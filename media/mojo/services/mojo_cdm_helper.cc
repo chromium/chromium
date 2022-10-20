@@ -45,7 +45,7 @@ cdm::FileIO* MojoCdmHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
 url::Origin MojoCdmHelper::GetCdmOrigin() {
   url::Origin cdm_origin;
   // Since the CDM is created asynchronously, by the time this function is
-  // called, the render frame host in the browser process may already be gone.
+  // called, the RenderFrameHost in the browser process may already be gone.
   // It's safe to ignore the error since the origin is used for crash reporting.
   std::ignore = frame_interfaces_->GetCdmOrigin(&cdm_origin);
   return cdm_origin;

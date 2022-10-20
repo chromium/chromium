@@ -31,7 +31,7 @@ DevToolsNetworkResourceLoader::DevToolsNetworkResourceLoader(
 DevToolsNetworkResourceLoader::~DevToolsNetworkResourceLoader() = default;
 
 // We can trust the |origin| parameter here, as it is the last committed origin
-// of a render frame host identified by a DevTools frame token. Note that there
+// of a RenderFrameHost identified by a DevTools frame token. Note that there
 // is a potential race condition when DevTools sends a request while the frame
 // already navigates away. This is difficult to fix before the
 // RenderDocumentHost refactoring is done.

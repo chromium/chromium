@@ -410,7 +410,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // can be passed here to prevent proxies from being created for it, in
   // case it is in the same FrameTree as another node on its opener chain).
   // |browsing_context_state| is the BrowsingContextState that is used in the
-  // speculative render frame host for cross browsing-instance navigations.
+  // speculative RenderFrameHost for cross browsing-instance navigations.
   void CreateOpenerProxies(
       SiteInstance* instance,
       FrameTreeNode* skip_this_node,
@@ -420,7 +420,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // this frame by name (e.g., via window.open("", "frame_name")).  See
   // https://crbug.com/511474.
   // |browsing_context_state| is the BrowsingContextState that is used in the
-  // speculative render frame host for cross browsing-instance navigations.
+  // speculative RenderFrameHost for cross browsing-instance navigations.
   void CreateProxiesForNewNamedFrame(
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
@@ -731,7 +731,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // |recovering_without_early_commit| is true if we are reviving a crashed
   // render frame by creating a proxy and committing later rather than doing an
   // immediate commit. |browsing_context_state| is the BrowsingContextState that
-  // is used in the speculative render frame host for cross browsing-instance
+  // is used in the speculative RenderFrameHost for cross browsing-instance
   // navigations.
   void CreateProxiesForNewRenderFrameHost(
       SiteInstance* old_instance,
@@ -756,7 +756,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // in CreateOpenerProxies for creating proxies in each FrameTree on the
   // opener chain.  Don't create proxies for the subtree rooted at
   // |skip_this_node|. |browsing_context_state| is the BrowsingContextState that
-  // is used in the speculative render frame host for cross browsing-instance
+  // is used in the speculative RenderFrameHost for cross browsing-instance
   // navigations.
   void CreateOpenerProxiesForFrameTree(
       SiteInstance* instance,

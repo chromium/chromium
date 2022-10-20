@@ -81,7 +81,7 @@ void ImageCaptureImpl::Create(
     mojo::PendingReceiver<media::mojom::ImageCapture> receiver) {
   CHECK(render_frame_host);
   // ImageCaptureImpl owns itself. It will self-destruct when a Mojo interface
-  // error occurs, the render frame host is deleted, or the render frame host
+  // error occurs, the RenderFrameHost is deleted, or the RenderFrameHost
   // navigates to a new document.
   new ImageCaptureImpl(*render_frame_host, std::move(receiver));
 }

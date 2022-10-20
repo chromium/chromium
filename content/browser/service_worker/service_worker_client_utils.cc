@@ -457,7 +457,7 @@ void OpenWindow(const GURL& url,
   }
 
   // The following code is a rough copy of Navigator::RequestOpenURL. That
-  // function can't be used directly since there is no render frame host yet
+  // function can't be used directly since there is no RenderFrameHost yet
   // that the navigation will occur in.
 
   OpenURLParams params(

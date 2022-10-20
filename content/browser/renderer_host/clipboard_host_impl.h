@@ -52,7 +52,7 @@ class CONTENT_EXPORT ClipboardHostImpl
       RenderFrameHostImpl::IsClipboardPasteContentAllowedCallback;
 
   // Keeps track of a request to see if some clipboard content, identified by
-  // its sequence number, is allowed to be pasted into the render frame host
+  // its sequence number, is allowed to be pasted into the RenderFrameHost
   // that owns this clipboard host.
   //
   // A request starts in the state incomplete until Complete() is called with

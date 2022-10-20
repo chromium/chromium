@@ -11128,9 +11128,9 @@ chromium-metrics-reviews@google.com.
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad event
-    and the render frame DocumentOnLoadCompleted event for the Read Later WebUI
-    page.
+    The amount of time between the RenderFrameHost StartProvisionalLoad event
+    and the RenderFrameHost DocumentOnLoadCompleted event for the Read Later
+    WebUI page.
   </summary>
 </histogram>
 
@@ -11139,7 +11139,7 @@ chromium-metrics-reviews@google.com.
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad and
+    The amount of time between the RenderFrameHost StartProvisionalLoad and
     DidFinishDocumentLoad events for the Read Later WebUI page.
   </summary>
 </histogram>
@@ -15731,11 +15731,11 @@ regressions. -->
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad event
-    and the render frame DocumentOnLoadCompleted event for the WebUI tab strip
-    page. This happens once when a browser window with WebUI tab strip enabled
-    is created. WebUITabStrip.LoadDocumentTime should be smaller or equal to
-    WebUITabStrip.LoadCoimpletedTime.
+    The amount of time between the RenderFrameHost StartProvisionalLoad event
+    and the RenderFrameHost DocumentOnLoadCompleted event for the WebUI tab
+    strip page. This happens once when a browser window with WebUI tab strip
+    enabled is created. WebUITabStrip.LoadDocumentTime should be smaller or
+    equal to WebUITabStrip.LoadCoimpletedTime.
   </summary>
 </histogram>
 
@@ -15745,7 +15745,7 @@ regressions. -->
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad and
+    The amount of time between the RenderFrameHost StartProvisionalLoad and
     DidFinishDocumentLoad events for the WebUI tab strip page. This happens once
     when a browser window with WebUI tab strip enabled is created.
     WebUITabStrip.LoadDocumentTime should be smaller or equal to

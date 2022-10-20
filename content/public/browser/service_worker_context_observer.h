@@ -85,7 +85,7 @@ class ServiceWorkerContextObserver {
 
   // Called when the navigation for a window client commits to a render frame
   // host. At this point, if there was a previous controllee attached to that
-  // render frame host, it has already been removed and OnControlleeRemoved()
+  // RenderFrameHost, it has already been removed and OnControlleeRemoved()
   // has been called.
   virtual void OnControlleeNavigationCommitted(
       int64_t version_id,

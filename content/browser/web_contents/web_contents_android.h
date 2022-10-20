@@ -43,7 +43,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  // Ensure that the render frame host etc are ready to handle JS eval
+  // Ensure that the RenderFrameHost etc are ready to handle JS eval
   // (e.g. recover from a crashed state).
   bool InitializeRenderFrameForJavaScript();
 

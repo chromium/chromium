@@ -149,7 +149,7 @@ bool WebOTPService::Create(
     return false;
 
   // WebOTPService owns itself. It will self-destruct when a mojo interface
-  // error occurs, the render frame host is deleted, or the render frame host
+  // error occurs, the RenderFrameHost is deleted, or the RenderFrameHost
   // navigates to a new document.
   new WebOTPService(fetcher, origin_list, *host, std::move(receiver));
   static_cast<RenderFrameHostImpl*>(host)

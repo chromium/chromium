@@ -26,7 +26,7 @@ namespace {
 // the Hung Page dialog, this is the simplest way. When we consolidate
 // implementations, it will be a good idea to reconsider this approach.
 
-// Returns the first render frame host that has a process that matches
+// Returns the first RenderFrameHost that has a process that matches
 // `hung_process`.
 content::RenderFrameHost* FindFirstRenderFrameHostMatchingProcess(
     content::WebContents* web_contents,

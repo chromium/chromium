@@ -74,7 +74,7 @@ void OfflinePageAutoFetcher::CancelSchedule() {
 void OfflinePageAutoFetcher::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chrome::mojom::OfflinePageAutoFetcher> receiver) {
-  // Lifetime of the self owned receiver can exceed the render frame host, so
+  // Lifetime of the self owned receiver can exceed the RenderFrameHost, so
   // OfflinePageAutoFetcher does not retain a reference.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<OfflinePageAutoFetcher>(render_frame_host),

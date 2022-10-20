@@ -1511,8 +1511,8 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest can be associated with.
   PrerenderHostRegistry& GetPrerenderHostRegistry();
 
-  // Returns the render frame host of the initiator document, iff there is such
-  // a document and its render frame host has not committed a different document
+  // Returns the RenderFrameHost of the initiator document, iff there is such
+  // a document and its RenderFrameHost has not committed a different document
   // since this navigation started. Otherwise returns nullptr.
   RenderFrameHostImpl* GetInitiatorDocumentRenderFrameHost();
 

@@ -127,7 +127,7 @@ void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
   if (!rfh || !rfh->IsActive()) {
-    // Requested from a no longer valid render frame host.
+    // Requested from a no longer valid RenderFrameHost.
     std::move(callback).Run(
         ChromeFileSystemAccessPermissionContext::SensitiveEntryResult::kAbort);
     return;
@@ -156,7 +156,7 @@ void ShowFileSystemAccessDangerousFileDialogOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
   if (!rfh || !rfh->IsActive()) {
-    // Requested from a no longer valid render frame host.
+    // Requested from a no longer valid RenderFrameHost.
     std::move(callback).Run(
         ChromeFileSystemAccessPermissionContext::SensitiveEntryResult::kAbort);
     return;
@@ -537,7 +537,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
 
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
     if (!rfh) {
-      // Requested from a no longer valid render frame host.
+      // Requested from a no longer valid RenderFrameHost.
       RunCallbackAndRecordPermissionRequestOutcome(
           std::move(callback), PermissionRequestOutcome::kInvalidFrame);
       return;

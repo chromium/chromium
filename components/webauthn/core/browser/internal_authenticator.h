@@ -76,7 +76,7 @@ class InternalAuthenticator {
   // any future calls are cancelled.
   virtual void Cancel() = 0;
 
-  // Returns the non-owned render frame host associated with this authenticator.
+  // Returns the non-owned RenderFrameHost associated with this authenticator.
   // Can be used for observing the host's deletion.
   virtual content::RenderFrameHost* GetRenderFrameHost() = 0;
 };

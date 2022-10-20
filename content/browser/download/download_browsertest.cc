@@ -4933,7 +4933,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadFromWebUIWithoutRenderer) {
   ASSERT_EQ(1u, downloads.size());
 
   // WebUI or other UrlLoaderFacotry will not handle request without a valid
-  // render frame host, download should gracefully fail without triggering
+  // RenderFrameHost, download should gracefully fail without triggering
   // crash.
   ASSERT_EQ(download::DownloadItem::INTERRUPTED, downloads[0]->GetState());
 }
@@ -5215,7 +5215,7 @@ IN_PROC_BROWSER_TEST_P(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
   RenderFrameHost* fenced_frame_host = CreateFencedFrame(
       shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
 
-  // Do a download without navigation from the fenced frame render frame host.
+  // Do a download without navigation from the fenced frame RenderFrameHost.
   // The download will be dropped.
   auto* download_manager =
       fenced_frame_host->GetBrowserContext()->GetDownloadManager();

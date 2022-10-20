@@ -566,7 +566,7 @@ class TestFrameNodeSource : public FrameNodeSource {
   void UnsubscribeFromFrameNode(
       content::GlobalRenderFrameHostId render_frame_host_id) override;
 
-  // Creates a frame node and returns its generated render frame host id.
+  // Creates a frame node and returns its generated RenderFrameHost id.
   content::GlobalRenderFrameHostId CreateFrameNode(
       int render_process_id,
       ProcessNodeImpl* process_node);
@@ -582,7 +582,7 @@ class TestFrameNodeSource : public FrameNodeSource {
   // The page node that hosts all frames.
   std::unique_ptr<PageNodeImpl> page_node_;
 
-  // Maps each frame's render frame host id with their associated frame node.
+  // Maps each frame's RenderFrameHost id with their associated frame node.
   base::flat_map<content::GlobalRenderFrameHostId,
                  std::unique_ptr<FrameNodeImpl>>
       frame_node_map_;
@@ -892,7 +892,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
         EXPECT_EQ(worker_node->process_node(), process_node);
 
         // The frame can not be connected to the service worker until its
-        // render frame host is available, which happens when the navigation
+        // RenderFrameHost is available, which happens when the navigation
         // commits.
         EXPECT_TRUE(worker_node->client_frames().empty());
       }));

@@ -532,7 +532,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // unknown data types.
   //
   // The implementation is expected to show UX to the user if needed.  If
-  // shown, the UX should be associated with the specific render frame host.
+  // shown, the UX should be associated with the specific RenderFrameHost.
   //
   // The callback is called, possibly asynchronously, with a status indicating
   // whether the operation is allowed or not.

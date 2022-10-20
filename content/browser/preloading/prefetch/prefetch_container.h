@@ -56,7 +56,7 @@ class CONTENT_EXPORT PrefetchContainer {
     return std::make_pair(referring_render_frame_host_id_, url_);
   }
 
-  // The ID of the render frame host that triggered the prefetch.
+  // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId GetReferringRenderFrameHostId() const {
     return referring_render_frame_host_id_;
   }
@@ -190,7 +190,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::mojom::URLResponseHead* head);
 
  private:
-  // The ID of the render frame host that triggered the prefetch.
+  // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
 
   // The URL that will potentially be prefetched

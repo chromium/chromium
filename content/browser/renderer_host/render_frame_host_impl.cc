@@ -3166,7 +3166,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     // See also https://crbug.com/1191161.
     //
     // We also exclude prerendering from this case manually, since prendering
-    // render frame hosts are unconditionally created with the
+    // RenderFrameHosts are unconditionally created with the
     // `renderer_initiated_creation_of_main_frame` set to false, even though the
     // frames arguably are renderer-created.
     //

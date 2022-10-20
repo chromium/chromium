@@ -276,8 +276,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
       ukm::SourceId document_ukm_source_id);
 
   // For service worker window clients. Called after the navigation commits to a
-  // render frame host. At this point, the previous ServiceWorkerContainerHost
-  // for that render frame host no longer exists.
+  // RenderFrameHost. At this point, the previous ServiceWorkerContainerHost
+  // for that RenderFrameHost no longer exists.
   void OnEndNavigationCommit();
 
   // For service worker clients that are shared workers or dedicated workers.

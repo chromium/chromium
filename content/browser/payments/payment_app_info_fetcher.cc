@@ -77,7 +77,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
   }
 
   for (const auto& frame : *frame_routing_ids) {
-    // Find out the render frame host registering the payment app. Although a
+    // Find out the RenderFrameHost registering the payment app. Although a
     // service worker can manage instruments, the first instrument must be set
     // on a page that has a link to a web app manifest, so it can be fetched
     // here.

@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
               NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   } else {
     // Policy container is properly initialized in the early committed
-    // render frame host.
+    // RenderFrameHost.
     EXPECT_TRUE(current_frame_host()->policy_container_host());
     EXPECT_EQ(navigation_request->associated_rfh_type(),
               NavigationRequest::AssociatedRenderFrameHostType::CURRENT);

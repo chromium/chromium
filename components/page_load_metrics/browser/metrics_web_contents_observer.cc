@@ -951,7 +951,7 @@ void MetricsWebContentsObserver::PrimaryMainFrameRenderProcessGone(
     return;
   }
 
-  // RenderProcessGone is associated with the render frame host for the
+  // RenderProcessGone is associated with the RenderFrameHost for the
   // currently committed load. We don't know if the pending navs or aborted
   // pending navs are associated w/ the render process that died, so we can't be
   // sure the info should propagate to them.

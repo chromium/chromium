@@ -32,7 +32,7 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
     /**
      * The tests trigger the context menu via JS rather than via a true native call which means
-     * the native code does not have a reference to the image's render frame host. Instead allow
+     * the native code does not have a reference to the image's RenderFrameHost. Instead allow
      * test cases to hardcode the test image bytes that will be shared.
      * @param hardcodedImageBytes The hard coded image bytes to fake or null if image should not be
      *         faked.

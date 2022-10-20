@@ -10185,7 +10185,7 @@ others/histograms.xml -->
   <int value="5" label="Loading"/>
   <int value="6" label="Was granted media access"/>
   <int value="7" label="Blocklisted features"/>
-  <int value="8" label="Disable for render frame host called"/>
+  <int value="8" label="Disable for RenderFrameHost called"/>
   <int value="9" label="Domain not allowed"/>
   <int value="10" label="HTTP method not GET"/>
   <int value="11" label="Subframe is navigating"/>

@@ -131,7 +131,7 @@ class SupervisedUserNavigationObserver
       int frame_id,
       const OnInterstitialResultCallback& callback);
 
-  // Filters the render frame host if render frame is live.
+  // Filters the RenderFrameHost if render frame is live.
   void FilterRenderFrame(content::RenderFrameHost* render_frame_host);
 
   // supervised_user::mojom::SupervisedUserCommands implementation. Should not

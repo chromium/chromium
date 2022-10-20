@@ -412,7 +412,7 @@ void WorkerWatcher::OnControlleeAdded(
   switch (client_info.type()) {
     case blink::mojom::ServiceWorkerClientType::kWindow: {
       // For window clients, it is necessary to wait until the navigation has
-      // committed to a render frame host.
+      // committed to a RenderFrameHost.
       bool inserted = client_frames_awaiting_commit_
                           .insert(AwaitingKey(version_id, client_uuid))
                           .second;

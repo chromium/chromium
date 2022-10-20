@@ -55,8 +55,8 @@ class ChromeBlobStorageContext;
 class CONTENT_EXPORT FileSystemManagerImpl
     : public blink::mojom::FileSystemManager {
  public:
-  // Constructed and held by the render frame host and render process host on
-  // the UI thread. Used by render frames (via the render frame host), workers
+  // Constructed and held by the RenderFrameHost and render process host on
+  // the UI thread. Used by render frames (via the RenderFrameHost), workers
   // and pepper (via the render process host).
   FileSystemManagerImpl(
       int process_id,

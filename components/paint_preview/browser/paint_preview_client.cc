@@ -460,7 +460,7 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     return;
   }
 
-  // If the render frame host navigated or is no longer around treat this as a
+  // If the RenderFrameHost navigated or is no longer around treat this as a
   // failure as a navigation occurring during capture is bad.
   auto* render_frame_host = content::RenderFrameHost::FromID(render_frame_id);
 
@@ -512,7 +512,7 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
   // |status|
   MarkFrameAsProcessed(params.document_guid, frame_guid);
 
-  // If the render frame host navigated or is no longer around treat this as a
+  // If the RenderFrameHost navigated or is no longer around treat this as a
   // failure as a navigation occurring during capture is bad.
   auto* render_frame_host = content::RenderFrameHost::FromID(render_frame_id);
   if (!render_frame_host || render_frame_host->GetEmbeddingToken().value_or(

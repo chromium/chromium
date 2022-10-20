@@ -67,7 +67,7 @@ bool ShouldSuspendDuringNavigation(crdtp::span<uint8_t> method) {
 }
 
 // Async control commands (such as CSS.enable) are idempotant and can
-// be safely replayed in the new render frame host. We will always forward
+// be safely replayed in the new RenderFrameHost. We will always forward
 // them to the new renderer on cross process navigation. Main rationale for
 // it is that the client doesn't expect such calls to fail in normal
 // circumstances.
@@ -228,7 +228,7 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
     return;
   }
 
-  // The session is not suspended but the render frame host may be updated
+  // The session is not suspended but the RenderFrameHost may be updated
   // during navigation because:
   // - auto attached to a new OOPIF
   // - cross-process navigation in the main frame

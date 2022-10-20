@@ -8388,7 +8388,7 @@ domain Page
       InjectedStyleSheet
       KeepaliveRequest
       Dummy
-      # Disabled for render frame host reasons
+      # Disabled for RenderFrameHost reasons
       # See content/browser/renderer_host/back_forward_cache_disable.h for explanations.
       ContentSecurityHandler
       ContentWebAuthenticationAPI

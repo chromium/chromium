@@ -76,8 +76,8 @@ chromium-metrics-reviews@google.com.
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad event
-    and the render frame DocumentOnLoadCompleted event for the Side Search
+    The amount of time between the RenderFrameHost StartProvisionalLoad event
+    and the RenderFrameHost DocumentOnLoadCompleted event for the Side Search
     Result Page. Recorded when DocumentOnLoadCompleted event triggered.
   </summary>
 </histogram>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad and
+    The amount of time between the RenderFrameHost StartProvisionalLoad and
     DidFinishDocumentLoad events for the Side Search Result Page. Recorded when
     DidFinishDocumentLoad events triggered.
   </summary>

@@ -157,7 +157,7 @@ class ExtensionWebContentsObserver
 
   base::CallbackListSubscription window_id_subscription_;
 
-  // A map of render frame host to mojo remotes.
+  // A map of RenderFrameHost to mojo remotes.
   std::map<content::RenderFrameHost*, mojo::AssociatedRemote<mojom::LocalFrame>>
       local_frame_map_;
 };

@@ -51,7 +51,7 @@ class WorkerNodeImpl;
 // service worker plays with frame navigations, the service worker can be
 // created before its first client's navigation has committed to a
 // RenderFrameHost. So when a OnControlleeAdded() notification is received for
-// a client frame, it is necessary to wait until the render frame host was
+// a client frame, it is necessary to wait until the RenderFrameHost was
 // determined.
 class WorkerWatcher : public content::DedicatedWorkerService::Observer,
                       public content::SharedWorkerService::Observer,

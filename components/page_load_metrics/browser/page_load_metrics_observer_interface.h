@@ -424,7 +424,7 @@ class PageLoadMetricsObserverInterface {
       const base::ReadOnlySharedMemoryRegion& shared_memory) = 0;
 
   // Invoked when there is data use for loading a resource on the page
-  // for a given render frame host. This only contains resources that have had
+  // for a given RenderFrameHost. This only contains resources that have had
   // new data use since the last callback. Resources loaded from the cache only
   // receive a single update. Multiple updates can be received for the same
   // resource if it is loaded in multiple documents.

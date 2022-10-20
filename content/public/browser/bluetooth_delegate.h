@@ -80,7 +80,7 @@ class CONTENT_EXPORT BluetoothDelegate {
       base::OnceCallback<void(const PairPromptResult& result)>;
 
   // An observer used to track permission revocation events for a particular
-  // render frame host.
+  // RenderFrameHost.
   class CONTENT_EXPORT FramePermissionObserver : public base::CheckedObserver {
    public:
     // Notify observer that an object permission was revoked for |origin|.

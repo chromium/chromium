@@ -444,7 +444,7 @@ class CONTENT_EXPORT StoragePartitionImpl
     URLLoaderNetworkContext(const URLLoaderNetworkContext& other);
     URLLoaderNetworkContext& operator=(const URLLoaderNetworkContext& other);
 
-    // Creates a URLLoaderNetworkContext for the render frame host.
+    // Creates a URLLoaderNetworkContext for the RenderFrameHost.
     static StoragePartitionImpl::URLLoaderNetworkContext
     CreateForRenderFrameHost(
         GlobalRenderFrameHostId global_render_frame_host_id);

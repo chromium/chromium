@@ -157,7 +157,7 @@ void RunLoopFor(base::TimeDelta duration) {
   run_loop.Run();
 }
 
-// Returns the render frame host where Gaia credentials can be filled in.
+// Returns the RenderFrameHost where Gaia credentials can be filled in.
 content::RenderFrameHost* GetSigninFrame(content::WebContents* web_contents) {
   // Dice displays the Gaia page directly in a tab.
   return web_contents->GetPrimaryMainFrame();

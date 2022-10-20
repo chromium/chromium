@@ -688,14 +688,14 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     return maybe_url;
   }
 
-  // Like RunAdAuctionAndFlushForFrame(), but uses the render frame host of the
+  // Like RunAdAuctionAndFlushForFrame(), but uses the RenderFrameHost of the
   // main frame.
   absl::optional<GURL> RunAdAuctionAndFlush(
       const blink::AuctionConfig& auction_config) {
     return RunAdAuctionAndFlushForFrame(auction_config, main_rfh());
   }
 
-  // Like UpdateInterestGroupNoFlushForFrame, but uses the render frame host of
+  // Like UpdateInterestGroupNoFlushForFrame, but uses the RenderFrameHost of
   // the main frame.
   void UpdateInterestGroupNoFlush() {
     UpdateInterestGroupNoFlushForFrame(main_rfh());

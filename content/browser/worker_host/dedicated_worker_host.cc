@@ -222,7 +222,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
       worker_process_host_->GetStoragePartition());
 
-  // Get nearest ancestor render frame host in order to determine the
+  // Get nearest ancestor RenderFrameHost in order to determine the
   // top-frame origin to use for the network isolation key.
   RenderFrameHostImpl* nearest_ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);

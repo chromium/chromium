@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// There is one instance of this interface per render frame host in the browser
+// There is one instance of this interface per RenderFrameHost in the browser
 // process. All methods are called by renderer on browser.
 interface AutofillDriver {
   // Pushes a form the user interacted with from the AutofillAgent to the

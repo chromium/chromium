@@ -43,7 +43,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   // Returns appropriate agent host for given frame tree node, traversing
   // up to local root as needed.
   static DevToolsAgentHostImpl* GetFor(FrameTreeNode* frame_tree_node);
-  // Returns appropriate agent host for given render frame host, traversing
+  // Returns appropriate agent host for given RenderFrameHost, traversing
   // up to local root as needed. This will have an effect different from
   // calling the above overload as GetFor(rfh->frame_tree_node()) when
   // given RFH is a pending local root.

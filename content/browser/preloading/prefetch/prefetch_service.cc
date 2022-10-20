@@ -567,7 +567,7 @@ base::WeakPtr<PrefetchContainer> PrefetchService::PopNextPrefetchContainer() {
     return nullptr;
   }
 
-  // Get the first prefetch that is from an active render frame host and in a
+  // Get the first prefetch that is from an active RenderFrameHost and in a
   // visible WebContents.
   auto prefetch_iter = base::ranges::find_if(
       prefetch_queue_,

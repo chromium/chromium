@@ -154,8 +154,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad event
-    and the render frame DocumentOnLoadCompleted event for the Chrome OS
+    The amount of time between the RenderFrameHost StartProvisionalLoad event
+    and the RenderFrameHost DocumentOnLoadCompleted event for the Chrome OS
     settings page.
   </summary>
 </histogram>
@@ -165,7 +165,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
-    The amount of time between the render frame host StartProvisionalLoad and
+    The amount of time between the RenderFrameHost StartProvisionalLoad and
     DidFinishDocumentLoad events for the Chrome OS settings page.
   </summary>
 </histogram>

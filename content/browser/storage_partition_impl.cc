@@ -1890,7 +1890,7 @@ void StoragePartitionImpl::OnAuthRequired(
     process_id = network::mojom::kInvalidProcessId;
 
     // `navigation_or_document_` can be null when `context` is created with
-    // an invalid render frame host after a page is destroyed.
+    // an invalid RenderFrameHost after a page is destroyed.
     // It is currently possible for the ServiceWorker case above to use
     // kRenderFrameHostContext for the auth request, after the RenderFrameHost
     // has been deleted. Treating this as an invalid process ID will cancel the
