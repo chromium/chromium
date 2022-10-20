@@ -44,12 +44,26 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
   }
 }
 
+// Report string used for NotRestoredReasons API. This will be brief and will
+// mask extension related reasons as "Extensions".
+std::string ReasonIdToReportString(DisabledReasonId reason_id) {
+  switch (reason_id) {
+    case DisabledReasonId::kExtensions:
+    case DisabledReasonId::kExtensionMessaging:
+    case DisabledReasonId::kExtensionMessagingForOpenPort:
+    case DisabledReasonId::kExtensionSentMessageToCachedFrame:
+      return "Extensions";
+    default:
+      return ReasonIdToString(reason_id);
+  }
+}
+
 content::BackForwardCache::DisabledReason DisabledReason(
     DisabledReasonId reason_id,
     const std::string& context) {
   return content::BackForwardCache::DisabledReason(
-      {content::BackForwardCache::DisabledSource::kEmbedder,
-       static_cast<content::BackForwardCache::DisabledReasonType>(reason_id),
-       ReasonIdToString(reason_id), context});
+      content::BackForwardCache::DisabledSource::kEmbedder,
+      static_cast<content::BackForwardCache::DisabledReasonType>(reason_id),
+      ReasonIdToString(reason_id), context, ReasonIdToReportString(reason_id));
 }
 }  // namespace back_forward_cache

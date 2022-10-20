@@ -39,8 +39,8 @@ std::string ReasonIdToString(
 BackForwardCache::DisabledReason BackForwardCacheDisable::DisabledReason(
     DisabledReasonId reason_id) {
   return BackForwardCache::DisabledReason(
-      {content::BackForwardCache::DisabledSource::kContent,
-       static_cast<BackForwardCache::DisabledReasonType>(reason_id),
-       ReasonIdToString(reason_id)});
+      content::BackForwardCache::DisabledSource::kContent,
+      static_cast<BackForwardCache::DisabledReasonType>(reason_id),
+      ReasonIdToString(reason_id), /*context=*/"", ReasonIdToString(reason_id));
 }
 }  // namespace content

@@ -1433,6 +1433,20 @@ bool BackForwardCacheImpl::IsScreenReaderAllowed() {
       features::kEnableBackForwardCacheForScreenReader);
 }
 
+BackForwardCache::DisabledReason::DisabledReason(
+    content::BackForwardCache::DisabledSource source,
+    content::BackForwardCache::DisabledReasonType id,
+    std::string description,
+    std::string context,
+    std::string report_string)
+    : source(source),
+      id(id),
+      description(description),
+      context(context),
+      report_string(report_string) {}
+
+BackForwardCache::DisabledReason::DisabledReason(
+    const BackForwardCache::DisabledReason& reason) = default;
 bool BackForwardCache::DisabledReason::operator<(
     const DisabledReason& other) const {
   return std::tie(source, id) < std::tie(other.source, other.id);
