@@ -277,10 +277,9 @@ void CredentialProviderService::RemoveCredentials(
   for (const auto& form : forms) {
     NSString* recordID = RecordIdentifierForPasswordForm(*form);
     DCHECK(recordID);
-    // TODO(crbug.com/1370113): Verify if this is the call leading to the error.
-    DCHECK([credential_store_ credentialWithRecordIdentifier:recordID])
-        << "Credential does not exist in the storage, " << recordID;
-    [credential_store_ removeCredentialWithRecordIdentifier:recordID];
+    if ([credential_store_ credentialWithRecordIdentifier:recordID]) {
+      [credential_store_ removeCredentialWithRecordIdentifier:recordID];
+    }
   }
 }
 
