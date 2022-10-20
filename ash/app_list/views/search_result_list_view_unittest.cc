@@ -34,18 +34,15 @@ int kDefaultSearchItems = 3;
 
 // Preferred sizing for different types of search result views.
 constexpr int kPreferredWidth = 640;
-constexpr int kClassicViewHeight = 48;
 constexpr int kDefaultViewHeight = 40;
 constexpr int kInlineAnswerViewHeight = 80;
 constexpr gfx::Insets kInlineAnswerBorder(12);
 
-// SearchResultListType::kUnified, SearchResultListType::AnswerCard, and
+// SearchResultListType::SearchResultListType::AnswerCard, and
 //  SearchResultListType::kBestMatch do not have associated categories.
-constexpr int num_list_types_not_in_category = 3;
+constexpr int num_list_types_not_in_category = 2;
 // SearchResult::Category::kUnknown does not have an associated list type.
 constexpr int num_category_without_list_type = 1;
-// SearchResultListType::kUnified is used for categorical search.
-constexpr int num_list_types_not_used_for_categorical_search = 1;
 
 }  // namespace
 
@@ -66,12 +63,6 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     views::test::WidgetTest::SetUp();
     widget_ = CreateTopLevelPlatformWidget();
 
-    unified_view_ = std::make_unique<SearchResultListView>(
-        nullptr, &view_delegate_, nullptr,
-        SearchResultView::SearchResultViewType::kClassic, false, absl::nullopt);
-    unified_view_->SetListType(
-        SearchResultListView::SearchResultListType::kUnified);
-
     default_view_ = std::make_unique<SearchResultListView>(
         nullptr, &view_delegate_, nullptr,
         SearchResultView::SearchResultViewType::kDefault, true, absl::nullopt);
@@ -86,17 +77,14 @@ class SearchResultListViewTest : public views::test::WidgetTest,
         SearchResultListView::SearchResultListType::kAnswerCard);
 
     widget_->SetBounds(gfx::Rect(0, 0, 700, 500));
-    widget_->GetContentsView()->AddChildView(unified_view_.get());
     widget_->GetContentsView()->AddChildView(default_view_.get());
     widget_->GetContentsView()->AddChildView(answer_card_view_.get());
     widget_->Show();
-    unified_view_->SetResults(GetResults());
     default_view_->SetResults(GetResults());
     answer_card_view_->SetResults(GetResults());
   }
 
   void TearDown() override {
-    unified_view_.reset();
     default_view_.reset();
     answer_card_view_.reset();
     widget_->CloseNow();
@@ -105,15 +93,11 @@ class SearchResultListViewTest : public views::test::WidgetTest,
 
  protected:
   bool IsProductivityLauncherEnabled() const { return GetParam(); }
-  SearchResultListView* unified_view() const { return unified_view_.get(); }
   SearchResultListView* default_view() const { return default_view_.get(); }
   SearchResultListView* answer_card_view() const {
     return answer_card_view_.get();
   }
 
-  SearchResultView* GetUnifiedResultViewAt(int index) const {
-    return unified_view_->GetResultViewAt(index);
-  }
   SearchResultView* GetDefaultResultViewAt(int index) const {
     return default_view_->GetResultViewAt(index);
   }
@@ -140,7 +124,7 @@ class SearchResultListViewTest : public views::test::WidgetTest,
 
   std::vector<SearchResultView*> GetAssistantResultViews() const {
     std::vector<SearchResultView*> results;
-    for (auto* view : unified_view_->search_result_views_) {
+    for (auto* view : default_view_->search_result_views_) {
       auto* result = view->result();
       if (result &&
           result->result_type() == AppListSearchResultType::kAssistantText)
@@ -284,7 +268,7 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     return result;
   }
 
-  int GetUnifiedViewResultCount() const { return unified_view_->num_results(); }
+  int GetUnifiedViewResultCount() const { return default_view_->num_results(); }
 
   void AddTestResult() {
     std::unique_ptr<TestSearchResult> result =
@@ -301,7 +285,7 @@ class SearchResultListViewTest : public views::test::WidgetTest,
 
   bool KeyPress(ui::KeyboardCode key_code) {
     ui::KeyEvent event(ui::ET_KEY_PRESSED, key_code, ui::EF_NONE);
-    return unified_view_->OnKeyPressed(event);
+    return default_view_->OnKeyPressed(event);
   }
 
   void ExpectConsistent() {
@@ -309,15 +293,13 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     SearchModel::SearchResults* results = GetResults();
 
     for (size_t i = 0; i < results->item_count(); ++i) {
-      SearchResultView* result_view = IsProductivityLauncherEnabled()
-                                          ? GetDefaultResultViewAt(i)
-                                          : GetUnifiedResultViewAt(i);
+      SearchResultView* result_view = GetDefaultResultViewAt(i);
       ASSERT_TRUE(result_view) << "result view at " << i;
       EXPECT_EQ(results->GetItemAt(i), result_view->result());
     }
   }
 
-  void DoUpdate() { unified_view()->DoUpdate(); }
+  void DoUpdate() { default_view()->DoUpdate(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -325,7 +307,6 @@ class SearchResultListViewTest : public views::test::WidgetTest,
   AshColorProvider
       ash_color_provider_;  // Needed by SearchResultInlineIconView.
   AppListTestViewDelegate view_delegate_;
-  std::unique_ptr<SearchResultListView> unified_view_;
   std::unique_ptr<SearchResultListView> default_view_;
   std::unique_ptr<SearchResultListView> answer_card_view_;
   views::Widget* widget_;
@@ -400,8 +381,7 @@ TEST_P(SearchResultListViewTest, CorrectEnumLength) {
       static_cast<int>(SearchResultListView::SearchResultListType::kMaxValue) +
           1 /*0 indexing offset*/,
       static_cast<int>(
-          SearchResultListView::GetAllListTypesForCategoricalSearch().size() +
-          num_list_types_not_used_for_categorical_search));
+          SearchResultListView::GetAllListTypesForCategoricalSearch().size()));
   // Check that all types in AppListSearchResultCategory are included in
   // SearchResultListType.
   EXPECT_EQ(
@@ -413,45 +393,31 @@ TEST_P(SearchResultListViewTest, CorrectEnumLength) {
 
 TEST_P(SearchResultListViewTest, SearchResultViewLayout) {
   // Set SearchResultListView bounds and check views are default size.
-  unified_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  default_view()->SetBounds(0, 0, kPreferredWidth, 400);
   SetUpSearchResults();
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
-            GetUnifiedResultViewAt(0)->size());
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
-            GetUnifiedResultViewAt(1)->size());
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
-            GetUnifiedResultViewAt(2)->size());
-
   // Override search result types.
-  GetUnifiedResultViewAt(0)->SetSearchResultViewType(
-      SearchResultView::SearchResultViewType::kClassic);
-  GetUnifiedResultViewAt(1)->SetSearchResultViewType(
-      SearchResultView::SearchResultViewType::kAnswerCard);
-  GetUnifiedResultViewAt(2)->SetSearchResultViewType(
+  GetDefaultResultViewAt(0)->SetSearchResultViewType(
       SearchResultView::SearchResultViewType::kDefault);
+  GetDefaultResultViewAt(1)->SetSearchResultViewType(
+      SearchResultView::SearchResultViewType::kAnswerCard);
   DoUpdate();
 
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
-            GetUnifiedResultViewAt(0)->size());
-  EXPECT_EQ(GetUnifiedResultViewAt(0)->TitleAndDetailsOrientationForTest(),
-            views::LayoutOrientation::kVertical);
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kInlineAnswerViewHeight),
-            GetUnifiedResultViewAt(1)->size());
-  EXPECT_EQ(GetUnifiedResultViewAt(1)->TitleAndDetailsOrientationForTest(),
-            views::LayoutOrientation::kVertical);
   EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
-            GetUnifiedResultViewAt(2)->size());
-  EXPECT_EQ(GetUnifiedResultViewAt(2)->TitleAndDetailsOrientationForTest(),
+            GetDefaultResultViewAt(0)->size());
+  EXPECT_EQ(GetDefaultResultViewAt(0)->TitleAndDetailsOrientationForTest(),
             views::LayoutOrientation::kHorizontal);
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kInlineAnswerViewHeight),
+            GetDefaultResultViewAt(1)->size());
+  EXPECT_EQ(GetDefaultResultViewAt(1)->TitleAndDetailsOrientationForTest(),
+            views::LayoutOrientation::kVertical);
 }
 
 TEST_P(SearchResultListViewTest, BorderTest) {
-  unified_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  default_view()->SetBounds(0, 0, kPreferredWidth, 400);
   SetUpSearchResults();
   DoUpdate();
   EXPECT_EQ(kInlineAnswerBorder,
             GetAnswerCardResultViewAt(0)->GetBorder()->GetInsets());
-  EXPECT_EQ(gfx::Insets(), GetUnifiedResultViewAt(0)->GetBorder()->GetInsets());
   EXPECT_EQ(gfx::Insets(), GetDefaultResultViewAt(0)->GetBorder()->GetInsets());
 }
 

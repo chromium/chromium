@@ -38,8 +38,11 @@ namespace {
 
 int kDefaultSearchItems = 3;
 const uint64_t kSearchResultImageViewResultCount = 4;
-const int kResultContainersCount = static_cast<int>(
-    ash::SearchResultListView::SearchResultListType::kMaxValue);
+// SearchResultListViewType is 0 indexed so we need to add 1 here.
+const int kResultContainersCount =
+    static_cast<int>(
+        ash::SearchResultListView::SearchResultListType::kMaxValue) +
+    1;
 
 }  // namespace
 

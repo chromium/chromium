@@ -101,11 +101,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   };
 
   enum class SearchResultViewType {
-    // The default vew type used for the majority of search results.
+    // The default view type used for the majority of search results.
     kDefault,
-    // The classic view type continues support for pre-BubbleView launcher's
-    // search UI.
-    kClassic,
     // Inline Answer views are used to directly answer questions posed by the
     // search query.
     kAnswerCard,

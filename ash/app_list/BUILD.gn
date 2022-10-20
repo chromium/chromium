@@ -306,7 +306,6 @@ source_set("unit_tests") {
     "views/scrollable_apps_grid_view_unittest.cc",
     "views/search_box_view_unittest.cc",
     "views/search_result_list_view_unittest.cc",
-    "views/search_result_page_view_unittest.cc",
     "views/search_result_view_unittest.cc",
   ]
 
