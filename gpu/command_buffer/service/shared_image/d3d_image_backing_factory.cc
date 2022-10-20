@@ -357,7 +357,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   } else {
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
-                     D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+                     (D3DSharedFence::IsSupported(d3d11_device_.Get())
+                          ? D3D11_RESOURCE_MISC_SHARED
+                          : D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
   }
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   HRESULT hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &d3d11_texture);

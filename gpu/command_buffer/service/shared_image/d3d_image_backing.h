@@ -10,11 +10,13 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/d3d_shared_fence.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -26,6 +28,10 @@
 // ui/gl/buildflags.h
 #if BUILDFLAG(USE_DAWN)
 #include <dawn/native/D3D12Backend.h>
+using dawn::native::d3d12::ExternalImageDescriptorDXGISharedHandle;
+using dawn::native::d3d12::ExternalImageDXGI;
+using dawn::native::d3d12::ExternalImageDXGIBeginAccessDescriptor;
+using dawn::native::d3d12::ExternalImageDXGIFenceDescriptor;
 #endif  // BUILDFLAG(USE_DAWN)
 
 namespace gfx {
@@ -116,11 +122,13 @@ class GPU_GLES2_EXPORT D3DImageBacking
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
 
-  bool BeginAccessD3D12();
-  void EndAccessD3D12();
-
-  bool BeginAccessD3D11();
+  bool BeginAccessD3D11(bool write_access);
   void EndAccessD3D11();
+
+#if BUILDFLAG(USE_DAWN)
+  WGPUTexture BeginAccessDawn(WGPUDevice device, WGPUTextureUsage usage);
+  void EndAccessDawn(WGPUDevice device, WGPUTexture texture);
+#endif
 
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_for_testing()
       const {
@@ -146,6 +154,60 @@ class GPU_GLES2_EXPORT D3DImageBacking
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
+  // A simple wrapper around a D3DSharedFence and a value that was previously
+  // signaled on the fence. This supports copy semantics so that it can be
+  // stored in |read_fences_| or |write_fence_|.
+  class SignaledFence {
+   public:
+    SignaledFence(scoped_refptr<D3DSharedFence> fence, uint64_t value);
+    SignaledFence(const SignaledFence&);
+    SignaledFence& operator=(const SignaledFence&);
+    ~SignaledFence();
+
+    const D3DSharedFence* fence() const { return fence_.get(); }
+
+    // Issues a wait on the |fence_| using |value_|. Wait is skipped if this
+    // fence is signaled by |device|. Returns true on success.
+    bool WaitD3D11(Microsoft::WRL::ComPtr<ID3D11Device> device) const;
+
+    // Issues a signal for the |fence_| with |value_| + 1 on the D3D11 device
+    // this fence was created with, and increments |value_| only on success.
+    // Returns true on success.
+    bool IncrementAndSignalD3D11();
+
+    // Update fence value from |other| if the underlying fence is the same.
+    // Returns true if the underlying fence was the same and either the value of
+    // this fence was updated to the new value or retained because it was ahead.
+    bool Update(const SignaledFence& other);
+
+#if BUILDFLAG(USE_DAWN)
+    // Wrap shared handle for |fence_| and |value_| in a Dawn fence descriptor.
+    ExternalImageDXGIFenceDescriptor AsDawnFenceDescriptor() const;
+#endif
+
+   private:
+    scoped_refptr<D3DSharedFence> fence_;
+    uint64_t value_ = 0;
+  };
+
+#if BUILDFLAG(USE_DAWN)
+  struct DawnExternalImageState {
+    DawnExternalImageState();
+    DawnExternalImageState(DawnExternalImageState&&);
+    DawnExternalImageState& operator=(DawnExternalImageState&&);
+    ~DawnExternalImageState();
+
+    // If an external image exists, it means Dawn produced the D3D12 side of the
+    // D3D11 texture created by ID3D12Device::OpenSharedHandle().
+    std::unique_ptr<ExternalImageDXGI> external_image;
+
+    // Signaled fence imported from Dawn at EndAccess. This can be reused if
+    // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.
+    scoped_refptr<D3DSharedFence> signaled_fence;
+  };
+  base::flat_map<WGPUDevice, DawnExternalImageState> dawn_external_image_cache_;
+#endif  // BUILDFLAG(USE_DAWN)
+
   D3DImageBacking(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -169,6 +231,10 @@ class GPU_GLES2_EXPORT D3DImageBacking
   gl::GLImage* GetGLImage() const;
 
   ID3D11Texture2D* GetOrCreateStagingTexture();
+
+  bool ValidateBeginAccess(bool write_access) const;
+
+  void EndAccessCommon(absl::optional<SignaledFence> signaled_fence);
 
   // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
@@ -197,16 +263,31 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // Set if this backing corresponds to the back buffer of |swap_chain_|.
   const bool is_back_buffer_;
 
-  // If an external image exists, it means Dawn produced the D3D12 side of the
-  // D3D11 texture created by ID3D12Device::OpenSharedHandle.
-#if BUILDFLAG(USE_DAWN)
-  base::flat_map<WGPUDevice,
-                 std::unique_ptr<dawn::native::d3d12::ExternalImageDXGI>>
-      dawn_external_images_;
-#endif  // BUILDFLAG(USE_DAWN)
-
   // Staging texture used for copy to/from shared memory GMB.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
+
+  // D3D11 device corresponding to the |d3d11_texture_| provided on creation.
+  // TODO(sunnyps): Support multiple D3D11 devices.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+
+  // Whether the backing is being used for exclusive read-write access.
+  bool in_write_access_ = false;
+
+  // Number of concurrent readers for this backing.
+  int num_readers_ = 0;
+
+  // Fences for previous reads. These will be waited on by the subsequent write,
+  // but not by reads.
+  std::vector<SignaledFence> read_fences_;
+
+  // Fence for the previous write. These will be waited on by subsequent reads
+  // and/or write.
+  absl::optional<SignaledFence> write_fence_;
+
+  // Fence used for signaling on this backing's |d3d11_device_|. Lazily created
+  // and signaled on first Dawn access, and used on any subsequent D3D11 access.
+  // TODO(sunnyps): Support multiple D3D11 devices.
+  absl::optional<SignaledFence> d3d11_device_fence_;
 };
 
 }  // namespace gpu

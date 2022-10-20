@@ -548,6 +548,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image/d3d_image_backing_factory.h",
       "shared_image/d3d_image_representation.cc",
       "shared_image/d3d_image_representation.h",
+      "shared_image/d3d_shared_fence.cc",
+      "shared_image/d3d_shared_fence.h",
     ]
     libs = [ "dxguid.lib" ]
   }

@@ -178,6 +178,59 @@ void CopyPlane(const uint8_t* source_memory,
 
 }  // namespace
 
+#if BUILDFLAG(USE_DAWN)
+D3DImageBacking::DawnExternalImageState::DawnExternalImageState() = default;
+D3DImageBacking::DawnExternalImageState::~DawnExternalImageState() = default;
+D3DImageBacking::DawnExternalImageState::DawnExternalImageState(
+    DawnExternalImageState&&) = default;
+D3DImageBacking::DawnExternalImageState&
+D3DImageBacking::DawnExternalImageState::operator=(DawnExternalImageState&&) =
+    default;
+#endif
+
+D3DImageBacking::SignaledFence::SignaledFence(
+    scoped_refptr<D3DSharedFence> fence,
+    uint64_t value)
+    : fence_(std::move(fence)), value_(value) {
+  DCHECK(fence_);
+  DCHECK_NE(value_, UINT64_MAX);
+}
+D3DImageBacking::SignaledFence::SignaledFence(const SignaledFence&) = default;
+D3DImageBacking::SignaledFence& D3DImageBacking::SignaledFence::operator=(
+    const SignaledFence&) = default;
+D3DImageBacking::SignaledFence::~SignaledFence() = default;
+
+bool D3DImageBacking::SignaledFence::WaitD3D11(
+    Microsoft::WRL::ComPtr<ID3D11Device> device) const {
+  // D3DSharedFence::WaitD3D11 skips the wait if the device created this fence.
+  return fence_->WaitD3D11(std::move(device), value_);
+}
+
+bool D3DImageBacking::SignaledFence::IncrementAndSignalD3D11() {
+  if (!fence_->SignalD3D11(value_ + 1)) {
+    DLOG(ERROR) << "D3DSharedFence::Signal failed";
+    return false;
+  }
+  value_++;
+  return true;
+}
+
+bool D3DImageBacking::SignaledFence::Update(const SignaledFence& other) {
+  if (fence_ == other.fence_) {
+    if (value_ < other.value_ && other.value_ != UINT64_MAX)
+      value_ = other.value_;
+    return true;
+  }
+  return false;
+}
+
+#if BUILDFLAG(USE_DAWN)
+ExternalImageDXGIFenceDescriptor
+D3DImageBacking::SignaledFence::AsDawnFenceDescriptor() const {
+  return ExternalImageDXGIFenceDescriptor{fence_->GetSharedHandle(), value_};
+}
+#endif
+
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     const Mailbox& mailbox,
@@ -222,8 +275,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
   // Keyed mutexes are required for Dawn interop but are not used for XR
   // composition where fences are used instead.
-  DCHECK(!has_webgpu_usage || (dxgi_shared_handle_state &&
-                               dxgi_shared_handle_state->has_keyed_mutex()));
+  DCHECK(!has_webgpu_usage || dxgi_shared_handle_state);
 
   // Do not cache a GL texture in the backing if it could be owned by WebGPU
   // since there's no GL context to MakeCurrent in the destructor.
@@ -278,9 +330,7 @@ D3DImageBacking::CreateFromVideoTexture(
 
   // Shared handle and keyed mutex are required for Dawn interop.
   const bool has_webgpu_usage = usage & gpu::SHARED_IMAGE_USAGE_WEBGPU;
-  const bool has_keyed_mutex =
-      dxgi_shared_handle_state && dxgi_shared_handle_state->has_keyed_mutex();
-  DCHECK(!has_webgpu_usage || has_keyed_mutex);
+  DCHECK(!has_webgpu_usage || dxgi_shared_handle_state);
 
   std::vector<std::unique_ptr<SharedImageBacking>> shared_images(
       NumPlanes(dxgi_format));
@@ -366,6 +416,8 @@ D3DImageBacking::D3DImageBacking(
       is_back_buffer_(is_back_buffer) {
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
   DCHECK(has_webgpu_usage || gl_texture_);
+  if (d3d11_texture_)
+    d3d11_texture_->GetDevice(&d3d11_device_);
 }
 
 D3DImageBacking::~D3DImageBacking() {
@@ -376,7 +428,7 @@ D3DImageBacking::~D3DImageBacking() {
   swap_chain_.Reset();
   d3d11_texture_.Reset();
 #if BUILDFLAG(USE_DAWN)
-  dawn_external_images_.clear();
+  dawn_external_image_cache_.clear();
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
@@ -592,39 +644,35 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
-  // Evict invalid external images e.g. due to their device being destroyed.
-  base::EraseIf(dawn_external_images_,
-                [](const auto& kv) { return !kv.second->IsValid(); });
-
   // Persistently open the shared handle by caching it on this backing.
-  auto it = dawn_external_images_.find(device);
-  dawn::native::d3d12::ExternalImageDXGI* external_image_ptr = nullptr;
-  if (it == dawn_external_images_.end()) {
+  auto it = dawn_external_image_cache_.find(device);
+  if (it == dawn_external_image_cache_.end()) {
     DCHECK(dxgi_shared_handle_state_);
     const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
     DCHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
 
-    dawn::native::d3d12::ExternalImageDescriptorDXGISharedHandle
-        externalImageDesc;
+    D3D11_TEXTURE2D_DESC texture_desc = {};
+    d3d11_texture_->GetDesc(&texture_desc);
+
+    ExternalImageDescriptorDXGISharedHandle externalImageDesc;
     externalImageDesc.cTextureDescriptor = &texture_descriptor;
     externalImageDesc.sharedHandle = shared_handle;
+    externalImageDesc.useFenceSynchronization =
+        !(texture_desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
 
-    std::unique_ptr<dawn::native::d3d12::ExternalImageDXGI> external_image =
-        dawn::native::d3d12::ExternalImageDXGI::Create(device,
-                                                       &externalImageDesc);
-    if (!external_image) {
+    DawnExternalImageState state;
+    state.external_image =
+        ExternalImageDXGI::Create(device, &externalImageDesc);
+    if (!state.external_image) {
       LOG(ERROR) << "Failed to create external image";
       return nullptr;
     }
-    external_image_ptr = external_image.get();
-    dawn_external_images_.emplace(device, std::move(external_image));
-  } else {
-    external_image_ptr = it->second.get();
+    DCHECK(state.external_image->IsValid());
+    dawn_external_image_cache_.emplace(device, std::move(state));
   }
-  DCHECK(external_image_ptr);
-  DCHECK(external_image_ptr->IsValid());
-  return std::make_unique<DawnD3DImageRepresentation>(
-      manager, this, tracker, device, external_image_ptr);
+
+  return std::make_unique<DawnD3DImageRepresentation>(manager, this, tracker,
+                                                      device);
 #else
   return nullptr;
 #endif  // BUILDFLAG(USE_DAWN)
@@ -650,28 +698,222 @@ void D3DImageBacking::OnMemoryDump(
     gl_image->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
-bool D3DImageBacking::BeginAccessD3D12() {
-  if (dxgi_shared_handle_state_)
-    return dxgi_shared_handle_state_->BeginAccessD3D12();
-  // D3D12 access is only allowed with shared handle and keyed mutex.
-  return false;
+#if BUILDFLAG(USE_DAWN)
+WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
+                                             WGPUTextureUsage wgpu_usage) {
+  const bool write_access =
+      wgpu_usage & (WGPUTextureUsage_CopyDst | WGPUTextureUsage_StorageBinding |
+                    WGPUTextureUsage_RenderAttachment);
+
+  if (!ValidateBeginAccess(write_access))
+    return nullptr;
+
+  // D3D12 access is only allowed with shared handle. Note that BeginAccessD3D12
+  // is a no-op if fences are used instead of keyed mutex.
+  if (!dxgi_shared_handle_state_ ||
+      !dxgi_shared_handle_state_->BeginAccessD3D12()) {
+    DLOG(ERROR) << "Missing shared handle state or BeginAccessD3D12 failed";
+    return nullptr;
+  }
+
+  // Create the D3D11 device fence on first Dawn access.
+  if (!dxgi_shared_handle_state_->has_keyed_mutex() && !d3d11_device_fence_) {
+    auto fence = D3DSharedFence::CreateForD3D11(d3d11_device_);
+    if (!fence) {
+      DLOG(ERROR) << "Failed to create D3D11 signal fence";
+      return nullptr;
+    }
+    d3d11_device_fence_ = SignaledFence(std::move(fence), 0);
+    // Make D3D11 device wait for |write_fence_| since we'll replace it below.
+    if (write_fence_ && !write_fence_->WaitD3D11(d3d11_device_)) {
+      DLOG(ERROR) << "Failed to wait for write fence";
+      return nullptr;
+    }
+    if (!d3d11_device_fence_->IncrementAndSignalD3D11()) {
+      DLOG(ERROR) << "Failed to signal D3D11 signal fence";
+      return nullptr;
+    }
+    // Store it in |write_fence_| so it's waited on for all subsequent access.
+    write_fence_ = d3d11_device_fence_;
+  }
+
+  auto it = dawn_external_image_cache_.find(device);
+  DCHECK(it != dawn_external_image_cache_.end());
+
+  const D3DSharedFence* dawn_signaled_fence = it->second.signaled_fence.get();
+
+  // Defer clearing fences until later to handle Dawn failure to import texture.
+  std::vector<ExternalImageDXGIFenceDescriptor> wait_fences;
+  // Always wait for previous write for both read-only or read-write access.
+  // Skip the wait if it's for the fence last signaled by the device.
+  if (write_fence_ && write_fence_->fence() != dawn_signaled_fence)
+    wait_fences.push_back(write_fence_->AsDawnFenceDescriptor());
+  // Also wait for all previous reads for read-write access.
+  if (write_access) {
+    for (const auto& read_fence : read_fences_) {
+      // Skip the wait if it's for the fence last signaled by the device.
+      if (read_fence.fence() != dawn_signaled_fence)
+        wait_fences.push_back(read_fence.AsDawnFenceDescriptor());
+    }
+  }
+
+  ExternalImageDXGIBeginAccessDescriptor descriptor;
+  descriptor.isInitialized = IsCleared();
+  descriptor.isSwapChainTexture =
+      (usage() & SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE);
+  descriptor.usage = wgpu_usage;
+  descriptor.waitFences = std::move(wait_fences);
+
+  ExternalImageDXGI* external_image = it->second.external_image.get();
+  DCHECK(external_image);
+  WGPUTexture texture = external_image->BeginAccess(&descriptor);
+  if (!texture) {
+    DLOG(ERROR) << "Failed to begin access and produce WGPUTexture";
+    dxgi_shared_handle_state_->EndAccessD3D12();
+    return nullptr;
+  }
+
+  // Clear fences and update state iff Dawn BeginAccess succeeds.
+  if (write_access) {
+    in_write_access_ = true;
+    write_fence_.reset();
+    read_fences_.clear();
+  } else {
+    num_readers_++;
+  }
+
+  return texture;
 }
 
-void D3DImageBacking::EndAccessD3D12() {
+void D3DImageBacking::EndAccessDawn(WGPUDevice device, WGPUTexture texture) {
+  DCHECK(texture);
+  if (dawn::native::IsTextureSubresourceInitialized(texture, 0, 1, 0, 1))
+    SetCleared();
+
+  // External image is removed from cache on first EndAccess after device is
+  // lost. It's ok to skip synchronization because it should've already been
+  // synchronized before the entry was removed from the cache.
+  auto it = dawn_external_image_cache_.find(device);
+  if (it != dawn_external_image_cache_.end()) {
+    ExternalImageDXGI* external_image = it->second.external_image.get();
+    DCHECK(external_image);
+
+    // EndAccess will only succeed if the external image is still valid.
+    if (external_image->IsValid()) {
+      ExternalImageDXGIFenceDescriptor descriptor;
+      external_image->EndAccess(texture, &descriptor);
+
+      absl::optional<SignaledFence> signaled_fence;
+      if (descriptor.fenceHandle != nullptr) {
+        scoped_refptr<D3DSharedFence>& cached_fence = it->second.signaled_fence;
+        // Try to reuse the last signaled fence if it's the same fence.
+        if (!cached_fence ||
+            !cached_fence->IsSameFenceAsHandle(descriptor.fenceHandle)) {
+          cached_fence =
+              D3DSharedFence::CreateFromHandle(descriptor.fenceHandle);
+          DCHECK(cached_fence);
+        }
+        signaled_fence = SignaledFence(cached_fence, descriptor.fenceValue);
+      }
+      // Dawn should be using either keyed mutex or fence synchronization.
+      DCHECK((dxgi_shared_handle_state_ &&
+              dxgi_shared_handle_state_->has_keyed_mutex()) ||
+             signaled_fence.has_value());
+      EndAccessCommon(std::move(signaled_fence));
+    } else {
+      // Erase from cache if external image is invalid i.e. device was lost.
+      dawn_external_image_cache_.erase(it);
+    }
+  }
+
   if (dxgi_shared_handle_state_)
     dxgi_shared_handle_state_->EndAccessD3D12();
 }
+#endif
 
-bool D3DImageBacking::BeginAccessD3D11() {
+bool D3DImageBacking::BeginAccessD3D11(bool write_access) {
+  if (!ValidateBeginAccess(write_access))
+    return false;
+
+  // If read fences or write fence are present, shared handle should be too.
+  DCHECK((read_fences_.empty() && !write_fence_) || dxgi_shared_handle_state_);
+
+  // Always wait for the write fence for both read-write and read-only access.
+  // We don't wait for previous read fences for read-only access since there's
+  // no dependency between concurrent reads and instead wait for the last write.
+  if (write_fence_ && !write_fence_->WaitD3D11(d3d11_device_)) {
+    DLOG(ERROR) << "Failed to wait for write fence";
+    return false;
+  }
+  if (write_access) {
+    // For read-write access, wait for all previous reads, and reset fences.
+    for (const auto& fence : read_fences_) {
+      if (!fence.WaitD3D11(d3d11_device_)) {
+        DLOG(ERROR) << "Failed to wait for read fence";
+        return false;
+      }
+    }
+    write_fence_.reset();
+    read_fences_.clear();
+    in_write_access_ = true;
+  } else {
+    num_readers_++;
+  }
+
   if (dxgi_shared_handle_state_)
     return dxgi_shared_handle_state_->BeginAccessD3D11();
-  // D3D11 access is allowed without shared handle and keyed mutex.
+  // D3D11 access is allowed without shared handle.
   return true;
 }
 
 void D3DImageBacking::EndAccessD3D11() {
+  // If D3D11 device signaling fence is present, shared handle should be too.
+  DCHECK(!d3d11_device_fence_ || dxgi_shared_handle_state_);
+
+  absl::optional<SignaledFence> signaled_fence;
+  if (d3d11_device_fence_ && d3d11_device_fence_->IncrementAndSignalD3D11())
+    signaled_fence = d3d11_device_fence_;
+
+  EndAccessCommon(std::move(signaled_fence));
+
   if (dxgi_shared_handle_state_)
     dxgi_shared_handle_state_->EndAccessD3D11();
+}
+
+bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
+  if (in_write_access_) {
+    DLOG(ERROR) << "Already being accessed for write";
+    return false;
+  }
+  if (write_access && num_readers_ > 0) {
+    DLOG(ERROR) << "Already being accessed for read";
+    return false;
+  }
+  return true;
+}
+
+void D3DImageBacking::EndAccessCommon(
+    absl::optional<SignaledFence> signaled_fence) {
+  if (in_write_access_) {
+    DCHECK(!write_fence_.has_value());
+    DCHECK(read_fences_.empty());
+    in_write_access_ = false;
+    if (signaled_fence)
+      write_fence_.emplace(*signaled_fence);
+  } else {
+    num_readers_--;
+    if (signaled_fence) {
+      // First try to update an existing read fence, otherwise insert a new one.
+      for (auto& fence : read_fences_) {
+        if (fence.Update(*signaled_fence)) {
+          signaled_fence.reset();
+          break;
+        }
+      }
+      if (signaled_fence)
+        read_fences_.emplace_back(*signaled_fence);
+    }
+  }
 }
 
 gl::GLImage* D3DImageBacking::GetGLImage() const {

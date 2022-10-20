@@ -66,6 +66,7 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
 
   bool has_keyed_mutex() const { return !!dxgi_keyed_mutex_; }
 
+  // The following only have an effect if a keyed mutex is present.
   bool BeginAccessD3D11();
   void EndAccessD3D11();
 
