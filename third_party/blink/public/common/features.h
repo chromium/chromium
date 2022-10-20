@@ -913,6 +913,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSSVTrailerEnforceExposureAssertion);
 // Kill switch for AbortSignal algorithm handle-based removal.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAbortSignalHandleBasedRemoval);
 
+// Forces the attribute powerPreference to be set to "high-performance" for
+// WebGL contexts.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);
+
 }  // namespace features
 }  // namespace blink
 

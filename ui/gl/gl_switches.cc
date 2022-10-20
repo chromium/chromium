@@ -317,15 +317,6 @@ const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
 
 bool SupportsEGLDualGpuRendering() {
 #if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-  gl::GLDisplayEGL* display_default =
-      gl::GLDisplayManagerEGL::GetInstance()->GetDisplay(
-          gl::GpuPreference::kDefault);
-  DCHECK(display_default);
-  gl::GLDisplayEGL* display_high_performance =
-      gl::GLDisplayManagerEGL::GetInstance()->GetDisplay(
-          gl::GpuPreference::kHighPerformance);
-  if (!display_high_performance || display_default == display_high_performance)
-    return false;
   return base::FeatureList::IsEnabled(kEGLDualGpuRendering);
 #else
   return false;

@@ -1671,5 +1671,9 @@ BASE_FEATURE(kAbortSignalHandleBasedRemoval,
              "AbortSignalHandleBasedRemoval",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
+             "ForceHighPerformanceGPUForWebGL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

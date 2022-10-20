@@ -171,12 +171,20 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       channel_->sync_point_manager()->CreateSyncPointClientState(
           CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
 
+  // TODO(crbug.com/1251724): Remove this after testing.
+  // Only enable multiple displays on ANGLE/Metal and only behind a feature.
+  bool force_default_display = true;
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
+      features::SupportsEGLDualGpuRendering()) {
+    force_default_display = false;
+  }
   gl::GpuPreference gpu_preference = init_params.attribs.gpu_preference;
   // If the user queries a low-power context, it's better to use whatever the
   // default GPU used by Chrome is, which may be different than the low-power
   // GPU determined by GLDisplayManager.
   if (gpu_preference == gl::GpuPreference::kLowPower ||
-      gpu_preference == gl::GpuPreference::kNone) {
+      gpu_preference == gl::GpuPreference::kNone || force_default_display) {
     gpu_preference = gl::GpuPreference::kDefault;
   }
   gl::GLDisplay* display = gl::GetDisplay(gpu_preference);
@@ -226,7 +234,13 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         return gpu::ContextResult::kSurfaceFailure;
       }
     } else {
-      surface_ = default_surface;
+      if (default_surface->GetGLDisplay() == display) {
+        surface_ = default_surface;
+      } else {
+        // The default surface was created on a different display, create a
+        // new surface on the requested display.
+        surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
+      }
     }
   } else {
     switch (init_params.attribs.color_space) {

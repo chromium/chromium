@@ -539,6 +539,13 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
   Platform::ContextAttributes context_attributes = ToPlatformContextAttributes(
       attributes, context_type, SupportOwnOffscreenSurface(execution_context));
 
+  // To run our tests with Chrome rendering on the low power GPU and WebGL on
+  // the high performance GPU, we need to force the power preference attribute.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kForceHighPerformanceGPUForWebGL)) {
+    context_attributes.prefer_low_power_gpu = false;
+  }
+
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider;
   const auto& url = execution_context->Url();
   if (IsMainThread()) {
