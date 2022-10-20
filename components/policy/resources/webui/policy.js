@@ -48,6 +48,14 @@ function getRefreshIntervalEl() {
       .shadowRoot.querySelector('.refresh-interval');
 }
 
+function getReportButtonVisibility() {
+  const button = document.querySelector('button#upload-report');
+  if (!button) {
+    return 'none';
+  }
+  return button.computedStyleMap().get('display').toString();
+}
+
 Object.assign(window, {
   getPolicyFieldsets,
   getAllPolicyTables,
@@ -55,4 +63,5 @@ Object.assign(window, {
   getAllPolicyRowDivs,
   getPrecedenceRowValue,
   getRefreshIntervalEl,
+  getReportButtonVisibility,
 });

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -67,10 +68,8 @@ constexpr char kClientId[] = "client_id";
 constexpr base::TimeDelta kUploadFrequency = base::Hours(12);
 constexpr base::TimeDelta kNewUploadFrequency = base::Hours(10);
 
-#if !BUILDFLAG(IS_ANDROID)
 constexpr char kUploadTriggerMetricName[] =
     "Enterprise.CloudReportingUploadTrigger";
-#endif
 
 }  // namespace
 
@@ -631,6 +630,82 @@ TEST_F(ReportSchedulerTest, ReportingIsDisabledWhileNewReportIsPosted) {
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(generator_);
+}
+
+TEST_F(ReportSchedulerTest, ManualReport) {
+  SetLastUploadInHour(base::Hours(1));
+  EXPECT_CALL_SetupRegistration();
+
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateScheduler();
+
+  base::MockOnceClosure callback;
+  EXPECT_CALL(callback, Run()).Times(1);
+  scheduler_->UploadFullReport(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  ExpectLastUploadTimestampUpdated(true);
+  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 6, 1);
+  ::testing::Mock::VerifyAndClearExpectations(generator_);
+  ::testing::Mock::VerifyAndClearExpectations(uploader_);
+}
+
+TEST_F(ReportSchedulerTest, ScheduledReportAfterManualReport) {
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateScheduler();
+
+  base::MockOnceClosure callback;
+  EXPECT_CALL(callback, Run()).Times(1);
+
+  // Trigger manual report first and then move forward time to trigger timer
+  // report.
+  scheduler_->UploadFullReport(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  ExpectLastUploadTimestampUpdated(true);
+  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 6, 1);
+  ::testing::Mock::VerifyAndClearExpectations(generator_);
+  ::testing::Mock::VerifyAndClearExpectations(uploader_);
+}
+
+TEST_F(ReportSchedulerTest, ManualReportWithRegularOneOngoing) {
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+
+  // Callback for timer report will be hold.
+  ReportUploader::ReportCallback saved_timer_callback;
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce([&saved_timer_callback](
+                    ReportType report_type, ReportRequestQueue requests,
+                    ReportUploader::ReportCallback callback) {
+        saved_timer_callback = std::move(callback);
+      });
+  CreateScheduler();
+  // Trigger timer report first.
+  task_environment_.RunUntilIdle();
+
+  base::MockOnceClosure callback;
+  EXPECT_CALL(callback, Run()).Times(1);
+
+  // Trigger manual report and then release timer report callback.
+  scheduler_->UploadFullReport(callback.Get());
+  std::move(saved_timer_callback).Run(ReportUploader::kSuccess);
+  task_environment_.RunUntilIdle();
+
+  ExpectLastUploadTimestampUpdated(true);
+  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 1, 1);
+  ::testing::Mock::VerifyAndClearExpectations(generator_);
+  ::testing::Mock::VerifyAndClearExpectations(uploader_);
 }
 
 // Android does not support version updates nor extensions

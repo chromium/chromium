@@ -9,9 +9,9 @@
 #import <utility>
 #import <vector>
 
-#import "base/bind.h"
 #import "base/callback.h"
 #import "base/callback_helpers.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -88,6 +88,8 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
       {"loadPoliciesDone", IDS_POLICY_LOAD_POLICIES_DONE},
       {"loadingPolicies", IDS_POLICY_LOADING_POLICIES},
+      {"reportUploading", IDS_REPORT_UPLOADING},
+      {"reportUploaded", IDS_REPORT_UPLOADED},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddLocalizedStrings(policy::kPolicySources);
@@ -145,11 +147,31 @@ void PolicyUIHandler::RegisterMessages() {
       "copyPoliciesJSON",
       base::BindRepeating(&PolicyUIHandler::HandleCopyPoliciesJson,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
+                                          base::Unretained(this)));
 }
 
 void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
   NSString* jsonString = base::SysUTF8ToNSString(GetPoliciesAsJson());
   [UIPasteboard generalPasteboard].string = jsonString;
+}
+
+void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
+  DCHECK_EQ(1u, args.size());
+  std::string callback_id = args[0].GetString();
+  auto* report_scheduler = GetApplicationContext()
+                               ->GetBrowserPolicyConnector()
+                               ->chrome_browser_cloud_management_controller()
+                               ->report_scheduler();
+  if (report_scheduler) {
+    report_scheduler->UploadFullReport(
+        base::BindOnce(&PolicyUIHandler::OnReportUploaded,
+                       weak_factory_.GetWeakPtr(), callback_id));
+  } else {
+    OnReportUploaded(callback_id);
+  }
 }
 
 std::string PolicyUIHandler::GetPoliciesAsJson() {
@@ -182,6 +204,12 @@ void PolicyUIHandler::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 }
 
 void PolicyUIHandler::OnPolicyStatusChanged() {
+  SendStatus();
+}
+
+void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
+  web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
+                                      /*response=*/base::Value());
   SendStatus();
 }
 

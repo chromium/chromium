@@ -255,6 +255,10 @@ class ChromeBrowserCloudManagementController
   void SetGaiaURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  enterprise_reporting::ReportScheduler* report_scheduler() {
+    return report_scheduler_.get();
+  }
+
  protected:
   void NotifyPolicyRegisterFinished(bool succeeded);
   void NotifyBrowserUnenrolled(bool succeeded);

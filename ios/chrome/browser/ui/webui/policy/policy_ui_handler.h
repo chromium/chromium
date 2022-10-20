@@ -47,6 +47,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // policy::PolicyValueProvider::Observer implementation.
   void OnPolicyStatusChanged() override;
 
+  // Called when report has been uploaded, successfully or not.
+  void OnReportUploaded(const std::string& callback_id);
+
   // policy::SchemaRegistry::Observer.
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
 
@@ -66,6 +69,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
 
   // Called to handle the "reloadPolicies" WebUI message.
   void HandleReloadPolicies(const base::Value::List& args);
+
+  // Called to handle the "uploadReport" WebUI message.
+  void HandleUploadReport(const base::Value::List& args);
 
   // Send information about the current policy values to the UI. For each policy
   // whose value has been set, dictionaries containing the value and additional

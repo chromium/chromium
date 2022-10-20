@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <include name="IDR_POLICY_CSS" file="../policy/resources/webui/policy.css" preprocess="true" type="BINDATA" />
-  <include name="IDR_POLICY_HTML" file="../policy/resources/webui/policy.html" type="BINDATA" />
+  <include name="IDR_POLICY_HTML" file="../policy/resources/webui/policy.html" preprocess="true" type="BINDATA" />
   <include name="IDR_POLICY_BASE_JS" file="../policy/resources/webui/policy_base.js" preprocess="true" type="BINDATA" />
   <include name="IDR_POLICY_JS" file="../policy/resources/webui/policy.js" type="BINDATA" />
   <include name="IDR_POLICY_POLICY_CONFLICT_HTML_JS" file="${root_gen_dir}/components/policy/resources/webui/policy_conflict.html.js" preprocess="true" use_base_dir="false" type="BINDATA" />

@@ -10,12 +10,12 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +31,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -84,6 +86,14 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
+namespace {
+void DoWritePoliciesToJSONFile(const base::FilePath& path,
+                               const std::string& data) {
+  base::WriteFile(path, data.c_str(), data.size());
+}
+
+}  // namespace
+
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
@@ -97,35 +107,39 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
   source->AddLocalizedStrings(policy::kPolicySources);
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"conflict", IDS_POLICY_LABEL_CONFLICT},
-      {"superseding", IDS_POLICY_LABEL_SUPERSEDING},
-      {"conflictValue", IDS_POLICY_LABEL_CONFLICT_VALUE},
-      {"supersededValue", IDS_POLICY_LABEL_SUPERSEDED_VALUE},
-      {"headerLevel", IDS_POLICY_HEADER_LEVEL},
-      {"headerName", IDS_POLICY_HEADER_NAME},
-      {"headerScope", IDS_POLICY_HEADER_SCOPE},
-      {"headerSource", IDS_POLICY_HEADER_SOURCE},
-      {"headerStatus", IDS_POLICY_HEADER_STATUS},
-      {"headerValue", IDS_POLICY_HEADER_VALUE},
-      {"warning", IDS_POLICY_HEADER_WARNING},
-      {"levelMandatory", IDS_POLICY_LEVEL_MANDATORY},
-      {"levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED},
-      {"error", IDS_POLICY_LABEL_ERROR},
-      {"deprecated", IDS_POLICY_LABEL_DEPRECATED},
-      {"future", IDS_POLICY_LABEL_FUTURE},
-      {"info", IDS_POLICY_LABEL_INFO},
-      {"ignored", IDS_POLICY_LABEL_IGNORED},
-      {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
-      {"ok", IDS_POLICY_OK},
-      {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
-      {"scopeUser", IDS_POLICY_SCOPE_USER},
-      {"title", IDS_POLICY_TITLE},
-      {"unknown", IDS_POLICY_UNKNOWN},
-      {"unset", IDS_POLICY_UNSET},
-      {"value", IDS_POLICY_LABEL_VALUE},
-      {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
-      {"loadPoliciesDone", IDS_POLICY_LOAD_POLICIES_DONE},
-      {"loadingPolicies", IDS_POLICY_LOADING_POLICIES},
+    {"conflict", IDS_POLICY_LABEL_CONFLICT},
+    {"superseding", IDS_POLICY_LABEL_SUPERSEDING},
+    {"conflictValue", IDS_POLICY_LABEL_CONFLICT_VALUE},
+    {"supersededValue", IDS_POLICY_LABEL_SUPERSEDED_VALUE},
+    {"headerLevel", IDS_POLICY_HEADER_LEVEL},
+    {"headerName", IDS_POLICY_HEADER_NAME},
+    {"headerScope", IDS_POLICY_HEADER_SCOPE},
+    {"headerSource", IDS_POLICY_HEADER_SOURCE},
+    {"headerStatus", IDS_POLICY_HEADER_STATUS},
+    {"headerValue", IDS_POLICY_HEADER_VALUE},
+    {"warning", IDS_POLICY_HEADER_WARNING},
+    {"levelMandatory", IDS_POLICY_LEVEL_MANDATORY},
+    {"levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED},
+    {"error", IDS_POLICY_LABEL_ERROR},
+    {"deprecated", IDS_POLICY_LABEL_DEPRECATED},
+    {"future", IDS_POLICY_LABEL_FUTURE},
+    {"info", IDS_POLICY_LABEL_INFO},
+    {"ignored", IDS_POLICY_LABEL_IGNORED},
+    {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
+    {"ok", IDS_POLICY_OK},
+    {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
+    {"scopeUser", IDS_POLICY_SCOPE_USER},
+    {"title", IDS_POLICY_TITLE},
+    {"unknown", IDS_POLICY_UNKNOWN},
+    {"unset", IDS_POLICY_UNSET},
+    {"value", IDS_POLICY_LABEL_VALUE},
+    {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
+    {"loadPoliciesDone", IDS_POLICY_LOAD_POLICIES_DONE},
+    {"loadingPolicies", IDS_POLICY_LOADING_POLICIES},
+#if !BUILDFLAG(IS_CHROMEOS)
+    {"reportUploading", IDS_REPORT_UPLOADING},
+    {"reportUploaded", IDS_REPORT_UPLOADED},
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -161,6 +175,11 @@ void PolicyUIHandler::RegisterMessages() {
       "copyPoliciesJSON",
       base::BindRepeating(&PolicyUIHandler::HandleCopyPoliciesJson,
                           base::Unretained(this)));
+#if !BUILDFLAG(IS_CHROMEOS)
+  web_ui()->RegisterMessageCallback(
+      "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
+                                          base::Unretained(this)));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void PolicyUIHandler::OnPolicyValueAndStatusChanged() {
@@ -171,13 +190,19 @@ void PolicyUIHandler::OnPolicyValueAndStatusChanged() {
   SendStatus();
 }
 
-void PolicyUIHandler::SendStatus() {
-  if (!IsJavascriptAllowed())
-    return;
+void PolicyUIHandler::FileSelected(const base::FilePath& path,
+                                   int index,
+                                   void* params) {
+  DCHECK(export_policies_select_file_dialog_);
 
-  FireWebUIListener(
-      "status-updated",
-      policy_value_and_status_aggregator_->GetAggregatedPolicyStatus());
+  WritePoliciesToJSONFile(path);
+
+  export_policies_select_file_dialog_ = nullptr;
+}
+
+void PolicyUIHandler::FileSelectionCanceled(void* params) {
+  DCHECK(export_policies_select_file_dialog_);
+  export_policies_select_file_dialog_ = nullptr;
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {
@@ -260,6 +285,53 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
   scw.WriteText(base::UTF8ToUTF16(policies_json));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
+  DCHECK_EQ(1u, args.size());
+  std::string callback_id = args[0].GetString();
+  auto* report_scheduler = g_browser_process->browser_policy_connector()
+                               ->chrome_browser_cloud_management_controller()
+                               ->report_scheduler();
+  if (report_scheduler) {
+    report_scheduler->UploadFullReport(
+        base::BindOnce(&PolicyUIHandler::OnReportUploaded,
+                       weak_factory_.GetWeakPtr(), callback_id));
+  } else {
+    OnReportUploaded(callback_id);
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+void PolicyUIHandler::SendPolicies() {
+  if (!IsJavascriptAllowed())
+    return;
+  FireWebUIListener(
+      "policies-updated",
+      base::Value(
+          policy_value_and_status_aggregator_->GetAggregatedPolicyNames()),
+      base::Value(
+          policy_value_and_status_aggregator_->GetAggregatedPolicyValues()));
+}
+
+void PolicyUIHandler::SendStatus() {
+  if (!IsJavascriptAllowed())
+    return;
+
+  FireWebUIListener(
+      "status-updated",
+      policy_value_and_status_aggregator_->GetAggregatedPolicyStatus());
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
+  if (!IsJavascriptAllowed())
+    return;
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            /*response=*/base::Value());
+  SendStatus();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 std::string PolicyUIHandler::GetPoliciesAsJson() {
   auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
       web_ui()->GetWebContents()->GetBrowserContext());
@@ -273,11 +345,6 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       policy_value_and_status_aggregator_->GetAggregatedPolicyStatus(), params);
 }
 
-void DoWritePoliciesToJSONFile(const base::FilePath& path,
-                               const std::string& data) {
-  base::WriteFile(path, data.c_str(), data.size());
-}
-
 void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
   std::string json_policies = GetPoliciesAsJson();
   base::ThreadPool::PostTask(
@@ -285,29 +352,4 @@ void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&DoWritePoliciesToJSONFile, path, json_policies));
-}
-
-void PolicyUIHandler::FileSelected(const base::FilePath& path,
-                                   int index,
-                                   void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-
-  WritePoliciesToJSONFile(path);
-
-  export_policies_select_file_dialog_ = nullptr;
-}
-
-void PolicyUIHandler::FileSelectionCanceled(void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-  export_policies_select_file_dialog_ = nullptr;
-}
-
-void PolicyUIHandler::SendPolicies() {
-  if (IsJavascriptAllowed())
-    FireWebUIListener(
-        "policies-updated",
-        base::Value(
-            policy_value_and_status_aggregator_->GetAggregatedPolicyNames()),
-        base::Value(
-            policy_value_and_status_aggregator_->GetAggregatedPolicyValues()));
 }

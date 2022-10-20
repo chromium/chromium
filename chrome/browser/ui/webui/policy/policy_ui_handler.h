@@ -59,6 +59,9 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void HandleListenPoliciesUpdates(const base::Value::List& args);
   void HandleReloadPolicies(const base::Value::List& args);
   void HandleCopyPoliciesJson(const base::Value::List& args);
+#if !BUILDFLAG(IS_CHROMEOS)
+  void HandleUploadReport(const base::Value::List& args);
+#endif
 
   // Send information about the current policy values to the UI. Information is
   // sent in two parts to the UI:
@@ -74,6 +77,11 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // policy enabled (device and/or user), a dictionary containing status
   // information.
   void SendStatus();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Called when report has been uploaded, successfully or not.
+  void OnReportUploaded(const std::string& callback_id);
+#endif
 
   // Build a JSON string of all the policies.
   std::string GetPoliciesAsJson();

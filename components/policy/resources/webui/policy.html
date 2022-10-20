@@ -22,6 +22,9 @@
       <button id="reload-policies">$i18n{reloadPolicies}</button>
       <button id="export-policies">$i18n{exportPoliciesJSON}</button>
       <button id="copy-policies">$i18n{copyPoliciesJSON}</button>
+<if expr="not is_chromeos">
+      <button id="upload-report">$i18n{uploadReport}</button>
+</if>
       <div id="show-unset-container" class="show-unset-checkbox">
         <label>
           <input id="show-unset" type="checkbox">

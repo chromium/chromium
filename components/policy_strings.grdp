@@ -372,6 +372,15 @@ Additional details:
   <message name="IDS_EXPORT_POLICIES_JSON" desc="Label for the button that exports policies in JSON format.">
     Export to JSON
   </message>
+  <message name="IDS_UPLOAD_REPORT" desc="Label for the button that uplaod Chrome usage report">
+    Upload Report
+  </message>
+  <message name="IDS_REPORT_UPLOADING" desc="Screen reader message indicates report is being uploaded">
+    Upload Report
+  </message>
+  <message name="IDS_REPORT_UPLOADED" desc="Screen reader message indicates report has been uploaded">
+    Report is uploaded
+  </message>
   <message name="IDS_POLICY_STATUS" desc="Title of the status section.">
     Status
   </message>

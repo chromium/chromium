@@ -11,7 +11,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 import './status_box.js';
 import './policy_table.js';
 
-import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.js';
@@ -89,6 +89,23 @@ export class Page {
       };
     }
 
+    // <if expr="not is_chromeos">
+    // Hide report button by default, will be displayed once we have policy
+    // value.
+    const reportButton = $('upload-report');
+    reportButton.style.display = 'none';
+    reportButton.onclick = () => {
+      reportButton.disabled = true;
+      $('screen-reader-message').textContent =
+          loadTimeData.getString('reportUploading');
+      sendWithPromise('uploadReport').then(() => {
+        $('upload-report').disabled = false;
+        $('screen-reader-message').textContent =
+            loadTimeData.getString('reportUploaded');
+      });
+    };
+    // </if>
+
     $('copy-policies').onclick = () => {
       chrome.send('copyPoliciesJSON');
     };
@@ -153,6 +170,10 @@ export class Page {
 
     policyGroups.forEach(group => this.createOrUpdatePolicyTable(group));
 
+    // <if expr="not is_chromeos">
+    this.updateReportButton(
+        policyValues?.chrome?.policies?.CloudReportingEnabled?.value === true);
+    // </if>
     this.reloadPoliciesDone();
   }
 
@@ -224,6 +245,17 @@ export class Page {
     $('screen-reader-message').textContent =
         loadTimeData.getString('loadPoliciesDone');
   }
+
+  // <if expr="not is_chromeos">
+  /**
+   * Show report button if it's `enabled` by the policy. Exclude CrOS as there
+   * are multiple report on CrOS but the button doesn't support all of them so
+   * far.
+   */
+  updateReportButton(enabled) {
+    $('upload-report').style.display = enabled ? 'inline-block' : 'none';
+  }
+  // </if>
 }
 
 // Make Page a singleton.

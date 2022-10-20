@@ -232,6 +232,8 @@ class PolicyUITest : public PlatformBrowserTest {
 
   void VerifyPolicies(const std::vector<std::vector<std::string>>& expected);
 
+  void VerifyReportButton(bool visible);
+
   void VerifyExportingPolicies(const base::Value::Dict& expected);
 
   content::WebContents* web_contents() {
@@ -361,6 +363,15 @@ void PolicyUITest::VerifyPolicies(
         EXPECT_EQ(expected_policy[j], *value);
     }
   }
+}
+
+void PolicyUITest::VerifyReportButton(bool visible) {
+  const std::string kJavaScript =
+      "domAutomationController.send(getReportButtonVisibility());";
+  std::string ret;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(web_contents(),
+                                                     kJavaScript, &ret));
+  EXPECT_EQ(visible, ret != "none");
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -853,6 +864,33 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
   VerifyPolicies(expected_policies);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButton) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+
+  // Hide by default.
+  VerifyReportButton(/*visible=*/false);
+
+  // Turn on with the policy
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kCloudReportingEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+#if !BUILDFLAG(IS_CHROMEOS)
+  VerifyReportButton(/*visible=*/true);
+#else
+  // Always hide on Chrome OS.
+  VerifyReportButton(/*visible=*/false);
+#endif
+  // Hide while policy is off.
+  policy_map.Set(policy::key::kCloudReportingEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+  VerifyReportButton(/*visible=*/false);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

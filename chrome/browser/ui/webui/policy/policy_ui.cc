@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -37,6 +38,8 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
     {"labelDirectoryApiId", IDS_POLICY_LABEL_DIRECTORY_API_ID},
     {"labelGaiaId", IDS_POLICY_LABEL_GAIA_ID},
     {"labelIsAffiliated", IDS_POLICY_LABEL_IS_AFFILIATED},
+    {"labelLastCloudReportSentTimestamp",
+     IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP},
     {"labelLocation", IDS_POLICY_LABEL_LOCATION},
     {"labelMachineEnrollmentDomain",
      IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN},
@@ -76,8 +79,9 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
     {"statusUpdater", IDS_POLICY_STATUS_UPDATER},
 #endif
     {"statusUser", IDS_POLICY_STATUS_USER},
-    {"labelLastCloudReportSentTimestamp",
-     IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP},
+#if !BUILDFLAG(IS_CHROMEOS)
+    {"uploadReport", IDS_UPLOAD_REPORT},
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   };
   source->AddLocalizedStrings(kStrings);
 

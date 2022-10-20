@@ -34,6 +34,7 @@ const int kMaximumRetry = 10;  // Retry 10 times takes about 15 to 19 hours.
 bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
   switch (trigger) {
     case ReportScheduler::kTriggerTimer:
+    case ReportScheduler::kTriggerManual:
     case ReportScheduler::kTriggerUpdate:
     case ReportScheduler::kTriggerNewVersion:
       return true;
@@ -46,6 +47,7 @@ bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
 bool IsExtensionRequestUploaded(ReportScheduler::ReportTrigger trigger) {
   switch (trigger) {
     case ReportScheduler::kTriggerTimer:
+    case ReportScheduler::kTriggerManual:
     case ReportScheduler::kTriggerExtensionRequestRealTime:
       return true;
     case ReportScheduler::kTriggerNone:
@@ -146,6 +148,22 @@ ReportScheduler::Delegate* ReportScheduler::GetDelegateForTesting() {
 
 void ReportScheduler::OnDMTokenUpdated() {
   OnReportEnabledPrefChanged();
+}
+
+void ReportScheduler::UploadFullReport(base::OnceClosure on_report_uploaded) {
+  if (!IsReportingEnabled()) {
+    VLOG(1) << "Reporting is not enabled.";
+    std::move(on_report_uploaded).Run();
+    return;
+  }
+
+  if (on_manual_report_uploaded_) {
+    VLOG(1) << "Another report is uploading.";
+    std::move(on_report_uploaded).Run();
+    return;
+  }
+  on_manual_report_uploaded_ = std::move(on_report_uploaded);
+  GenerateAndUploadReport(kTriggerManual);
 }
 
 void ReportScheduler::RegisterPrefObserver() {
@@ -337,7 +355,8 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
     case ReportUploader::kTransientError:
       // Stop retrying and schedule the next report to avoid stale report.
       // Failure count is not reset so retry delay remains.
-      if (active_trigger_ == kTriggerTimer) {
+      if (active_trigger_ == kTriggerTimer ||
+          active_trigger_ == kTriggerManual) {
         const base::Time now = base::Time::Now();
         delegate_->GetPrefService()->SetTime(kLastUploadTimestamp, now);
         if (IsReportingEnabled())
@@ -350,6 +369,17 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
       break;
   }
 
+  if ((active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer)) {
+    if (on_manual_report_uploaded_)
+      std::move(on_manual_report_uploaded_).Run();
+
+    // Timer and Manual report are exactly same. If we just uploaded one, skip
+    // the other.
+    if (pending_triggers_ & kTriggerTimer)
+      pending_triggers_ -= kTriggerTimer;
+    if (pending_triggers_ & kTriggerManual)
+      pending_triggers_ -= kTriggerManual;
+  }
   active_trigger_ = kTriggerNone;
   RunPendingTriggers();
 }
@@ -366,6 +396,10 @@ void ReportScheduler::RunPendingTriggers() {
   if ((pending_triggers_ & kTriggerTimer) != 0) {
     // Timer-triggered reports contain data of all other report types.
     trigger = kTriggerTimer;
+    pending_triggers_ = 0;
+  } else if ((pending_triggers_ & kTriggerManual) != 0) {
+    // Manual-triggered reports also contains all data.
+    trigger = kTriggerManual;
     pending_triggers_ = 0;
   } else {
     trigger = (pending_triggers_ & kTriggerUpdate) != 0 ? kTriggerUpdate
@@ -409,13 +443,17 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
     kNewVersion = 3,
     kExtensionRequest = 4,  // Deprecated.
     kExtensionRequestRealTime = 5,
-    kMaxValue = kExtensionRequestRealTime
+    kManual = 6,
+    kMaxValue = kManual
   } sample = Sample::kNone;
   switch (trigger) {
     case kTriggerNone:
       break;
     case kTriggerTimer:
       sample = Sample::kTimer;
+      break;
+    case kTriggerManual:
+      sample = Sample::kManual;
       break;
     case kTriggerUpdate:
       sample = Sample::kUpdate;
@@ -439,6 +477,7 @@ ReportType ReportScheduler::TriggerToReportType(
       NOTREACHED();
       [[fallthrough]];
     case ReportScheduler::kTriggerTimer:
+    case ReportScheduler::kTriggerManual:
       return full_report_type_;
     case ReportScheduler::kTriggerUpdate:
       return ReportType::kBrowserVersion;
