@@ -238,6 +238,8 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   DCHECK(!manifest_url.is_empty())
       << "must not be empty if manifest is not empty.";
 
+  DCHECK(!web_contents_->IsBeingDestroyed());
+
   if (base::expected<WebAppInstallInfo, std::string> install_info =
           CreateInstallInfoFromManifest(*opt_manifest, manifest_url);
       install_info.has_value()) {

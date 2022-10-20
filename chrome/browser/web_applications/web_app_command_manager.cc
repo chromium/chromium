@@ -116,10 +116,10 @@ void WebAppCommandManager::StartCommandOrPrepareForLoad(
 void WebAppCommandManager::OnAboutBlankLoadedForCommandStart(
     WebAppCommand* command,
     WebAppUrlLoader::Result result) {
-  if (!shared_web_contents_) {
-    DCHECK(is_in_shutdown_);
+  if (is_in_shutdown_) {
     return;
   }
+  DCHECK(shared_web_contents_);
 
   // about:blank must always be loaded.
   DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
@@ -144,7 +144,6 @@ void WebAppCommandManager::Shutdown() {
   if (is_in_shutdown_)
     return;
   is_in_shutdown_ = true;
-  shared_web_contents_.reset();
   AddValueToLog(base::Value("Shutdown has begun"));
 
   // Create a copy of commands to call `OnShutdown` because commands can call
@@ -163,6 +162,8 @@ void WebAppCommandManager::Shutdown() {
     command_ptr->OnShutdown();
   }
   commands_.clear();
+
+  shared_web_contents_.reset();
 }
 
 void WebAppCommandManager::NotifySyncSourceRemoved(

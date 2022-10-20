@@ -106,8 +106,6 @@ class WebAppCommandManager {
 
   SEQUENCE_CHECKER(command_sequence_checker_);
 
-  std::map<WebAppCommand::Id, std::unique_ptr<WebAppCommand>> commands_{};
-
   raw_ptr<Profile> profile_;
   // TODO(https://crbug.com/1329934): Figure out better ownership of this.
   // Perhaps set as subsystem?
@@ -120,6 +118,8 @@ class WebAppCommandManager {
   std::unique_ptr<WebAppLockManager> lock_manager_;
 
   raw_ptr<WebAppInstallManager> install_manager_;
+
+  std::map<WebAppCommand::Id, std::unique_ptr<WebAppCommand>> commands_{};
 
   std::unique_ptr<base::RunLoop> run_loop_for_testing_;
 
