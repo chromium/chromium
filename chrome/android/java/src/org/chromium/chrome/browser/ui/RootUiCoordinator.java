@@ -819,7 +819,7 @@ public class RootUiCoordinator
         mIncognitoReauthController =
                 new IncognitoReauthControllerImpl(mTabModelSelectorSupplier.get(),
                         mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
-                        mProfileSupplier, incognitoReauthCoordinatorFactory);
+                        mProfileSupplier, incognitoReauthCoordinatorFactory, mActivity.getTaskId());
         mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
     }
 

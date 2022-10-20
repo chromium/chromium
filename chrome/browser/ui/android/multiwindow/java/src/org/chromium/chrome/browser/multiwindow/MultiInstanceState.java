@@ -4,22 +4,16 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.util.SparseBooleanArray;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Tracks multi-instance mode of Chrome browser app.
@@ -28,10 +22,10 @@ import java.util.Set;
  * browser tasks have {@link ChromeTabbedActivity} at the bottom of the stack and other activities
  * on top of it. Their state is tracked to keep the multi-instance state up to date.
  */
-public class MultiInstanceState implements ActivityStateListener {
+public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListener {
     private static MultiInstanceState sInstance;
 
-    /** Observer used to notify multi-instance state change. */
+    /** Observer used to notify multi-instance state change. **/
     public interface MultiInstanceStateObserver {
         /**
          * Called whenever multi-instance state is flipped.
@@ -52,9 +46,8 @@ public class MultiInstanceState implements ActivityStateListener {
 
     // Task visibility observer list.
     private final ObserverList<MultiInstanceStateObserver> mObservers = new ObserverList<>();
-
-    // Stores the current multi-instance state.
-    private boolean mIsInMultiInstanceMode;
+    // Tracks the taskId of the currently visible tasks.
+    private final SparseBooleanArray mActiveTasks = new SparseBooleanArray();
 
     /**
      * Create a singleton instance of {@link MultiInstanceState} object, if not already available.
@@ -72,51 +65,44 @@ public class MultiInstanceState implements ActivityStateListener {
 
     private MultiInstanceState(
             Supplier<List<AppTask>> appTaskSupplier, BaseActivityName baseActivityName) {
-        ApplicationStatus.registerStateListenerForAllActivities(this);
+        ApplicationStatus.registerTaskVisibilityListener(this);
         mAppTaskSupplier = appTaskSupplier;
         mBaseActivityName = baseActivityName;
     }
 
-    @Override
-    public void onActivityStateChange(Activity activity, @ActivityState int newState) {
-        if (newState != ActivityState.RESUMED && newState != ActivityState.PAUSED
-                && newState != ActivityState.STOPPED) {
-            return;
-        }
-        boolean isInMultiInstanceMode = isInMultiInstanceMode();
-        if (isInMultiInstanceMode != mIsInMultiInstanceMode) {
-            mIsInMultiInstanceMode = isInMultiInstanceMode;
-            Iterator<MultiInstanceStateObserver> it = mObservers.iterator();
-            while (it.hasNext()) it.next().onMultiInstanceStateChanged(mIsInMultiInstanceMode);
-        }
-    }
-
-    private Set<Integer> getAllTaskIds() {
-        Set<Integer> results = new HashSet<>();
+    private boolean isRelevantTaskId(int taskId) {
         for (AppTask task : mAppTaskSupplier.get()) {
             ActivityManager.RecentTaskInfo taskInfo = AndroidTaskUtils.getTaskInfoFromTask(task);
-            if (taskInfo == null || taskInfo.baseActivity == null) continue;
+            if (taskInfo == null || taskInfo.baseActivity == null || taskInfo.id != taskId) {
+                continue;
+            }
             String baseActivity = taskInfo.baseActivity.getClassName();
-            if (mBaseActivityName.is(baseActivity)) results.add(taskInfo.id);
+            if (mBaseActivityName.is(baseActivity)) return true;
         }
-        return results;
+        return false;
     }
 
     public boolean isInMultiInstanceMode() {
-        Set<Integer> tasks = getAllTaskIds();
-        if (tasks.size() < 2) return false;
+        return mActiveTasks.size() > 1;
+    }
 
-        SparseBooleanArray visibleTasks = new SparseBooleanArray();
-        List<Activity> activities = ApplicationStatus.getRunningActivities();
-        for (Activity a : activities) {
-            int taskId = a.getTaskId();
-            if (!tasks.contains(taskId)) continue;
-            int state = ApplicationStatus.getStateForActivity(a);
-            if (state == ActivityState.RESUMED || state == ActivityState.PAUSED) {
-                visibleTasks.put(taskId, true);
+    @Override
+    public void onTaskVisibilityChanged(int taskId, boolean isVisible) {
+        if (!isRelevantTaskId(taskId)) return;
+
+        boolean multiInstanceState = isInMultiInstanceMode();
+        if (isVisible) {
+            mActiveTasks.append(taskId, true);
+        } else {
+            mActiveTasks.delete(taskId);
+        }
+        boolean newMultiInstanceState = isInMultiInstanceMode();
+
+        if (multiInstanceState != newMultiInstanceState) {
+            for (MultiInstanceStateObserver o : mObservers) {
+                o.onMultiInstanceStateChanged(newMultiInstanceState);
             }
         }
-        return visibleTasks.size() > 1;
     }
 
     /**
@@ -137,7 +123,7 @@ public class MultiInstanceState implements ActivityStateListener {
 
     void clear() {
         // TODO(jinsukkim): Do the cleanup when the last base activity is destroyed.
-        ApplicationStatus.unregisterActivityStateListener(this);
+        ApplicationStatus.unregisterTaskVisibilityListener(this);
         mObservers.clear();
         sInstance = null;
     }

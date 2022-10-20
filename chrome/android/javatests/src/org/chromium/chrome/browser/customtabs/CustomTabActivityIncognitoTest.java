@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -585,9 +586,12 @@ public class CustomTabActivityIncognitoTest {
                             .get();
 
             // Fake Chrome going background and coming back to foreground.
+            ApplicationStatus.TaskVisibilityListener visibilityListener =
+                    (ApplicationStatus.TaskVisibilityListener) incognitoReauthController;
+            visibilityListener.onTaskVisibilityChanged(customTabActivity.getTaskId(), false);
+
             StartStopWithNativeObserver observer =
                     (StartStopWithNativeObserver) incognitoReauthController;
-            observer.onStopWithNative();
             observer.onStartWithNative();
 
             assertTrue("Re-auth screen should be shown.",

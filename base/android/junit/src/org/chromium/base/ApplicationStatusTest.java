@@ -258,4 +258,52 @@ public class ApplicationStatusTest {
         Assert.assertTrue(ApplicationStatus.reachesWindowCallback(
                 new SubclassedCallbackWrapper(createWindowCallbackProxy())));
     }
+
+    @Test
+    public void testTaskVisibilityForCreatedActivity() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
+
+        controller.create();
+        Assert.assertFalse(ApplicationStatus.isTaskVisible(controller.get().getTaskId()));
+    }
+
+    @Test
+    public void testTaskVisibilityForStartedActivity() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
+
+        controller.create().start();
+        Assert.assertFalse(ApplicationStatus.isTaskVisible(controller.get().getTaskId()));
+    }
+
+    @Test
+    public void testTaskVisibilityForResumedActivity() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
+
+        controller.create().resume();
+        Assert.assertTrue(ApplicationStatus.isTaskVisible(controller.get().getTaskId()));
+    }
+
+    @Test
+    public void testTaskVisibilityForPausedActivity() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
+
+        controller.create().pause();
+        Assert.assertTrue(ApplicationStatus.isTaskVisible(controller.get().getTaskId()));
+    }
+
+    @Test
+    public void testTaskVisibilityForStoppedActivity() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
+
+        controller.create().stop();
+        Assert.assertFalse(ApplicationStatus.isTaskVisible(controller.get().getTaskId()));
+    }
+
+    @Test
+    public void testTaskVisibilityForDestroyedActivity() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
+
+        controller.create().destroy();
+        Assert.assertFalse(ApplicationStatus.isTaskVisible(controller.get().getTaskId()));
+    }
 }

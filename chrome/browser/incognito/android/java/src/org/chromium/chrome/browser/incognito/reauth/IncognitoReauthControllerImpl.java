@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -43,7 +44,8 @@ import java.util.List;
 public class IncognitoReauthControllerImpl
         implements IncognitoReauthController,
                    IncognitoTabModelObserver.IncognitoReauthDialogDelegate,
-                   StartStopWithNativeObserver, SaveInstanceStateObserver {
+                   StartStopWithNativeObserver, SaveInstanceStateObserver,
+                   ApplicationStatus.TaskVisibilityListener {
     // A key that would be persisted in saved instance that would be true if there were
     // incognito tabs present before Chrome went to background.
     public static final String KEY_IS_INCOGNITO_REAUTH_PENDING = "incognitoReauthPending";
@@ -147,6 +149,7 @@ public class IncognitoReauthControllerImpl
     private final @NonNull TabModelSelector mTabModelSelector;
     private final @NonNull ObservableSupplier<Profile> mProfileObservableSupplier;
     private final @NonNull IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactory;
+    private final int mTaskId;
     private final boolean mIsTabbedActivity;
 
     /**
@@ -188,12 +191,14 @@ public class IncognitoReauthControllerImpl
      *         used to determine the current {@link LayoutType} which is shown.
      * @param profileSupplier A Observable Supplier of {@link Profile} which is used to query the
      *         preference value of the Incognito lock setting.
+     * @param taskId The task Id of the {@link ChromeActivity} associated with this controller.
      */
     public IncognitoReauthControllerImpl(@NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher dispatcher,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory) {
+            @NonNull IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory,
+            int taskId) {
         mTabModelSelector = tabModelSelector;
         mActivityLifecycleDispatcher = dispatcher;
         mProfileObservableSupplier = profileSupplier;
@@ -202,6 +207,7 @@ public class IncognitoReauthControllerImpl
         mIsTabbedActivity = mIncognitoReauthCoordinatorFactory.getIsTabbedActivity();
         mBackPressInReauthFullScreenRunnable =
                 incognitoReauthCoordinatorFactory.getBackPressRunnable();
+        mTaskId = taskId;
 
         layoutStateProviderOneshotSupplier.onAvailable(
                 mLayoutStateProviderCallbackController.makeCancelable(layoutStateProvider -> {
@@ -215,6 +221,7 @@ public class IncognitoReauthControllerImpl
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
         mActivityLifecycleDispatcher.register(this);
+        ApplicationStatus.registerTaskVisibilityListener(this);
 
         if (mTabModelSelector.isTabStateInitialized()) {
             // It may happen that the tab state was initialized before the
@@ -231,6 +238,7 @@ public class IncognitoReauthControllerImpl
      */
     @Override
     public void destroy() {
+        ApplicationStatus.unregisterTaskVisibilityListener(this);
         mActivityLifecycleDispatcher.unregister(this);
         mTabModelSelector.setIncognitoReauthDialogDelegate(null);
         mTabModelSelector.removeIncognitoTabModelObserver(mIncognitoTabModelObserver);
@@ -298,25 +306,15 @@ public class IncognitoReauthControllerImpl
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        mIncognitoReauthPending = (mTabModelSelector.getModel(/*incognito=*/true).getCount() > 0);
-        if (mIncognitoReauthPending) {
-            outState.putBoolean(KEY_IS_INCOGNITO_REAUTH_PENDING, mIncognitoReauthPending);
-        }
+        // TODO(crbug.com/1374222): Incognito does not lock correctly for versions < Android P.
+        outState.putBoolean(KEY_IS_INCOGNITO_REAUTH_PENDING, mIncognitoReauthPending);
     }
 
     /**
      * Override from {@link StartStopWithNativeObserver}.
      */
     @Override
-    public void onStopWithNative() {
-        // |mIncognitoReauthPending| also gets set in
-        // IncognitoReauthController#onTabStateInitializedForReauth when the tab state is
-        // initialized for the first time which is needed to handle cases of restored Incognito tabs
-        // where a re-auth should be required. To tackle the more general case, we track the
-        // onStopWithNative to update the |mIncognitoReauthPending| which gets called each time when
-        // Chrome goes to background.
-        mIncognitoReauthPending = (mTabModelSelector.getModel(/*incognito=*/true).getCount() > 0);
-    }
+    public void onStopWithNative() {}
 
     /**
      * Override from {@link IncognitoReauthDialogDelegate}.
@@ -332,6 +330,17 @@ public class IncognitoReauthControllerImpl
     @Override
     public void onBeforeIncognitoTabModelSelected() {
         showDialogIfRequired();
+    }
+
+    /**
+     * Override from {@link TaskVisibility.TaskVisibilityObserver}
+     */
+    @Override
+    public void onTaskVisibilityChanged(int taskId, boolean isVisible) {
+        if (taskId != mTaskId) return;
+        if (!isVisible) {
+            mIncognitoReauthPending = mTabModelSelector.getModel(/*incognito=*/true).getCount() > 0;
+        }
     }
 
     @VisibleForTesting
