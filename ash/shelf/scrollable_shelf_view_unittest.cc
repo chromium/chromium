@@ -299,10 +299,12 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterDisplayRotationShortToLong) {
   EXPECT_FALSE(scrollable_shelf_view_->ShouldAdjustForTest());
 }
 
+// TODO(crbug.com/1366645): Enable when the bug is fixed.
 // Verifies that the display rotation from the long side to the short side
 // should not break the scrollable shelf's UI behavior
 // (https://crbug.com/1000764).
-TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterDisplayRotationLongToShort) {
+TEST_P(ScrollableShelfViewRTLTest,
+       DISABLED_CorrectUIAfterDisplayRotationLongToShort) {
   // Changes the display setting in order that the display's width is greater
   // than the height.
   UpdateDisplay("600x300");
@@ -334,44 +336,6 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterDisplayRotationLongToShort) {
   EXPECT_FALSE(scrollable_shelf_view_->ShouldAdjustForTest());
 }
 
-// Verifies that a small shelf width should not break the scrollable shelf's
-// UI behavior (https://crbug.com/1366645).
-TEST_P(ScrollableShelfViewRTLTest, VerifyNarrowShelf) {
-  AddAppShortcutsUntilOverflow();
-  const int view_size =
-      scrollable_shelf_view_->shelf_view()->view_model_for_test()->view_size();
-  PopulateAppShortcut(view_size + 1);
-
-  const gfx::Point start_point =
-      scrollable_shelf_view_->GetBoundsInScreen().CenterPoint();
-  constexpr int scroll_steps = 1;
-  constexpr int num_fingers = 2;
-
-  // Sufficient speed to exceed the threshold.
-  constexpr int scroll_speed = 50;
-
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
-  GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
-                                      -scroll_speed, /*y_offset=*/0,
-                                      scroll_steps, num_fingers);
-  EXPECT_EQ(ScrollableShelfView::kShowButtons,
-            scrollable_shelf_view_->layout_strategy_for_test());
-  EXPECT_FALSE(scrollable_shelf_view_->layer()->gradient_mask().IsEmpty());
-  // Number of steps required for shelf with gradients for both arrows.
-  EXPECT_EQ(8ul, scrollable_shelf_view_->layer()->gradient_mask().step_count());
-
-  // Changes the display setting so that the display's width is too small
-  // to accommodate start and end gradients without overlapping.
-  UpdateDisplay("350x600");
-  GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
-                                      -scroll_speed, /*y_offset=*/0,
-                                      scroll_steps, num_fingers);
-  EXPECT_EQ(ScrollableShelfView::kShowButtons,
-            scrollable_shelf_view_->layout_strategy_for_test());
-  EXPECT_TRUE(scrollable_shelf_view_->layer()->gradient_mask().IsEmpty());
-}
-
 // Verifies that the mask layer gradient shader is not applied when no arrow
 // button shows.
 TEST_P(ScrollableShelfViewRTLTest, VerifyApplyMaskGradientShaderWhenNeeded) {
@@ -382,17 +346,6 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyApplyMaskGradientShaderWhenNeeded) {
 
   AddAppShortcutsUntilOverflow();
   ASSERT_EQ(ScrollableShelfView::LayoutStrategy::kShowRightArrowButton,
-            scrollable_shelf_view_->layout_strategy_for_test());
-  EXPECT_FALSE(scrollable_shelf_view_->layer()->gradient_mask().IsEmpty());
-
-  // Pin enough apps to Shelf to ensure that layout strategy will be
-  // kShowButtons after pressing the right arrow button.
-  const int view_size =
-      scrollable_shelf_view_->shelf_view()->view_model_for_test()->view_size();
-  PopulateAppShortcut(view_size + 1);
-  GetEventGenerator()->GestureTapAt(
-      scrollable_shelf_view_->right_arrow()->GetBoundsInScreen().CenterPoint());
-  ASSERT_EQ(ScrollableShelfView::kShowButtons,
             scrollable_shelf_view_->layout_strategy_for_test());
   EXPECT_FALSE(scrollable_shelf_view_->layer()->gradient_mask().IsEmpty());
 }

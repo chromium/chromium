@@ -1574,8 +1574,9 @@ void ScrollableShelfView::CalculateHorizontalGradient(
   };
 
   // Do not add gradient if visible width is too narrow.
-  if (visible_space_.width() <
-      2 * scrollable_shelf_constants::kGradientZoneLength) {
+  if (visible_space_.right() <
+      visible_space_.x() +
+          2 * scrollable_shelf_constants::kGradientZoneLength) {
     return;
   }
 
@@ -1596,11 +1597,10 @@ void ScrollableShelfView::CalculateHorizontalGradient(
         (visible_space_.x() + scrollable_shelf_constants::kGradientZoneLength),
         width());
 
+    // When the scroll arrow button shows, `gradient_start` is greater than 0.
     // Ensure that the area in the range [0, gradient_start) has an opaque
     // opacity so that the scroll arrow button is visible.
-    const bool show_fade_in_arrow =
-        rtl ? ShouldShowRightArrow() : ShouldShowLeftArrow();
-    if (show_fade_in_arrow) {
+    if (gradient_start > 0) {
       gradient_mask->AddStep(0, /*alpha=*/255);
       gradient_mask->AddStep(get_clamped((visible_space_.x() - 2), width()),
                              255);
@@ -1611,7 +1611,7 @@ void ScrollableShelfView::CalculateHorizontalGradient(
 
   // If true, create a gradient area that fades out the shelf app buttons at
   // the end
-  const bool show_fade_out =
+  bool show_fade_out =
       rtl ? should_show_start_gradient_zone_ : should_show_end_gradient_zone_;
   if (show_fade_out) {
     gradient_start =
@@ -1622,11 +1622,10 @@ void ScrollableShelfView::CalculateHorizontalGradient(
     gradient_mask->AddStep(gradient_start, /*alpha=*/255);
     gradient_mask->AddStep(gradient_end, 0);
 
+    // When the scroll arrow button shows, `gradient_end` is less than 1.
     // Ensure that the area in the range (gradient_end, 1] has an opaque
     // opacity so that the scroll arrow button is visible.
-    const bool show_fade_out_arrow =
-        rtl ? ShouldShowLeftArrow() : ShouldShowRightArrow();
-    if (show_fade_out_arrow) {
+    if (gradient_end < 1) {
       gradient_mask->AddStep(get_clamped((visible_space_.right() + 2), width()),
                              255);
       gradient_mask->AddStep(1, 255);
@@ -1653,9 +1652,10 @@ void ScrollableShelfView::CalculateVerticalGradient(
         (visible_space_.y() + scrollable_shelf_constants::kGradientZoneLength),
         height());
 
+    // When the scroll arrow button shows, `gradient_start` is greater than 0.
     // Ensure that the area in the range [0, gradient_start) has an opaque
     // opacity so that the scroll arrow button is visible.
-    if (ShouldShowLeftArrow()) {
+    if (gradient_start > 0) {
       gradient_mask->AddStep(0, /*alpha=*/255);
       gradient_mask->AddStep(get_clamped((visible_space_.y() - 2), height()),
                              255);
@@ -1674,9 +1674,10 @@ void ScrollableShelfView::CalculateVerticalGradient(
                            /*alpha=*/255);
     gradient_mask->AddStep(gradient_end, 0);
 
+    // When the scroll arrow button shows, `gradient_end` is less than 1.
     // Ensure that the area in the range (gradient_end, 1] has an opaque
     // opacity so that the scroll arrow button is visible.
-    if (ShouldShowRightArrow()) {
+    if (gradient_end < 1) {
       gradient_mask->AddStep(
           get_clamped((visible_space_.bottom() + 2), height()), 255);
       gradient_mask->AddStep(1, 255);
@@ -1685,11 +1686,9 @@ void ScrollableShelfView::CalculateVerticalGradient(
 }
 
 void ScrollableShelfView::UpdateGradientMask() {
-  // There is no visible shelf app buttons so remove radient.
-  if (bounds().IsEmpty() || visible_space_.IsEmpty()) {
-    layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());
+  // There is no visible shelf app buttons so return early
+  if (bounds().IsEmpty() || visible_space_.IsEmpty())
     return;
-  }
 
   gfx::LinearGradient gradient_mask;
 
