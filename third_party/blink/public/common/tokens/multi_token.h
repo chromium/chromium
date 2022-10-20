@@ -13,143 +13,126 @@
 #include <type_traits>
 
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/multi_token_internal.h"
 
 namespace blink {
 
-// Defines MultiToken, which is effectively a variant over 2 or more
-// instances of base::TokenType.
+// `MultiToken<Tokens...>` is a variant of 2 or more token types. Each token
+// type must be an instantiation of `base::TokenType`, and each token type must
+// be unique within `Tokens...`. Unlike `base::UnguessableToken`, a `MultiToken`
+// is always valid: there is no null state. Default constructing a `MultiToken`
+// will create a `MultiToken` containing an instance of the first token type in
+// `Tokens`.
 //
-// A MultiToken<..> emulates a token like interface. When default constructed
-// it will construct itself as an instance of |TokenVariant0|. Additionally it
-// offers the following functions allowing casting and querying token types at
-// runtime:
+// Usage:
 //
-//   // Determines whether this token stores an instance of a TokenType.
-//   bool Is<TokenType>() const;
+// using CowToken = base::TokenType<class CowTokenTag>;
+// using GoatToken = base::TokenType<class GoatTokenTag>;
+// using UngulateToken = blink::MultiToken<CowToken, GoatToken>;
 //
-//   // Extracts the stored token in its original type. The stored token must
-//   // be of the provided type otherwise this will explode at runtime.
-//   const TokenType& GetAs<TokenType>() const;
+// void TeleportCow(const CowToken&);
+// void TeleportGoat(const GoatToken&);
 //
-// A variant must have at least 2 valid input types, but can have arbitrarily
-// many. They must all be distinct, and they must all be instances of
-// base::TokenType.
-template <typename TokenVariant0,
-          typename TokenVariant1,
-          typename... TokenVariants>
-class MultiToken : public internal::MultiTokenBase<TokenVariant0,
-                                                   TokenVariant1,
-                                                   TokenVariants...> {
+// void TeleportUngulate(const UngulateToken& token) {
+//   if (token.Is<CowToken>()) {
+//     TeleportCow(token.Get<CowToken>());
+//   } else if (token.Is<GoatToken>()) {
+//     TeleportGoat(token.Get<GoatToken>());
+//   }
+//   CHECK(false);  // Not reachable.
+// }
+template <typename... Tokens>
+class MultiToken {
+  static_assert(sizeof...(Tokens) > 1);
+  static_assert(std::conjunction_v<internal::IsBaseTokenType<Tokens>...>);
+  static_assert(internal::AreAllUnique<Tokens...>);
+
+  template <typename T>
+  using EnableIfIsSupportedToken =
+      internal::EnableIfIsSupportedToken<T, Tokens...>;
+
  public:
-  using Base =
-      internal::MultiTokenBase<TokenVariant0, TokenVariant1, TokenVariants...>;
+  using Storage = absl::variant<Tokens...>;
 
-  // The total number of types.
-  static const uint32_t kVariantCount = Base::VariantCount::kValue;
-
-  // Default constructor. The resulting token will be a valid token of type
-  // TokenVariant0.
+  // A default constructed token will hold a default-constructed instance (i.e.
+  // randomly initialised) of the first token type in `Tokens...`.
   MultiToken() = default;
 
-  // Copy constructors.
-  MultiToken(const MultiToken& other) = default;
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  MultiToken(const InputTokenType& input_token)
-      : value_(input_token.value()),
-        variant_index_(Base::template TypeIndex<InputTokenType>::kValue) {}
+  MultiToken(const T& token) : storage_(token) {}
+  MultiToken(const MultiToken&) = default;
+
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
+  MultiToken& operator=(const T& token) {
+    storage_ = token;
+    return *this;
+  }
+  MultiToken& operator=(const MultiToken&) = default;
 
   ~MultiToken() = default;
 
-  // Assignment operators.
-  MultiToken& operator=(const MultiToken& other) = default;
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
-  MultiToken& operator=(const InputTokenType& input_token) {
-    value_ = input_token.value();
-    variant_index_ = Base::template TypeIndex<InputTokenType>::kValue;
-    return *this;
-  }
-
-  const base::UnguessableToken& value() const { return value_; }
-  uint32_t variant_index() const { return variant_index_; }
-  std::string ToString() const { return value().ToString(); }
-
-  // Type checking.
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
+  // Returns true iff `this` currently holds a token of type `T`.
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
   bool Is() const {
-    return variant_index_ == Base::template TypeIndex<InputTokenType>::kValue;
+    return absl::holds_alternative<T>(storage_);
   }
 
-  // Type conversion. Allows extracting the underlying token type. This should
-  // only be called for the actual type that is stored in this token. This can
-  // be checked by calling "Is<>" first.
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
-  InputTokenType GetAs() const {
-    CHECK(Is<InputTokenType>()) << "invalid token type cast";
-    // Type-punning via casting is undefined behaviour, so we return by value.
-    return InputTokenType(value_);
+  // Returns `T` if `this` currently holds a token of type `T`; otherwise,
+  // crashes.
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
+  const T& GetAs() const {
+    return absl::get<T>(storage_);
   }
 
-  // Comparison with untyped tokens. Only compares the token value, ignoring the
-  // type.
-  int Compare(const base::UnguessableToken& other) const {
-    return Base::CompareImpl(value_, other);
-  }
-  bool operator<(const base::UnguessableToken& other) const {
-    return Compare(other) == -1;
-  }
-  bool operator==(const base::UnguessableToken& other) const {
-    return Compare(other) == 0;
-  }
-  bool operator!=(const base::UnguessableToken& other) const {
-    return Compare(other) != 0;
+  // Comparison operators
+  friend bool operator==(const MultiToken& lhs, const MultiToken& rhs) {
+    return lhs.storage_ == rhs.storage_;
   }
 
-  // Comparison with other MultiTokens. Compares by token, then type.
-  int Compare(const MultiToken& other) const {
-    return Base::CompareImpl(std::tie(value_, variant_index_),
-                             std::tie(other.value_, other.variant_index_));
+  friend bool operator!=(const MultiToken& lhs, const MultiToken& rhs) {
+    return !(lhs == rhs);
   }
-  bool operator<(const MultiToken& other) const { return Compare(other) == -1; }
-  bool operator==(const MultiToken& other) const { return Compare(other) == 0; }
-  bool operator!=(const MultiToken& other) const { return Compare(other) != 0; }
 
-  // Comparison with individual typed tokens. Compares by token, then type.
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
-  int Compare(const InputTokenType& other) const {
-    static constexpr uint32_t kInputTokenTypeIndex =
-        Base::template TypeIndex<InputTokenType>::kValue;
-    return Base::CompareImpl(std::tie(value_, variant_index_),
-                             std::tie(other.value(), kInputTokenTypeIndex));
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
+  friend bool operator==(const MultiToken& lhs, const T& rhs) {
+    return absl::holds_alternative<T>(lhs.storage_) &&
+           absl::get<T>(lhs.storage_) == rhs;
   }
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
-  bool operator<(const InputTokenType& other) const {
-    return Compare(other) == -1;
+
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
+  friend bool operator==(const T& lhs, const MultiToken& rhs) {
+    return rhs == lhs;
   }
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
-  bool operator==(const InputTokenType& other) const {
-    return Compare(other) == 0;
+
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
+  friend bool operator!=(const MultiToken& lhs, const T& rhs) {
+    return !(lhs == rhs);
   }
-  template <typename InputTokenType,
-            typename = typename std::enable_if<
-                Base::template ValidType<InputTokenType>::kValue>::type>
-  bool operator!=(const InputTokenType& other) const {
-    return Compare(other) != 0;
+
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
+  friend bool operator!=(const T& lhs, const MultiToken& rhs) {
+    return !(lhs == rhs);
+  }
+
+  // Unlike equality comparisons, ordering comparisons typically do not compare
+  // a MultiToken and a sub type from `Tokens...`, so do not bother with the
+  // extra overloads.
+  friend bool operator<(const MultiToken& lhs, const MultiToken& rhs) {
+    return lhs.storage_ < rhs.storage_;
+  }
+
+  friend bool operator<=(const MultiToken& lhs, const MultiToken& rhs) {
+    return !(lhs > rhs);
+  }
+
+  friend bool operator>(const MultiToken& lhs, const MultiToken& rhs) {
+    return rhs < lhs;
+  }
+
+  friend bool operator>=(const MultiToken& lhs, const MultiToken& rhs) {
+    return !(lhs < rhs);
   }
 
   // Hash functor for use in unordered containers.
@@ -157,17 +140,56 @@ class MultiToken : public internal::MultiTokenBase<TokenVariant0,
     using argument_type = MultiToken;
     using result_type = size_t;
     result_type operator()(const MultiToken& token) const {
-      return base::UnguessableTokenHash()(token.value_);
+      return base::UnguessableTokenHash()(token.value());
     }
   };
 
- private:
-  // The underlying untyped token value. This will *never* be null initialized.
-  base::UnguessableToken value_ = base::UnguessableToken::Create();
+  // Prefer the above helpers where possible. These methods are primarily useful
+  // for serialization/deserialization.
 
-  // The index of the variant type that is currently stored in this token.
-  uint32_t variant_index_ = 0;
+  // Returns the underlying `base::UnguessableToken` of the currently held
+  // token.
+  const base::UnguessableToken& value() const;
+
+  // 0-based index of the currently held token's type, based on its position in
+  // `Tokens...`.
+  uint32_t variant_index() const {
+    return static_cast<uint32_t>(storage_.index());
+  }
+
+  // Returns the 0-based index that a token of type `T` would have if it were
+  // currently held.
+  template <typename T, EnableIfIsSupportedToken<T> = 0>
+  static constexpr size_t IndexOf() {
+    return absl::variant<Tag<Tokens>...>(Tag<T>()).index();
+  }
+
+  // Equivalent to `value().ToString()`.
+  std::string ToString() const;
+
+ private:
+  // Helper struct for IndexOf(); a `base::TokenType` is never usable as a
+  // literal type but a Tag<base::TokenType> is.
+  template <typename T>
+  struct Tag {};
+
+  Storage storage_;
 };
+
+template <typename... Tokens>
+const base::UnguessableToken& MultiToken<Tokens...>::value() const {
+  return absl::visit(
+      [](const auto& token) -> const base::UnguessableToken& {
+        return token.value();
+      },
+      storage_);
+}
+
+template <typename... Tokens>
+std::string MultiToken<Tokens...>::ToString() const {
+  return absl::visit([](const auto& token) { return token.ToString(); },
+                     storage_);
+}
 
 }  // namespace blink
 
