@@ -99,24 +99,8 @@ class SevenZipDelegate : public seven_zip::Delegate {
     if (result == seven_zip::Result::kSuccess || entry.is_encrypted) {
       // TODO(crbug/1373509): We have the entire file in memory, so it's silly
       // to do all this work to flush it and read it back. Can we simplify this
-      // process?
-
-      // Flush the memory mapping, ensuring that
-      // `UpdateArchiveAnalyzerResultsWithFile` gets the full file.
-#if BUILDFLAG(IS_WIN)
-      ::FlushViewOfFile(mapped_file_->data(), mapped_file_->length());
-#else
-      // On OSX, "invalidate" removes all cached pages, forcing a re-read from
-      // disk. That's okay because we're closing the mapping directly after
-      // this.
-      //
-      // On POSIX, "invalidate" forces _other_ processes to recognize what has
-      // been written to disk. This is still okay.
-      ::msync(reinterpret_cast<void*>(mapped_file_->data()),
-              mapped_file_->length(), MS_INVALIDATE | MS_SYNC);
-#endif
+      // process? This also reduces the risk that the file is not flushed fully.
       mapped_file_.reset();
-      temp_file_.Flush();
       UpdateArchiveAnalyzerResultsWithFile(entry.file_path, &temp_file_,
                                            entry.file_size, entry.is_encrypted,
                                            results_);
