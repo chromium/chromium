@@ -71,7 +71,6 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       surface_resource_holder_(this),
       is_root_(is_root),
       allow_copy_output_requests_(is_root),
-      surface_animation_manager_(frame_sink_manager_->shared_bitmap_manager()),
       // Don't track the root surface for PowerMode voting. All child surfaces
       // are tracked individually instead, and tracking the root surface could
       // override votes from the children.
@@ -79,10 +78,6 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
           is_root ? nullptr
                   : power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
                         "PowerModeVoter.Animation")) {
-  surface_animation_manager_.SetDirectiveFinishedCallback(
-      base::BindRepeating(&CompositorFrameSinkSupport::
-                              OnCompositorFrameTransitionDirectiveProcessed,
-                          weak_factory_.GetWeakPtr()));
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
 }
@@ -219,18 +214,16 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   if (pending_surfaces_.empty())
     UpdateNeedsBeginFramesInternal();
 
-  // Let the animation manager process any new directives on the surface.
-  const auto& transition_directives =
-      surface->GetActiveFrameMetadata().transition_directives;
-  if (!transition_directives.empty()) {
-    surface_animation_manager_.ProcessTransitionDirectives(
-        transition_directives, surface);
+  for (const auto& directive :
+       surface->GetActiveFrameMetadata().transition_directives) {
+    ProcessCompositorFrameTransitionDirective(directive, surface);
   }
 
   // The directives above generate TransferableResources which are required to
-  // replaced shared elements with the corresponding cached snapshots. This step
+  // replace shared elements with the corresponding cached snapshots. This step
   // must be done after processing directives above.
-  surface_animation_manager_.ReplaceSharedElementResources(surface);
+  if (surface_animation_manager_)
+    surface_animation_manager_->ReplaceSharedElementResources(surface);
 
   if (surface->surface_id() == last_activated_surface_id_)
     return;
@@ -331,7 +324,8 @@ void CompositorFrameSinkSupport::OnSurfacePresented(
 
 void CompositorFrameSinkSupport::RefResources(
     const std::vector<TransferableResource>& resources) {
-  surface_animation_manager_.RefResources(resources);
+  if (surface_animation_manager_)
+    surface_animation_manager_->RefResources(resources);
   surface_resource_holder_.RefResources(resources);
 }
 
@@ -340,7 +334,8 @@ void CompositorFrameSinkSupport::UnrefResources(
   // |surface_animation_manager_| allocates ResourceIds in a different range
   // than the client so it can process returned resources before
   // |surface_resource_holder_|.
-  surface_animation_manager_.UnrefResources(resources);
+  if (surface_animation_manager_)
+    surface_animation_manager_->UnrefResources(resources);
   surface_resource_holder_.UnrefResources(std::move(resources));
 }
 
@@ -1150,6 +1145,29 @@ bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
          (frame_time - last_frame_time_) < begin_frame_interval_;
 }
 
+void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
+    const CompositorFrameTransitionDirective& directive,
+    Surface* surface) {
+  switch (directive.type()) {
+    case CompositorFrameTransitionDirective::Type::kSave:
+      surface_animation_manager_ = SurfaceAnimationManager::CreateWithSave(
+          directive, surface, frame_sink_manager_->shared_bitmap_manager(),
+          base::BindOnce(&CompositorFrameSinkSupport::
+                             OnCompositorFrameTransitionDirectiveProcessed,
+                         base::Unretained(this)));
+      break;
+    case CompositorFrameTransitionDirective::Type::kAnimateRenderer:
+      if (surface_animation_manager_)
+        surface_animation_manager_->Animate();
+      else
+        LOG(ERROR) << "Animate directive with no saved data.";
+      break;
+    case CompositorFrameTransitionDirective::Type::kRelease:
+      surface_animation_manager_.reset();
+      break;
+  }
+}
+
 void CompositorFrameSinkSupport::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
   if (client_)
@@ -1166,7 +1184,7 @@ bool CompositorFrameSinkSupport::IsEvicted(
 
 SurfaceAnimationManager*
 CompositorFrameSinkSupport::GetSurfaceAnimationManagerForTesting() {
-  return &surface_animation_manager_;
+  return surface_animation_manager_.get();
 }
 
 void CompositorFrameSinkSupport::DestroySelf() {

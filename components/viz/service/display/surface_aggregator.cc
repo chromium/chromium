@@ -1236,7 +1236,10 @@ void SurfaceAggregator::CopyQuadsToPass(
     DCHECK(quad->shared_quad_state->mask_filter_info.IsEmpty() ||
            parent_mask_filter_info_ext.mask_filter_info.IsEmpty());
 
-    if (quad->material == DrawQuad::Material::kSurfaceContent) {
+    if (quad->material == DrawQuad::Material::kSharedElement) {
+      // SharedElement quads should've been resolved before aggregation.
+      continue;
+    } else if (quad->material == DrawQuad::Material::kSurfaceContent) {
       const auto* surface_quad = SurfaceDrawQuad::MaterialCast(quad);
       // HandleSurfaceQuad may add other shared quad state, so reset the
       // current data.

@@ -897,8 +897,10 @@ void LayerTreeHost::AddDocumentTransitionRequest(
   // when the request is finished.
   DCHECK(
       !base::Contains(document_transition_callbacks_, request->sequence_id()));
-  document_transition_callbacks_[request->sequence_id()] =
-      request->TakeFinishedCallback();
+  if (auto callback = request->TakeFinishedCallback()) {
+    document_transition_callbacks_[request->sequence_id()] =
+        std::move(callback);
+  }
   pending_commit_state()->document_transition_requests.push_back(
       std::move(request));
   SetNeedsCommit();

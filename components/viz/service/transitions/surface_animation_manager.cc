@@ -130,84 +130,46 @@ void ReplaceSharedElementWithTexture(
 
 }  // namespace
 
-SurfaceAnimationManager::SurfaceAnimationManager(
-    SharedBitmapManager* shared_bitmap_manager)
-    : transferable_resource_tracker_(shared_bitmap_manager) {}
-
-SurfaceAnimationManager::~SurfaceAnimationManager() = default;
-
-void SurfaceAnimationManager::SetDirectiveFinishedCallback(
-    TransitionDirectiveCompleteCallback sequence_id_finished_callback) {
-  sequence_id_finished_callback_ = std::move(sequence_id_finished_callback);
-}
-
-void SurfaceAnimationManager::ProcessTransitionDirectives(
-    const std::vector<CompositorFrameTransitionDirective>& directives,
-    Surface* active_surface) {
-  for (auto& directive : directives) {
-    // Don't process directives with sequence ids smaller than or equal to the
-    // last seen one. It is possible that we call this with the same frame
-    // multiple times.
-    if (directive.sequence_id() <= last_processed_sequence_id_)
-      continue;
-    last_processed_sequence_id_ = directive.sequence_id();
-
-    bool handled = false;
-    // Dispatch to a specialized function based on type.
-    switch (directive.type()) {
-      case CompositorFrameTransitionDirective::Type::kSave:
-        handled = ProcessSaveDirective(directive, active_surface);
-        break;
-      case CompositorFrameTransitionDirective::Type::kAnimateRenderer:
-        handled = ProcessAnimateRendererDirective(directive);
-        break;
-      case CompositorFrameTransitionDirective::Type::kRelease:
-        handled = ProcessReleaseDirective();
-        break;
-    }
-
-    // If we didn't handle the directive, it means that we're in a state that
-    // does not permit the directive to be processed, and it was ignored. We
-    // should notify that we've fully processed the directive in this case to
-    // allow code that is waiting for this to continue.
-    if (!handled)
-      sequence_id_finished_callback_.Run(directive.sequence_id());
-  }
-}
-
-bool SurfaceAnimationManager::ProcessSaveDirective(
+// static
+std::unique_ptr<SurfaceAnimationManager>
+SurfaceAnimationManager::CreateWithSave(
     const CompositorFrameTransitionDirective& directive,
-    Surface* surface) {
-  // We can only have one saved frame. It is the job of the client to ensure the
-  // correct API usage. So if we are receiving a save directive while we already
-  // have a saved frame, release it first. That ensures that any subsequent
-  // animate directives which presumably rely on this save directive will
-  // succeed.
-  ProcessReleaseDirective();
+    Surface* surface,
+    SharedBitmapManager* shared_bitmap_manager,
+    TransitionDirectiveCompleteCallback sequence_id_finished_callback) {
+  return absl::WrapUnique(
+      new SurfaceAnimationManager(directive, surface, shared_bitmap_manager,
+                                  std::move(sequence_id_finished_callback)));
+}
 
-  // We need to be in the idle state in order to save.
-  if (state_ != State::kIdle)
-    return false;
-
+SurfaceAnimationManager::SurfaceAnimationManager(
+    const CompositorFrameTransitionDirective& directive,
+    Surface* surface,
+    SharedBitmapManager* shared_bitmap_manager,
+    TransitionDirectiveCompleteCallback sequence_id_finished_callback)
+    : transferable_resource_tracker_(shared_bitmap_manager) {
+  DCHECK(directive.type() == CompositorFrameTransitionDirective::Type::kSave);
   saved_frame_ = std::make_unique<SurfaceSavedFrame>(
-      directive, sequence_id_finished_callback_);
+      directive, std::move(sequence_id_finished_callback));
   saved_frame_->RequestCopyOfOutput(surface);
   empty_resource_ids_ = saved_frame_->GetEmptyResourceIds();
-  return true;
 }
 
-bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
-    const CompositorFrameTransitionDirective& directive) {
-  // We can only begin an animate if we are currently idle. The renderer sends
-  // this in response to a notification of the capture completing successfully.
-  if (state_ != State::kIdle)
-    return false;
+SurfaceAnimationManager::~SurfaceAnimationManager() {
+  if (saved_textures_)
+    transferable_resource_tracker_.ReturnFrame(*saved_textures_);
+  saved_textures_.reset();
+}
+
+void SurfaceAnimationManager::Animate() {
+  if (animating_)
+    return;
 
   DCHECK(!saved_textures_);
-  state_ = State::kAnimatingRenderer;
+  animating_ = true;
   if (!saved_frame_ || !saved_frame_->IsValid()) {
     LOG(ERROR) << "Failure in caching shared element snapshots";
-    return false;
+    return;
   }
 
   // Import the saved frame, which converts it to a ResourceFrame -- a
@@ -215,18 +177,6 @@ bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
   saved_textures_.emplace(
       transferable_resource_tracker_.ImportResources(std::move(saved_frame_)));
   empty_resource_ids_.clear();
-  return true;
-}
-
-bool SurfaceAnimationManager::ProcessReleaseDirective() {
-  if (state_ != State::kAnimatingRenderer)
-    return false;
-
-  state_ = State::kIdle;
-  if (saved_textures_)
-    transferable_resource_tracker_.ReturnFrame(*saved_textures_);
-  saved_textures_.reset();
-  return true;
 }
 
 void SurfaceAnimationManager::RefResources(

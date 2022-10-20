@@ -37,7 +37,6 @@ TEST(DocumentTransitionRequestTest, StartRequest) {
   auto request = DocumentTransitionRequest::CreateAnimateRenderer(
       /*document_tag=*/0);
 
-  request->TakeFinishedCallback().Run();
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
   auto directive = request->ConstructDirective({});

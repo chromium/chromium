@@ -233,8 +233,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return copy_output_requests_;
   }
 
-  void OnCompositorFrameTransitionDirectiveProcessed(uint32_t sequence_id);
-
   bool IsEvicted(const LocalSurfaceId& local_surface_id) const;
 
   SurfaceAnimationManager* GetSurfaceAnimationManagerForTesting();
@@ -251,6 +249,11 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // Creates a surface reference from the top-level root to |surface_id|.
   SurfaceReference MakeTopLevelRootReference(const SurfaceId& surface_id);
+
+  void ProcessCompositorFrameTransitionDirective(
+      const CompositorFrameTransitionDirective& directive,
+      Surface* surface);
+  void OnCompositorFrameTransitionDirectiveProcessed(uint32_t sequence_id);
 
   void DidReceiveCompositorFrameAck();
   void DidPresentCompositorFrame(uint32_t frame_token,
@@ -416,10 +419,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   mojom::CompositorFrameSinkType frame_sink_type_ =
       mojom::CompositorFrameSinkType::kUnspecified;
 
-  // This is responsible for transitioning between two frames of the same
-  // surface. In part implements "Shared Element Transition" feature for
-  // single-page-app transitions.
-  SurfaceAnimationManager surface_animation_manager_;
+  // This is responsible for transitioning between two CompositorFrames. The
+  // frames may be produced by Surfaces managed by distinct
+  // CompositorFrameSinks.
+  std::unique_ptr<SurfaceAnimationManager> surface_animation_manager_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 

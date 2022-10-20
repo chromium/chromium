@@ -12,6 +12,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -111,6 +112,16 @@ RenderPassBuilder& RenderPassBuilder::AddStubCopyOutputRequest(
   if (request_out)
     *request_out = request->GetWeakPtr();
   pass_->copy_requests.push_back(std::move(request));
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddSharedElementQuad(
+    const gfx::Rect& rect,
+    const SharedElementResourceId& id) {
+  auto* sqs = AppendDefaultSharedQuadState(rect, rect);
+  auto* quad = pass_->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
+  quad->SetNew(sqs, rect, rect, id);
+
   return *this;
 }
 

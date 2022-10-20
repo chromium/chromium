@@ -53,14 +53,14 @@ DocumentTransitionRequest::CreateCapture(
 std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreateAnimateRenderer(uint32_t document_tag) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kAnimateRenderer, document_tag, 0u, {}, base::DoNothing()));
+      Type::kAnimateRenderer, document_tag, 0u, {}, base::OnceClosure()));
 }
 
 // static
 std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreateRelease(uint32_t document_tag) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kRelease, document_tag, 0u, {}, base::DoNothing()));
+      Type::kRelease, document_tag, 0u, {}, base::OnceClosure()));
 }
 
 DocumentTransitionRequest::DocumentTransitionRequest(
@@ -74,7 +74,9 @@ DocumentTransitionRequest::DocumentTransitionRequest(
       shared_element_count_(shared_element_count),
       commit_callback_(std::move(commit_callback)),
       sequence_id_(s_next_sequence_id_++),
-      capture_resource_ids_(std::move(capture_ids)) {}
+      capture_resource_ids_(std::move(capture_ids)) {
+  DCHECK(type_ == Type::kSave || !commit_callback_);
+}
 
 DocumentTransitionRequest::~DocumentTransitionRequest() = default;
 

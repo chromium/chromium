@@ -250,7 +250,6 @@ TEST_P(DocumentTransitionTest, LayoutShift) {
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
   EXPECT_EQ(LayoutSize(100, 100), target->Size());
 
-  start_request->TakeFinishedCallback().Run();
   FinishTransition();
   start_tester.WaitUntilSettled();
 }
@@ -634,7 +633,6 @@ TEST_P(DocumentTransitionTest, MultipleStartsBeforeTransitionFinished) {
   // We will have a release request at this point.
   EXPECT_TRUE(transition->TakePendingRequest());
 
-  start_request->TakeFinishedCallback().Run();
   FinishTransition();
   start_tester.WaitUntilSettled();
   EXPECT_TRUE(start_tester.IsRejected());

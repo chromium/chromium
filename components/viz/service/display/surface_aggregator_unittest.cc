@@ -680,6 +680,27 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleFrame) {
   VerifyExpectedSurfaceIds({root_surface_id_});
 }
 
+// Tests that SharedElement quads are skipped during aggregation.
+TEST_F(SurfaceAggregatorValidSurfaceTest, SharedElementQuad) {
+  CompositorFrame frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kRed)
+                  .AddSharedElementQuad(gfx::Rect(5, 5),
+                                        SharedElementResourceId::Generate()))
+          .Build();
+
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(frame));
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+  EXPECT_EQ(aggregated_frame.render_pass_list.size(), 1u);
+
+  auto& render_pass = aggregated_frame.render_pass_list[0];
+  EXPECT_THAT(render_pass->quad_list,
+              ElementsAre(IsSolidColorQuad(SkColors::kRed)));
+}
+
 // Test that when surface is translucent and we need the render surface to apply
 // the opacity, we would keep the render surface.
 TEST_F(SurfaceAggregatorValidSurfaceTest, OpacityCopied) {

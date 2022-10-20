@@ -30,25 +30,26 @@ class Surface;
 struct ReturnedResource;
 struct TransferableResource;
 
-// This class is responsible for processing CompositorFrameTransitionDirectives,
-// and keeping track of the animation state.
+// This class is responsible for managing a single transition sequence. Each
+// sequence has save/animate/release directives in that order. Instances of this
+// class are 1:1 with this sequence.
+//
+// This class is owned by CompositorFrameSinkSupport but can be moved between
+// CompositorFrameSinkSupports for transitions between 2 renderer CC instances.
 class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
  public:
   using TransitionDirectiveCompleteCallback =
-      base::RepeatingCallback<void(uint32_t)>;
+      base::OnceCallback<void(uint32_t)>;
 
-  explicit SurfaceAnimationManager(SharedBitmapManager* shared_bitmap_manager);
-  ~SurfaceAnimationManager();
-
-  void SetDirectiveFinishedCallback(
+  static std::unique_ptr<SurfaceAnimationManager> CreateWithSave(
+      const CompositorFrameTransitionDirective& directive,
+      Surface* surface,
+      SharedBitmapManager* shared_bitmap_manager,
       TransitionDirectiveCompleteCallback sequence_id_finished_callback);
 
-  // Process any new transitions on the compositor frame metadata. Note that
-  // this keeps track of the latest processed sequence id and repeated calls
-  // with same sequence ids will have no effect.
-  void ProcessTransitionDirectives(
-      const std::vector<CompositorFrameTransitionDirective>& directives,
-      Surface* active_surface);
+  ~SurfaceAnimationManager();
+
+  void Animate();
 
   // Resource ref count management.
   void RefResources(const std::vector<TransferableResource>& resources);
@@ -63,12 +64,14 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
  private:
   friend class SurfaceAnimationManagerTest;
 
-  // Helpers to process specific directives.
+  SurfaceAnimationManager(
+      const CompositorFrameTransitionDirective& directive,
+      Surface* surface,
+      SharedBitmapManager* shared_bitmap_manager,
+      TransitionDirectiveCompleteCallback sequence_id_finished_callback);
+
   bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
                             Surface* surface);
-  bool ProcessAnimateRendererDirective(
-      const CompositorFrameTransitionDirective& directive);
-  bool ProcessReleaseDirective();
 
   bool FilterSharedElementsWithRenderPassOrResource(
       std::vector<TransferableResource>* resource_list,
@@ -77,19 +80,13 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
       const DrawQuad& quad,
       CompositorRenderPass& copy_pass);
 
-  enum class State { kIdle, kAnimatingRenderer };
-
-  TransitionDirectiveCompleteCallback sequence_id_finished_callback_;
-
-  uint32_t last_processed_sequence_id_ = 0;
-
+  bool animating_ = false;
   TransferableResourceTracker transferable_resource_tracker_;
-  absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
-
-  State state_ = State::kIdle;
 
   std::unique_ptr<SurfaceSavedFrame> saved_frame_;
   base::flat_set<SharedElementResourceId> empty_resource_ids_;
+
+  absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
 };
 
 }  // namespace viz
