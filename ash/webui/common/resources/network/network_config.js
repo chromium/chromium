@@ -211,7 +211,10 @@ Polymer({
     },
 
     /** @private {string|undefined} */
-    selectedUserCertHash_: String,
+    selectedUserCertHash_: {
+      type: String,
+      observer: 'updateIsConfigured_',
+    },
 
     /**
      * Whether all required properties have been set.
@@ -235,7 +238,10 @@ Polymer({
      * Whether the device should automatically connect to the network.
      * @private
      */
-    autoConnect_: Boolean,
+    autoConnect_: {
+      type: Boolean,
+      observer: 'updateHiddenNetworkWarning_',
+    },
 
     /**
      * Whether or not to show the hidden network warning.
@@ -264,7 +270,10 @@ Polymer({
      * VPN Type from vpnTypeItems_.
      * @private {VPNConfigType|undefined}
      */
-    vpnType_: String,
+    vpnType_: {
+      type: String,
+      observer: 'updateVpnIPsecAuthTypeItems_',
+    },
 
     /**
      * Ipsec auth type from ipsecAuthTypeItems_.
@@ -279,7 +288,10 @@ Polymer({
     wireguardKeyType_: String,
 
     /** @private {string|undefined} */
-    ipAddressInput_: String,
+    ipAddressInput_: {
+      type: String,
+      observer: 'updateIsConfigured_',
+    },
 
     /** @private {string|undefined} */
     nameServersInput_: String,
@@ -439,7 +451,6 @@ Polymer({
     'setEnableSave_(isConfigured_, managedProperties_)',
     'setShareNetwork_(mojoType_, managedProperties_, securityType_,' +
         'shareDefault, shareAllowEnable)',
-    'updateHiddenNetworkWarning_(autoConnect_)',
     'updateConfigProperties_(mojoType_, managedProperties_)',
     'updateSecurity_(configProperties_, securityType_)',
     'updateCertItems_(cachedServerCaCerts_, cachedUserCerts_, vpnType_, ' +
@@ -448,7 +459,6 @@ Polymer({
     'updateEapCerts_(eapProperties_.*, serverCaCerts_, userCerts_)',
     'updateShowEap_(configProperties_.*, eapProperties_.*, securityType_)',
     'updateVpnType_(configProperties_, vpnType_, ipsecAuthType_)',
-    'updateVpnIPsecAuthTypeItems_(vpnType_)',
     'updateVpnIPsecCerts_(vpnType_, ipsecAuthType_,' +
         'configProperties_.typeConfig.vpn.ipSec.*, serverCaCerts_, userCerts_)',
     'updateOpenVPNCerts_(vpnType_,' +
@@ -460,8 +470,6 @@ Polymer({
     'updateIsConfigured_(configProperties_.typeConfig.wifi.*)',
     'updateIsConfigured_(configProperties_.typeConfig.vpn.*, vpnType_,' +
         'ipsecAuthType_)',
-    'updateIsConfigured_(ipAddressInput_)',
-    'updateIsConfigured_(selectedUserCertHash_)',
   ],
 
   listeners: {'enter': 'onEnterEvent_'},
