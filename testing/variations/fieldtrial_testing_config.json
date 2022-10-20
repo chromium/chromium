@@ -4671,6 +4671,36 @@
             ]
         }
     ],
+    "FenderScriptScheduling": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LowPriLoading_20220927",
+                    "params": {
+                        "low_pri_async_loading_cross_site_only": "true",
+                        "low_pri_async_loading_feature_limit": "5s",
+                        "low_pri_async_loading_main_frame_only": "true"
+                    },
+                    "enable_features": [
+                        "LowPriorityScriptLoading"
+                    ],
+                    "disable_features": [
+                        "DOMContentLoadedWaitForAsyncScript",
+                        "DelayAsyncScriptExecution",
+                        "LowPriorityAsyncScriptExecution"
+                    ]
+                }
+            ]
+        }
+    ],
     "FillingAcrossAffiliatedWebsites": [
         {
             "platforms": [
