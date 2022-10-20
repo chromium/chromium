@@ -23,6 +23,7 @@ declare_args() {
   # |use_partition_alloc_as_malloc| and will generate buildflags.
   # Memory allocator to use. Set to "none" to use default allocator.
   use_allocator = _default_allocator
+  use_partition_alloc_as_malloc = use_partition_alloc_as_malloc_default
 }
 
 declare_args() {

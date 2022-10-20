@@ -52,6 +52,7 @@ template("nacl_toolchain") {
       # We do not replace the allocator when using NaCl toolchains.
       use_allocator = "none"
       use_allocator_shim = false
+      use_partition_alloc_as_malloc = false
 
       # We do not support clang profiling in the NaCl toolchains.
       use_clang_profiling = false

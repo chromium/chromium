@@ -48,7 +48,8 @@
       "symbol_level": 0,
       "use_allocator": "none",
       "use_dawn": true,
-      "use_goma": true
+      "use_goma": true,
+      "use_partition_alloc_as_malloc": false
     }
   },
   "dawn-try-mac-amd-exp": {
@@ -60,7 +61,8 @@
       "symbol_level": 0,
       "use_allocator": "none",
       "use_dawn": true,
-      "use_goma": true
+      "use_goma": true,
+      "use_partition_alloc_as_malloc": false
     }
   },
   "dawn-try-mac-intel-exp": {
@@ -72,7 +74,8 @@
       "symbol_level": 0,
       "use_allocator": "none",
       "use_dawn": true,
-      "use_goma": true
+      "use_goma": true,
+      "use_partition_alloc_as_malloc": false
     }
   },
   "dawn-try-win10-x64-asan-rel": {
@@ -143,7 +146,8 @@
       "symbol_level": 0,
       "use_allocator": "none",
       "use_dawn": true,
-      "use_goma": true
+      "use_goma": true,
+      "use_partition_alloc_as_malloc": false
     }
   },
   "win-dawn-rel": {

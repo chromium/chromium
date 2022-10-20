@@ -602,6 +602,7 @@
       "target_cpu": "arm",
       "target_os": "android",
       "use_allocator": "partition",
+      "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
     }
   },
@@ -621,6 +622,7 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_allocator": "partition",
+      "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
     }
   },
@@ -1107,6 +1109,7 @@
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_allocator": "partition",
+      "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
     }
   },
@@ -1427,6 +1430,7 @@
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_allocator": "partition",
+      "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
     }
   },
@@ -1500,6 +1504,7 @@
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_allocator": "partition",
+      "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
     }
   },
@@ -1515,6 +1520,7 @@
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_allocator": "partition",
+      "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
     }
   },
