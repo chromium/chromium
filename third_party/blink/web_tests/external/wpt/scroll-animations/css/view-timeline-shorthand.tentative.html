@@ -21,11 +21,12 @@ test_valid_value('view-timeline', 'horizontal block', 'horizontal');
 
 test_valid_value('view-timeline', 'a, b, c');
 test_valid_value('view-timeline', 'a inline, b block, c vertical', 'a inline, b, c vertical');
+test_valid_value('view-timeline', 'auto');
 
 test_invalid_value('view-timeline', 'abc abc');
 test_invalid_value('view-timeline', 'block none');
 test_invalid_value('view-timeline', 'none none');
-test_invalid_value('view-timeline', 'auto');
+test_invalid_value('view-timeline', 'default');
 test_invalid_value('view-timeline', ',');
 test_invalid_value('view-timeline', ',,block,,');
 

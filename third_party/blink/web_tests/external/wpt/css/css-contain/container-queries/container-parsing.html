@@ -30,6 +30,8 @@ test_valid_value('container', 'foo bar / normal', 'foo bar');
 test_valid_value('container', 'FOO / size');
 test_valid_value('container', 'FOO/size', 'FOO / size');
 test_valid_value('container', '  FOO  /size', 'FOO / size');
+test_valid_value('container', 'normal / size');
+test_valid_value('container', 'auto / size');
 
 test_invalid_value('container', 'none none');
 test_invalid_value('container', 'none inline-size');
@@ -43,8 +45,6 @@ test_invalid_value('container', 'none, none');
 test_invalid_value('container', 'none, normal');
 test_invalid_value('container', 'none / none');
 test_invalid_value('container', 'none / auto');
-test_invalid_value('container', 'normal / size');
-test_invalid_value('container', 'auto / size');
 test_invalid_value('container', 'none / foo');
 test_invalid_value('container', 'none / foo, bar');
 test_invalid_value('container', '#fff');

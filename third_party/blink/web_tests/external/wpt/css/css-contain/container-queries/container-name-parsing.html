@@ -20,9 +20,9 @@ test_valid_value('container-name', 'BAR');
 test_valid_value('container-name', 'foo bar');
 test_valid_value('container-name', 'foo foo');
 test_valid_value('container-name', '\\!escaped');
+test_valid_value('container-name', 'auto');
+test_valid_value('container-name', 'normal');
 
-test_invalid_value('container-name', 'auto');
-test_invalid_value('container-name', 'normal');
 test_invalid_value('container-name', 'none none');
 test_invalid_value('container-name', 'foo, bar');
 test_invalid_value('container-name', '#fff');

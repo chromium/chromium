@@ -19,8 +19,9 @@ test_valid_value('view-timeline-name', 'foo, bar');
 test_valid_value('view-timeline-name', 'bar, foo');
 test_valid_value('view-timeline-name', 'none, none');
 test_valid_value('view-timeline-name', 'a, none, b');
+test_valid_value('view-timeline-name', 'auto');
 
-test_invalid_value('view-timeline-name', 'auto');
+test_invalid_value('view-timeline-name', 'default');
 test_invalid_value('view-timeline-name', '10px');
 test_invalid_value('view-timeline-name', 'foo bar');
 test_invalid_value('view-timeline-name', '"foo" "bar"');

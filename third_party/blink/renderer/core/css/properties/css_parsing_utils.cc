@@ -1296,27 +1296,6 @@ CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange& range,
       range.ConsumeIncludingWhitespace().Value().ToAtomicString());
 }
 
-// Consume a custom ident more conservatively, for use in new uses of custom
-// idents, while we figure out if we can make these changes to existing uses.
-// Making new uses different avoids adding to the compatibility problem.
-CSSCustomIdentValue* ConsumeCustomIdentConservatively(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context) {
-  if (range.Peek().GetType() != kIdentToken)
-    return nullptr;
-  switch (range.Peek().Id()) {
-    // TODO(crbug.com/1340852): Find out if we can make auto/none/normal
-    // invalid generally.  For now, avoid allowing them on new custom idents.
-    case CSSValueID::kNone:
-    case CSSValueID::kNormal:
-    case CSSValueID::kAuto:
-      return nullptr;
-    default:
-      break;
-  }
-  return ConsumeCustomIdent(range, context);
-}
-
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange& range,
                                         const CSSParserContext& context) {
   if (range.Peek().GetType() != kIdentToken)
@@ -3754,7 +3733,7 @@ CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange& range,
                                     const CSSParserContext& context) {
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
     return value;
-  return ConsumeCustomIdentConservatively(range, context);
+  return ConsumeCustomIdent(range, context);
 }
 
 namespace {
@@ -5878,8 +5857,7 @@ CSSValue* ConsumeToggleGroup(CSSParserTokenRange& range,
                              const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)
     return nullptr;
-  CSSCustomIdentValue* toggle_name =
-      ConsumeCustomIdentConservatively(range, context);
+  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
   if (!toggle_name)
     return nullptr;
 
@@ -5901,15 +5879,14 @@ static CSSValue* ConsumeToggleValue(CSSParserTokenRange& range,
     return integer_value;
   }
 
-  return ConsumeCustomIdentConservatively(range, context);
+  return ConsumeCustomIdent(range, context);
 }
 
 CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange& range,
                                  const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)
     return nullptr;
-  CSSCustomIdentValue* toggle_name =
-      ConsumeCustomIdentConservatively(range, context);
+  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
   if (!toggle_name)
     return nullptr;
 
@@ -5959,8 +5936,7 @@ CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange& range,
         HashSet<AtomicString> states_found;
 
         while (true) {
-          CSSCustomIdentValue* state_name =
-              ConsumeCustomIdentConservatively(block, context);
+          CSSCustomIdentValue* state_name = ConsumeCustomIdent(block, context);
           if (!state_name)
             break;
 
@@ -6010,8 +5986,7 @@ CSSValue* ConsumeToggleTrigger(CSSParserTokenRange& range,
                                const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)
     return nullptr;
-  CSSCustomIdentValue* toggle_name =
-      ConsumeCustomIdentConservatively(range, context);
+  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
   if (!toggle_name)
     return nullptr;
 
@@ -6237,7 +6212,7 @@ CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
                                      const CSSParserContext& context) {
   if (range.Peek().GetType() != kIdentToken)
     return nullptr;
-  if (range.Peek().Id() == CSSValueID::kNormal)
+  if (range.Peek().Id() == CSSValueID::kNone)
     return nullptr;
   if (EqualIgnoringASCIICase(range.Peek().Value(), "not"))
     return nullptr;
@@ -6245,7 +6220,7 @@ CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
     return nullptr;
   if (EqualIgnoringASCIICase(range.Peek().Value(), "or"))
     return nullptr;
-  return ConsumeCustomIdentConservatively(range, context);
+  return ConsumeCustomIdent(range, context);
 }
 
 CSSValue* ConsumeContainerName(CSSParserTokenRange& range,

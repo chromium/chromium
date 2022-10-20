@@ -167,6 +167,10 @@
   test_container_name_valid('foo');
   test_container_name_valid(' foo');
   test_container_name_valid(' foo ');
+  test_container_name_valid('normal');
+  test_container_name_valid('Normal');
+  test_container_name_valid('auto');
+  test_container_name_valid('Auto');
 
   test_container_name_invalid('foo foo');
   test_container_name_invalid('1px');
@@ -175,12 +179,12 @@
   test_container_name_invalid('type(inline-size)');
   test_container_name_invalid('"foo"');
   test_container_name_invalid('"inherit"');
+  test_container_name_invalid('inherit');
+  test_container_name_invalid('INITIAL');
+  test_container_name_invalid('Unset');
+  test_container_name_invalid('deFAULT');
   test_container_name_invalid('none');
   test_container_name_invalid('None');
-  test_container_name_invalid('normal');
-  test_container_name_invalid('Normal');
-  test_container_name_invalid('auto');
-  test_container_name_invalid('Auto');
   test_container_name_invalid('and');
   test_container_name_invalid('or');
   test_container_name_invalid('not');
