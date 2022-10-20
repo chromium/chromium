@@ -7167,6 +7167,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Customize Chrome
       </message>
 
+      <!-- Bookmarks strings -->
+      <message name="IDS_BOOKMARKS_FOLDER_SORT" desc="Label for the active folder and sort type in the side panel.">
+        <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph> (<ph name="SORT_TYPE">$2<ex>Newest</ex>)</ph>
+      </message>
+      <message name="IDS_BOOKMARKS_ALL_BOOKMARKS" desc="The name of the root bookmarks folder as displayed to the user">
+        All Bookmarks
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_NEWEST" desc="Label for the newest-first bookmarks sort type">
+        Newest
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_OLDEST" desc="Label for the oldest-first bookmarks sort type">
+        Oldest
+      </message>
+
       <!-- Read Anything strings -->
       <!-- TODO(crbug.com/1266555): Add final strings and make them translateable. -->
       <message name="IDS_READ_ANYTHING_TITLE" desc="Title of the Read Anything feature, which gives users an accessible reading experience." translateable="false">

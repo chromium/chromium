@@ -1,5 +1,6 @@
 <style include="cr-icons cr-hidden-style">
   :host {
+    --back-button-size: 14px;
     --price-tracking-discount-color: var(--google-green-800);
     --price-tracking-original-color: var(--cr-secondary-text-color);
     --price-tracking-chip-background: var(--google-green-50);
@@ -13,13 +14,33 @@
     }
   }
 
-  cr-icon-button {
-    --cr-icon-button-size: 20px;
-    --cr-icon-button-margin-start: 14px;
+  .back-button {
+    align-items: flex-end;
+    background-color: transparent;
+    border: none;
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 4px;
+    height: var(--back-button-size);
+    margin: 14px;
+    padding: 0;
+    text-transform: uppercase;
   }
 
   .chip-discounted {
     --power-bookmark-chip-background: var(--price-tracking-chip-background);
+  }
+
+  .icon-arrow-back {
+    -webkit-mask-image: var(--cr-icon-image);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: var(--back-button-size);
+    background-color: var(--cr-primary-text-color);
+    height: var(--back-button-size);
+    width: var(--back-button-size);
   }
 
   .icon-discounted {
@@ -42,10 +63,14 @@
 </style>
 
 <div id="powerBookmarksContainer">
-  <cr-icon-button iron-icon="cr:arrow-back" on-click="onBackClicked_"
-      hidden="[[!activeFolderPath_.length]]"></cr-icon-button>
+  <button class="back-button" on-click="onBackClicked_"
+      disabled="[[!activeFolderPath_.length]]">
+    <div class="icon-arrow-back" hidden="[[!activeFolderPath_.length]]"></div>
+    [[getFolderSortLabel_(activeFolderPath_.*, activeSortIndex_)]]
+  </button>
   <template is="dom-repeat"
-      items="[[getShownBookmarks_(topLevelBookmarks_, activeFolderPath_.*)]]"
+      items="[[getShownBookmarks_(
+          topLevelBookmarks_, activeFolderPath_.*, activeSortIndex_)]]"
       id="powerBookmarksContainer">
     <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
         description="[[getBookmarkDescription_(item, descriptions_.*)]]"

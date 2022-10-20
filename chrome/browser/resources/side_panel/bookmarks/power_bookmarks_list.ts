@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../strings.m.js';
 import './commerce/shopping_list.js';
 import './power_bookmark_chip.js';
 import './power_bookmark_row.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -54,6 +55,18 @@ export class PowerBookmarksListElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      activeSortIndex_: {
+        type: Number,
+        value: 0,
+      },
+
+      sortTypes_: {
+        type: Array,
+        value: () =>
+            [loadTimeData.getString('sortNewest'),
+             loadTimeData.getString('sortOldest')],
+      },
     };
   }
 
@@ -68,6 +81,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
   private descriptions_ = new Map<string, string>();
   private showPriceTracking_: boolean;
+  private activeSortIndex_: number;
+  private sortTypes_: string[];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -134,6 +149,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     return this.get(`descriptions_.${bookmark.id}`);
   }
 
+  private getFolderSortLabel_(): string {
+    let folderName;
+    if (this.activeFolderPath_.length) {
+      const activeFolder =
+          this.activeFolderPath_[this.activeFolderPath_.length - 1];
+      folderName = activeFolder!.title;
+    } else {
+      folderName = loadTimeData.getString('allBookmarks');
+    }
+    return loadTimeData.getStringF(
+        'folderSort', folderName, this.sortTypes_[this.activeSortIndex_]!);
+  }
+
   private getProductInfos_(): BookmarkProductInfo[] {
     return Array.from(this.productInfos_.values());
   }
@@ -147,12 +175,38 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Returns a list of bookmarks and folders to display to the user.
    */
   private getShownBookmarks_(): chrome.bookmarks.BookmarkTreeNode[] {
+    let shownBookmarks;
     const activeFolder =
         this.activeFolderPath_[this.activeFolderPath_.length - 1];
     if (activeFolder) {
-      return activeFolder.children!;
+      shownBookmarks = activeFolder.children!;
+    } else {
+      shownBookmarks = this.topLevelBookmarks_;
     }
-    return this.topLevelBookmarks_;
+    this.sortBookmarks_(shownBookmarks);
+    return shownBookmarks;
+  }
+
+  private sortBookmarks_(bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+    const activeSortIndex = this.activeSortIndex_;
+    bookmarks.sort(function(
+        a: chrome.bookmarks.BookmarkTreeNode,
+        b: chrome.bookmarks.BookmarkTreeNode) {
+      // Always sort by folders first
+      if (a.children && !b.children) {
+        return -1;
+      } else if (!a.children && b.children) {
+        return 1;
+      } else {
+        if (activeSortIndex === 0) {
+          // Newest first
+          return b.dateAdded! - a.dateAdded!;
+        } else {
+          // Oldest first
+          return a.dateAdded! - b.dateAdded!;
+        }
+      }
+    });
   }
 
   /**
