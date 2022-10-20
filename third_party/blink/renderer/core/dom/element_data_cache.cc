@@ -36,13 +36,37 @@ inline unsigned AttributeHash(
                                   attributes.size() * sizeof(Attribute));
 }
 
+// Do comparisons 8 bytes-at-a-time on architectures where it's safe.
+#if defined(ARCH_CPU_64_BITS)
+inline bool EqualAttributes(const void* a, const void* b, wtf_size_t bytes) {
+  // On 64 bits machine, alignment of Attribute is 8
+  static_assert((alignof(Attribute) % 8) == 0);
+  DCHECK_EQ(bytes % 8, 0u);
+  const uint64_t* attr_a = unsafe_reinterpret_cast_ptr<const uint64_t*>(a);
+  const uint64_t* attr_b = unsafe_reinterpret_cast_ptr<const uint64_t*>(b);
+  wtf_size_t length = bytes >> 3;
+  for (wtf_size_t i = 0; i != length; ++i) {
+    if (*attr_a != *attr_b)
+      return false;
+    ++attr_a;
+    ++attr_b;
+  }
+
+  return true;
+}
+#else
+inline bool EqualAttributes(const void* a, const void* b, wtf_size_t bytes) {
+  return !memcmp(a, b, bytes);
+}
+#endif
+
 inline bool HasSameAttributes(
     const Vector<Attribute, kAttributePrealloc>& attributes,
     ShareableElementData& element_data) {
   if (attributes.size() != element_data.Attributes().size())
     return false;
-  return !memcmp(attributes.data(), element_data.attribute_array_,
-                 attributes.size() * sizeof(Attribute));
+  return EqualAttributes(attributes.data(), element_data.attribute_array_,
+                         attributes.size() * sizeof(Attribute));
 }
 
 ShareableElementData*
