@@ -3395,6 +3395,7 @@ test("base_unittests") {
     "test/metrics/histogram_tester_unittest.cc",
     "test/metrics/user_action_tester_unittest.cc",
     "test/mock_callback_unittest.cc",
+    "test/rectify_callback_unittest.cc",
     "test/repeating_test_future_unittest.cc",
     "test/scoped_feature_list_unittest.cc",
     "test/scoped_logging_settings.h",

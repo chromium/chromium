@@ -91,6 +91,8 @@ static_library("test_support") {
     "power_monitor_test.h",
     "power_monitor_test_utils.cc",
     "power_monitor_test_utils.h",
+    "rectify_callback.h",
+    "rectify_callback_internal.h",
     "repeating_test_future.h",
     "scoped_command_line.cc",
     "scoped_command_line.h",
