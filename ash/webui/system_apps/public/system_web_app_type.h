@@ -142,7 +142,11 @@ enum class SystemWebAppType {
   //
   // 6. Update kMaxValue.
   //
-  // 7. Have one of System Web App Platform owners review the CL.
+  // 7. (optional) Add your System Web App to |kSystemWebAppsMapping| in
+  //    chrome/browser/apps/app_service/policy_util.cc to make it discoverable
+  //    in policies.
+  //
+  // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
   kMaxValue = FACE_ML,
 };
