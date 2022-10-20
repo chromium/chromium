@@ -78,4 +78,5 @@ mojom("mojom") {
   ]
 
   blink_cpp_typemaps = shared_cpp_typemaps
+  webui_module_path = "chrome://resources/mojo/ui/events/mojom"
 }
