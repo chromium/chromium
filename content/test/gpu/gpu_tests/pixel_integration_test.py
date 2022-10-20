@@ -172,7 +172,8 @@ class PixelIntegrationTest(
     # sizes.
     if (PixelIntegrationTest.browser.platform.GetOSName() == 'fuchsia'
         and page.name in pixel_test_pages.PROBLEMATIC_FUCHSIA_TESTS):
-      screenshot = tab.FullScreenshot(5)
+      # Screenshot on Fuchsia can take a long time. See crbug.com/1376684.
+      screenshot = tab.FullScreenshot(15)
     else:
       screenshot = tab.Screenshot(5)
     if screenshot is None:
