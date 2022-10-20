@@ -8867,21 +8867,6 @@ const CSSValue* WebkitTextOrientation::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetTextOrientation());
 }
 
-void WebkitTextOrientation::ApplyInitial(StyleResolverState& state) const {
-  state.SetTextOrientation(
-      ComputedStyleInitialValues::InitialTextOrientation());
-}
-
-void WebkitTextOrientation::ApplyInherit(StyleResolverState& state) const {
-  state.SetTextOrientation(state.ParentStyle()->GetTextOrientation());
-}
-
-void WebkitTextOrientation::ApplyValue(StyleResolverState& state,
-                                       const CSSValue& value) const {
-  state.SetTextOrientation(
-      To<CSSIdentifierValue>(value).ConvertTo<ETextOrientation>());
-}
-
 const CSSValue* WebkitTextSecurity::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -9197,19 +9182,6 @@ const CSSValue* WebkitWritingMode::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return CSSIdentifierValue::Create(style.GetWritingMode());
-}
-
-void WebkitWritingMode::ApplyInitial(StyleResolverState& state) const {
-  state.SetWritingMode(ComputedStyleInitialValues::InitialWritingMode());
-}
-void WebkitWritingMode::ApplyInherit(StyleResolverState& state) const {
-  state.SetWritingMode(state.ParentStyle()->GetWritingMode());
-}
-
-void WebkitWritingMode::ApplyValue(StyleResolverState& state,
-                                   const CSSValue& value) const {
-  state.SetWritingMode(
-      To<CSSIdentifierValue>(value).ConvertTo<blink::WritingMode>());
 }
 
 const CSSValue* WhiteSpace::CSSValueFromComputedStyleInternal(

@@ -80,6 +80,26 @@ def validate_field(field):
         'mutable requires field_template:monotonic_flag [%s]' % name
 
 
+# Determines whether or not style builders (i.e. Apply functions)
+# should be generated for the given property.
+def needs_style_builders(property_):
+    if not property_['is_property']:
+        return False
+    # Shorthands do not get style builders, because shorthands are
+    # expanded to longhands parse-time.
+    if property_['longhands']:
+        return False
+    # Surrogates do not get style builders, because they are replaced
+    # with another target property cascade-time.
+    if property_['surrogate_for']:
+        return False
+    # Logical properties do not get style builders for the same reason
+    # as surrogates.
+    if property_['is_logical']:
+        return False
+    return True
+
+
 class CSSProperties(object):
     def __init__(self, file_paths):
         assert len(file_paths) >= 3, \
@@ -281,10 +301,32 @@ class CSSProperties(object):
             property_['is_inherited_setter'] = (
                 'Set' + method_name + 'IsInherited')
 
-        # Figure out whether this property should have style builders at all.
-        # E.g. shorthands do not get style builders.
-        property_['style_builder_declare'] = (property_['is_property']
-                                              and not property_['longhands'])
+        property_['is_logical'] = False
+
+        if property_['logical_property_group']:
+            group = property_['logical_property_group']
+            assert 'name' in group, 'name option is required'
+            assert 'resolver' in group, 'resolver option is required'
+            logicals = {
+                'block', 'inline', 'block-start', 'block-end', 'inline-start',
+                'inline-end', 'start-start', 'start-end', 'end-start',
+                'end-end'
+            }
+            physicals = {
+                'vertical', 'horizontal', 'top', 'bottom', 'left', 'right',
+                'top-left', 'top-right', 'bottom-right', 'bottom-left'
+            }
+            if group['resolver'] in logicals:
+                group['is_logical'] = True
+            elif group['resolver'] in physicals:
+                group['is_logical'] = False
+            else:
+                assert 0, 'invalid resolver option'
+            group['name'] = NameStyleConverter(group['name'])
+            group['resolver_name'] = NameStyleConverter(group['resolver'])
+            property_['is_logical'] = group['is_logical']
+
+        property_['style_builder_declare'] = needs_style_builders(property_)
 
         # Figure out whether we should generate style builder implementations.
         for x in ['initial', 'inherit', 'value']:
@@ -341,30 +383,6 @@ class CSSProperties(object):
         set_if_none(property_, 'custom_copy', False)
         set_if_none(property_, 'custom_compare', False)
         set_if_none(property_, 'mutable', False)
-
-        if property_['logical_property_group']:
-            group = property_['logical_property_group']
-            assert 'name' in group, 'name option is required'
-            assert 'resolver' in group, 'resolver option is required'
-            logicals = {
-                'block', 'inline', 'block-start', 'block-end', 'inline-start',
-                'inline-end', 'start-start', 'start-end', 'end-start',
-                'end-end'
-            }
-            physicals = {
-                'vertical', 'horizontal', 'top', 'bottom', 'left', 'right',
-                'top-left', 'top-right', 'bottom-right', 'bottom-left'
-            }
-            if group['resolver'] in logicals:
-                group['is_logical'] = True
-            elif group['resolver'] in physicals:
-                group['is_logical'] = False
-            else:
-                assert 0, 'invalid resolver option'
-            group['name'] = NameStyleConverter(group['name'])
-            group['resolver_name'] = NameStyleConverter(group['resolver'])
-            if not property_['style_builder_template'] and group['is_logical']:
-                property_['style_builder_template'] = 'direction_aware'
 
     @property
     def default_parameters(self):

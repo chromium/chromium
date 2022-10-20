@@ -62,6 +62,14 @@ class CORE_EXPORT StyleBuilder {
   static void ApplyProperty(const CSSProperty&,
                             StyleResolverState&,
                             const ScopedCSSValue&);
+
+  // Apply a physical property and its value to the ComputedStyle.
+  //
+  // Physical properties are properties that are not surrogates (see
+  // "surrogate_for" in css_properties.json5).
+  static void ApplyPhysicalProperty(const CSSProperty&,
+                                    StyleResolverState&,
+                                    const ScopedCSSValue&);
 };
 
 }  // namespace blink

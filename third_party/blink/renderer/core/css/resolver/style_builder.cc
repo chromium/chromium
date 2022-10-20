@@ -65,8 +65,22 @@ void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
 void StyleBuilder::ApplyProperty(const CSSProperty& property,
                                  StyleResolverState& state,
                                  const ScopedCSSValue& scoped_value) {
+  const CSSProperty* physical = &property;
+  if (property.IsSurrogate()) {
+    physical = property.SurrogateFor(state.Style()->Direction(),
+                                     state.Style()->GetWritingMode());
+    DCHECK(physical);
+  }
+  ApplyPhysicalProperty(*physical, state, scoped_value);
+}
+
+void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
+                                         StyleResolverState& state,
+                                         const ScopedCSSValue& scoped_value) {
   DCHECK(!Variable::IsStaticInstance(property))
       << "Please use a CustomProperty instance to apply custom properties";
+  DCHECK(!property.IsSurrogate())
+      << "Please use ApplyProperty for surrogate properties";
 
   CSSPropertyID id = property.PropertyID();
   const CSSValue& value = scoped_value.GetCSSValue();

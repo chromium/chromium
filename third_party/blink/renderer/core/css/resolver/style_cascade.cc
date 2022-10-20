@@ -674,8 +674,8 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
     tree_scope = &TreeScopeAt(match_result_, priority->GetPosition());
   else if (origin == CascadeOrigin::kAuthorPresentationalHint)
     tree_scope = &GetDocument();
-  StyleBuilder::ApplyProperty(property, state_,
-                              ScopedCSSValue(*value, tree_scope));
+  StyleBuilder::ApplyPhysicalProperty(property, state_,
+                                      ScopedCSSValue(*value, tree_scope));
 }
 
 void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
