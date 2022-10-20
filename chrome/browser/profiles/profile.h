@@ -505,6 +505,10 @@ class Profile : public content::BrowserContext {
   virtual bool IsSignedIn() = 0;
 
  private:
+  friend class ProfileDestroyer;
+
+  base::WeakPtr<Profile> GetWeakPtr();
+
   // Created on the UI thread, and returned by GetResourceContext(), but
   // otherwise lives on and is destroyed on the IO thread.
   //

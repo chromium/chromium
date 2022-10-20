@@ -27,7 +27,7 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // for dependent renderer process hosts to destroy.
   // Ownership of the profile is passed to profile destroyer and the profile
   // should not be used after this call.
-  static void DestroyProfileWhenAppropriate(Profile* const profile);
+  static void DestroyProfileWhenAppropriate(Profile* profile);
 
   // Force destroy all the profiles pending deletion. This is called by the
   // ProfileManager during shutdown.
@@ -48,10 +48,10 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // Same as DestroyProfileWhenAppropriate, but configures how long to wait
   // for render process hosts to be destroyed. Intended for testing/automation
   // scenarios, where default timeout is too short.
-  static void DestroyProfileWhenAppropriateWithTimeout(Profile* const profile,
+  static void DestroyProfileWhenAppropriateWithTimeout(Profile* profile,
                                                        base::TimeDelta timeout);
 
-  ProfileDestroyer(Profile* const profile,
+  ProfileDestroyer(Profile* profile,
                    const HostSet& hosts,
                    base::TimeDelta timeout);
   ~ProfileDestroyer() override;
@@ -74,22 +74,18 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // If |include_spare_rph| is true, include spare render process hosts in the
   // output.
   static void GetHostsForProfile(HostSet* out,
-                                 void* const profile_ptr,
+                                 void* profile_ptr,
                                  bool include_spare_rph = false);
 
   // Destroys a profile immediately.
-  static void DestroyProfileNow(Profile* const profile);
+  static void DestroyProfileNow(Profile* profile);
 
   // Destroys an Original (non-off-the-record) profile immediately.
-  static void DestroyOriginalProfileNow(Profile* const profile);
+  static void DestroyOriginalProfileNow(Profile* profile);
 
   // Destroys an OffTheRecord profile immediately and removes it from all
   // pending destroyers.
-  static void DestroyOffTheRecordProfileNow(Profile* const profile);
-
-  // Reset pending destroyers whose target profile matches the given one
-  // to make it stop attempting to destroy it.
-  static void ResetPendingDestroyers(Profile* const profile);
+  static void DestroyOffTheRecordProfileNow(Profile* profile);
 
   // We don't want to wait forever, so we have a cancellation timer.
   base::OneShotTimer timer_;
@@ -98,9 +94,24 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
                                      content::RenderProcessHostObserver>
       observations_{this};
 
-  // The profile being destroyed. If it is set to NULL, it is a signal from
-  // another instance of ProfileDestroyer that this instance is canceled.
-  Profile* profile_;
+  // The profile being destroyed.
+  //
+  // Note: Ownership model of the Profile is not consistent. As a result, this
+  // variable sometimes represent ownership over the Profile, but sometimes
+  // this is just a weak reference, and the Profile might be destroyed outside
+  // of the ProfileDestroyer.
+  //
+  // [Regular profile]
+  // Owned by the ProfileManager. Ownership is transferred.
+  //
+  // [OTR profile]
+  // Owned by the original profile. Owner is NOT transferred. This is a weak
+  // pointer. Deleting the original Profile will delete its OTR profile under
+  // the hood.
+  //
+  // [Independent profile]
+  // It depends on the component. Most likely, the ownership is transferred.
+  base::WeakPtr<Profile> profile_;
 
   // Force-destruction timeout.
   const base::TimeDelta timeout_;

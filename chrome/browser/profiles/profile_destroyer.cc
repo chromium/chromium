@@ -60,24 +60,15 @@ std::vector<Profile*> GetDependentProfiles(Profile* profile) {
 }  // namespace
 
 // static
-void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
+void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* profile) {
   DestroyProfileWhenAppropriateWithTimeout(profile,
                                            base::Seconds(kTimerDelaySeconds));
 }
 
 // static
 void ProfileDestroyer::DestroyProfileWhenAppropriateWithTimeout(
-    Profile* const profile,
+    Profile* profile,
     base::TimeDelta timeout) {
-  if (!profile)  // profile might have been reset in ResetPendingDestroyers();
-    return;
-
-  // We allow multiple calls to `DestroyProfileWhenAppropriate` for the same
-  // Profile. A new request replaces the previous one, so that there are never
-  // more than one ProfileDestroyer for the same profile.
-  // See https://crbug.com/1337388#c12
-  ResetPendingDestroyers(profile);
-
   TRACE_EVENT("shutdown", "ProfileDestroyer::DestroyProfileWhenAppropriate",
               [&](perfetto::EventContext ctx) {
                 auto* proto =
@@ -129,7 +120,7 @@ void ProfileDestroyer::DestroyPendingProfilesForShutdown() {
 }
 
 // static
-void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* const profile) {
+void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* profile) {
   DCHECK(profile);
   DCHECK(profile->IsOffTheRecord());
   TRACE_EVENT(
@@ -148,14 +139,7 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* const profile) {
 }
 
 // static
-void ProfileDestroyer::DestroyProfileNow(Profile* const profile) {
-  if (!profile)  // profile might have been reset in ResetPendingDestroyers();
-    return;
-
-  // Make sure we don't delete the same profile twice, otherwise this would have
-  // been a UAF.
-  ResetPendingDestroyers(profile);
-
+void ProfileDestroyer::DestroyProfileNow(Profile* profile) {
   if (profile->IsOffTheRecord())
     DestroyOffTheRecordProfileNow(profile);
   else
@@ -163,7 +147,7 @@ void ProfileDestroyer::DestroyProfileNow(Profile* const profile) {
 }
 
 // static
-void ProfileDestroyer::DestroyOriginalProfileNow(Profile* const profile) {
+void ProfileDestroyer::DestroyOriginalProfileNow(Profile* profile) {
   DCHECK(profile);
   DCHECK(!profile->IsOffTheRecord());
   TRACE_EVENT("shutdown", "ProfileDestroyer::DestroyOriginalProfileNow",
@@ -226,19 +210,10 @@ void ProfileDestroyer::DestroyOriginalProfileNow(Profile* const profile) {
 #endif  // DCHECK_IS_ON()
 }
 
-// static
-void ProfileDestroyer::ResetPendingDestroyers(Profile* const profile) {
-  for (auto* i : PendingDestroyers()) {
-    if (i->profile_ == profile) {
-      i->profile_ = nullptr;
-    }
-  }
-}
-
-ProfileDestroyer::ProfileDestroyer(Profile* const profile,
+ProfileDestroyer::ProfileDestroyer(Profile* profile,
                                    const HostSet& hosts,
                                    base::TimeDelta timeout)
-    : profile_(profile),
+    : profile_(profile->GetWeakPtr()),
       timeout_(timeout),
       profile_ptr_(reinterpret_cast<uint64_t>(profile)) {
   TRACE_EVENT("shutdown", "ProfileDestroyer::ProfileDestroyer",
@@ -272,8 +247,6 @@ ProfileDestroyer::~ProfileDestroyer() {
                 proto->set_host_count_at_destruction(
                     observations_.GetSourcesCount());
               });
-  DCHECK(!profile_);
-
   // Don't wait for pending registrations, if any, these hosts are buggy.
   // Note: this can happen, but if so, it's better to crash here than wait
   // for the host to dereference a deleted Profile. http://crbug.com/248625
@@ -320,18 +293,22 @@ void ProfileDestroyer::RenderProcessHostDestroyed(
 }
 
 void ProfileDestroyer::Timeout() {
-  DestroyProfileNow(profile_);
+  if (Profile* profile = profile_.get()) {
+    DestroyProfileNow(profile);
+  }
   delete this;  // Final state.
 }
 
 void ProfileDestroyer::Retry() {
-  DestroyProfileWhenAppropriateWithTimeout(profile_, timeout_);
+  if (Profile* profile = profile_.get()) {
+    DestroyProfileWhenAppropriateWithTimeout(profile, timeout_);
+  }
   delete this;  // Final state.
 }
 
 // static
 void ProfileDestroyer::GetHostsForProfile(HostSet* out,
-                                          void* const profile_ptr,
+                                          void* profile_ptr,
                                           bool include_spare_rph) {
   for (content::RenderProcessHost::iterator iter(
            content::RenderProcessHost::AllHostsIterator());

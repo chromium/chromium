@@ -293,6 +293,33 @@ TEST_P(ProfileDestroyerTest,
   EXPECT_FALSE(original_profile());
 }
 
+TEST_P(ProfileDestroyerTest, RenderProcessAddedAfterDestroyRequested) {
+  if (!IsScopedProfileKeepAliveSupported())
+    return;
+  CreateOriginalProfile();
+
+  content::RenderProcessHost* render_process_host_1 =
+      CreatedRendererProcessHost(original_profile());
+  StopKeepingAliveOriginalProfile();
+
+  ProfileDestroyer::DestroyProfileWhenAppropriate(original_profile());
+
+  EXPECT_TRUE(original_profile());
+  content::RenderProcessHost* render_process_host_2 =
+      CreatedRendererProcessHost(original_profile());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(original_profile());  // Waiting for 2 processes to be released
+
+  render_process_host_1->Cleanup();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(original_profile());  // Waiting for 1 process to be released.
+
+  render_process_host_2->Cleanup();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(original_profile());  // Destroyed.
+}
+
 // Regression test for:
 // https://crbug.com/1337388#c11
 TEST_P(ProfileDestroyerTest, DestructionRequestedTwiceWhileDelayedOTRProfile) {
