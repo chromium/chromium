@@ -6,4 +6,5 @@ include_rules = [
   "+components/translate/core/common",
   "+content/public/android",
   "+content/public/browser",
+  "+content/public/test/android",
 ]

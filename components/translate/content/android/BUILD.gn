@@ -119,6 +119,29 @@ robolectric_library("junit") {
   ]
 }
 
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenuTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/test/android:test_support_java",
+    "//components/browser_ui/widget/android:java",
+    "//components/messages/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
