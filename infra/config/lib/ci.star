@@ -90,7 +90,10 @@ def ci_builder(
     experiments = experiments or {}
 
     # TODO(crbug.com/1346781): Enable everywhere.
-    experiments.setdefault("chromium_swarming.expose_merge_script_failures", 10)
+    if hash(name) % 2 == 0:
+        experiments.setdefault("chromium_swarming.expose_merge_script_failures", 100)
+    else:
+        experiments.setdefault("chromium_swarming.expose_merge_script_failures", 10)
 
     try_only_kwargs = [k for k in ("mirrors", "try_settings") if k in kwargs]
     if try_only_kwargs:
