@@ -163,8 +163,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   class COMPONENT_EXPORT(UI_BASE) Builder {
    public:
     Builder();
-    Builder(const Builder& other) = delete;
-    void operator=(const Builder& other) = delete;
+    Builder(Builder&& other);
+    Builder& operator=(Builder&& other);
     ~Builder();
 
     // Sets the callback if the user exits the sequence early.
@@ -181,6 +181,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
     // Convenience methods to add a step when using a StepBuilder.
     Builder& AddStep(StepBuilder& step_builder);
+
+    // Convenience method for cases where we don't have an lvalue.
+    Builder& AddStep(StepBuilder&& step_builder);
 
     // Sets the context for this sequence. Must be called if no step is added
     // by element or has had SetContext() called. Typically the initial step of
@@ -202,8 +205,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
    public:
     StepBuilder();
     ~StepBuilder();
-    StepBuilder(const StepBuilder& other) = delete;
-    void operator=(StepBuilder& other) = delete;
+    StepBuilder(StepBuilder&& other);
+    StepBuilder& operator=(StepBuilder&& other);
 
     // Sets the unique identifier for this step. Either this or
     // SetElementName() is required for all step types except kCustomEvent.

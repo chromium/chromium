@@ -216,6 +216,76 @@ TEST(InteractionSequenceTest,
   EXPECT_CALL_IN_SCOPE(aborted, Run, sequence.reset());
 }
 
+// Now that we're fairly confident that sequences can complete, try all the
+// different ways to construct and add steps.
+TEST(InteractionSequenceTest, TestStepBuilderConstructAndAdd) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEvent);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, start1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepEndCallback, end1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, start2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepEndCallback, end2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, start3);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepEndCallback, end3);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, start4);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepEndCallback, end4);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+
+  InteractionSequence::StepBuilder step1;
+  step1.SetElementID(element1.identifier());
+  step1.SetStartCallback(start1.Get());
+  step1.SetEndCallback(end1.Get());
+  InteractionSequence::StepBuilder step2;
+  step2.SetElementID(element1.identifier());
+  step2.SetType(InteractionSequence::StepType::kActivated);
+  step2.SetStartCallback(start2.Get());
+  step2.SetEndCallback(end2.Get());
+  InteractionSequence::StepBuilder step3;
+  step3.SetElementID(element2.identifier());
+  step3.SetStartCallback(start3.Get());
+  step3.SetEndCallback(end3.Get());
+  InteractionSequence::StepBuilder step4;
+  step4.SetElementID(element2.identifier());
+  step4.SetType(InteractionSequence::StepType::kCustomEvent, kCustomEvent);
+
+  // Test move and assign for step builder.
+  InteractionSequence::StepBuilder step1_move_constructed(std::move(step1));
+  InteractionSequence::StepBuilder step2_move_assigned;
+  step2_move_assigned = std::move(step2);
+  InteractionSequence::StepBuilder step4_move_constructed_then_modified(
+      std::move(step4));
+  step4_move_constructed_then_modified.SetStartCallback(start4.Get());
+  step4_move_constructed_then_modified.SetEndCallback(end4.Get());
+
+  InteractionSequence::Builder builder;
+  builder.SetAbortedCallback(aborted.Get())
+      .SetCompletedCallback(completed.Get())
+      .SetContext(element1.context())
+      .AddStep(step1_move_constructed)
+      .AddStep(step2_move_assigned)
+      .AddStep(std::move(step3))
+      .AddStep(std::move(step4_move_constructed_then_modified))
+      .AddStep(std::move(InteractionSequence::StepBuilder()
+                             .SetElementID(element2.identifier())
+                             .SetType(InteractionSequence::StepType::kHidden)));
+
+  // Test move and assign for builder.
+  InteractionSequence::Builder builder2(std::move(builder));
+  InteractionSequence::Builder builder3;
+  builder3 = std::move(builder2);
+  auto sequence = builder3.Build();
+
+  EXPECT_CALL_IN_SCOPE(start1, Run, sequence->Start());
+  EXPECT_CALLS_IN_SCOPE_2(end1, Run, start2, Run, element1.Activate());
+  EXPECT_CALLS_IN_SCOPE_2(end2, Run, start3, Run, element2.Show());
+  EXPECT_CALLS_IN_SCOPE_2(end3, Run, start4, Run,
+                          element2.SendCustomEvent(kCustomEvent));
+  EXPECT_CALLS_IN_SCOPE_2(end4, Run, completed, Run, element2.Hide());
+}
+
 TEST(InteractionSequenceTest, TransitionOnActivated) {
   UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);

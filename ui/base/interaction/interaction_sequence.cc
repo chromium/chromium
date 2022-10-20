@@ -99,7 +99,9 @@ struct InteractionSequence::Configuration {
 
 InteractionSequence::Builder::Builder()
     : configuration_(std::make_unique<Configuration>()) {}
-
+InteractionSequence::Builder::Builder(Builder&& other) = default;
+InteractionSequence::Builder& InteractionSequence::Builder::operator=(
+    Builder&& other) = default;
 InteractionSequence::Builder::~Builder() {
   DCHECK(!configuration_);
 }
@@ -185,7 +187,12 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
 }
 
 InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
-    InteractionSequence::StepBuilder& step_builder) {
+    StepBuilder& step_builder) {
+  return AddStep(step_builder.Build());
+}
+
+InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
+    StepBuilder&& step_builder) {
   return AddStep(step_builder.Build());
 }
 
@@ -206,6 +213,9 @@ std::unique_ptr<InteractionSequence> InteractionSequence::Builder::Build() {
 
 InteractionSequence::StepBuilder::StepBuilder()
     : step_(std::make_unique<Step>()) {}
+InteractionSequence::StepBuilder::StepBuilder(StepBuilder&& other) = default;
+InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::operator=(
+    StepBuilder&& other) = default;
 InteractionSequence::StepBuilder::~StepBuilder() = default;
 
 InteractionSequence::StepBuilder&
