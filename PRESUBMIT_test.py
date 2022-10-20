@@ -4738,5 +4738,41 @@ class LayoutInTestsTest(unittest.TestCase):
     errors = PRESUBMIT.CheckNoLayoutCallsInTests(mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
 
+class AssertNoJsInIosTest(unittest.TestCase):
+    def testErrorJs(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('components/feature/ios/resources/script.js', []),
+            MockFile('ios/chrome/feature/resources/script.js', []),
+        ]
+        results = PRESUBMIT.CheckNoJsInIos(input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertEqual(2, len(results[0].items))
+
+    def testNonError(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('chrome/resources/script.js', []),
+            MockFile('components/feature/ios/resources/script.ts', []),
+            MockFile('ios/chrome/feature/resources/script.ts', []),
+            MockFile('ios/web/feature/resources/script.ts', []),
+            MockFile('ios/third_party/script.js', []),
+            MockFile('third_party/ios/script.js', []),
+        ]
+        results = PRESUBMIT.CheckNoJsInIos(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testExistingFilesWarningOnly(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ios/chrome/feature/resources/script.js', [], action='M'),
+            MockFile('ios/chrome/feature/resources/script2.js', [], action='D'),
+        ]
+        results = PRESUBMIT.CheckNoJsInIos(input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('warning', results[0].type)
+        self.assertEqual(1, len(results[0].items))
+
 if __name__ == '__main__':
   unittest.main()

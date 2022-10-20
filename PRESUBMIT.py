@@ -6522,3 +6522,42 @@ Mockito.mock()/spy() cause issues with our Java optimizer. You have 3 options:
 """, error_locations))
 
     return results
+
+def CheckNoJsInIos(input_api, output_api):
+    """Checks to make sure that JavaScript files are not used on iOS."""
+
+    def _FilterFile(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_skip=input_api.DEFAULT_FILES_TO_SKIP +
+                          (r'^ios/third_party/*', r'^third_party/*'),
+            files_to_check=[r'^ios/.*\.js$', r'.*/ios/.*\.js$'])
+
+    error_paths = []
+    warning_paths = []
+
+    for f in input_api.AffectedSourceFiles(_FilterFile):
+        local_path = f.LocalPath()
+
+        if input_api.os_path.splitext(local_path)[1] == '.js':
+            if f.Action() == 'A':
+                error_paths.append(local_path)
+            elif f.Action() != 'D':
+                warning_paths.append(local_path)
+
+    results = []
+
+    if warning_paths:
+        results.append(output_api.PresubmitPromptWarning(
+            'TypeScript is now fully supported for iOS feature scripts. '
+            'Consider converting JavaScript files to TypeScript. See '
+            '//ios/web/public/js_messaging/README.md for more details.',
+            warning_paths))
+
+    if error_paths:
+        results.append(output_api.PresubmitError(
+            'Do not use JavaScript on iOS as TypeScript is fully supported. '
+            'See //ios/web/public/js_messaging/README.md for help using '
+            'scripts on iOS.', error_paths))
+
+    return results
