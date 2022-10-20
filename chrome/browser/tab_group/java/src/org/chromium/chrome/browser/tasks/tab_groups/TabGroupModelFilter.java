@@ -373,10 +373,11 @@ public class TabGroupModelFilter extends TabModelFilter {
                 // If the tab is not moved TabModelImpl will not invoke
                 // TabModelObserver#didMoveTab() and update events will not be triggered. Call the
                 // event manually.
-                didMoveTab(tab,
-                        isMergingBackward ? destinationIndexInTabModel
-                                          : destinationIndexInTabModel++,
-                        index);
+                int destinationIndex =
+                        MathUtils.clamp(isMergingBackward ? destinationIndexInTabModel
+                                                          : destinationIndexInTabModel++,
+                                0, getTabModel().getCount());
+                didMoveTab(tab, isMergingBackward ? destinationIndex - 1 : destinationIndex, index);
             } else {
                 getTabModel().moveTab(tab.getId(),
                         isMergingBackward ? destinationIndexInTabModel
