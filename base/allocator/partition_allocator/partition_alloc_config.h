@@ -146,8 +146,19 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_HAS_FREELIST_SHADOW_ENTRY
 #endif
 
+// Build MTECheckedPtr code.
+//
+// Only applicable to code with 64-bit pointers. Currently conflicts with true
+// hardware MTE.
+#if BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT) && \
+    defined(PA_HAS_64_BITS_POINTERS) && !defined(PA_HAS_MEMORY_TAGGING)
+#define PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS
+#endif  // BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT) &&
+        // defined(PA_HAS_64_BITS_POINTERS) && !defined(PA_HAS_MEMORY_TAGGING)
+
 // Specifies whether allocation extras need to be added.
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #define PA_EXTRAS_REQUIRED
 #endif
 
@@ -249,16 +260,6 @@ constexpr bool kUseLazyCommit = false;
 #if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
 #define PA_PREFER_SMALLER_SLOT_SPANS
 #endif  // BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-
-// Build MTECheckedPtr code.
-//
-// Only applicable to code with 64-bit pointers. Currently conflicts with true
-// hardware MTE.
-#if BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT) && \
-    defined(PA_HAS_64_BITS_POINTERS) && !defined(PA_HAS_MEMORY_TAGGING)
-#define PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS
-#endif  // BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT) &&
-        // defined(PA_HAS_64_BITS_POINTERS) && !defined(PA_HAS_MEMORY_TAGGING)
 
 // Enable shadow metadata.
 //

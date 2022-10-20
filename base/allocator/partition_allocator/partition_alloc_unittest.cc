@@ -210,12 +210,23 @@ using BucketDistribution = ThreadSafePartitionRoot::BucketDistribution;
 using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
 const size_t kTestAllocSize = 16;
+
+// Add one extra byte to each slot's end to allow beyond-the-end
+// pointers (crbug.com/1364476).
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+const size_t kMTECheckedPtrExtrasAdjustment = 1;
+#else
+const size_t kMTECheckedPtrExtrasAdjustment = 0;
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+
 #if !BUILDFLAG(PA_DCHECK_IS_ON)
 const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
-const size_t kExtraAllocSize = kInSlotRefCountBufferSize;
+const size_t kExtraAllocSize =
+    kInSlotRefCountBufferSize + kMTECheckedPtrExtrasAdjustment;
 #else
 const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
-const size_t kExtraAllocSize = kCookieSize + kInSlotRefCountBufferSize;
+const size_t kExtraAllocSize =
+    kCookieSize + kInSlotRefCountBufferSize + kMTECheckedPtrExtrasAdjustment;
 #endif
 const size_t kRealAllocSize = partition_alloc::internal::base::bits::AlignUp(
     kTestAllocSize + kExtraAllocSize,
@@ -1200,7 +1211,7 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
 
   // Allocate something very large, and uneven.
   if (IsLargeMemoryDevice()) {
-    requested_size = 128 * 1024 * 1024 - 1;
+    requested_size = 128 * 1024 * 1024 - 33;
     predicted_capacity =
         allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
     ptr = allocator.root()->Alloc(requested_size, type_name);
@@ -1209,7 +1220,9 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
     actual_capacity =
         allocator.root()->AllocationCapacityFromSlotStart(slot_start);
     EXPECT_EQ(predicted_capacity, actual_capacity);
+
     EXPECT_LT(requested_size, actual_capacity);
+
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     address = UntagPtr(ptr);
     for (size_t offset = 0; offset < requested_size; offset += 16111) {
@@ -2334,7 +2347,10 @@ TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
 }
 
 // With BUILDFLAG(PA_DCHECK_IS_ON), cookie already handles off-by-one detection.
-#if !BUILDFLAG(PA_DCHECK_IS_ON)
+// With MTECheckedPtr enabled, an extra byte is present to allow an off-by-one
+// (crbug.com/1364476).
+#if !BUILDFLAG(PA_DCHECK_IS_ON) && \
+    !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 TEST_P(PartitionAllocDeathTest, OffByOneDetection) {
   base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
@@ -2376,7 +2392,8 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
     array[2] = previous_value;
   }
 }
-#endif  // !BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // !BUILDFLAG(PA_DCHECK_IS_ON) &&
+        // !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
@@ -3381,7 +3398,7 @@ TEST_P(PartitionAllocTest, FundamentalAlignment) {
 #else
     EXPECT_EQ(allocator.root()->AllocationCapacityFromSlotStart(slot_start) %
                   fundamental_alignment,
-              0u);
+              -kExtraAllocSize % fundamental_alignment);
 #endif
 
     allocator.root()->Free(ptr);
