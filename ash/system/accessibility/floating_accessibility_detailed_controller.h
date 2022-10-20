@@ -44,6 +44,7 @@ class ASH_EXPORT FloatingAccessibilityDetailedController
  private:
   friend class FloatingAccessibilityControllerTest;
   class DetailedBubbleView;
+
   // DetailedViewDelegate:
   views::Button* CreateBackButton(
       views::Button::PressedCallback callback) override;

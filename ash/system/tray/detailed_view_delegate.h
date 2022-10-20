@@ -64,6 +64,11 @@ class ASH_EXPORT DetailedViewDelegate {
   virtual void ShowStickyHeaderSeparator(views::View* view,
                                          bool show_separator);
 
+  // Returns the margin around the scroll view. Most detailed views should use
+  // the default implementation. Shelf pods that reuse detailed views may need
+  // custom margins. Only used with feature QsRevamp.
+  virtual gfx::Insets GetScrollViewMargin() const;
+
   // Return a targetable row containing |icon| and |text|. Caller takes
   // ownership of the returned view.
   virtual HoverHighlightView* CreateScrollListItem(ViewClickListener* listener,

@@ -4,6 +4,7 @@
 
 #include "ash/system/ime_menu/ime_list_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -160,7 +161,10 @@ class KeyboardStatusRow : public views::View {
   views::ToggleButton* toggle() const { return toggle_; }
 
   void Init(views::Button::PressedCallback callback) {
-    TrayPopupUtils::ConfigureAsStickyHeader(this);
+    // QsRevamp does not use sticky headers.
+    if (!features::IsQsRevampEnabled()) {
+      TrayPopupUtils::ConfigureAsStickyHeader(this);
+    }
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
@@ -271,6 +275,9 @@ void ImeListView::AppendImeListAndProperties(
         this, list[i].short_name, list[i].name, selected,
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorProminent));
+    // TODO(b/253091169): For QsRevamp, we will use a container view that is a
+    // child of the scroll view contents. For now, just use scroll contents.
+    // Ditto for calls to scroll_content()->AddChildView() below.
     scroll_content()->AddChildView(ime_view);
     ime_map_[ime_view] = list[i].id;
 

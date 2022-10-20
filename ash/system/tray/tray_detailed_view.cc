@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -23,11 +24,14 @@
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/clip_recorder.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -42,6 +46,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -51,6 +56,8 @@ namespace {
 
 // The index of the horizontal rule below the title row.
 const int kTitleRowSeparatorIndex = 1;
+
+constexpr int kQsScrollViewCornerRadius = 16;
 
 // A view that is used as ScrollView contents. It supports designating some of
 // the children as sticky header rows. The sticky header rows are not scrolled
@@ -63,6 +70,10 @@ class ScrollContentsView : public views::View {
       : delegate_(delegate) {
     box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
+    // NOTE: Pre-QsRevamp, insets are added in ViewHierarchyChanged().
+    if (features::IsQsRevampEnabled()) {
+      box_layout_->set_inside_border_insets(kQsScrollViewInsideBorderInsets);
+    }
   }
 
   ScrollContentsView(const ScrollContentsView&) = delete;
@@ -159,6 +170,10 @@ class ScrollContentsView : public views::View {
 
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override {
+    // No sticky headers or border insets in the revamped view.
+    if (features::IsQsRevampEnabled())
+      return;
+
     if (!details.is_add && details.parent == this) {
       headers_.erase(std::remove_if(headers_.begin(), headers_.end(),
                                     [details](const Header& header) {
@@ -359,8 +374,20 @@ void TrayDetailedView::CreateScrollableList() {
   scroll_content_ = scroller_->SetContents(std::move(scroll_content));
   // TODO(varkha): Make the sticky rows work with EnableViewPortLayer().
 
-  // Override the default theme-based color to remove the background.
-  scroller_->SetBackgroundColor(absl::nullopt);
+  if (features::IsQsRevampEnabled()) {
+    scroller_->SetProperty(views::kMarginsKey,
+                           delegate_->GetScrollViewMargin());
+    // TODO(b/253091169): For QsRevamp, use a container view that is a child of
+    // the scroll view contents and apply the background to that container.
+    scroller_->SetBackgroundThemeColorId(cros_tokens::kCrosSysSysOnBase);
+    scroller_->SetPaintToLayer();
+    scroller_->layer()->SetFillsBoundsOpaquely(false);
+    scroller_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kQsScrollViewCornerRadius));
+  } else {
+    // Override the default theme-based color to remove the background.
+    scroller_->SetBackgroundColor(absl::nullopt);
+  }
 
   box_layout_->SetFlexForView(scroller_, 1);
 }

@@ -31,6 +31,9 @@ namespace {
 
 constexpr int kQsItemBetweenSpacing = 8;
 
+// The scroll view's top is flush against the header.
+constexpr auto kQsScrollViewMargin = gfx::Insets::TLBR(0, 16, 16, 16);
+
 void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
   std::unique_ptr<views::BoxLayout> layout;
 
@@ -138,6 +141,10 @@ void DetailedViewDelegate::ShowStickyHeaderSeparator(views::View* view,
         gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   }
   view->SchedulePaint();
+}
+
+gfx::Insets DetailedViewDelegate::GetScrollViewMargin() const {
+  return kQsScrollViewMargin;
 }
 
 HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(

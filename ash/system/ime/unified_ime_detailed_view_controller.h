@@ -49,14 +49,20 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
   void OnIMEMenuActivationChanged(bool is_active) override;
 
  private:
+  // Updates the view with the active IME and the list of installed IMEs.
   void Update();
 
+  // Returns true if an item should be added with an on/off toggle for the
+  // 'On-screen keyboard'.
   bool ShouldShowKeyboardToggle() const;
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
+  // The view being controlled.
   IMEDetailedView* view_ = nullptr;
 
+  // Whether the on-screen keyboard is suppressed, for example by being in
+  // tablet mode with an external keyboard attached.
   bool keyboard_suppressed_ = false;
 };
 

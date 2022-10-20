@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/ime/ime_controller_impl.h"
-#include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -23,7 +22,6 @@
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/font.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"

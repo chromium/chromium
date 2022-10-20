@@ -6,6 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
@@ -19,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -56,7 +58,9 @@ void SetCurrentIme(const std::string& current_ime_id,
 
 }  // namespace
 
-class ImeMenuTrayTest : public AshTestBase {
+// Parameterized by feature QsRevamp.
+class ImeMenuTrayTest : public AshTestBase,
+                        public testing::WithParamInterface<bool> {
  public:
   ImeMenuTrayTest() = default;
 
@@ -67,8 +71,14 @@ class ImeMenuTrayTest : public AshTestBase {
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kImeTrayHideVoiceButton}, {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kImeTrayHideVoiceButton};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam())
+      enabled_features.push_back(features::kQsRevamp);
+    else
+      disabled_features.push_back(features::kQsRevamp);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     AshTestBase::SetUp();
   }
 
@@ -158,9 +168,11 @@ class ImeMenuTrayTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(QsRevamp, ImeMenuTrayTest, testing::Bool());
+
 // Tests that visibility of IME menu tray should be consistent with the
 // activation of the IME menu.
-TEST_F(ImeMenuTrayTest, ImeMenuTrayVisibility) {
+TEST_P(ImeMenuTrayTest, ImeMenuTrayVisibility) {
   ASSERT_FALSE(IsVisible());
 
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
@@ -171,7 +183,7 @@ TEST_F(ImeMenuTrayTest, ImeMenuTrayVisibility) {
 }
 
 // Tests that IME menu tray shows the right info of the current IME.
-TEST_F(ImeMenuTrayTest, TrayLabelTest) {
+TEST_P(ImeMenuTrayTest, TrayLabelTest) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
 
@@ -196,7 +208,7 @@ TEST_F(ImeMenuTrayTest, TrayLabelTest) {
   EXPECT_EQ(u"UK*", GetTrayText());
 }
 
-TEST_F(ImeMenuTrayTest, TrayLabelExludesDictation) {
+TEST_P(ImeMenuTrayTest, TrayLabelExludesDictation) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
 
@@ -233,7 +245,7 @@ TEST_F(ImeMenuTrayTest, TrayLabelExludesDictation) {
 // tests that the background color becomes 'inactive' when disabling the IME
 // menu feature. Also makes sure that the shelf won't autohide as long as the
 // IME menu is open.
-TEST_F(ImeMenuTrayTest, PerformAction) {
+TEST_P(ImeMenuTrayTest, PerformAction) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
@@ -268,7 +280,7 @@ TEST_F(ImeMenuTrayTest, PerformAction) {
 // Tests that IME menu list updates when changing the current IME. This should
 // only happen by using shortcuts (Ctrl + Space / Ctrl + Shift + Space) to
 // switch IMEs.
-TEST_F(ImeMenuTrayTest, RefreshImeWithListViewCreated) {
+TEST_P(ImeMenuTrayTest, RefreshImeWithListViewCreated) {
   ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
                        ui::GestureEventDetails(ui::ET_GESTURE_TAP));
   GetTray()->PerformAction(tap);
@@ -311,7 +323,7 @@ TEST_F(ImeMenuTrayTest, RefreshImeWithListViewCreated) {
 }
 
 // Tests that quits Chrome with IME menu openned will not crash.
-TEST_F(ImeMenuTrayTest, QuitChromeWithMenuOpen) {
+TEST_P(ImeMenuTrayTest, QuitChromeWithMenuOpen) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
@@ -324,7 +336,7 @@ TEST_F(ImeMenuTrayTest, QuitChromeWithMenuOpen) {
 }
 
 // Tests using 'Alt+Shift+K' to open the menu.
-TEST_F(ImeMenuTrayTest, TestAccelerator) {
+TEST_P(ImeMenuTrayTest, TestAccelerator) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
@@ -341,7 +353,7 @@ TEST_F(ImeMenuTrayTest, TestAccelerator) {
   EXPECT_FALSE(IsBubbleShown());
 }
 
-TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
+TEST_P(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
   // Setup the callback required by ui::ShowEmojiPanel() to a dummy one.
   // The ui::ShowEmojiPanel() call in ShowKeyboardWithKeyset will fail
   // without this callback.
@@ -366,7 +378,7 @@ TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
 }
 
 // Tests that the IME menu accelerator toggles the bubble on and off.
-TEST_F(ImeMenuTrayTest, ImeBubbleAccelerator) {
+TEST_P(ImeMenuTrayTest, ImeBubbleAccelerator) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
   EXPECT_FALSE(IsBubbleShown());
@@ -383,7 +395,7 @@ TEST_F(ImeMenuTrayTest, ImeBubbleAccelerator) {
 }
 
 // Tests that tapping the emoji button does not crash. http://crbug.com/739630
-TEST_F(ImeMenuTrayTest, TapEmojiButton) {
+TEST_P(ImeMenuTrayTest, TapEmojiButton) {
   int callCount = 0;
   ui::SetShowEmojiKeyboardCallback(
       base::BindRepeating([](int* count) { (*count)++; }, (&callCount)));
@@ -410,7 +422,7 @@ TEST_F(ImeMenuTrayTest, TapEmojiButton) {
   EXPECT_EQ(callCount, 1);
 }
 
-TEST_F(ImeMenuTrayTest, ShouldShowBottomButtons) {
+TEST_P(ImeMenuTrayTest, ShouldShowBottomButtons) {
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
       true /* ui enabled */, true /* emoji input enabled */,
       true /* hanwriting input enabled */, true /* voice input enabled */);
@@ -428,7 +440,7 @@ TEST_F(ImeMenuTrayTest, ShouldShowBottomButtons) {
   EXPECT_FALSE(IsVoiceEnabled());
 }
 
-TEST_F(ImeMenuTrayTest, ShouldShowBottomButtonsSeperate) {
+TEST_P(ImeMenuTrayTest, ShouldShowBottomButtonsSeperate) {
   FocusInInputContext(ui::TEXT_INPUT_TYPE_TEXT);
 
   // Sets emoji disabled.
@@ -452,7 +464,7 @@ TEST_F(ImeMenuTrayTest, ShouldShowBottomButtonsSeperate) {
   EXPECT_FALSE(IsVoiceEnabled());
 }
 
-TEST_F(ImeMenuTrayTest, KioskImeTraySettingsButton) {
+TEST_P(ImeMenuTrayTest, KioskImeTraySettingsButton) {
   SetUpKioskSession();
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
@@ -466,7 +478,7 @@ TEST_F(ImeMenuTrayTest, KioskImeTraySettingsButton) {
   EXPECT_FALSE(settings_button);
 }
 
-TEST_F(ImeMenuTrayTest, UserSessionImeTraySettingsButton) {
+TEST_P(ImeMenuTrayTest, UserSessionImeTraySettingsButton) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
 
@@ -479,7 +491,7 @@ TEST_F(ImeMenuTrayTest, UserSessionImeTraySettingsButton) {
   EXPECT_TRUE(settings_button);
 }
 
-TEST_F(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
+TEST_P(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
@@ -540,7 +552,7 @@ TEST_F(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
   EXPECT_FALSE(MenuHasOnScreenKeyboardToggle());
 }
 
-TEST_F(ImeMenuTrayTest, ShowVoiceButtonWhenDictationDisabled) {
+TEST_P(ImeMenuTrayTest, ShowVoiceButtonWhenDictationDisabled) {
   // Enable all extra input options.
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
       /*is_extra_input_options_enabled=*/true,
@@ -561,7 +573,7 @@ TEST_F(ImeMenuTrayTest, ShowVoiceButtonWhenDictationDisabled) {
   EXPECT_TRUE(voice_button);
 }
 
-TEST_F(ImeMenuTrayTest, HideVoiceButtonWhenDictationEnabled) {
+TEST_P(ImeMenuTrayTest, HideVoiceButtonWhenDictationEnabled) {
   // Enable all extra input options.
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
       /*is_extra_input_options_enabled=*/true,

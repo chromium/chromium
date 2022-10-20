@@ -31,6 +31,7 @@ class IMEDetailedView : public ImeListView {
   IMEDetailedView& operator=(const IMEDetailedView&) = delete;
   ~IMEDetailedView() override = default;
 
+  // ImeListView:
   void Update(const std::string& current_ime_id,
               const std::vector<ImeInfo>& list,
               const std::vector<ImeMenuItem>& property_list,
