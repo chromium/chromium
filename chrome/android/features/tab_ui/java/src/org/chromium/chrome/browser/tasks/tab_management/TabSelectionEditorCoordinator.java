@@ -159,6 +159,7 @@ class TabSelectionEditorCoordinator {
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mTabSelectionEditorLayoutChangeProcessor;
     private final TabSelectionEditorMediator mTabSelectionEditorMediator;
+    private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
 
     public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
@@ -179,12 +180,8 @@ class TabSelectionEditorCoordinator {
                             .inflate(R.layout.tab_selection_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
 
-            TabListMediator.ThumbnailProvider thumbnailProvider = displayGroups
-                    ? new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector)
-                    : (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
-                tabContentManager.getTabThumbnailWithCallback(
-                        tabId, thumbnailSize, callback, forceUpdate, writeBack);
-            };
+            TabListMediator.ThumbnailProvider thumbnailProvider =
+                    initThumbnailProvider(displayGroups, tabContentManager);
             PseudoTab.TitleProvider titleProvider = displayGroups ? this::getTitle : null;
 
             // TODO(ckitagawa): Lazily instantiate the TabSelectionEditorCoordinator. When doing so,
@@ -199,8 +196,8 @@ class TabSelectionEditorCoordinator {
             // initialized.
             assert LibraryLoader.getInstance().isInitialized();
             mTabListCoordinator.initWithNative(null);
-            if (thumbnailProvider instanceof MultiThumbnailCardProvider) {
-                ((MultiThumbnailCardProvider) thumbnailProvider).initWithNative();
+            if (mMultiThumbnailCardProvider != null) {
+                mMultiThumbnailCardProvider.initWithNative();
             }
 
             mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
@@ -289,6 +286,19 @@ class TabSelectionEditorCoordinator {
                 R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
     }
 
+    private TabListMediator.ThumbnailProvider initThumbnailProvider(
+            boolean displayGroups, TabContentManager tabContentManager) {
+        if (displayGroups) {
+            mMultiThumbnailCardProvider =
+                    new MultiThumbnailCardProvider(mContext, tabContentManager, mTabModelSelector);
+            return mMultiThumbnailCardProvider;
+        }
+        return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
+            tabContentManager.getTabThumbnailWithCallback(
+                    tabId, thumbnailSize, callback, forceUpdate, writeBack);
+        };
+    }
+
     /**
      * @return {@link TabSelectionEditorController} that can control the TabSelectionEditor.
      */
@@ -304,6 +314,9 @@ class TabSelectionEditorCoordinator {
         mTabSelectionEditorLayout.destroy();
         mTabSelectionEditorMediator.destroy();
         mTabSelectionEditorLayoutChangeProcessor.destroy();
+        if (mMultiThumbnailCardProvider != null) {
+            mMultiThumbnailCardProvider.destroy();
+        }
     }
 
     /**
