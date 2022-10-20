@@ -3958,6 +3958,10 @@ if (use_libfuzzer) {
       "//components/prefs",
       "//third_party/libprotobuf-mutator",
       "//ui/base",
+
+      # .pak files loaded by the fuzzer.
+      "//components:components_tests_pak",
+      "//ui/resources:ui_test_pak",
     ]
   }
 
