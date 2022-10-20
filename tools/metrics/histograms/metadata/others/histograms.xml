@@ -10634,17 +10634,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Process.Sandbox.CreateAlternateDesktopResultCode"
-    enum="LaunchErrorCodes" expires_after="2023-04-09">
-  <owner>ajgo@chromium.org</owner>
-  <owner>src/sandbox/policy/win/OWNERS</owner>
-  <summary>
-    The sandbox result or error returned after calling CreateAlternateDesktop()
-    during browser initialization on Windows. This will be logged at most once
-    per browser session. Only logged if the sandbox is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
     expires_after="never">
 <!-- expires-never: metric needed for diagnosing sandbox issues. -->

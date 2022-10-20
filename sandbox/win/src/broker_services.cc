@@ -680,10 +680,9 @@ std::wstring BrokerServicesBase::GetDesktopName(Desktop desktop) {
       // No alternate desktop or winstation. Return an empty string.
       return std::wstring();
     case Desktop::kAlternateWinstation:
-      return alt_winstation_ ? alt_winstation_->GetDesktopName()
-                             : std::wstring();
+      return alt_winstation_->GetDesktopName();
     case Desktop::kAlternateDesktop:
-      return alt_desktop_ ? alt_desktop_->GetDesktopName() : std::wstring();
+      return alt_desktop_->GetDesktopName();
   }
 }
 
@@ -693,22 +692,17 @@ ResultCode BrokerServicesBase::UpdateDesktopIntegrity(
   // If we're launching on an alternate desktop we need to make sure the
   // integrity label on the object is no higher than the sandboxed process's
   // integrity level. So, we lower the label on the desktop handle if it's
-  // not already low enough for our process. TODO(crbug.com/1361470) we allow
-  // desktop creation to fail - perhaps we can require them to be present in
-  // the future.
+  // not already low enough for our process.
   if (integrity == INTEGRITY_LEVEL_LAST)
     return SBOX_ALL_OK;
-  if (desktop == Desktop::kDefault)
-    return SBOX_ALL_OK;
-
-  ResultCode result = SBOX_ALL_OK;
-  if (desktop == Desktop::kAlternateWinstation && alt_winstation_) {
-    result = alt_winstation_->UpdateDesktopIntegrity(integrity);
-  } else if (desktop == Desktop::kAlternateDesktop && alt_desktop_) {
-    result = alt_desktop_->UpdateDesktopIntegrity(integrity);
+  switch (desktop) {
+    case Desktop::kDefault:
+      return SBOX_ALL_OK;
+    case Desktop::kAlternateWinstation:
+      return alt_winstation_->UpdateDesktopIntegrity(integrity);
+    case Desktop::kAlternateDesktop:
+      return alt_desktop_->UpdateDesktopIntegrity(integrity);
   }
-
-  return result;
 }
 
 ResultCode BrokerServicesBase::CreateAlternateDesktop(Desktop desktop) {

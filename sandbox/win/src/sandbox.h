@@ -66,9 +66,9 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // more information.
   virtual ResultCode Init() = 0;
 
-  // Pre-creates an alternate desktop. May be retried if the return value
-  // is SBOX_ERROR_CANNOT_QUERY_WINSTATION_SECURITY.
-  virtual ResultCode CreateAlternateDesktop(Desktop desktop) = 0;
+  // Pre-creates an alternate desktop. Must be called before a non-default
+  // desktop is used by any process.
+  [[nodiscard]] virtual ResultCode CreateAlternateDesktop(Desktop desktop) = 0;
   // Destroys all desktops created for this Broker.
   virtual void DestroyDesktops() = 0;
   // Returns the name of the alternate desktop used. If an alternate window

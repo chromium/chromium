@@ -59,9 +59,7 @@ bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
       // will be broken. This has to run before threads and windows are created.
       ResultCode result = broker_services->CreateAlternateDesktop(
           Desktop::kAlternateWinstation);
-      base::UmaHistogramSparse(
-          "Process.Sandbox.CreateAlternateDesktopResultCode", result);
-      CHECK(SBOX_ERROR_FAILED_TO_SWITCH_BACK_WINSTATION != result);
+      CHECK(result == SBOX_ALL_OK);
     }
     return true;
   }
