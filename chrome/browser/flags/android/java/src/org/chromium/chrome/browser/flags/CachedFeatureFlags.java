@@ -43,78 +43,6 @@ import java.util.Map;
  */
 public class CachedFeatureFlags {
     /**
-     * Stores the default values for each feature flag queried, used as a fallback in case native
-     * isn't loaded, and no value has been previously cached.
-     */
-    private static Map<String, Boolean> sDefaults =
-            ImmutableMap.<String, Boolean>builder()
-                    .put(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true)
-                    .put(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION, false)
-                    .put(ChromeFeatureList.BACK_GESTURE_REFACTOR, false)
-                    .put(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, false)
-                    .put(ChromeFeatureList.CCT_INCOGNITO, true)
-                    .put(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false)
-                    .put(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS, true)
-                    .put(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false)
-                    .put(ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE, false)
-                    .put(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES, true)
-                    .put(ChromeFeatureList.COMMERCE_COUPONS, false)
-                    .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
-                    .put(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS, true)
-                    .put(ChromeFeatureList.CCT_RESIZABLE_WINDOW_ABOVE_NAVBAR, true)
-                    .put(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, false)
-                    .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED, false)
-                    .put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false)
-                    .put(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP, false)
-                    .put(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, false)
-                    .put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true)
-                    .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, true)
-                    .put(ChromeFeatureList.ELASTIC_OVERSCROLL, true)
-                    .put(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS, true)
-                    .put(ChromeFeatureList.EXPERIMENTS_FOR_AGSA, true)
-                    .put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, false)
-                    .put(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, true)
-                    .put(ChromeFeatureList.IMMERSIVE_UI_MODE, false)
-                    .put(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false)
-                    .put(ChromeFeatureList.INSTANCE_SWITCHER, true)
-                    .put(ChromeFeatureList.INSTANT_START, false)
-                    .put(ChromeFeatureList.INTEREST_FEED_V2, true)
-                    .put(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH, false)
-                    .put(ChromeFeatureList.NEW_WINDOW_APP_MENU, true)
-                    .put(ChromeFeatureList.OMAHA_MIN_SDK_VERSION_ANDROID, false)
-                    .put(ChromeFeatureList.OMNIBOX_ANDROID_AUXILIARY_SEARCH, false)
-                    .put(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, false)
-                    .put(ChromeFeatureList.OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS,
-                            false)
-                    .put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false)
-                    .put(ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT, false)
-                    .put(ChromeFeatureList.PAINT_PREVIEW_DEMO, false)
-                    .put(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, false)
-                    .put(ChromeFeatureList.QUERY_TILES, false)
-                    .put(ChromeFeatureList.QUERY_TILES_ON_START, false)
-                    .put(ChromeFeatureList.PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION, false)
-                    .put(ChromeFeatureList.READ_LATER, false)
-                    .put(ChromeFeatureList.START_SURFACE_ANDROID, true)
-                    .put(ChromeFeatureList.START_SURFACE_RETURN_TIME, false)
-                    .put(ChromeFeatureList.START_SURFACE_REFACTOR, false)
-                    .put(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT, false)
-                    .put(ChromeFeatureList.STORE_HOURS, false)
-                    .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true)
-                    .put(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, true)
-                    .put(ChromeFeatureList.TAB_GROUPS_ANDROID, true)
-                    .put(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false)
-                    .put(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS, false)
-                    .put(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, false)
-                    .put(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false)
-                    .put(ChromeFeatureList.TAB_TO_GTS_ANIMATION, true)
-                    .put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false)
-                    .put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true)
-                    .put(ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false)
-                    .put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false)
-                    .put(ChromeFeatureList.USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true)
-                    .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
-                    .build();
-    /**
      * Non-dynamic preference keys used historically for specific features.
      *
      * Do not add new values to this list. To add a new cached feature flag, just follow the
@@ -198,10 +126,14 @@ public class CachedFeatureFlags {
     /**
      * Forces a feature to be enabled or disabled for testing.
      *
+     * @deprecated Use @EnableFeatures/@DisableFeatures annotations or
+     *     {@link CachedFlag#setForTesting(Boolean)} instead.
+     *
      * @param featureName the feature name from ChromeFeatureList.
-     * @param value the value that {@link #isEnabled(String)} will be forced to return. If null,
+     * @param value the value that {@link CachedFlag#isEnabled()} will be forced to return. If null,
      *     remove any values previously forced.
      */
+    @Deprecated
     public static void setForTesting(String featureName, @Nullable Boolean value) {
         String preferenceName = getPrefForFeatureFlag(featureName);
         synchronized (sValuesReturned.boolValues) {
@@ -219,13 +151,7 @@ public class CachedFeatureFlags {
         sValuesOverridden.enableOverrides();
 
         for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-            String key = entry.getKey();
-
-            if (!sDefaults.containsKey(key)) {
-                continue;
-            }
-
-            setForTesting(key, entry.getValue());
+            setForTesting(entry.getKey(), entry.getValue());
         }
     }
 
@@ -477,10 +403,8 @@ public class CachedFeatureFlags {
 
     @VisibleForTesting
     public static void resetDiskForTesting() {
-        for (Map.Entry<String, Boolean> e : sDefaults.entrySet()) {
-            String prefKey = ChromePreferenceKeys.FLAGS_CACHED.createKey(e.getKey());
-            SharedPreferencesManager.getInstance().removeKey(prefKey);
-        }
+        SharedPreferencesManager.getInstance().removeKeysWithPrefix(
+                ChromePreferenceKeys.FLAGS_CACHED);
         for (Map.Entry<String, String> e : sNonDynamicPrefKeys.entrySet()) {
             String prefKey = e.getValue();
             SharedPreferencesManager.getInstance().removeKey(prefKey);
@@ -490,13 +414,6 @@ public class CachedFeatureFlags {
     @VisibleForTesting
     static void setOverrideTestValue(String preferenceKey, String overrideValue) {
         sValuesOverridden.setOverrideTestValue(preferenceKey, overrideValue);
-    }
-
-    @VisibleForTesting
-    public static Map<String, Boolean> swapDefaultsForTesting(Map<String, Boolean> testDefaults) {
-        Map<String, Boolean> swapped = sDefaults;
-        sDefaults = testDefaults;
-        return swapped;
     }
 
     @VisibleForTesting
