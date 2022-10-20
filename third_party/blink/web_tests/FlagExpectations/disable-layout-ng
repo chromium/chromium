@@ -165,7 +165,7 @@ crbug.com/829028 external/wpt/css/css-break/borders-002.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/borders-003.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/borders-004.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/borders-005.html [ Failure ]
-crbug.com/269061 external/wpt/css/css-break/box-shadow.html [ Failure ]
+crbug.com/269061 external/wpt/css/css-break/box-shadow-001.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/break-at-end-container-edge-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/break-at-end-container-edge-001.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/break-at-end-container-edge-002.html [ Failure ]
@@ -1250,6 +1250,7 @@ crbug.com/591099 external/wpt/quirks/line-height-trailing-collapsable-whitespace
 
 ### fast/box-decoration-break/
 crbug.com/612641 fast/box-decoration-break/box-decoration-break-min-max.html [ Failure ]
+crbug.com/682173 fast/box-decoration-break/box-decoration-break-rendering.html [ Failure ]
 
 ### fast/css/
 crbug.com/591099 fast/css/absolute-inline-alignment-2.html [ Failure ]

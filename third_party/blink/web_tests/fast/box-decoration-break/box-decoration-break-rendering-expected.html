@@ -5,11 +5,17 @@
     <style type="text/css">
     body {
         width:  360px;
-        font: monospace 10px;
     }
     span {
         display: block;
         width: 350px;
+    }
+    .shadowObscurer {
+        display: inline;
+        position: absolute;
+        width: 5px;
+        height: 40px;
+        background: white;
     }
     #rightCutHighlight {
         display: inline;
@@ -44,8 +50,16 @@
     </head>
     <body>
     <h1>Box-decoration-break: slice</h1>
-    <span>This long word should break in a new line : <span id="rightCutHighlight">veryveryveryveryveryveryvery-</span><br><span id="leftCutHighlight">-longword</span>. box-decoration-break is set to cloned,
-    so the right edge of the previous line is cut, and the left edge of the highlight in this line is cut too.</span>
+    <div style="position:relative; line-height:40px;">
+      <span>
+        This long word should break in a new line :
+        <span id="rightCutHighlight">veryveryveryveryveryveryvery-</span>
+        <div class="shadowObscurer" style="top:40px;"></div><br>
+        <div class="shadowObscurer" style="top:80px; margin-left:-5px;"></div>
+        <span id="leftCutHighlight">-longword</span>. box-decoration-break is set to cloned,
+        so the right edge of the previous line is cut, and the left edge of the highlight in this line is cut too.
+      </span>
+    </div>
     <h1>Box-decoration-break: clone</h1>
     <span>This long word should break in a new line : <span class="clone">veryveryveryveryveryveryvery-</span><br><span class="clone">-longword</span>. box-decoration-break is set to cloned,
     so the right edge of the previous line is similar as its left edge, and the left edge of the highlight in this line is similar as its right one. </span>

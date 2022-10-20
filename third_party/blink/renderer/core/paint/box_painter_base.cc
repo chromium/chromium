@@ -190,35 +190,53 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     // The clip does not depend on any shadow-specific properties.
     if (!state_saver.Saved()) {
       state_saver.Save();
+
+      FloatRoundedRect rect_to_clip_out = border;
+
+      // If the box is opaque, it is unnecessary to clip it out. However,
+      // doing so saves time when painting the shadow. On the other hand, it
+      // introduces subpixel gaps along the corners / edges. Those are avoided
+      // by insetting the clipping path by one CSS pixel.
+      if (has_opaque_background)
+        rect_to_clip_out.Inset(1);
+
       if (has_border_radius) {
-        FloatRoundedRect rect_to_clip_out = border;
-
-        // If the box is opaque, it is unnecessary to clip it out. However,
-        // doing so saves time when painting the shadow. On the other hand, it
-        // introduces subpixel gaps along the corners. Those are avoided by
-        // insetting the clipping path by one CSS pixel.
-        if (has_opaque_background)
-          rect_to_clip_out.Inset(1);
-
         if (!rect_to_clip_out.IsEmpty())
           context.ClipOutRoundedRect(rect_to_clip_out);
       } else {
-        // This gfx::Rect is correct even with fractional shadows, because it is
-        // used for the rectangle of the box itself, which is always
-        // pixel-aligned.
-        gfx::RectF rect_to_clip_out = border.Rect();
-
-        // If the box is opaque, it is unnecessary to clip it out. However,
-        // doing so saves time when painting the shadow. On the other hand, it
-        // introduces subpixel gaps along the edges if they are not
-        // pixel-aligned. Those are avoided by insetting the clipping path by
-        // one CSS pixel.
-        if (has_opaque_background)
-          rect_to_clip_out.Inset(1);
-
         if (!rect_to_clip_out.IsEmpty())
-          context.ClipOut(rect_to_clip_out);
+          context.ClipOut(rect_to_clip_out.Rect());
       }
+
+      absl::optional<gfx::RectF> clip_rect;
+      auto GetClipRect = [&clip_rect, &fill_rect,
+                          shadow_blur]() -> gfx::RectF& {
+        if (!clip_rect) {
+          // Create a "pseudo-infinite" rectangle, that should be large enough
+          // to contain shadows on all four sides, including blur.
+          clip_rect.emplace(fill_rect.x() - shadow_blur * 3,
+                            fill_rect.y() - shadow_blur * 3,
+                            fill_rect.width() + shadow_blur * 6,
+                            fill_rect.height() + shadow_blur * 6);
+        }
+        return *clip_rect;
+      };
+
+      // Clip out the sides that are excluded in this fragment.
+      if (!sides_to_include.left)
+        GetClipRect().set_x(rect_to_clip_out.Rect().x());
+      if (!sides_to_include.top)
+        GetClipRect().set_y(rect_to_clip_out.Rect().y());
+      if (!sides_to_include.right) {
+        GetClipRect().set_width(rect_to_clip_out.Rect().right() -
+                                clip_rect->x());
+      }
+      if (!sides_to_include.bottom) {
+        GetClipRect().set_height(rect_to_clip_out.Rect().bottom() -
+                                 clip_rect->y());
+      }
+      if (clip_rect)
+        context.Clip(*clip_rect);
     }
 
     // Draw only the shadow. If the color of the shadow is transparent we will
