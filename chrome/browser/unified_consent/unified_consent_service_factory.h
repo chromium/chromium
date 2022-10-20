@@ -17,8 +17,8 @@ class UnifiedConsentServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of UnifiedConsentService associated with |profile|
   // (creating one if none exists). Returns nullptr if this profile cannot have
-  // a UnifiedConsentService (e.g. sync is disabled for |profile| or
-  // |profile| is incognito).
+  // a UnifiedConsentService (e.g. |profile| is an off-the-record profile, a
+  // Guest, System, other irregular profile or sync is disabled for |profile|).
   static unified_consent::UnifiedConsentService* GetForProfile(
       Profile* profile);
 

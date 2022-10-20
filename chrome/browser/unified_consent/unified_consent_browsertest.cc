@@ -63,7 +63,7 @@ class UnifiedConsentBrowserTest : public SyncTest {
  protected:
   base::HistogramTester histogram_tester_;
   const std::string histogram_name_ =
-      "UnifiedConsent.MakeSearchesAndBrowsingBetter.OnStartup";
+      "UnifiedConsent.MakeSearchesAndBrowsingBetter.OnProfileLoad";
 
  private:
   void InitializeSyncClientsIfNeeded() {
