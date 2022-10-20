@@ -98,6 +98,9 @@ constexpr int kMaxArcVersion = 999;
 bool IsArcAvailable();
 
 // Returns true if ARC VM is enabled.
+// Note: NEVER use this function to distinguish ARC P from R+. For that purpose,
+// use GetArcAndroidSdkVersionAsInt() instead. IsArcVmEnabled() returns *false*
+// for ARC R container and your code won't work on that configuration.
 bool IsArcVmEnabled();
 
 // This is a thin wrapper around version_loader::GetArcAndroidSdkVersion() and
