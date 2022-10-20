@@ -82,13 +82,13 @@
     popup1.showPopUp();
     await waitForRender();
     assert_true(popup1.matches(':open'));
-    outside.dispatchEvent(new Event('mousedown'));
+    outside.dispatchEvent(new Event('pointerdown'));
     await waitForRender();
-    assert_true(popup1.matches(':open'),'mousedown (outside the pop-up) should not hide the pop-up');
-    outside.dispatchEvent(new Event('mouseup'));
+    assert_true(popup1.matches(':open'),'pointerdown (outside the pop-up) should not hide the pop-up');
+    outside.dispatchEvent(new Event('pointerup'));
     await waitForRender();
-    assert_false(popup1.matches(':open'),'mouseup (outside the pop-up) should trigger light dismiss');
-  },'Pop-ups close on mouseup, not mousedown');
+    assert_false(popup1.matches(':open'),'pointerup (outside the pop-up) should trigger light dismiss');
+  },'Pop-ups close on pointerup, not pointerdown');
 
   promise_test(async () => {
     assert_false(popup1.matches(':open'));

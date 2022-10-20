@@ -175,6 +175,19 @@ void PointerEventManager::PointerEventBoundaryEventDispatcher::Dispatch(
       check_for_listener);
 }
 
+bool PointerEventManager::ShouldFireEventForPopup(PointerEvent* event) {
+  // pointerdown and pointerup are used for pop-up light-dismiss in
+  // Element::HandlePopupLightDismiss
+  if (event->type() == event_type_names::kPointerup ||
+      event->type() == event_type_names::kPointerdown) {
+    if (auto* document = event->GetDocument()) {
+      // Fire pointer events if there is any showing non-manual pop-up.
+      return document->TopmostPopupAutoOrHint();
+    }
+  }
+  return false;
+}
+
 WebInputEventResult PointerEventManager::DispatchPointerEvent(
     EventTarget* target,
     PointerEvent* pointer_event,
@@ -200,7 +213,8 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   }
 
   if (should_filter &&
-      !HasPointerEventListener(frame_->GetEventHandlerRegistry()))
+      !HasPointerEventListener(frame_->GetEventHandlerRegistry()) &&
+      !ShouldFireEventForPopup(pointer_event))
     return WebInputEventResult::kNotHandled;
 
   if (event_type == event_type_names::kPointerdown) {

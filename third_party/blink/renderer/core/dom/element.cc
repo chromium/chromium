@@ -3049,22 +3049,22 @@ void Element::HandlePopupLightDismiss(const Event& event) {
       document.GetExecutionContext()));
   DCHECK(document.TopmostPopupAutoOrHint());
   const AtomicString& event_type = event.type();
-  if (event_type == event_type_names::kMousedown) {
-    document.SetPopUpMousedownTarget(
+  if (event_type == event_type_names::kPointerdown) {
+    document.SetPopUpPointerdownTarget(
         NearestOpenAncestralPopup(*target_node, PopUpAncestorType::kInclusive));
-  } else if (event_type == event_type_names::kMouseup) {
-    // Hide everything up to the clicked element. We do this on mouseup,
-    // rather than mousedown or click, primarily for accessibility concerns.
+  } else if (event_type == event_type_names::kPointerup) {
+    // Hide everything up to the clicked element. We do this on pointerup,
+    // rather than pointerdown or click, primarily for accessibility concerns.
     // See https://www.w3.org/WAI/WCAG21/Understanding/pointer-cancellation.html
     // for more information on why it is better to perform potentially
-    // destructive actions (including hiding a pop-up) on mouse-up rather than
-    // mouse-down. To properly handle the use case where a user starts a
-    // mouse-drag on a pop-up, and finishes off the pop-up (to highlight text),
-    // the ancestral pop-up is stored in mousedown and compared here.
+    // destructive actions (including hiding a pop-up) on pointer-up rather than
+    // pointer-down. To properly handle the use case where a user starts a
+    // pointer-drag on a pop-up, and finishes off the pop-up (to highlight
+    // text), the ancestral pop-up is stored in pointerdown and compared here.
     auto* ancestor_pop_up =
         NearestOpenAncestralPopup(*target_node, PopUpAncestorType::kInclusive);
-    bool same_target = ancestor_pop_up == document.PopUpMousedownTarget();
-    document.SetPopUpMousedownTarget(nullptr);
+    bool same_target = ancestor_pop_up == document.PopUpPointerdownTarget();
+    document.SetPopUpPointerdownTarget(nullptr);
     if (same_target) {
       HideAllPopupsUntil(ancestor_pop_up, document,
                          HidePopupFocusBehavior::kNone,

@@ -1554,10 +1554,10 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<Element>>& PopupsWaitingToHide() {
     return popups_waiting_to_hide_;
   }
-  const Element* PopUpMousedownTarget() const {
-    return pop_up_mousedown_target_;
+  const Element* PopUpPointerdownTarget() const {
+    return pop_up_pointerdown_target_;
   }
-  void SetPopUpMousedownTarget(const Element*);
+  void SetPopUpPointerdownTarget(const Element*);
 
   // Add an element to the set of elements that, because of CSS toggle
   // creation, need style recalc done later.
@@ -2397,8 +2397,8 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<Element>> popup_stack_;
   // The `popup=hint` that is currently showing, if any.
   Member<Element> popup_hint_showing_;
-  // The pop-up (if any) that received the most recent mousedown event.
-  Member<const Element> pop_up_mousedown_target_;
+  // The pop-up (if any) that received the most recent pointerdown event.
+  Member<const Element> pop_up_pointerdown_target_;
   // A set of popups for which hidePopUp() has been called, but animations are
   // still running.
   HeapHashSet<Member<Element>> popups_waiting_to_hide_;

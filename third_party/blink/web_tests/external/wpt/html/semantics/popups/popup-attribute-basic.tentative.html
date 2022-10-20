@@ -301,7 +301,7 @@
                 // Make sure the type is really correct, via behavior.
                 popUp.showPopUp(); // Show it
                 assert_true(popUp.matches(':open'),'Pop-up should function');
-                document.body.dispatchEvent(new Event('mouseup')); // Try to light dismiss
+                document.body.dispatchEvent(new Event('pointerup')); // Try to light dismiss
                 switch (interpretedType(inEventType,method)) {
                   case 'manual':
                     assert_true(popUp.matches(':open'),'A popup=manual should not light-dismiss');

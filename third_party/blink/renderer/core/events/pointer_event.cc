@@ -196,9 +196,15 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
 }
 
 PointerId PointerEvent::pointerIdForBindings() const {
-  if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view()))
-    UseCounter::Count(local_dom_window->document(), WebFeature::kPointerId);
+  if (auto* document = GetDocument())
+    UseCounter::Count(document, WebFeature::kPointerId);
   return pointerId();
+}
+
+Document* PointerEvent::GetDocument() const {
+  if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view()))
+    return local_dom_window->document();
+  return nullptr;
 }
 
 }  // namespace blink

@@ -101,6 +101,8 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
+  Document* GetDocument() const;
+
   void Trace(Visitor*) const override;
 
  private:

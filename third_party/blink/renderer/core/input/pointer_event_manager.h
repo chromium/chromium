@@ -248,6 +248,10 @@ class CORE_EXPORT PointerEventManager final
   // filtering on the given event.
   bool ShouldFilterEvent(PointerEvent* pointer_event);
 
+  // Returns true if the pointer event needs to be fired in order to support the
+  // popup HTML attribute.
+  bool ShouldFireEventForPopup(PointerEvent*);
+
   bool HandleScrollbarTouchDrag(const WebPointerEvent&, Scrollbar*);
 
   // NOTE: If adding a new field to this class please ensure that it is
