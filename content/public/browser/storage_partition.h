@@ -198,7 +198,8 @@ class CONTENT_EXPORT StoragePartition {
     // Corresponds to storage::kStorageTypeTemporary.
     QUOTA_MANAGED_STORAGE_MASK_TEMPORARY = 1 << 0,
     // Corresponds to storage::kStorageTypePersistent.
-    QUOTA_MANAGED_STORAGE_MASK_PERSISTENT = 1 << 1,
+    // Deprecated since crbug.com/1233525.
+    // QUOTA_MANAGED_STORAGE_MASK_PERSISTENT = 1 << 1,
     // Corresponds to storage::kStorageTypeSyncable.
     QUOTA_MANAGED_STORAGE_MASK_SYNCABLE = 1 << 2,
     QUOTA_MANAGED_STORAGE_MASK_ALL = 0xFFFFFFFF,

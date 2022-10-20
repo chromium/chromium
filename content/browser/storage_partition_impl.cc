@@ -2304,20 +2304,9 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::ClearDataOnIOThread(
       &QuotaManagedDataDeletionHelper::DecrementTaskCountOnIO,
       base::Unretained(this));
 
-  if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_PERSISTENT) {
-    IncrementTaskCountOnIO();
-    // Ask the QuotaManager for all buckets with persistent quota modified
-    // within the user-specified timeframe, and deal with the resulting set in
-    // ClearBucketsOnIOThread().
-    quota_manager->GetBucketsModifiedBetween(
-        blink::mojom::StorageType::kPersistent, begin, end,
-        base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
-                       base::Unretained(this), base::RetainedRef(quota_manager),
-                       special_storage_policy, storage_key_matcher,
-                       perform_storage_cleanup, decrement_callback));
-  }
-
-  // Do the same for temporary quota.
+  // Ask the QuotaManager for all buckets with temporary quota modified
+  // within the user-specified timeframe, and deal with the resulting set in
+  // ClearBucketsOnIOThread().
   if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_TEMPORARY) {
     IncrementTaskCountOnIO();
     quota_manager->GetBucketsModifiedBetween(

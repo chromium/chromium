@@ -440,17 +440,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   StoragePartition* storage_partition = GetStoragePartition();
 
   if (storage_partition_remove_mask) {
-    uint32_t quota_storage_remove_mask =
-        ~StoragePartition::QUOTA_MANAGED_STORAGE_MASK_PERSISTENT;
-
-    if (delete_begin_ == base::Time() ||
-        ((origin_type_mask_ & ~ORIGIN_TYPE_UNPROTECTED_WEB) != 0)) {
-      // If we're deleting since the beginning of time, or we're removing
-      // protected origins, then remove persistent quota data.
-      quota_storage_remove_mask |=
-          StoragePartition::QUOTA_MANAGED_STORAGE_MASK_PERSISTENT;
-    }
-
     // If cookies are supposed to be conditionally deleted from the storage
     // partition, create the deletion info object.
     network::mojom::CookieDeletionFilterPtr deletion_filter;
@@ -483,8 +472,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         filter_builder->GetMode() == BrowsingDataFilterBuilder::Mode::kPreserve;
 
     storage_partition->ClearData(
-        storage_partition_remove_mask, quota_storage_remove_mask,
-        filter_builder,
+        storage_partition_remove_mask,
+        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, filter_builder,
         base::BindRepeating(&DoesStorageKeyMatchMask, origin_type_mask_,
                             std::move(embedder_matcher)),
         std::move(deletion_filter), perform_storage_cleanup, delete_begin_,

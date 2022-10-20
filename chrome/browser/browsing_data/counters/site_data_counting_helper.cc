@@ -68,7 +68,6 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
                             base::Unretained(this));
     const blink::mojom::StorageType types[] = {
         blink::mojom::StorageType::kTemporary,
-        blink::mojom::StorageType::kPersistent,
         blink::mojom::StorageType::kSyncable};
     for (auto type : types) {
       tasks_ += 1;
