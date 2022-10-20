@@ -14,6 +14,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
+#include "media/gpu/chromeos/gl_image_processor_backend.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 #include "media/gpu/macros.h"
@@ -196,6 +197,38 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
       output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
       std::move(error_cb), std::move(client_task_runner));
 }
+
+std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
+    const std::vector<PixelLayoutCandidate>& input_candidates,
+    const gfx::Rect& input_visible_rect,
+    const gfx::Size& output_size,
+    size_t num_buffers,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    ImageProcessorFactory::PickFormatCB out_format_picker,
+    ImageProcessor::ErrorCB error_cb) {
+  if (input_candidates.size() != 1)
+    return nullptr;
+
+  if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21))
+    return nullptr;
+
+  ImageProcessor::PortConfig input_config(
+      Fourcc(Fourcc::MM21), input_candidates[0].size, /*planes=*/{},
+      input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
+  ImageProcessor::PortConfig output_config(
+      Fourcc(Fourcc::NV12), output_size, /*planes=*/{}, gfx::Rect(output_size),
+      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+
+  if (!GLImageProcessorBackend::IsSupported(input_config, output_config,
+                                            VIDEO_ROTATION_0)) {
+    return nullptr;
+  }
+
+  return ImageProcessor::Create(
+      base::BindRepeating(&GLImageProcessorBackend::Create), input_config,
+      output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
+      std::move(error_cb), std::move(client_task_runner));
+}
 #endif  // BUILDFLAG(USE_V4L2_CODEC) && !BUILDFLAG(USE_VAAPI)
 
 }  // namespace
@@ -248,6 +281,13 @@ ImageProcessorFactory::CreateWithInputCandidates(
   if (processor)
     return processor;
 #elif BUILDFLAG(USE_V4L2_CODEC)
+  if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor)) {
+    auto processor = CreateGLImageProcessorWithInputCandidates(
+        input_candidates, input_visible_rect, output_size, num_buffers,
+        client_task_runner, out_format_picker, error_cb);
+    if (processor)
+      return processor;
+  }
   if (base::FeatureList::IsEnabled(media::kPreferLibYuvImageProcessor)) {
     auto processor = CreateLibYUVImageProcessorWithInputCandidates(
         input_candidates, input_visible_rect, output_size, num_buffers,

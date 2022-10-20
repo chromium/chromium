@@ -5,8 +5,10 @@
 #include "media/gpu/chromeos/gl_image_processor_backend.h"
 
 #include "base/callback_forward.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -190,17 +192,11 @@ std::unique_ptr<ImageProcessorBackend> GLImageProcessorBackend::Create(
   // preventing our local variables from being deallocated too soon.
   bool success = false;
   base::WaitableEvent done;
-  auto init_cb = base::BindOnce(
-      [](base::WaitableEvent* done, bool* success, bool value) {
-        *success = value;
-        done->Signal();
-      },
-      base::Unretained(&done), base::Unretained(&success));
-  image_processor->backend_task_runner_->PostTaskAndReplyWithResult(
+  image_processor->backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GLImageProcessorBackend::InitializeTask,
-                     base::Unretained(image_processor.get())),
-      std::move(init_cb));
+                     base::Unretained(image_processor.get()),
+                     base::Unretained(&done), base::Unretained(&success)));
   done.Wait();
   if (!success) {
     return nullptr;
@@ -208,7 +204,8 @@ std::unique_ptr<ImageProcessorBackend> GLImageProcessorBackend::Create(
   return std::move(image_processor);
 }
 
-bool GLImageProcessorBackend::InitializeTask() {
+void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
+                                             bool* success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
   // Create a driver-level GL context just for us. This is questionable because
@@ -218,7 +215,8 @@ bool GLImageProcessorBackend::InitializeTask() {
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
   if (!gl_surface_) {
     LOG(ERROR) << "Could not create the offscreen EGL surface";
-    return false;
+    done->Signal();
+    return;
   }
   gl::GLContextAttribs attribs{};
   attribs.can_skip_validation = true;
@@ -226,18 +224,21 @@ bool GLImageProcessorBackend::InitializeTask() {
   gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(), attribs);
   if (!gl_context_) {
     LOG(ERROR) << "Could not create the GL context";
-    return false;
+    done->Signal();
+    return;
   }
   if (!gl_context_->MakeCurrent(gl_surface_.get())) {
     LOG(ERROR) << "Could not make the GL context current";
-    return false;
+    done->Signal();
+    return;
   }
 
   // The GL_EXT_YUV_target extension is needed for using a YUV texture (target =
   // GL_TEXTURE_EXTERNAL_OES) as a rendering target.
   if (!gl_context_->HasExtension("GL_EXT_YUV_target")) {
     LOG(ERROR) << "The context doesn't support GL_EXT_YUV_target";
-    return false;
+    done->Signal();
+    return;
   }
 
   const gfx::Size input_visible_size = input_config_.visible_rect.size();
@@ -250,7 +251,8 @@ bool GLImageProcessorBackend::InitializeTask() {
       max_texture_size < output_visible_size.height()) {
     LOG(ERROR)
         << "Either the input or output size exceeds the maximum texture size";
-    return false;
+    done->Signal();
+    return;
   }
 
   // Create an output texture: this will be used as the color attachment for the
@@ -283,7 +285,8 @@ bool GLImageProcessorBackend::InitializeTask() {
   if (!CreateAndAttachShader(program, GL_VERTEX_SHADER, kVertexShader,
                              sizeof(kVertexShader))) {
     LOG(ERROR) << "Could not compile the vertex shader";
-    return false;
+    done->Signal();
+    return;
   }
 
   // Detiling fragment shader. Notice how we have to sample the Y and UV channel
@@ -341,7 +344,8 @@ bool GLImageProcessorBackend::InitializeTask() {
   if (!CreateAndAttachShader(program, GL_FRAGMENT_SHADER, kFragmentShader,
                              sizeof(kFragmentShader))) {
     LOG(ERROR) << "Could not compile the fragment shader";
-    return false;
+    done->Signal();
+    return;
   }
 
   glLinkProgram(program);
@@ -352,7 +356,8 @@ bool GLImageProcessorBackend::InitializeTask() {
     char log[kLogBufferSize];
     glGetShaderInfoLog(program, kLogBufferSize, nullptr, log);
     LOG(ERROR) << "Could not link the GL program" << log;
-    return false;
+    done->Signal();
+    return;
   }
   glUseProgram(program);
   glDeleteProgram(program);
@@ -378,13 +383,15 @@ bool GLImageProcessorBackend::InitializeTask() {
   if (error != GL_NO_ERROR) {
     LOG(ERROR) << "Could not initialize the GL image processor: "
                << gl::GLEnums::GetStringError(error);
-    return false;
+    done->Signal();
+    return;
   }
 
   LOG(ERROR) << "Initialized a GLImageProcessorBackend: input size = "
              << input_visible_size.ToString()
              << ", output size = " << output_visible_size.ToString();
-  return true;
+  *success = true;
+  done->Signal();
 }
 
 // Note that the ImageProcessor calls the destructor from the
@@ -406,6 +413,9 @@ void GLImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
                                       scoped_refptr<VideoFrame> output_frame,
                                       FrameReadyCB cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+  TRACE_EVENT0("media", "GLImageProcessorBackend::Process");
+  SCOPED_UMA_HISTOGRAM_TIMER("GLImageProcessorBackend::Process");
+
   if (!gl_context_->MakeCurrent(gl_surface_.get())) {
     LOG(ERROR) << "Could not make the GL context current";
     error_cb_.Run();

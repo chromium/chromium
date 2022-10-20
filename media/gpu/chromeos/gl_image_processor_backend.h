@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
@@ -38,6 +39,10 @@ class MEDIA_GPU_EXPORT GLImageProcessorBackend : public ImageProcessorBackend {
                scoped_refptr<VideoFrame> output_frame,
                FrameReadyCB cb) override;
 
+  static bool IsSupported(const PortConfig& input_config,
+                          const PortConfig& output_config,
+                          VideoRotation relative_rotation);
+
  private:
   // Callback for initialization.
   using InitCB = base::OnceCallback<void(bool)>;
@@ -53,11 +58,7 @@ class MEDIA_GPU_EXPORT GLImageProcessorBackend : public ImageProcessorBackend {
   ~GLImageProcessorBackend() override;
   GLImageProcessorBackend& operator=(const GLImageProcessorBackend&) = delete;
 
-  static bool IsSupported(const PortConfig& input_config,
-                          const PortConfig& output_config,
-                          VideoRotation relative_rotation);
-
-  bool InitializeTask();
+  void InitializeTask(base::WaitableEvent* done, bool* success);
   void DestroyTask();
 
   scoped_refptr<gl::GLSurface> gl_surface_;
