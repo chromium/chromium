@@ -313,7 +313,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
       script_context, response_function,
       base::BindOnce(&OneTimeMessageHandler::OnResponseCallbackCollected,
                      weak_factory_.GetWeakPtr(), script_context, target_port_id,
-                     callback.get()),
+                     base::UnsafeDanglingUntriaged(callback.get())),
       base::OnceClosure());
 
   v8::HandleScope handle_scope(isolate);

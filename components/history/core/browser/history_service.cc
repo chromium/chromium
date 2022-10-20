@@ -499,7 +499,8 @@ void HistoryService::SetPageLanguageForVisit(ContextID context_id,
   ScheduleTask(
       PRIORITY_NORMAL,
       base::BindOnce(&HistoryBackend::SetPageLanguageForVisit, history_backend_,
-                     context_id, nav_entry_id, url, page_language));
+                     base::UnsafeDanglingUntriaged(context_id), nav_entry_id,
+                     url, page_language));
 }
 
 void HistoryService::SetPasswordStateForVisit(
