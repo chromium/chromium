@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
@@ -60,8 +60,8 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
   // The queue and visited set of operators that help implement the
   // breadth-first graph traversal:
   // https://en.wikipedia.org/wiki/Breadth-first_search
-  Deque<Member<const MLOperator>> operators_queue;
-  HashSet<Member<const MLOperator>> visited_operators;
+  HeapDeque<Member<const MLOperator>> operators_queue;
+  HeapHashSet<Member<const MLOperator>> visited_operators;
 
   // Validate the named outputs, setup corresponding output resource info and
   // initialize the queue and visited set with their dependent operators.
@@ -87,8 +87,7 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
 
   while (operators_queue.size() > 0) {
     // If the queue is not empty, dequeue an operator from the queue.
-    const auto& current_operator = operators_queue.front();
-    operators_queue.pop_front();
+    const auto current_operator = operators_queue.TakeFirst();
     // Enumerate the current operator's input operands.
     for (const auto& operand : current_operator->Inputs()) {
       switch (operand->Kind()) {
