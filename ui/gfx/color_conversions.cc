@@ -377,4 +377,52 @@ SkColor4f OKLchToSkColor4f(float l_input,
   return XYZD65ToSkColor4f(x, y, z, alpha);
 }
 
+SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha) {
+  // Explanation of this algorithm can be found in the CSS Color 4 Module
+  // specification at https://drafts.csswg.org/css-color-4/#hsl-to-rgb with
+  // further explanation available at
+  // http://en.wikipedia.org/wiki/HSL_color_space
+
+  // Hue is in the range of 0.0 to 6.0, the remainder are in the range 0.0
+  // to 1.0. Out parameters r, g, and b are also returned in range 0.0 to 1.0.
+  if (!s) {
+    return SkColor4f{l, l, l, alpha};
+  }
+  float temp2 = l <= 0.5 ? l * (1.0 + s) : l + s - l * s;
+  float temp1 = 2.0 * l - temp2;
+
+  auto CalcHue = [](float temp1, float temp2, float hue_val) {
+    if (hue_val < 0.0f)
+      hue_val += 6.0f;
+    else if (hue_val >= 6.0f)
+      hue_val -= 6.0f;
+    if (hue_val < 1.0f)
+      return temp1 + (temp2 - temp1) * hue_val;
+    if (hue_val < 3.0f)
+      return temp2;
+    if (hue_val < 4.0f)
+      return temp1 + (temp2 - temp1) * (4.0f - hue_val);
+    return temp1;
+  };
+
+  return SkColor4f{CalcHue(temp1, temp2, h + 2.0), CalcHue(temp1, temp2, h),
+                   CalcHue(temp1, temp2, h - 2.0), alpha};
+}
+
+SkColor4f HWBToSkColor4f(float h, float w, float b, float alpha) {
+  if (w + b >= 1.0f) {
+    float gray = (w / (w + b));
+    return SkColor4f{gray, gray, gray, alpha};
+  }
+
+  // Leverage HSL to RGB conversion to find HWB to RGB, see
+  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
+  SkColor4f result = HSLToSkColor4f(h, 1.0f, 0.5f, alpha);
+
+  result.fR += w - (w + b) * result.fR;
+  result.fG += w - (w + b) * result.fG;
+  result.fB += w - (w + b) * result.fB;
+
+  return result;
+}
 }  // namespace gfx

@@ -924,4 +924,74 @@ TEST(ColorConversions, Rec2020ToSkColor4f) {
   }
 }
 
+TEST(ColorConversions, HSLToSkColor4f) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},            // black
+      {{0.0f, 0.f, 1.f}, {1.0f, 1.0f, 1.0f}},              // white
+      {{120.0f / 60.0f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.0f, 0.59420289855072475f, 0.40588235294117645f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{300.0f / 60.0f, 1.0f, 0.250980392156862741f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{349.5238095238096f / 60.0f, 1.00f, 0.876470588235294f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_h, input_s, input_l] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = HSLToSkColor4f(input_h, input_s, input_l, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_h << ' ' << input_s << ' ' << input_l << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_h << ' ' << input_s << ' ' << input_l << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_h << ' ' << input_s << ' ' << input_l << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
+TEST(ColorConversions, HWBToSkColor4f) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}},            // black
+      {{0.0f, 1.f, 0.f}, {1.0f, 1.0f, 1.0f}},              // white
+      {{0.0f, 0.7f, 0.7f}, {0.5, 0.5, 0.5}},               // grey
+      {{5.0f, 0.7f, 0.7f}, {0.5, 0.5, 0.5}},               // grey
+      {{120.0f / 60.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.0f, 0.1647058823529411f, 0.35294117647058826f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{300.0f / 60.0f, 0.0f, 0.4980392156862745f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{349.5238095238096f / 60.0f, 0.7529411764705883f, 0.0f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_h, input_w, input_b] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = HWBToSkColor4f(input_h, input_w, input_b, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_h << ' ' << input_w << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_h << ' ' << input_w << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_h << ' ' << input_w << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
 }  // namespace gfx

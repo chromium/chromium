@@ -127,93 +127,6 @@ RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {
          ColorFloatToRGBAByte(g) << 8 | ColorFloatToRGBAByte(b);
 }
 
-constexpr RGBA32 MakeRGBA(int r, int g, int b, int a) {
-  return ClampTo(a, 0, 255) << 24 | ClampTo(r, 0, 255) << 16 |
-         ClampTo(g, 0, 255) << 8 | ClampTo(b, 0, 255);
-}
-
-constexpr double CalcHue(double temp1, double temp2, double hue_val) {
-  if (hue_val < 0.0)
-    hue_val += 6.0;
-  else if (hue_val >= 6.0)
-    hue_val -= 6.0;
-  if (hue_val < 1.0)
-    return temp1 + (temp2 - temp1) * hue_val;
-  if (hue_val < 3.0)
-    return temp2;
-  if (hue_val < 4.0)
-    return temp1 + (temp2 - temp1) * (4.0 - hue_val);
-  return temp1;
-}
-
-// Explanation of this algorithm can be found in the CSS Color 4 Module
-// specification at https://drafts.csswg.org/css-color-4/#hsl-to-rgb with
-// further explanation available at http://en.wikipedia.org/wiki/HSL_color_space
-
-// Hue is in the range of 0.0 to 6.0, the remainder are in the range 0.0 to 1.0.
-// Out parameters r, g, and b are also returned in range 0.0 to 1.0.
-constexpr void HSLToRGB(double hue,
-                        double saturation,
-                        double lightness,
-                        double& r,
-                        double& g,
-                        double& b) {
-  if (!saturation) {
-    r = g = b = lightness;
-  } else {
-    double temp2 = lightness <= 0.5
-                       ? lightness * (1.0 + saturation)
-                       : lightness + saturation - lightness * saturation;
-    double temp1 = 2.0 * lightness - temp2;
-
-    r = CalcHue(temp1, temp2, hue + 2.0);
-    g = CalcHue(temp1, temp2, hue);
-    b = CalcHue(temp1, temp2, hue - 2.0);
-  }
-}
-
-// Hue is in the range of 0 to 6.0, the remainder are in the range 0 to 1.0
-constexpr RGBA32 MakeRGBAFromHSLA(double hue,
-                                  double saturation,
-                                  double lightness,
-                                  double alpha) {
-  const double scale_factor = 255.0;
-  double r = 0, g = 0, b = 0;
-  HSLToRGB(hue, saturation, lightness, r, g, b);
-
-  return MakeRGBA(static_cast<int>(round(r * scale_factor)),
-                  static_cast<int>(round(g * scale_factor)),
-                  static_cast<int>(round(b * scale_factor)),
-                  static_cast<int>(round(alpha * scale_factor)));
-}
-
-// Hue is in the range of 0 to 6.0, the remainder are in the range 0 to 1.0
-constexpr RGBA32 MakeRGBAFromHWBA(double hue,
-                                  double white,
-                                  double black,
-                                  double alpha) {
-  const double scale_factor = 255.0;
-
-  if (white + black >= 1.0) {
-    int gray = static_cast<int>(round(white / (white + black) * scale_factor));
-    return MakeRGBA(gray, gray, gray,
-                    static_cast<int>(round(alpha * scale_factor)));
-  }
-
-  // Leverage HSL to RGB conversion to find HWB to RGB, see
-  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
-  double r = 0, g = 0, b = 0;
-  HSLToRGB(hue, 1.0, 0.5, r, g, b);
-  r += white - (white + black) * r;
-  g += white - (white + black) * g;
-  b += white - (white + black) * b;
-
-  return MakeRGBA(static_cast<int>(round(r * scale_factor)),
-                  static_cast<int>(round(g * scale_factor)),
-                  static_cast<int>(round(b * scale_factor)),
-                  static_cast<int>(round(alpha * scale_factor)));
-}
-
 constexpr int RedChannel(RGBA32 color) {
   return (color >> 16) & 0xFF;
 }
@@ -250,12 +163,12 @@ Color::Color(int r, int g, int b, int a) {
 
 // static
 Color Color::FromHSLA(double h, double s, double l, double a) {
-  return Color(MakeRGBAFromHSLA(h, s, l, a));
+  return Color(gfx::HSLToSkColor4f(h, s, l, a));
 }
 
 // static
 Color Color::FromHWBA(double h, double w, double b, double a) {
-  return Color(MakeRGBAFromHWBA(h, w, b, a));
+  return Color(gfx::HWBToSkColor4f(h, w, b, a));
 }
 
 // static

@@ -272,6 +272,15 @@ class PLATFORM_EXPORT Color {
         param1_(((color >> 8) & 0xFF) / 255.f),
         param2_(((color >> 0) & 0xFF) / 255.f),
         alpha_(((color >> 24) & 0xFF) / 255.f) {}
+  constexpr explicit Color(SkColor4f color)
+      : param0_is_none_(0),
+        param1_is_none_(0),
+        param2_is_none_(0),
+        alpha_is_none_(0),
+        param0_(color.fR),
+        param1_(color.fG),
+        param2_(color.fB),
+        alpha_(color.fA) {}
   static constexpr int ClampInt(int x) {
     return x < 0 ? 0 : (x > 255 ? 255 : x);
   }

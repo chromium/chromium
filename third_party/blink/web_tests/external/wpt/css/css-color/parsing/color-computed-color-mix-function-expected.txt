@@ -129,7 +129,7 @@ FAIL Property color value 'color-mix(in hwb specified hue, hwb(320deg 30% 40%), 
 FAIL Property color value 'color-mix(in hwb, hwb(none none none), hwb(none none none))' assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
 FAIL Property color value 'color-mix(in hwb, hwb(none none none), hwb(30deg 30% 40%))' assert_equals: expected "rgb(153, 115, 77)" but got "rgb(128, 128, 128)"
 FAIL Property color value 'color-mix(in hwb, hwb(120deg 10% 20%), hwb(none none none))' assert_equals: expected "rgb(26, 204, 26)" but got "rgb(128, 128, 128)"
-FAIL Property color value 'color-mix(in hwb, hwb(120deg 10% none), hwb(30deg 30% 40%))' assert_equals: expected "rgb(127, 153, 51)" but got "rgb(128, 128, 128)"
+FAIL Property color value 'color-mix(in hwb, hwb(120deg 10% none), hwb(30deg 30% 40%))' assert_equals: expected "rgb(128, 153, 51)" but got "rgb(128, 128, 128)"
 FAIL Property color value 'color-mix(in hwb, hwb(120deg 10% 20%), hwb(30deg 30% none))' assert_equals: expected "rgb(166, 204, 51)" but got "rgb(128, 128, 128)"
 FAIL Property color value 'color-mix(in hwb, hwb(none 10% 20%), hwb(30deg none 40%))' assert_equals: expected "rgb(179, 102, 26)" but got "rgb(128, 128, 128)"
 FAIL Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40%))' assert_equals: expected "rgb(147, 179, 51)" but got "rgb(128, 128, 128)"

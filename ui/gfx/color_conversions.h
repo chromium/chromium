@@ -137,6 +137,16 @@ GFX_EXPORT SkColor4f OKLchToSkColor4f(float l,
                                       absl::optional<float> b,
                                       float alpha);
 
+// Method exposed for blink::color conversions.
+// Hue is in the range of 0.0 to 6.0, the rest of the parameters are in the
+// range 0.0 to 1.0.
+GFX_EXPORT SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha);
+
+// Method exposed for blink::color conversions.
+// Hue is in the range of 0.0 to 6.0, the rest of the parameters are in the
+// range 0.0 to 1.0.
+GFX_EXPORT SkColor4f HWBToSkColor4f(float h, float w, float b, float alpha);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_COLOR_CONVERSIONS_H_
