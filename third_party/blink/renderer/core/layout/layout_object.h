@@ -3334,10 +3334,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // Convenience mutator that clears paint invalidation flags and this object
     // and its descendants' needs-paint-property-update flags.
     void ClearPaintFlags() { layout_object_.ClearPaintFlags(); }
+
+    // These methods are only intended to be called when visiting this object
+    // during pre-paint, and as such it should only mark itself, and not the
+    // entire containing block chain.
     void SetShouldCheckForPaintInvalidation() {
-      // This method is only intended to be called when visiting this object
-      // during pre-paint, and as such it should only mark itself, and not the
-      // entire containing block chain.
       DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),
                 DocumentLifecycle::kInPrePaint);
       layout_object_.bitfields_.SetShouldCheckGeometryForPaintInvalidation(
@@ -3345,17 +3346,26 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       layout_object_.bitfields_.SetShouldCheckForPaintInvalidation(true);
     }
     void SetShouldDoFullPaintInvalidation(PaintInvalidationReason reason) {
-      layout_object_.SetShouldDoFullPaintInvalidation(reason);
+      DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),
+                DocumentLifecycle::kInPrePaint);
+      if (layout_object_.ShouldDoFullPaintInvalidation())
+        return;
+      SetShouldDoFullPaintInvalidationWithoutGeometryChange(reason);
+      layout_object_.bitfields_.SetShouldCheckGeometryForPaintInvalidation(
+          true);
     }
     void SetShouldDoFullPaintInvalidationWithoutGeometryChange(
         PaintInvalidationReason reason) {
-      layout_object_
-          .SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
-              reason);
+      DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),
+                DocumentLifecycle::kInPrePaint);
+      if (layout_object_.ShouldDoFullPaintInvalidation())
+        return;
+      layout_object_.bitfields_.SetShouldCheckForPaintInvalidation(true);
+      layout_object_.bitfields_.SetShouldDelayFullPaintInvalidation(false);
+      layout_object_.full_paint_invalidation_reason_ =
+          static_cast<unsigned>(reason);
     }
-    void SetBackgroundNeedsFullPaintInvalidation() {
-      layout_object_.SetBackgroundNeedsFullPaintInvalidation();
-    }
+
     void SetShouldDelayFullPaintInvalidation() {
       layout_object_.SetShouldDelayFullPaintInvalidation();
     }
