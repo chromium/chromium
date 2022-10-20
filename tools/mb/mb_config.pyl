@@ -303,9 +303,9 @@
       'Libfuzzer Upload Linux32 ASan Debug': 'libfuzzer_asan_debug_bot_x86_reclient',
       'Libfuzzer Upload Linux32 V8-ARM ASan': 'libfuzzer_asan_release_bot_x86_v8_arm_reclient',
       'Libfuzzer Upload Linux32 V8-ARM ASan Debug': 'libfuzzer_asan_debug_bot_x86_v8_arm_reclient',
-      'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
+      'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot_reclient',
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot_reclient',
-      'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting',
+      'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
       'MSAN Release (chained origins)': 'msan_release_bot_reclient',
       'MSAN Release (no origins)': 'msan_no_origins_release_bot_reclient',
       'Mac ASAN Release': 'asan_disable_nacl_fuzzer_v8_heap_release_bot_reclient',
@@ -3103,6 +3103,10 @@
 
 	'libfuzzer_mac_asan_shared_release_bot': [
       'libfuzzer', 'asan', 'shared_release_bot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing',
+    ],
+
+    'libfuzzer_mac_asan_shared_release_bot_reclient': [
+      'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing',
     ],
 
     'libfuzzer_msan_release_bot': [
