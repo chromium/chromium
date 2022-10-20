@@ -60,6 +60,7 @@ IOSChromePasswordStoreFactory::IOSChromePasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "PasswordStore",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
 

@@ -54,6 +54,7 @@ PasswordStoreFactory::PasswordStoreFactory()
           "PasswordStore",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
+  DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
 }
 
 PasswordStoreFactory::~PasswordStoreFactory() = default;

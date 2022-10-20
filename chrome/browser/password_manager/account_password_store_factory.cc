@@ -126,7 +126,9 @@ AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
 AccountPasswordStoreFactory::AccountPasswordStoreFactory()
     : RefcountedBrowserContextKeyedServiceFactory(
           "AccountPasswordStore",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
+}
 
 AccountPasswordStoreFactory::~AccountPasswordStoreFactory() = default;
 
