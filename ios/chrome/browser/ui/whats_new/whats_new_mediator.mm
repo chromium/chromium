@@ -70,8 +70,18 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
 - (void)didTapActionButton:(WhatsNewType)type {
   switch (type) {
     case WhatsNewType::kAddPasswordManually:
+      base::RecordAction(base::UserMetricsAction(
+          "WhatsNew.AddPasswordManually.PrimaryActionTapped"));
+      [self openSettingsURLString];
+      break;
     case WhatsNewType::kUseChromeByDefault:
+      base::RecordAction(base::UserMetricsAction(
+          "WhatsNew.UseChromeByDefault.PrimaryActionTapped"));
+      [self openSettingsURLString];
+      break;
     case WhatsNewType::kPasswordsInOtherApps:
+      base::RecordAction(base::UserMetricsAction(
+          "WhatsNew.PasswordsInOtherApps.PrimaryActionTapped"));
       [self openSettingsURLString];
       break;
     default:
@@ -80,10 +90,12 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
   };
 }
 
-- (void)didTapLearnMoreButton:(const GURL&)learnMoreURL {
+- (void)didTapLearnMoreButton:(const GURL&)learnMoreURL
+                         type:(WhatsNewType)type {
   UrlLoadParams params = UrlLoadParams::InNewTab(learnMoreURL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   self.urlLoadingAgent->Load(params);
+  [self recordLearnMoreInteraction:type];
 }
 
 #pragma mark - WhatsNewTableViewActionHandler
@@ -173,6 +185,40 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
                              chromeTip:[self whatsNewChromeTipItem]
                           featureItems:[self whatsNewFeatureItems]
                          isModuleBased:IsWhatsNewModuleBasedLayout()];
+}
+
+// Record when a user tap on learn more.
+- (void)recordLearnMoreInteraction:(WhatsNewType)type {
+  switch (type) {
+    case WhatsNewType::kSearchTabs:
+      base::RecordAction(
+          base::UserMetricsAction("WhatsNew.SearchTabs.LearnMoreTapped"));
+      break;
+    case WhatsNewType::kSharedHighlighting:
+      base::RecordAction(base::UserMetricsAction(
+          "WhatsNew.SharedHighlighting.LearnMoreTapped"));
+      break;
+    case WhatsNewType::kAddPasswordManually:
+      base::RecordAction(base::UserMetricsAction(
+          "WhatsNew.AddPasswordManually.LearnMoreTapped"));
+      break;
+    case WhatsNewType::kUseChromeByDefault:
+      base::RecordAction(base::UserMetricsAction(
+          "WhatsNew.UseChromeByDefault.LearnMoreTapped"));
+      break;
+    case WhatsNewType::kPasswordsInOtherApps:
+      base::RecordAction(base::UserMetricsAction(
+          "WhatsNew.PasswordsInOtherApps.LearnMoreTapped"));
+      break;
+    case WhatsNewType::kAutofill:
+      base::RecordAction(
+          base::UserMetricsAction("WhatsNew.Autofill.LearnMoreTapped"));
+      break;
+    case WhatsNewType::kNewOverflowMenu:
+    default:
+      NOTREACHED();
+      break;
+  };
 }
 
 @end

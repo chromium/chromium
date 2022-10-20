@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_promo_display_handler.h"
 
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,6 +25,10 @@
 
 - (promos_manager::Promo)identifier {
   return promos_manager::Promo::WhatsNew;
+}
+
+- (void)promoWasDisplayed {
+  base::RecordAction(base::UserMetricsAction("WhatsNew.Promo.Displayed"));
 }
 
 @end

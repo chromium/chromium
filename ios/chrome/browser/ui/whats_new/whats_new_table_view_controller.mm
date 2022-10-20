@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -61,6 +62,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // based.
 @property(nonatomic, assign) BOOL isModuleTableView;
 
+// Indicates whether a scroll happened.
+@property(nonatomic, assign) BOOL viewDidScroll;
+
 @end
 
 @implementation WhatsNewTableViewController
@@ -86,6 +90,17 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 #pragma mark - UIViewController
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  base::UmaHistogramBoolean("IOS.WhatsNew.TableViewDidScroll",
+                            self.viewDidScroll);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  self.viewDidScroll = NO;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -163,6 +178,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   }
 
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  self.viewDidScroll = YES;
 }
 
 #pragma mark - ChromeTableViewController

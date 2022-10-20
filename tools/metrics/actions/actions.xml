@@ -34415,10 +34415,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WhatsNew.AddPasswordManually.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Add Password Manually in
+    What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.AddPasswordManually.PrimaryActionTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the primary action of Add Password Manually in What's
+    New.
+  </description>
+</action>
+
 <action name="WhatsNew.Autofill">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Autofill in What's New.</description>
+</action>
+
+<action name="WhatsNew.Autofill.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Autofill in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.Dismissed">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user dismissed What's New.</description>
 </action>
 
 <action name="WhatsNew.NewOverflowMenu">
@@ -34435,10 +34467,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WhatsNew.PasswordsInOtherApps.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Passwords In Other Apps in
+    What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.PasswordsInOtherApps.PrimaryActionTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the primary action of Passwords In Other Apps in What's
+    New.
+  </description>
+</action>
+
+<action name="WhatsNew.Promo.Displayed">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The What's New promo was displayed to the user.</description>
+</action>
+
 <action name="WhatsNew.SearchTabs">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Search Tabs in What's New.</description>
+</action>
+
+<action name="WhatsNew.SearchTabs.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Search Tabs in What's New.
+  </description>
 </action>
 
 <action name="WhatsNew.SharedHighlighting">
@@ -34447,10 +34511,36 @@ should be able to be added at any place in this file.
   <description>The user opened Shared Highlighting in What's New.</description>
 </action>
 
+<action name="WhatsNew.SharedHighlighting.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Shared Highlighting in
+    What's New.
+  </description>
+</action>
+
 <action name="WhatsNew.UseChromeByDefault">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user opened Chrome By Default in What's New.</description>
+</action>
+
+<action name="WhatsNew.UseChromeByDefault.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Chrome By Default in What's
+    New.
+  </description>
+</action>
+
+<action name="WhatsNew.UseChromeByDefault.PrimaryActionTappedTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the primary action of Chrome By Default in What's New.
+  </description>
 </action>
 
 <action name="Win10WelcomePage_SetAsDefaultBrowser">
