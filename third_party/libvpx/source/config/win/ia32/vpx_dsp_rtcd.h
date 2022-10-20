@@ -4526,7 +4526,14 @@ unsigned int vpx_highbd_sad16x16_sse2(const uint8_t* src_ptr,
                                       int src_stride,
                                       const uint8_t* ref_ptr,
                                       int ref_stride);
-#define vpx_highbd_sad16x16 vpx_highbd_sad16x16_sse2
+unsigned int vpx_highbd_sad16x16_avx2(const uint8_t* src_ptr,
+                                      int src_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad16x16)(const uint8_t* src_ptr,
+                                                int src_stride,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride);
 
 unsigned int vpx_highbd_sad16x16_avg_c(const uint8_t* src_ptr,
                                        int src_stride,
@@ -4538,7 +4545,16 @@ unsigned int vpx_highbd_sad16x16_avg_sse2(const uint8_t* src_ptr,
                                           const uint8_t* ref_ptr,
                                           int ref_stride,
                                           const uint8_t* second_pred);
-#define vpx_highbd_sad16x16_avg vpx_highbd_sad16x16_avg_sse2
+unsigned int vpx_highbd_sad16x16_avg_avx2(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* ref_ptr,
+                                          int ref_stride,
+                                          const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad16x16_avg)(const uint8_t* src_ptr,
+                                                    int src_stride,
+                                                    const uint8_t* ref_ptr,
+                                                    int ref_stride,
+                                                    const uint8_t* second_pred);
 
 void vpx_highbd_sad16x16x4d_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -4550,7 +4566,16 @@ void vpx_highbd_sad16x16x4d_sse2(const uint8_t* src_ptr,
                                  const uint8_t* const ref_array[4],
                                  int ref_stride,
                                  uint32_t sad_array[4]);
-#define vpx_highbd_sad16x16x4d vpx_highbd_sad16x16x4d_sse2
+void vpx_highbd_sad16x16x4d_avx2(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* const ref_array[4],
+                                 int ref_stride,
+                                 uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad16x16x4d)(const uint8_t* src_ptr,
+                                           int src_stride,
+                                           const uint8_t* const ref_array[4],
+                                           int ref_stride,
+                                           uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad16x32_c(const uint8_t* src_ptr,
                                    int src_stride,
@@ -4560,7 +4585,14 @@ unsigned int vpx_highbd_sad16x32_sse2(const uint8_t* src_ptr,
                                       int src_stride,
                                       const uint8_t* ref_ptr,
                                       int ref_stride);
-#define vpx_highbd_sad16x32 vpx_highbd_sad16x32_sse2
+unsigned int vpx_highbd_sad16x32_avx2(const uint8_t* src_ptr,
+                                      int src_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad16x32)(const uint8_t* src_ptr,
+                                                int src_stride,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride);
 
 unsigned int vpx_highbd_sad16x32_avg_c(const uint8_t* src_ptr,
                                        int src_stride,
@@ -4572,7 +4604,16 @@ unsigned int vpx_highbd_sad16x32_avg_sse2(const uint8_t* src_ptr,
                                           const uint8_t* ref_ptr,
                                           int ref_stride,
                                           const uint8_t* second_pred);
-#define vpx_highbd_sad16x32_avg vpx_highbd_sad16x32_avg_sse2
+unsigned int vpx_highbd_sad16x32_avg_avx2(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* ref_ptr,
+                                          int ref_stride,
+                                          const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad16x32_avg)(const uint8_t* src_ptr,
+                                                    int src_stride,
+                                                    const uint8_t* ref_ptr,
+                                                    int ref_stride,
+                                                    const uint8_t* second_pred);
 
 void vpx_highbd_sad16x32x4d_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -4584,7 +4625,16 @@ void vpx_highbd_sad16x32x4d_sse2(const uint8_t* src_ptr,
                                  const uint8_t* const ref_array[4],
                                  int ref_stride,
                                  uint32_t sad_array[4]);
-#define vpx_highbd_sad16x32x4d vpx_highbd_sad16x32x4d_sse2
+void vpx_highbd_sad16x32x4d_avx2(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* const ref_array[4],
+                                 int ref_stride,
+                                 uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad16x32x4d)(const uint8_t* src_ptr,
+                                           int src_stride,
+                                           const uint8_t* const ref_array[4],
+                                           int ref_stride,
+                                           uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad16x8_c(const uint8_t* src_ptr,
                                   int src_stride,
@@ -4594,7 +4644,14 @@ unsigned int vpx_highbd_sad16x8_sse2(const uint8_t* src_ptr,
                                      int src_stride,
                                      const uint8_t* ref_ptr,
                                      int ref_stride);
-#define vpx_highbd_sad16x8 vpx_highbd_sad16x8_sse2
+unsigned int vpx_highbd_sad16x8_avx2(const uint8_t* src_ptr,
+                                     int src_stride,
+                                     const uint8_t* ref_ptr,
+                                     int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad16x8)(const uint8_t* src_ptr,
+                                               int src_stride,
+                                               const uint8_t* ref_ptr,
+                                               int ref_stride);
 
 unsigned int vpx_highbd_sad16x8_avg_c(const uint8_t* src_ptr,
                                       int src_stride,
@@ -4606,7 +4663,16 @@ unsigned int vpx_highbd_sad16x8_avg_sse2(const uint8_t* src_ptr,
                                          const uint8_t* ref_ptr,
                                          int ref_stride,
                                          const uint8_t* second_pred);
-#define vpx_highbd_sad16x8_avg vpx_highbd_sad16x8_avg_sse2
+unsigned int vpx_highbd_sad16x8_avg_avx2(const uint8_t* src_ptr,
+                                         int src_stride,
+                                         const uint8_t* ref_ptr,
+                                         int ref_stride,
+                                         const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad16x8_avg)(const uint8_t* src_ptr,
+                                                   int src_stride,
+                                                   const uint8_t* ref_ptr,
+                                                   int ref_stride,
+                                                   const uint8_t* second_pred);
 
 void vpx_highbd_sad16x8x4d_c(const uint8_t* src_ptr,
                              int src_stride,
@@ -4618,7 +4684,16 @@ void vpx_highbd_sad16x8x4d_sse2(const uint8_t* src_ptr,
                                 const uint8_t* const ref_array[4],
                                 int ref_stride,
                                 uint32_t sad_array[4]);
-#define vpx_highbd_sad16x8x4d vpx_highbd_sad16x8x4d_sse2
+void vpx_highbd_sad16x8x4d_avx2(const uint8_t* src_ptr,
+                                int src_stride,
+                                const uint8_t* const ref_array[4],
+                                int ref_stride,
+                                uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad16x8x4d)(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* const ref_array[4],
+                                          int ref_stride,
+                                          uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad32x16_c(const uint8_t* src_ptr,
                                    int src_stride,
@@ -4628,7 +4703,14 @@ unsigned int vpx_highbd_sad32x16_sse2(const uint8_t* src_ptr,
                                       int src_stride,
                                       const uint8_t* ref_ptr,
                                       int ref_stride);
-#define vpx_highbd_sad32x16 vpx_highbd_sad32x16_sse2
+unsigned int vpx_highbd_sad32x16_avx2(const uint8_t* src_ptr,
+                                      int src_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad32x16)(const uint8_t* src_ptr,
+                                                int src_stride,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride);
 
 unsigned int vpx_highbd_sad32x16_avg_c(const uint8_t* src_ptr,
                                        int src_stride,
@@ -4640,7 +4722,16 @@ unsigned int vpx_highbd_sad32x16_avg_sse2(const uint8_t* src_ptr,
                                           const uint8_t* ref_ptr,
                                           int ref_stride,
                                           const uint8_t* second_pred);
-#define vpx_highbd_sad32x16_avg vpx_highbd_sad32x16_avg_sse2
+unsigned int vpx_highbd_sad32x16_avg_avx2(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* ref_ptr,
+                                          int ref_stride,
+                                          const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad32x16_avg)(const uint8_t* src_ptr,
+                                                    int src_stride,
+                                                    const uint8_t* ref_ptr,
+                                                    int ref_stride,
+                                                    const uint8_t* second_pred);
 
 void vpx_highbd_sad32x16x4d_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -4652,7 +4743,16 @@ void vpx_highbd_sad32x16x4d_sse2(const uint8_t* src_ptr,
                                  const uint8_t* const ref_array[4],
                                  int ref_stride,
                                  uint32_t sad_array[4]);
-#define vpx_highbd_sad32x16x4d vpx_highbd_sad32x16x4d_sse2
+void vpx_highbd_sad32x16x4d_avx2(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* const ref_array[4],
+                                 int ref_stride,
+                                 uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad32x16x4d)(const uint8_t* src_ptr,
+                                           int src_stride,
+                                           const uint8_t* const ref_array[4],
+                                           int ref_stride,
+                                           uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad32x32_c(const uint8_t* src_ptr,
                                    int src_stride,
@@ -4662,7 +4762,14 @@ unsigned int vpx_highbd_sad32x32_sse2(const uint8_t* src_ptr,
                                       int src_stride,
                                       const uint8_t* ref_ptr,
                                       int ref_stride);
-#define vpx_highbd_sad32x32 vpx_highbd_sad32x32_sse2
+unsigned int vpx_highbd_sad32x32_avx2(const uint8_t* src_ptr,
+                                      int src_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad32x32)(const uint8_t* src_ptr,
+                                                int src_stride,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride);
 
 unsigned int vpx_highbd_sad32x32_avg_c(const uint8_t* src_ptr,
                                        int src_stride,
@@ -4674,7 +4781,16 @@ unsigned int vpx_highbd_sad32x32_avg_sse2(const uint8_t* src_ptr,
                                           const uint8_t* ref_ptr,
                                           int ref_stride,
                                           const uint8_t* second_pred);
-#define vpx_highbd_sad32x32_avg vpx_highbd_sad32x32_avg_sse2
+unsigned int vpx_highbd_sad32x32_avg_avx2(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* ref_ptr,
+                                          int ref_stride,
+                                          const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad32x32_avg)(const uint8_t* src_ptr,
+                                                    int src_stride,
+                                                    const uint8_t* ref_ptr,
+                                                    int ref_stride,
+                                                    const uint8_t* second_pred);
 
 void vpx_highbd_sad32x32x4d_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -4686,7 +4802,16 @@ void vpx_highbd_sad32x32x4d_sse2(const uint8_t* src_ptr,
                                  const uint8_t* const ref_array[4],
                                  int ref_stride,
                                  uint32_t sad_array[4]);
-#define vpx_highbd_sad32x32x4d vpx_highbd_sad32x32x4d_sse2
+void vpx_highbd_sad32x32x4d_avx2(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* const ref_array[4],
+                                 int ref_stride,
+                                 uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad32x32x4d)(const uint8_t* src_ptr,
+                                           int src_stride,
+                                           const uint8_t* const ref_array[4],
+                                           int ref_stride,
+                                           uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad32x64_c(const uint8_t* src_ptr,
                                    int src_stride,
@@ -4696,7 +4821,14 @@ unsigned int vpx_highbd_sad32x64_sse2(const uint8_t* src_ptr,
                                       int src_stride,
                                       const uint8_t* ref_ptr,
                                       int ref_stride);
-#define vpx_highbd_sad32x64 vpx_highbd_sad32x64_sse2
+unsigned int vpx_highbd_sad32x64_avx2(const uint8_t* src_ptr,
+                                      int src_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad32x64)(const uint8_t* src_ptr,
+                                                int src_stride,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride);
 
 unsigned int vpx_highbd_sad32x64_avg_c(const uint8_t* src_ptr,
                                        int src_stride,
@@ -4708,7 +4840,16 @@ unsigned int vpx_highbd_sad32x64_avg_sse2(const uint8_t* src_ptr,
                                           const uint8_t* ref_ptr,
                                           int ref_stride,
                                           const uint8_t* second_pred);
-#define vpx_highbd_sad32x64_avg vpx_highbd_sad32x64_avg_sse2
+unsigned int vpx_highbd_sad32x64_avg_avx2(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* ref_ptr,
+                                          int ref_stride,
+                                          const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad32x64_avg)(const uint8_t* src_ptr,
+                                                    int src_stride,
+                                                    const uint8_t* ref_ptr,
+                                                    int ref_stride,
+                                                    const uint8_t* second_pred);
 
 void vpx_highbd_sad32x64x4d_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -4720,7 +4861,16 @@ void vpx_highbd_sad32x64x4d_sse2(const uint8_t* src_ptr,
                                  const uint8_t* const ref_array[4],
                                  int ref_stride,
                                  uint32_t sad_array[4]);
-#define vpx_highbd_sad32x64x4d vpx_highbd_sad32x64x4d_sse2
+void vpx_highbd_sad32x64x4d_avx2(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* const ref_array[4],
+                                 int ref_stride,
+                                 uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad32x64x4d)(const uint8_t* src_ptr,
+                                           int src_stride,
+                                           const uint8_t* const ref_array[4],
+                                           int ref_stride,
+                                           uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad4x4_c(const uint8_t* src_ptr,
                                  int src_stride,
@@ -4780,7 +4930,14 @@ unsigned int vpx_highbd_sad64x32_sse2(const uint8_t* src_ptr,
                                       int src_stride,
                                       const uint8_t* ref_ptr,
                                       int ref_stride);
-#define vpx_highbd_sad64x32 vpx_highbd_sad64x32_sse2
+unsigned int vpx_highbd_sad64x32_avx2(const uint8_t* src_ptr,
+                                      int src_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad64x32)(const uint8_t* src_ptr,
+                                                int src_stride,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride);
 
 unsigned int vpx_highbd_sad64x32_avg_c(const uint8_t* src_ptr,
                                        int src_stride,
@@ -4792,7 +4949,16 @@ unsigned int vpx_highbd_sad64x32_avg_sse2(const uint8_t* src_ptr,
                                           const uint8_t* ref_ptr,
                                           int ref_stride,
                                           const uint8_t* second_pred);
-#define vpx_highbd_sad64x32_avg vpx_highbd_sad64x32_avg_sse2
+unsigned int vpx_highbd_sad64x32_avg_avx2(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* ref_ptr,
+                                          int ref_stride,
+                                          const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad64x32_avg)(const uint8_t* src_ptr,
+                                                    int src_stride,
+                                                    const uint8_t* ref_ptr,
+                                                    int ref_stride,
+                                                    const uint8_t* second_pred);
 
 void vpx_highbd_sad64x32x4d_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -4804,7 +4970,16 @@ void vpx_highbd_sad64x32x4d_sse2(const uint8_t* src_ptr,
                                  const uint8_t* const ref_array[4],
                                  int ref_stride,
                                  uint32_t sad_array[4]);
-#define vpx_highbd_sad64x32x4d vpx_highbd_sad64x32x4d_sse2
+void vpx_highbd_sad64x32x4d_avx2(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* const ref_array[4],
+                                 int ref_stride,
+                                 uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad64x32x4d)(const uint8_t* src_ptr,
+                                           int src_stride,
+                                           const uint8_t* const ref_array[4],
+                                           int ref_stride,
+                                           uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad64x64_c(const uint8_t* src_ptr,
                                    int src_stride,
@@ -4814,7 +4989,14 @@ unsigned int vpx_highbd_sad64x64_sse2(const uint8_t* src_ptr,
                                       int src_stride,
                                       const uint8_t* ref_ptr,
                                       int ref_stride);
-#define vpx_highbd_sad64x64 vpx_highbd_sad64x64_sse2
+unsigned int vpx_highbd_sad64x64_avx2(const uint8_t* src_ptr,
+                                      int src_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad64x64)(const uint8_t* src_ptr,
+                                                int src_stride,
+                                                const uint8_t* ref_ptr,
+                                                int ref_stride);
 
 unsigned int vpx_highbd_sad64x64_avg_c(const uint8_t* src_ptr,
                                        int src_stride,
@@ -4826,7 +5008,16 @@ unsigned int vpx_highbd_sad64x64_avg_sse2(const uint8_t* src_ptr,
                                           const uint8_t* ref_ptr,
                                           int ref_stride,
                                           const uint8_t* second_pred);
-#define vpx_highbd_sad64x64_avg vpx_highbd_sad64x64_avg_sse2
+unsigned int vpx_highbd_sad64x64_avg_avx2(const uint8_t* src_ptr,
+                                          int src_stride,
+                                          const uint8_t* ref_ptr,
+                                          int ref_stride,
+                                          const uint8_t* second_pred);
+RTCD_EXTERN unsigned int (*vpx_highbd_sad64x64_avg)(const uint8_t* src_ptr,
+                                                    int src_stride,
+                                                    const uint8_t* ref_ptr,
+                                                    int ref_stride,
+                                                    const uint8_t* second_pred);
 
 void vpx_highbd_sad64x64x4d_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -4838,7 +5029,16 @@ void vpx_highbd_sad64x64x4d_sse2(const uint8_t* src_ptr,
                                  const uint8_t* const ref_array[4],
                                  int ref_stride,
                                  uint32_t sad_array[4]);
-#define vpx_highbd_sad64x64x4d vpx_highbd_sad64x64x4d_sse2
+void vpx_highbd_sad64x64x4d_avx2(const uint8_t* src_ptr,
+                                 int src_stride,
+                                 const uint8_t* const ref_array[4],
+                                 int ref_stride,
+                                 uint32_t sad_array[4]);
+RTCD_EXTERN void (*vpx_highbd_sad64x64x4d)(const uint8_t* src_ptr,
+                                           int src_stride,
+                                           const uint8_t* const ref_array[4],
+                                           int ref_stride,
+                                           uint32_t sad_array[4]);
 
 unsigned int vpx_highbd_sad8x16_c(const uint8_t* src_ptr,
                                   int src_stride,
@@ -7686,6 +7886,78 @@ static void setup_rtcd_internal(void) {
   vpx_highbd_quantize_b_32x32 = vpx_highbd_quantize_b_32x32_sse2;
   if (flags & HAS_AVX2)
     vpx_highbd_quantize_b_32x32 = vpx_highbd_quantize_b_32x32_avx2;
+  vpx_highbd_sad16x16 = vpx_highbd_sad16x16_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x16 = vpx_highbd_sad16x16_avx2;
+  vpx_highbd_sad16x16_avg = vpx_highbd_sad16x16_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x16_avg = vpx_highbd_sad16x16_avg_avx2;
+  vpx_highbd_sad16x16x4d = vpx_highbd_sad16x16x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x16x4d = vpx_highbd_sad16x16x4d_avx2;
+  vpx_highbd_sad16x32 = vpx_highbd_sad16x32_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x32 = vpx_highbd_sad16x32_avx2;
+  vpx_highbd_sad16x32_avg = vpx_highbd_sad16x32_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x32_avg = vpx_highbd_sad16x32_avg_avx2;
+  vpx_highbd_sad16x32x4d = vpx_highbd_sad16x32x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x32x4d = vpx_highbd_sad16x32x4d_avx2;
+  vpx_highbd_sad16x8 = vpx_highbd_sad16x8_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x8 = vpx_highbd_sad16x8_avx2;
+  vpx_highbd_sad16x8_avg = vpx_highbd_sad16x8_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x8_avg = vpx_highbd_sad16x8_avg_avx2;
+  vpx_highbd_sad16x8x4d = vpx_highbd_sad16x8x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad16x8x4d = vpx_highbd_sad16x8x4d_avx2;
+  vpx_highbd_sad32x16 = vpx_highbd_sad32x16_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x16 = vpx_highbd_sad32x16_avx2;
+  vpx_highbd_sad32x16_avg = vpx_highbd_sad32x16_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x16_avg = vpx_highbd_sad32x16_avg_avx2;
+  vpx_highbd_sad32x16x4d = vpx_highbd_sad32x16x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x16x4d = vpx_highbd_sad32x16x4d_avx2;
+  vpx_highbd_sad32x32 = vpx_highbd_sad32x32_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x32 = vpx_highbd_sad32x32_avx2;
+  vpx_highbd_sad32x32_avg = vpx_highbd_sad32x32_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x32_avg = vpx_highbd_sad32x32_avg_avx2;
+  vpx_highbd_sad32x32x4d = vpx_highbd_sad32x32x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x32x4d = vpx_highbd_sad32x32x4d_avx2;
+  vpx_highbd_sad32x64 = vpx_highbd_sad32x64_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x64 = vpx_highbd_sad32x64_avx2;
+  vpx_highbd_sad32x64_avg = vpx_highbd_sad32x64_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x64_avg = vpx_highbd_sad32x64_avg_avx2;
+  vpx_highbd_sad32x64x4d = vpx_highbd_sad32x64x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad32x64x4d = vpx_highbd_sad32x64x4d_avx2;
+  vpx_highbd_sad64x32 = vpx_highbd_sad64x32_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad64x32 = vpx_highbd_sad64x32_avx2;
+  vpx_highbd_sad64x32_avg = vpx_highbd_sad64x32_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad64x32_avg = vpx_highbd_sad64x32_avg_avx2;
+  vpx_highbd_sad64x32x4d = vpx_highbd_sad64x32x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad64x32x4d = vpx_highbd_sad64x32x4d_avx2;
+  vpx_highbd_sad64x64 = vpx_highbd_sad64x64_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad64x64 = vpx_highbd_sad64x64_avx2;
+  vpx_highbd_sad64x64_avg = vpx_highbd_sad64x64_avg_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad64x64_avg = vpx_highbd_sad64x64_avg_avx2;
+  vpx_highbd_sad64x64x4d = vpx_highbd_sad64x64x4d_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_sad64x64x4d = vpx_highbd_sad64x64x4d_avx2;
   vpx_highbd_satd = vpx_highbd_satd_c;
   if (flags & HAS_AVX2)
     vpx_highbd_satd = vpx_highbd_satd_avx2;

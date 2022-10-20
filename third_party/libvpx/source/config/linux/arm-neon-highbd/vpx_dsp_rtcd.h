@@ -3514,12 +3514,18 @@ void vpx_highbd_dc_top_predictor_8x8_neon(uint16_t* dst,
 void vpx_highbd_fdct16x16_c(const int16_t* input,
                             tran_low_t* output,
                             int stride);
-#define vpx_highbd_fdct16x16 vpx_highbd_fdct16x16_c
+void vpx_highbd_fdct16x16_neon(const int16_t* input,
+                               tran_low_t* output,
+                               int stride);
+#define vpx_highbd_fdct16x16 vpx_highbd_fdct16x16_neon
 
 void vpx_highbd_fdct16x16_1_c(const int16_t* input,
                               tran_low_t* output,
                               int stride);
-#define vpx_highbd_fdct16x16_1 vpx_highbd_fdct16x16_1_c
+void vpx_highbd_fdct16x16_1_neon(const int16_t* input,
+                                 tran_low_t* output,
+                                 int stride);
+#define vpx_highbd_fdct16x16_1 vpx_highbd_fdct16x16_1_neon
 
 void vpx_highbd_fdct32x32_c(const int16_t* input,
                             tran_low_t* output,
@@ -3529,7 +3535,10 @@ void vpx_highbd_fdct32x32_c(const int16_t* input,
 void vpx_highbd_fdct32x32_1_c(const int16_t* input,
                               tran_low_t* output,
                               int stride);
-#define vpx_highbd_fdct32x32_1 vpx_highbd_fdct32x32_1_c
+void vpx_highbd_fdct32x32_1_neon(const int16_t* input,
+                                 tran_low_t* output,
+                                 int stride);
+#define vpx_highbd_fdct32x32_1 vpx_highbd_fdct32x32_1_neon
 
 void vpx_highbd_fdct32x32_rd_c(const int16_t* input,
                                tran_low_t* output,
@@ -3537,10 +3546,16 @@ void vpx_highbd_fdct32x32_rd_c(const int16_t* input,
 #define vpx_highbd_fdct32x32_rd vpx_highbd_fdct32x32_rd_c
 
 void vpx_highbd_fdct4x4_c(const int16_t* input, tran_low_t* output, int stride);
-#define vpx_highbd_fdct4x4 vpx_highbd_fdct4x4_c
+void vpx_highbd_fdct4x4_neon(const int16_t* input,
+                             tran_low_t* output,
+                             int stride);
+#define vpx_highbd_fdct4x4 vpx_highbd_fdct4x4_neon
 
 void vpx_highbd_fdct8x8_c(const int16_t* input, tran_low_t* output, int stride);
-#define vpx_highbd_fdct8x8 vpx_highbd_fdct8x8_c
+void vpx_highbd_fdct8x8_neon(const int16_t* input,
+                             tran_low_t* output,
+                             int stride);
+#define vpx_highbd_fdct8x8 vpx_highbd_fdct8x8_neon
 
 void vpx_highbd_fdct8x8_1_c(const int16_t* input,
                             tran_low_t* output,
