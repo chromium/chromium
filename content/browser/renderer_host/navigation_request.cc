@@ -6608,7 +6608,7 @@ url::Origin NavigationRequest::GetTentativeOriginAtRequestTime() {
 }
 
 url::Origin NavigationRequest::GetOriginToCommit() {
-  return GetOriginForURLLoaderFactoryWithFinalFrameHost();
+  return GetOriginToCommitWithDebugInfo().first;
 }
 
 std::pair<url::Origin, std::string>
