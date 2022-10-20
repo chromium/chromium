@@ -43,6 +43,7 @@ gclient_gn_args = [
   'checkout_nacl',
   'checkout_openxr',
   'checkout_rts_model',
+  'checkout_src_internal',
   'cros_boards',
   'cros_boards_with_qemu_images',
   'generate_location_tags',
