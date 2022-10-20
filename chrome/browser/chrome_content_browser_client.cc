@@ -1658,6 +1658,15 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
   content::StoragePartitionConfig default_storage_partition_config =
       content::StoragePartitionConfig::CreateDefault(browser_context);
 
+  // A non-default storage partition is used in the following situations:
+  // - To enforce process isolation between a more-trusted content (Chrome Apps,
+  // Extensions, and Isolated Web Apps) and regular web content.
+  // - For the <webview> tag, which Chrome Apps, Isolated Web Apps and WebUI use
+  // to create temporary storage buckets for loading various kinds of web
+  // content.
+  //
+  // In general, those use cases aren't considered part of the user's normal
+  // browsing activity.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (site.SchemeIs(extensions::kExtensionScheme)) {
     // The host in an extension site URL is the extension_id.
