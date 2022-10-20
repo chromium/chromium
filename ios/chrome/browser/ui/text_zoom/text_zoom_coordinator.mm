@@ -87,6 +87,7 @@
   self.textZoomViewController = nil;
 
   [self.mediator disconnect];
+  self.mediator = nil;
 }
 
 - (void)showAnimated:(BOOL)animated {

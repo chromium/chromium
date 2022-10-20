@@ -76,6 +76,8 @@
   }
   [self.findBarController findBarViewWillHide];
   [self.presenter dismissAnimated:animated];
+
+  [self.mediator disconnect];
   self.mediator = nil;
 }
 

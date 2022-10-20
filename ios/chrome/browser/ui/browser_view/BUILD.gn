@@ -225,6 +225,7 @@ source_set("browser_view") {
     "//ios/web/public",
     "//ios/web/public/deprecated:deprecated_web_util",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/gfx",
     "//url",

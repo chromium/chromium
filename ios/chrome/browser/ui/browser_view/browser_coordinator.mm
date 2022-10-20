@@ -173,6 +173,7 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -180,12 +181,22 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
 // Duration of the toolbar animation.
 constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     base::Milliseconds(300);
 
 // URL to share when user selects "Share Chrome"
 const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
+
+// Enum for toolbar to present.
+enum class ToolbarKind {
+  kTextZoom,
+  kFindInPage,
+};
+
+}  // anonymous namespace
 
 @interface BrowserCoordinator () <ActivityServiceCommands,
                                   BrowserCoordinatorCommands,
@@ -284,9 +295,6 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 // The coordinator that manages net export.
 @property(nonatomic, strong) NetExportCoordinator* netExportCoordinator;
-
-// Weak reference for the next coordinator to be displayed over the toolbar.
-@property(nonatomic, weak) ChromeCoordinator* nextToolbarCoordinator;
 
 // Coordinator for Page Info UI.
 @property(nonatomic, strong) ChromeCoordinator* pageInfoCoordinator;
@@ -414,6 +422,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   id<HelpCommands> _helpHandler;
   id<PopupMenuCommands> _popupMenuCommandsHandler;
   id<SnackbarCommands> _snackbarCommandsHandler;
+  absl::optional<ToolbarKind> _nextToolbarToPresent;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1455,20 +1464,27 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   if (!self.canShowFindBar)
     return;
 
-  self.findBarCoordinator =
-      [[FindBarCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser];
-  self.findBarCoordinator.presenter = _toolbarAccessoryPresenter;
-  self.findBarCoordinator.delegate = self;
-  self.findBarCoordinator.presentationDelegate = self.viewController;
-
   if (_toolbarAccessoryPresenter.isPresenting) {
-    self.nextToolbarCoordinator = self.findBarCoordinator;
+    _nextToolbarToPresent = ToolbarKind::kFindInPage;
     [self closeTextZoom];
     return;
   }
 
-  [self.findBarCoordinator start];
+  FindBarCoordinator* findBarCoordinator = self.findBarCoordinator;
+  if (findBarCoordinator) {
+    [findBarCoordinator stop];
+    self.findBarCoordinator = nil;
+  }
+
+  findBarCoordinator =
+      [[FindBarCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser];
+  self.findBarCoordinator = findBarCoordinator;
+
+  findBarCoordinator.presenter = _toolbarAccessoryPresenter;
+  findBarCoordinator.delegate = self;
+  findBarCoordinator.presentationDelegate = self.viewController;
+  [findBarCoordinator start];
 }
 
 - (void)closeFindInPage {
@@ -1652,47 +1668,68 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 - (void)toolbarAccessoryCoordinatorDidDismissUI:
     (ChromeCoordinator*)coordinator {
-  if (!self.nextToolbarCoordinator) {
+  if (self.findBarCoordinator) {
+    [self.findBarCoordinator stop];
+    self.findBarCoordinator = nil;
+  }
+
+  if (self.textZoomCoordinator) {
+    [self.textZoomCoordinator stop];
+    self.textZoomCoordinator = nil;
+  }
+
+  if (!_nextToolbarToPresent.has_value()) {
     return;
   }
-  if (self.nextToolbarCoordinator == self.findBarCoordinator) {
-    [self openFindInPage];
-    self.nextToolbarCoordinator = nil;
-  } else if (self.nextToolbarCoordinator == self.textZoomCoordinator) {
-    [self openTextZoom];
-    self.nextToolbarCoordinator = nil;
+
+  const ToolbarKind nextToolbarToPresent = *_nextToolbarToPresent;
+  _nextToolbarToPresent = absl::nullopt;
+
+  switch (nextToolbarToPresent) {
+    case ToolbarKind::kTextZoom:
+      [self openTextZoom];
+      break;
+
+    case ToolbarKind::kFindInPage:
+      [self openFindInPage];
+      break;
   }
 }
 
 #pragma mark - TextZoomCommands
 
 - (void)openTextZoom {
-  self.textZoomCoordinator = [[TextZoomCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.textZoomCoordinator.presenter = _toolbarAccessoryPresenter;
-  self.textZoomCoordinator.delegate = self;
-
   if (_toolbarAccessoryPresenter.isPresenting) {
-    self.nextToolbarCoordinator = self.textZoomCoordinator;
+    _nextToolbarToPresent = ToolbarKind::kTextZoom;
     [self closeFindInPage];
     return;
   }
 
-  [self.textZoomCoordinator start];
+  TextZoomCoordinator* textZoomCoordinator = self.textZoomCoordinator;
+  if (textZoomCoordinator) {
+    [textZoomCoordinator stop];
+    self.textZoomCoordinator = nil;
+  }
+
+  textZoomCoordinator = [[TextZoomCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.textZoomCoordinator = textZoomCoordinator;
+
+  textZoomCoordinator.presenter = _toolbarAccessoryPresenter;
+  textZoomCoordinator.delegate = self;
+  [textZoomCoordinator start];
 }
 
 - (void)closeTextZoom {
-  if (!ios::provider::IsTextZoomEnabled()) {
-    return;
-  }
-
   web::WebState* currentWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   if (currentWebState) {
-    FontSizeTabHelper* fontSizeTabHelper =
-        FontSizeTabHelper::FromWebState(currentWebState);
-    fontSizeTabHelper->SetTextZoomUIActive(false);
+    if (ios::provider::IsTextZoomEnabled()) {
+      FontSizeTabHelper* fontSizeTabHelper =
+          FontSizeTabHelper::FromWebState(currentWebState);
+      fontSizeTabHelper->SetTextZoomUIActive(false);
+    }
   }
   [self.textZoomCoordinator stop];
 }

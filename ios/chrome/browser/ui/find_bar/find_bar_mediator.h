@@ -26,6 +26,9 @@ class WebState;
 
 @property(nonatomic, weak) id<FindBarConsumer> consumer;
 
+// Stops observing all objects.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_MEDIATOR_H_
