@@ -75,7 +75,9 @@ class TestSigninController : public NetworkPortalSigninController {
 
 class NetworkPortalSigninControllerTest : public testing::Test {
  public:
-  NetworkPortalSigninControllerTest() = default;
+  NetworkPortalSigninControllerTest() {
+    feature_list_.InitAndDisableFeature({features::kCaptivePortalUI2022});
+  }
   NetworkPortalSigninControllerTest(const NetworkPortalSigninControllerTest&) =
       delete;
   NetworkPortalSigninControllerTest& operator=(
@@ -164,6 +166,7 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   FakeChromeUserManager* user_manager_;
   std::unique_ptr<TestingProfileManager> test_profile_manager_;
   std::unique_ptr<TestSigninController> controller_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(NetworkPortalSigninControllerTest, LoginScreen) {
@@ -214,11 +217,9 @@ class NetworkPortalSigninControllerTest2022Update
     : public NetworkPortalSigninControllerTest {
  public:
   NetworkPortalSigninControllerTest2022Update() {
+    feature_list_.Reset();
     feature_list_.InitAndEnableFeature(features::kCaptivePortalUI2022);
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(NetworkPortalSigninControllerTest2022Update, LoginScreen) {

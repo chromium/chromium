@@ -515,7 +515,7 @@ BASE_FEATURE(kBruschettaAlphaMigrate,
 // notifications, network details page, quick settings, and portal signin UI.
 BASE_FEATURE(kCaptivePortalUI2022,
              "CaptivePortalUI2022",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.

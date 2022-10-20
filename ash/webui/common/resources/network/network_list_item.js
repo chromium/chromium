@@ -707,7 +707,7 @@ Polymer({
     }
 
     // Warning is shown when there is restricted connectivity.
-    if (this.isCaptivePortalUI2022Enabled_ &&
+    if (this.isCaptivePortalUI2022Enabled_ && this.networkState &&
         OncMojo.isRestrictedConnectivity(this.networkState.portalState)) {
       return true;
     }

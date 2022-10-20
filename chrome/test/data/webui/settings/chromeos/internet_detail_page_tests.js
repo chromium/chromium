@@ -232,8 +232,8 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailPage.shadowRoot.querySelector(`#networkState`);
@@ -260,8 +260,8 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailPage.shadowRoot.querySelector(`#networkState`);
@@ -288,8 +288,8 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailPage.shadowRoot.querySelector(`#networkState`);
@@ -316,8 +316,8 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailPage.shadowRoot.querySelector(`#networkState`);
@@ -347,8 +347,8 @@ suite('InternetDetailPage', function() {
 
           mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-          internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
           internetDetailPage.isCaptivePortalUI2022Enabled_ = false;
+          internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
           return flushAsync().then(() => {
             const networkStateText =
                 internetDetailPage.shadowRoot.querySelector(`#networkState`);
