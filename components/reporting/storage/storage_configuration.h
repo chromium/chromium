@@ -135,6 +135,10 @@ class QueueOptions {
     max_single_file_size_ = max_single_file_size;
     return *this;
   }
+  QueueOptions& set_can_shed_records(bool can_shed_records) {
+    can_shed_records_ = can_shed_records;
+    return *this;
+  }
   const base::FilePath& directory() const { return directory_; }
   const base::FilePath::StringType& file_prefix() const { return file_prefix_; }
   size_t max_record_size() const { return storage_options_.max_record_size(); }
@@ -147,6 +151,7 @@ class QueueOptions {
   uint64_t max_single_file_size() const { return max_single_file_size_; }
   base::TimeDelta upload_period() const { return upload_period_; }
   base::TimeDelta upload_retry_delay() const { return upload_retry_delay_; }
+  bool can_shed_records() const { return can_shed_records_; }
   scoped_refptr<ResourceInterface> disk_space_resource() const {
     return storage_options_.disk_space_resource();
   }
@@ -171,6 +176,9 @@ class QueueOptions {
   // Retry delay for a failed upload. If 0, not retried at all
   // (should only be set to 0 in periodic queues).
   base::TimeDelta upload_retry_delay_;
+  // Does the queue have the ability to perform a record shedding process on
+  // itself. Only SECURITY can't shed.
+  bool can_shed_records_ = true;
   // Cut-off file size of an individual queue
   // When file exceeds this size, the new file is created
   // for further records. Note that each file must have at least

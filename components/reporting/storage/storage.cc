@@ -728,6 +728,19 @@ void Storage::Create(
         Response(final_status_);
         return;
       }
+      // Now all queues are ready, assign degradation vectors to them
+      // in an ascending priorities order. The lowest priority queue has
+      // an empty vector.
+      std::vector<scoped_refptr<StorageQueue>> degradation_queues;
+      for (const auto& queue_options : queues_options_) {
+        const auto queue_or_error = storage_->GetQueue(queue_options.first);
+        DCHECK(queue_or_error.ok()) << queue_or_error.status();
+        queue_or_error.ValueOrDie()->AssignDegradationQueues(
+            degradation_queues);
+        // Add newly created queue to the list to be used by all the later ones.
+        degradation_queues.emplace_back(queue_or_error.ValueOrDie());
+      }
+
       Response(std::move(storage_));
     }
 

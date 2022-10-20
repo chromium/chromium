@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -34,6 +35,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
+
+BASE_DECLARE_FEATURE(kReportingStorageDegradationFeature);
 
 namespace test {
 
@@ -81,13 +84,13 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Confirms acceptance of the records up to
   // |sequence_information.sequencing_id()| (inclusively), if the
-  // |sequence_information.generation_id()| matches. All records with sequencing
-  // ids <= this one can be removed from the Storage, and can no longer be
-  // uploaded. In order to reset to the very first record (seq_id=0)
-  // |sequence_information.sequencing_id()| should be set to -1.
+  // |sequence_information.generation_id()| matches. All records with
+  // sequencing ids <= this one can be removed from the Storage, and can no
+  // longer be uploaded. In order to reset to the very first record
+  // (seq_id=0) |sequence_information.sequencing_id()| should be set to -1.
   // If |force| is false (which is used in most cases),
-  // |sequence_information.sequencing_id()| is only accepted if no higher ids
-  // were confirmed before; otherwise it is accepted unconditionally.
+  // |sequence_information.sequencing_id()| is only accepted if no higher
+  // ids were confirmed before; otherwise it is accepted unconditionally.
   // |sequence_information.priority()| is ignored - should have been used
   // by Storage when selecting the queue.
   // Helper methods: RemoveConfirmedData.
@@ -117,6 +120,13 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // locking StorageQueue. Helper methods: SwitchLastFileIfNotEmpty,
   // CollectFilesForUpload.
   void Flush();
+
+  // Assigns degradation vector to the queue, allowing to shed records
+  // from those queue in ascending order when the current queue does not have
+  // enough disk space. Can only be called once after the queues are initialized
+  // and before they are actually used.
+  void AssignDegradationQueues(
+      const std::vector<scoped_refptr<StorageQueue>>& degradation_queues);
 
   // Test only: makes specified records fail on specified operation kind.
   void TestInjectErrorsForOperation(
@@ -336,6 +346,42 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Helper method called by periodic time to upload data.
   void PeriodicUpload();
 
+  // Helper method to reserve space needed to write a new record.
+  Status ReserveNewRecordDiskSpace(size_t total_size);
+
+  // Sequentially removes the files comprising the queue from oldest to newest
+  // to recover disk space so higher priority files can be stored. This function
+  // is posted iteratively through all StorageQueues in the
+  // `degradation_queues_` until enough space is recovered. Once all the queues
+  // available are used to shed files, then the Helper function
+  // RecordsSheddingHelper is triggered to shed files from the queue that is
+  // trying to write a new record, `writing_storage_queue`. Parameters:
+  // `degradation_queues` -> contains the queues still available where files can
+  // be shed from. writing_storage_queue
+  // -> a reference to the queue that is trying to write a record.
+  // `space_to_recover` -> an addition of the space RecordsShedding needs to
+  // recover by shedding files to write the record. `resume_writing_cb` ->
+  // callback to retry writing the new record with the newly available space.
+  // `writing_failure_cb` -> callback to log the writing error and close the
+  // writing process.
+  void RecordsShedding(
+      base::span<scoped_refptr<StorageQueue>> degradation_queues,
+      scoped_refptr<StorageQueue> writing_storage_queue,
+      const size_t space_to_recover,
+      base::OnceClosure resume_writing_cb,
+      base::OnceClosure writing_failure_cb);
+
+  // Helper function for RecordsShedding used to shed records from the queue
+  // that is trying to write a new record.
+  void RecordsSheddingHelper(const size_t space_to_recover,
+                             base::OnceClosure resume_writing_cb,
+                             base::OnceClosure writing_failure_cb);
+
+  // This function iterates over the files_ map and removes them in order of
+  // oldest to newest until disk_space_resource has more space available than
+  // `space_to_recover`.
+  bool FilesShedding(const size_t space_to_recover);
+
   // Sequential task runner for all activities in this StorageQueue
   // (must be first member in class).
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
@@ -348,6 +394,12 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Immutable options, stored at the time of creation.
   const QueueOptions options_;
+
+  // List of queues to be used for degradation (from lowest priority
+  // to the one below our own). Can only be set once by
+  // `AssignDegradationQueues` after the queues are initialized and before they
+  // are actually used, so it becomes effectively immutable.
+  std::vector<scoped_refptr<StorageQueue>> degradation_queues_;
 
   // Current generation id, unique per device and queue.
   // Set up once during initialization by reading from the 'gen_id.NNNN' file
@@ -365,6 +417,11 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // if the write fails, it needs to be removed from the queue regardless of
   // whether it is at the head, tail or middle.
   std::list<WriteContext*> write_contexts_queue_;
+
+  // Reflects reservation for the head of the write contexts queue. Will return
+  // to 0 after each writing process is finished. It helps keep disk space usage
+  // accurate and within the bounds of the reservation.
+  size_t active_write_reservation_size_ = 0;
 
   // Next sequencing id to store (not assigned yet).
   int64_t next_sequencing_id_ = 0;

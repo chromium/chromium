@@ -108,7 +108,8 @@ StorageOptions::QueuesOptionsList StorageOptions::ProduceQueuesOptions() const {
                      QueueOptions(*this)
                          .set_subdirectory(kSecurityQueueSubdir)
                          .set_file_prefix(kSecurityQueuePrefix)
-                         .set_upload_retry_delay(kFailedUploadRetryDelay)),
+                         .set_upload_retry_delay(kFailedUploadRetryDelay)
+                         .set_can_shed_records(false)),
   };
 }
 

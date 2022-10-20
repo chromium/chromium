@@ -35,6 +35,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/reporting/compression/compression_module.h"
@@ -54,6 +55,14 @@
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace reporting {
+
+// Temporary: enable/disable Storage degradation.
+// When enabled: If there is no disk space available at the time of writing a
+// new record then the storage queue will try to shed files sequentially from
+// lowest to highest priority.
+BASE_FEATURE(kReportingStorageDegradationFeature,
+             "ReportingStorageDegradation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -161,6 +170,12 @@ StorageQueue::~StorageQueue() {
 
   // Release all files.
   ReleaseAllFileInstances();
+}
+
+void StorageQueue::AssignDegradationQueues(
+    const std::vector<scoped_refptr<StorageQueue>>& degradation_queues) {
+  DCHECK(degradation_queues_.empty()) << "Can only be assigned once";
+  degradation_queues_ = degradation_queues;
 }
 
 Status StorageQueue::Init() {
@@ -516,12 +531,16 @@ Status StorageQueue::WriteHeaderAndBlock(
                   base::StrCat({"Cannot open file=", file->name(),
                                 " status=", open_status.ToString()}));
   }
-  if (!options_.disk_space_resource()->Reserve(total_size)) {
+  // The space for this append is being reserved in
+  // StorageQueue::ReserveNewRecordDiskSpace.
+  if (active_write_reservation_size_ < total_size) {
     return Status(
         error::RESOURCE_EXHAUSTED,
         base::StrCat({"Not enough disk space available to write into file=",
                       file->name()}));
   }
+  active_write_reservation_size_ -= total_size;
+
   auto write_status = file->Append(base::StringPiece(
       reinterpret_cast<const char*>(&header), sizeof(header)));
   if (!write_status.ok()) {
@@ -576,14 +595,19 @@ Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
           /*size=*/0, options_.memory_resource(),
           options_.disk_space_resource()));
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/false));
-  // Account for the metadata file size.
-  if (!options_.disk_space_resource()->Reserve(sizeof(generation_id_) +
-                                               current_record_digest.size())) {
+
+  // The space for this following Append is being reserved in
+  // StorageQueue::ReserveNewRecordDiskSpace.
+  if (active_write_reservation_size_ <
+      sizeof(generation_id_) + current_record_digest.size()) {
     return Status(
         error::RESOURCE_EXHAUSTED,
         base::StrCat({"Not enough disk space available to write into file=",
                       meta_file->name()}));
   }
+  active_write_reservation_size_ -=
+      sizeof(generation_id_) + current_record_digest.size();
+
   // Metadata file format is:
   // - generation id (8 bytes)
   // - last record digest (crypto::kSHA256Length bytes)
@@ -1485,6 +1509,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   void ResumeWriteRecord() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(
         storage_queue_->storage_queue_sequence_checker_);
+    // The size of the reservation is unknown until calculated.
+    DCHECK_EQ(storage_queue_->active_write_reservation_size_, 0u);
 
     // If we are not at the head of the queue, delay write and expect to be
     // reactivated later.
@@ -1493,11 +1519,30 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       return;
     }
 
+    DCHECK(!buffer_.empty());
+    // active_write_reservation_size_ includes both expected size of META file
+    // and increase in size of DATA file.
+    storage_queue_->active_write_reservation_size_ =
+        sizeof(generation_id_) + current_record_digest_.size() +
+        RoundUpToFrameSize(sizeof(RecordHeader) + buffer_.size());
+
+    Status reserve_result = storage_queue_->ReserveNewRecordDiskSpace(
+        storage_queue_->active_write_reservation_size_);
+    if (!reserve_result.ok()) {
+      if (!base::FeatureList::IsEnabled(kReportingStorageDegradationFeature)) {
+        storage_queue_->active_write_reservation_size_ = 0;
+        Response(reserve_result);
+        return;
+      }
+      StartRecordsShedding(storage_queue_->active_write_reservation_size_);
+      storage_queue_->active_write_reservation_size_ = 0;
+      return;
+    }
+
     // We are at the head of the queue, remove ourselves.
     storage_queue_->write_contexts_queue_.pop_front();
     in_contexts_queue_ = storage_queue_->write_contexts_queue_.end();
 
-    DCHECK(!buffer_.empty());
     StatusOr<scoped_refptr<SingleFile>> assign_result =
         storage_queue_->AssignLastFile(buffer_.size());
     if (!assign_result.ok()) {
@@ -1525,6 +1570,76 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     Response(Status::StatusOK());
   }
 
+  void StartRecordsShedding(const size_t space_to_recover) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
+
+    // Prepare callbacks for shedding success and failure.
+    // Both will run on the current queue.
+    auto resume_writing_cb =
+        base::BindPostTask(storage_queue_->sequenced_task_runner_,
+                           base::BindOnce(&WriteContext::ResumeWriteRecord,
+                                          base::Unretained(this)));
+    auto writing_failure_cb = base::BindPostTask(
+        storage_queue_->sequenced_task_runner_,
+        base::BindOnce(&WriteContext::DiskSpaceReservationFailure,
+                       base::Unretained(this), space_to_recover));
+
+    if (storage_queue_->degradation_queues_.empty()) {
+      // No lower priority queues available for degradation.
+      // Try to shed files in the current queue (if allowed).
+      storage_queue_->RecordsSheddingHelper(space_to_recover,
+                                            std::move(resume_writing_cb),
+                                            std::move(writing_failure_cb));
+      return;
+    }
+
+    // Try shedding in the lowest priority queue, passing the rest of the vector
+    // for the next attempts (schedule shedding on the lowest priority queue's
+    // task runner).
+    base::span<scoped_refptr<StorageQueue>> degradation_queues_span{
+        storage_queue_->degradation_queues_};
+    storage_queue_->degradation_queues_.front()
+        ->sequenced_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(&StorageQueue::RecordsShedding,
+                           storage_queue_->degradation_queues_.front(),
+                           degradation_queues_span.last(
+                               degradation_queues_span.size() - 1),
+                           storage_queue_, space_to_recover,
+                           std::move(resume_writing_cb),
+                           std::move(writing_failure_cb)));
+  }
+
+  void DiskSpaceReservationFailure(uint64_t space_to_recover) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
+
+    // We are at the head of the queue, remove ourselves.
+    storage_queue_->write_contexts_queue_.pop_front();
+    in_contexts_queue_ = storage_queue_->write_contexts_queue_.end();
+
+    const uint64_t space_used =
+        storage_queue_->options().disk_space_resource()->GetUsed();
+    const uint64_t space_total =
+        storage_queue_->options().disk_space_resource()->GetTotal();
+    Response(
+        Status(error::RESOURCE_EXHAUSTED,
+               base::StrCat({"Not enough disk space available to write "
+                             "new record.\nSize of new record: ",
+                             base::NumberToString(space_to_recover),
+                             "\nDisk space available: ",
+                             base::NumberToString(space_total - space_used)})));
+  }
+
+  void OnCompletion(const Status& status) override {
+    if (storage_queue_->active_write_reservation_size_ > 0u) {
+      DCHECK(!status.ok());
+      storage_queue_->options_.disk_space_resource()->Discard(
+          storage_queue_->active_write_reservation_size_);
+    }
+  }
+
   scoped_refptr<StorageQueue> storage_queue_;
 
   Record record_;
@@ -1545,6 +1660,90 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 void StorageQueue::Write(Record record,
                          base::OnceCallback<void(Status)> completion_cb) {
   Start<WriteContext>(std::move(record), std::move(completion_cb), this);
+}
+
+Status StorageQueue::ReserveNewRecordDiskSpace(const size_t total_size) {
+  if (!options_.disk_space_resource()->Reserve(total_size)) {
+    const uint64_t space_used = options_.disk_space_resource()->GetUsed();
+    const uint64_t space_total = options_.disk_space_resource()->GetTotal();
+    return Status(
+        error::RESOURCE_EXHAUSTED,
+        base::StrCat({"Not enough disk space available to write "
+                      "new record.\nSize of new record: ",
+                      base::NumberToString(total_size),
+                      "\nDisk space available: ",
+                      base::NumberToString(space_total - space_used)}));
+  }
+  return Status::StatusOK();
+}
+
+void StorageQueue::RecordsShedding(
+    base::span<scoped_refptr<StorageQueue>> degradation_queues,
+    scoped_refptr<StorageQueue> writing_storage_queue,
+    const size_t space_to_recover,
+    base::OnceClosure resume_writing_cb,
+    base::OnceClosure writing_failure_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+
+  // Try to shed files in the current queue.
+  if (FilesShedding(space_to_recover)) {
+    std::move(resume_writing_cb).Run();
+    return;
+  }
+
+  if (!degradation_queues.empty()) {
+    // There are more queues, try shedding in the lowest priority
+    // (schedule it on the respective task runner).
+    degradation_queues.front()->sequenced_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &StorageQueue::RecordsShedding, degradation_queues.front(),
+            degradation_queues.last(degradation_queues.size() - 1),
+            writing_storage_queue, space_to_recover,
+            std::move(resume_writing_cb), std::move(writing_failure_cb)));
+    return;
+  }
+
+  // No more queues, try shedding in `write_storage_queue`.
+  writing_storage_queue->sequenced_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&StorageQueue::RecordsSheddingHelper,
+                                writing_storage_queue, space_to_recover,
+                                std::move(resume_writing_cb),
+                                std::move(writing_failure_cb)));
+}
+
+void StorageQueue::RecordsSheddingHelper(const size_t space_to_recover,
+                                         base::OnceClosure resume_writing_cb,
+                                         base::OnceClosure writing_failure_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+
+  if (FilesShedding(space_to_recover)) {
+    std::move(resume_writing_cb).Run();
+    return;
+  }
+
+  std::move(writing_failure_cb).Run();
+}
+
+bool StorageQueue::FilesShedding(const size_t space_to_recover) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+  if (files_.size() > 1 && !active_read_operations_ &&
+      options_.can_shed_records()) {
+    auto file = files_.begin();
+    auto last_file = std::prev(files_.end());
+    while (file != last_file) {
+      // Delete file and discard reserved space
+      file->second->DeleteWarnIfFailed();
+      file = files_.erase(file);
+      first_sequencing_id_ = file->first;
+      // Check if now there is enough space available.
+      if (space_to_recover + options_.disk_space_resource()->GetUsed() <
+          options_.disk_space_resource()->GetTotal()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 Status StorageQueue::SwitchLastFileIfNotEmpty() {

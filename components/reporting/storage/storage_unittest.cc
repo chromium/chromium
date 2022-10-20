@@ -64,6 +64,8 @@ namespace {
 
 // Test uploader counter - for generation of unique ids.
 std::atomic<int64_t> next_uploader_id{0};
+// Maximum length of debug data prints to prevent excessive output.
+static constexpr size_t kDebugDataPrintSize = 16uL;
 
 // Storage options to be used in tests.
 class TestStorageOptions : public StorageOptions {
@@ -81,7 +83,7 @@ class TestStorageOptions : public StorageOptions {
     return queues_options;
   }
 
-  // Prepare options adjustment.
+  // Prepare options adjustments.
   // Must be called before the options are used by Storage::Create().
   void set_upload_retry_delay(base::TimeDelta upload_retry_delay) {
     upload_retry_delay_ = upload_retry_delay;
@@ -212,7 +214,7 @@ class SingleDecryptionContext {
 };
 
 class StorageTest
-    : public ::testing::TestWithParam<::testing::tuple<bool, size_t>> {
+    : public ::testing::TestWithParam<::testing::tuple<bool, size_t, bool>> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
@@ -226,25 +228,20 @@ class StorageTest
         }));
     // Encryption is enabled by default.
     ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
+
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (is_encryption_enabled()) {
-      // Generate signing key pair.
-      test::GenerateSigningKeyPair(signing_private_key_,
-                                   signature_verification_public_key_);
-      options_.set_signature_verification_public_key(std::string(
-          reinterpret_cast<const char*>(signature_verification_public_key_),
-          kKeySize));
-      // Create decryption module.
-      auto decryptor_result = test::Decryptor::Create();
-      ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
-      decryptor_ = std::move(decryptor_result.ValueOrDie());
-      // Prepare the key.
-      signed_encryption_key_ = GenerateAndSignKey();
-      // First record enqueue to Storage would need key delivered.
-      expect_to_need_key_ = true;
+      SetUpEncryption();
     } else {
-      // Disable encryption.
-      scoped_feature_list_.InitAndDisableFeature(kEncryptedReportingFeature);
+      // disable encryption
+      disabled_features.push_back(kEncryptedReportingFeature);
     }
+    if (is_degradation_enabled()) {
+      // Enable storage degradation
+      enabled_features.push_back(kReportingStorageDegradationFeature);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     test_compression_module_ =
         base::MakeRefCounted<test::TestCompressionModule>();
   }
@@ -323,7 +320,7 @@ class StorageTest
           .append("/")
           .append(base::NumberToString(generation_id))
           .append(" '")
-          .append(data.data(), data.size())
+          .append(data.data(), 0, std::min(data.size(), kDebugDataPrintSize))
           .append("'\n");
       std::move(processed_cb)
           .Run(mock_upload_->UploadRecord(uploader_id, priority, sequencing_id,
@@ -919,8 +916,8 @@ class StorageTest
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
     record.set_dm_token("DM TOKEN");
-    LOG(ERROR) << "Write priority=" << priority << " data='" << record.data()
-               << "'";
+    LOG(ERROR) << "Write priority=" << priority << " data='"
+               << record.data().substr(0, kDebugDataPrintSize) << "'";
     storage_->Write(priority, std::move(record), w.cb());
     return w.result();
   }
@@ -995,7 +992,25 @@ class StorageTest
     storage_->UpdateEncryptionKey(signed_encryption_key_);
   }
 
+  void SetUpEncryption() {
+    // Generate signing key pair.
+    test::GenerateSigningKeyPair(signing_private_key_,
+                                 signature_verification_public_key_);
+    options_.set_signature_verification_public_key(std::string(
+        reinterpret_cast<const char*>(signature_verification_public_key_),
+        kKeySize));
+    // Create decryption module.
+    auto decryptor_result = test::Decryptor::Create();
+    ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
+    decryptor_ = std::move(decryptor_result.ValueOrDie());
+    // Prepare the key.
+    signed_encryption_key_ = GenerateAndSignKey();
+    // First record enqueue to Storage would need key delivered.
+    expect_to_need_key_ = true;
+  }
+
   bool is_encryption_enabled() const { return ::testing::get<0>(GetParam()); }
+  bool is_degradation_enabled() const { return ::testing::get<2>(GetParam()); }
   size_t single_file_size_limit() const {
     return ::testing::get<1>(GetParam());
   }
@@ -1035,6 +1050,9 @@ class StorageTest
 constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
+constexpr std::array<char, (1024 * 1024 / 3)* 2> kBigData = {'A'};
+constexpr base::StringPiece xBigData(&kBigData.front(), kBigData.size());
+
 TEST_P(StorageTest, WriteAndReadPipelineId) {
   ResetTestStorage();
   CreateTestStorageOrDie(BuildTestStorageOptions());
@@ -1991,13 +2009,102 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   }
 }
 
+// Test no available files to delete
+TEST_P(StorageTest, WriteAttemptWithRecordsSheddingFailure) {
+  // TO-DO cleanup this test, build a test that actually deletes files.
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+
+  // Write records on a certain priority StorageQueue
+  WriteStringOrDie(FAST_BATCH, kData[0]);
+  WriteStringOrDie(FAST_BATCH, kData[1]);
+
+  // Reserve the remaining space to have none available and trigger Records
+  // Shedding
+  const uint64_t temp_used = options_.disk_space_resource()->GetUsed();
+  const uint64_t temp_total = options_.disk_space_resource()->GetTotal();
+  const uint64_t to_reserve = temp_total - temp_used;
+  options_.disk_space_resource()->Reserve(to_reserve);
+
+  // Write records on a higher priority queue to see if records shedding has any
+  // effect.
+  const Status write_result = WriteString(IMMEDIATE, kData[2]);
+  ASSERT_FALSE(write_result.ok());
+
+  // Discard the space reserved
+  options_.disk_space_resource()->Discard(to_reserve);
+}
+
+// Test Available files to delete in multiple queues
+TEST_P(StorageTest, WriteAttemptWithRecordsSheddingSuccess) {
+  // The test will try to write this amount of records.
+  static constexpr size_t kAmountOfBigRecords = 10;
+
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+
+  // This writes enough records to create `kAmountOfBigRecords` files in each
+  // queue: FAST_BATCH and MANUAL_BATCH
+  for (size_t i = 0; i < kAmountOfBigRecords; i++) {
+    WriteStringOrDie(FAST_BATCH, xBigData);
+    WriteStringOrDie(MANUAL_BATCH, xBigData);
+  }
+
+  // Reserve the remaining space to have none available and trigger Records
+  // Shedding
+  uint64_t temp_used = options_.disk_space_resource()->GetUsed();
+  uint64_t temp_total = options_.disk_space_resource()->GetTotal();
+  uint64_t to_reserve = temp_total - temp_used;
+  options_.disk_space_resource()->Reserve(to_reserve);
+
+  // Write records on a higher priority queue to see if records shedding has any
+  // effect.
+  const Status write_result_immediate = WriteString(IMMEDIATE, kData[2]);
+  if (!base::FeatureList::IsEnabled(kReportingStorageDegradationFeature)) {
+    ASSERT_FALSE(write_result_immediate.ok());
+  } else {
+    ASSERT_OK(write_result_immediate) << write_result_immediate;
+  }
+
+  // Discard the space reserved
+  options_.disk_space_resource()->Discard(to_reserve);
+}
+
+// Test Security queue cant_shed_records option
+TEST_P(StorageTest, RecordsSheddingSecurityCantShedRecords) {
+  // The test will try to write this amount of records.
+  static constexpr size_t kAmountOfBigRecords = 10;
+
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+
+  // This writes enough records to create `kAmountOfBigRecords` files in each
+  // queue: FAST_BATCH and MANUAL_BATCH
+  for (size_t i = 0; i < kAmountOfBigRecords; i++) {
+    WriteStringOrDie(SECURITY, xBigData);
+  }
+
+  // Reserve the remaining space to have none available and trigger Records
+  // Shedding
+  const uint64_t temp_used = options_.disk_space_resource()->GetUsed();
+  const uint64_t temp_total = options_.disk_space_resource()->GetTotal();
+  const uint64_t to_reserve = temp_total - temp_used;
+  options_.disk_space_resource()->Reserve(to_reserve);
+
+  // Write records on a higher priority queue to see if records shedding has no
+  // effect.
+  const Status write_result = WriteString(SECURITY, xBigData);
+  ASSERT_FALSE(write_result.ok());
+
+  // Discard the space reserved
+  options_.disk_space_resource()->Discard(to_reserve);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     VaryingFileSize,
     StorageTest,
     ::testing::Combine(::testing::Bool() /* true - encryption enabled */,
                        ::testing::Values(128 * 1024LL * 1024LL,
                                          256 /* two records in file */,
-                                         1 /* single record in file */)));
+                                         1 /* single record in file */),
+                       ::testing::Bool() /* true - degradation enabled */));
 
 }  // namespace
 }  // namespace reporting
