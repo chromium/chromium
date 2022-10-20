@@ -88,8 +88,12 @@ class WTF_EXPORT String {
   String(const char* characters, size_t length);
 #endif  // defined(ARCH_CPU_64_BITS)
 
-  // Construct a string with latin1 data, from a null-terminated source.
-  String(const LChar* characters)
+  // Construct a string with latin1 data, from a null-terminated source. The
+  // `LChar` constructor is explicit to avoid misinterpreting byte arrays.
+  // If the conversion is implicit, functions with both `String` and
+  // `base::span<const uint8_t>` overloads become ambiguous when called on
+  // `uint8_t[N]`.
+  explicit String(const LChar* characters)
       : String(reinterpret_cast<const char*>(characters)) {}
   String(const char* characters)
       : String(characters, characters ? strlen(characters) : 0) {}

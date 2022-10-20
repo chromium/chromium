@@ -148,7 +148,9 @@ class CORE_EXPORT V8ScriptValueSerializer
 #endif
 };
 
-// For code testing V8ScriptValueSerializer
+// For code testing V8ScriptValueSerializer. Behaves the same as
+// SerializedScriptValue::Create, except it can be called on an initializer
+// list.
 scoped_refptr<SerializedScriptValue> SerializedValue(
     const Vector<uint8_t>& bytes);
 

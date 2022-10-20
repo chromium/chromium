@@ -210,17 +210,16 @@ static void SwapWiredDataIfNeeded(uint8_t* buffer, size_t buffer_size) {
 }
 
 scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
-    const char* data,
-    size_t length) {
-  if (!data)
+    base::span<const uint8_t> data) {
+  if (data.empty())
     return Create();
 
-  DataBufferPtr data_buffer = AllocateBuffer(length);
-  std::copy(data, data + length, data_buffer.get());
-  SwapWiredDataIfNeeded(data_buffer.get(), length);
+  DataBufferPtr data_buffer = AllocateBuffer(data.size());
+  std::copy(data.begin(), data.end(), data_buffer.get());
+  SwapWiredDataIfNeeded(data_buffer.get(), data.size());
 
   return base::AdoptRef(
-      new SerializedScriptValue(std::move(data_buffer), length));
+      new SerializedScriptValue(std::move(data_buffer), data.size()));
 }
 
 scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
@@ -276,15 +275,14 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::NullValue() {
   // The format here may fall a bit out of date, because we support
   // deserializing SSVs written by old browser versions.
   static const uint8_t kNullData[] = {0xFF, 17, 0xFF, 13, '0', 0x00};
-  return Create(reinterpret_cast<const char*>(kNullData), sizeof(kNullData));
+  return Create(kNullData);
 }
 
 scoped_refptr<SerializedScriptValue> SerializedScriptValue::UndefinedValue() {
   // The format here may fall a bit out of date, because we support
   // deserializing SSVs written by old browser versions.
   static const uint8_t kUndefinedData[] = {0xFF, 17, 0xFF, 13, '_', 0x00};
-  return Create(reinterpret_cast<const char*>(kUndefinedData),
-                sizeof(kUndefinedData));
+  return Create(kUndefinedData);
 }
 
 String SerializedScriptValue::ToWireString() const {

@@ -27,9 +27,7 @@ bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
   mojo_base::BigBufferView message_view;
   if (!data.ReadEncodedMessage(&message_view))
     return false;
-  auto message_data = message_view.data();
-  out->message = blink::SerializedScriptValue::Create(
-      reinterpret_cast<const char*>(message_data.data()), message_data.size());
+  out->message = blink::SerializedScriptValue::Create(message_view.data());
 
   Vector<scoped_refptr<blink::BlobDataHandle>> blobs;
   if (!data.ReadBlobs(&blobs))

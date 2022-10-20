@@ -133,11 +133,7 @@ String ToJSON(v8::Local<v8::Object> object, const V8TestingScope& scope) {
 
 scoped_refptr<SerializedScriptValue> SerializedValue(
     const Vector<uint8_t>& bytes) {
-  // TODO(jbroman): Fix this once SerializedScriptValue can take bytes without
-  // endianness swapping.
-  DCHECK_EQ(bytes.size() % 2, 0u);
-  return SerializedScriptValue::Create(
-      String(reinterpret_cast<const UChar*>(&bytes[0]), bytes.size() / 2));
+  return SerializedScriptValue::Create(bytes);
 }
 
 // Checks for a DOM exception, including a rethrown one.
@@ -2133,9 +2129,8 @@ TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
   uint8_t serialized_value[] = {0xff, 0x14, 0xff, 0x0d, 0x5c, 0x6d,
                                 0xff, 0xff, 0xff, 0xff, 0x0f};
 
-  auto corrupted_serialized_script_value = SerializedScriptValue::Create(
-      reinterpret_cast<const char*>(serialized_value),
-      sizeof(serialized_value));
+  auto corrupted_serialized_script_value =
+      SerializedScriptValue::Create(serialized_value);
   corrupted_serialized_script_value->GetStreams() =
       std::move(serialized_script_value->GetStreams());
 

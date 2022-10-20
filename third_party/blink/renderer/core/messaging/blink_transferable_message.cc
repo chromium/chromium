@@ -20,9 +20,7 @@ namespace blink {
 BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
     TransferableMessage message) {
   BlinkTransferableMessage result;
-  result.message = SerializedScriptValue::Create(
-      reinterpret_cast<const char*>(message.encoded_message.data()),
-      message.encoded_message.size());
+  result.message = SerializedScriptValue::Create(message.encoded_message);
   for (auto& blob : message.blobs) {
     result.message->BlobDataHandles().Set(
         String::FromUTF8(blob->uuid),

@@ -344,15 +344,12 @@ bool Notification::requireInteraction() const {
 }
 
 ScriptValue Notification::data(ScriptState* script_state) {
-  const char* data = nullptr;
-  size_t length = 0;
+  base::span<const uint8_t> data;
   if (data_->data.has_value()) {
-    // TODO(https://crbug.com/798466): Align data types to avoid this cast.
-    data = reinterpret_cast<const char*>(data_->data->data());
-    length = data_->data->size();
+    data = data_->data.value();
   }
   scoped_refptr<SerializedScriptValue> serialized_value =
-      SerializedScriptValue::Create(data, length);
+      SerializedScriptValue::Create(data);
 
   return ScriptValue(script_state->GetIsolate(),
                      serialized_value->Deserialize(script_state->GetIsolate()));

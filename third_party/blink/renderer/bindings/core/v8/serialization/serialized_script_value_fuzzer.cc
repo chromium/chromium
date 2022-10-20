@@ -96,7 +96,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
 
   // Deserialize.
   scoped_refptr<SerializedScriptValue> serialized_script_value =
-      SerializedScriptValue::Create(reinterpret_cast<const char*>(data), size);
+      SerializedScriptValue::Create(base::make_span(data, size));
   serialized_script_value->Deserialize(isolate, options);
   CHECK(!try_catch.HasCaught())
       << "deserialize() should return null rather than throwing an exception.";

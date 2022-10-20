@@ -34,8 +34,7 @@ TEST(SerializedScriptValueTest, WireFormatRoundTrip) {
       sourceSerializedScriptValue->GetWireData();
 
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(
-          reinterpret_cast<const char*>(wire_data.data()), wire_data.size());
+      SerializedScriptValue::Create(wire_data);
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -46,8 +45,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion17NoByteSwapping) {
 
   const uint8_t data[] = {0xFF, 0x11, 0xFF, 0x0D, 0x54, 0x00};
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(reinterpret_cast<const char*>(data),
-                                    sizeof(data));
+      SerializedScriptValue::Create(data);
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -59,8 +57,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion16ByteSwapping) {
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
   const UChar data[] = {0xFF10, 0xFF0D, 0x5400};
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(reinterpret_cast<const char*>(data),
-                                    sizeof(data));
+      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -72,8 +69,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion13ByteSwapping) {
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
   const UChar data[] = {0xFF0D, 0x5400};
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(reinterpret_cast<const char*>(data),
-                                    sizeof(data));
+      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -85,8 +81,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ByteSwapping) {
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
   const UChar data[] = {0x5400};
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(reinterpret_cast<const char*>(data),
-                                    sizeof(data));
+      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -112,8 +107,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ImageData) {
   data.resize(257);  // (508 pixel data + 6 header bytes) / 2
 
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(reinterpret_cast<const char*>(data.data()),
-                                    data.size() * sizeof(UChar));
+      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(isolate);
   ASSERT_TRUE(deserialized->IsObject());
