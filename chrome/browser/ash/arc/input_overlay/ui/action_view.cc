@@ -197,6 +197,7 @@ void ActionView::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       break;
     case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_SCROLL_FLING_START:
       OnDragEnd();
       event->SetHandled();
       break;
