@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -564,16 +564,21 @@ let brokenTests = [
   'testRedirectRequest2',  // Hangs.
 ];
 
-chrome.test.getConfig(function(config) {
-  let args = JSON.parse(config.customArg);
-  if (args.testSuite == 'normal') {
-    runTests(allTests.filter(function(op) {
-      return workingTests.includes(op.name);
-    }));
-  } else {
-    chrome.test.assertEq('broken', args.testSuite);
-    runTests(allTests.filter(function(op) {
-      return brokenTests.includes(op.name);
-    }));
-  }
+const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
+  chrome.test.getConfig(function(config) {
+    let args = JSON.parse(config.customArg);
+    if (args.testSuite == 'normal') {
+      runTests(allTests.filter(function(op) {
+        return workingTests.includes(op.name);
+      }));
+    } else {
+      chrome.test.assertEq('broken', args.testSuite);
+      runTests(allTests.filter(function(op) {
+        return brokenTests.includes(op.name);
+      }));
+    }
+  })
 });

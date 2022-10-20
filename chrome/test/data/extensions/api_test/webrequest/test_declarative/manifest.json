@@ -1,0 +1,13 @@
+{
+  "name": "test_declarative",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webRequest API.",
+  "content_security_policy": "script-src 'self' http://127.0.0.1:*; object-src 'self'",
+  "permissions": ["webRequest", "webRequestBlocking", "declarativeWebRequest",
+                  "tabs", "<all_urls>"],
+  "background": {
+    "scripts": ["test_declarative.js"],
+    "persistent": true
+  }
+}

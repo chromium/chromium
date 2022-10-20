@@ -1076,11 +1076,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestDeclarative1) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestDeclarative1) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.extension_url = "test_declarative1.html",
-                                .custom_arg = R"({"testSuite": "normal"})"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_declarative",
+                               {.custom_arg = R"({"testSuite": "normal"})"}))
       << message_;
 }
 
@@ -1088,12 +1088,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestDeclarative1) {
 // until these tests are fixed and moved to the set of tests that aren't
 // broken or flaky. Should tests become flaky, they can be moved here.
 // See https://crbug.com/846555.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        DISABLED_WebRequestDeclarative1Broken) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.extension_url = "test_declarative1.html",
-                                .custom_arg = R"({"testSuite": "broken"})"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_declarative",
+                               {.custom_arg = R"({"testSuite": "broken"})"}))
       << message_;
 }
 
