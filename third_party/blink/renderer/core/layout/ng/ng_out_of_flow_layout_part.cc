@@ -1455,8 +1455,6 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
   const NGLayoutResult* layout_result =
       Layout(oof_node_to_layout, fragmentainer_constraint_space,
              is_known_to_be_last_fragmentainer);
-  NGBoxStrut scrollbars_after =
-      ComputeScrollbarsForNonAnonymous(node_info.node);
 
   // Since out-of-flow positioning sets up a constraint space with fixed
   // inline-size, the regular layout code (|NGBlockNode::Layout()|) cannot
@@ -1469,6 +1467,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
     WritingDirectionMode writing_mode_direction =
         node_info.node.Style().GetWritingDirection();
     bool freeze_horizontal = false, freeze_vertical = false;
+    NGBoxStrut scrollbars_after =
+        ComputeScrollbarsForNonAnonymous(node_info.node);
     bool ignore_first_inline_freeze =
         scrollbars_after.InlineSum() && scrollbars_after.BlockSum();
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
