@@ -125,6 +125,10 @@ def _ParseOptions():
                       help='Use when filing R8 bugs to capture inputs.'
                       ' Stores inputs to r8inputs.zip')
   parser.add_argument(
+      '--dump-unknown-refs',
+      action='store_true',
+      help='Log all reasons why API modelling cannot determine API level')
+  parser.add_argument(
       '--stamp',
       help='File to touch upon success. Mutually exclusive with --output-path')
   parser.add_argument('--desugared-library-keep-rule-output',
@@ -303,6 +307,8 @@ def _OptimizeWithR8(options,
     ]
     if options.dump_inputs:
       cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
+    if options.dump_unknown_refs:
+      cmd += ['-Dcom.android.tools.r8.reportUnknownApiReferences=1']
     cmd += [
         '-cp',
         options.r8_path,
