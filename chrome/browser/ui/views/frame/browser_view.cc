@@ -1020,6 +1020,12 @@ BrowserView::~BrowserView() {
   side_panel_button_highlighter_.reset();
   side_panel_visibility_controller_.reset();
 
+// Delete lens side panel controller before deleting the child views.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (lens_side_panel_controller_)
+    lens_side_panel_controller_.reset();
+#endif
+
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
   RemoveAllChildViews();
