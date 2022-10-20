@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_stack_entry.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 
 #include <utility>
 
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_app {
+namespace web_package {
 
 namespace {
 
@@ -22,11 +22,11 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
-MakeSignatureStackEntry(base::span<const uint8_t> public_key,
-                        base::span<const uint8_t> signature) {
+mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
+    base::span<const uint8_t> public_key,
+    base::span<const uint8_t> signature) {
   auto raw_signature_stack_entry =
-      web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
+      mojom::BundleIntegrityBlockSignatureStackEntry::New();
   raw_signature_stack_entry->public_key =
       std::vector(std::begin(public_key), std::end(public_key));
   raw_signature_stack_entry->signature =
@@ -68,4 +68,4 @@ TEST(SignedWebBundleSignatureStackEntryTest, TestInvalidSignature) {
             "64, but got 0 bytes.");
 }
 
-}  // namespace web_app
+}  // namespace web_package

@@ -12,10 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/shared_file.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -232,12 +232,13 @@ class SignedWebBundleReader {
       web_package::mojom::BundleIntegrityBlockParseErrorPtr error);
 
   void OnShouldContinueParsingAfterIntegrityBlock(
-      SignedWebBundleIntegrityBlock integrity_block,
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
       ReadErrorCallback callback,
       SignatureVerificationAction action);
 
-  void VerifySignatures(SignedWebBundleIntegrityBlock integrity_block,
-                        ReadErrorCallback callback);
+  void VerifySignatures(
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
+      ReadErrorCallback callback);
 
   void OnSignaturesVerified(
       ReadErrorCallback callback,

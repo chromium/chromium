@@ -66,9 +66,10 @@ class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
       base::RepeatingClosure on_verify_signatures = base::DoNothing())
       : error_(error), on_verify_signatures_(on_verify_signatures) {}
 
-  void VerifySignatures(scoped_refptr<web_package::SharedFile> file,
-                        SignedWebBundleIntegrityBlock integrity_block,
-                        SignatureVerificationCallback callback) override {
+  void VerifySignatures(
+      scoped_refptr<web_package::SharedFile> file,
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
+      SignatureVerificationCallback callback) override {
     on_verify_signatures_.Run();
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), error_));

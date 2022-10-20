@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/ed25519_signature.h"
+#include "components/web_package/signed_web_bundles/ed25519_signature.h"
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
-namespace web_app {
+namespace web_package {
 
 // We don't use `ED25519_SIGNATURE_LEN` in the header file, because we want to
 // avoid including large BoringSSL headers in header files.
@@ -39,9 +39,9 @@ Ed25519Signature::Ed25519Signature(std::array<uint8_t, kLength>& bytes)
 
 [[nodiscard]] bool Ed25519Signature::Verify(
     base::span<const uint8_t> message,
-    const web_package::Ed25519PublicKey& public_key) const {
+    const Ed25519PublicKey& public_key) const {
   return ED25519_verify(message.data(), message.size(), bytes().data(),
                         public_key.bytes().data());
 }
 
-}  // namespace web_app
+}  // namespace web_package

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 
 #include "base/strings/stringprintf.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 
-namespace web_app {
+namespace web_package {
 
 SignedWebBundleIntegrityBlock::~SignedWebBundleIntegrityBlock() = default;
 
 base::expected<SignedWebBundleIntegrityBlock, std::string>
 SignedWebBundleIntegrityBlock::Create(
-    web_package::mojom::BundleIntegrityBlockPtr integrity_block) {
+    mojom::BundleIntegrityBlockPtr integrity_block) {
   if (integrity_block->size == 0) {
     return base::unexpected("Cannot create integrity block with a size of 0.");
   }
@@ -37,9 +37,9 @@ SignedWebBundleIntegrityBlock::Create(
                                        std::move(signature_stack));
 }
 
-const std::vector<web_package::Ed25519PublicKey>
+const std::vector<Ed25519PublicKey>
 SignedWebBundleIntegrityBlock::GetPublicKeyStack() const {
-  std::vector<web_package::Ed25519PublicKey> public_key_stack;
+  std::vector<Ed25519PublicKey> public_key_stack;
   public_key_stack.reserve(signature_stack_.size());
   base::ranges::transform(signature_stack_,
                           std::back_inserter(public_key_stack),
@@ -60,4 +60,4 @@ SignedWebBundleIntegrityBlock::SignedWebBundleIntegrityBlock(
 SignedWebBundleIntegrityBlock& SignedWebBundleIntegrityBlock::operator=(
     SignedWebBundleIntegrityBlock&&) = default;
 
-}  // namespace web_app
+}  // namespace web_package

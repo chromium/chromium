@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_INTEGRITY_BLOCK_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_INTEGRITY_BLOCK_H_
+#ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_INTEGRITY_BLOCK_H_
+#define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_INTEGRITY_BLOCK_H_
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_stack_entry.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 
-namespace web_app {
+namespace web_package {
 
 // This class represents the integrity block of a Signed Web Bundle. It is
 // guaranteed to have a `size_in_bytes` greater than 0, and at least one
 // signature stack entry. It is constructed from a
-// `web_package::mojom::BundleIntegrityBlockPtr`, which is the result of
+// `mojom::BundleIntegrityBlockPtr`, which is the result of
 // CBOR-parsing the integrity block of the Signed Web Bundle in a separate data
 // decoder process. Given that the Signed Web Bundle is untrusted user input,
 // there is a potential for an attacker to compromise the data decoder process
@@ -33,7 +33,7 @@ class SignedWebBundleIntegrityBlock {
   // Attempt to convert the provided Mojo integrity block into an instance of
   // this class, returning a string describing the error on failure.
   static base::expected<SignedWebBundleIntegrityBlock, std::string> Create(
-      web_package::mojom::BundleIntegrityBlockPtr integrity_block);
+      mojom::BundleIntegrityBlockPtr integrity_block);
 
   SignedWebBundleIntegrityBlock(const SignedWebBundleIntegrityBlock&) = delete;
   SignedWebBundleIntegrityBlock& operator=(
@@ -52,7 +52,7 @@ class SignedWebBundleIntegrityBlock {
   // The first public key in the vector is the first key that signed the Web
   // Bundle, the second key is the public key that countersigned the signature
   // of the first key, and so on.
-  const std::vector<web_package::Ed25519PublicKey> GetPublicKeyStack() const;
+  const std::vector<Ed25519PublicKey> GetPublicKeyStack() const;
 
   const std::vector<SignedWebBundleSignatureStackEntry>& signature_stack()
       const {
@@ -68,6 +68,6 @@ class SignedWebBundleIntegrityBlock {
   std::vector<SignedWebBundleSignatureStackEntry> signature_stack_;
 };
 
-}  // namespace web_app
+}  // namespace web_package
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_INTEGRITY_BLOCK_H_
+#endif  // COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_INTEGRITY_BLOCK_H_

@@ -16,11 +16,10 @@
 
 namespace web_package {
 class SharedFile;
+class SignedWebBundleIntegrityBlock;
 }
 
 namespace web_app {
-
-class SignedWebBundleIntegrityBlock;
 
 // This class can be used to verify the signatures contained in a Signed Web
 // Bundle's integrity block. Currently, only one signature is supported, as
@@ -60,9 +59,10 @@ class SignedWebBundleSignatureVerifier {
   // currently supported.
   //
   // TODO(crbug.com/1366303): Support more than one signature.
-  virtual void VerifySignatures(scoped_refptr<web_package::SharedFile> file,
-                                SignedWebBundleIntegrityBlock integrity_block,
-                                SignatureVerificationCallback callback);
+  virtual void VerifySignatures(
+      scoped_refptr<web_package::SharedFile> file,
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
+      SignatureVerificationCallback callback);
 
  private:
   // We don't use `SHA512_DIGEST_LENGTH` here, because we don't want to include
@@ -77,7 +77,7 @@ class SignedWebBundleSignatureVerifier {
                                    int64_t integrity_block_size);
 
   void OnHashOfUnsignedWebBundleCalculated(
-      SignedWebBundleIntegrityBlock integrity_block,
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback,
       base::expected<std::array<uint8_t, kSHA512DigestLength>, std::string>
           unsigned_web_bundle_hash);

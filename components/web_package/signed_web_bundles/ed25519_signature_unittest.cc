@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/ed25519_signature.h"
+#include "components/web_package/signed_web_bundles/ed25519_signature.h"
 
 #include <vector>
 
@@ -10,7 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_app {
+namespace web_package {
 
 namespace {
 
@@ -92,13 +92,13 @@ TEST(Ed25519SignatureTest, InvalidSignature) {
 TEST(Ed25519SignatureTest, Verify) {
   auto signature = Ed25519Signature::Create(base::make_span(kSignature));
 
-  EXPECT_TRUE(signature.Verify(
-      base::make_span(kMessage),
-      web_package::Ed25519PublicKey::Create(base::make_span(kPublicKey))));
+  EXPECT_TRUE(
+      signature.Verify(base::make_span(kMessage),
+                       Ed25519PublicKey::Create(base::make_span(kPublicKey))));
 
-  EXPECT_FALSE(signature.Verify(
-      base::make_span(kOtherMessage),
-      web_package::Ed25519PublicKey::Create(base::make_span(kPublicKey))));
+  EXPECT_FALSE(
+      signature.Verify(base::make_span(kOtherMessage),
+                       Ed25519PublicKey::Create(base::make_span(kPublicKey))));
 }
 
-}  // namespace web_app
+}  // namespace web_package

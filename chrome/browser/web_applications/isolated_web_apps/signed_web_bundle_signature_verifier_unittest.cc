@@ -20,10 +20,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
 #include "components/cbor/values.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/shared_file.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,8 +128,8 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
   raw_integrity_block->size = 135;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
-  auto integrity_block =
-      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
+  auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
+      std::move(raw_integrity_block));
   ASSERT_TRUE(integrity_block.has_value()) << integrity_block.error();
 
   auto shared_file = base::MakeRefCounted<web_package::SharedFile>(
@@ -231,7 +231,7 @@ class SignedWebBundleSignatureVerifierTest
     return base::MakeRefCounted<web_package::SharedFile>(std::move(file));
   }
 
-  SignedWebBundleIntegrityBlock CreateParsedIntegrityBlock(
+  web_package::SignedWebBundleIntegrityBlock CreateParsedIntegrityBlock(
       const cbor::Value& integrity_block,
       size_t integrity_block_size) {
     std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
@@ -256,7 +256,8 @@ class SignedWebBundleSignatureVerifierTest
     raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
     auto parsed_integrity_block =
-        SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
+        web_package::SignedWebBundleIntegrityBlock::Create(
+            std::move(raw_integrity_block));
     EXPECT_TRUE(parsed_integrity_block.has_value())
         << parsed_integrity_block.error();
     return std::move(*parsed_integrity_block);

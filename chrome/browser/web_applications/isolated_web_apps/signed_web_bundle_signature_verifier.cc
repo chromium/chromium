@@ -14,10 +14,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_stack_entry.h"
 #include "components/web_package/shared_file.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_utils.h"
 #include "crypto/secure_hash.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -57,7 +57,7 @@ SignedWebBundleSignatureVerifier::~SignedWebBundleSignatureVerifier() {
 
 void SignedWebBundleSignatureVerifier::VerifySignatures(
     scoped_refptr<web_package::SharedFile> file,
-    SignedWebBundleIntegrityBlock integrity_block,
+    web_package::SignedWebBundleIntegrityBlock integrity_block,
     SignatureVerificationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -126,7 +126,7 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
 }
 
 void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
-    SignedWebBundleIntegrityBlock integrity_block,
+    web_package::SignedWebBundleIntegrityBlock integrity_block,
     SignatureVerificationCallback callback,
     base::expected<std::array<uint8_t, kSHA512DigestLength>, std::string>
         unsigned_web_bundle_hash) {
@@ -145,7 +145,7 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
     return;
   }
 
-  const SignedWebBundleSignatureStackEntry& signature_stack_entry =
+  const web_package::SignedWebBundleSignatureStackEntry& signature_stack_entry =
       integrity_block.signature_stack()[0];
 
   // The algorithm shown in [1] is a more abstract view of the verification

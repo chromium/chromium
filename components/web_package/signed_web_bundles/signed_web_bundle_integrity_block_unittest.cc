@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_app {
+namespace web_package {
 
 namespace {
 
@@ -39,13 +39,13 @@ constexpr uint8_t kCompleteEntryCbor2[] = {'e', 2, 2, 2};
 constexpr uint8_t kAttributesCbor1[] = {'a', 1, 1, 1};
 constexpr uint8_t kAttributesCbor2[] = {'a', 2, 2, 2};
 
-web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
-MakeSignatureStackEntry(base::span<const uint8_t> public_key,
-                        base::span<const uint8_t> signature,
-                        base::span<const uint8_t> complete_entry_cbor,
-                        base::span<const uint8_t> attributes_cbor) {
+mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
+    base::span<const uint8_t> public_key,
+    base::span<const uint8_t> signature,
+    base::span<const uint8_t> complete_entry_cbor,
+    base::span<const uint8_t> attributes_cbor) {
   auto raw_signature_stack_entry =
-      web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
+      mojom::BundleIntegrityBlockSignatureStackEntry::New();
   raw_signature_stack_entry->public_key =
       std::vector(std::begin(public_key), std::end(public_key));
   raw_signature_stack_entry->signature =
@@ -60,7 +60,7 @@ MakeSignatureStackEntry(base::span<const uint8_t> public_key,
 }  // namespace
 
 TEST(SignedWebBundleIntegrityBlockTest, InvalidSize) {
-  auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
+  auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
 
   auto integrity_block =
       SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
@@ -70,7 +70,7 @@ TEST(SignedWebBundleIntegrityBlockTest, InvalidSize) {
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, EmptySignatureStack) {
-  auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
+  auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
 
   auto integrity_block =
@@ -81,12 +81,12 @@ TEST(SignedWebBundleIntegrityBlockTest, EmptySignatureStack) {
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, SignatureStackEntryInvalidPublicKey) {
-  std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
+  std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack;
   raw_signature_stack.push_back(MakeSignatureStackEntry(
       {}, kEd25519Signature1, kCompleteEntryCbor1, kAttributesCbor1));
 
-  auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
+  auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
@@ -100,12 +100,12 @@ TEST(SignedWebBundleIntegrityBlockTest, SignatureStackEntryInvalidPublicKey) {
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, SignatureStackEntryInvalidSignature) {
-  std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
+  std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack;
   raw_signature_stack.push_back(MakeSignatureStackEntry(
       kEd25519PublicKey1, {}, kCompleteEntryCbor1, kAttributesCbor1));
 
-  auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
+  auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
@@ -118,13 +118,13 @@ TEST(SignedWebBundleIntegrityBlockTest, SignatureStackEntryInvalidSignature) {
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
-  std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
+  std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack;
   raw_signature_stack.push_back(
       MakeSignatureStackEntry(kEd25519PublicKey1, kEd25519Signature1,
                               kCompleteEntryCbor1, kAttributesCbor1));
 
-  auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
+  auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
@@ -151,7 +151,7 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
-  std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
+  std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack;
   raw_signature_stack.push_back(
       MakeSignatureStackEntry(kEd25519PublicKey1, kEd25519Signature1,
@@ -160,7 +160,7 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
       MakeSignatureStackEntry(kEd25519PublicKey2, kEd25519Signature2,
                               kCompleteEntryCbor2, kAttributesCbor2));
 
-  auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
+  auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
@@ -195,4 +195,4 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
                                   kAttributesCbor2));
 }
 
-}  // namespace web_app
+}  // namespace web_package

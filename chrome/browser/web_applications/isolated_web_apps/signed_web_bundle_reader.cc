@@ -18,8 +18,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -135,8 +135,8 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
     return;
   }
 
-  auto integrity_block =
-      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
+  auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
+      std::move(raw_integrity_block));
   if (!integrity_block.has_value()) {
     FulfillWithError(
         std::move(read_error_callback),
@@ -162,7 +162,7 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
 }
 
 void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
-    SignedWebBundleIntegrityBlock integrity_block,
+    web_package::SignedWebBundleIntegrityBlock integrity_block,
     ReadErrorCallback callback,
     SignatureVerificationAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -184,7 +184,7 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
 }
 
 void SignedWebBundleReader::VerifySignatures(
-    SignedWebBundleIntegrityBlock integrity_block,
+    web_package::SignedWebBundleIntegrityBlock integrity_block,
     ReadErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);

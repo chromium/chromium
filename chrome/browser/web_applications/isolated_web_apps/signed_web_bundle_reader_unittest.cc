@@ -41,9 +41,10 @@ class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
       absl::optional<SignedWebBundleSignatureVerifier::Error> error)
       : error_(error) {}
 
-  void VerifySignatures(scoped_refptr<web_package::SharedFile> file,
-                        SignedWebBundleIntegrityBlock integrity_block,
-                        SignatureVerificationCallback callback) override {
+  void VerifySignatures(
+      scoped_refptr<web_package::SharedFile> file,
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
+      SignatureVerificationCallback callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), error_));
   }

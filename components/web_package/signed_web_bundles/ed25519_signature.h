@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ED25519_SIGNATURE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ED25519_SIGNATURE_H_
+#ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_ED25519_SIGNATURE_H_
+#define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_ED25519_SIGNATURE_H_
 
 #include <array>
 
@@ -11,7 +11,7 @@
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 
-namespace web_app {
+namespace web_package {
 
 // Wrapper class around an Ed25519 signature.
 class Ed25519Signature {
@@ -25,9 +25,8 @@ class Ed25519Signature {
 
   static Ed25519Signature Create(base::span<const uint8_t, kLength> bytes);
 
-  [[nodiscard]] bool Verify(
-      base::span<const uint8_t> message,
-      const web_package::Ed25519PublicKey& public_key) const;
+  [[nodiscard]] bool Verify(base::span<const uint8_t> message,
+                            const Ed25519PublicKey& public_key) const;
 
   const std::array<uint8_t, kLength>& bytes() const { return bytes_; }
 
@@ -37,6 +36,6 @@ class Ed25519Signature {
   const std::array<uint8_t, kLength> bytes_;
 };
 
-}  // namespace web_app
+}  // namespace web_package
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ED25519_SIGNATURE_H_
+#endif  // COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_ED25519_SIGNATURE_H_
