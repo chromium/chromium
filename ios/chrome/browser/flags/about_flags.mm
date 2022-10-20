@@ -541,11 +541,12 @@ const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
      nullptr}};
 
 const FeatureEntry::FeatureParam kOpenInDownloadInShareButton[] = {
-    {kOpenInDownloadInShareButtonParam, kOpenInDownloadParameterName}};
+    {kOpenInDownloadParameterName, kOpenInDownloadInShareButtonParam}};
 const FeatureEntry::FeatureParam kOpenInDownloadWithWKDownload[] = {
-    {kOpenInDownloadWithWKDownloadParam, kOpenInDownloadParameterName}};
+    {kOpenInDownloadParameterName, kOpenInDownloadWithWKDownloadParam}};
 const FeatureEntry::FeatureParam kOpenInDownloadWithV2[] = {
-    {kOpenInDownloadWithV2Param, kOpenInDownloadParameterName}};
+    {kOpenInDownloadParameterName, kOpenInDownloadWithV2Param}};
+
 const FeatureEntry::FeatureVariation kOpenInDownloadVariations[] = {
     {"With legacy download", kOpenInDownloadInShareButton,
      std::size(kOpenInDownloadInShareButton), nullptr},
