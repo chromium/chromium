@@ -920,6 +920,37 @@ void AddNativeNotificationWorkItems(
                                notification_helper_path.value(), true);
 }
 
+void AddOldWerHelperRegistrationCleanupItems(HKEY root,
+                                             const base::FilePath& target_path,
+                                             WorkItemList* list) {
+  std::wstring value_prefix(target_path.value());
+  DCHECK(!value_prefix.empty());
+  if (value_prefix.back() != L'\\')
+    value_prefix.push_back(L'\\');
+  const std::wstring value_postfix(std::wstring(L"\\") + kWerDll);
+  const std::wstring wer_registry_path = GetWerHelperRegistryPath();
+  for (base::win::RegistryValueIterator value_iter(
+           root, wer_registry_path.c_str(), WorkItem::kWow64Default);
+       value_iter.Valid(); ++value_iter) {
+    const std::wstring value_name(value_iter.Name());
+    if (value_name.size() <= value_prefix.size() + value_postfix.size())
+      continue;
+
+    if (base::StartsWith(value_name, value_prefix,
+                         base::CompareCase::INSENSITIVE_ASCII) &&
+        base::EndsWith(value_name, value_postfix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+      std::wstring value_version = value_name.substr(
+          value_prefix.size(),
+          value_name.size() - value_prefix.size() - value_postfix.size());
+      if (base::Version(base::WideToASCII(value_version)).IsValid()) {
+        list->AddDeleteRegValueWorkItem(root, wer_registry_path,
+                                        WorkItem::kWow64Default, value_name);
+      }
+    }
+  }
+}
+
 void AddWerHelperRegistration(HKEY root,
                               const base::FilePath& wer_helper_path,
                               WorkItemList* list) {
@@ -1094,6 +1125,8 @@ void AddFinalizeUpdateWorkItems(const base::Version& new_version,
   // overwriting any of the following post-install tasks.
   AddDowngradeCleanupItems(new_version, list);
 
+  AddOldWerHelperRegistrationCleanupItems(installer_state.root_key(),
+                                          installer_state.target_path(), list);
   AddWerHelperRegistration(
       installer_state.root_key(),
       GetWerHelperPath(installer_state.target_path(), new_version), list);
