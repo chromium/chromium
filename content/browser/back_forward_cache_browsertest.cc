@@ -445,7 +445,7 @@ class ThemeColorObserver : public WebContentsObserver {
       : WebContentsObserver(contents) {}
 
   // Can only be called once.
-  bool WaitUntilThemeColorChange() {
+  [[nodiscard]] bool WaitUntilThemeColorChange() {
     CHECK(!loop_);
     loop_ = std::make_unique<base::RunLoop>();
     if (observed_) {
