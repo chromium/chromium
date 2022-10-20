@@ -10,6 +10,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -1496,6 +1498,7 @@ public class WebContentsAccessibilityTreeTest {
         performHtmlTest("figure.html");
     }
 
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.O, message = "https://crbug.com/1376954")
     @Test
     @SmallTest
     public void test_fixedWidthText() {
