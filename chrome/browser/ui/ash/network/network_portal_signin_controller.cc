@@ -105,6 +105,17 @@ void NetworkPortalSigninController::ShowSignin() {
 
 NetworkPortalSigninController::SigninMode
 NetworkPortalSigninController::GetSigninMode() const {
+  if (!user_manager::UserManager::IsInitialized()
+      || !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    NET_LOG(DEBUG) << "GetSigninMode: Not logged in";
+    return SigninMode::kSigninDialog;
+  }
+
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
+    NET_LOG(DEBUG) << "GetSigninMode: Kiosk app";
+    return SigninMode::kSigninDialog;
+  }
+
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
     // Login screen. Always show a dialog using the signin profile.

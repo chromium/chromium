@@ -26,6 +26,7 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -166,6 +167,16 @@ class NetworkPortalSigninControllerTest : public testing::Test {
 };
 
 TEST_F(NetworkPortalSigninControllerTest, LoginScreen) {
+  controller_->ShowSignin();
+  EXPECT_FALSE(controller_->dialog_url().empty());
+}
+
+TEST_F(NetworkPortalSigninControllerTest, KioskMode) {
+  SimulateLogin();
+  const user_manager::User* user = user_manager_->AddKioskAppUser(
+      AccountId::FromUserEmail("fake_user@test"));
+  user_manager_->LoginUser(user->GetAccountId());
+
   controller_->ShowSignin();
   EXPECT_FALSE(controller_->dialog_url().empty());
 }
