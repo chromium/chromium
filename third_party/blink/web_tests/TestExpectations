@@ -7736,3 +7736,5 @@ crbug.com/1376568 virtual/threaded-preload-scanner/external/wpt/html/semantics/s
 
 # Sheriff 2022-10-20
 crbug.com/1376822 [ Win11 ] external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-intrinsic-width-height.html [ Failure ]
+
+crbug.com/1376495 http/tests/devtools/runtime/evaluate-timeout.js [ Failure Pass ]
