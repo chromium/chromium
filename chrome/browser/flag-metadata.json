@@ -2973,7 +2973,7 @@
   {
     "name": "enable-save-session-tabs-in-separate-files",
     "owners": [ "olivierrobin", "sdefresne", "bling-flags@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 118
   },
   {
     "name": "enable-seamless-refresh-rate-switching",
