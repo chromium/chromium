@@ -76,7 +76,7 @@ message AdditionalModelFile {
 
 // Metadata for a prediction model for a specific optimization target.
 //
-// Next ID: 10
+// Next ID: 11
 message ModelInfo {
   reserved 3;
 
@@ -112,6 +112,12 @@ message ModelInfo {
   // is part of the request, and the server can provide the model features that
   // are actually present in the model.
   optional Any model_metadata = 6;
+  // Cache key of this model. Sent in the request and response. The client can
+  // set all the parameters based on the user profile characteristics, and the
+  // server can return the parameters that were used by the model selection
+  // logic to serve this model. The server should also update this in the model
+  // info proto that is sent in the downloaded model files.
+  optional ModelCacheKey model_cache_key = 10;
 }
 
 // The scenarios for which the optimization guide has models for.
@@ -202,4 +208,11 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_10 = 9;
   // A model using only operations that are supported by TensorflowLite 2.11.0.
   MODEL_ENGINE_VERSION_TFLITE_2_11 = 10;
+}
+
+// The set of parameters that the server can use to vary the served model for
+// a given install. It can also vary by OS or Finch seed but those are global
+// for the install.
+message ModelCacheKey {
+  optional string locale = 1;
 }
