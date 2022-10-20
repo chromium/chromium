@@ -255,8 +255,7 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   }
   base::Value::Dict root_node = entity_data->ToDictionaryValue();
   if (entity_) {
-    root_node.Set("metadata", base::Value::FromUniquePtrValue(
-                                  EntityMetadataToValue(entity_->metadata())));
+    root_node.Set("metadata", EntityMetadataToValue(entity_->metadata()));
   }
 
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and

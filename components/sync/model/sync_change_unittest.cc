@@ -43,11 +43,9 @@ TEST(SyncChangeTest, LocalUpdate) {
             e.sync_data().GetClientTagHash());
   EXPECT_EQ(title, e.sync_data().GetTitle());
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
-  std::unique_ptr<base::DictionaryValue> ref_spec(
-      EntitySpecificsToValue(specifics));
-  std::unique_ptr<base::DictionaryValue> e_spec(
-      EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_EQ(*ref_spec, *e_spec);
+  base::Value ref_spec = EntitySpecificsToValue(specifics);
+  base::Value e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
+  EXPECT_EQ(ref_spec, e_spec);
 }
 
 TEST(SyncChangeTest, LocalAdd) {
@@ -64,11 +62,9 @@ TEST(SyncChangeTest, LocalAdd) {
             e.sync_data().GetClientTagHash());
   EXPECT_EQ(title, e.sync_data().GetTitle());
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
-  std::unique_ptr<base::DictionaryValue> ref_spec(
-      EntitySpecificsToValue(specifics));
-  std::unique_ptr<base::DictionaryValue> e_spec(
-      EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_EQ(*ref_spec, *e_spec);
+  base::Value ref_spec = EntitySpecificsToValue(specifics);
+  base::Value e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
+  EXPECT_EQ(ref_spec, e_spec);
 }
 
 TEST(SyncChangeTest, SyncerChanges) {
@@ -108,11 +104,9 @@ TEST(SyncChangeTest, SyncerChanges) {
   SyncChange e = change_list[0];
   EXPECT_EQ(SyncChange::ACTION_UPDATE, e.change_type());
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
-  std::unique_ptr<base::DictionaryValue> ref_spec(
-      EntitySpecificsToValue(update_specifics));
-  std::unique_ptr<base::DictionaryValue> e_spec(
-      EntitySpecificsToValue(e.sync_data().GetSpecifics()));
-  EXPECT_EQ(*ref_spec, *e_spec);
+  base::Value ref_spec = EntitySpecificsToValue(update_specifics);
+  base::Value e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
+  EXPECT_EQ(ref_spec, e_spec);
 
   // Verify add.
   e = change_list[1];
@@ -120,7 +114,7 @@ TEST(SyncChangeTest, SyncerChanges) {
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   ref_spec = EntitySpecificsToValue(add_specifics);
   e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
-  EXPECT_EQ(*ref_spec, *e_spec);
+  EXPECT_EQ(ref_spec, e_spec);
 
   // Verify delete.
   e = change_list[2];
@@ -128,7 +122,7 @@ TEST(SyncChangeTest, SyncerChanges) {
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   ref_spec = EntitySpecificsToValue(delete_specifics);
   e_spec = EntitySpecificsToValue(e.sync_data().GetSpecifics());
-  EXPECT_EQ(*ref_spec, *e_spec);
+  EXPECT_EQ(ref_spec, e_spec);
 }
 
 TEST(SyncChangeTest, MoveIsCopy) {

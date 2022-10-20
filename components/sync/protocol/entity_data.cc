@@ -29,8 +29,7 @@ base::Value::Dict EntityData::ToDictionaryValue() const {
   // sync_node_browser.js is expecting certain fields names. e.g. CTIME, MTIME,
   // and IS_DIR.
   base::Value::Dict dict;
-  dict.Set("SPECIFICS",
-           base::Value::FromUniquePtrValue(EntitySpecificsToValue(specifics)));
+  dict.Set("SPECIFICS", EntitySpecificsToValue(specifics));
   dict.Set("ID", id);
   dict.Set("CLIENT_TAG_HASH", client_tag_hash.value());
   dict.Set("ORIGINATOR_CACHE_GUID", originator_cache_guid);
@@ -64,7 +63,7 @@ size_t EntityData::EstimateMemoryUsage() const {
 void PrintTo(const EntityData& entity_data, std::ostream* os) {
   std::string specifics;
   base::JSONWriter::WriteWithOptions(
-      *syncer::EntitySpecificsToValue(entity_data.specifics),
+      syncer::EntitySpecificsToValue(entity_data.specifics),
       base::JSONWriter::OPTIONS_PRETTY_PRINT, &specifics);
   *os << "{ id: '" << entity_data.id << "', client_tag_hash: '"
       << entity_data.client_tag_hash << "', originator_cache_guid: '"

@@ -789,8 +789,8 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   history1_expected.set_redirect_chain_end_incomplete(true);
   sync_pb::HistorySpecifics history1_updated =
       processor()->GetEntities().at(storage_key1).specifics.history();
-  EXPECT_EQ(*syncer::HistorySpecificsToValue(history1_expected),
-            *syncer::HistorySpecificsToValue(history1_updated));
+  EXPECT_EQ(syncer::HistorySpecificsToValue(history1_expected),
+            syncer::HistorySpecificsToValue(history1_updated));
   // The second chain should contain only the last two entries.
   sync_pb::HistorySpecifics history2 =
       processor()->GetEntities().at(storage_key2).specifics.history();

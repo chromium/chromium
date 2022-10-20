@@ -1158,8 +1158,7 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
     node.Set("modelType", type_string);
     // Copy the whole metadata message into the dictionary (if existing).
     if (entity != nullptr) {
-      node.Set("metadata", base::Value::FromUniquePtrValue(
-                               EntityMetadataToValue(entity->metadata())));
+      node.Set("metadata", EntityMetadataToValue(entity->metadata()));
     }
     all_nodes.Append(std::move(node));
   }

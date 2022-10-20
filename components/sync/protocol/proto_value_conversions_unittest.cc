@@ -4,6 +4,7 @@
 
 #include "components/sync/protocol/proto_value_conversions.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -52,9 +53,9 @@ using testing::Not;
   TEST(ProtoValueConversionsTest, Proto_##Key##_SpecificsToValue) { \
     sync_pb::EntitySpecifics specifics;                             \
     specifics.mutable_##Key();                                      \
-    std::unique_ptr<base::DictionaryValue> value(                   \
-        EntitySpecificsToValue(specifics));                         \
-    EXPECT_EQ(1, static_cast<int>(value->DictSize()));              \
+    base::Value value = EntitySpecificsToValue(specifics);          \
+    ASSERT_TRUE(value.is_dict());                                   \
+    EXPECT_EQ(1, static_cast<int>(value.DictSize()));               \
   }
 
 // We'd also like to check if we changed any field in our messages. However,
@@ -119,29 +120,32 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   specifics.mutable_cloud_token_data()->set_masked_card_id("1111");
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::UNKNOWN);
-  std::unique_ptr<base::DictionaryValue> value =
-      AutofillWalletSpecificsToValue(specifics);
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(AutofillWalletSpecificsToValue(specifics)));
   EXPECT_FALSE(value->Get("masked_card", nullptr));
   EXPECT_FALSE(value->Get("address", nullptr));
   EXPECT_FALSE(value->Get("customer_data", nullptr));
   EXPECT_FALSE(value->Get("cloud_token_data", nullptr));
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::MASKED_CREDIT_CARD);
-  value = AutofillWalletSpecificsToValue(specifics);
+  value = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(AutofillWalletSpecificsToValue(specifics)));
   EXPECT_TRUE(value->Get("masked_card", nullptr));
   EXPECT_FALSE(value->Get("address", nullptr));
   EXPECT_FALSE(value->Get("customer_data", nullptr));
   EXPECT_FALSE(value->Get("cloud_token_data", nullptr));
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS);
-  value = AutofillWalletSpecificsToValue(specifics);
+  value = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(AutofillWalletSpecificsToValue(specifics)));
   EXPECT_FALSE(value->Get("masked_card", nullptr));
   EXPECT_TRUE(value->Get("address", nullptr));
   EXPECT_FALSE(value->Get("customer_data", nullptr));
   EXPECT_FALSE(value->Get("cloud_token_data", nullptr));
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::CUSTOMER_DATA);
-  value = AutofillWalletSpecificsToValue(specifics);
+  value = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(AutofillWalletSpecificsToValue(specifics)));
   EXPECT_FALSE(value->Get("masked_card", nullptr));
   EXPECT_FALSE(value->Get("address", nullptr));
   EXPECT_TRUE(value->Get("customer_data", nullptr));
@@ -149,7 +153,8 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
 
   specifics.set_type(
       sync_pb::AutofillWalletSpecifics::CREDIT_CARD_CLOUD_TOKEN_DATA);
-  value = AutofillWalletSpecificsToValue(specifics);
+  value = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(AutofillWalletSpecificsToValue(specifics)));
   EXPECT_FALSE(value->Get("masked_card", nullptr));
   EXPECT_FALSE(value->Get("address", nullptr));
   EXPECT_FALSE(value->Get("customer_data", nullptr));
@@ -169,8 +174,8 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
   meta_2->set_key("key2");
   meta_2->set_value("value2");
 
-  std::unique_ptr<base::DictionaryValue> value(
-      BookmarkSpecificsToValue(specifics));
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(BookmarkSpecificsToValue(specifics)));
   EXPECT_FALSE(value->DictEmpty());
   std::string encoded_time;
   EXPECT_TRUE(value->GetString("creation_time_us", &encoded_time));
@@ -203,7 +208,8 @@ TEST(ProtoValueConversionsTest, UniquePositionToValue) {
   entity.mutable_unique_position()->set_custom_compressed_v1("test");
 
   std::unique_ptr<base::DictionaryValue> value =
-      SyncEntityToValue(entity, {.include_specifics = false});
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+          SyncEntityToValue(entity, {.include_specifics = false})));
   std::string unique_position;
   EXPECT_TRUE(value->GetString("unique_position", &unique_position));
 
@@ -217,10 +223,12 @@ TEST(ProtoValueConversionsTest, SyncEntityToValueIncludeSpecifics) {
   entity.mutable_specifics();
 
   std::unique_ptr<base::DictionaryValue> value =
-      SyncEntityToValue(entity, {.include_specifics = true});
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+          SyncEntityToValue(entity, {.include_specifics = true})));
   EXPECT_TRUE(value->GetDictionary("specifics", nullptr));
 
-  value = SyncEntityToValue(entity, {.include_specifics = false});
+  value = base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+      SyncEntityToValue(entity, {.include_specifics = false})));
   EXPECT_FALSE(value->GetDictionary("specifics", nullptr));
 }
 
@@ -286,14 +294,16 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValue) {
   sync_pb::SyncEntity* entity = commit_message->add_entries();
   entity->mutable_specifics();
 
-  std::unique_ptr<base::DictionaryValue> value_with_specifics(
-      ClientToServerMessageToValue(message, {.include_specifics = true}));
+  std::unique_ptr<base::DictionaryValue> value_with_specifics =
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+          ClientToServerMessageToValue(message, {.include_specifics = true})));
   EXPECT_FALSE(value_with_specifics->DictEmpty());
   EXPECT_TRUE(
       ValueHasSpecifics(*(value_with_specifics.get()), "commit.entries"));
 
-  std::unique_ptr<base::DictionaryValue> value_without_specifics(
-      ClientToServerMessageToValue(message, {.include_specifics = false}));
+  std::unique_ptr<base::DictionaryValue> value_without_specifics =
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+          ClientToServerMessageToValue(message, {.include_specifics = false})));
   EXPECT_FALSE(value_without_specifics->DictEmpty());
   EXPECT_FALSE(
       ValueHasSpecifics(*(value_without_specifics.get()), "commit.entries"));
@@ -312,16 +322,18 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValueGUTriggers) {
   get_update_triggers->set_initial_sync_in_progress(false);
   get_update_triggers->set_sync_for_resolve_conflict_in_progress(false);
 
-  std::unique_ptr<base::DictionaryValue> value_with_full_gu_triggers(
-      ClientToServerMessageToValue(message,
-                                   {.include_full_get_update_triggers = true}));
+  std::unique_ptr<base::DictionaryValue> value_with_full_gu_triggers =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(ClientToServerMessageToValue(
+              message, {.include_full_get_update_triggers = true})));
   EXPECT_FALSE(value_with_full_gu_triggers->DictEmpty());
   EXPECT_THAT(*value_with_full_gu_triggers,
               ValueHasNonEmptyGetUpdateTriggers());
 
-  std::unique_ptr<base::DictionaryValue> value_without_full_gu_triggers(
-      ClientToServerMessageToValue(
-          message, {.include_full_get_update_triggers = false}));
+  std::unique_ptr<base::DictionaryValue> value_without_full_gu_triggers =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(ClientToServerMessageToValue(
+              message, {.include_full_get_update_triggers = false})));
   EXPECT_FALSE(value_without_full_gu_triggers->DictEmpty());
   EXPECT_THAT(*value_without_full_gu_triggers,
               Not(ValueHasNonEmptyGetUpdateTriggers()));
@@ -335,14 +347,17 @@ TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
   sync_pb::SyncEntity* entity = response->add_entries();
   entity->mutable_specifics();
 
-  std::unique_ptr<base::DictionaryValue> value_with_specifics(
-      ClientToServerResponseToValue(message, {.include_specifics = true}));
+  std::unique_ptr<base::DictionaryValue> value_with_specifics =
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+          ClientToServerResponseToValue(message, {.include_specifics = true})));
   EXPECT_FALSE(value_with_specifics->DictEmpty());
   EXPECT_TRUE(
       ValueHasSpecifics(*(value_with_specifics.get()), "get_updates.entries"));
 
-  std::unique_ptr<base::DictionaryValue> value_without_specifics(
-      ClientToServerResponseToValue(message, {.include_specifics = false}));
+  std::unique_ptr<base::DictionaryValue> value_without_specifics =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(ClientToServerResponseToValue(
+              message, {.include_specifics = false})));
   EXPECT_FALSE(value_without_specifics->DictEmpty());
   EXPECT_FALSE(ValueHasSpecifics(*(value_without_specifics.get()),
                                  "get_updates.entries"));

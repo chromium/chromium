@@ -190,10 +190,10 @@ void PopulateFullUpdateTypeResults(
   }
 }
 
-std::string PrettyPrintValue(std::unique_ptr<base::DictionaryValue> value) {
+std::string PrettyPrintValue(base::Value value) {
   std::string message;
   base::JSONWriter::WriteWithOptions(
-      *value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &message);
+      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &message);
   return message;
 }
 

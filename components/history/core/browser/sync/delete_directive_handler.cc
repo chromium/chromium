@@ -39,10 +39,10 @@ std::string RandASCIIString(size_t length) {
 
 std::string DeleteDirectiveToString(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
-  std::unique_ptr<base::Value> value(
-      syncer::HistoryDeleteDirectiveSpecificsToValue(delete_directive));
+  base::Value value =
+      syncer::HistoryDeleteDirectiveSpecificsToValue(delete_directive);
   std::string str;
-  base::JSONWriter::Write(*value, &str);
+  base::JSONWriter::Write(value, &str);
   return str;
 }
 

@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_SYNC_PROTOCOL_PROTO_VALUE_CONVERSIONS_H_
 #define COMPONENTS_SYNC_PROTOCOL_PROTO_VALUE_CONVERSIONS_H_
 
-#include <memory>
-
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace sync_pb {
@@ -88,194 +86,181 @@ class WorkspaceDeskSpecifics;
 
 namespace syncer {
 
-std::unique_ptr<base::DictionaryValue> AppListSpecificsToValue(
-    const sync_pb::AppListSpecifics& proto);
+base::Value AppListSpecificsToValue(const sync_pb::AppListSpecifics& proto);
 
-std::unique_ptr<base::DictionaryValue> AppSettingSpecificsToValue(
+base::Value AppSettingSpecificsToValue(
     const sync_pb::AppSettingSpecifics& app_setting_specifics);
 
-std::unique_ptr<base::DictionaryValue> AppSpecificsToValue(
-    const sync_pb::AppSpecifics& app_specifics);
+base::Value AppSpecificsToValue(const sync_pb::AppSpecifics& app_specifics);
 
-std::unique_ptr<base::DictionaryValue> ArcPackageSpecificsToValue(
+base::Value ArcPackageSpecificsToValue(
     const sync_pb::ArcPackageSpecifics& proto);
 
-std::unique_ptr<base::DictionaryValue> AutofillOfferSpecificsToValue(
+base::Value AutofillOfferSpecificsToValue(
     const sync_pb::AutofillOfferSpecifics& autofill_offer_specifics);
 
-std::unique_ptr<base::DictionaryValue> AutofillProfileSpecificsToValue(
+base::Value AutofillProfileSpecificsToValue(
     const sync_pb::AutofillProfileSpecifics& autofill_profile_specifics);
 
-std::unique_ptr<base::DictionaryValue> AutofillSpecificsToValue(
+base::Value AutofillSpecificsToValue(
     const sync_pb::AutofillSpecifics& autofill_specifics);
 
-std::unique_ptr<base::DictionaryValue> AutofillWalletSpecificsToValue(
+base::Value AutofillWalletSpecificsToValue(
     const sync_pb::AutofillWalletSpecifics& autofill_wallet_specifics);
 
-std::unique_ptr<base::DictionaryValue> AutofillWalletUsageSpecificsToValue(
+base::Value AutofillWalletUsageSpecificsToValue(
     const sync_pb::AutofillWalletUsageSpecifics&
         autofill_wallet_usage_specifics);
 
-std::unique_ptr<base::DictionaryValue> BookmarkSpecificsToValue(
+base::Value BookmarkSpecificsToValue(
     const sync_pb::BookmarkSpecifics& bookmark_specifics);
 
-std::unique_ptr<base::DictionaryValue> ClientConfigParamsToValue(
-    const sync_pb::ClientConfigParams& proto);
+base::Value ClientConfigParamsToValue(const sync_pb::ClientConfigParams& proto);
 
-std::unique_ptr<base::DictionaryValue> ContactInfoSpecificsToValue(
+base::Value ContactInfoSpecificsToValue(
     const sync_pb::ContactInfoSpecifics& proto);
 
-std::unique_ptr<base::DictionaryValue> DebugEventInfoToValue(
-    const sync_pb::DebugEventInfo& proto);
+base::Value DebugEventInfoToValue(const sync_pb::DebugEventInfo& proto);
 
-std::unique_ptr<base::DictionaryValue> DebugInfoToValue(
-    const sync_pb::DebugInfo& proto);
+base::Value DebugInfoToValue(const sync_pb::DebugInfo& proto);
 
-std::unique_ptr<base::DictionaryValue> DeviceInfoSpecificsToValue(
+base::Value DeviceInfoSpecificsToValue(
     const sync_pb::DeviceInfoSpecifics& device_info_specifics);
 
-std::unique_ptr<base::DictionaryValue> DictionarySpecificsToValue(
+base::Value DictionarySpecificsToValue(
     const sync_pb::DictionarySpecifics& dictionary_specifics);
 
-std::unique_ptr<base::DictionaryValue> EncryptedDataToValue(
-    const sync_pb::EncryptedData& encrypted_data);
+base::Value EncryptedDataToValue(const sync_pb::EncryptedData& encrypted_data);
 
-std::unique_ptr<base::DictionaryValue> EntityMetadataToValue(
-    const sync_pb::EntityMetadata& metadata);
+base::Value EntityMetadataToValue(const sync_pb::EntityMetadata& metadata);
 
-std::unique_ptr<base::DictionaryValue> EntitySpecificsToValue(
-    const sync_pb::EntitySpecifics& specifics);
+base::Value EntitySpecificsToValue(const sync_pb::EntitySpecifics& specifics);
 
-std::unique_ptr<base::DictionaryValue> ExtensionSettingSpecificsToValue(
+base::Value ExtensionSettingSpecificsToValue(
     const sync_pb::ExtensionSettingSpecifics& extension_setting_specifics);
 
-std::unique_ptr<base::DictionaryValue> ExtensionSpecificsToValue(
+base::Value ExtensionSpecificsToValue(
     const sync_pb::ExtensionSpecifics& extension_specifics);
 
-std::unique_ptr<base::DictionaryValue> HistoryDeleteDirectiveSpecificsToValue(
+base::Value HistoryDeleteDirectiveSpecificsToValue(
     const sync_pb::HistoryDeleteDirectiveSpecifics&
         history_delete_directive_specifics);
 
-std::unique_ptr<base::DictionaryValue> HistorySpecificsToValue(
+base::Value HistorySpecificsToValue(
     const sync_pb::HistorySpecifics& history_specifics);
 
-std::unique_ptr<base::DictionaryValue> LinkedAppIconInfoToValue(
+base::Value LinkedAppIconInfoToValue(
     const sync_pb::LinkedAppIconInfo& linked_app_icon_info);
 
-std::unique_ptr<base::DictionaryValue> ManagedUserSettingSpecificsToValue(
+base::Value ManagedUserSettingSpecificsToValue(
     const sync_pb::ManagedUserSettingSpecifics& managed_user_setting_specifics);
 
-std::unique_ptr<base::DictionaryValue> NavigationRedirectToValue(
+base::Value NavigationRedirectToValue(
     const sync_pb::NavigationRedirect& navigation_redirect);
 
-std::unique_ptr<base::DictionaryValue> NigoriSpecificsToValue(
+base::Value NigoriSpecificsToValue(
     const sync_pb::NigoriSpecifics& nigori_specifics);
 
-std::unique_ptr<base::DictionaryValue> OsPreferenceSpecificsToValue(
+base::Value OsPreferenceSpecificsToValue(
     const sync_pb::OsPreferenceSpecifics& specifics);
 
-std::unique_ptr<base::DictionaryValue> OsPriorityPreferenceSpecificsToValue(
+base::Value OsPriorityPreferenceSpecificsToValue(
     const sync_pb::OsPriorityPreferenceSpecifics& specifics);
 
-std::unique_ptr<base::DictionaryValue> PasswordSpecificsToValue(
+base::Value PasswordSpecificsToValue(
     const sync_pb::PasswordSpecifics& password_specifics);
 
-std::unique_ptr<base::DictionaryValue> PasswordSpecificsDataToValue(
+base::Value PasswordSpecificsDataToValue(
     const sync_pb::PasswordSpecificsData& password_specifics_data);
 
-std::unique_ptr<base::DictionaryValue> PaymentsCustomerDataToValue(
+base::Value PaymentsCustomerDataToValue(
     const sync_pb::PaymentsCustomerData& payments_customer_data);
 
-std::unique_ptr<base::DictionaryValue> PreferenceSpecificsToValue(
+base::Value PreferenceSpecificsToValue(
     const sync_pb::PreferenceSpecifics& password_specifics);
 
-std::unique_ptr<base::DictionaryValue> PrinterPPDReferenceToValue(
+base::Value PrinterPPDReferenceToValue(
     const sync_pb::PrinterPPDReference& proto);
 
-std::unique_ptr<base::DictionaryValue> PrinterSpecificsToValue(
+base::Value PrinterSpecificsToValue(
     const sync_pb::PrinterSpecifics& printer_specifics);
 
-std::unique_ptr<base::DictionaryValue>
-PrintersAuthorizationServerSpecificsToValue(
+base::Value PrintersAuthorizationServerSpecificsToValue(
     const sync_pb::PrintersAuthorizationServerSpecifics&
         printers_authorization_server_specifics);
 
-std::unique_ptr<base::DictionaryValue> PriorityPreferenceSpecificsToValue(
+base::Value PriorityPreferenceSpecificsToValue(
     const sync_pb::PriorityPreferenceSpecifics& proto);
 
-std::unique_ptr<base::DictionaryValue> ReadingListSpecificsToValue(
+base::Value ReadingListSpecificsToValue(
     const sync_pb::ReadingListSpecifics& proto);
 
-std::unique_ptr<base::DictionaryValue> SearchEngineSpecificsToValue(
+base::Value SearchEngineSpecificsToValue(
     const sync_pb::SearchEngineSpecifics& search_engine_specifics);
 
-std::unique_ptr<base::DictionaryValue> SegmentationSpecificsToValue(
+base::Value SegmentationSpecificsToValue(
     const sync_pb::SegmentationSpecifics& segmentation_specifics);
 
-std::unique_ptr<base::DictionaryValue> SendTabToSelfSpecificsToValue(
+base::Value SendTabToSelfSpecificsToValue(
     const sync_pb::SendTabToSelfSpecifics& send_tab_specifics);
 
-std::unique_ptr<base::DictionaryValue> SecurityEventSpecificsToValue(
+base::Value SecurityEventSpecificsToValue(
     const sync_pb::SecurityEventSpecifics& security_event_specifics);
 
-std::unique_ptr<base::DictionaryValue> SessionHeaderToValue(
-    const sync_pb::SessionHeader& session_header);
+base::Value SessionHeaderToValue(const sync_pb::SessionHeader& session_header);
 
-std::unique_ptr<base::DictionaryValue> SessionSpecificsToValue(
+base::Value SessionSpecificsToValue(
     const sync_pb::SessionSpecifics& session_specifics);
 
-std::unique_ptr<base::DictionaryValue> SessionTabToValue(
-    const sync_pb::SessionTab& session_tab);
+base::Value SessionTabToValue(const sync_pb::SessionTab& session_tab);
 
-std::unique_ptr<base::DictionaryValue> SessionWindowToValue(
-    const sync_pb::SessionWindow& session_window);
+base::Value SessionWindowToValue(const sync_pb::SessionWindow& session_window);
 
-std::unique_ptr<base::DictionaryValue> SharingMessageSpecificsToValue(
+base::Value SharingMessageSpecificsToValue(
     const sync_pb::SharingMessageSpecifics& sharing_message_specifics);
 
-std::unique_ptr<base::DictionaryValue> SyncCycleCompletedEventInfoToValue(
+base::Value SyncCycleCompletedEventInfoToValue(
     const sync_pb::SyncCycleCompletedEventInfo& proto);
 
-std::unique_ptr<base::DictionaryValue> TabNavigationToValue(
-    const sync_pb::TabNavigation& tab_navigation);
+base::Value TabNavigationToValue(const sync_pb::TabNavigation& tab_navigation);
 
-std::unique_ptr<base::DictionaryValue> ThemeSpecificsToValue(
+base::Value ThemeSpecificsToValue(
     const sync_pb::ThemeSpecifics& theme_specifics);
 
-std::unique_ptr<base::DictionaryValue> TimeRangeDirectiveToValue(
+base::Value TimeRangeDirectiveToValue(
     const sync_pb::TimeRangeDirective& time_range_directive);
 
-std::unique_ptr<base::DictionaryValue> TypedUrlSpecificsToValue(
+base::Value TypedUrlSpecificsToValue(
     const sync_pb::TypedUrlSpecifics& typed_url_specifics);
 
-std::unique_ptr<base::DictionaryValue> UrlDirectiveToValue(
+base::Value UrlDirectiveToValue(
     const sync_pb::UrlDirective& time_range_directive);
 
-std::unique_ptr<base::DictionaryValue> UserConsentSpecificsToValue(
+base::Value UserConsentSpecificsToValue(
     const sync_pb::UserConsentSpecifics& user_consent_specifics);
 
-std::unique_ptr<base::DictionaryValue> UserEventSpecificsToValue(
+base::Value UserEventSpecificsToValue(
     const sync_pb::UserEventSpecifics& user_event_specifics);
 
-std::unique_ptr<base::DictionaryValue> WalletCreditCardCloudTokenDataToValue(
+base::Value WalletCreditCardCloudTokenDataToValue(
     const sync_pb::WalletCreditCardCloudTokenData& cloud_token_data);
 
-std::unique_ptr<base::DictionaryValue> WalletMaskedCreditCardToValue(
+base::Value WalletMaskedCreditCardToValue(
     const sync_pb::WalletMaskedCreditCard& wallet_masked_card);
 
-std::unique_ptr<base::DictionaryValue> WalletMetadataSpecificsToValue(
+base::Value WalletMetadataSpecificsToValue(
     const sync_pb::WalletMetadataSpecifics& wallet_metadata_specifics);
 
-std::unique_ptr<base::DictionaryValue> WalletPostalAddressToValue(
+base::Value WalletPostalAddressToValue(
     const sync_pb::WalletPostalAddress& wallet_postal_address);
 
-std::unique_ptr<base::DictionaryValue> WebAppSpecificsToValue(
+base::Value WebAppSpecificsToValue(
     const sync_pb::WebAppSpecifics& web_app_specifics);
 
-std::unique_ptr<base::DictionaryValue> WifiConfigurationSpecificsToValue(
+base::Value WifiConfigurationSpecificsToValue(
     const sync_pb::WifiConfigurationSpecifics& wifi_configuration_specifics);
 
-std::unique_ptr<base::DictionaryValue> WorkspaceDeskSpecificsToValue(
+base::Value WorkspaceDeskSpecificsToValue(
     const sync_pb::WorkspaceDeskSpecifics& workspace_desk_specifics);
 
 // ToValue functions that allow omitting specifics and other fields.
@@ -288,17 +273,16 @@ struct ProtoValueConversionOptions {
   bool include_full_get_update_triggers = true;
 };
 
-std::unique_ptr<base::DictionaryValue> ClientToServerMessageToValue(
+base::Value ClientToServerMessageToValue(
     const sync_pb::ClientToServerMessage& proto,
     const ProtoValueConversionOptions& options);
 
-std::unique_ptr<base::DictionaryValue> ClientToServerResponseToValue(
+base::Value ClientToServerResponseToValue(
     const sync_pb::ClientToServerResponse& proto,
     const ProtoValueConversionOptions& options);
 
-std::unique_ptr<base::DictionaryValue> SyncEntityToValue(
-    const sync_pb::SyncEntity& entity,
-    const ProtoValueConversionOptions& options);
+base::Value SyncEntityToValue(const sync_pb::SyncEntity& entity,
+                              const ProtoValueConversionOptions& options);
 
 }  // namespace syncer
 

@@ -553,8 +553,7 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   }
   data_dictionary.Set("LOCAL_EXTERNAL_ID", static_cast<int>(node->id()));
   data_dictionary.Set("positionIndex", index);
-  data_dictionary.Set("metadata", base::Value::FromUniquePtrValue(
-                                      syncer::EntityMetadataToValue(metadata)));
+  data_dictionary.Set("metadata", syncer::EntityMetadataToValue(metadata));
   data_dictionary.Set("modelType", "Bookmarks");
   data_dictionary.Set("IS_DIR", node->is_folder());
   all_nodes->Append(std::move(data_dictionary));

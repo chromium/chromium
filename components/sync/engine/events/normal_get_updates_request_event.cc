@@ -88,9 +88,10 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
 
 std::unique_ptr<base::DictionaryValue>
 NormalGetUpdatesRequestEvent::GetProtoMessage(bool include_specifics) const {
-  return ClientToServerMessageToValue(
-      request_, {.include_specifics = include_specifics,
-                 .include_full_get_update_triggers = false});
+  return base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(ClientToServerMessageToValue(
+          request_, {.include_specifics = include_specifics,
+                     .include_full_get_update_triggers = false})));
 }
 
 }  // namespace syncer

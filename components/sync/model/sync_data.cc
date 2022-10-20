@@ -107,7 +107,7 @@ std::string SyncData::ToString() const {
 
   std::string type = ModelTypeToDebugString(GetDataType());
   std::string specifics;
-  base::JSONWriter::WriteWithOptions(*EntitySpecificsToValue(GetSpecifics()),
+  base::JSONWriter::WriteWithOptions(EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &specifics);
 
