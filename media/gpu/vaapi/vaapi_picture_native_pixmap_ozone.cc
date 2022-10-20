@@ -108,9 +108,18 @@ VaapiStatus VaapiPictureNativePixmapOzone::Allocate(gfx::BufferFormat format) {
 
   ui::OzonePlatform* platform = ui::OzonePlatform::GetInstance();
   ui::SurfaceFactoryOzone* factory = platform->GetSurfaceFactoryOzone();
+  gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT_VDA_WRITE;
+#if BUILDFLAG(USE_VAAPI_X11)
+  // The 'VaapiVideoDecodeAccelerator' requires the VPP to download the decoded
+  // frame from the internal surface to the allocated native pixmap.
+  // 'SCANOUT_VDA_WRITE' is used for 'YUV_420_BIPLANAR' on ChromeOS; For Linux,
+  // the usage is set to 'GPU_READ' for 'RGBX_8888'.
+  DCHECK(format == gfx::BufferFormat::RGBX_8888);
+  buffer_usage = gfx::BufferUsage::GPU_READ;
+#endif
   auto pixmap = factory->CreateNativePixmap(
-      gfx::kNullAcceleratedWidget, VK_NULL_HANDLE, size_, format,
-      gfx::BufferUsage::SCANOUT_VDA_WRITE, /*framebuffer_size=*/visible_size_);
+      gfx::kNullAcceleratedWidget, VK_NULL_HANDLE, size_, format, buffer_usage,
+      /*framebuffer_size=*/visible_size_);
   if (!pixmap) {
     return VaapiStatus::Codes::kNoPixmap;
   }
