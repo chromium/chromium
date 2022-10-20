@@ -7282,10 +7282,6 @@ crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transf
 crbug.com/1370050 http/tests/devtools/debugger/stop-on-debugger-from-detached-iframe.js [ Skip ]
 crbug.com/1370050 http/tests/devtools/sources/debugger-ui/debugger-save-to-temp-var.js [ Skip ]
 
-# Temporarily disable tests till frontend part of this CL lands
-crbug.com/1349331 http/tests/devtools/storage-panel-dom-storage-update.js [ Skip ]
-crbug.com/1349331 http/tests/devtools/storage-panel-dom-storage.js [ Skip ]
-
 crbug.com/1279220 [ Win ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass Timeout ]
 crbug.com/1279220 [ Linux ] fast/scrolling/non-composited-scroller-in-position-fixed-scroller.html [ Failure Pass ]
 

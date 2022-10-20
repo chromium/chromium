@@ -11,9 +11,9 @@ Application
   Storage
 Storage
   Local Storage
-    http://127.0.0.1:8000
+    http://127.0.0.1:8000/
   Session Storage
-    http://127.0.0.1:8000
+    http://127.0.0.1:8000/
   IndexedDB
   Web SQL
   Cookies
@@ -48,9 +48,9 @@ Application
   Storage
 Storage
   Local Storage
-    http://127.0.0.1:8000
+    http://127.0.0.1:8000/
   Session Storage
-    http://127.0.0.1:8000
+    http://127.0.0.1:8000/
   IndexedDB
   Web SQL
     inspector-test-db (selected)
@@ -85,9 +85,9 @@ Application
   Storage
 Storage
   Local Storage
-    http://127.0.0.1:8000
+    http://127.0.0.1:8000/
   Session Storage
-    http://127.0.0.1:8000
+    http://127.0.0.1:8000/
   IndexedDB
   Web SQL
     inspector-test-db (selected)

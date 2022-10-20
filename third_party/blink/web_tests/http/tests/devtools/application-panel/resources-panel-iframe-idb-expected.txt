@@ -12,10 +12,10 @@ Application
  Storage
 Storage
  Local Storage
-  http://127.0.0.1:8000
+  http://127.0.0.1:8000/
   http://devtools.oopif.test:8000
  Session Storage
-  http://127.0.0.1:8000
+  http://127.0.0.1:8000/
   http://devtools.oopif.test:8000
  IndexedDB
   Database-iframe - http://devtools.oopif.test:8000
@@ -56,9 +56,9 @@ Application
  Storage
 Storage
  Local Storage
-  http://127.0.0.1:8000
+  http://127.0.0.1:8000/
  Session Storage
-  http://127.0.0.1:8000
+  http://127.0.0.1:8000/
  IndexedDB
   Database-main-frame - http://127.0.0.1:8000
  Web SQL
@@ -94,10 +94,10 @@ Application
  Storage
 Storage
  Local Storage
-  http://127.0.0.1:8000
+  http://127.0.0.1:8000/
   http://devtools.oopif.test:8000
  Session Storage
-  http://127.0.0.1:8000
+  http://127.0.0.1:8000/
   http://devtools.oopif.test:8000
  IndexedDB
   Database-main-frame - http://127.0.0.1:8000
