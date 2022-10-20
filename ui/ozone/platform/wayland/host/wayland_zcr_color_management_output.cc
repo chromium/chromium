@@ -15,8 +15,10 @@
 namespace ui {
 
 WaylandZcrColorManagementOutput::WaylandZcrColorManagementOutput(
+    WaylandOutput* wayland_output,
     zcr_color_management_output_v1* color_management_output)
-    : zcr_color_management_output_(color_management_output) {
+    : wayland_output_(wayland_output),
+      zcr_color_management_output_(color_management_output) {
   DCHECK(color_management_output);
   static const zcr_color_management_output_v1_listener listener = {
       &WaylandZcrColorManagementOutput::OnColorSpaceChanged,
@@ -28,6 +30,14 @@ WaylandZcrColorManagementOutput::WaylandZcrColorManagementOutput(
 }
 
 WaylandZcrColorManagementOutput::~WaylandZcrColorManagementOutput() = default;
+
+void WaylandZcrColorManagementOutput::OnColorSpaceDone(
+    const gfx::ColorSpace& color_space) {
+  gfx_color_space_ = std::make_unique<gfx::ColorSpace>(color_space);
+  // Notify WaylandScreen that the output has been updated, so it will check for
+  // the new ColorSpace.
+  wayland_output_->TriggerDelegateNotifications();
+}
 
 // static
 void WaylandZcrColorManagementOutput::OnColorSpaceChanged(
@@ -47,13 +57,6 @@ void WaylandZcrColorManagementOutput::OnColorSpaceChanged(
       base::BindOnce(&WaylandZcrColorManagementOutput::OnColorSpaceDone,
                      zcr_color_management_output->weak_factory_.GetWeakPtr()));
 }
-
-// static
-void WaylandZcrColorManagementOutput::OnColorSpaceDone(
-    const gfx::ColorSpace& color_space) {
-  gfx_color_space_ = std::make_unique<gfx::ColorSpace>(color_space);
-}
-
 // static
 void WaylandZcrColorManagementOutput::OnExtendedDynamicRange(
     void* data,

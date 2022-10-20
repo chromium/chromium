@@ -89,6 +89,7 @@ void WaylandOutput::InitializeColorManagementOutput(
     WaylandZcrColorManager* zcr_color_manager) {
   DCHECK(!color_management_output_);
   color_management_output_ = std::make_unique<WaylandZcrColorManagementOutput>(
+      this,
       zcr_color_manager->CreateColorManagementOutput(output_.get()).release());
 }
 

@@ -5,9 +5,11 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_MANAGEMENT_OUTPUT_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_MANAGEMENT_OUTPUT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/color_space.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 namespace ui {
@@ -17,6 +19,7 @@ namespace ui {
 class WaylandZcrColorManagementOutput {
  public:
   explicit WaylandZcrColorManagementOutput(
+      WaylandOutput* wayland_output,
       struct zcr_color_management_output_v1* management_output);
   WaylandZcrColorManagementOutput(const WaylandZcrColorManagementOutput&) =
       delete;
@@ -37,6 +40,7 @@ class WaylandZcrColorManagementOutput {
 
   void OnColorSpaceDone(const gfx::ColorSpace& color_space);
 
+  const raw_ptr<WaylandOutput> wayland_output_;
   wl::Object<zcr_color_management_output_v1> zcr_color_management_output_;
   std::unique_ptr<gfx::ColorSpace> gfx_color_space_;
   scoped_refptr<WaylandZcrColorSpace> color_space_;

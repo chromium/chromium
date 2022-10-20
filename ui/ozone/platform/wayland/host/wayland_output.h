@@ -95,12 +95,12 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
 
   void SetScaleFactorForTesting(float scale_factor);
 
+  void TriggerDelegateNotifications();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
 
   static constexpr int32_t kDefaultScaleFactor = 1;
-
-  void TriggerDelegateNotifications();
 
   // Callback functions used for setting geometric properties of the output
   // and available modes.
