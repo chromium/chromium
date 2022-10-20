@@ -2828,6 +2828,8 @@
       // A kill switch. Please consider removing this after M112.
       name: "WarnSandboxIneffective",
       status: "stable",
+      base_feature: "WarnSandboxIneffective",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "WebAnimationsAPI",
