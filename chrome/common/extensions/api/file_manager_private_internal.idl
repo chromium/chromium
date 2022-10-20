@@ -104,6 +104,7 @@ callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
     static void getDownloadUrl(DOMString url, GetUrlCallback callback);
     static void getDisallowedTransfers(DOMString[] entries,
                                        DOMString destinationEntry,
+                                       boolean isMove,
                                        GetDisallowedTransfersCallback callback);
     static void getDlpMetadata(DOMString[] entries,
                                GetDlpMetadataCallback callback);

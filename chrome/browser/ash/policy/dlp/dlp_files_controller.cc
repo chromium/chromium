@@ -239,6 +239,7 @@ DlpFilesController::~DlpFilesController() = default;
 void DlpFilesController::GetDisallowedTransfers(
     const std::vector<storage::FileSystemURL>& transferred_files,
     storage::FileSystemURL destination,
+    bool is_move,
     GetDisallowedTransfersCallback result_callback) {
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());

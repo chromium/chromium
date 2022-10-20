@@ -1093,7 +1093,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
   policy::DlpFilesController* files_controller =
       rules_manager->GetDlpFilesController();
   files_controller->GetDisallowedTransfers(
-      source_urls_, destination_url_,
+      source_urls_, destination_url_, params->is_move,
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
                          OnGetDisallowedFiles,
                      this));

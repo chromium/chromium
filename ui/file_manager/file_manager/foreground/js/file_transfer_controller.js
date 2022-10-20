@@ -458,10 +458,10 @@ export class FileTransferController {
     try {
       if (util.isDlpEnabled()) {
         const destinationDir =
-          /** @type{!DirectoryEntry} */ (
-              assert(util.unwrapEntry(pastePlan.destinationEntry)));
-        disallowedTransfers =
-            await getDisallowedTransfers(sourceEntries, destinationDir);
+            /** @type{!DirectoryEntry} */ (
+                assert(util.unwrapEntry(pastePlan.destinationEntry)));
+        disallowedTransfers = await getDisallowedTransfers(
+            sourceEntries, destinationDir, pastePlan.isMove);
       }
     } catch (error) {
       disallowedTransfers = [];

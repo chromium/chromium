@@ -162,10 +162,13 @@ class DlpFilesController {
 
   virtual ~DlpFilesController();
 
-  // Returns a list of files disallowed to be transferred in |result_callback|.
+  // Returns a sublist of |transferred_files| disallowed to be transferred to
+  // |destination| in |result_callback|. |is_move| is true if it's a move
+  // operation. Otherwise it's false.
   void GetDisallowedTransfers(
       const std::vector<storage::FileSystemURL>& transferred_files,
       storage::FileSystemURL destination,
+      bool is_move,
       GetDisallowedTransfersCallback result_callback);
 
   // Retrieves metadata for each entry in |files| and returns it as a list in

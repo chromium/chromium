@@ -217,11 +217,12 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest(
-      'getDisallowedTransfers', function(entries, destinationEntry, callback) {
+      'getDisallowedTransfers',
+      function(entries, destinationEntry, isMove, callback) {
         var sourceUrls = entries.map(getEntryURL);
         var destinationUrl = getEntryURL(destinationEntry);
         fileManagerPrivateInternal.getDisallowedTransfers(
-            sourceUrls, destinationUrl, callback);
+            sourceUrls, destinationUrl, isMove, callback);
       });
 
   apiFunctions.setHandleRequest(

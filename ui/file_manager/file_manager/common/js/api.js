@@ -104,13 +104,15 @@ export async function getHoldingSpaceState() {
  * async/await compatible style.
  * @param {!Array<!Entry>} entries entries to be transferred
  * @param {!DirectoryEntry} destinationEntry destination entry
+ * @param {boolean} isMove true if the operation is move. false if copy.
  * @return {!Promise<!Array<!Entry>>} disallowed transfers
  */
-export async function getDisallowedTransfers(entries, destinationEntry) {
+export async function getDisallowedTransfers(
+    entries, destinationEntry, isMove) {
   return promisify(
       chrome.fileManagerPrivate.getDisallowedTransfers,
-      entries.map(e => util.unwrapEntry(e)),
-      util.unwrapEntry(destinationEntry));
+      entries.map(e => util.unwrapEntry(e)), util.unwrapEntry(destinationEntry),
+      isMove);
 }
 
 /**

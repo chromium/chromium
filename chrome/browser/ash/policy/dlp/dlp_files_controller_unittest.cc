@@ -307,8 +307,8 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
-                                            future.GetCallback());
+  files_controller_->GetDisallowedTransfers(
+      transferred_files, dst_url, /*is_move=*/true, future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(disallowed_files, future.Take());
 }
@@ -321,9 +321,9 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_SameFileSystem) {
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(transferred_files,
-                                            CreateFileSystemURL("Downloads"),
-                                            future.GetCallback());
+  files_controller_->GetDisallowedTransfers(
+      transferred_files, CreateFileSystemURL("Downloads"), /*is_move=*/false,
+      future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
@@ -350,8 +350,8 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ClientNotRunning) {
   chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(false);
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
-                                            future.GetCallback());
+  files_controller_->GetDisallowedTransfers(
+      transferred_files, dst_url, /*is_move=*/true, future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
@@ -385,8 +385,8 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ErrorResponse) {
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
-                                            future.GetCallback());
+  files_controller_->GetDisallowedTransfers(
+      transferred_files, dst_url, /*is_move=*/false, future.GetCallback());
 
   std::vector<storage::FileSystemURL> expected_restricted_files(
       {file_url1_, file_url2_, file_url3_});

@@ -1471,11 +1471,13 @@ interface Functions {
   // Returns the list of files not allowed to be transfered.
   // |entries| List of the source entries to be transfered.
   // |destinationEntry| Entry for the destination (parent) directory.
+  // |isMove| True if the operation is move, false otherwise.
   // |callback| Result callback.
   [nocompile]
   static void getDisallowedTransfers(
       [instanceOf=Entry] object[] entries,
       [instanceOf=DirectoryEntry] object destinationEntry,
+      boolean isMove,
       GetDisallowedTransfersCallback callback);
 
   // Returns the list of DlpMetadata containing DLP information

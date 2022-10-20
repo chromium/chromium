@@ -1024,11 +1024,12 @@ chrome.fileManagerPrivate.getVolumeMetadataList = function(callback) {};
  * directory.
  * @param {!Array<!Entry>} entries
  * @param {!DirectoryEntry} destinationEntry
+ * @param {boolean} isMove true if the operation is move. false if copy.
  * @param {!Array<!Entry>} callback Entries of the files not allowed to be
  *     transferred.
  */
 chrome.fileManagerPrivate.getDisallowedTransfers = function(
-    entries, destinationEntry, callback) {};
+    entries, destinationEntry, isMove, callback) {};
 
 /**
  * Returns a list of files that are restricted by any Data Leak Prevention

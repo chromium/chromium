@@ -88,7 +88,8 @@ chrome.test.getConfig(async (config) => {
     const destinationDirectory = await getDirectoryEntry('drive', 'subdir');
 
     await chrome.fileManagerPrivate.getDisallowedTransfers(
-        testEntries, destinationDirectory, (disallowed_entries) => {
+        testEntries, destinationDirectory, /*isMove=*/ true,
+        (disallowed_entries) => {
           chrome.test.assertEq(1, disallowed_entries.length);
           chrome.test.succeed();
         });
