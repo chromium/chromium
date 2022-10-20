@@ -16,11 +16,11 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -47,10 +47,10 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     authentication_flow_ = OCMStrictClassMock([AuthenticationFlow class]);
-    identity1_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    identity1_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                 gaiaID:@"foo1ID1"
                                                   name:@"Fake Foo 1"];
-    identity2_ = [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
+    identity2_ = [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
                                                 gaiaID:@"foo1ID2"
                                                   name:@"Fake Foo 2"];
     GetIdentityService()->AddIdentity(identity1_);
@@ -177,8 +177,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 
   AuthenticationFlow* authentication_flow_ = nil;
-  FakeChromeIdentity* identity1_ = nil;
-  FakeChromeIdentity* identity2_ = nil;
+  FakeSystemIdentity* identity1_ = nil;
+  FakeSystemIdentity* identity2_ = nil;
 
   id<ConsistencyPromoSigninMediatorDelegate> mediator_delegate_mock_ = nil;
 };
@@ -267,8 +267,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 TEST_F(ConsistencyPromoSigninMediatorTest,
        SigninCoordinatorResultSuccessWithAddedIdentity) {
   base::HistogramTester histogram_tester;
-  FakeChromeIdentity* identity3 =
-      [FakeChromeIdentity identityWithEmail:@"foo3@gmail.com"
+  FakeSystemIdentity* identity3 =
+      [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
                                      gaiaID:@"foo1ID3"
                                        name:@"Fake Foo 3"];
   GetIdentityService()->AddIdentity(identity3);

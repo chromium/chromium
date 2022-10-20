@@ -10,6 +10,7 @@
 #import "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -290,7 +290,7 @@ id<GREYMatcher> GetSyncSettings() {
 // Tests FRE with UMA off and without sign-in.
 - (void)testWithUMAUncheckedAndSignin {
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -339,7 +339,7 @@ id<GREYMatcher> GetSyncSettings() {
 // Tests FRE with UMA default value and with sign-in.
 - (void)testWithUMACheckedAndSignin {
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -370,7 +370,7 @@ id<GREYMatcher> GetSyncSettings() {
 // Tests FRE with UMA default value, with sign-in and no sync.
 - (void)testWithUMACheckedAndSigninAndNoSync {
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -401,7 +401,7 @@ id<GREYMatcher> GetSyncSettings() {
 // Tests accepting sync with 2 datatype disabled.
 - (void)testAdvancedSettingsAndDisableTwoDataTypes {
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -482,7 +482,7 @@ id<GREYMatcher> GetSyncSettings() {
 - (void)testAdvancedSettingsWithSyncPassphrase {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kSyncPassphrase];
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -547,7 +547,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Configure the policy to force sign-in.
   [self relaunchAppWithBrowserSigninMode:BrowserSigninMode::kForced];
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -583,7 +583,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Configure the policy to force sign-in.
   [self relaunchAppWithBrowserSigninMode:BrowserSigninMode::kForced];
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -619,7 +619,7 @@ id<GREYMatcher> GetSyncSettings() {
   [self relaunchAppWithPolicyKey:policy::key::kSyncDisabled
                   xmlPolicyValue:"<true/>"];
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -647,7 +647,7 @@ id<GREYMatcher> GetSyncSettings() {
   [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
                   xmlPolicyValue:"<array><string>bookmarks</string></array>"];
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -703,7 +703,7 @@ id<GREYMatcher> GetSyncSettings() {
   [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
                   xmlPolicyValue:"<integer>1</integer>"];
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -729,7 +729,7 @@ id<GREYMatcher> GetSyncSettings() {
   [self relaunchAppWithPolicyKey:policy::key::kMetricsReportingEnabled
                   xmlPolicyValue:"<false/>"];
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify 2 step FRE with no UMA footer.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:

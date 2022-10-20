@@ -11,7 +11,10 @@ specific_include_rules = {
   "test_signin_resources\.mm": [
     "+ui/base/test/ios/ui_image_test_utils.h",
   ],
-  "fake_chrome_identity\.mm": [
-    "+components/signin/public/identity_manager/account_info.h"
-  ]
+  "fake_chrome_identity_service\.mm": [
+    "+ios/chrome/browser/signin/fake_system_identity.h",
+  ],
+  "chrome_identity_service_unittest\.mm": [
+    "+ios/chrome/browser/signin/fake_system_identity.h",
+  ],
 }

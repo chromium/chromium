@@ -12,11 +12,11 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -33,13 +33,13 @@ class UnifiedConsentMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    identity1_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    identity1_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                 gaiaID:@"foo1ID"
                                                   name:@"Fake Foo 1"];
-    identity2_ = [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
+    identity2_ = [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
                                                 gaiaID:@"foo2ID"
                                                   name:@"Fake Foo 2"];
-    identity3_ = [FakeChromeIdentity identityWithEmail:@"foo3@gmail.com"
+    identity3_ = [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
                                                 gaiaID:@"foo3ID"
                                                   name:@"Fake Foo 3"];
 
@@ -96,9 +96,9 @@ class UnifiedConsentMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
-  FakeChromeIdentity* identity1_ = nullptr;
-  FakeChromeIdentity* identity2_ = nullptr;
-  FakeChromeIdentity* identity3_ = nullptr;
+  FakeSystemIdentity* identity1_ = nullptr;
+  FakeSystemIdentity* identity2_ = nullptr;
+  FakeSystemIdentity* identity3_ = nullptr;
 
   UnifiedConsentMediator* mediator_ = nullptr;
   PrefService* pref_service_ = nullptr;

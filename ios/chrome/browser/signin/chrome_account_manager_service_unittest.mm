@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/test/testing_application_context.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -20,20 +20,20 @@
 #endif
 
 namespace {
-FakeChromeIdentity* identity1 =
-    [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+FakeSystemIdentity* identity1 =
+    [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                    gaiaID:@"foo1ID"
                                      name:@"Fake Foo 1"];
-FakeChromeIdentity* identity2 =
-    [FakeChromeIdentity identityWithEmail:@"foo2@google.com"
+FakeSystemIdentity* identity2 =
+    [FakeSystemIdentity identityWithEmail:@"foo2@google.com"
                                    gaiaID:@"foo2ID"
                                      name:@"Fake Foo 2"];
-FakeChromeIdentity* identity3 =
-    [FakeChromeIdentity identityWithEmail:@"foo3@chromium.com"
+FakeSystemIdentity* identity3 =
+    [FakeSystemIdentity identityWithEmail:@"foo3@chromium.com"
                                    gaiaID:@"foo3ID"
                                      name:@"Fake Foo 3"];
-FakeChromeIdentity* identity4 =
-    [FakeChromeIdentity identityWithEmail:@"foo4@chromium.com"
+FakeSystemIdentity* identity4 =
+    [FakeSystemIdentity identityWithEmail:@"foo4@chromium.com"
                                    gaiaID:@"foo3ID"
                                      name:@"Fake Foo 3"];
 }  // namespace

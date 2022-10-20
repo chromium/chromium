@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
@@ -35,7 +36,6 @@
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -96,7 +96,7 @@ class SigninSyncMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     identity_service_ =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identity_ = [FakeChromeIdentity identityWithEmail:@"test@email.com"
+    identity_ = [FakeSystemIdentity identityWithEmail:@"test@email.com"
                                                gaiaID:@"gaiaID"
                                                  name:@"Test Name"];
     TestChromeBrowserState::Builder builder;
@@ -171,7 +171,7 @@ class SigninSyncMediatorTest : public PlatformTest {
   std::unique_ptr<ChromeBrowserState> browser_state_;
   ios::FakeChromeIdentityService* identity_service_;
   FakeSigninSyncConsumer* consumer_;
-  FakeChromeIdentity* identity_;
+  FakeSystemIdentity* identity_;
   SyncSetupServiceMock* sync_setup_service_mock_;
   syncer::MockSyncService* sync_service_mock_;
 };
@@ -262,8 +262,8 @@ TEST_F(SigninSyncMediatorTest, TestProfileUpdate) {
 
   NSString* email = @"second@email.com";
   NSString* name = @"Second identity";
-  FakeChromeIdentity* second_identity =
-      [FakeChromeIdentity identityWithEmail:email
+  FakeSystemIdentity* second_identity =
+      [FakeSystemIdentity identityWithEmail:email
                                      gaiaID:@"second gaiaID"
                                        name:name];
   std::unique_ptr<ios::FakeChromeIdentityService> second_service_unique =

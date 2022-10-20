@@ -13,7 +13,7 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
 @class ElementSelector;
-@class FakeChromeIdentity;
+@class FakeSystemIdentity;
 @class NamedGuide;
 
 @interface JavaScriptExecutionResult : NSObject
@@ -352,7 +352,7 @@
 + (void)clearSyncServerData;
 
 // Signs in with `identity` without sync consent.
-+ (void)signInWithoutSyncWithIdentity:(FakeChromeIdentity*)identity;
++ (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
 // Starts the sync server. The server should not be running when calling this.
 + (void)startSync;

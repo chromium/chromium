@@ -16,13 +16,13 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -44,7 +44,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                gaiaID:@"foo1ID"
                                                  name:@"Fake Foo 1"];
     identity_service()->AddIdentity(identity_);
@@ -103,7 +103,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   UIViewController* view_controller_ = nullptr;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  FakeChromeIdentity* identity_ = nullptr;
+  FakeSystemIdentity* identity_ = nullptr;
 
   syncer::MockSyncService* sync_service_mock_ = nullptr;
 };

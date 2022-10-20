@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -28,7 +29,6 @@
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -47,7 +47,7 @@ class UserSigninMediatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                gaiaID:@"foo1ID"
                                                  name:@"Fake Foo 1"];
     identity_service()->AddIdentity(identity_);
@@ -261,7 +261,7 @@ class UserSigninMediatorTest : public PlatformTest {
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  FakeChromeIdentity* identity_ = nullptr;
+  FakeSystemIdentity* identity_ = nullptr;
 
   AuthenticationFlow* authentication_flow_ = nullptr;
   std::unique_ptr<Browser> browser_;
@@ -501,7 +501,7 @@ TEST_F(UserSigninMediatorTest, CancelSyncAndStaySignin) {
 TEST_F(UserSigninMediatorTest, OpenSettingsLinkWithDifferentIdentityAndCancel) {
   // Signs in with identity 2.
   id<SystemIdentity> identity2 =
-      [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
+      [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];
   identity_service()->AddIdentity(identity2);
@@ -553,7 +553,7 @@ TEST_F(UserSigninMediatorTest,
        OpenSettingsLinkWithDifferentIdentityAndForgetIdentity) {
   // Signs in with identity 2.
   id<SystemIdentity> identity2 =
-      [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
+      [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];
   identity_service()->AddIdentity(identity2);

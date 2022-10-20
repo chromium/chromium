@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -95,7 +95,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
                                         password_manager::TestPasswordStore>))
                 .get()));
 
-    fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    fake_identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                     gaiaID:@"foo1ID"
                                                       name:@"Fake Foo 1"];
 
@@ -182,7 +182,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
-  FakeChromeIdentity* fake_identity_ = nullptr;
+  FakeSystemIdentity* fake_identity_ = nullptr;
   AuthenticationServiceFake* auth_service_ = nullptr;
   syncer::MockSyncService* sync_service_mock_ = nullptr;
   SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;

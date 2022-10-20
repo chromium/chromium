@@ -26,9 +26,9 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_test_utils.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -107,7 +107,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     }
     browser_state_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-    fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    fake_identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                     gaiaID:@"foo1ID"
                                                       name:@"Fake Foo 1"];
     auth_service_ = static_cast<AuthenticationServiceFake*>(
@@ -187,7 +187,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   web::FakeNavigationContext context_;
-  FakeChromeIdentity* fake_identity_ = nullptr;
+  FakeSystemIdentity* fake_identity_ = nullptr;
   AuthenticationServiceFake* auth_service_ = nullptr;
 };
 

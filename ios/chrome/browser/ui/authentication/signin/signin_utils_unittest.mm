@@ -23,9 +23,9 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -281,8 +281,8 @@ TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSignedOut) {
 // signin::GetPrimaryIdentitySigninState for a signed-in user should
 // return the signed-in, sync disabled state.
 TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSignedInSyncDisabled) {
-  FakeChromeIdentity* identity =
-      [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                      gaiaID:@"foo1ID"
                                        name:@"Fake Foo 1"];
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
@@ -301,8 +301,8 @@ TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSignedInSyncDisabled) {
 // completed the sync setup should return the signed-in, sync enabled state.
 TEST_F(SigninUtilsTest,
        TestGetPrimaryIdentitySigninStateSyncGrantedSetupComplete) {
-  FakeChromeIdentity* identity =
-      [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                      gaiaID:@"foo1ID"
                                        name:@"Fake Foo 1"];
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
@@ -328,8 +328,8 @@ TEST_F(SigninUtilsTest,
 // completed the sync setup (due to a crash while in advanced settings) should
 // return the signed-in, sync disabled state.
 TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSyncGranted) {
-  FakeChromeIdentity* identity =
-      [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                      gaiaID:@"foo1ID"
                                        name:@"Fake Foo 1"];
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(

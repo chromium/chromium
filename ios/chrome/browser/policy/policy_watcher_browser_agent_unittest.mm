@@ -23,13 +23,13 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -89,8 +89,8 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
 
   // Sign in in the authentication service with a fake identity.
   void SignIn() {
-    FakeChromeIdentity* identity =
-        [FakeChromeIdentity identityWithEmail:@"email@mail.com"
+    FakeSystemIdentity* identity =
+        [FakeSystemIdentity identityWithEmail:@"email@mail.com"
                                        gaiaID:@"gaiaID"
                                          name:@"myName"];
     AuthenticationServiceFactory::GetForBrowserState(
@@ -298,8 +298,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
           AuthenticationServiceFactory::GetForBrowserState(
               chrome_browser_state_.get()));
 
-  FakeChromeIdentity* identity =
-      [FakeChromeIdentity identityWithEmail:@"email@google.com"
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"email@google.com"
                                      gaiaID:@"gaiaID"
                                        name:@"myName"];
   authentication_service->SignIn(identity);

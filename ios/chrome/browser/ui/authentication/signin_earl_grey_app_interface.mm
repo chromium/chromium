@@ -16,12 +16,12 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
@@ -34,18 +34,18 @@
 
 @implementation SigninEarlGreyAppInterface
 
-+ (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
++ (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
       fakeIdentity);
 }
 
 + (void)setCapabilities:(NSDictionary*)capabilities
-            forIdentity:(FakeChromeIdentity*)fakeIdentity {
+            forIdentity:(FakeSystemIdentity*)fakeIdentity {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->SetCapabilities(fakeIdentity, capabilities);
 }
 
-+ (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
++ (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->ForgetIdentity(fakeIdentity, nil);
 }
@@ -87,7 +87,7 @@
                                   /*force_clear_browsing_data=*/false, nil);
 }
 
-+ (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity {
++ (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
   FakeChromeIdentityInteractionManager.identity = identity;
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
   PrefService* prefService =

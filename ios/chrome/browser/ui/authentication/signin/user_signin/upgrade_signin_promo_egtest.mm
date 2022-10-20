@@ -6,6 +6,7 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
@@ -18,7 +19,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -95,7 +95,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
 // Tests that the sign-in promo is not visible at start-up once
 // the user has signed in to their account previously.
 - (void)testStartupSigninPromoUserSignedIn {
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey
       setCapabilities:GetCapabilitiesDictionary(
@@ -113,7 +113,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
 // Tests that the sign-in promo is not visible at start-up for an account
 // with minor mode restrictions.
 - (void)testStartupSigninPromoNotShownForMinor {
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey
       setCapabilities:GetCapabilitiesDictionary(
@@ -129,7 +129,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
 
 // Tests that the sign-in promo is visible at start-up for regular user.
 - (void)testStartupSigninPromoShownForNoneMinor {
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey
       setCapabilities:GetCapabilitiesDictionary(

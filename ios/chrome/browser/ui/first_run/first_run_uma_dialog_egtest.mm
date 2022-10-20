@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/signin/ios/browser/features.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
@@ -16,7 +17,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -270,7 +270,7 @@ GREYElementInteraction* ElementInteractionWithGreyMatcher(
 // Tests FRE with UMA off and without sign-in.
 - (void)testWithUMAUncheckedAndSignin {
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify FRE.
   VerifyWelcomeScreenIsDisplayed();
@@ -311,7 +311,7 @@ GREYElementInteraction* ElementInteractionWithGreyMatcher(
 // Tests FRE with UMA default value and with sign-in.
 - (void)testWithUMACheckedAndSignin {
   // Add identity.
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Verify FRE.
   VerifyWelcomeScreenIsDisplayed();

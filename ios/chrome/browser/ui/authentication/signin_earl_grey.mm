@@ -6,10 +6,10 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -21,17 +21,17 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation SigninEarlGreyImpl
 
-- (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
+- (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity];
 }
 
 - (void)setCapabilities:(NSDictionary*)capabilities
-            forIdentity:(FakeChromeIdentity*)fakeIdentity {
+            forIdentity:(FakeSystemIdentity*)fakeIdentity {
   [SigninEarlGreyAppInterface setCapabilities:capabilities
                                   forIdentity:fakeIdentity];
 }
 
-- (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
+- (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   [SigninEarlGreyAppInterface forgetFakeIdentity:fakeIdentity];
 }
 
@@ -40,7 +40,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [self verifySignedOut];
 }
 
-- (void)verifySignedInWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
+- (void)verifySignedInWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   BOOL fakeIdentityIsNonNil = fakeIdentity != nil;
   EG_TEST_HELPER_ASSERT_TRUE(fakeIdentityIsNonNil, @"Need to give an identity");
 

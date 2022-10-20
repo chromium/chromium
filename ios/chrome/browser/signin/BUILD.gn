@@ -156,6 +156,20 @@ source_set("system_identity") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("fake_system_identity") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "fake_system_identity.h",
+    "fake_system_identity.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":system_identity",
+    "//base",
+  ]
+}
+
 source_set("trusted_vault") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -272,6 +286,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui/commands",
@@ -281,7 +296,6 @@ source_set("unit_tests") {
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
@@ -302,9 +316,9 @@ source_set("eg2_tests") {
   sources = [ "authentication_service_egtest.mm" ]
   deps = [
     "//base",
+    "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
     "//ui/base",

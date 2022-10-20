@@ -13,9 +13,9 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -30,7 +30,7 @@ class PriceAlertUtilTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationServiceFake*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    fake_identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                     gaiaID:@"foo1ID"
                                                       name:@"Fake Foo 1"];
   }
@@ -67,7 +67,7 @@ class PriceAlertUtilTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   AuthenticationServiceFake* auth_service_ = nullptr;
-  FakeChromeIdentity* fake_identity_ = nullptr;
+  FakeSystemIdentity* fake_identity_ = nullptr;
 };
 
 TEST_F(PriceAlertUtilTest, TestMSBBOff) {

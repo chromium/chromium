@@ -9,7 +9,7 @@
 #import "base/test/scoped_mock_clock_override.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -128,7 +128,7 @@ class TestChromeIdentityService : public ChromeIdentityService {
 class ChromeIdentityServiceTest : public PlatformTest {
  public:
   ChromeIdentityServiceTest() {
-    identity_ = [FakeChromeIdentity identityWithEmail:@"foo@bar.com"
+    identity_ = [FakeSystemIdentity identityWithEmail:@"foo@bar.com"
                                                gaiaID:@"foo_bar_id"
                                                  name:@"Foo"];
   }
@@ -220,7 +220,7 @@ class ChromeIdentityServiceTest : public PlatformTest {
     }
   }
 
-  FakeChromeIdentity* identity_;
+  FakeSystemIdentity* identity_;
   TestChromeIdentityService service_;
 };
 

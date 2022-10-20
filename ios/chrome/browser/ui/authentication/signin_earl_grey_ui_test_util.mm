@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -22,7 +23,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -51,7 +51,7 @@ BOOL IsEmailManaged(NSString* email) {
 }
 
 // Closes the managed account dialog, if `fakeIdentity` is a managed account.
-void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
+void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   if (!IsEmailManaged(fakeIdentity.userEmail)) {
     // Don't expect a managed account dialog when the account isn't considered
     // managed.
@@ -71,11 +71,11 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 
 @implementation SigninEarlGreyUI
 
-+ (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
++ (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   [self signinWithFakeIdentity:fakeIdentity enableSync:YES];
 }
 
-+ (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity
++ (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
                     enableSync:(BOOL)enableSync {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   if (!enableSync) {
@@ -233,7 +233,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 }
 
 + (void)openRemoveAccountConfirmationDialogWithFakeIdentity:
-    (FakeChromeIdentity*)fakeIdentity {
+    (FakeSystemIdentity*)fakeIdentity {
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                           fakeIdentity.userEmail)]
       performAction:grey_tap()];
@@ -244,7 +244,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
       performAction:grey_tap()];
 }
 
-+ (void)openMyGoogleDialogWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
++ (void)openMyGoogleDialogWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                           fakeIdentity.userEmail)]
       performAction:grey_tap()];
@@ -256,7 +256,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 }
 
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:
-    (FakeChromeIdentity*)fakeIdentity {
+    (FakeSystemIdentity*)fakeIdentity {
   [self openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity];
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                           l10n_util::GetNSString(

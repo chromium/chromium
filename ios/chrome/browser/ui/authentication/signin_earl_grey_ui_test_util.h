@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 
-@class FakeChromeIdentity;
+@class FakeSystemIdentity;
 
 typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
   SignOutConfirmationChoiceClearData,
@@ -21,13 +21,13 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 @interface SigninEarlGreyUI : NSObject
 
 // Calls +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES].
-+ (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
++ (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Signs the account for `fakeIdentity` into Chrome through the Settings screen,
 // with sync enabled or not according to `enableSync`.
 // There will be a GREYAssert if the tools menus is open when calling this
 // method or if the account is not successfully signed in.
-+ (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity
++ (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
                     enableSync:(BOOL)enableSync;
 
 // Signs the primary account out of Chrome through the accounts list screen.
@@ -47,15 +47,15 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Opens the confirmation dialog to remove an account from the device, without
 // confirming it.
 + (void)openRemoveAccountConfirmationDialogWithFakeIdentity:
-    (FakeChromeIdentity*)fakeIdentity;
+    (FakeSystemIdentity*)fakeIdentity;
 
 // Opens MyGoogle UI from the account list settings.
-+ (void)openMyGoogleDialogWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
++ (void)openMyGoogleDialogWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Taps "Remove from this device" button and follow-up confirmation.
 // Assumes the user is on the Settings screen.
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:
-    (FakeChromeIdentity*)fakeIdentity;
+    (FakeSystemIdentity*)fakeIdentity;
 
 // Opens the recent tabs and tap in the primary sign-in button.
 + (void)tapPrimarySignInButtonInRecentTabs;

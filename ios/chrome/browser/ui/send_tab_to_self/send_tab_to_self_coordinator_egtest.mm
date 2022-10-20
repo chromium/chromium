@@ -4,13 +4,13 @@
 
 #import "base/bind.h"
 #import "components/send_tab_to_self/features.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -72,7 +72,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testHideButtonIfSignedOutAndHasDeviceAccount {
-  [SigninEarlGrey addFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
 
@@ -86,7 +86,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testHideButtonIfSignedInAndNoTargetDevice {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
@@ -105,7 +105,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // considered expired and won't be displayed.
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
@@ -159,7 +159,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testShowPromoIfSignedOutAndHasDeviceAccount {
-  [SigninEarlGrey addFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
 
@@ -177,7 +177,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
@@ -200,7 +200,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // considered expired and won't be displayed.
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];

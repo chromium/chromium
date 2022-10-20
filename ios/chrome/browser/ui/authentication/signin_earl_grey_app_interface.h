@@ -9,7 +9,7 @@
 
 #import "url/gurl.h"
 
-@class FakeChromeIdentity;
+@class FakeSystemIdentity;
 @protocol GREYMatcher;
 
 namespace signin {
@@ -22,16 +22,16 @@ enum class ConsentLevel;
 @interface SigninEarlGreyAppInterface : NSObject
 
 // Adds `fakeIdentity` to the fake identity service.
-+ (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
++ (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Maps `capabilities` to the `fakeIdentity`.
 // Must be called after `addFakeIdentity`.
 + (void)setCapabilities:(NSDictionary*)capabilities
-            forIdentity:(FakeChromeIdentity*)fakeIdentity;
+            forIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Removes `fakeIdentity` from the fake chrome identity service asynchronously
 // to simulate identity removal from the device.
-+ (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
++ (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Returns the gaia ID of the signed-in account.
 // If there is no signed-in account returns an empty string.
@@ -49,7 +49,7 @@ enum class ConsentLevel;
 
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to
 // SceneController, without any UI interaction to open the dialog.
-+ (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity;
++ (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.

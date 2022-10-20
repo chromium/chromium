@@ -765,7 +765,7 @@ UIWindow* GetAnyKeyWindow() {
   [ChromeEarlGreyAppInterface clearSyncServerData];
 }
 
-- (void)signInWithoutSyncWithIdentity:(FakeChromeIdentity*)identity {
+- (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
   [ChromeEarlGreyAppInterface signInWithoutSyncWithIdentity:identity];
 }
 

@@ -12,8 +12,8 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -26,7 +26,7 @@
 #endif
 
 namespace {
-// Constants for configuring a FakeChromeIdentity.
+// Constants for configuring a FakeSystemIdentity.
 const char kTestGaiaID[] = "fooID";
 const char kTestEmail[] = "foo@gmail.com";
 }  // namespace
@@ -42,7 +42,7 @@ class AddAccountSigninManagerTest : public PlatformTest {
     FakeChromeIdentityInteractionManager* identity_interaction_manager =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
             ->CreateFakeChromeIdentityInteractionManager();
-    fake_identity_ = [FakeChromeIdentity
+    fake_identity_ = [FakeSystemIdentity
         identityWithEmail:[NSString stringWithUTF8String:kTestEmail]
                    gaiaID:[NSString stringWithUTF8String:kTestGaiaID]
                      name:@"Foo"];
@@ -108,7 +108,7 @@ class AddAccountSigninManagerTest : public PlatformTest {
   id<AddAccountSigninManagerDelegate> signin_manager_delegate_ = nil;
 
   FakeChromeIdentityInteractionManager* identity_interaction_manager_ = nil;
-  FakeChromeIdentity* fake_identity_ = nil;
+  FakeSystemIdentity* fake_identity_ = nil;
 };
 
 // Verifies the following state in the successful add account flow:

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -97,7 +97,7 @@ class SyncScreenCoordinatorTest : public PlatformTest {
 
 // Tests that the delegate is not called when there is a user identity.
 TEST_F(SyncScreenCoordinatorTest, TestStart) {
-  FakeChromeIdentity* identity = [FakeChromeIdentity identityWithEmail:@"email"
+  FakeSystemIdentity* identity = [FakeSystemIdentity identityWithEmail:@"email"
                                                                 gaiaID:@"gaiaID"
                                                                   name:@"name"];
 
@@ -122,7 +122,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncActivated) {
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(testing::Return(true));
 
-  FakeChromeIdentity* identity = [FakeChromeIdentity identityWithEmail:@"email"
+  FakeSystemIdentity* identity = [FakeSystemIdentity identityWithEmail:@"email"
                                                                 gaiaID:@"gaiaID"
                                                                   name:@"name"];
 
@@ -141,7 +141,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncPolicyDisabled) {
       .WillByDefault(testing::Return(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
 
-  FakeChromeIdentity* identity = [FakeChromeIdentity identityWithEmail:@"email"
+  FakeSystemIdentity* identity = [FakeSystemIdentity identityWithEmail:@"email"
                                                                 gaiaID:@"gaiaID"
                                                                   name:@"name"];
 

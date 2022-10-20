@@ -12,13 +12,13 @@
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -91,7 +91,7 @@ class LegacySigninScreenMediatorTest : public PlatformTest {
                                           GetForBrowserState(
                                               browser_state_.get())];
     consumer_ = [[FakeLegacySigninScreenConsumer alloc] init];
-    identity_ = [FakeChromeIdentity identityWithEmail:@"test@email.com"
+    identity_ = [FakeSystemIdentity identityWithEmail:@"test@email.com"
                                                gaiaID:@"gaiaID"
                                                  name:@"Test Name"];
   }
@@ -121,7 +121,7 @@ class LegacySigninScreenMediatorTest : public PlatformTest {
   std::unique_ptr<ChromeBrowserState> browser_state_;
   ios::FakeChromeIdentityService* identity_service_;
   FakeLegacySigninScreenConsumer* consumer_;
-  FakeChromeIdentity* identity_;
+  FakeSystemIdentity* identity_;
 };
 
 // Tests that setting the consumer after the selected identity is set is
@@ -211,8 +211,8 @@ TEST_F(LegacySigninScreenMediatorTest, TestProfileUpdate) {
 
   NSString* email = @"second@email.com";
   NSString* name = @"Second identity";
-  FakeChromeIdentity* second_identity =
-      [FakeChromeIdentity identityWithEmail:email
+  FakeSystemIdentity* second_identity =
+      [FakeSystemIdentity identityWithEmail:email
                                      gaiaID:@"second gaiaID"
                                        name:name];
   std::unique_ptr<ios::FakeChromeIdentityService> second_service_unique =

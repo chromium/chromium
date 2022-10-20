@@ -17,7 +17,7 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "url/gurl.h"
 
-@class FakeChromeIdentity;
+@class FakeSystemIdentity;
 @class ElementSelector;
 @protocol GREYMatcher;
 
@@ -165,7 +165,7 @@ UIWindow* GetAnyKeyWindow();
 - (void)clearSyncServerData;
 
 // Signs in with `identity` without sync consent.
-- (void)signInWithoutSyncWithIdentity:(FakeChromeIdentity*)identity;
+- (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
 // Starts the sync server. The server should not be running when calling this.
 - (void)startSync;

@@ -10,10 +10,10 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -34,7 +34,7 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
     [scoped_key_window_.Get() setRootViewController:view_controller_];
   }
 
-  void AddIdentity(FakeChromeIdentity* identity) {
+  void AddIdentity(FakeSystemIdentity* identity) {
     ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
         ->AddIdentity(identity);
   }
@@ -67,8 +67,8 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
 
 TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
   // Set up a fake identity on device.
-  FakeChromeIdentity* identity =
-      [FakeChromeIdentity identityWithEmail:@"janedoe@gmail.com"
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"janedoe@gmail.com"
                                      gaiaID:@"1"
                                        name:@"Jane Doe"];
   AddIdentity(identity);

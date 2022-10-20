@@ -8,12 +8,12 @@
 #import "base/logging.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/test_platform_policy_provider.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 
@@ -86,7 +86,7 @@ void SetUpTestsIfPresent() {
       // commandline switch.
       ios::FakeChromeIdentityService* identity_service =
           ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-      identity_service->AddIdentity([FakeChromeIdentity fakeIdentity1]);
+      identity_service->AddIdentity([FakeSystemIdentity fakeIdentity1]);
     }
   }
 }

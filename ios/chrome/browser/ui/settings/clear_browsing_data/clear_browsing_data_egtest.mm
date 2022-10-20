@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_egtest_util.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -321,7 +321,7 @@ using chrome_test_util::WindowWithNumber;
 
 // Sign-in without sync. Clear browsing data.
 - (void)signInOpenCBDAndClearDataWithFakeIdentity:
-    (FakeChromeIdentity*)fakeIdentity {
+    (FakeSystemIdentity*)fakeIdentity {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -342,7 +342,7 @@ using chrome_test_util::WindowWithNumber;
 // after clearing their browsing history if `kEnableCbdSignOut` feature is
 // enabled.
 - (void)testUserSignedInWhenClearingBrowsingData {
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -351,7 +351,7 @@ using chrome_test_util::WindowWithNumber;
 // after clearing their browsing history if `kEnableCbdSignOut` feature is
 // disabled.
 - (void)testUserSignedOutWhenClearingBrowsingData {
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedOut];
 }

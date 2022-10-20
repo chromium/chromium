@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -19,16 +19,10 @@ NSString* const kCoderUserGivenNameKey = @"UserGivenName";
 NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 }  // namespace
 
-@implementation FakeChromeIdentity
-
-@synthesize userEmail = _userEmail;
-@synthesize gaiaID = _gaiaID;
-@synthesize userFullName = _userFullName;
-@synthesize userGivenName = _userGivenName;
-@synthesize hashedGaiaID = _hashedGaiaID;
+@implementation FakeSystemIdentity
 
 + (std::string)encodeIdentitiesToBase64:
-    (NSArray<FakeChromeIdentity*>*)identities {
+    (NSArray<FakeSystemIdentity*>*)identities {
   NSError* error = nil;
   NSData* data = [NSKeyedArchiver archivedDataWithRootObject:identities
                                        requiringSecureCoding:NO
@@ -39,13 +33,13 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   return base::SysNSStringToUTF8(string);
 }
 
-+ (NSArray<FakeChromeIdentity*>*)identitiesFromBase64String:
++ (NSArray<FakeSystemIdentity*>*)identitiesFromBase64String:
     (const std::string&)string {
   NSData* data = [[NSData alloc]
       initWithBase64EncodedString:base::SysUTF8ToNSString(string)
                           options:NSDataBase64DecodingIgnoreUnknownCharacters];
   NSSet* classes =
-      [NSSet setWithArray:@[ [NSArray class], [FakeChromeIdentity class] ]];
+      [NSSet setWithArray:@[ [NSArray class], [FakeSystemIdentity class] ]];
   NSError* error = nil;
   NSArray* identities = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
                                                             fromData:data
@@ -53,28 +47,28 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   return identities;
 }
 
-+ (FakeChromeIdentity*)fakeIdentity1 {
-  return [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
++ (instancetype)fakeIdentity1 {
+  return [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                         gaiaID:@"foo1ID"
                                           name:@"Fake Foo 1"];
 }
 
-+ (FakeChromeIdentity*)fakeIdentity2 {
-  return [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
++ (instancetype)fakeIdentity2 {
+  return [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
                                         gaiaID:@"foo2ID"
                                           name:@"Fake Foo 2"];
 }
 
-+ (FakeChromeIdentity*)fakeManagedIdentity {
-  return [FakeChromeIdentity identityWithEmail:@"foo@google.com"
++ (instancetype)fakeManagedIdentity {
+  return [FakeSystemIdentity identityWithEmail:@"foo@google.com"
                                         gaiaID:@"fooManagedID"
                                           name:@"Fake Managed"];
 }
 
-+ (FakeChromeIdentity*)identityWithEmail:(NSString*)email
-                                  gaiaID:(NSString*)gaiaID
-                                    name:(NSString*)name {
-  return [[FakeChromeIdentity alloc] initWithEmail:email
++ (instancetype)identityWithEmail:(NSString*)email
+                           gaiaID:(NSString*)gaiaID
+                             name:(NSString*)name {
+  return [[FakeSystemIdentity alloc] initWithEmail:email
                                             gaiaID:gaiaID
                                               name:name];
 }
@@ -82,8 +76,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 - (instancetype)initWithEmail:(NSString*)email
                        gaiaID:(NSString*)gaiaID
                          name:(NSString*)name {
-  self = [super init];
-  if (self) {
+  if ((self = [super init])) {
     _userEmail = [email copy];
     _gaiaID = [gaiaID copy];
     _userFullName = [name copy];
@@ -91,26 +84,6 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
     _hashedGaiaID = [NSString stringWithFormat:@"%@_hashID", name];
   }
   return self;
-}
-
-- (NSString*)userEmail {
-  return _userEmail;
-}
-
-- (NSString*)gaiaID {
-  return _gaiaID;
-}
-
-- (NSString*)userFullName {
-  return _userFullName;
-}
-
-- (NSString*)userGivenName {
-  return _userGivenName;
-}
-
-- (NSString*)hashedGaiaID {
-  return _hashedGaiaID;
 }
 
 // Overrides the method to return YES so that the object will be passed by value
@@ -125,16 +98,17 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   if (self == object) {
     return YES;
   }
-  if ([object isKindOfClass:self.class]) {
-    FakeChromeIdentity* other =
-        base::mac::ObjCCastStrict<FakeChromeIdentity>(object);
-    return [_userEmail isEqualToString:other.userEmail] &&
-           [_gaiaID isEqualToString:other.gaiaID] &&
-           [_userFullName isEqualToString:other.userFullName] &&
-           [_userGivenName isEqualToString:other.userGivenName] &&
-           [_hashedGaiaID isEqualToString:other.hashedGaiaID];
+
+  FakeSystemIdentity* other = base::mac::ObjCCast<FakeSystemIdentity>(object);
+  if (!other) {
+    return NO;
   }
-  return NO;
+
+  return [_userEmail isEqualToString:other.userEmail] &&
+         [_gaiaID isEqualToString:other.gaiaID] &&
+         [_userFullName isEqualToString:other.userFullName] &&
+         [_userGivenName isEqualToString:other.userGivenName] &&
+         [_hashedGaiaID isEqualToString:other.hashedGaiaID];
 }
 
 - (NSUInteger)hash {

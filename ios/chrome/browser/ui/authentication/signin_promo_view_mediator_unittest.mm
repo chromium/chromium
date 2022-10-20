@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -32,7 +33,6 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -135,7 +135,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Creates the default identity and adds it into the ChromeIdentityService.
   void AddDefaultIdentity() {
     expected_default_identity_ =
-        [FakeChromeIdentity identityWithEmail:@"johndoe@example.com"
+        [FakeSystemIdentity identityWithEmail:@"johndoe@example.com"
                                        gaiaID:@"1"
                                          name:user_full_name_];
     ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
@@ -315,7 +315,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // User full name for the identity;
   NSString* user_full_name_;
   // Identity used for sign-in.
-  FakeChromeIdentity* expected_default_identity_;
+  FakeSystemIdentity* expected_default_identity_;
 
   // Configurator received from the consumer.
   SigninPromoViewConfigurator* configurator_;
@@ -536,7 +536,7 @@ TEST_F(SigninPromoViewMediatorTest,
 TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
   AddDefaultIdentity();
   expected_default_identity_ =
-      [FakeChromeIdentity identityWithEmail:@"johndoe2@example.com"
+      [FakeSystemIdentity identityWithEmail:@"johndoe2@example.com"
                                      gaiaID:@"2"
                                        name:@"johndoe2"];
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(

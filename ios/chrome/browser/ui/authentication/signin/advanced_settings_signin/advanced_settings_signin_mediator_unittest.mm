@@ -16,11 +16,11 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "testing/platform_test.h"
 
@@ -33,7 +33,7 @@ using syncer::SyncService;
 using testing::Return;
 
 namespace {
-// Constants for configuring a FakeChromeIdentity.
+// Constants for configuring a FakeSystemIdentity.
 const char kTestGaiaID[] = "fooID";
 const char kTestEmail[] = "foo@gmail.com";
 
@@ -47,7 +47,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                gaiaID:@"foo1ID"
                                                  name:@"Fake Foo 1"];
     identity_service()->AddIdentity(identity_);
@@ -106,7 +106,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
   base::test::TaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  FakeChromeIdentity* identity_ = nullptr;
+  FakeSystemIdentity* identity_ = nullptr;
 
   AdvancedSettingsSigninMediator* mediator_ = nil;
 

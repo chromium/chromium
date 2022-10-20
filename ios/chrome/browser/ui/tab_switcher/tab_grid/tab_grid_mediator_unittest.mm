@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
@@ -47,7 +48,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -283,7 +283,7 @@ class TabGridMediatorTest : public PlatformTest {
     // Price Drops are only available to signed in MSBB users.
     browser_state_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-    fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+    fake_identity_ = [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                                     gaiaID:@"foo1ID"
                                                       name:@"Fake Foo 1"];
     auth_service_ = static_cast<AuthenticationServiceFake*>(
@@ -404,7 +404,7 @@ class TabGridMediatorTest : public PlatformTest {
   BrowserList* browser_list_;
   base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  FakeChromeIdentity* fake_identity_ = nullptr;
+  FakeSystemIdentity* fake_identity_ = nullptr;
   AuthenticationServiceFake* auth_service_ = nullptr;
 };
 

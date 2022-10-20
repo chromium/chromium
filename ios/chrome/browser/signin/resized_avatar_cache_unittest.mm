@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/signin/resized_avatar_cache.h"
 
 #import "base/values.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -24,10 +24,10 @@ class ResizedAvatarCacheTest : public PlatformTest {
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     resized_avatar_cache_ = [[ResizedAvatarCache alloc]
         initWithIdentityAvatarSize:IdentityAvatarSize::TableViewIcon];
-    identity1_ = [FakeChromeIdentity identityWithEmail:@"test1@email.com"
+    identity1_ = [FakeSystemIdentity identityWithEmail:@"test1@email.com"
                                                 gaiaID:@"gaiaID1"
                                                   name:@"Test Name1"];
-    identity2_ = [FakeChromeIdentity identityWithEmail:@"test2@email.com"
+    identity2_ = [FakeSystemIdentity identityWithEmail:@"test2@email.com"
                                                 gaiaID:@"gaiaID2"
                                                   name:@"Test Name2"];
   }

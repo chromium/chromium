@@ -6,13 +6,13 @@
 #import <XCTest/XCTest.h>
 
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -99,7 +99,7 @@ void SelectFeedMenu() {
 #endif
 - (void)MAYBE_testSignedInOpenAndCloseFeedMenu {
   // Sign into a fake identity.
-  FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
 
@@ -124,7 +124,7 @@ void SelectFeedMenu() {
 #endif
 - (void)MAYBE_testOpenFeedManagementSurface {
   // Sign into a fake identity.
-  FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
 

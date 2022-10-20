@@ -13,8 +13,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
@@ -152,7 +152,7 @@ FakeChromeIdentityService::FakeChromeIdentityService()
   std::string value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kAddFakeIdentitiesArg);
-  NSArray* identities = [FakeChromeIdentity identitiesFromBase64String:value];
+  NSArray* identities = [FakeSystemIdentity identitiesFromBase64String:value];
   if (identities) {
     [identities_ addObjectsFromArray:identities];
   }
@@ -318,7 +318,7 @@ void FakeChromeIdentityService::AddManagedIdentities(NSArray* identitiesNames) {
     NSString* email =
         [NSString stringWithFormat:@"%@%@", name, kManagedIdentityEmailSuffix];
     NSString* gaiaID = [NSString stringWithFormat:kIdentityGaiaIDFormat, name];
-    [identities_ addObject:[FakeChromeIdentity identityWithEmail:email
+    [identities_ addObject:[FakeSystemIdentity identityWithEmail:email
                                                           gaiaID:gaiaID
                                                             name:name]];
   }
@@ -328,7 +328,7 @@ void FakeChromeIdentityService::AddIdentities(NSArray* identitiesNames) {
   for (NSString* name in identitiesNames) {
     NSString* email = [NSString stringWithFormat:kIdentityEmailFormat, name];
     NSString* gaiaID = [NSString stringWithFormat:kIdentityGaiaIDFormat, name];
-    [identities_ addObject:[FakeChromeIdentity identityWithEmail:email
+    [identities_ addObject:[FakeSystemIdentity identityWithEmail:email
                                                           gaiaID:gaiaID
                                                             name:name]];
   }

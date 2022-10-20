@@ -16,8 +16,8 @@ extern NSString* const kManagedIdentityEmailSuffix;
 extern NSString* const kManagedExampleIdentityEmailSuffix;
 
 // Argument to use when starting FakeChromeIdentityService with a list of
-// FakeChromeIdentity. The value is a NSArray of FakeChromeIdentity encoded. See
-// +[FakeChromeIdentity encodeIdentitiesToBase64:].
+// FakeSystemIdentity. The value is a NSArray of FakeSystemIdentity encoded. See
+// +[FakeSystemIdentity encodeIdentitiesToBase64:].
 extern const char* const kAddFakeIdentitiesArg;
 
 // Gets the suffixes of the emails that are considered as managed.
