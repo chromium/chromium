@@ -1103,6 +1103,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mLocaleManager.stopObservingPhoneChanges();
 
         NavigationPredictorBridge.onPause();
+        // Always track the last backgrounded time in case others are using the pref.
+        mInactivityTracker.setLastBackgroundedTimeInPrefsSync(System.currentTimeMillis());
 
         super.onPauseWithNative();
     }

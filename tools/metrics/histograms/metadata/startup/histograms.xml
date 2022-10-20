@@ -274,6 +274,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.IsLastBackgroundTimeLogged" enum="Boolean"
+    expires_after="2023-03-05">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Android: Records whether the last time when Chrome went to background or
+    closed was logged. The histogram is recorded when onResumeWithNative() is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch"
     enum="Boolean" expires_after="2023-02-12">
   <owner>hanxi@chromium.org</owner>
