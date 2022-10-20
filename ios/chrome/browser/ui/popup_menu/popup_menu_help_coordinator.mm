@@ -156,8 +156,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
                           alignment:BubbleAlignmentTrailing
                isLongDurationBubble:NO
                   dismissalCallback:dismissalCallback];
-  bubbleViewControllerPresenter.voiceOverAnnouncement =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SUGGESTIONS_TIP_VOICEOVER);
+  bubbleViewControllerPresenter.voiceOverAnnouncement = text;
   return bubbleViewControllerPresenter;
 }
 
@@ -243,7 +242,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
                isLongDurationBubble:NO
                   dismissalCallback:dismissalCallback];
   bubbleViewControllerPresenter.voiceOverAnnouncement =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SUGGESTIONS_TIP_VOICEOVER);
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP_VOICEOVER);
   return bubbleViewControllerPresenter;
 }
 

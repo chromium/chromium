@@ -3778,6 +3778,9 @@ New Search
       <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP" desc="The text of the tip explaining to the user they can use the carousel in the overflow menu.">
         Your saved bookmarks, passwords, settings, and more are now here
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP_VOICEOVER" desc="The VoiceOver announcement for the tip explaining to the user they can use the carousel in the overflow menu.">
+        Your saved bookmarks, passwords, settings, and more are available from this screen.
+      </message>
     </messages>
   </release>
 </grit>
