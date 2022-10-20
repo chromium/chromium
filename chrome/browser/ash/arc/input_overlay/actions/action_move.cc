@@ -91,6 +91,7 @@ class ActionMove::ActionMoveMouseView : public ActionView {
     labels_[0]->SetPosition(gfx::Point());
     center_.set_x(label_size.width() / 2);
     center_.set_y(label_size.height() / 2);
+    UpdateTrashButtonPosition();
     SetSize(label_size);
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
@@ -118,6 +119,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     }
     center_.set_x(radius);
     center_.set_y(radius);
+    UpdateTrashButtonPosition();
 
     InputElement* input_binding = nullptr;
     switch (binding_option) {
@@ -352,7 +354,7 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
                               const gfx::Transform* rotation_transform,
                               std::list<ui::TouchEvent>& touch_events,
                               bool& keep_original_event) {
-  if (!IsInputBound(*current_input_) ||
+  if (deleted() || !IsInputBound(*current_input_) ||
       (IsKeyboardBound(*current_input_) && !origin.IsKeyEvent()) ||
       (IsMouseBound(*current_input_) && !origin.IsMouseEvent())) {
     return false;

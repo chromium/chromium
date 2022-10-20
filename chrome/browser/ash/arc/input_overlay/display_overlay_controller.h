@@ -81,6 +81,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnActionAdded(Action* action);
   // Remove the action view when removing |action|.
   void OnActionRemoved(Action* action);
+  void OnActionTrashButtonPressed(Action* action);
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;

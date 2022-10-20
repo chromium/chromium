@@ -220,7 +220,7 @@ bool Action::ParseFromProto(const ActionProto& proto) {
   original_input_ = InputElement::ConvertFromProto(proto.input_element());
   current_input_ = std::make_unique<InputElement>(*original_input_);
 
-  if (!proto.positions().empty()) {
+  if (beta_ && !proto.positions().empty()) {
     std::vector<Position> positions;
     for (const auto& pos_proto : proto.positions()) {
       auto position = Position::ConvertFromProto(pos_proto);
@@ -248,6 +248,8 @@ void Action::OverwriteFromProto(const ActionProto& proto) {
       current_positions_[0] = *position;
     position.reset();
   }
+  if (beta_ && proto.has_deleted())
+    deleted_ = proto.deleted();
 }
 
 bool Action::InitFromEditor() {
@@ -346,15 +348,21 @@ void Action::PrepareToBindPosition(std::unique_ptr<Position> position) {
 
 void Action::RestoreToDefault() {
   bool restored = false;
-  if (beta_ && GetCurrentDisplayedPosition() != original_positions_[0]) {
-    pending_position_.reset();
-    pending_position_ = std::make_unique<Position>(original_positions_[0]);
-    restored = true;
-  }
   if (GetCurrentDisplayedInput() != *original_input_) {
     pending_input_.reset();
     pending_input_ = std::make_unique<InputElement>(*original_input_);
     restored = true;
+  }
+  if (beta_) {
+    if (GetCurrentDisplayedPosition() != original_positions_[0]) {
+      pending_position_.reset();
+      pending_position_ = std::make_unique<Position>(original_positions_[0]);
+      restored = true;
+    }
+    if (deleted_) {
+      deleted_ = false;
+      restored = true;
+    }
   }
 
   // For unit test, |action_view_| could be nullptr.
@@ -427,6 +435,10 @@ int Action::GetUIRadius() {
   return std::max(static_cast<int>(*radius_ * min), kMinRadius);
 }
 
+bool Action::IsDefaultAction() const {
+  return id_ <= kMaxDefaultActionID;
+}
+
 bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
   if ((key_event.flags() & ui::EF_IS_REPEAT) &&
       (key_event.type() == ui::ET_KEY_PRESSED)) {
@@ -489,21 +501,31 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
   auto proto = std::make_unique<ActionProto>();
   proto->set_id(id_);
 
-  if (id_ <= kMaxDefaultActionID) {
-    if (*original_input_ == *current_input_) {
-      if (!beta_ || original_positions_ == current_positions_)
-        return nullptr;
-    } else {
+  if (IsDefaultAction()) {
+    // Check if the default action is customized.
+    bool customized = false;
+    if (*original_input_ != *current_input_) {
       proto->set_allocated_input_element(
           current_input_->ConvertToProto().release());
+      customized = true;
     }
 
-    if (beta_ && original_positions_ != current_positions_) {
-      // Now only supports changing and saving the first touch position.
-      auto pos_proto = current_positions_[0].ConvertToProto();
-      *proto->add_positions() = *pos_proto;
-      pos_proto.reset();
+    if (beta_) {
+      if (original_positions_ != current_positions_) {
+        // Now only supports changing and saving the first touch position.
+        auto pos_proto = current_positions_[0].ConvertToProto();
+        *proto->add_positions() = *pos_proto;
+        pos_proto.reset();
+        customized = true;
+      }
+      if (deleted_) {
+        proto->set_deleted(true);
+        customized = true;
+      }
     }
+
+    if (!customized)
+      return nullptr;
   } else if (beta_) {
     // Save everything for user-added action.
     proto->set_allocated_input_element(

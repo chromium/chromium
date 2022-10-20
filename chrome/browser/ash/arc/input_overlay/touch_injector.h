@@ -146,6 +146,7 @@ class TouchInjector : public ui::EventRewriter {
   void AddNewAction(ActionType action_type);
   // Add action view for |action|.
   void AddActionView(Action* action);
+  void RemoveAction(Action* action);
   // Remove action view for |action|.
   void RemoveActionView(Action* action);
 
@@ -222,11 +223,19 @@ class TouchInjector : public ui::EventRewriter {
 
   // Create Action by |action_type| without any input bindings.
   std::unique_ptr<Action> CreateRawAction(ActionType action_type);
-  // Remove all user-added actions from |actions|, and move the deleted actions
-  // to |removed_actions|.
-  void RemoveUserActionsAndViews(
-      std::vector<std::unique_ptr<Action>>& actions,
-      std::vector<std::unique_ptr<Action>>& removed_actions);
+  // Remove all user-added actions from |actions| and return the deleted
+  // actions.
+  std::vector<std::unique_ptr<Action>> RemoveUserActionsAndViews(
+      std::vector<std::unique_ptr<Action>>& actions);
+  // Add removed default actions and show their views in |actions|, and save
+  // these actions in |added_actions|.
+  void AddDefaultActionsAndViews(std::vector<std::unique_ptr<Action>>& actions,
+                                 std::vector<Action*>& added_actions);
+  // Add the |deleted_default_actions| back and show their views.
+  void AddDefaultActionsAndViews(std::vector<Action*>& deleted_default_actions);
+  // Remove the |added_default_actions| and remove their views.
+  void RemoveDefaultActionsAndViews(
+      std::vector<Action*>& added_default_actions);
 
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
@@ -281,8 +290,12 @@ class TouchInjector : public ui::EventRewriter {
   // This for Action adding or deleting. For default action, ID <=
   // kMaxDefaultActionID. For custom actions, ID > kMaxDefaultActionID.
   int next_action_id_ = kMaxDefaultActionID + 1;
-  std::vector<std::unique_ptr<Action>> pending_add_actions_;
-  std::vector<std::unique_ptr<Action>> pending_delete_actions_;
+  // Pending status for adding and and deleting actions.
+  std::vector<std::unique_ptr<Action>> pending_add_user_actions_;
+  std::vector<std::unique_ptr<Action>> pending_delete_user_actions_;
+  // Default actions wont be removed from |actions_|.
+  std::vector<Action*> pending_add_default_actions_;
+  std::vector<Action*> pending_delete_default_actions_;
 
   // Callback when saving proto file.
   OnSaveProtoFileCallback save_file_callback_;

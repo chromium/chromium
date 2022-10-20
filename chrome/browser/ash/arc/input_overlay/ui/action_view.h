@@ -102,6 +102,8 @@ class ActionView : public views::View {
   bool show_circle() const { return show_circle_; }
 
  protected:
+  void UpdateTrashButtonPosition();
+
   // Reference to the action of this UI.
   raw_ptr<Action> action_ = nullptr;
   // Reference to the owner class.
@@ -125,6 +127,10 @@ class ActionView : public views::View {
   void AddEditButton();
   void RemoveEditButton();
 
+  void AddTrashButton();
+  void RemoveTrashButton();
+  void OnTrashButtonPressed();
+
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);
   bool OnDragUpdate(const ui::LocatedEvent& event);
@@ -136,6 +142,8 @@ class ActionView : public views::View {
   int unbind_label_index_ = kDefaultLabelIndex;
   // The position when starting to drag.
   gfx::Point start_drag_pos_;
+  // TODO(b/250900717): Update when the final UX/UI is ready.
+  raw_ptr<views::ImageButton> trash_button_ = nullptr;
 
   // TODO(cuicuiruan) As requested, we remove the action circle for edit mode
   // for now. We will remove the circle permanently once the future design for

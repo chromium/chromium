@@ -63,6 +63,8 @@ message ActionProto {
   repeated PositionProto positions = 3;
   // Action type for this action.
   optional ActionType action_type = 4;
+  // This action is deleted or not.
+  optional bool deleted = 5;
 }
 
 message AppDataProto {

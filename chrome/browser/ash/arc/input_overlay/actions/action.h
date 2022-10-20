@@ -118,6 +118,14 @@ class Action {
   // bounds change.
   void UpdateTouchDownPositions();
 
+  // Cancel event when the focus is lost or window is destroyed and the touch
+  // event is still not released.
+  absl::optional<ui::TouchEvent> GetTouchCanceledEvent();
+  absl::optional<ui::TouchEvent> GetTouchReleasedEvent();
+  int GetUIRadius();
+
+  bool IsDefaultAction() const;
+
   InputElement* current_input() const { return current_input_.get(); }
   InputElement* original_input() const { return original_input_.get(); }
   InputElement* pending_input() const { return pending_input_.get(); }
@@ -144,12 +152,10 @@ class Action {
   bool on_left_or_middle_side() const { return on_left_or_middle_side_; }
   bool support_modifier_key() const { return support_modifier_key_; }
   ActionView* action_view() const { return action_view_; }
+  void set_action_view(ActionView* action_view) { action_view_ = action_view; }
 
-  // Cancel event when the focus is leave or window is destroyed and the touch
-  // event is still not released.
-  absl::optional<ui::TouchEvent> GetTouchCanceledEvent();
-  absl::optional<ui::TouchEvent> GetTouchReleasedEvent();
-  int GetUIRadius();
+  bool deleted() const { return deleted_; }
+  void set_deleted(bool deleted) { deleted_ = deleted; }
 
  protected:
   // |touch_injector| must be non-NULL and own this Action.
@@ -207,8 +213,12 @@ class Action {
   raw_ptr<ActionView> action_view_ = nullptr;
 
  private:
+  // Mainly for default action to mark if it is deleted.
+  bool deleted_ = false;
+
   // TODO(cuicuiruan): This can be removed when removing the flag. If |beta_| is
-  // true, then we care about the position change.
+  // true, then we care about the position change and whether the default action
+  // is deleted.
   bool beta_;
 };
 

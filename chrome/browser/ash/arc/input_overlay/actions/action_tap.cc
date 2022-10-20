@@ -168,6 +168,7 @@ class ActionTap::ActionTapView : public ActionView {
       center_.set_x(width - radius);
       center_.set_y(radius);
     }
+    UpdateTrashButtonPosition();
     label->SetSize(label_size);
     SetSize(gfx::Size(width, radius * 2));
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
@@ -232,7 +233,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
                              const gfx::Transform* rotation_transform,
                              std::list<ui::TouchEvent>& touch_events,
                              bool& keep_original_event) {
-  if (!IsInputBound(*current_input_) ||
+  if (deleted() || !IsInputBound(*current_input_) ||
       (IsKeyboardBound(*current_input_) && !origin.IsKeyEvent()) ||
       (IsMouseBound(*current_input_) && !origin.IsMouseEvent())) {
     return false;

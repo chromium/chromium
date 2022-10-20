@@ -121,6 +121,8 @@ void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
 }
 
 void DisplayOverlayController::RemoveOverlayIfAny() {
+  if (display_mode_ == DisplayMode::kEdit)
+    OnCustomizeCancel();
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
   if (shell_surface_base && shell_surface_base->HasOverlay()) {
@@ -405,6 +407,10 @@ void DisplayOverlayController::RemoveButtonForAddActionMove() {
 
 void DisplayOverlayController::OnAddActionMoveButtonPressed() {
   touch_injector_->AddNewAction(ActionType::MOVE);
+}
+
+void DisplayOverlayController::OnActionTrashButtonPressed(Action* action) {
+  touch_injector_->RemoveAction(action);
 }
 
 views::Widget* DisplayOverlayController::GetOverlayWidget() {

@@ -7,14 +7,21 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button_factory.h"
 
 namespace arc {
 namespace input_overlay {
 namespace {
 constexpr int kMenuEntryOffset = 4;
+
+// TODO(b/250900717): Update according to UX/UI spec.
+constexpr int kTrashButtonSize = 20;
+constexpr SkColor kTrashIconColor = SK_ColorRED;
 
 // For the keys that are caught by display overlay, check if they are reserved
 // for special use.
@@ -58,11 +65,13 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
     return;
   if (mode == DisplayMode::kView) {
     RemoveEditButton();
+    RemoveTrashButton();
     if (!IsInputBound(action_->GetCurrentDisplayedInput()))
       SetVisible(false);
   }
   if (mode == DisplayMode::kEdit) {
     AddEditButton();
+    AddTrashButton();
     if (!IsInputBound(*action_->current_input()))
       SetVisible(true);
   }
@@ -226,6 +235,48 @@ void ActionView::RemoveEditButton() {
     return;
   RemoveChildViewT(menu_entry_);
   menu_entry_ = nullptr;
+}
+
+void ActionView::AddTrashButton() {
+  if (!beta_ || !editable_)
+    return;
+
+  auto trash_icon = ui::ImageModel::FromVectorIcon(
+      kTrashCanIcon, kTrashIconColor, kTrashButtonSize);
+  trash_button_ =
+      AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
+          &ActionView::OnTrashButtonPressed, base::Unretained(this))));
+  trash_button_->SetImageModel(views::Button::STATE_NORMAL, trash_icon);
+  trash_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  trash_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  // TODO(b/253337606): Update the tooltip text.
+  trash_button_->SetTooltipText(u"Delete Action");
+  trash_button_->SetSize(gfx::Size(kTrashButtonSize, kTrashButtonSize));
+  UpdateTrashButtonPosition();
+}
+
+void ActionView::RemoveTrashButton() {
+  if (!editable_ || !trash_button_)
+    return;
+
+  RemoveChildViewT(trash_button_);
+  trash_button_ = nullptr;
+}
+
+void ActionView::OnTrashButtonPressed() {
+  if (!display_overlay_controller_)
+    return;
+
+  display_overlay_controller_->OnActionTrashButtonPressed(action_);
+}
+
+void ActionView::UpdateTrashButtonPosition() {
+  if (!trash_button_)
+    return;
+
+  trash_button_->SetPosition(
+      gfx::Point(std::max(0, center_.x() - kTrashButtonSize / 2),
+                 std::max(0, center_.y() - kTrashButtonSize / 2)));
 }
 
 void ActionView::OnDragStart(const ui::LocatedEvent& event) {

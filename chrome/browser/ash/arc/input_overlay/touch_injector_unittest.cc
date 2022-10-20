@@ -218,6 +218,20 @@ constexpr const char kValidJsonActionMoveMouse[] =
         }
       ]
     })json";
+
+void TouchInjectorResetAndAddTwoActions(TouchInjector* touch_injector) {
+  DCHECK(touch_injector);
+  touch_injector->OnBindingRestore();
+  touch_injector->OnBindingSave();
+  EXPECT_EQ(2u, touch_injector->actions().size());
+  EXPECT_FALSE(touch_injector->actions()[0]->deleted());
+  EXPECT_FALSE(touch_injector->actions()[1]->deleted());
+  touch_injector->AddNewAction(ActionType::MOVE);
+  touch_injector->AddNewAction(ActionType::TAP);
+  touch_injector->OnBindingSave();
+  EXPECT_EQ(4u, touch_injector->actions().size());
+}
+
 }  // namespace
 
 class TouchInjectorTest : public views::ViewsTestBase {
@@ -242,12 +256,36 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return injector_->ConvertToProto();
   }
 
-  const std::vector<std::unique_ptr<Action>>& GetPendingAddActions() const {
-    return injector_->pending_add_actions_;
+  const std::vector<std::unique_ptr<Action>>& GetPendingAddUserActions() const {
+    return injector_->pending_add_user_actions_;
   }
 
-  const std::vector<std::unique_ptr<Action>>& GetPendingDeleteActions() const {
-    return injector_->pending_delete_actions_;
+  const std::vector<std::unique_ptr<Action>>& GetPendingDeleteUserActions()
+      const {
+    return injector_->pending_delete_user_actions_;
+  }
+
+  const std::vector<Action*> GetPendingAddDefaultActions() const {
+    return injector_->pending_add_default_actions_;
+  }
+
+  const std::vector<Action*> GetPendingDeleteDefaultActions() const {
+    return injector_->pending_delete_default_actions_;
+  }
+
+  void ExpectActionSizes(unsigned int size_pending_add_user_actions,
+                         unsigned int size_pending_delete_user_actions,
+                         unsigned int size_pending_add_default_actions,
+                         unsigned int size_pending_delete_default_actions,
+                         unsigned int size_actions) {
+    EXPECT_EQ(size_pending_add_user_actions, GetPendingAddUserActions().size());
+    EXPECT_EQ(size_pending_delete_user_actions,
+              GetPendingDeleteUserActions().size());
+    EXPECT_EQ(size_pending_add_default_actions,
+              GetPendingAddDefaultActions().size());
+    EXPECT_EQ(size_pending_delete_default_actions,
+              GetPendingDeleteDefaultActions().size());
+    EXPECT_EQ(size_actions, injector_->actions().size());
   }
 
   int GetNextActionID() { return injector_->next_action_id_; }
@@ -875,19 +913,19 @@ TEST_F(TouchInjectorTest, TestAddAction) {
 
   // Add->Save.
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(1u, GetPendingAddActions().size());
+  EXPECT_EQ(1u, GetPendingAddUserActions().size());
   injector_->OnBindingSave();
   EXPECT_EQ(3u, injector_->actions().size());
-  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(0u, GetPendingAddUserActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, injector_->actions().back()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, GetNextActionID());
 
   // Add->Save->Restore->Save. Final result only has default actions.
   injector_->AddNewAction(ActionType::TAP);
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(2u, GetPendingAddActions().size());
+  EXPECT_EQ(2u, GetPendingAddUserActions().size());
   injector_->OnBindingSave();
-  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(0u, GetPendingAddUserActions().size());
   EXPECT_EQ(5u, injector_->actions().size());
   EXPECT_EQ(kMaxDefaultActionID + 2,
             (injector_->actions().rbegin() + 1)->get()->id());
@@ -895,7 +933,7 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   EXPECT_EQ(kMaxDefaultActionID + 4, GetNextActionID());
   injector_->OnBindingRestore();
   EXPECT_EQ(2u, injector_->actions().size());
-  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(0u, GetPendingAddUserActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
   injector_->OnBindingSave();
   EXPECT_EQ(2u, injector_->actions().size());
@@ -903,9 +941,9 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   // Add->Cancel. Nothing is added.
   injector_->AddNewAction(ActionType::TAP);
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(2u, GetPendingAddActions().size());
+  EXPECT_EQ(2u, GetPendingAddUserActions().size());
   injector_->OnBindingCancel();
-  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(0u, GetPendingAddUserActions().size());
   EXPECT_EQ(2u, injector_->actions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
 
@@ -913,15 +951,15 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   injector_->AddNewAction(ActionType::MOVE);
   injector_->AddNewAction(ActionType::TAP);
   EXPECT_EQ(kMaxDefaultActionID + 1,
-            (GetPendingAddActions().rbegin() + 1)->get()->id());
-  EXPECT_EQ(kMaxDefaultActionID + 2, GetPendingAddActions().back()->id());
-  EXPECT_EQ(2u, GetPendingAddActions().size());
+            (GetPendingAddUserActions().rbegin() + 1)->get()->id());
+  EXPECT_EQ(kMaxDefaultActionID + 2, GetPendingAddUserActions().back()->id());
+  EXPECT_EQ(2u, GetPendingAddUserActions().size());
   injector_->OnBindingCancel();
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
   EXPECT_EQ(2u, injector_->actions().size());
-  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(0u, GetPendingAddUserActions().size());
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(1u, GetPendingAddActions().size());
+  EXPECT_EQ(1u, GetPendingAddUserActions().size());
   injector_->OnBindingSave();
   EXPECT_EQ(3u, injector_->actions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, injector_->actions().back()->id());
@@ -935,23 +973,126 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   injector_->AddNewAction(ActionType::TAP);
   injector_->OnBindingSave();
   EXPECT_EQ(4u, injector_->actions().size());
-  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(0u, GetPendingAddUserActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1,
             (injector_->actions().rbegin() + 1)->get()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, injector_->actions().back()->id());
   EXPECT_EQ(kMaxDefaultActionID + 3, GetNextActionID());
   injector_->OnBindingRestore();
   EXPECT_EQ(2u, injector_->actions().size());
-  EXPECT_EQ(2u, GetPendingDeleteActions().size());
+  EXPECT_EQ(2u, GetPendingDeleteUserActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
   injector_->OnBindingCancel();
   EXPECT_EQ(4u, injector_->actions().size());
-  EXPECT_EQ(0u, GetPendingAddActions().size());
-  EXPECT_EQ(0u, GetPendingDeleteActions().size());
+  EXPECT_EQ(0u, GetPendingAddUserActions().size());
+  EXPECT_EQ(0u, GetPendingDeleteUserActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1,
             (injector_->actions().rbegin() + 1)->get()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, injector_->actions().back()->id());
   EXPECT_EQ(kMaxDefaultActionID + 3, GetNextActionID());
+}
+
+TEST_F(TouchInjectorTest, TestDeleteAction) {
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(*json_value);
+  TouchInjectorResetAndAddTwoActions(injector_.get());
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/4u);
+
+  // Delete->Save->Restore->Save.
+  // Delete a default action.
+  injector_->RemoveAction(injector_->actions()[1].get());
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/1u,
+                    /*size_actions=*/4u);
+  injector_->OnBindingSave();
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/4u);
+  EXPECT_TRUE(injector_->actions()[1]->deleted());
+  // Delete a user-added action.
+  injector_->RemoveAction(injector_->actions()[2].get());
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/1u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/3u);
+  injector_->OnBindingSave();
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/3u);
+
+  // Delete->Cancel->Delete->Save.
+  TouchInjectorResetAndAddTwoActions(injector_.get());
+  injector_->RemoveAction(injector_->actions()[1].get());
+  injector_->RemoveAction(injector_->actions()[2].get());
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/1u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/1u,
+                    /*size_actions=*/3u);
+  injector_->OnBindingCancel();
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/4u);
+  injector_->RemoveAction(injector_->actions()[1].get());
+  injector_->RemoveAction(injector_->actions()[2].get());
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/1u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/1u,
+                    /*size_actions=*/3u);
+  injector_->OnBindingSave();
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/3u);
+  EXPECT_FALSE(injector_->actions()[0]->deleted());
+  EXPECT_TRUE(injector_->actions()[1]->deleted());
+
+  // Delete->Save->Restore->Cancel.
+  TouchInjectorResetAndAddTwoActions(injector_.get());
+  injector_->RemoveAction(injector_->actions()[1].get());
+  injector_->RemoveAction(injector_->actions()[2].get());
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/1u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/1u,
+                    /*size_actions=*/3u);
+  injector_->OnBindingSave();
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/3u);
+  EXPECT_TRUE(injector_->actions()[1]->deleted());
+  injector_->OnBindingRestore();
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/1u,
+                    /*size_pending_add_default_actions=*/1u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/2u);
+  EXPECT_FALSE(injector_->actions()[1]->deleted());
+  injector_->OnBindingCancel();
+  ExpectActionSizes(/*size_pending_add_user_actions=*/0u,
+                    /*size_pending_delete_user_actions=*/0u,
+                    /*size_pending_add_default_actions=*/0u,
+                    /*size_pending_delete_default_actions=*/0u,
+                    /*size_actions=*/3u);
+  EXPECT_TRUE(injector_->actions()[1]->deleted());
 }
 
 }  // namespace input_overlay

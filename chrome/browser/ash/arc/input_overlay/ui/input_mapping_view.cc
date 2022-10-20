@@ -24,6 +24,8 @@ InputMappingView::InputMappingView(
   SetBounds(content_bounds.x(), content_bounds.y(), content_bounds.width(),
             content_bounds.height());
   for (auto& action : actions) {
+    if (action->deleted())
+      continue;
     auto view = action->CreateView(display_overlay_controller_);
     if (view)
       AddChildView(std::move(view));
@@ -70,6 +72,7 @@ void InputMappingView::OnActionRemoved(Action* action) {
     if (action != action_view->action())
       continue;
 
+    action->set_action_view(nullptr);
     RemoveChildViewT(action_view);
     break;
   }
