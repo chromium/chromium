@@ -52,9 +52,7 @@ void GetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
                       const base::FilePath& zip_file,
                       GetExtractedInfoCallback result_callback);
 
-namespace {
 class UnzipParams;
-}
 
 // Class that wraps the unzip service to manage the lifetime of its
 // mojo conncections to enable cancellation, etc.

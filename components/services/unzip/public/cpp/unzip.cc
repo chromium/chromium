@@ -29,11 +29,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace unzip {
-namespace {
-
-std::string Redact(const base::FilePath& path) {
-  return LOG_IS_ON(INFO) ? "'" + path.AsUTF8Unsafe() + "'" : "(redacted)";
-}
 
 class UnzipParams : public base::RefCounted<UnzipParams>,
                     public unzip::mojom::UnzipFilter,
@@ -99,6 +94,12 @@ class UnzipParams : public base::RefCounted<UnzipParams>,
   UnzipListenerCallback listener_callback_;
   UnzipCallback callback_;
 };
+
+namespace {
+
+std::string Redact(const base::FilePath& path) {
+  return LOG_IS_ON(INFO) ? "'" + path.AsUTF8Unsafe() + "'" : "(redacted)";
+}
 
 class DetectEncodingParams : public base::RefCounted<DetectEncodingParams> {
  public:
