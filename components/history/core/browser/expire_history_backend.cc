@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -21,6 +20,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_database.h"
@@ -262,10 +262,8 @@ void ExpireHistoryBackend::ExpireHistoryForTimes(
   // `times` must be in reverse chronological order and have no
   // duplicates, i.e. each member must be earlier than the one before
   // it.
-  DCHECK(
-      std::adjacent_find(
-          times.begin(), times.end(), std::less_equal<base::Time>()) ==
-      times.end());
+  DCHECK(base::ranges::adjacent_find(times, std::less_equal<base::Time>()) ==
+         times.end());
 
   if (!main_db_)
     return;

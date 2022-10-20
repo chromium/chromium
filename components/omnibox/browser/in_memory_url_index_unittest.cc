@@ -723,9 +723,8 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
 
   // Each next group should fill almost everything, while the previous group
   // should occupy what's left.
-  auto* error_position = std::adjacent_find(
-      std::begin(item_groups), std::end(item_groups),
-      [&](const ItemGroup& previous, const ItemGroup& current) {
+  auto* error_position = base::ranges::adjacent_find(
+      item_groups, [&](const ItemGroup& previous, const ItemGroup& current) {
         auto ids = GetHistoryIdsUpTo(current.max_id);
         EXPECT_TRUE(GetPrivateData()->TrimHistoryIdsPool(&ids));
 

@@ -7,6 +7,7 @@
 #include <hb.h>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -411,9 +412,8 @@ class ClusterStarts {
 
   void Finish(unsigned from, unsigned to) {
     std::sort(cluster_starts_.begin(), cluster_starts_.end());
-    DCHECK_EQ(
-        std::adjacent_find(cluster_starts_.begin(), cluster_starts_.end()),
-        cluster_starts_.end());
+    DCHECK_EQ(base::ranges::adjacent_find(cluster_starts_),
+              cluster_starts_.end());
     DVLOG(4) << "  Cluster starts: " << base::make_span(cluster_starts_);
     if (!cluster_starts_.empty()) {
       // 'from' may point inside a cluster; the least seen index may be larger.

@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/generation/password_generator.h"
 
-#include <algorithm>
 #include <limits>
 #include <map>
 #include <utility>
@@ -12,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 
@@ -80,10 +80,9 @@ PasswordRequirementsSpec BuildDefaultSpec() {
 // sequences of '-' or '_' that are joined into long strokes on the screen
 // in many fonts.
 bool IsDifficultToRead(const std::u16string& password) {
-  return std::adjacent_find(password.begin(), password.end(),
-                            [](auto a, auto b) {
-                              return a == b && (a == '-' || a == '_');
-                            }) != password.end();
+  return base::ranges::adjacent_find(password, [](auto a, auto b) {
+           return a == b && (a == '-' || a == '_');
+         }) != password.end();
 }
 
 // Generates a password according to |spec| and tries to maximze the entropy
