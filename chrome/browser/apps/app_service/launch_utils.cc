@@ -93,9 +93,10 @@ crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
       return crosapi::mojom::WindowOpenDisposition::kNewBackgroundTab;
     case WindowOpenDisposition::NEW_WINDOW:
       return crosapi::mojom::WindowOpenDisposition::kNewWindow;
+    case WindowOpenDisposition::NEW_POPUP:
+      return crosapi::mojom::WindowOpenDisposition::kNewPopup;
     case WindowOpenDisposition::SINGLETON_TAB:
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    case WindowOpenDisposition::NEW_POPUP:
     case WindowOpenDisposition::SAVE_TO_DISK:
     case WindowOpenDisposition::OFF_THE_RECORD:
     case WindowOpenDisposition::IGNORE_ACTION:
@@ -120,6 +121,8 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
       return WindowOpenDisposition::NEW_BACKGROUND_TAB;
     case crosapi::mojom::WindowOpenDisposition::kNewWindow:
       return WindowOpenDisposition::NEW_WINDOW;
+    case crosapi::mojom::WindowOpenDisposition::kNewPopup:
+      return WindowOpenDisposition::NEW_POPUP;
   }
 
   NOTREACHED();
