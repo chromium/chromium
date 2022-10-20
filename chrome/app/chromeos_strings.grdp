@@ -5953,6 +5953,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_PARENT_ACCESS_AFTER_DENY_BUTTON" desc="Deny button on the local web approvals dialog.">
     Deny
   </message>
+  <message name="IDS_PARENT_ACCESS_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the parent access screen is loading.">
+    Please wait...
+  </message>
 
   <!-- Strings for gnubby U2FD authentication UI -->
   <message name="IDS_GNUBBY_NOTIFICATION_TITLE" desc="Title for notification informing user to press power button for gnubby U2FD.">

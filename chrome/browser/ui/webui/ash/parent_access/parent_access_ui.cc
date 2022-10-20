@@ -145,6 +145,7 @@ void ParentAccessUI::SetUpResources() {
        IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_SUBTITLE},
       {"localWebApprovalsAfterDetails",
        IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS},
+      {"webviewLoadingMessage", IDS_PARENT_ACCESS_WEBVIEW_LOADING_MESSAGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
