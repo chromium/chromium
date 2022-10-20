@@ -136,6 +136,22 @@ void WontCompile() {
   WeakPtr<MultiplyDerivedProducer> ptr = AsWeakPtr(&f);
 }
 
+#elif defined(NCTEST_GETMUTABLEWEAKPTR_CONST_T)  // [r"fatal error: no matching member function for call to 'GetMutableWeakPtr'"]
+
+void WontCompile() {
+  Unrelated unrelated;
+  const WeakPtrFactory<const Unrelated> factory(&unrelated);
+  factory.GetMutableWeakPtr();
+}
+
+#elif defined(NCTEST_GETMUTABLEWEAKPTR_NOT_T)  // [r"fatal error: no matching member function for call to 'GetMutableWeakPtr'"]
+
+void WontCompile() {
+  DerivedUnrelated derived_unrelated;
+  const WeakPtrFactory<DerivedUnrelated> factory(&derived_unrelated);
+  factory.GetMutableWeakPtr<Unrelated>();
+}
+
 #endif
 
 }

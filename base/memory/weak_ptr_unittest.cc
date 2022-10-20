@@ -707,6 +707,24 @@ TEST(WeakPtrTest, ConstUpCast) {
       !std::is_constructible_v<WeakPtr<Target>, WeakPtr<const Target>>);
 }
 
+TEST(WeakPtrTest, ConstGetWeakPtr) {
+  struct TestTarget {
+    const char* Method() const { return "const method"; }
+    const char* Method() { return "non-const method"; }
+
+    WeakPtrFactory<TestTarget> weak_ptr_factory{this};
+  } non_const_test_target;
+
+  const TestTarget& const_test_target = non_const_test_target;
+
+  EXPECT_EQ(const_test_target.weak_ptr_factory.GetWeakPtr()->Method(),
+            "const method");
+  EXPECT_EQ(non_const_test_target.weak_ptr_factory.GetWeakPtr()->Method(),
+            "non-const method");
+  EXPECT_EQ(const_test_target.weak_ptr_factory.GetMutableWeakPtr()->Method(),
+            "non-const method");
+}
+
 TEST(WeakPtrTest, GetMutableWeakPtr) {
   struct TestStruct {
     int member = 0;

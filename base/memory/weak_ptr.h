@@ -296,6 +296,7 @@ class TRIVIAL_ABI WeakPtr : public internal::WeakPtrBase {
   template <typename U> friend class WeakPtr;
   friend class SupportsWeakPtr<T>;
   friend class WeakPtrFactory<T>;
+  friend class WeakPtrFactory<std::remove_const_t<T>>;
   template <typename U>
   friend SafeRef<U> internal::MakeSafeRefFromWeakPtrInternals(
       const internal::WeakReference& ref,
@@ -351,15 +352,22 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
 
   ~WeakPtrFactory() = default;
 
-  // TODO(crbug.com/1366168): Replace all uses of this with GetMutableWeakPtr()
-  // in the codebase and make this return WeakPtr<const T>.
-  WeakPtr<T> GetWeakPtr() const { return GetMutableWeakPtr(); }
+  WeakPtr<const T> GetWeakPtr() const {
+    return WeakPtr<const T>(weak_reference_owner_.GetRef(),
+                            reinterpret_cast<const T*>(ptr_));
+  }
 
+  template <int&... ExplicitArgumentBarrier,
+            typename U = T,
+            typename = std::enable_if_t<!std::is_const_v<U>>>
   WeakPtr<T> GetWeakPtr() {
     return WeakPtr<T>(weak_reference_owner_.GetRef(),
                       reinterpret_cast<T*>(ptr_));
   }
 
+  template <int&... ExplicitArgumentBarrier,
+            typename U = T,
+            typename = std::enable_if_t<!std::is_const_v<U>>>
   WeakPtr<T> GetMutableWeakPtr() const {
     return WeakPtr<T>(weak_reference_owner_.GetRef(),
                       reinterpret_cast<T*>(ptr_));
