@@ -1985,7 +1985,7 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
     const volatile void* cmd_data) {
   const volatile webgpu::cmds::SetWebGPUExecutionContextToken& c = *static_cast<
       const volatile webgpu::cmds::SetWebGPUExecutionContextToken*>(cmd_data);
-  uint32_t type(c.type);
+  blink::WebGPUExecutionContextToken::Tag type{c.type};
   uint64_t high = uint64_t(c.high_high) << 32 | uint64_t(c.high_low);
   uint64_t low = uint64_t(c.low_high) << 32 | uint64_t(c.low_low);
   base::UnguessableToken unguessable_token =

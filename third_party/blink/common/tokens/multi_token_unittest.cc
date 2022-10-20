@@ -26,15 +26,15 @@ static_assert(!internal::AreAllUnique<int, char, int>);
 using FooBarToken = MultiToken<FooToken, BarToken>;
 using FooBarBazToken = MultiToken<FooToken, BarToken, BazToken>;
 
-static_assert(FooBarBazToken::IndexOf<FooToken>() == 0);
-static_assert(FooBarBazToken::IndexOf<BarToken>() == 1);
-static_assert(FooBarBazToken::IndexOf<BazToken>() == 2);
+static_assert(FooBarBazToken::IndexOf<FooToken>() == FooBarBazToken::Tag{0});
+static_assert(FooBarBazToken::IndexOf<BarToken>() == FooBarBazToken::Tag{1});
+static_assert(FooBarBazToken::IndexOf<BazToken>() == FooBarBazToken::Tag{2});
 
 TEST(MultiTokenTest, MultiTokenWorks) {
   // Test default initialization.
   FooBarToken token1;
   EXPECT_FALSE(token1.value().is_empty());
-  EXPECT_EQ(0u, token1.variant_index());
+  EXPECT_EQ(FooBarToken::Tag{0}, token1.variant_index());
   EXPECT_TRUE(token1.Is<FooToken>());
   EXPECT_FALSE(token1.Is<BarToken>());
 
@@ -43,7 +43,7 @@ TEST(MultiTokenTest, MultiTokenWorks) {
   FooBarToken token2(bar);
   EXPECT_EQ(token2.value(), bar.value());
   EXPECT_FALSE(token2.value().is_empty());
-  EXPECT_EQ(1u, token2.variant_index());
+  EXPECT_EQ(FooBarToken::Tag{1}, token2.variant_index());
   EXPECT_FALSE(token2.Is<FooToken>());
   EXPECT_TRUE(token2.Is<BarToken>());
 

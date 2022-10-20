@@ -10,6 +10,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_MULTI_TOKEN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_MULTI_TOKEN_H_
 
+#include <stdint.h>
+
+#include <limits>
 #include <type_traits>
 
 #include "base/unguessable_token.h"
@@ -45,6 +48,7 @@ namespace blink {
 template <typename... Tokens>
 class MultiToken {
   static_assert(sizeof...(Tokens) > 1);
+  static_assert(sizeof...(Tokens) <= std::numeric_limits<uint32_t>::max());
   static_assert(std::conjunction_v<internal::IsBaseTokenType<Tokens>...>);
   static_assert(internal::AreAllUnique<Tokens...>);
 
@@ -54,6 +58,9 @@ class MultiToken {
 
  public:
   using Storage = absl::variant<Tokens...>;
+  // In an ideal world, this would use StrongAlias, but a StrongAlias is not
+  // usable in a switch statement, even when the underlying type is integral.
+  enum class Tag : uint32_t {};
 
   // A default constructed token will hold a default-constructed instance (i.e.
   // randomly initialised) of the first token type in `Tokens...`.
@@ -153,15 +160,14 @@ class MultiToken {
 
   // 0-based index of the currently held token's type, based on its position in
   // `Tokens...`.
-  uint32_t variant_index() const {
-    return static_cast<uint32_t>(storage_.index());
-  }
+  Tag variant_index() const { return static_cast<Tag>(storage_.index()); }
 
   // Returns the 0-based index that a token of type `T` would have if it were
   // currently held.
   template <typename T, EnableIfIsSupportedToken<T> = 0>
-  static constexpr size_t IndexOf() {
-    return absl::variant<Tag<Tokens>...>(Tag<T>()).index();
+  static constexpr Tag IndexOf() {
+    return static_cast<Tag>(
+        absl::variant<IndexOfHelper<Tokens>...>(IndexOfHelper<T>()).index());
   }
 
   // Equivalent to `value().ToString()`.
@@ -169,9 +175,9 @@ class MultiToken {
 
  private:
   // Helper struct for IndexOf(); a `base::TokenType` is never usable as a
-  // literal type but a Tag<base::TokenType> is.
+  // literal type but an IndexOfHelper<base::TokenType> is.
   template <typename T>
-  struct Tag {};
+  struct IndexOfHelper {};
 
   Storage storage_;
 };

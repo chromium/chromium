@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
@@ -90,8 +91,8 @@ TEST_F(WebGPUDecoderTest, IsolationKeyFromDocument) {
       .Times(1);
 
   cmds::SetWebGPUExecutionContextToken cmd;
-  cmd.Init(wgpu_context_token.variant_index(), high >> 32, high, low >> 32,
-           low);
+  cmd.Init(base::to_underlying(wgpu_context_token.variant_index()), high >> 32,
+           high, low >> 32, low);
   ExecuteCmd(cmd);
 }
 
@@ -105,8 +106,8 @@ TEST_F(WebGPUDecoderTest, IsolationKeyFromWorker) {
       .Times(1);
 
   cmds::SetWebGPUExecutionContextToken cmd;
-  cmd.Init(wgpu_context_token.variant_index(), high >> 32, high, low >> 32,
-           low);
+  cmd.Init(base::to_underlying(wgpu_context_token.variant_index()), high >> 32,
+           high, low >> 32, low);
   ExecuteCmd(cmd);
 }
 
