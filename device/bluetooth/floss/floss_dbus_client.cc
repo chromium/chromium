@@ -91,10 +91,13 @@ const char kGetFlossEnabled[] = "GetFlossEnabled";
 const char kSetFlossEnabled[] = "SetFlossEnabled";
 const char kGetState[] = "GetState";
 const char kGetAvailableAdapters[] = "GetAvailableAdapters";
+const char kGetDefaultAdapter[] = "GetDefaultAdapter";
+const char kSetDesiredDefaultAdapter[] = "SetDesiredDefaultAdapter";
 const char kRegisterCallback[] = "RegisterCallback";
 const char kCallbackInterface[] = "org.chromium.bluetooth.ManagerCallback";
 const char kOnHciDeviceChanged[] = "OnHciDeviceChanged";
 const char kOnHciEnabledChanged[] = "OnHciEnabledChanged";
+const char kOnDefaultAdapterChanged[] = "OnDefaultAdapterChanged";
 }  // namespace manager
 
 namespace socket_manager {

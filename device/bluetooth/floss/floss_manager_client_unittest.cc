@@ -98,7 +98,20 @@ class FlossManagerClientTest : public testing::Test {
         .WillRepeatedly(::testing::Return(manager_object_proxy_.get()));
     EXPECT_CALL(*bus_.get(), GetExportedObject)
         .WillRepeatedly(::testing::Return(exported_callbacks_.get()));
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(2);
+
+    // Exported callback methods that we don't need to invoke.
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(1);
+    // Save method handlers of exported callbacks that we need to invoke here.
+    EXPECT_CALL(
+        *exported_callbacks_.get(),
+        ExportMethod(manager::kCallbackInterface, manager::kOnHciDeviceChanged,
+                     testing::_, testing::_))
+        .WillOnce(testing::SaveArg<2>(&on_hci_device_changed_));
+    EXPECT_CALL(
+        *exported_callbacks_.get(),
+        ExportMethod(manager::kCallbackInterface, manager::kOnHciEnabledChanged,
+                     testing::_, testing::_))
+        .WillOnce(testing::SaveArg<2>(&on_hci_enabled_changed_));
 
     // Handle method calls on the object proxy
     ON_CALL(*manager_object_proxy_.get(), DoCallMethodWithErrorResponse)
@@ -127,14 +140,14 @@ class FlossManagerClientTest : public testing::Test {
     writer.AppendInt32(adapter);
     writer.AppendBool(present);
 
-    client_->OnHciDeviceChange(&method_call, std::move(response));
+    on_hci_device_changed_.Run(&method_call, std::move(response));
   }
 
   void SendInvalidHciDeviceCallback(dbus::ExportedObject::ResponseSender rsp) {
     dbus::MethodCall method_call(manager::kCallbackInterface,
                                  manager::kOnHciDeviceChanged);
     method_call.SetSerial(serial_++);
-    client_->OnHciDeviceChange(&method_call, std::move(rsp));
+    on_hci_device_changed_.Run(&method_call, std::move(rsp));
   }
 
   void SendHciEnabledCallback(int adapter,
@@ -147,14 +160,14 @@ class FlossManagerClientTest : public testing::Test {
     writer.AppendInt32(adapter);
     writer.AppendBool(enabled);
 
-    client_->OnHciEnabledChange(&method_call, std::move(response));
+    on_hci_enabled_changed_.Run(&method_call, std::move(response));
   }
 
   void SendInvalidHciEnabledCallback(dbus::ExportedObject::ResponseSender rsp) {
     dbus::MethodCall method_call(manager::kCallbackInterface,
                                  manager::kOnHciEnabledChanged);
     method_call.SetSerial(serial_++);
-    client_->OnHciEnabledChange(&method_call, std::move(rsp));
+    on_hci_enabled_changed_.Run(&method_call, std::move(rsp));
   }
 
   void SetUp() override {
@@ -300,6 +313,9 @@ class FlossManagerClientTest : public testing::Test {
   int fail_setfloss_count_ = 0;
   int fail_getfloss_count_ = 0;
   bool floss_enabled_target_ = true;
+
+  dbus::ExportedObject::MethodCallCallback on_hci_device_changed_;
+  dbus::ExportedObject::MethodCallCallback on_hci_enabled_changed_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::WeakPtrFactory<FlossManagerClientTest> weak_ptr_factory_{this};

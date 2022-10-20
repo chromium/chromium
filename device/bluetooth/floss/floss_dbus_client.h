@@ -97,11 +97,14 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGetFlossEnabled[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetFlossEnabled[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetAvailableAdapters[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetDefaultAdapter[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetDesiredDefaultAdapter[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnHciDeviceChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnHciEnabledChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDefaultAdapterChanged[];
 }  // namespace manager
 
 namespace socket_manager {

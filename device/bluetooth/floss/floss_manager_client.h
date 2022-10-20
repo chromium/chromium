@@ -17,15 +17,45 @@
 #include "dbus/object_manager.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/floss/exported_callback_manager.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 namespace dbus {
-class ErrorResponse;
 class PropertySet;
-class Response;
 }  // namespace dbus
 
 namespace floss {
+namespace internal {
+
+// Struct with an adapter and whether it is enabled.
+struct AdapterWithEnabled {
+  int adapter;
+  bool enabled;
+};
+
+// Exported callbacks that are used by Floss daemon.
+class DEVICE_BLUETOOTH_EXPORT FlossManagerClientCallbacks {
+ public:
+  FlossManagerClientCallbacks(const FlossManagerClientCallbacks&) = delete;
+  FlossManagerClientCallbacks& operator=(const FlossManagerClientCallbacks&) =
+      delete;
+
+  FlossManagerClientCallbacks() = default;
+  virtual ~FlossManagerClientCallbacks() = default;
+
+  // Notification sent when an HCI interface appears or disappears.
+  virtual void OnHciDeviceChanged(int32_t adapter, bool present) = 0;
+
+  // Notification sent when an HCI interface is enabled or disabled.
+  virtual void OnHciEnabledChanged(int32_t adapter, bool enabled) = 0;
+
+  // Notification sent when the default adapter changes. This can happen because
+  // a new default adapter was chosen or the desired default adapter has its
+  // presence changed.
+  virtual void OnDefaultAdapterChanged(int32_t adapter) = 0;
+};
+
+}  // namespace internal
 
 // The adapter manager client observes the Manager interface which lists all
 // available adapters and signals when adapters become available + their state
@@ -36,6 +66,7 @@ namespace floss {
 // select the default adapter.
 class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
     : public FlossDBusClient,
+      public internal::FlossManagerClientCallbacks,
       public dbus::ObjectManager::Interface {
  public:
   class Observer : public base::CheckedObserver {
@@ -46,9 +77,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
     Observer() = default;
     ~Observer() override = default;
 
+    // Presence of manager daemon has changed.
     virtual void ManagerPresent(bool present) {}
+
+    // Presence of an adapter has changed.
     virtual void AdapterPresent(int adapter, bool present) {}
+
+    // An adapter is enabled or disabled.
     virtual void AdapterEnabledChanged(int adapter, bool enabled) {}
+
+    // The default adapter has changed.
+    virtual void DefaultAdapterChanged(int previous, int adapter) {}
   };
 
   class PoweredCallback {
@@ -123,9 +162,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Check whether Floss is currently enabled. If the response matches the
   // target, continue. If it doesn't, retry setting the target value (with
   // a short delay) until the number of retries is 0.
-  virtual void GetFlossEnabledWithTarget(bool target,
-                                         int retry,
-                                         int retry_wait_ms);
+  void GetFlossEnabledWithTarget(bool target, int retry, int retry_wait_ms);
 
   // Enable or disable Floss at the platform level. This will only be used while
   // Floss is being developed behind a feature flag. This api will be called on
@@ -133,41 +170,37 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // instead. If setting this value fails, it will be automatically retried
   // several times with delays. Once the value of |GetFlossEnabled| matches
   // |enable| (or an error occurs), the ResponseCallback will be called.
-  virtual void SetFlossEnabled(bool enable,
-                               int retry,
-                               int retry_wait_ms,
-                               absl::optional<ResponseCallback<bool>> cb);
+  void SetFlossEnabled(bool enable,
+                       int retry,
+                       int retry_wait_ms,
+                       absl::optional<ResponseCallback<bool>> cb);
+
+  // Handle response to |GetDefaultAdapter| DBus method call.
+  void HandleGetDefaultAdapter(DBusResult<int32_t> response);
 
   // Handle response to |GetAvailableAdapters| DBus method call.
-  virtual void HandleGetAvailableAdapters(dbus::Response* response,
-                                          dbus::ErrorResponse* error);
+  void HandleGetAvailableAdapters(
+      DBusResult<std::vector<internal::AdapterWithEnabled>> adapters);
 
-  // Handle callback |OnHciDeviceChange| on exported object path.
-  virtual void OnHciDeviceChange(
-      dbus::MethodCall* method_call,
-      dbus::ExportedObject::ResponseSender response_sender);
-
-  // Handle callback |OnHciEnabledChange| on exported object path.
-  virtual void OnHciEnabledChange(
-      dbus::MethodCall* method_call,
-      dbus::ExportedObject::ResponseSender response_sender);
+  // internal::FlossManagerClientCallbacks overrides.
+  void OnHciDeviceChanged(int32_t adapter, bool present) override;
+  void OnHciEnabledChanged(int32_t adapter, bool enabled) override;
+  void OnDefaultAdapterChanged(int32_t adapter) override;
 
   // Handle response to |SetFlossEnabled|.
-  virtual void HandleSetFlossEnabled(bool target,
-                                     int retry,
-                                     int retry_wait_ms,
-                                     dbus::Response* response,
-                                     dbus::ErrorResponse* error_response);
+  void HandleSetFlossEnabled(bool target,
+                             int retry,
+                             int retry_wait_ms,
+                             DBusResult<Void> response);
 
   // Handle response to |GetFlossEnabled|.
-  virtual void HandleGetFlossEnabled(bool target,
-                                     int retry,
-                                     int retry_wait_ms,
-                                     dbus::Response* response,
-                                     dbus::ErrorResponse* error_response);
+  void HandleGetFlossEnabled(bool target,
+                             int retry,
+                             int retry_wait_ms,
+                             DBusResult<bool> response);
 
   // Completion of |SetFlossEnabled|.
-  virtual void CompleteSetFlossEnabled(DBusResult<bool> ret);
+  void CompleteSetFlossEnabled(DBusResult<bool> ret);
 
   // Get active adapters and register for callbacks with manager object.
   void RegisterWithManager();
@@ -197,7 +230,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   bool manager_available_ = false;
 
   // Default adapter to use.
-  // TODO(b/191906229) - Default adapter should be taken via manager api.
   int default_adapter_ = 0;
 
   // Cached list of available adapters and their powered state indexed by hci
@@ -212,8 +244,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
 
  private:
   // Handle response to SetAdapterEnabled
-  void OnSetAdapterEnabled(dbus::Response* response,
-                           dbus::ErrorResponse* error_response);
+  void OnSetAdapterEnabled(DBusResult<Void> response);
 
   // Call methods in floss experimental interface
   template <typename R, typename... Args>
@@ -247,6 +278,18 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
 
   // Callback sent for SetFlossEnabled completion.
   std::unique_ptr<WeaklyOwnedCallback<bool>> set_floss_enabled_callback_;
+
+  template <typename R, typename... Args>
+  void CallManagerMethod(ResponseCallback<R> callback,
+                         const char* member,
+                         Args... args) {
+    CallMethod(std::move(callback), bus_, service_name_, kManagerInterface,
+               dbus::ObjectPath(kManagerObject), member, args...);
+  }
+
+  // Exported callbacks for interacting with daemon.
+  ExportedCallbackManager<FlossManagerClientCallbacks>
+      exported_callback_manager_{manager::kCallbackInterface};
 
   base::WeakPtrFactory<FlossManagerClient> weak_ptr_factory_{this};
 };
