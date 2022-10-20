@@ -2587,14 +2587,6 @@ export class Output {
   }
 
   /**
-   * Gets the output buffer for braille.
-   * @return {!Spannable}
-   */
-  get brailleOutputForTest() {
-    return this.mergeBraille_(this.brailleBuffer_);
-  }
-
-  /**
    * @param {string} text
    * @param {!AutomationNode} contextNode
    * @param {!Array<Spannable>} buff

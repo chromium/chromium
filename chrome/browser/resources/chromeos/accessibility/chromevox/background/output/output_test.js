@@ -10,7 +10,7 @@ GEN_INCLUDE([
  * Annotations in the output that are primitive strings are ignored.
  */
 function checkBrailleOutput(expectedText, expectedSpans, output) {
-  const actualOutput = output.brailleOutputForTest;
+  const actualOutput = output.braille;
   // Remove string annotations.  These are tested in the speech output and
   // there's no need to clutter the tests with the corresponding braille
   // annotations.
@@ -773,7 +773,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ToggleButton', async function() {
         ],
       },
       o.speechOutputForTest);
-  assertEquals('Subscribe tgl btn =', o.brailleOutputForTest.string_);
+  assertEquals('Subscribe tgl btn =', o.braille.string_);
 });
 
 AX_TEST_F('ChromeVoxOutputE2ETest', 'JoinDescendants', async function() {
@@ -1112,8 +1112,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', async function() {
   const o = new Output().withRichSpeechAndBraille(CursorRange.fromNode(obj));
   assertEquals(
       'Name|row 1 column 1|Table , 1 by 3', o.speechOutputForTest.string_);
-  assertEquals(
-      'Name r1c1 Age r1c2 Address r1c3', o.brailleOutputForTest.string_);
+  assertEquals('Name r1c1 Age r1c2 Address r1c3', o.braille.string_);
 });
 
 AX_TEST_F(
@@ -1130,12 +1129,12 @@ AX_TEST_F(
 
       let o = new Output().withRichSpeechAndBraille(CursorRange.fromNode(text));
       assertEquals('|square', o.speechOutputForTest.string_);
-      assertEquals('square', o.brailleOutputForTest.string_);
+      assertEquals('square', o.braille.string_);
 
       const region = root.find({role: RoleType.REGION});
       o = new Output().withRichSpeechAndBraille(CursorRange.fromNode(region));
       assertEquals('circle', o.speechOutputForTest.string_);
-      assertEquals('circle', o.brailleOutputForTest.string_);
+      assertEquals('circle', o.braille.string_);
     });
 
 AX_TEST_F('ChromeVoxOutputE2ETest', 'NestedList', async function() {
