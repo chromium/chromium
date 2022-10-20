@@ -2055,6 +2055,8 @@ static_library("ui") {
       "app_list/reorder/app_list_reorder_util.h",
       "app_list/search/app_result.cc",
       "app_list/search/app_result.h",
+      "app_list/search/app_search_data_source.cc",
+      "app_list/search/app_search_data_source.h",
       "app_list/search/app_search_provider.cc",
       "app_list/search/app_search_provider.h",
       "app_list/search/app_service_app_result.cc",

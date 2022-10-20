@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -22,18 +22,12 @@ namespace base {
 class Clock;
 }
 
-namespace sync_sessions {
-class OpenTabsUIDelegate;
-}  // namespace sync_sessions
-
 namespace app_list {
+
+class AppSearchDataSource;
 
 class AppSearchProvider : public SearchProvider {
  public:
-  class App;
-  class DataSource;
-  using Apps = std::vector<std::unique_ptr<App>>;
-
   // |clock| should be used by tests that needs to overrides the time.
   // Otherwise, pass a base::DefaultClock instance. This doesn't take the
   // ownership of the clock. |clock| must outlive the AppSearchProvider
@@ -55,22 +49,6 @@ class AppSearchProvider : public SearchProvider {
   ash::AppListSearchResultType ResultType() const override;
   bool ShouldBlockZeroState() const override;
 
-  // Refreshes apps and updates results inline
-  void RefreshAppsAndUpdateResults();
-
-  // Refreshes apps deferred to prevent multiple redundant refreshes in case of
-  // batch update events from app providers. Used in case when no removed app is
-  // detected.
-  void RefreshAppsAndUpdateResultsDeferred();
-
-  void set_open_tabs_ui_delegate_for_testing(
-      sync_sessions::OpenTabsUIDelegate* delegate) {
-    open_tabs_ui_delegate_for_testing_ = delegate;
-  }
-  sync_sessions::OpenTabsUIDelegate* open_tabs_ui_delegate_for_testing() {
-    return open_tabs_ui_delegate_for_testing_;
-  }
-
  private:
   void UpdateResults();
 
@@ -91,18 +69,17 @@ class AppSearchProvider : public SearchProvider {
   // zero state recommendation latency.
   void MaybeRecordQueryLatencyHistogram(bool is_queried_search);
 
-  AppListControllerDelegate* const list_controller_;
   std::u16string query_;
   base::TimeTicks query_start_time_;
   bool record_query_uma_ = false;
-  Apps apps_;
   AppListModelUpdater* const model_updater_;
-  base::Clock* clock_;
-  std::vector<std::unique_ptr<DataSource>> data_sources_;
-  sync_sessions::OpenTabsUIDelegate* open_tabs_ui_delegate_for_testing_ =
-      nullptr;
-  base::WeakPtrFactory<AppSearchProvider> refresh_apps_factory_{this};
-  base::WeakPtrFactory<AppSearchProvider> update_results_factory_{this};
+  std::unique_ptr<AppSearchDataSource> data_source_;
+
+  // Used to skip result updates caused by data source changes due to an
+  // explicit refresh request.
+  bool updates_blocked_ = false;
+
+  base::CallbackListSubscription app_updates_subscription_;
 
   base::WeakPtrFactory<AppSearchProvider> weak_ptr_factory_{this};
 };

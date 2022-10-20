@@ -15,6 +15,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -274,6 +275,56 @@ TEST_F(AppSearchProviderTest, Basic) {
   EXPECT_TRUE(result == "Packaged App 1,Fake App 1" ||
               result == "Fake App 1,Packaged App 1");
   arc_test().TearDown();
+}
+
+TEST_F(AppSearchProviderTest, NonLatinLocale) {
+  base::i18n::SetICUDefaultLocale("sr");
+
+  arc_test().SetUp(profile());
+
+  const std::string test_app_id_1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  AddExtension(test_app_id_1, "Тестна апликација 1",
+               ManifestLocation::kExternalPrefDownload,
+               extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  service_->EnableExtension(test_app_id_1);
+  const std::string test_app_id_2 = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+  AddExtension(test_app_id_2, "Тестна апликација 2",
+               ManifestLocation::kExternalPrefDownload,
+               extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  service_->EnableExtension(test_app_id_2);
+
+  AddArcApp("Лажна апликација 1", "fake.app.first", "activity");
+  AddArcApp("Лажна апликација 2", "fake.app.second", "activity");
+
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+
+  CreateSearch();
+
+  EXPECT_EQ("", RunQuery("!@#$-,-_"));
+  EXPECT_EQ("", RunQuery("без резултата"));  // no results
+
+  // Search for "Те" should return both packaged app. The order is undefined
+  // because the test only considers textual relevance and the two apps end
+  // up having the same score.
+  std::string result = RunQuery("Те");
+  EXPECT_TRUE(result == "Тестна апликација 1,Тестна апликација 2" ||
+              result == "Тестна апликација 2,Тестна апликација 1");
+
+  // Serbian, as non-latin local uses exact matching, so only single app will
+  // match.
+  EXPECT_EQ("Тестна апликација 1", RunQuery("Тестна 1"));
+  EXPECT_EQ("Тестна апликација 2", RunQuery("Тестна 2"));
+
+  result = RunQuery("Лажна");
+  EXPECT_TRUE(result == "Лажна апликација 2,Лажна апликација 1" ||
+              result == "Лажна апликација 1,Лажна апликација 2");
+  result = RunQuery("апликација 1");
+  EXPECT_TRUE(result == "Тестна апликација 1,Лажна апликација 1" ||
+              result == "Лажна апликација 1,Тестна апликација 1");
+  arc_test().TearDown();
+
+  base::i18n::SetICUDefaultLocale("en");
 }
 
 TEST_F(AppSearchProviderTest, DisableAndEnable) {
@@ -580,6 +631,35 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniApp) {
   EXPECT_EQ("goodApp", RunQuery("executable"));
   EXPECT_EQ("goodApp", RunQuery("wow amazing"));
   EXPECT_EQ("", RunQuery("terrible"));
+}
+
+TEST_F(AppSearchProviderCrostiniTest, CrostiniAppWithExactMathing) {
+  // Set a non-latin locale, which don't support fuzzy matching.
+  base::i18n::SetICUDefaultLocale("sr");
+  // This both allows Crostini UI and enables Crostini.
+  crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
+  crostini_test_helper.ReInitializeAppServiceIntegration();
+  CreateSearch();
+
+  // Search based on keywords and name
+  auto testApp = crostini_test_helper.BasicApp("goodApp");
+  std::map<std::string, std::set<std::string>> keywords;
+  keywords[""] = {"wow", "amazing", "excellent app"};
+  crostini_test_helper.UpdateAppKeywords(testApp, keywords);
+  testApp.set_executable_file_name("executable");
+  crostini_test_helper.AddApp(testApp);
+
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ("goodApp", RunQuery("wow"));
+  EXPECT_EQ("goodApp", RunQuery("amazing"));
+  EXPECT_EQ("goodApp", RunQuery("excellent app"));
+  EXPECT_EQ("goodApp", RunQuery("good"));
+  EXPECT_EQ("goodApp", RunQuery("executable"));
+  EXPECT_EQ("", RunQuery("terrible"));
+
+  base::i18n::SetICUDefaultLocale("en");
 }
 
 TEST_F(AppSearchProviderTest, AppServiceIconCache) {
