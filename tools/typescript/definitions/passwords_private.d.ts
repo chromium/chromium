@@ -145,55 +145,46 @@ declare global {
 
       export function recordPasswordsPageAccessInSettings(): void;
       export function changeSavedPassword(
-          id: number, params: ChangeSavedPasswordParams,
-          callback?: (newId: number) => void): void;
+          id: number, params: ChangeSavedPasswordParams): Promise<number>;
       export function removeSavedPassword(
           id: number, fromStores: PasswordStoreSet): void;
       export function removePasswordException(id: number): void;
       export function undoRemoveSavedPasswordOrException(): void;
       export function requestPlaintextPassword(
-          id: number, reason: PlaintextReason,
-          callback: (password: string) => void): void;
-      export function requestCredentialDetails(
-          id: number,
-          callback: (passwordUiEntry: PasswordUiEntry) => void): void;
+          id: number, reason: PlaintextReason): Promise<string>;
+      export function requestCredentialDetails(id: number):
+          Promise<PasswordUiEntry>;
       export function getSavedPasswordList(
           callback: (entries: PasswordUiEntry[]) => void): void;
       export function getPasswordExceptionList(
           callback: (entries: ExceptionEntry[]) => void): void;
       export function movePasswordsToAccount(ids: number[]): void;
-      export function importPasswords(toStore: PasswordStoreSet,
-          callback: (results: ImportResults) => void): void;
-      export function exportPasswords(callback: () => void): void;
-      export function requestExportProgressStatus(
-          callback: (status: ExportProgressStatus) => void): void;
+      export function importPasswords(toStore: PasswordStoreSet):
+          Promise<ImportResults>;
+      export function exportPasswords(): Promise<void>;
+      export function requestExportProgressStatus():
+          Promise<ExportProgressStatus>;
       export function cancelExportPasswords(): void;
-      export function isOptedInForAccountStorage(
-          callback: (isOptedIn: boolean) => void): void;
+      export function isOptedInForAccountStorage(): Promise<boolean>;
       export function optInForAccountStorage(optIn: boolean): void;
       export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
-      export function muteInsecureCredential(
-          credential: PasswordUiEntry, callback?: () => void): void;
-      export function unmuteInsecureCredential(
-          credential: PasswordUiEntry, callback?: () => void): void;
+      export function muteInsecureCredential(credential: PasswordUiEntry):
+          Promise<void>;
+      export function unmuteInsecureCredential(credential: PasswordUiEntry):
+          Promise<void>;
       export function recordChangePasswordFlowStarted(
           credential: PasswordUiEntry, isManualFlow: boolean): void;
-      export function refreshScriptsIfNecessary(
-          callback?: () => void): void;
-      export function startPasswordCheck(callback?: () => void): void;
-      export function stopPasswordCheck(callback?: () => void): void;
-      export function getPasswordCheckStatus(
-          callback: (status: PasswordCheckStatus) => void): void;
-      export function startAutomatedPasswordChange(
-          credential: PasswordUiEntry,
-          callback?: (success: boolean) => void): void;
-      export function isAccountStoreDefault(
-          callback: (isDefault: boolean) => void): void;
-      export function getUrlCollection(
-          url: string, callback: (urlCollection: UrlCollection) => void): void;
-      export function addPassword(
-          options: AddPasswordOptions, callback?: () => void): void;
-      export function extendAuthValidity(callback?: () => void): void;
+      export function refreshScriptsIfNecessary(): Promise<void>;
+      export function startPasswordCheck(): Promise<void>;
+      export function stopPasswordCheck(): Promise<void>;
+      export function getPasswordCheckStatus(): Promise<PasswordCheckStatus>;
+      export function startAutomatedPasswordChange(credential: PasswordUiEntry):
+          Promise<boolean>;
+      export function isAccountStoreDefault(): Promise<boolean>;
+      export function getUrlCollection(url: string):
+          Promise<UrlCollection|null>;
+      export function addPassword(options: AddPasswordOptions): Promise<void>;
+      export function extendAuthValidity(): Promise<void>;
       export function switchBiometricAuthBeforeFillingState(): void;
       export function showAddShortcutDialog(): void;
 

@@ -126,21 +126,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   getPasswordCheckStatus() {
-    return new Promise<chrome.passwordsPrivate.PasswordCheckStatus>(resolve => {
-      chrome.passwordsPrivate.getPasswordCheckStatus(resolve);
-    });
+    return chrome.passwordsPrivate.getPasswordCheckStatus();
   }
 
   startBulkPasswordCheck() {
-    return new Promise<void>((resolve, reject) => {
-      chrome.passwordsPrivate.startPasswordCheck(() => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
-          return;
-        }
-        resolve();
-      });
-    });
+    return chrome.passwordsPrivate.startPasswordCheck();
   }
 
   recordPasswordCheckInteraction(interaction: PasswordCheckInteraction) {

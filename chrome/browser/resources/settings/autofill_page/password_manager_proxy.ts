@@ -385,33 +385,20 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   isAccountStoreDefault() {
-    return new Promise<boolean>(resolve => {
-      chrome.passwordsPrivate.isAccountStoreDefault(resolve);
-    });
+    return chrome.passwordsPrivate.isAccountStoreDefault();
   }
 
   getUrlCollection(url: string) {
-    return new Promise<chrome.passwordsPrivate.UrlCollection|null>(resolve => {
-      chrome.passwordsPrivate.getUrlCollection(url, urlCollection => {
-        resolve(chrome.runtime.lastError ? null : urlCollection);
-      });
-    });
+    return chrome.passwordsPrivate.getUrlCollection(url);
   }
 
   addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
-    return new Promise<void>(resolve => {
-      chrome.passwordsPrivate.addPassword(options, resolve);
-    });
+    return chrome.passwordsPrivate.addPassword(options);
   }
 
   changeSavedPassword(
       id: number, params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
-    return new Promise<number>(resolve => {
-      chrome.passwordsPrivate.changeSavedPassword(
-          id, params, (newId: number) => {
-            resolve(newId);
-          });
-    });
+    return chrome.passwordsPrivate.changeSavedPassword(id, params);
   }
 
   removeSavedPassword(
@@ -448,59 +435,24 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   requestCredentialDetails(id: number) {
-    return new Promise<chrome.passwordsPrivate.PasswordUiEntry>(
-        (resolve, reject) => {
-          chrome.passwordsPrivate.requestCredentialDetails(
-              id,
-              (passwordUiEntry: chrome.passwordsPrivate.PasswordUiEntry) => {
-                if (chrome.runtime.lastError) {
-                  reject(chrome.runtime.lastError.message);
-                  return;
-                }
-
-                resolve(passwordUiEntry);
-              });
-        });
+    return chrome.passwordsPrivate.requestCredentialDetails(id);
   }
 
   requestPlaintextPassword(
       id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
-    return new Promise<string>((resolve, reject) => {
-      chrome.passwordsPrivate.requestPlaintextPassword(
-          id, reason, (password) => {
-            if (chrome.runtime.lastError) {
-              reject(chrome.runtime.lastError.message);
-              return;
-            }
-
-            resolve(password);
-          });
-    });
+    return chrome.passwordsPrivate.requestPlaintextPassword(id, reason);
   }
 
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
-    return new Promise<chrome.passwordsPrivate.ImportResults>(resolve => {
-      chrome.passwordsPrivate.importPasswords(toStore, resolve);
-    });
+    return chrome.passwordsPrivate.importPasswords(toStore);
   }
 
   exportPasswords() {
-    return new Promise<void>((resolve, reject) => {
-      chrome.passwordsPrivate.exportPasswords(() => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
-          return;
-        }
-        resolve();
-      });
-    });
+    return chrome.passwordsPrivate.exportPasswords();
   }
 
   requestExportProgressStatus() {
-    return new Promise<chrome.passwordsPrivate.ExportProgressStatus>(
-        resolve => {
-          chrome.passwordsPrivate.requestExportProgressStatus(resolve);
-        });
+    return chrome.passwordsPrivate.requestExportProgressStatus();
   }
 
   addPasswordsFileExportProgressListener(
@@ -531,22 +483,16 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   isOptedInForAccountStorage() {
-    return new Promise<boolean>(resolve => {
-      chrome.passwordsPrivate.isOptedInForAccountStorage(resolve);
-    });
+    return chrome.passwordsPrivate.isOptedInForAccountStorage();
   }
 
   getPasswordCheckStatus() {
-    return new Promise<chrome.passwordsPrivate.PasswordCheckStatus>(resolve => {
-      chrome.passwordsPrivate.getPasswordCheckStatus(resolve);
-    });
+    return chrome.passwordsPrivate.getPasswordCheckStatus();
   }
 
   startAutomatedPasswordChange(credential:
                                    chrome.passwordsPrivate.PasswordUiEntry) {
-    return new Promise<boolean>(resolve => {
-      chrome.passwordsPrivate.startAutomatedPasswordChange(credential, resolve);
-    });
+    return chrome.passwordsPrivate.startAutomatedPasswordChange(credential);
   }
 
   optInForAccountStorage(optIn: boolean) {
@@ -554,21 +500,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   refreshScriptsIfNecessary() {
-    return new Promise<void>(resolve => {
-      chrome.passwordsPrivate.refreshScriptsIfNecessary(resolve);
-    });
+    return chrome.passwordsPrivate.refreshScriptsIfNecessary();
   }
 
   startBulkPasswordCheck() {
-    return new Promise<void>((resolve, reject) => {
-      chrome.passwordsPrivate.startPasswordCheck(() => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
-          return;
-        }
-        resolve();
-      });
-    });
+    return chrome.passwordsPrivate.startPasswordCheck();
   }
 
   stopBulkPasswordCheck() {
