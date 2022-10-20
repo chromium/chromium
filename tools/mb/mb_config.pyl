@@ -61,7 +61,7 @@
       'fuchsia-official': 'fuchsia_official_optimize_goma',
       'lacros-arm-archive-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'lacros-arm64-archive-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
-      'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel',
+      'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-rel': 'release_bot_reclient',
       'linux-official': 'official_optimize_reclient',

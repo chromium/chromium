@@ -82,7 +82,7 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-archive-dbg": {
