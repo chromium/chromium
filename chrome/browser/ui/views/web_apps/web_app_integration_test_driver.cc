@@ -3051,6 +3051,7 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
     }
   }
 #elif BUILDFLAG(IS_MAC)
+  AppId app_id = GetAppIdBySiteMode(site);
   std::string app_name = GetSiteConfiguration(site).app_name;
   const base::FilePath test_file_path =
       override_registration_->shortcut_override->chrome_apps_folder.GetPath()
@@ -3058,9 +3059,12 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
   const base::File test_file(
       test_file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   const GURL test_file_url = net::FilePathToFileURL(test_file_path);
-  is_file_handled =
-      (base::UTF8ToUTF16(app_name) ==
-       shell_integration::GetApplicationNameForProtocol(test_file_url));
+  base::FilePath app_path = GetShortcutPath(
+      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      app_name, app_id);
+  std::vector<base::FilePath> app_paths =
+      shell_integration::GetAllApplicationPathsForURL(test_file_url);
+  is_file_handled = base::Contains(app_paths, app_path);
 #elif BUILDFLAG(IS_LINUX)
   AppId app_id = GetAppIdBySiteMode(site);
   for (const LinuxFileRegistration& command :

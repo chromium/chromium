@@ -12,6 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
+#import "net/base/mac/url_conversions.h"
 #import "third_party/mozilla/NSWorkspace+Utils.h"
 
 namespace shell_integration {
@@ -108,6 +109,27 @@ std::u16string GetApplicationNameForProtocol(const GURL& url) {
   NSString* appDisplayName =
       [[NSFileManager defaultManager] displayNameAtPath:appPath];
   return base::SysNSStringToUTF16(appDisplayName);
+}
+
+std::vector<base::FilePath> GetAllApplicationPathsForURL(const GURL& url) {
+  NSURL* ns_url = net::NSURLWithGURL(url);
+  NSArray* app_urls = nil;
+  if (@available(macos 12.0, *)) {
+    app_urls =
+        [[NSWorkspace sharedWorkspace] URLsForApplicationsToOpenURL:ns_url];
+  } else {
+    CFArrayRef urls =
+        LSCopyApplicationURLsForURL(base::mac::NSToCFCast(ns_url), kLSRolesAll);
+    app_urls = [base::mac::CFToNSCast(urls) autorelease];
+  }
+  std::vector<base::FilePath> app_paths;
+  if ([app_urls count] == 0)
+    return app_paths;
+  app_paths.reserve([app_urls count]);
+  for (NSURL* app_url in app_urls) {
+    app_paths.push_back(base::mac::NSURLToFilePath(app_url));
+  }
+  return app_paths;
 }
 
 // Attempt to determine if this instance of Chrome is the default browser and

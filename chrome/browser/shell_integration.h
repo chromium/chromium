@@ -63,6 +63,13 @@ bool IsElevationNeededForSettingDefaultProtocolClient();
 // Returns an empty string on failure.
 std::u16string GetApplicationNameForProtocol(const GURL& url);
 
+#if BUILDFLAG(IS_MAC)
+// Returns a vector which containing all the application paths that can be used
+// to launch the requested URL.
+// Returns an empty vector if no application is found.
+std::vector<base::FilePath> GetAllApplicationPathsForURL(const GURL& url);
+#endif
+
 // Chrome's default web client state as a browser as a protocol client. If the
 // current install mode is not default, the brand's other modes are
 // checked. This allows callers to take specific action in case the current mode
