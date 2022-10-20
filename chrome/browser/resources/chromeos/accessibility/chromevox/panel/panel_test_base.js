@@ -12,9 +12,12 @@ ChromeVoxPanelTestBase = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         ['PanelCommand', 'PanelCommandType'],
         '/chromevox/common/panel_command.js');
+
     await new PanelCommand(PanelCommandType.ENABLE_TEST_HOOKS).send();
   }
 

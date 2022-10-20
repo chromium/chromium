@@ -33,6 +33,7 @@ ChromeVoxLocaleOutputHelperTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
+    // Alphabetical based on file path.
     await importModule(
         'LocaleOutputHelper', '/chromevox/common/locale_output_helper.js');
 

@@ -11,6 +11,8 @@ ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'BluetoothBrailleDisplayUI',
         '/chromevox/options/bluetooth_braille_display_ui.js');

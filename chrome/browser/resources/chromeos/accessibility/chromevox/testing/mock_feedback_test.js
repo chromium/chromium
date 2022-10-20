@@ -29,7 +29,11 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
 
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+    await importModule(
+        ['AbstractEarcons', 'Earcon'], '/chromevox/common/abstract_earcons.js');
     await importModule(
         'BrailleInterface', '/chromevox/common/braille/braille_interface.js');
     await importModule(
@@ -37,8 +41,6 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
     await importModule('Spannable', '/chromevox/common/spannable.js');
     await importModule(
         ['QueueMode', 'TtsInterface'], '/chromevox/common/tts_interface.js');
-    await importModule(
-        ['AbstractEarcons', 'Earcon'], '/chromevox/common/abstract_earcons.js');
   }
 
   /** @override */

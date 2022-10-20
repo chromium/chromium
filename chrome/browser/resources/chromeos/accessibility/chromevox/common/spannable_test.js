@@ -65,8 +65,11 @@ ChromeVoxSpannableUnitTest = class extends AccessibilityTestBase {
 
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
+
     Spannable.registerStatelessSerializableSpan(
         StatelessSerializableSpan, 'StatelessSerializableSpan');
 

@@ -14,6 +14,8 @@ ChromeVoxBrailleTableTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'BrailleTable', '/chromevox/common/braille/braille_table.js');
   }

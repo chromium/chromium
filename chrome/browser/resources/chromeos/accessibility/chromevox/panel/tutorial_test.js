@@ -13,6 +13,8 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(

@@ -12,6 +12,8 @@ ChromeVoxBrailleCommandDataTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'BrailleCommandData',
         '/chromevox/common/braille/braille_command_data.js');

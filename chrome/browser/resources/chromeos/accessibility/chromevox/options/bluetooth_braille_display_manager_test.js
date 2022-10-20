@@ -33,6 +33,8 @@ ChromeVoxBluetoothBrailleDisplayManagerWebUITest =
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'BluetoothBrailleDisplayManager',
         '/chromevox/options/bluetooth_braille_display_manager.js');
