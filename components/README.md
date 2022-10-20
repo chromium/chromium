@@ -24,11 +24,11 @@ than one part of the Chromium codebase.
 
 Note that the above list is meant to be exhaustive. A component should not be
 added just to separate it from other code in the same layer that is the only
-consumer; that can be done with strict DEPS or GN visibility rules.
+consumer; that can be done with strict `DEPS` or GN `visibility` rules.
 
 ## Guidelines for adding a new component
 
-  * You will be added to an OWNERS file under `//components/{your component}`
+  * You will be added to an `OWNERS` file under `//components/{your component}`
     and be responsible for maintaining your addition.
   * A `//components/OWNER` must approve of the location of your code.
   * Code must be needed in at least 2 places in Chrome that don't have a "higher
@@ -85,12 +85,12 @@ separate the code into different subdirectories. Hence for a component named
 'foo' you might end up with a structure like the following (assuming that foo is
 not used by iOS and thus does not need to be a layered component):
 
-  * `components/foo`          - DEPS, OWNERS, BUILD.gn
+  * `components/foo`          - `BUILD.gn`, `DEPS`, `DIR_METADATA`, `OWNERS`, `README.md`
   * `components/foo/browser`  - code that needs the browser process
   * `components/foo/common`   - for e.g. Mojo interfaces and such
   * `components/foo/renderer` - code that needs renderer process
 
-These subdirectories should have DEPS files with the relevant restrictions in
+These subdirectories should have `DEPS` files with the relevant restrictions in
 place, i.e. only `components/foo/browser` should be allowed to #include from
 `content/public/browser`. Note that `third_party/blink/public` is a
 renderer process directory except for `third_party/blink/public/common` which
@@ -101,7 +101,7 @@ structure underneath it where the package name is org.chromium.components.foo,
 and with subdirs after 'foo' to illustrate process, e.g. 'browser' or
 'renderer':
 
-  * `components/foo/android/OWNERS`, `DEPS`
+  * `components/foo/android/`{`OWNERS`, `DEPS`}
   * `components/foo/android/java/src/org/chromium/components/foo/browser/`
   * `components/foo/android/javatests/src/org/chromium/components/foo/browser/`
 
