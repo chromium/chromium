@@ -2175,7 +2175,7 @@
     ],
 
     'chromeos_betty-pi-arc_cfi_thin_lto_official': [
-      'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
+      'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'minimal_symbols',
     ],
 
     'chromeos_betty-pi-arc_dchecks': [
