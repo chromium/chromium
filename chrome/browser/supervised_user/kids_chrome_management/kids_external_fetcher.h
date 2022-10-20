@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_EXTERNAL_FETCHER_H_
 #define CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_EXTERNAL_FETCHER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_access_token_fetcher.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -48,6 +47,11 @@ class KidsExternalFetcherStatus {
   // KidsExternalFetcherStatus::IsOk iff google_service_auth_error_.state() ==
   // NONE and state_ == NONE
   bool IsOk() const;
+  // Indicates whether the status is not ok, but is worth retrying because it
+  // might go away.
+  bool IsTransientError() const;
+  // Indicates whether the status is not ok and there is no point in retrying.
+  bool IsPersistentError() const;
 
   State state() const;
   const class GoogleServiceAuthError& google_service_auth_error() const;
