@@ -3692,6 +3692,8 @@ enum WebFeature {
   kBackForwardCacheNotRestoredReasons = 4371,
   kCSSNesting = 4372,
   kSandboxIneffectiveAllowOriginAllowScript = 4373,
+  kDocumentOpenDifferentWindow = 4374,
+  kDocumentOpenMutateSandbox = 4375,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

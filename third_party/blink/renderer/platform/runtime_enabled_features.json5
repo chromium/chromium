@@ -1050,6 +1050,12 @@
       name: "DocumentDomain",
     },
     {
+      name: "DocumentOpenSandboxInheritanceRemoval",
+      status: "experimental",
+      base_feature: "DocumentOpenSandboxInheritanceRemoval",
+      copied_from_base_feature_if: "overridden",
+    },
+    {
       name: "DocumentPictureInPictureAPI",
       depends_on: ["PictureInPictureAPI"],
       public: true,

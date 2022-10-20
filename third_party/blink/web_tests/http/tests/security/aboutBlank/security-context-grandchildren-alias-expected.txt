@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL document.domain behavior of grandchildren 'about:blank' matches grandparent. assert_equals: expected "subdomain.example.test" but got "example.test"
-Harness: the test ran to completion.
-

@@ -3273,32 +3273,58 @@ void Document::open(LocalDOMWindow* entered_window,
       Loader()->DidOpenDocumentInputStream(new_url);
 
     if (dom_window_ != entered_window) {
-      // We inherit the sandbox flags of the entered document, so mask on
-      // the ones contained in the CSP. The operator| is a bitwise operation on
-      // the sandbox flags bits. It makes the sandbox policy stricter (or as
-      // strict) as both policy.
-      //
-      // TODO(arthursonzogni): Why merging sandbox flags?
-      // This doesn't look great at many levels:
-      // - The browser process won't be notified of the update.
-      // - The origin won't be made opaque, despite the new flags.
-      // - The sandbox flags of the document can't be considered to be an
-      //   immutable property anymore.
-      //
-      // Ideally:
-      // - javascript-url document.
-      // - XSLT document.
-      // - document.open.
-      // should not mutate the security properties of the current document. From
-      // the browser process point of view, all of those operations are not
-      // considered to produce new documents. No IPCs are sent, it is as if it
-      // was a no-op.
-      dom_window_->GetSecurityContext().SetSandboxFlags(
-          dom_window_->GetSecurityContext().GetSandboxFlags() |
-          entered_window->GetSandboxFlags());
+      CountUse(WebFeature::kDocumentOpenDifferentWindow);
 
-      dom_window_->GetSecurityContext().SetSecurityOrigin(
-          entered_window->GetMutableSecurityOrigin());
+      if ((dom_window_->GetSecurityContext().GetSandboxFlags() |
+           entered_window->GetSandboxFlags()) !=
+          dom_window_->GetSecurityContext().GetSandboxFlags()) {
+        CountUse(WebFeature::kDocumentOpenMutateSandbox);
+      }
+
+      if (!RuntimeEnabledFeatures::
+              DocumentOpenSandboxInheritanceRemovalEnabled()) {
+        // We inherit the sandbox flags of the entered document, so mask on
+        // the ones contained in the CSP. The operator| is a bitwise operation
+        // on the sandbox flags bits. It makes the sandbox policy stricter (or
+        // as strict) as both policy.
+        //
+        // TODO(arthursonzogni): Why merging sandbox flags?
+        // This doesn't look great at many levels:
+        // - The browser process won't be notified of the update.
+        // - The origin won't be made opaque, despite the new flags.
+        // - The sandbox flags of the document can't be considered to be an
+        //   immutable property anymore.
+        //
+        // Ideally:
+        // - javascript-url document.
+        // - XSLT document.
+        // - document.open.
+        // should not mutate the security properties of the current document.
+        // From the browser process point of view, all of those operations are
+        // not considered to produce new documents. No IPCs are sent, it is as
+        // if it was a no-op.
+        //
+        // TODO(https://crbug.com/1360795) Remove this
+        dom_window_->GetSecurityContext().SetSandboxFlags(
+            dom_window_->GetSecurityContext().GetSandboxFlags() |
+            entered_window->GetSandboxFlags());
+
+        dom_window_->GetSecurityContext().SetSecurityOrigin(
+            entered_window->GetMutableSecurityOrigin());
+      }
+
+      // Question: Should we remove the inheritance of the CookieURL via
+      // document.open?
+      //
+      // Arguments in favor of maintaining this behavior include the fact that
+      // document.open can be used to alter the document's URL. According to
+      // prior talks, this is necessary for web compatibility. It looks nicer if
+      // all URL variations change uniformly and simultaneously.
+      //
+      // Arguments in favor of eliminating this behavior include the fact that
+      // cookie URLs are extremely particular pieces of state that resemble the
+      // origin more than they do actual URLs. The less we inherit via
+      // document.open, the better.
       cookie_url_ = entered_window->document()->CookieURL();
     }
   }
