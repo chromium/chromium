@@ -546,7 +546,6 @@
             },
           ],
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'Android WebView N (dbg)': {
@@ -568,7 +567,6 @@
           ],
           'expiration': 10800,
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'Android WebView O (dbg)': {
@@ -583,7 +581,6 @@
         'swarming': {
           'expiration': 10800,
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'Android WebView P (dbg)': {
@@ -595,7 +592,6 @@
         'test_suites': {
           'gtest_tests': 'webview_bot_all_gtests',
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'Android arm Builder (dbg)': {
@@ -716,7 +712,6 @@
         'test_suites': {
           'gtest_tests': 'android_10_rel_gtests',
         },
-        'use_swarming': True,
         'os_type': 'android',
         'mixins': [
           'has_native_resultdb_integration'
@@ -1022,7 +1017,6 @@
           # has been deployed.
           #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'android-pie-arm64-dbg': {
@@ -1053,7 +1047,6 @@
           #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
           'scripts': 'chromium_android_scripts',
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'android-pie-x86-rel': {
@@ -1082,7 +1075,6 @@
         'test_suites': {
           'gtest_tests': 'webview_trichrome_10_cts_tests_gtest',
         },
-        'use_swarming': True,
       },
     },
   },
@@ -1138,7 +1130,6 @@
         'test_suites': {
           'isolated_scripts': 'chrome_public_wpt',
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'android-cronet-asan-x86-rel': {
@@ -1167,7 +1158,6 @@
         'test_suites': {
           'isolated_scripts': 'system_webview_wpt',
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       # A builder for early prototype of test-reviver in Clank.
@@ -1212,7 +1202,6 @@
         'test_suites': {
           'isolated_scripts': 'system_webview_wpt',
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
     },
@@ -3029,7 +3018,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
         },
-        'use_swarming': True,
         'os_type': 'android',
       },
       'android-fieldtrial-rel': {
