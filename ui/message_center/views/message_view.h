@@ -250,6 +250,10 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   int bottom_radius() const { return bottom_radius_; }
 
+  views::SlideOutController* slide_out_controller_for_test() {
+    return &slide_out_controller_;
+  }
+
  private:
   friend class test::MessagePopupCollectionTest;
 
@@ -262,6 +266,12 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   // Returns if the control buttons should be shown.
   bool ShouldShowControlButtons() const;
+
+  // Returns true if the slide behavior for this view should be handled by a
+  // parent message view. This is used to ensure that the parent's layer is
+  // animated for slides and the entire parent notification is removed on swipe
+  // out.
+  bool ShouldParentHandleSlide() const;
 
   void UpdateNestedBorder();
 
