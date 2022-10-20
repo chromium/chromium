@@ -10866,7 +10866,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="18" label="EMF_INVALID_PORT_CONTEXT"/>
   <int value="19" label="AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME"/>
   <int value="20" label="EFD_INVALID_EXTENSION_ID_FOR_PROCESS"/>
-  <int value="21" label="EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG"/>
+  <int value="21" label="DEPRECATED_EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG"/>
+  <int value="22" label="EMF_NON_EXTENSION_SENDER_FRAME"/>
+  <int value="23" label="EMF_NON_EXTENSION_SENDER_NATIVE_HOST"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

@@ -61,7 +61,6 @@ class MessagingAPIMessageFilter : public content::BrowserMessageFilter {
                                 const extensions::PortId& port_id);
   void OnOpenChannelToTab(const PortContext& source_context,
                           const ExtensionMsg_TabTargetConnectionInfo& info,
-                          const std::string& extension_id,
                           const std::string& channel_name,
                           const extensions::PortId& port_id);
   void OnOpenMessagePort(const PortContext& port_context,

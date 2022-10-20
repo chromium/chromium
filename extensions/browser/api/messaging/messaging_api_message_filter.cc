@@ -10,6 +10,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
@@ -20,6 +21,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/trace_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using content::RenderProcessHost;
@@ -183,6 +185,47 @@ class ScopedExternalConnectionInfoCrashKeys {
   base::debug::ScopedCrashKeyString source_url_;
 };
 
+// Validates whether `source_context` can be legitimately used in the IPC
+// messages sent from the given renderer `process`.  If the validation fails, or
+// the sender is not associated with an extension, then `nullopt` is returned.
+// The sender should ignore the IPC when `nullopt` is returned.
+absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
+    content::RenderProcessHost& process,
+    const PortContext& source_context) {
+  if (!IsValidSourceContext(process, source_context))
+    return absl::nullopt;
+
+  if (source_context.is_for_service_worker())
+    return source_context.worker->extension_id;
+
+  if (source_context.is_for_render_frame()) {
+    content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
+        process.GetID(), source_context.frame->routing_id);
+    if (!frame) {
+      // Not calling ReceivedBadMessage because it is possible that the frame
+      // got deleted before the IPC arrived.
+      return absl::nullopt;
+    }
+
+    // These extension IPCs are on the same pipe as DidCommit() (and thus can't
+    // arrive out-of-order), and therefore we can rely on
+    // `frame->GetLastCommittedOrigin()` to return the origin of the IPC sender.
+    const url::Origin& origin = frame->GetLastCommittedOrigin();
+    if (origin.scheme() != kExtensionScheme) {
+      bad_message::ReceivedBadMessage(
+          &process, bad_message::EMF_NON_EXTENSION_SENDER_FRAME);
+      return absl::nullopt;
+    }
+
+    return origin.host();
+  }
+
+  DCHECK(source_context.is_for_native_host());
+  bad_message::ReceivedBadMessage(
+      &process, bad_message::EMF_NON_EXTENSION_SENDER_NATIVE_HOST);
+  return absl::nullopt;
+}
+
 }  // namespace
 
 MessagingAPIMessageFilter::MessagingAPIMessageFilter(
@@ -274,6 +317,8 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
   debug::ScopedPortContextCrashKeys port_context_crash_keys(source_context);
   if (!IsValidMessagingSource(*process, info.source_endpoint) ||
       !IsValidSourceContext(*process, source_context)) {
+    // No need to call ReceivedBadMessage here, because it will be called (when
+    // appropriate) within IsValidSourceContext and/or IsValidMessagingSource.
     return;
   }
 
@@ -297,8 +342,11 @@ void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
               ChromeTrackEvent::kRenderProcessHost, *process);
 
   debug::ScopedPortContextCrashKeys port_context_crash_keys(source_context);
-  if (!IsValidSourceContext(*process, source_context))
+  if (!IsValidSourceContext(*process, source_context)) {
+    // No need to call ReceivedBadMessage here, because it will be called (when
+    // appropriate) within IsValidSourceContext.
     return;
+  }
 
   ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
                                   source_context);
@@ -309,7 +357,6 @@ void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
 void MessagingAPIMessageFilter::OnOpenChannelToTab(
     const PortContext& source_context,
     const ExtensionMsg_TabTargetConnectionInfo& info,
-    const std::string& extension_id,
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -319,9 +366,11 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
   TRACE_EVENT("extensions", "MessageFilter::OnOpenChannelToTab",
               ChromeTrackEvent::kRenderProcessHost, *process);
 
-  if (!util::CanRendererHostExtensionOrigin(render_process_id_, extension_id)) {
-    bad_message::ReceivedBadMessage(
-        process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG);
+  absl::optional<ExtensionId> extension_id =
+      ValidateSourceContextAndExtractExtensionId(*process, source_context);
+  if (!extension_id) {
+    // No need to call ReceivedBadMessage here, because it will be called (when
+    // appropriate) within ValidateSourceContextAndExtractExtensionId.
     return;
   }
 
@@ -329,7 +378,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
                                   source_context);
   MessageService::Get(browser_context_)
       ->OpenChannelToTab(source_endpoint, port_id, info.tab_id, info.frame_id,
-                         info.document_id, extension_id, channel_name);
+                         info.document_id, *extension_id, channel_name);
 }
 
 void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,

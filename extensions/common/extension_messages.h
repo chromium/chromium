@@ -327,10 +327,9 @@ IPC_MESSAGE_CONTROL3(ExtensionHostMsg_OpenChannelToNativeApp,
 
 // Get a port handle to the given tab.  The handle can be used for sending
 // messages to the extension.
-IPC_MESSAGE_CONTROL5(ExtensionHostMsg_OpenChannelToTab,
+IPC_MESSAGE_CONTROL4(ExtensionHostMsg_OpenChannelToTab,
                      extensions::PortContext /* source_context */,
                      ExtensionMsg_TabTargetConnectionInfo,
-                     std::string /* extension_id */,
                      std::string /* channel_name */,
                      extensions::PortId /* port_id */)
 
