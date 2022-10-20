@@ -112,6 +112,13 @@ function setAutofillAssistantUrl() {
   chrome.send('set-autofill-assistant-url', [autofillAssistantUrl]);
 }
 
+function setAutofillAssistantCountryCode() {
+  const autofillAssistantCountryCode =
+      $('autofill-assistant-country-code').value;
+  chrome.send(
+      'set-autofill-assistant-country-code', [autofillAssistantCountryCode]);
+}
+
 function launchScript(origin) {
   chrome.send('launch-script', [origin, $('bundle-id').value, $('ldap').value]);
 }
@@ -165,6 +172,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
   $('script-cache-show').onclick = showScriptCache;
   $('script-cache-refresh').onclick = refreshScriptCache;
   $('set-autofill-assistant-url').onclick = setAutofillAssistantUrl;
+  $('set-autofill-assistant-country-code').onclick =
+      setAutofillAssistantCountryCode;
 
   chrome.send('loaded');
 });

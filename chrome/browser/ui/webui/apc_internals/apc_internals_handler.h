@@ -63,6 +63,9 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
   // user-triggered DOM event.
   void OnSetAutofillAssistantUrl(const base::Value::List& args);
 
+  // Sets the country code for the Autofill Assistant.
+  void OnSetAutofillAssistantCountryCode(const base::Value::List& args);
+
   void GetLoginsAndTryLaunchScript(const base::Value::List& args);
 
   // Returns a raw pointer to the `PasswordScriptsFetcher` keyed service.

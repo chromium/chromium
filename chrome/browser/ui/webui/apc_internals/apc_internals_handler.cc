@@ -34,6 +34,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
@@ -104,6 +105,12 @@ void APCInternalsHandler::RegisterMessages() {
       "set-autofill-assistant-url",
       base::BindRepeating(&APCInternalsHandler::OnSetAutofillAssistantUrl,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "set-autofill-assistant-country-code",
+      base::BindRepeating(
+          &APCInternalsHandler::OnSetAutofillAssistantCountryCode,
+          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "launch-script",
@@ -192,6 +199,24 @@ void APCInternalsHandler::OnSetAutofillAssistantUrl(
     command_line->AppendSwitchASCII(
         autofill_assistant::switches::kAutofillAssistantUrl,
         autofill_assistant_url);
+
+    UpdateAutofillAssistantInformation();
+  }
+}
+
+void APCInternalsHandler::OnSetAutofillAssistantCountryCode(
+    const base::Value::List& args) {
+  if (args.size() == 1 && args.front().is_string()) {
+    const std::string& autofill_assistant_country_code =
+        args.front().GetString();
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+
+    command_line->RemoveSwitch(
+        variations::switches::kVariationsOverrideCountry);
+
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry,
+        autofill_assistant_country_code);
 
     UpdateAutofillAssistantInformation();
   }
@@ -315,7 +340,8 @@ base::Value::Dict APCInternalsHandler::GetAutofillAssistantInformation() const {
       autofill_assistant::switches::
           kAutofillAssistantImplicitTriggeringDebugParameters,
       autofill_assistant::switches::kAutofillAssistantServerKey,
-      autofill_assistant::switches::kAutofillAssistantUrl};
+      autofill_assistant::switches::kAutofillAssistantUrl,
+  };
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   for (base::StringPiece switch_name : kAutofillAssistantSwitches) {
