@@ -9,11 +9,13 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/continue_section_view.h"
+#include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -402,6 +404,25 @@ TEST_F(AppsContainerViewTest, StartPageDragThenRelease) {
   // The gradient mask should be removed after the end of the page animation.
   EXPECT_FALSE(HasGradientMask());
   EXPECT_EQ(0, GetSelectedPage());
+}
+
+TEST_F(AppsContainerViewTest,
+       PageSwitcherBoundsShouldNotChangeAfterOverviewMode) {
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  auto* helper = GetAppListTestHelper();
+  auto* overview_controller = Shell::Get()->overview_controller();
+
+  const auto initial_bounds =
+      helper->GetAppsContainerView()->page_switcher()->bounds();
+
+  EnterOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ExitOverview();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  EXPECT_EQ(initial_bounds,
+            helper->GetAppsContainerView()->page_switcher()->bounds());
 }
 
 }  // namespace ash

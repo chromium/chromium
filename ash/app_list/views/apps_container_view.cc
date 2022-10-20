@@ -1026,7 +1026,7 @@ void AppsContainerView::Layout() {
   // Layout page switcher.
   const int page_switcher_width = page_switcher_->GetPreferredSize().width();
   const gfx::Rect page_switcher_bounds(
-      grid_rect.right() + kGridToPageSwitcherMargin, grid_rect.y(),
+      grid_rect.right() + kGridToPageSwitcherMargin, scrollable_container_->y(),
       page_switcher_width, grid_rect.height());
   page_switcher_->SetBoundsRect(page_switcher_bounds);
 
