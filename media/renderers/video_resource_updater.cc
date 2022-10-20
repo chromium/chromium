@@ -949,6 +949,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
          input_frame_format == PIXEL_FORMAT_Y16 || is_rgb);
 
   viz::ResourceFormat output_resource_format;
+  absl::optional<viz::ResourceFormat> subplane_resource_format;
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
   if (input_frame_format == PIXEL_FORMAT_XBGR) {
     output_resource_format = viz::RGBX_8888;
@@ -968,6 +969,25 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   } else if (!software_compositor()) {
     // Can be composited directly from yuv planes.
     output_resource_format = YuvResourceFormat(bits_per_channel);
+
+    // Some YUV resources have different sized planes. If we lack the proper
+    // ResourceFormat just convert to RGB. We could do something better like
+    // unpacking to I420/I016, but texture_rg and r16 support should be pretty
+    // universal and we expect these frames to be rare.
+    if (input_frame_format == PIXEL_FORMAT_NV12) {
+      if (output_resource_format == viz::RED_8)
+        subplane_resource_format = viz::RG_88;
+      else
+        output_resource_format = viz::RGBA_8888;
+    } else if (input_frame_format == PIXEL_FORMAT_P016LE) {
+      if (output_resource_format == viz::R16_EXT)
+        subplane_resource_format = viz::RG16_EXT;
+      else
+        output_resource_format = viz::RGBA_8888;
+    } else {
+      DCHECK_EQ(VideoFrame::BytesPerElement(input_frame_format, 0),
+                VideoFrame::BytesPerElement(input_frame_format, 1));
+    }
   }
 
   // If GPU compositing is enabled, but the output resource format
@@ -1017,13 +1037,16 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
   // Delete recycled resources that are the wrong format or wrong size.
   auto can_delete_resource_fn =
-      [output_resource_format,
+      [output_resource_format, subplane_resource_format,
        &outplane_plane_sizes](const std::unique_ptr<PlaneResource>& resource) {
         // Resources that are still being used can't be deleted.
         if (resource->has_refs())
           return false;
 
-        return resource->resource_format() != output_resource_format ||
+        return (resource->resource_format() != output_resource_format &&
+                resource->resource_format() !=
+                    subplane_resource_format.value_or(
+                        output_resource_format)) ||
                !base::Contains(outplane_plane_sizes, resource->resource_size());
       };
   base::EraseIf(all_resources_, can_delete_resource_fn);
@@ -1033,8 +1056,10 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   plane_resources.reserve(output_plane_count);
   for (size_t i = 0; i < output_plane_count; ++i) {
     plane_resources.push_back(RecycleOrAllocateResource(
-        outplane_plane_sizes[i], output_resource_format, output_color_space,
-        video_frame->unique_id(), i));
+        outplane_plane_sizes[i],
+        i == 0 ? output_resource_format
+               : subplane_resource_format.value_or(output_resource_format),
+        output_color_space, video_frame->unique_id(), i));
     plane_resources.back()->add_ref();
   }
 
@@ -1138,8 +1163,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     return external_resources;
   }
 
-  const viz::ResourceFormat yuv_resource_format =
-      YuvResourceFormat(bits_per_channel);
+  const auto yuv_resource_format = output_resource_format;
   DCHECK(yuv_resource_format == viz::LUMINANCE_F16 ||
          yuv_resource_format == viz::R16_EXT ||
          yuv_resource_format == viz::LUMINANCE_8 ||
@@ -1167,10 +1191,9 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
     const viz::ResourceFormat plane_resource_format =
         plane_resource->resource_format();
-    DCHECK_EQ(plane_resource_format, yuv_resource_format);
-
-    // TODO(hubbe): Move upload code to media/.
-    // TODO(reveman): Can use GpuMemoryBuffers here to improve performance.
+    DCHECK(plane_resource_format == yuv_resource_format ||
+           plane_resource_format ==
+               subplane_resource_format.value_or(yuv_resource_format));
 
     // |video_stride_bytes| is the width of the |video_frame| we are uploading
     // (including non-frame data to fill in the stride).
@@ -1290,7 +1313,9 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     HardwarePlaneResource* plane_resource = plane_resources[i]->AsHardware();
     auto transferable_resource = viz::TransferableResource::MakeGpu(
         plane_resource->mailbox(), GL_LINEAR, plane_resource->texture_target(),
-        sync_token, plane_resource->resource_size(), output_resource_format,
+        sync_token, plane_resource->resource_size(),
+        i == 0 ? output_resource_format
+               : subplane_resource_format.value_or(output_resource_format),
         plane_resource->overlay_candidate());
     transferable_resource.color_space = output_color_space;
     external_resources.resources.push_back(std::move(transferable_resource));
