@@ -1236,21 +1236,21 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunNTP) {
   histogram_tester.ExpectTotalCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", /*kRequestSent=*/1, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kRemoteResponseConvertedToMatches=*/5, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
 
-  EXPECT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(3U, provider_->matches().size());
   PrefService* prefs = client_->GetPrefs();
   EXPECT_EQ(json_response,
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
@@ -1262,10 +1262,11 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
+      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   AutocompleteInput input = OnClobberInputForSRP();
@@ -1300,22 +1301,22 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
   histogram_tester.ExpectTotalCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kRemoteResponseConvertedToMatches=*/5, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
 
-  EXPECT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(3U, provider_->matches().size());
   PrefService* prefs = client_->GetPrefs();
   EXPECT_EQ(json_response,
             omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
@@ -1328,10 +1329,11 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest},
+      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   AutocompleteInput input = OnClobberInputForWeb();
@@ -1366,22 +1368,22 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
   histogram_tester.ExpectTotalCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kRemoteResponseConvertedToMatches=*/5, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
 
-  EXPECT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(3U, provider_->matches().size());
   PrefService* prefs = client_->GetPrefs();
   EXPECT_EQ(json_response,
             omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
@@ -1529,7 +1531,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsNTP) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1562,18 +1564,18 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsNTP) {
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", /*kRequestSent=*/1, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      /*kRemoteResponseCached=*/4, 1);
 
   // Expect the same results after the response has been handled.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1607,7 +1609,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsNTP) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1640,18 +1642,18 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsNTP) {
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", /*kRequestSent=*/1, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      /*kRemoteResponseCached=*/4, 1);
 
   // Expect the same results after the response has been handled.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1666,10 +1668,11 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
+      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -1687,7 +1690,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1721,19 +1724,19 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
 
   // Expect the same results after the response has been handled.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1750,11 +1753,12 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable in-memory ZPS caching and on-clobber ZPS.
+  // Enable in-memory ZPS caching and on-clobber ZPS and prefetching on SRP.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
-                            omnibox::kClobberTriggersSRPZeroSuggest},
+                            omnibox::kClobberTriggersSRPZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{});
 
   // Set up the in-memory cache with the response from the previous run.
@@ -1772,7 +1776,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1806,19 +1810,19 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
 
   // Expect the same results after the response has been handled.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1834,10 +1838,11 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest},
+      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -1855,7 +1860,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1889,19 +1894,19 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
 
   // Expect the same results after the response has been handled.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1918,11 +1923,12 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable in-memory caching and on-clobber ZPS.
+  // Enable in-memory caching and on-clobber ZPS and prefetching on Web.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
-                            omnibox::kClobberTriggersContextualWebZeroSuggest},
+                            omnibox::kClobberTriggersContextualWebZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{});
 
   // Set up the in-memory cache with the response from the previous run.
@@ -1940,7 +1946,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -1974,19 +1980,19 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
 
   // Expect the same results after the response has been handled.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -2005,7 +2011,9 @@ TEST_F(ZeroSuggestProviderTest,
 
   // Disable in-memory ZPS caching.
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
+  features.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response(
@@ -2021,7 +2029,7 @@ TEST_F(ZeroSuggestProviderTest,
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -2047,18 +2055,18 @@ TEST_F(ZeroSuggestProviderTest,
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 5);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", /*kRequestSent=*/1, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      /*kRemoteResponseConvertedToMatches=*/5, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
@@ -2078,10 +2086,11 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
+      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -2099,7 +2108,7 @@ TEST_F(ZeroSuggestProviderTest,
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -2126,19 +2135,19 @@ TEST_F(ZeroSuggestProviderTest,
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 5);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kRemoteResponseConvertedToMatches=*/5, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
@@ -2159,10 +2168,11 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest},
+      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest,
+                            omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -2180,7 +2190,7 @@ TEST_F(ZeroSuggestProviderTest,
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -2207,19 +2217,19 @@ TEST_F(ZeroSuggestProviderTest,
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 5);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
       1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kRemoteResponseConvertedToMatches=*/5, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
@@ -2283,13 +2293,13 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     histogram_tester.ExpectTotalCount(
         "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 3);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 1 /*REQUEST_SENT*/, 1);
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", /*kRequestSent=*/1, 1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.NoURL.Prefetch",
-        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+        /*kRemoteResponseReceived=*/3, 1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.NoURL.Prefetch",
-        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+        /*kRemoteResponseCached=*/4, 1);
 
     // Expect the provider to not have notified the provider listener since the
     // matches were not updated.
@@ -2313,7 +2323,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
               provider_->GetResultTypeRunningForTesting());
 
     // Expect the results from the cached response.
-    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+    ASSERT_EQ(3U, provider_->matches().size());
     EXPECT_EQ(u"search4", provider_->matches()[0].contents);
     EXPECT_EQ(u"search5", provider_->matches()[1].contents);
     EXPECT_EQ(u"search6", provider_->matches()[2].contents);
@@ -2342,22 +2352,22 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
         "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 4);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-        0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+        /*kCachedResponseConvertedToMatches=*/0, 1);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
-    histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", /*kRequestSent=*/1, 1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+        /*kRemoteResponseReceived=*/3, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+        /*kRemoteResponseCached=*/4, 1);
 
     // Expect the provider to not have notified the provider listener since the
     // matches were not updated.
     EXPECT_FALSE(provider_did_notify_);
 
     // Expect the same results after the response has been handled.
-    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+    ASSERT_EQ(3U, provider_->matches().size());
     EXPECT_EQ(u"search4", provider_->matches()[0].contents);
     EXPECT_EQ(u"search5", provider_->matches()[1].contents);
     EXPECT_EQ(u"search6", provider_->matches()[2].contents);
@@ -2373,13 +2383,19 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and disable in-memory caching and prefetching on SRP.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
-      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
+      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
+                             omnibox::kZeroSuggestPrefetchingOnSRP});
 
   PrefService* prefs = client_->GetPrefs();
+
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
 
   {
     base::HistogramTester histogram_tester;
@@ -2387,10 +2403,6 @@ TEST_F(ZeroSuggestProviderTest,
     // Start a prefetch request.
     AutocompleteInput input = PrefetchingInputForSRP();
     // Set up the pref to cache the response from the previous run.
-    std::string json_response(
-        R"(["",["search1", "search2", "search3"],)"
-        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
-        R"("google:verbatimrelevance":1300}])");
     omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
         prefs, input.current_url().spec(), json_response);
     provider_->StartPrefetch(input);
@@ -2419,17 +2431,14 @@ TEST_F(ZeroSuggestProviderTest,
     histogram_tester.ExpectTotalCount(
         "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
     histogram_tester.ExpectTotalCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 3);
-    histogram_tester.ExpectTotalCount(
         "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 2);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 1 /*REQUEST_SENT*/, 1);
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", /*kRequestSent=*/1, 1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.URLBased.Prefetch",
-        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
-    histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch",
-        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+        /*kRemoteResponseReceived=*/3, 1);
 
     // Expect the provider to not have notified the provider listener since the
     // matches were not updated.
@@ -2438,8 +2447,8 @@ TEST_F(ZeroSuggestProviderTest,
     // Expect the same empty results after the response has been handled.
     ASSERT_EQ(0U, provider_->matches().size());
 
-    // Expect the new response to have been stored in the pref.
-    EXPECT_EQ(json_response2,
+    // Expect the response to not have been stored in the prefs.
+    EXPECT_EQ(json_response,
               omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
                   prefs, input.current_url().spec()));
   }
@@ -2453,11 +2462,8 @@ TEST_F(ZeroSuggestProviderTest,
     ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
               provider_->GetResultTypeRunningForTesting());
 
-    // Expect the results from the cached response.
-    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(u"search4", provider_->matches()[0].contents);
-    EXPECT_EQ(u"search5", provider_->matches()[1].contents);
-    EXPECT_EQ(u"search6", provider_->matches()[2].contents);
+    // Expect the results to be empty.
+    ASSERT_EQ(0U, provider_->matches().size());
 
     GURL suggest_url =
         GetSuggestURL(metrics::OmniboxEventProto::
@@ -2482,32 +2488,28 @@ TEST_F(ZeroSuggestProviderTest,
     histogram_tester.ExpectTotalCount(
         "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
     histogram_tester.ExpectTotalCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 3);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-        0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
-    histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
         1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+        /*kRemoteResponseReceived=*/3, 1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+        /*kRemoteResponseConvertedToMatches=*/5, 1);
 
-    // Expect the provider to not have notified the provider listener since the
-    // matches were not updated.
-    EXPECT_FALSE(provider_did_notify_);
+    // Expect the provider to have notified the provider listener.
+    EXPECT_TRUE(provider_did_notify_);
 
-    // Expect the same results after the response has been handled.
-    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(u"search4", provider_->matches()[0].contents);
-    EXPECT_EQ(u"search5", provider_->matches()[1].contents);
-    EXPECT_EQ(u"search6", provider_->matches()[2].contents);
+    // Expect the results after the response has been handled.
+    ASSERT_EQ(3U, provider_->matches().size());
+    EXPECT_EQ(u"search7", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search8", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search9", provider_->matches()[2].contents);
 
-    // Expect the new response to have been stored in the pref.
-    EXPECT_EQ(json_response3,
+    // Expect the response to not have been stored in the prefs.
+    EXPECT_EQ(json_response,
               omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
                   prefs, input.current_url().spec()));
   }
@@ -2518,13 +2520,19 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Enable on-clobber ZPS and disable in-memory caching and prefetching on Web.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest},
-      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
+      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
+                             omnibox::kZeroSuggestPrefetchingOnWeb});
 
   PrefService* prefs = client_->GetPrefs();
+
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
 
   {
     base::HistogramTester histogram_tester;
@@ -2532,10 +2540,6 @@ TEST_F(ZeroSuggestProviderTest,
     // Start a prefetch request.
     AutocompleteInput input = PrefetchingInputForWeb();
     // Set up the pref to cache the response from the previous run.
-    std::string json_response(
-        R"(["",["search1", "search2", "search3"],)"
-        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
-        R"("google:verbatimrelevance":1300}])");
     omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
         prefs, input.current_url().spec(), json_response);
     provider_->StartPrefetch(input);
@@ -2564,17 +2568,14 @@ TEST_F(ZeroSuggestProviderTest,
     histogram_tester.ExpectTotalCount(
         "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
     histogram_tester.ExpectTotalCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 3);
-    histogram_tester.ExpectTotalCount(
         "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 2);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 1 /*REQUEST_SENT*/, 1);
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", /*kRequestSent=*/1, 1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.URLBased.Prefetch",
-        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
-    histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch",
-        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+        /*kRemoteResponseReceived=*/3, 1);
 
     // Expect the provider to not have notified the provider listener since the
     // matches were not updated.
@@ -2583,8 +2584,8 @@ TEST_F(ZeroSuggestProviderTest,
     // Expect the same empty results after the response has been handled.
     ASSERT_EQ(0U, provider_->matches().size());
 
-    // Expect the new response to have been stored in the pref.
-    EXPECT_EQ(json_response2,
+    // Expect the response to not have been stored in the prefs.
+    EXPECT_EQ(json_response,
               omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
                   prefs, input.current_url().spec()));
   }
@@ -2598,11 +2599,8 @@ TEST_F(ZeroSuggestProviderTest,
     ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
               provider_->GetResultTypeRunningForTesting());
 
-    // Expect the results from the cached response.
-    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(u"search4", provider_->matches()[0].contents);
-    EXPECT_EQ(u"search5", provider_->matches()[1].contents);
-    EXPECT_EQ(u"search6", provider_->matches()[2].contents);
+    // Expect the results to be empty.
+    ASSERT_EQ(0U, provider_->matches().size());
 
     GURL suggest_url =
         GetSuggestURL(metrics::OmniboxEventProto::OTHER,
@@ -2626,32 +2624,28 @@ TEST_F(ZeroSuggestProviderTest,
     histogram_tester.ExpectTotalCount(
         "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
     histogram_tester.ExpectTotalCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 3);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-        0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
-    histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", /*kRequestSent=*/1,
         1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+        /*kRemoteResponseReceived=*/3, 1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
-        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+        /*kRemoteResponseConvertedToMatches=*/5, 1);
 
-    // Expect the provider to not have notified the provider listener since the
-    // matches were not updated.
-    EXPECT_FALSE(provider_did_notify_);
+    // Expect the provider to have notified the provider listener.
+    EXPECT_TRUE(provider_did_notify_);
 
-    // Expect the same results after the response has been handled.
-    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(u"search4", provider_->matches()[0].contents);
-    EXPECT_EQ(u"search5", provider_->matches()[1].contents);
-    EXPECT_EQ(u"search6", provider_->matches()[2].contents);
+    // Expect the results after the response has been handled.
+    ASSERT_EQ(3U, provider_->matches().size());
+    EXPECT_EQ(u"search7", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search8", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search9", provider_->matches()[2].contents);
 
-    // Expect the new response to have been stored in the pref.
-    EXPECT_EQ(json_response3,
+    // Expect the response to not have been stored in the prefs.
+    EXPECT_EQ(json_response,
               omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
                   prefs, input.current_url().spec()));
   }
@@ -2687,9 +2681,10 @@ TEST_F(ZeroSuggestProviderTest, TestNoURLResultTypeWithNonEmptyURLInput) {
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
             provider_->GetResultTypeRunningForTesting());
 
-  // Since ZeroSuggestProvider will coerce the input to have an empty page
-  // URL, the matches should get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  // Despite the input having a non-empty URL, since the provider enforces an
+  // empty string as the key for the cached response on NTP, the matches get
+  // populated synchronously out of the cache.
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -2715,18 +2710,18 @@ TEST_F(ZeroSuggestProviderTest, TestNoURLResultTypeWithNonEmptyURLInput) {
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 5);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kCachedResponseConvertedToMatches=*/0, 1);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", /*kRequestSent=*/1, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+      /*kRemoteResponseReceived=*/3, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
-      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+      /*kRemoteResponseCached=*/4, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      /*kRemoteResponseConvertedToMatches=*/5, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
@@ -2746,7 +2741,9 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsPrefsBasedCache) {
 
   // Disable in-memory ZPS caching.
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
+  features.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response(
@@ -2772,7 +2769,7 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsPrefsBasedCache) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
@@ -2819,7 +2816,7 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsInMemoryCache) {
             provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  ASSERT_EQ(3U, provider_->matches().size());
   EXPECT_EQ(u"search1", provider_->matches()[0].contents);
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
