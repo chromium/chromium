@@ -262,7 +262,9 @@ class SyncEngineImplTest : public testing::Test {
 
   // Synchronously configures the backend's datatypes.
   ModelTypeSet ConfigureDataTypes() {
-    return ConfigureDataTypesWithUnready(ModelTypeSet());
+    ModelTypeSet ready_types = ConfigureDataTypesWithUnready(ModelTypeSet());
+    backend_->StartHandlingInvalidations();
+    return ready_types;
   }
 
   ModelTypeSet ConfigureDataTypesWithUnready(ModelTypeSet unready_types) {
@@ -679,6 +681,8 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldInvalidateDataTypesOnIncomingInvalidation) {
   enabled_types_.PutAll({syncer::BOOKMARKS, syncer::PREFERENCES});
 
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillRepeatedly(Return(enabled_types_));
   InitializeBackend(/*expect_success=*/true);
   ConfigureDataTypes();
 
@@ -692,8 +696,6 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   preferences_invalidation->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(ModelType::PREFERENCES));
 
-  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
-      .WillOnce(Return(enabled_types_));
   backend_->OnInvalidationReceived(payload.SerializeAsString());
 
   fake_manager_->WaitForSyncThread();
@@ -706,6 +708,8 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   enabled_types_.Remove(syncer::BOOKMARKS);
   enabled_types_.Put(syncer::PREFERENCES);
 
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillRepeatedly(Return(enabled_types_));
   InitializeBackend(/*expect_success=*/true);
   ConfigureDataTypes();
 
@@ -719,8 +723,6 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   preferences_invalidation->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(ModelType::PREFERENCES));
 
-  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
-      .WillOnce(Return(enabled_types_));
   backend_->OnInvalidationReceived(payload.SerializeAsString());
 
   fake_manager_->WaitForSyncThread();
@@ -733,7 +735,8 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
       .WillByDefault(Return(enabled_types_));
   EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
-  backend_->StartHandlingInvalidations();
+  InitializeBackend(/*expect_success=*/true);
+  ConfigureDataTypes();
 }
 
 TEST_F(SyncEngineImplWithSyncInvalidationsTest,
