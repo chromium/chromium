@@ -1472,45 +1472,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabManager.TimeSinceGroupClosedUntilRestored" units="ms"
-    expires_after="2022-01-10">
-  <owner>connily@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    Duration between restoring a whole group (multiple tabs) when &quot;Reopen
-    Closed Group&quot; button was clicked or any of Ctrl+Shift+T (on
-    Linux/Windows/Chrome OS) and Command+Shift+T (on Mac) were pressed and the
-    closing of the same group. Recorded when the user manually restores a group.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.TimeSinceTabClosedUntilRestored" units="ms"
-    expires_after="2022-01-16">
-  <owner>aebacanu@chromium.org</owner>
-  <owner>carlscab@chromium.org</owner>
-  <owner>sreejakshetty@chromium.org</owner>
-  <summary>
-    Duration between restoring a tab when &quot;Reopen Closed Tab&quot; button
-    was clicked or any of Ctrl+Shift+T (on Linux/Windows/Chrome OS) and
-    Command+Shift+T (on Mac) were pressed and the closing of the same tab.
-    Recorded when the user manually restores a tab.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.TimeSinceWindowClosedUntilRestored" units="ms"
-    expires_after="2021-07-13">
-  <owner>aebacanu@chromium.org</owner>
-  <owner>carlscab@chromium.org</owner>
-  <owner>sreejakshetty@chromium.org</owner>
-  <summary>
-    Duration between restoring a whole window (multiple tabs) when &quot;Reopen
-    Closed Window&quot; button was clicked or any of Ctrl+Shift+T (on
-    Linux/Windows/Chrome OS) and Command+Shift+T (on Mac) were pressed and the
-    closing of the same window. Recorded when the user manually restores a
-    window.
-  </summary>
-</histogram>
-
 <histogram name="TabRestore.error_move_session_at_path_to_backup"
     enum="FoundationFileSystemError" expires_after="M77">
   <owner>sky@chromium.org</owner>

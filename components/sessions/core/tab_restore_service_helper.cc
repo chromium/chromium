@@ -406,34 +406,6 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreMostRecentEntry(
     LiveTabContext* context) {
   if (entries_.empty())
     return std::vector<LiveTab*>();
-  auto& entry = *entries_.front();
-  switch (entry.type) {
-    case TabRestoreService::TAB: {
-      auto& tab = static_cast<const Tab&>(entry);
-      if (tab.timestamp != base::Time() &&
-          !tab.timestamp.ToDeltaSinceWindowsEpoch().is_zero())
-        UMA_HISTOGRAM_LONG_TIMES("TabManager.TimeSinceTabClosedUntilRestored",
-                                 TimeNow() - tab.timestamp);
-      break;
-    }
-    case TabRestoreService::WINDOW: {
-      auto& window = static_cast<Window&>(entry);
-      if (window.timestamp != base::Time() &&
-          !window.timestamp.ToDeltaSinceWindowsEpoch().is_zero())
-        UMA_HISTOGRAM_LONG_TIMES(
-            "TabManager.TimeSinceWindowClosedUntilRestored",
-            TimeNow() - window.timestamp);
-      break;
-    }
-    case TabRestoreService::GROUP: {
-      auto& group = static_cast<Group&>(entry);
-      if (group.timestamp != base::Time() &&
-          !group.timestamp.ToDeltaSinceWindowsEpoch().is_zero())
-        UMA_HISTOGRAM_LONG_TIMES("TabManager.TimeSinceGroupClosedUntilRestored",
-                                 TimeNow() - group.timestamp);
-      break;
-    }
-  }
   return RestoreEntryById(context, entries_.front()->id,
                           WindowOpenDisposition::UNKNOWN);
 }
