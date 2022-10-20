@@ -20,6 +20,10 @@ class KeyEvent;
 }  // namespace ui
 
 namespace ash {
+namespace ime {
+struct AssistiveWindow;
+}  // namespace ime
+
 namespace input_method {
 
 class MockInputMethodEngine : public ui::TextInputMethod {
@@ -45,6 +49,7 @@ class MockInputMethodEngine : public ui::TextInputMethod {
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;
+  void AssistiveWindowChanged(const ash::ime::AssistiveWindow& window) override;
   void SetMirroringEnabled(bool mirroring_enabled) override;
   void SetCastingEnabled(bool casting_enabled) override;
   bool IsReadyForTesting() override;

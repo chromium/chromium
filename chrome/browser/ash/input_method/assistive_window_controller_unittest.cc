@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -39,6 +40,8 @@ class MockDelegate : public AssistiveWindowControllerDelegate {
   ~MockDelegate() override = default;
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override {}
+  void AssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) const override {}
 };
 
 class TestAccessibilityView : public ui::ime::AssistiveAccessibilityView {
@@ -94,13 +97,13 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   }
 
   void InitEmojiSuggestionWindow() {
-    emoji_window_.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
+    emoji_window_.type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
     emoji_window_.visible = true;
     emoji_window_.candidates = Candidates();
   }
 
   void InitEmojiButton() {
-    emoji_button_.window_type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
+    emoji_button_.window_type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
     emoji_button_.announce_string = kAnnounceString;
   }
 
@@ -256,7 +259,7 @@ TEST_F(AssistiveWindowControllerTest,
 
   // Create new suggestion window.
   AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
+  properties.type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
   controller_->SetAssistiveWindowProperties(properties);
@@ -280,7 +283,7 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
   controller_->SetBounds(bounds);
 
   AssistiveWindowProperties window;
-  window.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  window.type = ash::ime::AssistiveWindowType::kUndoWindow;
   window.visible = true;
   controller_->SetAssistiveWindowProperties(window);
 
@@ -293,7 +296,7 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
 TEST_F(AssistiveWindowControllerTest, SetsEmojiWindowOrientationVertical) {
   // Create new suggestion window.
   AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
+  properties.type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
   controller_->SetAssistiveWindowProperties(properties);
@@ -312,7 +315,7 @@ TEST_F(AssistiveWindowControllerTest,
        SetsPersonalInfoWindowOrientationVertical) {
   // Create new suggestion window.
   AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kPersonalInfoSuggestion;
+  properties.type = ash::ime::AssistiveWindowType::kPersonalInfoSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
   controller_->SetAssistiveWindowProperties(properties);
@@ -330,7 +333,7 @@ TEST_F(AssistiveWindowControllerTest,
 TEST_F(AssistiveWindowControllerTest, SetsMultiWordWindowOrientationVertical) {
   // Create new suggestion window.
   AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+  properties.type = ash::ime::AssistiveWindowType::kMultiWordSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
   controller_->SetAssistiveWindowProperties(properties);
@@ -350,7 +353,7 @@ TEST_F(AssistiveWindowControllerTest,
   // Create new suggestion window.
   AssistiveWindowProperties properties;
   properties.type =
-      ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
   controller_->SetAssistiveWindowProperties(properties);
@@ -369,7 +372,7 @@ TEST_F(AssistiveWindowControllerTest,
        SetsWindowOrientationHorizontalWhenVerticalWindowAlreadyInitialised) {
   AssistiveWindowProperties init_vertical_properties;
   init_vertical_properties.type =
-      ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+      ash::ime::AssistiveWindowType::kMultiWordSuggestion;
   init_vertical_properties.visible = true;
   init_vertical_properties.candidates =
       std::vector<std::u16string>({u"vertical"});
@@ -377,7 +380,7 @@ TEST_F(AssistiveWindowControllerTest,
 
   AssistiveWindowProperties horizontal_properties;
   horizontal_properties.type =
-      ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
   horizontal_properties.visible = true;
   horizontal_properties.candidates =
       std::vector<std::u16string>({u"candidate"});
@@ -397,14 +400,15 @@ TEST_F(AssistiveWindowControllerTest,
        SetsWindowOrientationVerticalWhenHorizontalWindowAlreadyInitialised) {
   AssistiveWindowProperties init_horizontal_properties;
   init_horizontal_properties.type =
-      ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
   init_horizontal_properties.visible = true;
   init_horizontal_properties.candidates =
       std::vector<std::u16string>({u"horizontal"});
   controller_->SetAssistiveWindowProperties(init_horizontal_properties);
 
   AssistiveWindowProperties vertical_properties;
-  vertical_properties.type = ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+  vertical_properties.type =
+      ash::ime::AssistiveWindowType::kMultiWordSuggestion;
   vertical_properties.visible = true;
   vertical_properties.candidates = std::vector<std::u16string>({u"candidate"});
   controller_->SetAssistiveWindowProperties(vertical_properties);
@@ -453,10 +457,10 @@ TEST_F(AssistiveWindowControllerTest,
   profile_->GetPrefs()->SetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
   AssistiveWindowProperties window;
-  window.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  window.type = ash::ime::AssistiveWindowType::kUndoWindow;
   window.visible = true;
   ui::ime::AssistiveWindowButton button;
-  button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
+  button.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
   button.announce_string = kAnnounceString;
 
   controller_->SetAssistiveWindowProperties(window);

@@ -102,15 +102,15 @@ EmojiSuggester::EmojiSuggester(SuggestionHandlerInterface* suggestion_handler,
       highlighted_index_(kNoneHighlighted) {
   LoadEmojiMap();
 
-  properties_.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
+  properties_.type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =
-      ui::ime::AssistiveWindowType::kEmojiSuggestion;
+      ash::ime::AssistiveWindowType::kEmojiSuggestion;
   learn_more_button_.id = ui::ime::ButtonId::kLearnMore;
   learn_more_button_.announce_string =
       l10n_util::GetStringUTF16(IDS_LEARN_MORE);
   learn_more_button_.window_type =
-      ui::ime::AssistiveWindowType::kEmojiSuggestion;
+      ash::ime::AssistiveWindowType::kEmojiSuggestion;
 }
 
 EmojiSuggester::~EmojiSuggester() = default;

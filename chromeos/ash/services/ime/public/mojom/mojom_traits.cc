@@ -9,6 +9,10 @@
 namespace mojo {
 namespace {
 
+using AssistiveWindow = ash::ime::AssistiveWindow;
+using AssistiveWindowDataView = ash::ime::mojom::AssistiveWindowDataView;
+using AssistiveWindowType = ash::ime::AssistiveWindowType;
+using AssistiveWindowTypeMojo = ash::ime::mojom::AssistiveWindowType;
 using CompletionCandidateDataView =
     ash::ime::mojom::CompletionCandidateDataView;
 using SuggestionMode = ash::ime::mojom::SuggestionMode;
@@ -60,6 +64,10 @@ SuggestionType EnumTraits<SuggestionType, TextSuggestionType>::ToMojom(
       return SuggestionType::kAssistiveEmoji;
     case TextSuggestionType::kMultiWord:
       return SuggestionType::kMultiWord;
+    case TextSuggestionType::kGrammar:
+      return SuggestionType::kGrammar;
+    case TextSuggestionType::kLongpressDiacritic:
+      return SuggestionType::kLongpressDiacritic;
   }
 }
 
@@ -82,6 +90,12 @@ bool EnumTraits<SuggestionType, TextSuggestionType>::FromMojom(
     case SuggestionType::kMultiWord:
       *output = TextSuggestionType::kMultiWord;
       return true;
+    case SuggestionType::kGrammar:
+      *output = TextSuggestionType::kGrammar;
+      return true;
+    case SuggestionType::kLongpressDiacritic:
+      *output = TextSuggestionType::kLongpressDiacritic;
+      return true;
   }
 }
 
@@ -94,6 +108,7 @@ bool StructTraits<SuggestionCandidateDataView, TextSuggestion>::Read(
     return false;
   if (!input.ReadText(&output->text))
     return false;
+  output->confirmed_length = input.confirmed_length();
   return true;
 }
 
@@ -103,6 +118,66 @@ bool StructTraits<CompletionCandidateDataView, TextCompletionCandidate>::Read(
   if (!input.ReadText(&output->text))
     return false;
   output->score = input.normalized_score();
+  return true;
+}
+
+AssistiveWindowTypeMojo
+EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::ToMojom(
+    AssistiveWindowType type) {
+  switch (type) {
+    case AssistiveWindowType::kUndoWindow:
+      return AssistiveWindowTypeMojo::kUndo;
+    case AssistiveWindowType::kEmojiSuggestion:
+      return AssistiveWindowTypeMojo::kEmojiSuggestion;
+    case AssistiveWindowType::kPersonalInfoSuggestion:
+      return AssistiveWindowTypeMojo::kPersonalInfoSuggestion;
+    case AssistiveWindowType::kGrammarSuggestion:
+      return AssistiveWindowTypeMojo::kGrammarSuggestion;
+    case AssistiveWindowType::kMultiWordSuggestion:
+      return AssistiveWindowTypeMojo::kMultiWordSuggestion;
+    case AssistiveWindowType::kLongpressDiacriticsSuggestion:
+      return AssistiveWindowTypeMojo::kLongpressDiacriticsSuggestion;
+    case AssistiveWindowType::kNone:
+    default:
+      return AssistiveWindowTypeMojo::kHidden;
+  }
+}
+
+bool EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::FromMojom(
+    AssistiveWindowTypeMojo input,
+    AssistiveWindowType* output) {
+  switch (input) {
+    case AssistiveWindowTypeMojo::kHidden:
+      *output = AssistiveWindowType::kNone;
+      return true;
+    case AssistiveWindowTypeMojo::kUndo:
+      *output = AssistiveWindowType::kUndoWindow;
+      return true;
+    case AssistiveWindowTypeMojo::kEmojiSuggestion:
+      *output = AssistiveWindowType::kEmojiSuggestion;
+      return true;
+    case AssistiveWindowTypeMojo::kPersonalInfoSuggestion:
+      *output = AssistiveWindowType::kPersonalInfoSuggestion;
+      return true;
+    case AssistiveWindowTypeMojo::kGrammarSuggestion:
+      *output = AssistiveWindowType::kGrammarSuggestion;
+      return true;
+    case AssistiveWindowTypeMojo::kMultiWordSuggestion:
+      *output = AssistiveWindowType::kMultiWordSuggestion;
+      return true;
+    case AssistiveWindowTypeMojo::kLongpressDiacriticsSuggestion:
+      *output = AssistiveWindowType::kLongpressDiacriticsSuggestion;
+      return true;
+  }
+}
+
+bool StructTraits<AssistiveWindowDataView, AssistiveWindow>::Read(
+    AssistiveWindowDataView input,
+    AssistiveWindow* output) {
+  if (!input.ReadType(&output->type))
+    return false;
+  if (!input.ReadCandidates(&output->candidates))
+    return false;
   return true;
 }
 

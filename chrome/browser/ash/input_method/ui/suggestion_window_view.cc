@@ -108,7 +108,7 @@ void SuggestionWindowView::ShowMultipleCandidates(
   Reorient(orientation);
   ResizeCandidateArea(
       candidates,
-      properties.type == ui::ime::AssistiveWindowType::kEmojiSuggestion);
+      properties.type == ash::ime::AssistiveWindowType::kEmojiSuggestion);
   learn_more_button_->SetVisible(properties.show_setting_link);
 
   MakeVisible();
@@ -213,7 +213,8 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
           base::Unretained(delegate_),
           AssistiveWindowButton{
               .id = ui::ime::ButtonId::kLearnMore,
-              .window_type = ui::ime::AssistiveWindowType::kEmojiSuggestion})));
+              .window_type =
+                  ash::ime::AssistiveWindowType::kEmojiSuggestion})));
   learn_more_button_->SetImageHorizontalAlignment(
       views::ImageButton::ALIGN_CENTER);
   learn_more_button_->SetImageVerticalAlignment(

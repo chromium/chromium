@@ -37,7 +37,7 @@ AssistiveWindowButton CreateButtonFor(size_t index,
   AssistiveWindowButton button = {
       .id = ui::ime::ButtonId::kSuggestion,
       .window_type =
-          ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
+          ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
       .index = index,
       .announce_string = announce_string,
   };
@@ -82,7 +82,7 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
       it != kDefaultDiacriticsMap.end()) {
     AssistiveWindowProperties properties;
     properties.type =
-        ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+        ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
     properties.visible = true;
     properties.candidates = SplitDiacritics(it->second);
     properties.announce_string =
@@ -238,7 +238,7 @@ void LongpressDiacriticsSuggester::DismissSuggestion() {
   std::string error;
   AssistiveWindowProperties properties;
   properties.type =
-      ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
   properties.visible = false;
   properties.announce_string =
       l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_DISMISSED);

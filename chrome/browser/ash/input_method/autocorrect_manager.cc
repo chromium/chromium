@@ -607,7 +607,7 @@ void AutocorrectManager::ShowUndoWindow(
   const std::u16string autocorrected_text =
       text.substr(range.start(), range.length());
   AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  properties.type = ash::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = true;
   properties.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
@@ -649,7 +649,7 @@ void AutocorrectManager::HideUndoWindow() {
 
   std::string error;
   AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  properties.type = ash::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = false;
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                     &error);
@@ -683,7 +683,7 @@ void AutocorrectManager::HighlightUndoButton() {
   std::string error;
   ui::ime::AssistiveWindowButton button = ui::ime::AssistiveWindowButton();
   button.id = ui::ime::ButtonId::kUndo;
-  button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
+  button.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
   button.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
       pending_autocorrect_->original_text);

@@ -10,7 +10,10 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 assert(is_chromeos_ash)
 
 source_set("structs") {
-  sources = [ "suggestions.h" ]
+  sources = [
+    "suggestions.cc",
+    "suggestions.h",
+  ]
 }
 
 source_set("rulebased") {

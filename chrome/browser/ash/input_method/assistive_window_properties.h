@@ -21,7 +21,7 @@ struct AssistiveWindowProperties {
 
   bool operator==(const AssistiveWindowProperties& other) const;
 
-  ui::ime::AssistiveWindowType type = ui::ime::AssistiveWindowType::kNone;
+  ash::ime::AssistiveWindowType type = ash::ime::AssistiveWindowType::kNone;
   bool visible = false;
   std::u16string announce_string;
   std::vector<std::u16string> candidates;

@@ -45,6 +45,14 @@ mojom("mojom") {
           mojom = "ash.ime.mojom.TextRange"
           cpp = "::gfx::Range"
         },
+        {
+          mojom = "ash.ime.mojom.AssistiveWindow"
+          cpp = "::ash::ime::AssistiveWindow"
+        },
+        {
+          mojom = "ash.ime.mojom.AssistiveWindowType"
+          cpp = "::ash::ime::AssistiveWindowType"
+        },
       ]
 
       traits_headers = [ "mojom_traits.h" ]

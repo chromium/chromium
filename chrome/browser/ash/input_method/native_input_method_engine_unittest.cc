@@ -111,6 +111,10 @@ class MockInputMethod : public ime::mojom::InputMethod {
               (ime::mojom::InputMethodQuickSettingsPtr quick_settings),
               (override));
   MOCK_METHOD(void,
+              OnAssistiveWindowChanged,
+              (const ash::ime::AssistiveWindow& window),
+              (override));
+  MOCK_METHOD(void,
               IsReadyForTesting,
               (IsReadyForTestingCallback callback),
               (override));

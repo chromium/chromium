@@ -1260,6 +1260,13 @@ void InputMethodManagerImpl::AssistiveWindowButtonClicked(
     engine->AssistiveWindowButtonClicked(button);
 }
 
+void InputMethodManagerImpl::AssistiveWindowChanged(
+    const ash::ime::AssistiveWindow& window) const {
+  ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  if (engine)
+    engine->AssistiveWindowChanged(window);
+}
+
 void InputMethodManagerImpl::ImeMenuActivationChanged(bool is_active) {
   // Saves the state that whether the expanded IME menu has been activated by
   // users. This method is only called when the preference is changing.

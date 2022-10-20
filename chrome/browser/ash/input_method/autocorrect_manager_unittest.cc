@@ -214,7 +214,7 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
 // A helper to create properties for hidden undo window.
 AssistiveWindowProperties CreateHiddenUndoWindowProperties() {
   AssistiveWindowProperties window_properties;
-  window_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  window_properties.type = ash::ime::AssistiveWindowType::kUndoWindow;
   window_properties.visible = false;
   return window_properties;
 }
@@ -224,7 +224,7 @@ AssistiveWindowProperties CreateVisibleUndoWindowProperties(
     const std::u16string& original_text,
     const std::u16string& autocorrected_text) {
   AssistiveWindowProperties window_properties;
-  window_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  window_properties.type = ash::ime::AssistiveWindowType::kUndoWindow;
   window_properties.visible = true;
   window_properties.announce_string =
       l10n_util::GetStringFUTF16(IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
@@ -237,7 +237,7 @@ ui::ime::AssistiveWindowButton CreateHighlightedUndoButton(
     const std::u16string& original_text) {
   ui::ime::AssistiveWindowButton button = ui::ime::AssistiveWindowButton();
   button.id = ui::ime::ButtonId::kUndo;
-  button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
+  button.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
   button.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text);
   return button;

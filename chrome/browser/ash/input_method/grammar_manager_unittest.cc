@@ -287,7 +287,7 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
   AssistiveWindowProperties expected_properties;
-  expected_properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
+  expected_properties.type = ash::ime::AssistiveWindowType::kGrammarSuggestion;
   expected_properties.candidates = {u"correct"};
   expected_properties.visible = true;
   expected_properties.announce_string = kShowGrammarSuggestionMessage;
@@ -347,7 +347,7 @@ TEST_F(GrammarManagerTest, DismissesSuggestionWhenSelectingARange) {
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
   AssistiveWindowProperties expected_properties;
-  expected_properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
+  expected_properties.type = ash::ime::AssistiveWindowType::kGrammarSuggestion;
   expected_properties.candidates = {u"correct"};
   expected_properties.visible = true;
   expected_properties.announce_string = kShowGrammarSuggestionMessage;
@@ -384,7 +384,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithTab) {
 
   ui::ime::AssistiveWindowButton suggestion_button{
       .id = ui::ime::ButtonId::kSuggestion,
-      .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+      .window_type = ash::ime::AssistiveWindowType::kGrammarSuggestion,
       .announce_string = kSuggestionButtonMessage,
   };
   EXPECT_CALL(mock_suggestion_handler,
@@ -429,7 +429,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithUpArrow) {
 
   ui::ime::AssistiveWindowButton suggestion_button{
       .id = ui::ime::ButtonId::kSuggestion,
-      .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+      .window_type = ash::ime::AssistiveWindowType::kGrammarSuggestion,
       .announce_string = kSuggestionButtonMessage,
   };
   EXPECT_CALL(mock_suggestion_handler,
@@ -475,12 +475,12 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
 
   ui::ime::AssistiveWindowButton suggestion_button{
       .id = ui::ime::ButtonId::kSuggestion,
-      .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+      .window_type = ash::ime::AssistiveWindowType::kGrammarSuggestion,
       .announce_string = kSuggestionButtonMessage,
   };
   ui::ime::AssistiveWindowButton ignore_button{
       .id = ui::ime::ButtonId::kIgnoreSuggestion,
-      .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+      .window_type = ash::ime::AssistiveWindowType::kGrammarSuggestion,
       .announce_string = kIgnoreButtonMessage,
   };
 

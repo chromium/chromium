@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/input_method/ui/grammar_suggestion_window.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_window_view.h"
 #include "chrome/browser/ash/input_method/ui/undo_window.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -67,10 +68,12 @@ class AssistiveWindowController : public views::WidgetObserver,
   // ui::ime::AssistiveDelegate implementation.
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override;
+  void AssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) const override;
 
  private:
   ui::ime::SuggestionWindowView::Orientation WindowOrientationFor(
-      ui::ime::AssistiveWindowType window_type);
+      ash::ime::AssistiveWindowType window_type);
   void InitSuggestionWindow(
       ui::ime::SuggestionWindowView::Orientation orientation);
   void InitUndoWindow();

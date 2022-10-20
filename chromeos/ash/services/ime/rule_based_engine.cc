@@ -160,6 +160,12 @@ void RuleBasedEngine::OnCandidateSelected(uint32_t selected_candidate_index) {
   NOTREACHED();
 }
 
+void RuleBasedEngine::OnAssistiveWindowChanged(
+    const ash::ime::AssistiveWindow& window) {
+  // Rule-based engines don't use the assistive window.
+  NOTREACHED();
+}
+
 void RuleBasedEngine::OnQuickSettingsUpdated(
     mojom::InputMethodQuickSettingsPtr quick_settings) {
   // Rule-based engines don't use quick settings.

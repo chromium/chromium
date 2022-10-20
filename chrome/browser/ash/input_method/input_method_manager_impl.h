@@ -35,6 +35,10 @@ class TextInputMethod;
 }  // namespace ui
 
 namespace ash {
+namespace ime {
+struct AssistiveWindow;
+}  // namespace ime
+
 namespace input_method {
 
 // The implementation of InputMethodManager.
@@ -244,6 +248,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   // AssistiveWindowControllerDelegate overrides:
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override;
+  void AssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) const override;
 
   // Creates and initializes |candidate_window_controller_| if it hasn't been
   // done.

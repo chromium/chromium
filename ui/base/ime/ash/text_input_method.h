@@ -23,6 +23,12 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
+namespace ash {
+namespace ime {
+struct AssistiveWindow;
+}  // namespace ime
+}  // namespace ash
+
 namespace ui {
 
 class VirtualKeyboardController;
@@ -138,6 +144,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
   // Called when assistive window is clicked.
   virtual void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) {}
+
+  // Called when an input's assistive window state is updated.
+  virtual void AssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) = 0;
 
   // Sets the mirroring/casting enable states.
   virtual void SetMirroringEnabled(bool mirroring_enabled) = 0;

@@ -156,7 +156,7 @@ MultiWordSuggester::MultiWordSuggester(
     : suggestion_handler_(suggestion_handler), state_(this), profile_(profile) {
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =
-      ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+      ash::ime::AssistiveWindowType::kMultiWordSuggestion;
   suggestion_button_.index = 0;
 }
 

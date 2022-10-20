@@ -63,6 +63,10 @@ struct MockInputMethod : public mojom::InputMethod {
               (mojom::InputMethodQuickSettingsPtr quick_settings),
               (override));
   MOCK_METHOD(void,
+              OnAssistiveWindowChanged,
+              (const ash::ime::AssistiveWindow& window),
+              (override));
+  MOCK_METHOD(void,
               IsReadyForTesting,
               (IsReadyForTestingCallback callback),
               (override));

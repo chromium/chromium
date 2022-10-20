@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(
   base::UserActionTester user_action_tester;
   ui::ime::AssistiveWindowButton button;
   button.id = ui::ime::ButtonId::kLearnMore;
-  button.window_type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
+  button.window_type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
 
   engine_->AssistiveWindowButtonClicked(button);
 

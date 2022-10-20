@@ -80,6 +80,8 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
                           MouseButtonEvent button) override;
   void OnAssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) override;
+  void OnAssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) override;
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override;
   void OnScreenProjectionChanged(bool is_projected) override;

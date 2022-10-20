@@ -51,6 +51,8 @@ class RuleBasedEngine : public mojom::InputMethod {
   void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
                        ProcessKeyEventCallback callback) override;
   void OnCandidateSelected(uint32_t selected_candidate_index) override;
+  void OnAssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) override;
   void OnQuickSettingsUpdated(
       mojom::InputMethodQuickSettingsPtr quick_settings) override;
   void IsReadyForTesting(IsReadyForTestingCallback callback) override;

@@ -51,6 +51,9 @@ struct StructTraits<ash::ime::mojom::SuggestionCandidateDataView,
   static const std::string& text(const TextSuggestion& suggestion) {
     return suggestion.text;
   }
+  static size_t confirmed_length(const TextSuggestion& suggestion) {
+    return suggestion.confirmed_length;
+  }
 
   static bool Read(SuggestionCandidateDataView input, TextSuggestion* output);
 };
@@ -84,6 +87,36 @@ struct StructTraits<ash::ime::mojom::TextRangeDataView, gfx::Range> {
     out->set_end(data.end());
     return true;
   }
+};
+
+template <>
+struct EnumTraits<ash::ime::mojom::AssistiveWindowType,
+                  ash::ime::AssistiveWindowType> {
+  using AssistiveWindowTypeMojo = ::ash::ime::mojom::AssistiveWindowType;
+  using AssistiveWindowType = ::ash::ime::AssistiveWindowType;
+
+  static AssistiveWindowTypeMojo ToMojom(AssistiveWindowType type);
+  static bool FromMojom(AssistiveWindowTypeMojo input,
+                        AssistiveWindowType* output);
+};
+
+template <>
+struct StructTraits<ash::ime::mojom::AssistiveWindowDataView,
+                    ash::ime::AssistiveWindow> {
+  using AssistiveWindowDataView = ::ash::ime::mojom::AssistiveWindowDataView;
+  using AssistiveWindowType = ::ash::ime::AssistiveWindowType;
+  using AssistiveWindow = ::ash::ime::AssistiveWindow;
+  using TextSuggestion = ::ash::ime::TextSuggestion;
+
+  static AssistiveWindowType type(const AssistiveWindow& window) {
+    return window.type;
+  }
+  static const std::vector<TextSuggestion>& candidates(
+      const AssistiveWindow& window) {
+    return window.candidates;
+  }
+
+  static bool Read(AssistiveWindowDataView input, AssistiveWindow* output);
 };
 
 }  // namespace mojo

@@ -168,12 +168,12 @@ PersonalInfoSuggester::PersonalInfoSuggester(
       highlighted_index_(kNoneHighlighted) {
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =
-      ui::ime::AssistiveWindowType::kPersonalInfoSuggestion;
+      ash::ime::AssistiveWindowType::kPersonalInfoSuggestion;
   suggestion_button_.index = 0;
   settings_button_.id = ui::ime::ButtonId::kSmartInputsSettingLink;
   settings_button_.announce_string = kLearnMoreMessage;
   settings_button_.window_type =
-      ui::ime::AssistiveWindowType::kPersonalInfoSuggestion;
+      ash::ime::AssistiveWindowType::kPersonalInfoSuggestion;
 }
 
 PersonalInfoSuggester::~PersonalInfoSuggester() = default;

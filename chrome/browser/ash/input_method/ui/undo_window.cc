@@ -124,7 +124,8 @@ views::Button* UndoWindow::GetUndoButtonForTesting() {
 
 void UndoWindow::UndoButtonPressed() {
   const AssistiveWindowButton button = {
-      .id = ButtonId::kUndo, .window_type = AssistiveWindowType::kUndoWindow};
+      .id = ButtonId::kUndo,
+      .window_type = ash::ime::AssistiveWindowType::kUndoWindow};
   SetButtonHighlighted(button, true);
   delegate_->AssistiveWindowButtonClicked(button);
 }

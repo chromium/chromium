@@ -80,37 +80,6 @@ struct CompletionCandidate {
   float normalized_score@1;
 };
 
-// Next ordinal: 3
-[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.SuggestionMode"]
-enum SuggestionMode {
-  [Default] kUnknown = 0,
-
-  // A completion suggestion is text that completes an incomplete word. For
-  // example, the text "hello wor" may have a completion candidate like the
-  // following "hello world".
-  kCompletion = 1,
-
-  // A prediction suggestion is text that we predict may come after some other
-  // text that contains completed words. For example, the text "hello " may
-  // produce a prediction suggestion such as "hello world".
-  kPrediction = 2,
-};
-
-// Next ordinal: 4
-[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.SuggestionType"]
-enum SuggestionType {
-  [Default] kUnknown = 0,
-
-  // Personal info suggestions from the assistive framework
-  kAssistivePersonalInfo = 1,
-
-  // Emoji suggestions from the assistive framework
-  kAssistiveEmoji = 2,
-
-  // Multi word suggestions from the system
-  kMultiWord = 3,
-};
-
 // Single request to generate suggestion candidates from the given context.
 //
 // Next ordinal: 3
@@ -124,21 +93,6 @@ struct SuggestionsRequest {
 
   // Optional: any candidates generated to complete the current text.
   array<CompletionCandidate> completion_candidates@2;
-};
-
-// The text candidate to use as a suggestion to the user.
-//
-// Next ordinal: 3
-[Stable, RenamedFrom="chromeos.ime.mojom.SuggestionCandidate"]
-struct SuggestionCandidate {
-  // How should a consumer use this suggestion.
-  SuggestionMode mode@0;
-
-  // What kind of suggestion is this.
-  SuggestionType type@1;
-
-  // The text to suggest
-  string text@2;
 };
 
 // Encapsulates the results of a suggestions request.

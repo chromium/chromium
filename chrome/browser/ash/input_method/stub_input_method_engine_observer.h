@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/ash/input_method/input_method_engine_observer.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 
 namespace ash {
 namespace input_method {
@@ -31,6 +32,8 @@ class StubInputMethodEngineObserver : public InputMethodEngineObserver {
   void OnCandidateClicked(const std::string& engine_id,
                           int candidate_id,
                           MouseButtonEvent button) override {}
+  void OnAssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) override {}
   void OnMenuItemActivated(const std::string& engine_id,
                            const std::string& menu_id) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,

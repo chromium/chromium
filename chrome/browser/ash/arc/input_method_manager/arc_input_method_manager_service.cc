@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -270,6 +271,8 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
                           int candidate_id,
                           ash::input_method::MouseButtonEvent button) override {
   }
+  void OnAssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) override {}
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}

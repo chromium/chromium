@@ -738,6 +738,11 @@ void InputMethodEngine::AssistiveWindowButtonClicked(
   observer_->OnAssistiveWindowButtonClicked(button);
 }
 
+void InputMethodEngine::AssistiveWindowChanged(
+    const ash::ime::AssistiveWindow& window) {
+  observer_->OnAssistiveWindowChanged(window);
+}
+
 void InputMethodEngine::SetMirroringEnabled(bool mirroring_enabled) {
   if (mirroring_enabled != is_mirroring_) {
     is_mirroring_ = mirroring_enabled;

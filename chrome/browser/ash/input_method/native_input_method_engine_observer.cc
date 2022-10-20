@@ -966,7 +966,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
       break;
     case ui::ime::ButtonId::kLearnMore:
       if (button.window_type ==
-          ui::ime::AssistiveWindowType::kEmojiSuggestion) {
+          ash::ime::AssistiveWindowType::kEmojiSuggestion) {
         base::RecordAction(base::UserMetricsAction(
             "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
         // TODO(crbug/1101689): Add subpath for emoji suggestions settings.
@@ -996,6 +996,12 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
       ime_base_observer_->OnAssistiveWindowButtonClicked(button);
       break;
   }
+}
+
+void NativeInputMethodEngineObserver::OnAssistiveWindowChanged(
+    const ash::ime::AssistiveWindow& window) {
+  if (IsInputMethodConnected())
+    input_method_->OnAssistiveWindowChanged(window);
 }
 
 void NativeInputMethodEngineObserver::OnMenuItemActivated(

@@ -67,12 +67,12 @@ GrammarManager::GrammarManager(
       current_fragment_(gfx::Range(), std::string()),
       suggestion_button_(ui::ime::AssistiveWindowButton{
           .id = ui::ime::ButtonId::kSuggestion,
-          .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+          .window_type = ash::ime::AssistiveWindowType::kGrammarSuggestion,
           .announce_string = u"",
       }),
       ignore_button_(ui::ime::AssistiveWindowButton{
           .id = ui::ime::ButtonId::kIgnoreSuggestion,
-          .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+          .window_type = ash::ime::AssistiveWindowType::kGrammarSuggestion,
           .announce_string = kIgnoreButtonMessage,
       }) {}
 
@@ -221,7 +221,7 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
 
   std::string error;
   AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
+  properties.type = ash::ime::AssistiveWindowType::kGrammarSuggestion;
   properties.candidates = {base::UTF8ToUTF16(current_fragment_.suggestion)};
   properties.visible = true;
   properties.announce_string = kShowGrammarSuggestionMessage;

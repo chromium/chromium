@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/input_method/ui/completion_suggestion_view.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/text_utils.h"
@@ -29,6 +30,8 @@ class MockAssistiveDelegate : public AssistiveDelegate {
   ~MockAssistiveDelegate() override = default;
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override {}
+  void AssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) const override {}
 };
 
 class SuggestionWindowViewTest

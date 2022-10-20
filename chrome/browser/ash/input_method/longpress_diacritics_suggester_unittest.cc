@@ -74,7 +74,7 @@ AssistiveWindowButton CreateDiacriticsButtonFor(
   AssistiveWindowButton button = {
       .id = ui::ime::ButtonId::kSuggestion,
       .window_type =
-          ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
+          ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
       .index = index,
       .announce_string = announce_string,
   };

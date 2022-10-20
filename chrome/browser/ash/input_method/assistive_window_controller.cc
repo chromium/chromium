@@ -136,7 +136,7 @@ void AssistiveWindowController::Announce(const std::u16string& message) {
 // announce_string, or no string)
 void AssistiveWindowController::AcceptSuggestion(
     const std::u16string& suggestion) {
-  if (window_.type == ui::ime::AssistiveWindowType::kEmojiSuggestion) {
+  if (window_.type == ash::ime::AssistiveWindowType::kEmojiSuggestion) {
     Announce(l10n_util::GetStringUTF16(IDS_SUGGESTION_EMOJI_SUGGESTED));
   } else {
     Announce(l10n_util::GetStringUTF16(IDS_SUGGESTION_INSERTED));
@@ -194,10 +194,10 @@ void AssistiveWindowController::SetButtonHighlighted(
     const ui::ime::AssistiveWindowButton& button,
     bool highlighted) {
   switch (button.window_type) {
-    case ui::ime::AssistiveWindowType::kEmojiSuggestion:
-    case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
-    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
-    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
+    case ash::ime::AssistiveWindowType::kEmojiSuggestion:
+    case ash::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ash::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
       if (!suggestion_window_view_)
         return;
 
@@ -205,14 +205,14 @@ void AssistiveWindowController::SetButtonHighlighted(
       if (highlighted)
         Announce(button.announce_string);
       break;
-    case ui::ime::AssistiveWindowType::kUndoWindow:
+    case ash::ime::AssistiveWindowType::kUndoWindow:
       if (!undo_window_)
         return;
 
       undo_window_->SetButtonHighlighted(button, highlighted);
       Announce(button.announce_string);
       break;
-    case ui::ime::AssistiveWindowType::kGrammarSuggestion:
+    case ash::ime::AssistiveWindowType::kGrammarSuggestion:
       if (!grammar_suggestion_window_)
         return;
 
@@ -220,7 +220,7 @@ void AssistiveWindowController::SetButtonHighlighted(
       if (highlighted)
         Announce(button.announce_string);
       break;
-    case ui::ime::AssistiveWindowType::kNone:
+    case ash::ime::AssistiveWindowType::kNone:
       break;
   }
 }
@@ -235,17 +235,17 @@ size_t AssistiveWindowController::GetConfirmedLength() const {
 
 ui::ime::SuggestionWindowView::Orientation
 AssistiveWindowController::WindowOrientationFor(
-    ui::ime::AssistiveWindowType window_type) {
+    ash::ime::AssistiveWindowType window_type) {
   switch (window_type) {
-    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
+    case ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
       return ui::ime::SuggestionWindowView::Orientation::kHorizontal;
-    case ui::ime::AssistiveWindowType::kUndoWindow:
-    case ui::ime::AssistiveWindowType::kEmojiSuggestion:
-    case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
-    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
-    case ui::ime::AssistiveWindowType::kGrammarSuggestion:
+    case ash::ime::AssistiveWindowType::kUndoWindow:
+    case ash::ime::AssistiveWindowType::kEmojiSuggestion:
+    case ash::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ash::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ash::ime::AssistiveWindowType::kGrammarSuggestion:
       return ui::ime::SuggestionWindowView::Orientation::kVertical;
-    case ui::ime::AssistiveWindowType::kNone:
+    case ash::ime::AssistiveWindowType::kNone:
       NOTREACHED();
   }
   NOTREACHED();
@@ -261,7 +261,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
   ClearPendingSuggestionTimer();
 
   switch (window.type) {
-    case ui::ime::AssistiveWindowType::kUndoWindow:
+    case ash::ime::AssistiveWindowType::kUndoWindow:
       if (!undo_window_)
         InitUndoWindow();
       if (window.visible) {
@@ -275,10 +275,10 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
         undo_window_->Hide();
       }
       break;
-    case ui::ime::AssistiveWindowType::kEmojiSuggestion:
-    case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
-    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
-    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
+    case ash::ime::AssistiveWindowType::kEmojiSuggestion:
+    case ash::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ash::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
       if (!suggestion_window_view_)
         InitSuggestionWindow(WindowOrientationFor(window.type));
       if (window_.visible) {
@@ -289,7 +289,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
         HideSuggestion();
       }
       break;
-    case ui::ime::AssistiveWindowType::kGrammarSuggestion:
+    case ash::ime::AssistiveWindowType::kGrammarSuggestion:
       if (window.candidates.size() == 0)
         return;
       if (!grammar_suggestion_window_)
@@ -302,7 +302,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
         grammar_suggestion_window_->Hide();
       }
       break;
-    case ui::ime::AssistiveWindowType::kNone:
+    case ash::ime::AssistiveWindowType::kNone:
       break;
   }
   Announce(window.announce_string);
@@ -327,6 +327,11 @@ void AssistiveWindowController::ClearPendingSuggestionTimer() {
 void AssistiveWindowController::AssistiveWindowButtonClicked(
     const ui::ime::AssistiveWindowButton& button) const {
   delegate_->AssistiveWindowButtonClicked(button);
+}
+
+void AssistiveWindowController::AssistiveWindowChanged(
+    const ash::ime::AssistiveWindow& window) const {
+  delegate_->AssistiveWindowChanged(window);
 }
 
 ui::ime::SuggestionWindowView*

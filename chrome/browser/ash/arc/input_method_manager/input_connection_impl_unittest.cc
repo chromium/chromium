@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/arc/input_method_manager/test_input_method_manager_bridge.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
@@ -56,6 +57,8 @@ class DummyInputMethodEngineObserver
                           int candidate_id,
                           ash::input_method::MouseButtonEvent button) override {
   }
+  void OnAssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) override {}
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}

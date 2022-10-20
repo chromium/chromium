@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 13
+// Next MinVersion: 14
 
 module ash.ime.mojom;
 
@@ -435,12 +435,76 @@ struct JapaneseQuickSettings {
   JapaneseInputMode mode@0;
 };
 
+// Next ordinal: 3
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.SuggestionMode"]
+enum SuggestionMode {
+  [Default] kUnknown = 0,
+
+  // A completion suggestion is text that completes an incomplete word. For
+  // example, the text "hello wor" may have a completion candidate like the
+  // following "hello world".
+  kCompletion = 1,
+
+  // A prediction suggestion is text that we predict may come after some other
+  // text that contains completed words. For example, the text "hello " may
+  // produce a prediction suggestion such as "hello world".
+  kPrediction = 2,
+};
+
+// Next ordinal: 6
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.SuggestionType"]
+enum SuggestionType {
+  [Default] kUnknown = 0,
+  kAssistivePersonalInfo = 1,
+  kAssistiveEmoji = 2,
+  kMultiWord = 3,
+  [MinVersion=13] kGrammar = 4,
+  [MinVersion=13] kLongpressDiacritic = 5,
+};
+
+// Specifies an assistive suggestion candidate that may, or may not be, shown
+// to the user in the assistive window.
+// Next ordinal: 4
+[Stable, RenamedFrom="chromeos.ime.mojom.SuggestionCandidate"]
+struct SuggestionCandidate {
+  SuggestionMode mode@0;
+  SuggestionType type@1;
+  // The text suggested by this candidate to the user.
+  string text@2;
+  // How much of suggested_text has already been typed by the user.
+  [MinVersion=13] int32 confirmed_length@3;
+};
+
+// Next ordinal: 7
+[Stable, Extensible]
+enum AssistiveWindowType {
+  [Default] kHidden = 0,
+  kUndo = 1,
+  kEmojiSuggestion = 2,
+  kPersonalInfoSuggestion = 3,
+  kGrammarSuggestion = 4,
+  kMultiWordSuggestion = 5,
+  kLongpressDiacriticsSuggestion = 6,
+};
+
+// Next ordinal: 2
+[Stable]
+struct AssistiveWindow {
+  // What kind of assistive window is shown currently to the user.
+  AssistiveWindowType type@0;
+
+  // Contains all candidates that are currently showing in the window. This
+  // field captures both "single" assistive candidates, and "multiple choice"
+  // assistive candidates.
+  array<SuggestionCandidate> candidates@1;
+};
+
 // An input method that is provided natively by the IME Service.
 // The browser process uses this interface to communicate with IMEs hosted in
 // a Chrome utility process, and this interface uses the InputMethodHost
 // interface to communicate back to the browser process.
 //
-// Next ordinal: 8
+// Next ordinal: 10
 [Stable, RenamedFrom="chromeos.ime.mojom.InputMethod"]
 interface InputMethod {
   // DEPRECATED: Called when there's a new focused input field.
@@ -486,4 +550,8 @@ interface InputMethod {
   // Returns whether the input method is ready to accept key events from a test.
   // Used for end-to-end testing via Tast.
   [MinVersion=12, Sync] IsReadyForTesting@8() => (bool ready);
+
+  // Called when any changes are made to the assistive window (a suggestion is
+  // shown, dismissed, accepted etc).
+  [MinVersion=13] OnAssistiveWindowChanged@9(AssistiveWindow window);
 };

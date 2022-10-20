@@ -26,6 +26,10 @@ struct AssistiveWindowButton;
 }  // namespace ui
 
 namespace ash {
+namespace ime {
+struct AssistiveWindow;
+}  // namespace ime
+
 namespace input_method {
 
 enum MouseButtonEvent {
@@ -89,6 +93,10 @@ class InputMethodEngineObserver {
   // Called when the user clicks on a button in assistive window.
   virtual void OnAssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) {}
+
+  // Called when there are changes to the assistive window shown to the user.
+  virtual void OnAssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) = 0;
 
   // Called when a menu item for this IME is interacted with.
   virtual void OnMenuItemActivated(const std::string& component_id,

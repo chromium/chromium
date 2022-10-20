@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_UI_ASSISTIVE_DELEGATE_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_ASSISTIVE_DELEGATE_H_
 
+#include <optional>
 #include <string>
+#include <vector>
 
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 
-namespace ui {
-namespace ime {
+namespace ui::ime {
 
 enum class ButtonId {
   kNone,
@@ -22,19 +24,10 @@ enum class ButtonId {
   kIgnoreSuggestion,
 };
 
-enum class AssistiveWindowType {
-  kNone,
-  kUndoWindow,
-  kEmojiSuggestion,
-  kPersonalInfoSuggestion,
-  kGrammarSuggestion,
-  kMultiWordSuggestion,
-  kLongpressDiacriticsSuggestion,
-};
-
 struct AssistiveWindowButton {
   ButtonId id = ButtonId::kNone;
-  AssistiveWindowType window_type = AssistiveWindowType::kNone;
+  ash::ime::AssistiveWindowType window_type =
+      ash::ime::AssistiveWindowType::kNone;
   // TODO(crbug/1101852): Rename index to suggestion_index for further clarity.
   // Currently index is only considered when ButtonId is kSuggestion.
   size_t index = -1;
@@ -52,11 +45,16 @@ class UI_CHROMEOS_EXPORT AssistiveDelegate {
   virtual void AssistiveWindowButtonClicked(
       const AssistiveWindowButton& button) const = 0;
 
+  // This method is invoked whenever there is a change to the suggestion state
+  // in the assistive window. If a new suggestion is shown, accepted, dismissed,
+  // updated, etc, then this method is invoked.
+  virtual void AssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) const = 0;
+
  protected:
   virtual ~AssistiveDelegate() = default;
 };
 
-}  // namespace ime
-}  // namespace ui
+}  // namespace ui::ime
 
 #endif  //  CHROME_BROWSER_ASH_INPUT_METHOD_UI_ASSISTIVE_DELEGATE_H_
