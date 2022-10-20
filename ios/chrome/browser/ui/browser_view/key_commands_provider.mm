@@ -87,27 +87,6 @@
 
   const BOOL hasTabs = self.tabsCount > 0;
 
-  const BOOL useRTLLayout = UseRTLLayout();
-
-  // Blocks for next/previous tab.
-  void (^showTabLeft)();
-  void (^showTabRight)();
-  if (useRTLLayout) {
-    showTabLeft = ^{
-      [weakSelf showNextTab];
-    };
-    showTabRight = ^{
-      [weakSelf showPreviousTab];
-    };
-  } else {
-    showTabLeft = ^{
-      [weakSelf showPreviousTab];
-    };
-    showTabRight = ^{
-      [weakSelf showNextTab];
-    };
-  }
-
   // Initialize the array of commands with an estimated capacity.
   NSMutableArray<UIKeyCommand*>* keyCommands = [NSMutableArray array];
 
@@ -184,35 +163,71 @@
                                     }],
     ]];
 
-    // Deal with the multiple next/previous tab commands we have, only one pair
-    // of which appears in the HUD. Take RTL into account for the direction.
-    const int tabLeftDescriptionID = useRTLLayout
-                                          ? IDS_IOS_KEYBOARD_NEXT_TAB
-                                          : IDS_IOS_KEYBOARD_PREVIOUS_TAB;
-    const int tabRightDescriptionID = useRTLLayout
-                                           ? IDS_IOS_KEYBOARD_PREVIOUS_TAB
-                                           : IDS_IOS_KEYBOARD_NEXT_TAB;
-    NSString* tabLeftTitle = l10n_util::GetNSStringWithFixup(
-        tabLeftDescriptionID);
-    NSString* tabRightTitle = l10n_util::GetNSStringWithFixup(
-        tabRightDescriptionID);
+    // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
+    // by default. It handles flipping the direction of arrows and braces
+    // inputs.
+    NSString* arrowNext;
+    NSString* arrowPrevious;
+    NSString* braceNext;
+    NSString* bracePrevious;
+    if (@available(iOS 15.0, *)) {
+      arrowNext = UIKeyInputRightArrow;
+      arrowPrevious = UIKeyInputLeftArrow;
+      braceNext = @"}";
+      bracePrevious = @"{";
+    } else {
+      if (UseRTLLayout()) {
+        arrowNext = UIKeyInputLeftArrow;
+        arrowPrevious = UIKeyInputRightArrow;
+        braceNext = @"{";
+        bracePrevious = @"}";
+      } else {
+        arrowNext = UIKeyInputRightArrow;
+        arrowPrevious = UIKeyInputLeftArrow;
+        braceNext = @"}";
+        bracePrevious = @"{";
+      }
+    }
     [keyCommands addObjectsFromArray:@[
-      [UIKeyCommand cr_keyCommandWithInput:UIKeyInputLeftArrow
+      [UIKeyCommand cr_keyCommandWithInput:arrowNext
                              modifierFlags:KeyModifierAltCommand
-                                     title:tabLeftTitle
-                                    action:showTabLeft],
-      [UIKeyCommand cr_keyCommandWithInput:UIKeyInputRightArrow
+                                     title:l10n_util::GetNSStringWithFixup(
+                                               IDS_IOS_KEYBOARD_NEXT_TAB)
+                                    action:^{
+                                      [weakSelf showNextTab];
+                                    }],
+      [UIKeyCommand cr_keyCommandWithInput:arrowPrevious
                              modifierFlags:KeyModifierAltCommand
-                                     title:tabRightTitle
-                                    action:showTabRight],
-      [UIKeyCommand cr_keyCommandWithInput:@"{"
+                                     title:l10n_util::GetNSStringWithFixup(
+                                               IDS_IOS_KEYBOARD_PREVIOUS_TAB)
+                                    action:^{
+                                      [weakSelf showPreviousTab];
+                                    }],
+      [UIKeyCommand cr_keyCommandWithInput:braceNext
                              modifierFlags:KeyModifierCommand
                                      title:nil
-                                    action:showTabLeft],
-      [UIKeyCommand cr_keyCommandWithInput:@"}"
+                                    action:^{
+                                      [weakSelf showNextTab];
+                                    }],
+      [UIKeyCommand cr_keyCommandWithInput:bracePrevious
                              modifierFlags:KeyModifierCommand
                                      title:nil
-                                    action:showTabRight],
+                                    action:^{
+                                      [weakSelf showPreviousTab];
+                                    }],
+      // TODO(crbug.com/1278594): Doesn't work on iOS 15+.
+      [UIKeyCommand cr_keyCommandWithInput:@"\t"
+                             modifierFlags:KeyModifierControl
+                                     title:nil
+                                    action:^{
+                                      [weakSelf showNextTab];
+                                    }],
+      [UIKeyCommand cr_keyCommandWithInput:@"\t"
+                             modifierFlags:KeyModifierControlShift
+                                     title:nil
+                                    action:^{
+                                      [weakSelf showPreviousTab];
+                                    }],
     ]];
 
     [keyCommands addObjectsFromArray:@[
@@ -422,18 +437,6 @@
                                      title:nil
                                     action:^{
                                       [weakSelf showLastTab];
-                                    }],
-      [UIKeyCommand cr_keyCommandWithInput:@"\t"
-                             modifierFlags:KeyModifierControlShift
-                                     title:nil
-                                    action:^{
-                                      [weakSelf showPreviousTab];
-                                    }],
-      [UIKeyCommand cr_keyCommandWithInput:@"\t"
-                             modifierFlags:KeyModifierControl
-                                     title:nil
-                                    action:^{
-                                      [weakSelf showNextTab];
                                     }],
     ]];
   }
