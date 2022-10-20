@@ -6803,6 +6803,13 @@ interface PressureObserver
     method observe
     method takeRecords
     method unobserve
+interface PressureRecord
+    attribute @@toStringTag
+    getter factors
+    getter source
+    getter state
+    getter time
+    method constructor
 interface ProcessingInstruction : CharacterData
     attribute @@toStringTag
     getter sheet

@@ -16,10 +16,11 @@ enum PressureState {
 // https://wicg.github.io/compute-pressure/#dom-pressurerecord
 [
     Exposed=Window,
+    RuntimeEnabled=ComputePressure,
     SecureContext
-] dictionary PressureRecord {
-  PressureSource source;
-  PressureState state;
-  sequence<PressureFactor> factors;
-  DOMHighResTimeStamp time;
+] interface PressureRecord {
+  readonly attribute PressureSource source;
+  readonly attribute PressureState state;
+  readonly attribute FrozenArray<PressureFactor> factors;
+  readonly attribute DOMHighResTimeStamp time;
 };

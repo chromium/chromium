@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
+#include "third_party/blink/renderer/modules/compute_pressure/pressure_record.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -112,11 +113,8 @@ void PressureObserver::OnUpdate(ExecutionContext* execution_context,
   if (!HasChangeInData(source, state, factors))
     return;
 
-  auto* record = PressureRecord::Create();
-  record->setSource(V8PressureSource(source));
-  record->setFactors(factors);
-  record->setState(V8PressureState(state));
-  record->setTime(timestamp);
+  auto* record =
+      MakeGarbageCollected<PressureRecord>(source, state, factors, timestamp);
 
   last_record_map_[static_cast<size_t>(source)] = record;
 

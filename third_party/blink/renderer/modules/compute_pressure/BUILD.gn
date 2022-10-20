@@ -10,6 +10,8 @@ blink_modules_sources("compute_pressure") {
     "pressure_observer.h",
     "pressure_observer_manager.cc",
     "pressure_observer_manager.h",
+    "pressure_record.cc",
+    "pressure_record.h",
   ]
 
   deps = [ "//third_party/blink/renderer/platform" ]

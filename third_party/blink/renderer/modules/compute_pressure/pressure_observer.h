@@ -7,7 +7,9 @@
 
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_factor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -29,8 +31,8 @@ constexpr wtf_size_t kMaxQueuedRecords = 10;
 class ExceptionState;
 class PressureObserverManager;
 class PressureObserverOptions;
+class PressureRecord;
 class ScriptState;
-class V8PressureSource;
 
 class PressureObserver final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
