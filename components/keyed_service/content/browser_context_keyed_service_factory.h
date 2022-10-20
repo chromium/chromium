@@ -118,6 +118,13 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceFactory
   // By default, we create instances of a service lazily and wait until
   // GetForBrowserContext() is called on our subclass. Some services need to be
   // created as soon as the BrowserContext has been brought up.
+  //
+  // Note: To ensure that this method takes effect, the Factory should be
+  // instantiated before any BrowserContext is created to be part of the
+  // dependency graph used to initialize all services on BrowserContext
+  // creation.
+  // The best practice is to initialize the factory in the appropriate
+  // `EnsureBrowserContextKeyedServiceFactoriesBuilt()` method.
   virtual bool ServiceIsCreatedWithBrowserContext() const;
 
   // By default, TestingBrowserContexts will be treated like normal contexts.
