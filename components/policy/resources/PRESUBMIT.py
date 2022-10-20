@@ -295,22 +295,22 @@ def _CommonChecks(input_api, output_api):
         output_api.PresubmitError('Unable to load the policy templates.'))
       return results
 
-  policies = [policy
-              for policy in template_data['policy_definitions']
-              if policy['type'] != 'group']
+    policies = [policy
+                for policy in template_data['policy_definitions']
+                if policy['type'] != 'group']
 
-  if template_changed or syntax_check_changed:
-    results.extend(_CheckMissingPlaceholders(input_api, output_api,
-        template_data))
-  if template_changed or tests_changed:
-    results.extend(_CheckPolicyTestCases(input_api, output_api, policies))
-  if template_changed:
-    results.extend(_CheckPolicyHistograms(input_api, output_api, policies))
-  # chrome_device_policy.proto is hand crafted. When it is changed, we need
-  # to check if it still corresponds to policy_templates.json.
-  if template_changed or device_policy_proto_changed or syntax_check_changed:
-    results.extend(
-      _CheckPolicyTemplatesSyntax(input_api, output_api, template_data))
+    if template_changed or syntax_check_changed:
+      results.extend(_CheckMissingPlaceholders(input_api, output_api,
+          template_data))
+    if template_changed or tests_changed:
+      results.extend(_CheckPolicyTestCases(input_api, output_api, policies))
+    if template_changed:
+      results.extend(_CheckPolicyHistograms(input_api, output_api, policies))
+    # chrome_device_policy.proto is hand crafted. When it is changed, we need
+    # to check if it still corresponds to policy_templates.json.
+    if template_changed or device_policy_proto_changed or syntax_check_changed:
+      results.extend(
+        _CheckPolicyTemplatesSyntax(input_api, output_api, template_data))
 
   return results
 
