@@ -38,6 +38,3 @@
 
 # https://crbug.com/851641
 -DevToolsFileWatcher*
-
-# https://crbug.com/1315834
--GalleryWatchManagerTest.Basic
