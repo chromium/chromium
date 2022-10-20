@@ -375,6 +375,7 @@ class Generator(generator.Generator):
 
   def GetFilters(self):
     cpp_filters = {
+        "append_space_if_nonempty": self._AppendSpaceIfNonEmpty,
         "all_enum_values": AllEnumValues,
         "constant_value": self._ConstantValue,
         "contains_handles_or_interfaces": mojom.ContainsHandlesOrInterfaces,
@@ -526,6 +527,11 @@ class Generator(generator.Generator):
             self._GenerateModuleFromImportedTemplate(path_to_template,
                                                      filename), "%s%s-%s" %
             (self.module.path, suffix, filename_without_tmpl_suffix))
+
+  def _AppendSpaceIfNonEmpty(self, statement):
+    if len(statement) == 0:
+      return ""
+    return statement + " "
 
   def _ConstantValue(self, constant):
     return self._ExpressionToText(constant.value, kind=constant.kind)

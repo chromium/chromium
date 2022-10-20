@@ -12,7 +12,7 @@ class {{interface.name}}ResponseValidator;
 {%- set interface_prefix = "%s.%s"|format(module_prefix, interface.name) %}
 
 {{ kythe_annotation(interface_prefix) }}
-class {{export_attribute}} {{interface.name}}
+class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
     : public {{interface.name}}InterfaceBase {
  public:
   using IPCStableHashFunction = uint32_t(*)();
