@@ -16,6 +16,14 @@
 namespace {
 using ::base::StringPiece;
 using ::kids_chrome_management::FamilyMember;
+
+bool IsChildAccount(const Profile& profile) {
+  return profile
+      .IsChild();  // TODO(b/252793687): Use AccountInfo.is_child_account ==
+                   // Tribool::kTrue once setting child status is possible in
+                   // test and remove the direct Profile dependency.
+}
+
 }  // namespace
 
 KidsProfileManager::KidsProfileManager(PrefService& pref_service,
@@ -38,15 +46,8 @@ KidsProfileManager::KidsProfileManager(PrefService& pref_service,
       pref_service_(pref_service),
       profile_(profile) {}
 
-bool KidsProfileManager::IsChildAccount() const {
-  return profile_
-      .IsChild();  // TODO(b/252793687): Use AccountInfo.is_child_account ==
-                   // Tribool::kTrue once setting child status is possible in
-                   // test and remove the direct Profile dependency.
-}
-
 void KidsProfileManager::UpdateChildAccountStatus(bool is_child_account) {
-  if (IsChildAccount() != is_child_account) {
+  if (IsChildAccount(profile_) != is_child_account) {
     if (is_child_account) {
       supervised_user_id_.Set(StringPiece(supervised_users::kChildAccountSUID));
     } else {

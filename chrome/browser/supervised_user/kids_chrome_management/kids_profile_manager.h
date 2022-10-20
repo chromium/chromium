@@ -13,7 +13,7 @@
 // A helper utility to manage the Profile properties consistently.
 class KidsProfileManager {
  public:
-  // An individual property which can be read and written.
+  // An invididual property which can be read and written.
   class Property {
    public:
     Property() = delete;
@@ -56,7 +56,6 @@ class KidsProfileManager {
                      Profile& profile);
   void UpdateChildAccountStatus(bool is_child_account);
   bool IsChildAccountStatusKnown() const;
-  bool IsChildAccount() const;
   void SetFirstCustodian(kids_chrome_management::FamilyMember member);
   void SetSecondCustodian(kids_chrome_management::FamilyMember member);
 

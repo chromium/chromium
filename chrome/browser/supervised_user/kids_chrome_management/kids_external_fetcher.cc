@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
@@ -29,7 +31,6 @@ namespace {
 const int kNumFamilyInfoFetcherRetries = 1;
 
 using ::base::BindOnce;
-using ::base::StringPiece;
 using ::base::Unretained;
 using ::kids_chrome_management::ListFamilyMembersRequest;
 using ::kids_chrome_management::ListFamilyMembersResponse;
@@ -52,8 +53,8 @@ bool HasHttpOkResponse(const network::SimpleURLLoader& loader) {
 }
 
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
-    StringPiece payload,
-    StringPiece access_token,
+    base::StringPiece payload,
+    base::StringPiece access_token,
     const GURL& url,
     net::NetworkTrafficAnnotationTag traffic_annotation) {
   std::unique_ptr<ResourceRequest> resource_request =
@@ -122,14 +123,14 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
   explicit FetcherImpl(
       IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      StringPiece url,
+      base::StringPiece url,
       Request request,
       Callback callback) {
     access_token_fetcher_ = std::make_unique<KidsAccessTokenFetcher>(
         identity_manager,
         BindOnce(&FetcherImpl::StartRequest, Unretained(this),
                  url_loader_factory, GURL(url), request,
-                 std::move(callback)));  // Unretained(.) is safe because `this`
+                 std::move(callback)));  // Unretained() is safe because `this`
                                          // owns `access_token_fetcher_`.
   }
 
@@ -154,23 +155,20 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
                               std::make_unique<Response>());
       return;
     }
-
-    StringPiece token_value = access_token.value().token;
+    base::StringPiece token_value = access_token.value().token;
     net::NetworkTrafficAnnotationTag traffic_annotation =
         GetDefaultNetworkTrafficAnnotationTag<Request>();
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
         InitializeSimpleUrlLoader(request.SerializeAsString(), token_value,
                                   gurl, traffic_annotation);
 
+    DCHECK(simple_url_loader);
     auto* simple_url_loader_ptr = simple_url_loader.get();
     simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
-        BindOnce(
-            &FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
-            std::move(callback),
-            std::move(
-                simple_url_loader)));  // Unretained(.) is safe because `this`
-                                       // owns `access_token_fetcher_`.
+        base::BindOnce(&FetcherImpl::OnSimpleUrlLoaderComplete,
+                       weak_ptr_factory_.GetSafeRef(), std::move(callback),
+                       std::move(simple_url_loader)));
   }
 
   void OnSimpleUrlLoaderComplete(
@@ -196,6 +194,7 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
   }
 
   std::unique_ptr<KidsAccessTokenFetcher> access_token_fetcher_;
+  base::WeakPtrFactory<FetcherImpl> weak_ptr_factory_{this};
 };
 
 template class FetcherImpl<ListFamilyMembersRequest, ListFamilyMembersResponse>;
@@ -246,25 +245,6 @@ KidsExternalFetcherStatus KidsExternalFetcherStatus::InvalidResponse() {
 bool KidsExternalFetcherStatus::IsOk() const {
   return state_ == State::NO_ERROR;
 }
-bool KidsExternalFetcherStatus::IsTransientError() const {
-  if (state_ == State::HTTP_ERROR) {
-    return true;
-  }
-  if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
-    return google_service_auth_error_.IsTransientError();
-  }
-  return false;
-}
-bool KidsExternalFetcherStatus::IsPersistentError() const {
-  if (state_ == State::INVALID_RESPONSE) {
-    return true;
-  }
-  if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
-    return google_service_auth_error_.IsPersistentError();
-  }
-  return false;
-}
-
 KidsExternalFetcherStatus::State KidsExternalFetcherStatus::state() const {
   return state_;
 }
@@ -278,7 +258,7 @@ std::unique_ptr<
 FetchListFamilyMembers(
     IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    StringPiece url,
+    base::StringPiece url,
     KidsExternalFetcher<ListFamilyMembersRequest,
                         ListFamilyMembersResponse>::Callback callback) {
   return std::make_unique<
