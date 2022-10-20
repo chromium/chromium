@@ -149,6 +149,7 @@ void HttpsLatencyRoutine::HostResolver::CreateHostResolver() {
 }
 
 void HttpsLatencyRoutine::HostResolver::OnMojoConnectionError() {
+  host_resolver_.reset();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
              /*resolved_addresses=*/absl::nullopt,
              /*endpoint_results_with_metadata=*/absl::nullopt);
