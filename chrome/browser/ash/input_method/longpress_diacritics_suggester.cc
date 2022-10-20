@@ -185,9 +185,13 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
         }
       }
 
-      // Dismiss on any unexpected key events.
-      DismissSuggestion();
-      RecordActionMetric(IMEPKLongpressDiacriticAction::kDismiss);
+      // Commit current text if there is a selection.
+      if (highlighted_index_.has_value()) {
+        AcceptSuggestion(*highlighted_index_);
+      } else {
+        DismissSuggestion();
+        RecordActionMetric(IMEPKLongpressDiacriticAction::kDismiss);
+      }
       // NotHandled is passed so that the IME will let the key event pass
       // through.
       return SuggestionStatus::kNotHandled;
