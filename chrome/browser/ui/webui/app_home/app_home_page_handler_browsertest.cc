@@ -273,4 +273,43 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionUninstall) {
   page_handler->Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, UninstallWebApp) {
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+
+  // First, install a test web app for test.
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  AppId installed_app_id = InstallTestWebApp();
+  page_handler->Wait();
+
+  // Then, check uninstalling previous web app via using
+  // `AppHomePageHandler::UninstallApp`.
+  EXPECT_CALL(page_, RemoveApp(MatchAppId(installed_app_id)))
+      .Times(testing::AtLeast(1));
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+  page_handler->UninstallApp(installed_app_id);
+  page_handler->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, UninstallExtensionApp) {
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+
+  // First, install a test extension app for test.
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  scoped_refptr<const extensions::Extension> extension =
+      InstallTestExtensionApp();
+  page_handler->Wait();
+
+  // Then, check uninstalling previous extension app via using
+  // `AppHomePageHandler::UninstallApp`.
+  EXPECT_CALL(page_, RemoveApp(MatchAppId(extension->id())))
+      .Times(testing::AtLeast(1));
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+  page_handler->UninstallApp(extension->id());
+  page_handler->Wait();
+}
+
 }  // namespace webapps
