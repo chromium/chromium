@@ -54,6 +54,10 @@ void PopupAnimationFinishedEventListener::Invoke(ExecutionContext*,
   DCHECK(!animations_.empty());
   DCHECK(event->type() == event_type_names::kFinish ||
          event->type() == event_type_names::kCancel);
+
+  if (!event->isTrusted())
+    return;
+
   auto* animation = event->target();
   RemoveEventListeners(animation);
   animations_.erase(animation);
