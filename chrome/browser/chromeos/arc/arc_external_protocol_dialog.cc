@@ -65,12 +65,13 @@ using IntentPickerResponseWithDevices = base::OnceCallback<void(
     apps::IntentPickerCloseReason close_reason,
     bool should_persist)>;
 
-// Creates an icon for a specific |device_type|.
+// Creates an icon for a specific |device_form_factor|.
 ui::ImageModel CreateDeviceIcon(
-    const sync_pb::SyncEnums::DeviceType device_type) {
-  const gfx::VectorIcon& icon = device_type == sync_pb::SyncEnums::TYPE_TABLET
-                                    ? kTabletIcon
-                                    : kHardwareSmartphoneIcon;
+    const syncer::DeviceInfo::FormFactor device_form_factor) {
+  const gfx::VectorIcon& icon =
+      device_form_factor == syncer::DeviceInfo::FormFactor::kTablet
+          ? kTabletIcon
+          : kHardwareSmartphoneIcon;
   return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kDeviceIconSize);
 }
 
@@ -85,7 +86,7 @@ std::vector<apps::IntentPickerAppInfo> AddDevices(
   std::vector<apps::IntentPickerAppInfo> all_entries;
   for (const auto& device : devices) {
     all_entries.emplace_back(apps::PickerEntryType::kDevice,
-                             CreateDeviceIcon(device->device_type()),
+                             CreateDeviceIcon(device->form_factor()),
                              device->guid(), device->client_name());
   }
 

@@ -88,14 +88,16 @@ void GetDeviceNameAndType(const syncer::DeviceInfoTracker* tracker,
       tracker->GetDeviceInfo(client_id);
   if (device_info.get()) {
     *name = device_info->client_name();
-    switch (device_info->device_type()) {
-      case sync_pb::SyncEnums::TYPE_PHONE:
+    switch (device_info->form_factor()) {
+      case syncer::DeviceInfo::FormFactor::kPhone:
         *type = kDeviceTypePhone;
         break;
-      case sync_pb::SyncEnums::TYPE_TABLET:
+      case syncer::DeviceInfo::FormFactor::kTablet:
         *type = kDeviceTypeTablet;
         break;
-      default:
+      case syncer::DeviceInfo::FormFactor::kUnknown:
+        [[fallthrough]];  // return the laptop icon as default.
+      case syncer::DeviceInfo::FormFactor::kDesktop:
         *type = kDeviceTypeLaptop;
     }
     return;
