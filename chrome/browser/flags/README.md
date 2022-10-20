@@ -33,9 +33,9 @@ Note that this call requires native to be initialized. If native might not be
 initialized when the check is run, there are two ways of proceeding:
 
 1.  Use a cached value of the flag from the previous run by calling
-    [`CachedFeatureFlags.isEnabled(ChromeFeatureList.MY_FEATURE)`](https://cs.chromium.org/chromium/src/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java).
+    [`ChromeFeatureList.sMyFeature.isEnabled()`](https://cs.chromium.org/chromium/src/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlag.java).
     This caching is only done for a subset of the flags. To register your flag,
-    specify a default value in `CachedFeatureFlags.sDefaults` and add it to
+    create a CachedFlag object in ChromeFeatureList and add it to
     [`ChromeCachedFlags.cacheNativeFlags()`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java)
 2.  Check
     [`FeatureList.isInitialized()`](https://cs.chromium.org/chromium/src/base/android/java/src/org/chromium/base/FeatureList.java)
