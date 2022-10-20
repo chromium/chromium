@@ -239,6 +239,7 @@ mixed_component("base") {
     "check_op.h",
     "command_line.cc",
     "command_line.h",
+    "compiler_specific.h",
     "component_export.h",
     "containers/adapters.h",
     "containers/buffer_iterator.h",
@@ -2689,7 +2690,6 @@ static_library("base_static") {
     "base_export.h",
     "base_switches.cc",
     "base_switches.h",
-    "compiler_specific.h",
     "immediate_crash.h",
   ]
 
