@@ -608,11 +608,16 @@ bool TranslatePrefs::IsSiteOnNeverPromptList(base::StringPiece site) const {
   return prefs_->GetDict(prefs::kPrefNeverPromptSitesWithTime).Find(site);
 }
 
-void TranslatePrefs::AddSiteToNeverPromptList(base::StringPiece site) {
+void TranslatePrefs::AddSiteToNeverPromptList(base::StringPiece site,
+                                              base::Time time) {
   DCHECK(!site.empty());
   AddValueToNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
   ScopedDictPrefUpdate update(prefs_, prefs::kPrefNeverPromptSitesWithTime);
-  update->Set(site, base::TimeToValue(base::Time::Now()));
+  update->Set(site, base::TimeToValue(time));
+}
+
+void TranslatePrefs::AddSiteToNeverPromptList(base::StringPiece site) {
+  AddSiteToNeverPromptList(site, base::Time::Now());
 }
 
 void TranslatePrefs::RemoveSiteFromNeverPromptList(base::StringPiece site) {

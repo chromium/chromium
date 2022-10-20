@@ -987,20 +987,24 @@ TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
 }
 
 TEST_F(TranslatePrefsTest, SiteNeverPromptList) {
-  translate_prefs_->AddSiteToNeverPromptList("a.com");
-  base::Time t = base::Time::Now();
-  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  translate_prefs_->AddSiteToNeverPromptList("b.com");
+  base::Time a_insert = base::Time::Now();
+  base::Time after_a_insert = a_insert + base::Seconds(2);
+  base::Time b_insert = a_insert + base::Seconds(4);
+  base::Time after_b_insert = a_insert + base::Seconds(6);
+  translate_prefs_->AddSiteToNeverPromptList("a.com", a_insert);
+  translate_prefs_->AddSiteToNeverPromptList("b.com", b_insert);
   EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList("a.com"));
   EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList("b.com"));
 
   EXPECT_EQ(std::vector<std::string>({"a.com"}),
-            translate_prefs_->GetNeverPromptSitesBetween(base::Time(), t));
+            translate_prefs_->GetNeverPromptSitesBetween(base::Time(),
+                                                         after_a_insert));
   EXPECT_EQ(std::vector<std::string>({"a.com", "b.com"}),
             translate_prefs_->GetNeverPromptSitesBetween(base::Time(),
-                                                         base::Time::Max()));
+                                                         after_b_insert));
 
-  translate_prefs_->DeleteNeverPromptSitesBetween(t, base::Time::Max());
+  translate_prefs_->DeleteNeverPromptSitesBetween(after_a_insert,
+                                                  base::Time::Max());
   EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList("a.com"));
   EXPECT_FALSE(translate_prefs_->IsSiteOnNeverPromptList("b.com"));
 

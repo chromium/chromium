@@ -378,6 +378,7 @@ class TranslatePrefs {
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, MoveLanguageDown);
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, ResetBlockedLanguagesToDefault);
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, MigrateNeverPromptSites);
+  FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, SiteNeverPromptList);
   friend class TranslatePrefsTest;
 
   void ClearNeverPromptSiteList();
@@ -387,6 +388,8 @@ class TranslatePrefs {
   bool IsValueOnNeverPromptList(const char* pref_id,
                                 base::StringPiece value) const;
   void AddValueToNeverPromptList(const char* pref_id, base::StringPiece value);
+  // Used for testing. The public version passes in base::Time::Now()
+  void AddSiteToNeverPromptList(base::StringPiece site, base::Time time);
   void RemoveValueFromNeverPromptList(const char* pref_id,
                                       base::StringPiece value);
   size_t GetListSize(const char* pref_id) const;
