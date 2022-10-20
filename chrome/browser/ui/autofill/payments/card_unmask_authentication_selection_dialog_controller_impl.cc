@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,9 +51,11 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
   if (dialog_view_)
     return;
 
-  // Currently we only display the first challenge option available.
   DCHECK(!challenge_options.empty());
-  challenge_options_ = {challenge_options[0]};
+  challenge_options_ =
+      base::FeatureList::IsEnabled(features::kAutofillEnableCvcForVcnYellowPath)
+          ? challenge_options
+          : std::vector<CardUnmaskChallengeOption>{challenge_options[0]};
 
   confirm_unmasking_method_callback_ =
       std::move(confirm_unmasking_method_callback);
