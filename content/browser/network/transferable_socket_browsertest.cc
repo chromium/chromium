@@ -7,8 +7,10 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
@@ -140,9 +142,15 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
   network::TransferableSocket transferable(
       socket.ReleaseSocketDescriptorForTesting(), network_process);
 #else
-  network::TransferableSocket transferable(
-      socket.ReleaseSocketDescriptorForTesting());
+  base::test::TestFuture<net::SocketDescriptor> socket_descriptor;
+  GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        return socket.ReleaseSocketDescriptorForTesting();
+      }),
+      socket_descriptor.GetCallback());
+  network::TransferableSocket transferable(socket_descriptor.Get());
 #endif
+
   {
     base::RunLoop network_service_runloop;
     network_service_test()->MakeRequestToServer(
