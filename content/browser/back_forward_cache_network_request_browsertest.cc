@@ -708,25 +708,24 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with an image with src == "image.png".
-  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  RenderFrameHostImplWrapper rfh_1(NavigateToPageWithImage(
+      embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   // Wait for the image request, but don't send anything yet.
   image_response.WaitForRequest();
 
   // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
   // The page was still loading when we navigated away, but it's still eligible
   // for back-forward cache.
-  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  ASSERT_TRUE(rfh_1->IsInBackForwardCache());
 
-  RenderFrameDeletedObserver delete_observer(rfh_1);
   // Start sending the image response while in the back-forward cache, but never
   // finish the request. Eventually the page will get deleted due to network
   // request timeout.
   image_response.Send(net::HTTP_OK, "image/png");
-  delete_observer.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
@@ -745,14 +744,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with 2 images.
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  RenderFrameHostImpl* rfh_1 = current_frame_host();
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
   // Wait for the document to load DOM to ensure that kLoading is not
   // one of the reasons why the document wasn't cached.
-  ASSERT_TRUE(WaitForDOMContentLoaded(rfh_1));
+  ASSERT_TRUE(WaitForDOMContentLoaded(rfh_1.get()));
 
-  EXPECT_TRUE(ExecJs(rfh_1, R"(
+  ASSERT_TRUE(ExecJs(rfh_1.get(), R"(
       var image1 = document.createElement("img");
       image1.src = "image1.png";
       document.body.appendChild(image1);
@@ -781,16 +780,15 @@ IN_PROC_BROWSER_TEST_F(
   image2_response.Send(net::HTTP_OK, "image/png");
   image2_response.Send(" ");
   // Run some script to ensure the renderer processed its pending tasks.
-  EXPECT_TRUE(ExecJs(rfh_1, "var foo = 42;"));
+  ASSERT_TRUE(ExecJs(rfh_1.get(), "var foo = 42;"));
 
   // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
   // The page was still loading when we navigated away, but it's still eligible
   // for back-forward cache.
-  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  ASSERT_TRUE(rfh_1.get()->IsInBackForwardCache());
 
-  RenderFrameDeletedObserver delete_observer(rfh_1);
   // Send the image response body while in the back-forward cache. The body size
   // of the responses individually is less than the per-process limit, but
   // together they surpass the per-process limit.
@@ -800,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(
   image1_response.Done();
   image2_response.Send(body);
   image2_response.Done();
-  delete_observer.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
