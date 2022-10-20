@@ -6,5 +6,8 @@ import {InstanceChecker} from '../common/instance_checker.js';
 
 import {SelectToSpeak} from './select_to_speak.js';
 
-InstanceChecker.closeExtraInstances();
-export const selectToSpeak = new SelectToSpeak();
+export let selectToSpeak;
+
+if (InstanceChecker.isActiveInstance()) {
+  selectToSpeak = new SelectToSpeak();
+}

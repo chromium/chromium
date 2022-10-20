@@ -7,7 +7,7 @@
  * simultaneously.
  */
 export class InstanceChecker {
-  static closeExtraInstances() {
+  static isActiveInstance() {
     // In 'split' manifest mode, the extension system runs two copies of the
     // extension. One in an incognito context; the other not. In guest mode, the
     // extension system runs only the extension in an incognito context. To
@@ -15,8 +15,12 @@ export class InstanceChecker {
     const manifest =
         /** @type {{incognito: (string|undefined)}} */ (
             chrome.runtime.getManifest());
-    if (manifest.incognito === 'split' &&
-        !chrome.extension.inIncognitoContext) {
+    return manifest.incognito !== 'split' ||
+        chrome.extension.inIncognitoContext;
+  }
+
+  static closeExtraInstances() {
+    if (!InstanceChecker.isActiveInstance()) {
       window.close();
     }
   }
