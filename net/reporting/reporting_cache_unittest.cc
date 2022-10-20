@@ -1167,16 +1167,16 @@ TEST_P(ReportingCacheTest, GetMixedCandidateEndpointsForDelivery) {
 
   // This test relies on proper NAKs being used, so set those up, and endpoint
   // group keys to go with them.
-  NetworkAnonymizationKey network_isolation_key1 =
+  NetworkAnonymizationKey network_anonymization_key1 =
       kIsolationInfo1_.network_anonymization_key();
-  NetworkAnonymizationKey network_isolation_key2 =
+  NetworkAnonymizationKey network_anonymization_key2 =
       kIsolationInfo2_.network_anonymization_key();
-  ReportingEndpointGroupKey group_key_11 =
-      ReportingEndpointGroupKey(network_isolation_key1, kOrigin1_, kGroup1_);
-  ReportingEndpointGroupKey group_key_12 =
-      ReportingEndpointGroupKey(network_isolation_key1, kOrigin1_, kGroup2_);
-  ReportingEndpointGroupKey group_key_21 =
-      ReportingEndpointGroupKey(network_isolation_key2, kOrigin2_, kGroup1_);
+  ReportingEndpointGroupKey group_key_11 = ReportingEndpointGroupKey(
+      network_anonymization_key1, kOrigin1_, kGroup1_);
+  ReportingEndpointGroupKey group_key_12 = ReportingEndpointGroupKey(
+      network_anonymization_key1, kOrigin1_, kGroup2_);
+  ReportingEndpointGroupKey group_key_21 = ReportingEndpointGroupKey(
+      network_anonymization_key2, kOrigin2_, kGroup1_);
 
   // Set up V0 endpoint groups for this origin.
   ASSERT_TRUE(SetEndpointInCache(group_key_11, kEndpoint1_, kExpires1_));
@@ -1190,7 +1190,7 @@ TEST_P(ReportingCacheTest, GetMixedCandidateEndpointsForDelivery) {
   const base::UnguessableToken reporting_source =
       base::UnguessableToken::Create();
   const ReportingEndpointGroupKey document_group_key =
-      ReportingEndpointGroupKey(network_isolation_key1, reporting_source,
+      ReportingEndpointGroupKey(network_anonymization_key1, reporting_source,
                                 kOrigin1_, kGroup1_);
   SetV1EndpointInCache(document_group_key, reporting_source, kIsolationInfo1_,
                        kEndpoint1_);
@@ -1199,7 +1199,7 @@ TEST_P(ReportingCacheTest, GetMixedCandidateEndpointsForDelivery) {
   // the V1 endpoint should be returned.
   std::vector<ReportingEndpoint> candidate_endpoints =
       cache()->GetCandidateEndpointsForDelivery(ReportingEndpointGroupKey(
-          network_isolation_key1, reporting_source, kOrigin1_, kGroup1_));
+          network_anonymization_key1, reporting_source, kOrigin1_, kGroup1_));
   ASSERT_EQ(1u, candidate_endpoints.size());
   EXPECT_EQ(document_group_key, candidate_endpoints[0].group_key);
 
@@ -1207,7 +1207,7 @@ TEST_P(ReportingCacheTest, GetMixedCandidateEndpointsForDelivery) {
   // returned.
   candidate_endpoints =
       cache()->GetCandidateEndpointsForDelivery(ReportingEndpointGroupKey(
-          network_isolation_key1, absl::nullopt, kOrigin1_, kGroup1_));
+          network_anonymization_key1, absl::nullopt, kOrigin1_, kGroup1_));
   ASSERT_EQ(2u, candidate_endpoints.size());
   EXPECT_EQ(group_key_11, candidate_endpoints[0].group_key);
   EXPECT_EQ(group_key_11, candidate_endpoints[1].group_key);
@@ -1216,7 +1216,7 @@ TEST_P(ReportingCacheTest, GetMixedCandidateEndpointsForDelivery) {
   // been configured, so we should fall back to the V0 endpoints.
   candidate_endpoints =
       cache()->GetCandidateEndpointsForDelivery(ReportingEndpointGroupKey(
-          network_isolation_key1, reporting_source, kOrigin1_, kGroup2_));
+          network_anonymization_key1, reporting_source, kOrigin1_, kGroup2_));
   ASSERT_EQ(1u, candidate_endpoints.size());
   EXPECT_EQ(group_key_12, candidate_endpoints[0].group_key);
 }
@@ -1955,18 +1955,18 @@ TEST_P(ReportingCacheTest, DoNotAddDuplicatedEntriesFromStore) {
 TEST_P(ReportingCacheTest, GetIsolationInfoForEndpoint) {
   LoadReportingClients();
 
-  NetworkAnonymizationKey network_isolation_key1 =
+  NetworkAnonymizationKey network_anonymization_key1 =
       kIsolationInfo1_.network_anonymization_key();
 
   // Set up a V1 endpoint for this origin.
   cache()->SetV1EndpointForTesting(
-      ReportingEndpointGroupKey(network_isolation_key1, *kReportingSource_,
+      ReportingEndpointGroupKey(network_anonymization_key1, *kReportingSource_,
                                 kOrigin1_, kGroup1_),
       *kReportingSource_, kIsolationInfo1_, kUrl1_);
 
   // Set up a V0 endpoint group for this origin.
-  ReportingEndpointGroupKey group_key_11 =
-      ReportingEndpointGroupKey(network_isolation_key1, kOrigin1_, kGroup1_);
+  ReportingEndpointGroupKey group_key_11 = ReportingEndpointGroupKey(
+      network_anonymization_key1, kOrigin1_, kGroup1_);
   ASSERT_TRUE(SetEndpointInCache(group_key_11, kEndpoint1_, kExpires1_));
 
   // For a V1 endpoint, ensure that the isolation info matches exactly what was

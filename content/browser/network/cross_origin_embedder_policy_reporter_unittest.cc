@@ -31,18 +31,18 @@ class TestNetworkContext : public network::TestNetworkContext {
     Report(const std::string& type,
            const std::string& group,
            const GURL& url,
-           const net::NetworkAnonymizationKey& network_isolation_key,
+           const net::NetworkAnonymizationKey& network_anonymization_key,
            base::Value::Dict body)
         : type(type),
           group(group),
           url(url),
-          network_isolation_key(network_isolation_key),
+          network_anonymization_key(network_anonymization_key),
           body(std::move(body)) {}
 
     std::string type;
     std::string group;
     GURL url;
-    net::NetworkAnonymizationKey network_isolation_key;
+    net::NetworkAnonymizationKey network_anonymization_key;
     base::Value::Dict body;
   };
 
@@ -51,12 +51,12 @@ class TestNetworkContext : public network::TestNetworkContext {
       const std::string& group,
       const GURL& url,
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       const absl::optional<std::string>& user_agent,
       base::Value::Dict body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(
-        Report(type, group, url, network_isolation_key, std::move(body)));
+        Report(type, group, url, network_anonymization_key, std::move(body)));
   }
 
   const std::vector<Report>& reports() const { return reports_; }
@@ -234,13 +234,13 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicCorp) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_EQ(r1.network_isolation_key, kNetworkIsolationKey);
+  EXPECT_EQ(r1.network_anonymization_key, kNetworkIsolationKey);
   EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x#foo?bar=baz",
                                        RequestDestination::kScript, "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
-  EXPECT_EQ(r2.network_isolation_key, kNetworkIsolationKey);
+  EXPECT_EQ(r2.network_anonymization_key, kNetworkIsolationKey);
   EXPECT_EQ(r2.body,
             CreateBodyForCorp("http://www2.example.com:41/y",
                               RequestDestination::kEmpty, "reporting"));

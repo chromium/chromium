@@ -24,7 +24,7 @@ namespace predictors {
 
 ResolveHostClientImpl::ResolveHostClientImpl(
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     ResolveHostCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {
@@ -43,7 +43,7 @@ ResolveHostClientImpl::ResolveHostClientImpl(
   network_context->ResolveHost(
       network::mojom::HostResolverHost::NewSchemeHostPort(
           url::SchemeHostPort(url)),
-      network_isolation_key, std::move(parameters),
+      network_anonymization_key, std::move(parameters),
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostClientImpl::OnConnectionError, base::Unretained(this)));

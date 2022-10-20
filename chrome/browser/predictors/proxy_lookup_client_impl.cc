@@ -19,13 +19,13 @@ namespace predictors {
 
 ProxyLookupClientImpl::ProxyLookupClientImpl(
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     ProxyLookupCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   proxy_lookup_start_time_ = base::TimeTicks::Now();
-  network_context->LookUpProxyForURL(url, network_isolation_key,
+  network_context->LookUpProxyForURL(url, network_anonymization_key,
                                      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&ProxyLookupClientImpl::OnProxyLookupComplete,

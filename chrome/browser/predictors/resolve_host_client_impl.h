@@ -38,7 +38,7 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   // resolved or when an error occurs.
   ResolveHostClientImpl(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       ResolveHostCallback callback,
       network::mojom::NetworkContext* network_context);
 

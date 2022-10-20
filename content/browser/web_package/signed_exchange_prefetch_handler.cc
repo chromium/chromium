@@ -32,7 +32,7 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     URLLoaderThrottlesGetter loader_throttles_getter,
     network::mojom::URLLoaderClient* forwarding_client,
-    const net::NetworkAnonymizationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
     const std::string& accept_langs,
     bool keep_entry_for_prefetch_cache)
@@ -45,7 +45,7 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
 
   auto reporter = SignedExchangeReporter::MaybeCreate(
       resource_request.url, resource_request.referrer.spec(), *response_head,
-      network_isolation_key, frame_tree_node_id);
+      network_anonymization_key, frame_tree_node_id);
   auto devtools_proxy = std::make_unique<SignedExchangeDevToolsProxy>(
       resource_request.url, response_head.Clone(), frame_tree_node_id,
       absl::nullopt /* devtools_navigation_token */,
@@ -56,7 +56,7 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
       network::mojom::kURLLoadOptionNone,
       false /* should_redirect_to_fallback */, std::move(devtools_proxy),
       std::move(reporter), std::move(url_loader_factory),
-      loader_throttles_getter, network_isolation_key, frame_tree_node_id,
+      loader_throttles_getter, network_anonymization_key, frame_tree_node_id,
       std::move(metric_recorder), accept_langs, keep_entry_for_prefetch_cache);
 }
 

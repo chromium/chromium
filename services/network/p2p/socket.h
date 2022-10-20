@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
       uint16_t min_port,
       uint16_t max_port,
       const P2PHostAndIPEndPoint& remote_address,
-      const net::NetworkAnonymizationKey& network_isolation_key) = 0;
+      const net::NetworkAnonymizationKey& network_anonymization_key) = 0;
 
   mojo::PendingRemote<mojom::P2PSocketClient> ReleaseClientForTesting();
   mojo::PendingReceiver<mojom::P2PSocket> ReleaseReceiverForTesting();

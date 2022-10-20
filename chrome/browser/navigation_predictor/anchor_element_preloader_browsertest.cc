@@ -112,7 +112,7 @@ class AnchorElementPreloaderBrowserTest
   // given it already has a warm connection.
   void OnPreresolveFinished(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       bool success) override {
     if (url != GURL(kOrigin1) && url != GURL(kOrigin2)) {
       return;

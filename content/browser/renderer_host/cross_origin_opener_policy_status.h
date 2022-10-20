@@ -58,9 +58,10 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
       network::mojom::URLResponseHead* response);
 
   // Called when receiving a redirect or the final response.
-  void EnforceCOOP(const network::CrossOriginOpenerPolicy& response_coop,
-                   const url::Origin& response_origin,
-                   const net::NetworkAnonymizationKey& network_isolation_key);
+  void EnforceCOOP(
+      const network::CrossOriginOpenerPolicy& response_coop,
+      const url::Origin& response_origin,
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
   // Force a browsing instance swap, even if the COOP rules do not require it.
   // Calling this function is safe because it can only tighten security.

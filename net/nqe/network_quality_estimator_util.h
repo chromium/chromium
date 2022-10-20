@@ -39,7 +39,7 @@ NET_EXPORT_PRIVATE bool IsRequestForPrivateHost(const URLRequest& request,
 NET_EXPORT_PRIVATE bool IsPrivateHostForTesting(
     HostResolver* host_resolver,
     const HostPortPair& host_port_pair,
-    const NetworkAnonymizationKey& network_isolation_key);
+    const NetworkAnonymizationKey& network_anonymization_key);
 
 }  // namespace nqe::internal
 

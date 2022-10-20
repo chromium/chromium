@@ -28,7 +28,7 @@ class CONTENT_EXPORT SignedExchangeReporter {
       const GURL& outer_url,
       const std::string& referrer,
       const network::mojom::URLResponseHead& response,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       int frame_tree_node_id);
 
   SignedExchangeReporter(const SignedExchangeReporter&) = delete;
@@ -51,12 +51,12 @@ class CONTENT_EXPORT SignedExchangeReporter {
       const GURL& outer_url,
       const std::string& referrer,
       const network::mojom::URLResponseHead& response,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       int frame_tree_node_id);
 
   network::mojom::SignedExchangeReportPtr report_;
   const base::TimeTicks request_start_;
-  const net::NetworkAnonymizationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
   const int frame_tree_node_id_;
   net::IPAddress cert_server_ip_address_;
 };

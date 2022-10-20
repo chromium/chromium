@@ -43,11 +43,12 @@ class MockHostResolver : public network::mojom::HostResolver {
   MockHostResolver(const MockHostResolver&) = delete;
   MockHostResolver& operator=(const MockHostResolver&) = delete;
 
-  void ResolveHost(network::mojom::HostResolverHostPtr host,
-                   const ::net::NetworkAnonymizationKey& network_isolation_key,
-                   network::mojom::ResolveHostParametersPtr optional_parameters,
-                   ::mojo::PendingRemote<network::mojom::ResolveHostClient>
-                       pending_response_client) override;
+  void ResolveHost(
+      network::mojom::HostResolverHostPtr host,
+      const ::net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ResolveHostParametersPtr optional_parameters,
+      ::mojo::PendingRemote<network::mojom::ResolveHostClient>
+          pending_response_client) override;
 
   void MdnsListen(
       const ::net::HostPortPair& host,

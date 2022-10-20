@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,18 +26,18 @@ class TestNetworkContext : public network::TestNetworkContext {
     Report(const std::string& type,
            const std::string& group,
            const GURL& url,
-           const net::NetworkAnonymizationKey& network_isolation_key,
+           const net::NetworkAnonymizationKey& network_anonymization_key,
            base::Value::Dict body)
         : type(type),
           group(group),
           url(url),
-          network_isolation_key(network_isolation_key),
+          network_anonymization_key(network_anonymization_key),
           body(std::move(body)) {}
 
     std::string type;
     std::string group;
     GURL url;
-    net::NetworkAnonymizationKey network_isolation_key;
+    net::NetworkAnonymizationKey network_anonymization_key;
     base::Value::Dict body;
   };
 
@@ -46,12 +46,12 @@ class TestNetworkContext : public network::TestNetworkContext {
       const std::string& group,
       const GURL& url,
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       const absl::optional<std::string>& user_agent,
       base::Value::Dict body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(
-        Report(type, group, url, network_isolation_key, std::move(body)));
+        Report(type, group, url, network_anonymization_key, std::move(body)));
   }
 
   const std::vector<Report>& reports() const { return reports_; }
@@ -80,15 +80,15 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
   const base::UnguessableToken& reporting_source() const {
     return reporting_source_;
   }
-  const net::NetworkAnonymizationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const net::NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  protected:
   std::unique_ptr<CrossOriginOpenerPolicyReporter> GetReporter() {
     return std::make_unique<CrossOriginOpenerPolicyReporter>(
         storage_partition(), context_url(), GURL("https://referrer.com/?a#b"),
-        coop(), reporting_source(), network_isolation_key_);
+        coop(), reporting_source(), network_anonymization_key_);
   }
 
  private:
@@ -99,7 +99,7 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
   network::CrossOriginOpenerPolicy coop_;
   const base::UnguessableToken reporting_source_ =
       base::UnguessableToken::Create();
-  const net::NetworkAnonymizationKey network_isolation_key_ =
+  const net::NetworkAnonymizationKey network_anonymization_key_ =
       net::NetworkAnonymizationKey::CreateTransient();
 };
 
@@ -119,7 +119,7 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, Basic) {
 
   EXPECT_EQ(r1.type, "coop");
   EXPECT_EQ(r1.url, context_url());
-  EXPECT_EQ(r1.network_isolation_key, network_isolation_key());
+  EXPECT_EQ(r1.network_anonymization_key, network_anonymization_key());
   EXPECT_EQ(*r1.body.FindString("disposition"), "enforce");
   EXPECT_EQ(*r1.body.FindString("previousResponseURL"), url1_report);
   EXPECT_EQ(*r1.body.FindString("referrer"), "https://referrer.com/?a");
@@ -128,7 +128,7 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, Basic) {
 
   EXPECT_EQ(r2.type, "coop");
   EXPECT_EQ(r2.url, context_url());
-  EXPECT_EQ(r2.network_isolation_key, network_isolation_key());
+  EXPECT_EQ(r2.network_anonymization_key, network_anonymization_key());
   EXPECT_EQ(*r2.body.FindString("disposition"), "enforce");
   EXPECT_EQ(*r2.body.FindString("nextResponseURL"), url3);
   EXPECT_EQ(*r2.body.FindString("type"), "navigation-from-response");

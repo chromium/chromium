@@ -45,7 +45,7 @@ void TestNavigationURLLoaderDelegate::ReleaseURLLoaderClientEndpoints() {
 
 void TestNavigationURLLoaderDelegate::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
-    const net::NetworkAnonymizationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::URLResponseHeadPtr response_head) {
   redirect_info_ = redirect_info;
   redirect_response_ = std::move(response_head);
@@ -60,7 +60,7 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     GlobalRequestID request_id,
     bool is_download,
     blink::NavigationDownloadPolicy download_policy,
-    net::NetworkAnonymizationKey network_isolation_key,
+    net::NetworkAnonymizationKey network_anonymization_key,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
   on_request_handled_counter_++;

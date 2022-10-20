@@ -184,7 +184,7 @@ int SOCKSConnectJob::DoSOCKSConnect() {
   } else {
     auto socks_socket = std::make_unique<SOCKSClientSocket>(
         transport_connect_job_->PassSocket(), socks_params_->destination(),
-        socks_params_->network_isolation_key(), priority(), host_resolver(),
+        socks_params_->network_anonymization_key(), priority(), host_resolver(),
         socks_params_->transport_params()->secure_dns_policy(),
         socks_params_->traffic_annotation());
     socks_socket_ptr_ = socks_socket.get();

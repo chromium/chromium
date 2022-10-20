@@ -43,7 +43,7 @@ class NET_EXPORT_PRIVATE SOCKSSocketParams
   }
   const HostPortPair& destination() const { return destination_; }
   bool is_socks_v5() const { return socks_v5_; }
-  const NetworkAnonymizationKey& network_isolation_key() {
+  const NetworkAnonymizationKey& network_anonymization_key() {
     return network_anonymization_key_;
   }
 

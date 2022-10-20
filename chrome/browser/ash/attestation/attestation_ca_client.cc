@@ -91,7 +91,7 @@ class CAProxyLookupClient : public network::mojom::ProxyLookupClient {
     CHECK(network_context);
   }
   void Start(network::mojom::NetworkContext* network_context, const GURL& url) {
-    const net::NetworkAnonymizationKey network_isolation_key =
+    const net::NetworkAnonymizationKey network_anonymization_key =
         net::NetworkAnonymizationKey::CreateTransient();
     mojo::PendingRemote<network::mojom::ProxyLookupClient> proxy_lookup_client =
         receiver_.BindNewPipeAndPassRemote();
@@ -99,7 +99,7 @@ class CAProxyLookupClient : public network::mojom::ProxyLookupClient {
         &CAProxyLookupClient::OnProxyLookupComplete, base::Unretained(this),
         net::ERR_ABORTED, absl::nullopt));
 
-    network_context->LookUpProxyForURL(url, network_isolation_key,
+    network_context->LookUpProxyForURL(url, network_anonymization_key,
                                        std::move(proxy_lookup_client));
   }
 

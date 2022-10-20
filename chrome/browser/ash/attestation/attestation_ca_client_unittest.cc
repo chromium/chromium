@@ -41,7 +41,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   MOCK_METHOD(void,
               LookUpProxyForURL,
               (const GURL& url,
-               const net::NetworkAnonymizationKey& network_isolation_key,
+               const net::NetworkAnonymizationKey& network_anonymization_key,
                mojo::PendingRemote<::network::mojom::ProxyLookupClient>
                    proxy_lookup_client),
               (override));
@@ -53,7 +53,7 @@ class MockNetworkContext : public network::TestNetworkContext {
  private:
   void LookUpProxyForURLInternal(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<::network::mojom::ProxyLookupClient>
           proxy_lookup_client) {
     mojo::Remote<::network::mojom::ProxyLookupClient> client(

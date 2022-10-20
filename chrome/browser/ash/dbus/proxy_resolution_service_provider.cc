@@ -48,7 +48,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
   ProxyLookupRequest(
       network::mojom::NetworkContext* network_context,
       const GURL& source_url,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       ProxyResolutionServiceProvider::NotifyCallback notify_callback,
       chromeos::SystemProxyOverride system_proxy_override)
       : notify_callback_(std::move(notify_callback)),
@@ -59,7 +59,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
         &ProxyLookupRequest::OnProxyLookupComplete, base::Unretained(this),
         net::ERR_ABORTED, absl::nullopt));
 
-    network_context->LookUpProxyForURL(source_url, network_isolation_key,
+    network_context->LookUpProxyForURL(source_url, network_anonymization_key,
                                        std::move(proxy_lookup_client));
   }
 

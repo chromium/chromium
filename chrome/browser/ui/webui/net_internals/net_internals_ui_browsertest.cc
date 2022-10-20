@@ -115,11 +115,12 @@ class NetworkContextForTesting : public network::TestNetworkContext {
   // Only "*.com" is registered to this resolver. And especially for
   // http2/http3/multihost.com, results include endpoint_results_with_metadata
   // as well as resolved_addresses.
-  void ResolveHost(network::mojom::HostResolverHostPtr host,
-                   const net::NetworkAnonymizationKey& network_isolation_key,
-                   network::mojom::ResolveHostParametersPtr optional_parameters,
-                   mojo::PendingRemote<network::mojom::ResolveHostClient>
-                       pending_response_client) override {
+  void ResolveHost(
+      network::mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ResolveHostParametersPtr optional_parameters,
+      mojo::PendingRemote<network::mojom::ResolveHostClient>
+          pending_response_client) override {
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
 
@@ -229,7 +230,7 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
 
   // Single NetworkAnonymizationKey used for all DNS lookups, so repeated
   // lookups use the same cache key.
-  net::NetworkAnonymizationKey network_isolation_key_{
+  net::NetworkAnonymizationKey network_anonymization_key_{
       net::NetworkAnonymizationKey::CreateTransient()};
 
   base::WeakPtrFactory<MessageHandler> weak_factory_{this};
@@ -327,8 +328,8 @@ void NetInternalsTest::MessageHandler::DnsLookup(
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                         net::HostPortPair(hostname, 80)),
-                    network_isolation_key_, std::move(resolve_host_parameters),
-                    std::move(client));
+                    network_anonymization_key_,
+                    std::move(resolve_host_parameters), std::move(client));
 }
 
 void NetInternalsTest::MessageHandler::SetNetworkContextForTesting(

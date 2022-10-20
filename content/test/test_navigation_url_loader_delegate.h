@@ -60,7 +60,7 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       network::mojom::URLResponseHeadPtr response) override;
   void OnResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -69,7 +69,7 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       GlobalRequestID request_id,
       bool is_download,
       blink::NavigationDownloadPolicy download_policy,
-      net::NetworkAnonymizationKey network_isolation_key,
+      net::NetworkAnonymizationKey network_anonymization_key,
       absl::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) override;
   void OnRequestFailed(

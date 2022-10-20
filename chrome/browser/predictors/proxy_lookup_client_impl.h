@@ -35,7 +35,7 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
   // lookup is completed or when an error occurs.
   ProxyLookupClientImpl(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       ProxyLookupCallback callback,
       network::mojom::NetworkContext* network_context);
 

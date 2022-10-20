@@ -48,7 +48,7 @@ class HttpServerPropertiesPeer {
           NetworkAnonymizationKey()) {
     BrokenAlternativeService broken_alternative_service(
         alternative_service, network_anonymization_key,
-        true /* use_network_isolation_key */);
+        true /* use_network_anonymization_key */);
     BrokenAlternativeServiceList::iterator unused_it;
     impl->broken_alternative_services_.AddToBrokenListAndMap(
         broken_alternative_service, when, &unused_it);
@@ -77,7 +77,7 @@ HttpServerProperties::ServerInfoMapKey CreateSimpleKey(
     const url::SchemeHostPort& server) {
   return HttpServerProperties::ServerInfoMapKey(
       server, net::NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
 }
 
 class HttpServerPropertiesTest : public TestWithTaskEnvironment {
@@ -96,9 +96,9 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
     test_clock_.Advance(base::Seconds(12345));
 
     SchemefulSite site1(GURL("https://foo.test/"));
-    network_isolation_key1_ = NetworkAnonymizationKey(site1, site1);
+    network_anonymization_key1_ = NetworkAnonymizationKey(site1, site1);
     SchemefulSite site2(GURL("https://bar.test/"));
-    network_isolation_key2_ = NetworkAnonymizationKey(site2, site2);
+    network_anonymization_key2_ = NetworkAnonymizationKey(site2, site2);
   }
 
   // This is a little awkward, but need to create and configure the
@@ -144,8 +144,8 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
 
   // Two different non-empty network isolation keys for use in tests that need
   // them.
-  NetworkAnonymizationKey network_isolation_key1_;
-  NetworkAnonymizationKey network_isolation_key2_;
+  NetworkAnonymizationKey network_anonymization_key1_;
+  NetworkAnonymizationKey network_anonymization_key2_;
 
   HttpServerProperties impl_;
 };
@@ -244,28 +244,29 @@ TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWebSockets) {
 TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWithNetworkIsolationKey) {
   const url::SchemeHostPort kServer("https", "foo.test", 443);
 
-  EXPECT_FALSE(impl_.GetSupportsSpdy(kServer, network_isolation_key1_));
-  EXPECT_FALSE(impl_.SupportsRequestPriority(kServer, network_isolation_key1_));
+  EXPECT_FALSE(impl_.GetSupportsSpdy(kServer, network_anonymization_key1_));
+  EXPECT_FALSE(
+      impl_.SupportsRequestPriority(kServer, network_anonymization_key1_));
   EXPECT_FALSE(impl_.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
   EXPECT_FALSE(
       impl_.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
 
   // Without network isolation keys enabled for HttpServerProperties, passing in
   // a NetworkAnonymizationKey should have no effect on behavior.
-  for (const auto& network_isolation_key_to_set :
-       {NetworkAnonymizationKey(), network_isolation_key1_}) {
-    impl_.SetSupportsSpdy(kServer, network_isolation_key_to_set, true);
-    EXPECT_TRUE(impl_.GetSupportsSpdy(kServer, network_isolation_key1_));
+  for (const auto& network_anonymization_key_to_set :
+       {NetworkAnonymizationKey(), network_anonymization_key1_}) {
+    impl_.SetSupportsSpdy(kServer, network_anonymization_key_to_set, true);
+    EXPECT_TRUE(impl_.GetSupportsSpdy(kServer, network_anonymization_key1_));
     EXPECT_TRUE(
-        impl_.SupportsRequestPriority(kServer, network_isolation_key1_));
+        impl_.SupportsRequestPriority(kServer, network_anonymization_key1_));
     EXPECT_TRUE(impl_.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
     EXPECT_TRUE(
         impl_.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
 
-    impl_.SetSupportsSpdy(kServer, network_isolation_key_to_set, false);
-    EXPECT_FALSE(impl_.GetSupportsSpdy(kServer, network_isolation_key1_));
+    impl_.SetSupportsSpdy(kServer, network_anonymization_key_to_set, false);
+    EXPECT_FALSE(impl_.GetSupportsSpdy(kServer, network_anonymization_key1_));
     EXPECT_FALSE(
-        impl_.SupportsRequestPriority(kServer, network_isolation_key1_));
+        impl_.SupportsRequestPriority(kServer, network_anonymization_key1_));
     EXPECT_FALSE(impl_.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
     EXPECT_FALSE(
         impl_.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
@@ -283,41 +284,44 @@ TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWithNetworkIsolationKey) {
                                   nullptr /* net_log */, test_tick_clock_,
                                   &test_clock_);
 
-  EXPECT_FALSE(properties.GetSupportsSpdy(kServer, network_isolation_key1_));
   EXPECT_FALSE(
-      properties.SupportsRequestPriority(kServer, network_isolation_key1_));
+      properties.GetSupportsSpdy(kServer, network_anonymization_key1_));
+  EXPECT_FALSE(
+      properties.SupportsRequestPriority(kServer, network_anonymization_key1_));
   EXPECT_FALSE(properties.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
   EXPECT_FALSE(
       properties.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
 
-  properties.SetSupportsSpdy(kServer, network_isolation_key1_, true);
-  EXPECT_TRUE(properties.GetSupportsSpdy(kServer, network_isolation_key1_));
+  properties.SetSupportsSpdy(kServer, network_anonymization_key1_, true);
+  EXPECT_TRUE(properties.GetSupportsSpdy(kServer, network_anonymization_key1_));
   EXPECT_TRUE(
-      properties.SupportsRequestPriority(kServer, network_isolation_key1_));
+      properties.SupportsRequestPriority(kServer, network_anonymization_key1_));
   EXPECT_FALSE(properties.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
   EXPECT_FALSE(
       properties.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
 
   properties.SetSupportsSpdy(kServer, NetworkAnonymizationKey(), true);
-  EXPECT_TRUE(properties.GetSupportsSpdy(kServer, network_isolation_key1_));
+  EXPECT_TRUE(properties.GetSupportsSpdy(kServer, network_anonymization_key1_));
   EXPECT_TRUE(
-      properties.SupportsRequestPriority(kServer, network_isolation_key1_));
+      properties.SupportsRequestPriority(kServer, network_anonymization_key1_));
   EXPECT_TRUE(properties.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
   EXPECT_TRUE(
       properties.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
 
-  properties.SetSupportsSpdy(kServer, network_isolation_key1_, false);
-  EXPECT_FALSE(properties.GetSupportsSpdy(kServer, network_isolation_key1_));
+  properties.SetSupportsSpdy(kServer, network_anonymization_key1_, false);
   EXPECT_FALSE(
-      properties.SupportsRequestPriority(kServer, network_isolation_key1_));
+      properties.GetSupportsSpdy(kServer, network_anonymization_key1_));
+  EXPECT_FALSE(
+      properties.SupportsRequestPriority(kServer, network_anonymization_key1_));
   EXPECT_TRUE(properties.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
   EXPECT_TRUE(
       properties.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
 
   properties.SetSupportsSpdy(kServer, NetworkAnonymizationKey(), false);
-  EXPECT_FALSE(properties.GetSupportsSpdy(kServer, network_isolation_key1_));
   EXPECT_FALSE(
-      properties.SupportsRequestPriority(kServer, network_isolation_key1_));
+      properties.GetSupportsSpdy(kServer, network_anonymization_key1_));
+  EXPECT_FALSE(
+      properties.SupportsRequestPriority(kServer, network_anonymization_key1_));
   EXPECT_FALSE(properties.GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
   EXPECT_FALSE(
       properties.SupportsRequestPriority(kServer, NetworkAnonymizationKey()));
@@ -815,27 +819,28 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
           AlternativeService(kProtoHTTP2, "foo", 443),
           base::Time::Now() + base::Days(1) /* expiration */)});
 
-  EXPECT_TRUE(impl_.GetAlternativeServiceInfos(kServer, network_isolation_key1_)
-                  .empty());
+  EXPECT_TRUE(
+      impl_.GetAlternativeServiceInfos(kServer, network_anonymization_key1_)
+          .empty());
   EXPECT_TRUE(
       impl_.GetAlternativeServiceInfos(kServer, NetworkAnonymizationKey())
           .empty());
 
   // Without network isolation keys enabled for HttpServerProperties, passing in
   // a NetworkAnonymizationKey should have no effect on behavior.
-  for (const auto& network_isolation_key_to_set :
-       {NetworkAnonymizationKey(), network_isolation_key1_}) {
-    impl_.SetAlternativeServices(kServer, network_isolation_key_to_set,
+  for (const auto& network_anonymization_key_to_set :
+       {NetworkAnonymizationKey(), network_anonymization_key1_}) {
+    impl_.SetAlternativeServices(kServer, network_anonymization_key_to_set,
                                  kAlternativeServices);
     EXPECT_EQ(kAlternativeServices, impl_.GetAlternativeServiceInfos(
-                                        kServer, network_isolation_key1_));
+                                        kServer, network_anonymization_key1_));
     EXPECT_EQ(kAlternativeServices, impl_.GetAlternativeServiceInfos(
                                         kServer, NetworkAnonymizationKey()));
 
-    impl_.SetAlternativeServices(kServer, network_isolation_key_to_set,
+    impl_.SetAlternativeServices(kServer, network_anonymization_key_to_set,
                                  AlternativeServiceInfoVector());
     EXPECT_TRUE(
-        impl_.GetAlternativeServiceInfos(kServer, network_isolation_key1_)
+        impl_.GetAlternativeServiceInfos(kServer, network_anonymization_key1_)
             .empty());
     EXPECT_TRUE(
         impl_.GetAlternativeServiceInfos(kServer, NetworkAnonymizationKey())
@@ -854,10 +859,10 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
                                   nullptr /* net_log */, test_tick_clock_,
                                   &test_clock_);
 
-  properties.SetAlternativeServices(kServer, network_isolation_key1_,
+  properties.SetAlternativeServices(kServer, network_anonymization_key1_,
                                     kAlternativeServices);
   EXPECT_EQ(kAlternativeServices, properties.GetAlternativeServiceInfos(
-                                      kServer, network_isolation_key1_));
+                                      kServer, network_anonymization_key1_));
   EXPECT_TRUE(
       properties.GetAlternativeServiceInfos(kServer, NetworkAnonymizationKey())
           .empty());
@@ -865,14 +870,15 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
   properties.SetAlternativeServices(kServer, NetworkAnonymizationKey(),
                                     kAlternativeServices);
   EXPECT_EQ(kAlternativeServices, properties.GetAlternativeServiceInfos(
-                                      kServer, network_isolation_key1_));
+                                      kServer, network_anonymization_key1_));
   EXPECT_EQ(kAlternativeServices, properties.GetAlternativeServiceInfos(
                                       kServer, NetworkAnonymizationKey()));
 
-  properties.SetAlternativeServices(kServer, network_isolation_key1_,
+  properties.SetAlternativeServices(kServer, network_anonymization_key1_,
                                     AlternativeServiceInfoVector());
   EXPECT_TRUE(
-      properties.GetAlternativeServiceInfos(kServer, network_isolation_key1_)
+      properties
+          .GetAlternativeServiceInfos(kServer, network_anonymization_key1_)
           .empty());
   EXPECT_EQ(kAlternativeServices, properties.GetAlternativeServiceInfos(
                                       kServer, NetworkAnonymizationKey()));
@@ -880,7 +886,8 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
   properties.SetAlternativeServices(kServer, NetworkAnonymizationKey(),
                                     AlternativeServiceInfoVector());
   EXPECT_TRUE(
-      properties.GetAlternativeServiceInfos(kServer, network_isolation_key1_)
+      properties
+          .GetAlternativeServiceInfos(kServer, network_anonymization_key1_)
           .empty());
   EXPECT_TRUE(
       properties.GetAlternativeServiceInfos(kServer, NetworkAnonymizationKey())
@@ -1389,37 +1396,38 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   // Without NetworkIsolationKeys enabled, the NetworkAnonymizationKey parameter
   // should be ignored.
-  impl_.SetHttp2AlternativeService(server, network_isolation_key1_,
+  impl_.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                    alternative_service, expiration);
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key1_));
+                                                network_anonymization_key1_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key2_));
+                                                network_anonymization_key2_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   impl_.MarkAlternativeServiceBroken(alternative_service,
-                                     network_isolation_key1_);
+                                     network_anonymization_key1_);
   EXPECT_TRUE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                               network_isolation_key1_));
+                                               network_anonymization_key1_));
   EXPECT_TRUE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                               network_isolation_key2_));
+                                               network_anonymization_key2_));
   EXPECT_TRUE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
-  impl_.ConfirmAlternativeService(alternative_service, network_isolation_key2_);
+  impl_.ConfirmAlternativeService(alternative_service,
+                                  network_anonymization_key2_);
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key1_));
+                                                network_anonymization_key1_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key2_));
+                                                network_anonymization_key2_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1430,63 +1438,63 @@ TEST_F(AlternateProtocolServerPropertiesTest,
                                   nullptr /* net_log */, test_tick_clock_,
                                   &test_clock_);
 
-  properties.SetHttp2AlternativeService(server, network_isolation_key1_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                         alternative_service, expiration);
-  properties.SetHttp2AlternativeService(server, network_isolation_key2_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key2_,
                                         alternative_service, expiration);
 
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.MarkAlternativeServiceBroken(alternative_service,
-                                          network_isolation_key1_);
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key1_));
+                                          network_anonymization_key1_);
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.MarkAlternativeServiceBroken(alternative_service,
-                                          network_isolation_key2_);
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key1_));
+                                          network_anonymization_key2_);
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.ConfirmAlternativeService(alternative_service,
-                                       network_isolation_key1_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                       network_anonymization_key1_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.ConfirmAlternativeService(alternative_service,
-                                       network_isolation_key2_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                       network_anonymization_key2_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 }
 
 TEST_F(AlternateProtocolServerPropertiesTest, MarkRecentlyBroken) {
@@ -1522,37 +1530,38 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   // Without NetworkIsolationKeys enabled, the NetworkAnonymizationKey parameter
   // should be ignored.
-  impl_.SetHttp2AlternativeService(server, network_isolation_key1_,
+  impl_.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                    alternative_service, expiration);
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key1_));
+                                                network_anonymization_key1_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key2_));
+                                                network_anonymization_key2_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   impl_.MarkAlternativeServiceRecentlyBroken(alternative_service,
-                                             network_isolation_key1_);
+                                             network_anonymization_key1_);
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key1_));
+                                                network_anonymization_key1_));
   EXPECT_TRUE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key2_));
+                                                network_anonymization_key2_));
   EXPECT_TRUE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
-  impl_.ConfirmAlternativeService(alternative_service, network_isolation_key2_);
+  impl_.ConfirmAlternativeService(alternative_service,
+                                  network_anonymization_key2_);
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key1_));
+                                                network_anonymization_key1_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key2_));
+                                                network_anonymization_key2_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1563,62 +1572,62 @@ TEST_F(AlternateProtocolServerPropertiesTest,
                                   nullptr /* net_log */, test_tick_clock_,
                                   &test_clock_);
 
-  properties.SetHttp2AlternativeService(server, network_isolation_key1_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                         alternative_service, expiration);
-  properties.SetHttp2AlternativeService(server, network_isolation_key2_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key2_,
                                         alternative_service, expiration);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.MarkAlternativeServiceRecentlyBroken(alternative_service,
-                                                  network_isolation_key1_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                                  network_anonymization_key1_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.MarkAlternativeServiceRecentlyBroken(alternative_service,
-                                                  network_isolation_key2_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                                  network_anonymization_key2_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.ConfirmAlternativeService(alternative_service,
-                                       network_isolation_key1_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                       network_anonymization_key1_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.ConfirmAlternativeService(alternative_service,
-                                       network_isolation_key2_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                       network_anonymization_key2_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 }
 
 TEST_F(AlternateProtocolServerPropertiesTest,
@@ -1655,38 +1664,39 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   // Without NetworkIsolationKeys enabled, the NetworkAnonymizationKey parameter
   // should be ignored.
-  impl_.SetHttp2AlternativeService(server, network_isolation_key1_,
+  impl_.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                    alternative_service, expiration);
 
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key1_));
+                                                network_anonymization_key1_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key2_));
+                                                network_anonymization_key2_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   impl_.MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-      alternative_service, network_isolation_key1_);
+      alternative_service, network_anonymization_key1_);
   EXPECT_TRUE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                               network_isolation_key1_));
+                                               network_anonymization_key1_));
   EXPECT_TRUE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                               network_isolation_key2_));
+                                               network_anonymization_key2_));
   EXPECT_TRUE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
-  impl_.ConfirmAlternativeService(alternative_service, network_isolation_key2_);
+  impl_.ConfirmAlternativeService(alternative_service,
+                                  network_anonymization_key2_);
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key1_));
+                                                network_anonymization_key1_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
-                                                network_isolation_key2_));
+                                                network_anonymization_key2_));
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1697,63 +1707,63 @@ TEST_F(AlternateProtocolServerPropertiesTest,
                                   nullptr /* net_log */, test_tick_clock_,
                                   &test_clock_);
 
-  properties.SetHttp2AlternativeService(server, network_isolation_key1_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                         alternative_service, expiration);
-  properties.SetHttp2AlternativeService(server, network_isolation_key2_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key2_,
                                         alternative_service, expiration);
 
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-      alternative_service, network_isolation_key1_);
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key1_));
+      alternative_service, network_anonymization_key1_);
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-      alternative_service, network_isolation_key2_);
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key1_));
+      alternative_service, network_anonymization_key2_);
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.ConfirmAlternativeService(alternative_service,
-                                       network_isolation_key1_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                       network_anonymization_key1_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.ConfirmAlternativeService(alternative_service,
-                                       network_isolation_key2_);
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+                                       network_anonymization_key2_);
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 }
 
 TEST_F(AlternateProtocolServerPropertiesTest, OnDefaultNetworkChanged) {
@@ -1834,43 +1844,43 @@ TEST_F(AlternateProtocolServerPropertiesTest,
                                   &test_clock_);
 
   const base::Time expiration = test_clock_.Now() + base::Days(1);
-  properties.SetHttp2AlternativeService(server, network_isolation_key1_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                         alternative_service, expiration);
-  properties.SetHttp2AlternativeService(server, network_isolation_key2_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key2_,
                                         alternative_service, expiration);
 
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   properties.MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-      alternative_service, network_isolation_key1_);
+      alternative_service, network_anonymization_key1_);
   properties.MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-      alternative_service, network_isolation_key2_);
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key1_));
+      alternative_service, network_anonymization_key2_);
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   // Default network change clears alt svc broken until default network changes.
   properties.OnDefaultNetworkChanged();
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 }
 
 TEST_F(AlternateProtocolServerPropertiesTest, Canonical) {
@@ -1945,11 +1955,11 @@ TEST_F(AlternateProtocolServerPropertiesTest,
                                   &test_clock_);
 
   url::SchemeHostPort test_server("https", "foo.c.youtube.com", 443);
-  EXPECT_FALSE(HasAlternativeService(test_server, network_isolation_key1_));
+  EXPECT_FALSE(HasAlternativeService(test_server, network_anonymization_key1_));
 
   url::SchemeHostPort canonical_server1("https", "bar.c.youtube.com", 443);
   EXPECT_FALSE(
-      HasAlternativeService(canonical_server1, network_isolation_key1_));
+      HasAlternativeService(canonical_server1, network_anonymization_key1_));
 
   AlternativeServiceInfoVector alternative_service_info_vector;
   const AlternativeService canonical_alternative_service1(
@@ -1963,14 +1973,15 @@ TEST_F(AlternateProtocolServerPropertiesTest,
   alternative_service_info_vector.push_back(
       AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
           canonical_alternative_service2, expiration));
-  properties.SetAlternativeServices(canonical_server1, network_isolation_key1_,
+  properties.SetAlternativeServices(canonical_server1,
+                                    network_anonymization_key1_,
                                     alternative_service_info_vector);
 
   // Since |test_server| does not have an alternative service itself,
   // GetAlternativeServiceInfos should return those of |canonical_server|.
   AlternativeServiceInfoVector alternative_service_info_vector2 =
       properties.GetAlternativeServiceInfos(test_server,
-                                            network_isolation_key1_);
+                                            network_anonymization_key1_);
   ASSERT_EQ(2u, alternative_service_info_vector2.size());
   EXPECT_EQ(canonical_alternative_service1,
             alternative_service_info_vector2[0].alternative_service());
@@ -1978,46 +1989,47 @@ TEST_F(AlternateProtocolServerPropertiesTest,
   // Canonical information should not be visible for other NetworkIsolationKeys.
   EXPECT_TRUE(
       properties
-          .GetAlternativeServiceInfos(test_server, network_isolation_key2_)
+          .GetAlternativeServiceInfos(test_server, network_anonymization_key2_)
           .empty());
   EXPECT_TRUE(
       properties
           .GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 
-  // Now add an alternative service entry for network_isolation_key2_ for a
+  // Now add an alternative service entry for network_anonymization_key2_ for a
   // different server and different NetworkAnonymizationKey, but with the same
   // canonical suffix.
   url::SchemeHostPort canonical_server2("https", "shrimp.c.youtube.com", 443);
-  properties.SetAlternativeServices(canonical_server2, network_isolation_key2_,
+  properties.SetAlternativeServices(canonical_server2,
+                                    network_anonymization_key2_,
                                     {alternative_service_info_vector[0]});
 
   // The canonical server information should reachable, and different, for both
   // NetworkIsolationKeys.
-  EXPECT_EQ(
-      1u, properties
-              .GetAlternativeServiceInfos(test_server, network_isolation_key2_)
-              .size());
-  EXPECT_EQ(
-      2u, properties
-              .GetAlternativeServiceInfos(test_server, network_isolation_key1_)
-              .size());
+  EXPECT_EQ(1u, properties
+                    .GetAlternativeServiceInfos(test_server,
+                                                network_anonymization_key2_)
+                    .size());
+  EXPECT_EQ(2u, properties
+                    .GetAlternativeServiceInfos(test_server,
+                                                network_anonymization_key1_)
+                    .size());
   EXPECT_TRUE(
       properties
           .GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 
-  // Clearing the alternate service state of network_isolation_key1_'s canonical
-  // server should only affect network_isolation_key1_.
-  properties.SetAlternativeServices(canonical_server1, network_isolation_key1_,
-                                    {});
-  EXPECT_EQ(
-      1u, properties
-              .GetAlternativeServiceInfos(test_server, network_isolation_key2_)
-              .size());
+  // Clearing the alternate service state of network_anonymization_key1_'s
+  // canonical server should only affect network_anonymization_key1_.
+  properties.SetAlternativeServices(canonical_server1,
+                                    network_anonymization_key1_, {});
+  EXPECT_EQ(1u, properties
+                    .GetAlternativeServiceInfos(test_server,
+                                                network_anonymization_key2_)
+                    .size());
   EXPECT_TRUE(
       properties
-          .GetAlternativeServiceInfos(test_server, network_isolation_key1_)
+          .GetAlternativeServiceInfos(test_server, network_anonymization_key1_)
           .empty());
   EXPECT_TRUE(
       properties
@@ -2131,70 +2143,70 @@ TEST_F(AlternateProtocolServerPropertiesTest,
                                   nullptr /* net_log */, test_tick_clock_,
                                   &test_clock_);
 
-  properties.SetHttp2AlternativeService(server, network_isolation_key1_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
                                         alternative_service,
                                         alt_service_expiration);
-  properties.SetHttp2AlternativeService(server, network_isolation_key2_,
+  properties.SetHttp2AlternativeService(server, network_anonymization_key2_,
                                         alternative_service,
                                         alt_service_expiration);
 
   EXPECT_FALSE(
-      properties.GetAlternativeServiceInfos(server, network_isolation_key1_)
+      properties.GetAlternativeServiceInfos(server, network_anonymization_key1_)
           .empty());
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(
-      properties.GetAlternativeServiceInfos(server, network_isolation_key2_)
+      properties.GetAlternativeServiceInfos(server, network_anonymization_key2_)
           .empty());
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   // Set broken alternative service with expiration date in the past for
-  // |network_isolation_key1_|.
+  // |network_anonymization_key1_|.
   HttpServerPropertiesPeer::AddBrokenAlternativeServiceWithExpirationTime(
-      &properties, alternative_service, past, network_isolation_key1_);
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key1_));
+      &properties, alternative_service, past, network_anonymization_key1_);
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_FALSE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
   // Set broken alternative service with expiration date in the future for
-  // |network_isolation_key1_|.
+  // |network_anonymization_key1_|.
   HttpServerPropertiesPeer::AddBrokenAlternativeServiceWithExpirationTime(
-      &properties, alternative_service, future, network_isolation_key2_);
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key1_));
+      &properties, alternative_service, future, network_anonymization_key2_);
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key2_));
+      alternative_service, network_anonymization_key1_));
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 
-  // Only the broken entry for |network_isolation_key1_| should be expired.
+  // Only the broken entry for |network_anonymization_key1_| should be expired.
   HttpServerPropertiesPeer::ExpireBrokenAlternateProtocolMappings(&properties);
   EXPECT_TRUE(
-      properties.GetAlternativeServiceInfos(server, network_isolation_key1_)
+      properties.GetAlternativeServiceInfos(server, network_anonymization_key1_)
           .empty());
-  EXPECT_FALSE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                     network_isolation_key1_));
+  EXPECT_FALSE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key1_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key1_));
+      alternative_service, network_anonymization_key1_));
   EXPECT_FALSE(
-      properties.GetAlternativeServiceInfos(server, network_isolation_key2_)
+      properties.GetAlternativeServiceInfos(server, network_anonymization_key2_)
           .empty());
-  EXPECT_TRUE(properties.IsAlternativeServiceBroken(alternative_service,
-                                                    network_isolation_key2_));
+  EXPECT_TRUE(properties.IsAlternativeServiceBroken(
+      alternative_service, network_anonymization_key2_));
   EXPECT_TRUE(properties.WasAlternativeServiceRecentlyBroken(
-      alternative_service, network_isolation_key2_));
+      alternative_service, network_anonymization_key2_));
 }
 
 // Regression test for https://crbug.com/505413.
@@ -2671,7 +2683,7 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   quic::QuicServerId google_quic_server_id("www.google.com", 443, true);
   HttpServerProperties::QuicServerInfoMapKey google_key(
       google_quic_server_id, NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
 
   const int kMaxQuicServerEntries = 10;
   impl_.SetMaxServerConfigsStoredInProperties(kMaxQuicServerEntries);
@@ -2709,7 +2721,7 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   quic::QuicServerId docs_quic_server_id("docs.google.com", 443, true);
   HttpServerProperties::QuicServerInfoMapKey docs_key(
       docs_quic_server_id, NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
   std::string docs_server_info("docs_quic_server_info");
   impl_.SetQuicServerInfo(docs_quic_server_id, NetworkAnonymizationKey(),
                           docs_server_info);
@@ -2738,7 +2750,7 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   quic::QuicServerId mail_quic_server_id("mail.google.com", 443, true);
   HttpServerProperties::QuicServerInfoMapKey mail_key(
       mail_quic_server_id, NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
   std::string mail_server_info("mail_quic_server_info");
   quic_server_info_map->Put(mail_key, mail_server_info);
   impl_.OnQuicServerInfoMapLoadedForTesting(std::move(quic_server_info_map));
@@ -2792,34 +2804,36 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
             *(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey())));
   EXPECT_FALSE(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
   EXPECT_EQ(quic_server_info1,
-            *(impl_.GetQuicServerInfo(server1, network_isolation_key1_)));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, network_isolation_key1_));
+            *(impl_.GetQuicServerInfo(server1, network_anonymization_key1_)));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, network_anonymization_key1_));
 
-  impl_.SetQuicServerInfo(server2, network_isolation_key1_, quic_server_info2);
+  impl_.SetQuicServerInfo(server2, network_anonymization_key1_,
+                          quic_server_info2);
   EXPECT_EQ(quic_server_info1,
             *(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info2,
             *(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info1,
-            *(impl_.GetQuicServerInfo(server1, network_isolation_key1_)));
+            *(impl_.GetQuicServerInfo(server1, network_anonymization_key1_)));
   EXPECT_EQ(quic_server_info2,
-            *(impl_.GetQuicServerInfo(server2, network_isolation_key1_)));
+            *(impl_.GetQuicServerInfo(server2, network_anonymization_key1_)));
 
-  impl_.SetQuicServerInfo(server1, network_isolation_key1_, quic_server_info3);
+  impl_.SetQuicServerInfo(server1, network_anonymization_key1_,
+                          quic_server_info3);
   EXPECT_EQ(quic_server_info3,
             *(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info2,
             *(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey())));
   EXPECT_EQ(quic_server_info3,
-            *(impl_.GetQuicServerInfo(server1, network_isolation_key1_)));
+            *(impl_.GetQuicServerInfo(server1, network_anonymization_key1_)));
   EXPECT_EQ(quic_server_info2,
-            *(impl_.GetQuicServerInfo(server2, network_isolation_key1_)));
+            *(impl_.GetQuicServerInfo(server2, network_anonymization_key1_)));
 
   impl_.Clear(base::OnceClosure());
   EXPECT_FALSE(impl_.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
   EXPECT_FALSE(impl_.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server1, network_isolation_key1_));
-  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, network_isolation_key1_));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server1, network_anonymization_key1_));
+  EXPECT_FALSE(impl_.GetQuicServerInfo(server2, network_anonymization_key1_));
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -2836,37 +2850,42 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
                                    server1, NetworkAnonymizationKey())));
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server1, network_isolation_key1_));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server2, network_isolation_key1_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server1, network_anonymization_key1_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
 
-  properties.SetQuicServerInfo(server1, network_isolation_key1_,
+  properties.SetQuicServerInfo(server1, network_anonymization_key1_,
                                quic_server_info2);
   EXPECT_EQ(quic_server_info1, *(properties.GetQuicServerInfo(
                                    server1, NetworkAnonymizationKey())));
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_EQ(quic_server_info2,
-            *(properties.GetQuicServerInfo(server1, network_isolation_key1_)));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server2, network_isolation_key1_));
+  EXPECT_EQ(quic_server_info2, *(properties.GetQuicServerInfo(
+                                   server1, network_anonymization_key1_)));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
 
-  properties.SetQuicServerInfo(server2, network_isolation_key1_,
+  properties.SetQuicServerInfo(server2, network_anonymization_key1_,
                                quic_server_info3);
   EXPECT_EQ(quic_server_info1, *(properties.GetQuicServerInfo(
                                    server1, NetworkAnonymizationKey())));
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_EQ(quic_server_info2,
-            *(properties.GetQuicServerInfo(server1, network_isolation_key1_)));
-  EXPECT_EQ(quic_server_info3,
-            *(properties.GetQuicServerInfo(server2, network_isolation_key1_)));
+  EXPECT_EQ(quic_server_info2, *(properties.GetQuicServerInfo(
+                                   server1, network_anonymization_key1_)));
+  EXPECT_EQ(quic_server_info3, *(properties.GetQuicServerInfo(
+                                   server2, network_anonymization_key1_)));
 
   properties.Clear(base::OnceClosure());
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server1, network_isolation_key1_));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server2, network_isolation_key1_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server1, network_anonymization_key1_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
 }
 
 // Tests that GetQuicServerInfo() returns server info of a host
@@ -2918,42 +2937,46 @@ TEST_F(HttpServerPropertiesTest,
                                   &test_clock_);
 
   // Set QuicServerInfo for one canononical suffix and
-  // |network_isolation_key1_|. It should be accessible via another
+  // |network_anonymization_key1_|. It should be accessible via another
   // SchemeHostPort, but only when the NetworkIsolationKeys match.
-  properties.SetQuicServerInfo(server1, network_isolation_key1_, server_info1);
+  properties.SetQuicServerInfo(server1, network_anonymization_key1_,
+                               server_info1);
   const std::string* fetched_server_info =
-      properties.GetQuicServerInfo(server1, network_isolation_key1_);
+      properties.GetQuicServerInfo(server1, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
   fetched_server_info =
-      properties.GetQuicServerInfo(server2, network_isolation_key1_);
+      properties.GetQuicServerInfo(server2, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
-  EXPECT_FALSE(properties.GetQuicServerInfo(server1, network_isolation_key2_));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server2, network_isolation_key2_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server1, network_anonymization_key2_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server2, network_anonymization_key2_));
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server2, NetworkAnonymizationKey()));
 
   // Set different QuicServerInfo for the same canononical suffix and
-  // |network_isolation_key2_|. Both infos should be retriveable by using the
-  // different NetworkIsolationKeys.
-  properties.SetQuicServerInfo(server1, network_isolation_key2_, server_info2);
+  // |network_anonymization_key2_|. Both infos should be retriveable by using
+  // the different NetworkIsolationKeys.
+  properties.SetQuicServerInfo(server1, network_anonymization_key2_,
+                               server_info2);
   fetched_server_info =
-      properties.GetQuicServerInfo(server1, network_isolation_key1_);
+      properties.GetQuicServerInfo(server1, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
   fetched_server_info =
-      properties.GetQuicServerInfo(server2, network_isolation_key1_);
+      properties.GetQuicServerInfo(server2, network_anonymization_key1_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info1, *fetched_server_info);
   fetched_server_info =
-      properties.GetQuicServerInfo(server1, network_isolation_key2_);
+      properties.GetQuicServerInfo(server1, network_anonymization_key2_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info2, *fetched_server_info);
   fetched_server_info =
-      properties.GetQuicServerInfo(server2, network_isolation_key2_);
+      properties.GetQuicServerInfo(server2, network_anonymization_key2_);
   ASSERT_TRUE(fetched_server_info);
   EXPECT_EQ(server_info2, *fetched_server_info);
   EXPECT_FALSE(
@@ -2963,10 +2986,14 @@ TEST_F(HttpServerPropertiesTest,
 
   // Clearing should destroy all information.
   properties.Clear(base::OnceClosure());
-  EXPECT_FALSE(properties.GetQuicServerInfo(server1, network_isolation_key1_));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server2, network_isolation_key1_));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server1, network_isolation_key2_));
-  EXPECT_FALSE(properties.GetQuicServerInfo(server2, network_isolation_key2_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server1, network_anonymization_key1_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server2, network_anonymization_key1_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server1, network_anonymization_key2_));
+  EXPECT_FALSE(
+      properties.GetQuicServerInfo(server2, network_anonymization_key2_));
   EXPECT_FALSE(
       properties.GetQuicServerInfo(server1, NetworkAnonymizationKey()));
   EXPECT_FALSE(
@@ -3016,7 +3043,7 @@ TEST_F(HttpServerPropertiesTest,
   quic::QuicServerId h1_server_id("h1.googlevideo.com", 443, false);
   HttpServerProperties::QuicServerInfoMapKey h1_key(
       h1_server_id, NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
   std::string h1_server_info("h1_server_info");
   impl_.SetQuicServerInfo(h1_server_id, NetworkAnonymizationKey(),
                           h1_server_info);
@@ -3025,7 +3052,7 @@ TEST_F(HttpServerPropertiesTest,
   quic::QuicServerId h2_server_id("h2.video.com", 443, false);
   HttpServerProperties::QuicServerInfoMapKey h2_key(
       h2_server_id, NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
   std::string h2_server_info("h2_server_info");
   impl_.SetQuicServerInfo(h2_server_id, NetworkAnonymizationKey(),
                           h2_server_info);
@@ -3069,13 +3096,13 @@ TEST_F(HttpServerPropertiesTest, QuicServerInfoCanonicalSuffixMatchSetInfoMap) {
   quic::QuicServerId h2_server_id("h2.googlevideo.com", 443, false);
   HttpServerProperties::QuicServerInfoMapKey h2_key(
       h2_server_id, NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
   std::string h2_server_info("h2_server_info_from_disk");
 
   quic::QuicServerId h3_server_id("h3.ggpht.com", 443, false);
   HttpServerProperties::QuicServerInfoMapKey h3_key(
       h3_server_id, NetworkAnonymizationKey(),
-      false /* use_network_isolation_key */);
+      false /* use_network_anonymization_key */);
   std::string h3_server_info("h3_server_info_from_disk");
 
   const int kMaxQuicServerEntries = 10;

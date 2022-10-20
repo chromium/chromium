@@ -80,7 +80,7 @@ class NavigationPredictorPreconnectClientBrowserTest
 
   void OnPreresolveFinished(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       bool success) override {
     // The tests do not care about preresolves to non-test server (e.g., hard
     // coded preconnects to google.com).

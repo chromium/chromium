@@ -155,7 +155,7 @@ class TestNetworkContext : public network::TestNetworkContext {
 
   void LookUpProxyForURL(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<network::mojom::ProxyLookupClient>
           pending_proxy_lookup_client) override {
     mojo::Remote<network::mojom::ProxyLookupClient> proxy_lookup_client(
