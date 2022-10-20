@@ -335,11 +335,11 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
     return nullptr;
   }
 
-#if defined(IS_OZONE)
+#if defined(USE_OZONE)
   const bool needs_gl_image = false;
 #else
   const bool needs_gl_image = true;
-#endif  // defined(IS_OZONE)
+#endif  // defined(USE_OZONE)
 
   // TODO(penghuang): do not depend on GLImage.
   auto shared_image_access =
