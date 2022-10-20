@@ -234,6 +234,27 @@ bool UpdateFrameHeaderForTemporalLayerEncoding(
   return true;
 }
 
+size_t GetActiveTemporalLayers(
+    const VideoBitrateAllocation& bitrate_allocation) {
+  size_t temporal_id = 0;
+  while (temporal_id < VideoBitrateAllocation::kMaxTemporalLayers &&
+         bitrate_allocation.GetBitrateBps(0, temporal_id) != 0) {
+    temporal_id++;
+  }
+  return temporal_id;
+}
+
+bool VP8TLEncodingIsEnabled() {
+  // TODO(b/202926617): Remove once VP8 TL encoding is enabled by default.
+  const static bool enable_vp8_tl_encoding =
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+      base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding);
+#else
+      false;
+#endif
+  return enable_vp8_tl_encoding;
+}
+
 }  // namespace
 
 VP8VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
@@ -285,14 +306,7 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
 
   if (config.HasTemporalLayer()) {
     CHECK_EQ(config.spatial_layers.size(), 1u);
-    // TODO(b/202926617): Remove once VP8 TL encoding is enabled by default.
-    const bool enable_vp8_tl_encoding =
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-        base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding);
-#else
-        false;
-#endif
-    if (enable_vp8_tl_encoding) {
+    if (VP8TLEncodingIsEnabled()) {
       num_temporal_layers_ = config.spatial_layers[0].num_of_temporal_layers;
       if (num_temporal_layers_ > kMaxSupportedVP8TemporalLayers ||
           num_temporal_layers_ < kMinSupportedVP8TemporalLayers) {
@@ -435,11 +449,26 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
       current_params_.framerate == framerate) {
     return true;
   }
-  VLOGF(2) << "New bitrate: " << bitrate_allocation.ToString()
-           << ", new framerate: " << framerate;
+  DVLOGF(2) << "New bitrate: " << bitrate_allocation.ToString()
+            << ", new framerate: " << framerate;
 
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
+
+  if (VP8TLEncodingIsEnabled()) {
+    const size_t new_num_temporal_layers =
+        GetActiveTemporalLayers(bitrate_allocation);
+    if (new_num_temporal_layers != num_temporal_layers_) {
+      VLOGF(2) << "The number of temporal layers is changed, from "
+               << base::strict_cast<int>(num_temporal_layers_) << " to "
+               << new_num_temporal_layers;
+      num_temporal_layers_ =
+          base::checked_cast<uint8_t>(new_num_temporal_layers);
+      // We need to change a temporal layer structure.
+      // Reset |frame_num_| to 0 to start with keyframe.
+      frame_num_ = 0;
+    }
+  }
 
   rate_ctrl_->UpdateRateControl(
       CreateRateControlConfig(visible_size_, current_params_,
