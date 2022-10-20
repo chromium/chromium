@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_SPOKEN;
+
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.TAG;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -80,6 +82,10 @@ public class BrowserAccessibilityState {
     // otherwise.
     private static boolean sTextShowPasswordEnabled;
 
+    // True when the user is running at least one service that requests the FEEDBACK_SPOKEN feedback
+    // type in AccessibilityServiceInfo. False otherwise.
+    private static boolean sHasSpokenFeedbackServicePresent;
+
     /**
      * Whether the user has enabled the Android-OS speak password when in accessibility mode,
      * available on pre-Android O. (Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD).
@@ -123,6 +129,13 @@ public class BrowserAccessibilityState {
         if (!sInitialized) updateAccessibilityServices();
 
         return sAccessibilityToolPresent;
+    }
+
+    @CalledByNative
+    public static boolean hasSpokenFeedbackServicePresent() {
+        if (!sInitialized) updateAccessibilityServices();
+
+        return sHasSpokenFeedbackServicePresent;
     }
 
     public static boolean screenReaderMode() {
@@ -192,6 +205,11 @@ public class BrowserAccessibilityState {
         for (Listener listener : sListeners) {
             listener.onBrowserAccessibilityStateChanged(sScreenReader);
         }
+    }
+
+    @VisibleForTesting
+    public static void setHasSpokenFeedbackServicePresent(boolean present) {
+        sHasSpokenFeedbackServicePresent = present;
     }
 
     static void updateAccessibilityServices() {
@@ -294,6 +312,7 @@ public class BrowserAccessibilityState {
         // new state includes a screen reader.
         Log.v(TAG, "Informing listeners of changes.");
         sScreenReader = (0 != (sEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
+        sHasSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
         for (Listener listener : sListeners) {
             listener.onBrowserAccessibilityStateChanged(sScreenReader);
         }
@@ -304,8 +323,9 @@ public class BrowserAccessibilityState {
      * services listen to.
      * @return
      */
+    // TODO(mschillaci,jacklynch): Make this private and update current callers.
     @CalledByNative
-    public static int getAccessibilityServiceEventTypeMask() {
+    protected static int getAccessibilityServiceEventTypeMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sEventTypeMask;
     }
@@ -316,7 +336,7 @@ public class BrowserAccessibilityState {
      * @return
      */
     @CalledByNative
-    public static int getAccessibilityServiceFeedbackTypeMask() {
+    private static int getAccessibilityServiceFeedbackTypeMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sFeedbackTypeMask;
     }
@@ -337,7 +357,7 @@ public class BrowserAccessibilityState {
      * @return
      */
     @CalledByNative
-    protected static int getAccessibilityServiceCapabilitiesMask() {
+    private static int getAccessibilityServiceCapabilitiesMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sCapabilitiesMask;
     }
@@ -347,7 +367,7 @@ public class BrowserAccessibilityState {
      * @return
      */
     @CalledByNative
-    protected static String[] getAccessibilityServiceIds() {
+    private static String[] getAccessibilityServiceIds() {
         if (!sInitialized) updateAccessibilityServices();
         return sServiceIds;
     }

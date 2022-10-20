@@ -441,6 +441,11 @@ void BrowserAccessibilityStateImplAndroid::SetImageLabelsModeForProfile(
   }
 }
 
+bool BrowserAccessibilityStateImplAndroid::HasSpokenFeedbackServicePresent() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BrowserAccessibilityState_hasSpokenFeedbackServicePresent(env);
+}
+
 // static
 void JNI_BrowserAccessibilityState_OnAnimatorDurationScaleChanged(JNIEnv* env) {
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,

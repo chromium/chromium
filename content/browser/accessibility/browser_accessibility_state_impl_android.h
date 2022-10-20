@@ -24,6 +24,8 @@ class BrowserAccessibilityStateImplAndroid
                                                 int capabilities_mask,
                                                 std::string histogram);
 
+  bool HasSpokenFeedbackServicePresent() override;
+
  protected:
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;

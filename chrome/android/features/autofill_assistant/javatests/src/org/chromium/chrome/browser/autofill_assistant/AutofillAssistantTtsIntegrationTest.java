@@ -27,12 +27,9 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistantWithParams;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
-import android.accessibilityservice.AccessibilityServiceInfo;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -87,18 +84,10 @@ public class AutofillAssistantTtsIntegrationTest {
     @Mock
     public Runnable mOnStopRequestCallbackMock;
 
-    private int mOriginalFeedbackTypeMask;
-
-    @Before
-    public void setUp() throws Exception {
-        mOriginalFeedbackTypeMask =
-                BrowserAccessibilityState.getAccessibilityServiceFeedbackTypeMask();
-    }
-
     @After
     public void tearDown() {
         // Reset accessibility state.
-        BrowserAccessibilityState.setFeedbackTypeMaskForTesting(mOriginalFeedbackTypeMask);
+        BrowserAccessibilityState.setHasSpokenFeedbackServicePresent(false);
     }
 
     private void startAutofillAssistantWithTts(AutofillAssistantTestScript script,
@@ -214,8 +203,7 @@ public class AutofillAssistantTtsIntegrationTest {
                 list);
 
         // Mock enabling an accessibility service with spoken feedback.
-        BrowserAccessibilityState.setFeedbackTypeMaskForTesting(
-                AccessibilityServiceInfo.FEEDBACK_SPOKEN);
+        BrowserAccessibilityState.setHasSpokenFeedbackServicePresent(true);
 
         AutofillAssistantTestTtsController testTtsController =
                 new AutofillAssistantTestTtsController(

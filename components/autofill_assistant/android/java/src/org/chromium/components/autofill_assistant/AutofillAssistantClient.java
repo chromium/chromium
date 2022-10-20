@@ -4,7 +4,6 @@
 
 package org.chromium.components.autofill_assistant;
 
-import android.accessibilityservice.AccessibilityServiceInfo;
 import android.accounts.Account;
 import android.app.Activity;
 import android.os.Build;
@@ -97,7 +96,7 @@ public class AutofillAssistantClient {
 
             AutofillAssistantClientJni.get().onSpokenFeedbackAccessibilityServiceChanged(
                     mNativeClientAndroid, AutofillAssistantClient.this,
-                    isSpokenFeedbackAccessibilityServiceEnabled());
+                    BrowserAccessibilityState.hasSpokenFeedbackServicePresent());
         };
         // BrowserAccessibilityState listeners are garbage-collected and automatically removed
         // from the set of active listeners.
@@ -357,17 +356,6 @@ public class AutofillAssistantClient {
     @CalledByNative
     private String getDeviceModel() {
         return Build.MODEL;
-    }
-
-    /**
-     * Returns whether an accessibility service with "FEEDBACK_SPOKEN" feedback type is enabled
-     * or not.
-     */
-    @CalledByNative
-    private boolean isSpokenFeedbackAccessibilityServiceEnabled() {
-        return (BrowserAccessibilityState.getAccessibilityServiceFeedbackTypeMask()
-                       & AccessibilityServiceInfo.FEEDBACK_SPOKEN)
-                != 0;
     }
 
     /** Adds a dynamic action to the given reporter. */

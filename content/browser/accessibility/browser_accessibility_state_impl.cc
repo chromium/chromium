@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -313,6 +314,11 @@ void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
 void BrowserAccessibilityStateImpl::SetImageLabelsModeForProfile(
     bool enabled,
     BrowserContext* profile) {}
+
+bool BrowserAccessibilityStateImpl::HasSpokenFeedbackServicePresent() {
+  NOTIMPLEMENTED();
+  return false;
+}
 #endif
 
 void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
