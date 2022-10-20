@@ -1399,7 +1399,7 @@ void DocumentLoader::CommitData(BodyData& data) {
   // TODO(dgozman): we should stop body loader when stopping the parser to
   // avoid unnecessary work. This may happen, for example, when we abort current
   // committed document which is still loading when initiating a new navigation.
-  if (!frame_ || !frame_->GetDocument()->Parsing())
+  if (!frame_ || !frame_->GetDocument()->Parsing() || !parser_)
     return;
 
   base::AutoReset<bool> reentrancy_protector(&in_commit_data_, true);
