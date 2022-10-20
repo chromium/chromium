@@ -23,6 +23,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/sdk_forward_declarations.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -54,6 +55,7 @@
 #include "media/gpu/mac/vt_config_util.h"
 #include "media/video/h264_level_limits.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_io_surface.h"
 #include "ui/gl/gl_implementation.h"
@@ -660,6 +662,7 @@ bool VTVideoDecodeAccelerator::OnMemoryDump(
 
   // Dump output pictures (decoded frames for which PictureReady() has been
   // called already).
+  // TODO(sandersd): Dump SharedImages also.
   for (const auto& [texture_id, picture_info] : picture_info_map_) {
     for (const auto& gl_image : picture_info->gl_images) {
       std::string dump_name =
@@ -2183,69 +2186,44 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       break;
   }
   for (size_t plane = 0; plane < planes.size(); ++plane) {
-    const gfx::Size plane_size(
-        CVPixelBufferGetWidthOfPlane(frame.image.get(), plane),
-        CVPixelBufferGetHeightOfPlane(frame.image.get(), plane));
-    gfx::BufferFormat plane_buffer_format =
-        gpu::GetPlaneBufferFormat(planes[plane], buffer_format_);
-    const viz::ResourceFormat viz_resource_format =
-        viz::GetResourceFormat(plane_buffer_format);
-    const GLenum gl_format = viz::GLDataFormat(viz_resource_format);
-
-    scoped_refptr<gl::GLImageIOSurface> gl_image(
-        gl::GLImageIOSurface::Create(plane_size));
-    if (!gl_image->InitializeWithCVPixelBuffer(
-            frame.image.get(), plane,
-            gfx::GenericSharedMemoryId(g_cv_pixel_buffer_ids.GetNext()),
-            plane_buffer_format, color_space)) {
-      NOTIFY_STATUS("Failed to initialize GLImageIOSurface", PLATFORM_FAILURE,
-                    SFT_PLATFORM_ERROR);
-    }
-
     if (picture_info->uses_shared_images) {
       gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();
       DCHECK(shared_image_stub);
-      const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                          gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+      const gfx::Size frame_size(CVPixelBufferGetWidth(frame.image.get()),
+                                 CVPixelBufferGetHeight(frame.image.get()));
+      const uint32_t shared_image_usage =
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+          gpu::SHARED_IMAGE_USAGE_SCANOUT |
+          gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+          gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2;
+      GLenum target = gl_client_.supports_arb_texture_rectangle
+                          ? GL_TEXTURE_RECTANGLE_ARB
+                          : GL_TEXTURE_2D;
+
+      gfx::GpuMemoryBufferHandle handle;
+      handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
+      handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
+      handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image),
+                              base::scoped_policy::RETAIN);
+
       gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
-
-      gpu::GLTextureImageBackingHelper::InitializeGLTextureParams gl_params;
-      // ANGLE-on-Metal exposes IOSurfaces via GL_TEXTURE_2D. Be robust to that.
-      gl_params.target = gl_client_.supports_arb_texture_rectangle
-                             ? GL_TEXTURE_RECTANGLE_ARB
-                             : GL_TEXTURE_2D;
-      gl_params.internal_format = gl_format;
-      gl_params.format = gl_format;
-      gl_params.type = GL_UNSIGNED_BYTE;
-      gl_params.is_cleared = true;
-
-      // Making the GL context current before performing below shared image
-      // tasks.
-      // TODO(vikassoni) : Remove if making context current is not required.
-      if (!gl_client_.make_context_current.Run()) {
-        DLOG(ERROR) << "Failed to make context current";
-        NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
-        return false;
-      }
-
-      auto shared_image = std::make_unique<gpu::GLImageBacking>(
-          gl_image, mailbox,
-          viz::SharedImageFormat::SinglePlane(viz_resource_format), plane_size,
-          color_space, kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-          shared_image_usage, gl_params, gl_client_.is_passthrough);
-
-      const bool success = shared_image_stub->factory()->RegisterBacking(
-          std::move(shared_image));
+      bool success = shared_image_stub->CreateSharedImage(
+          mailbox, /*client_id=*/0, std::move(handle), buffer_format_,
+          planes[plane], gpu::kNullSurfaceHandle, frame_size, color_space,
+          kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage);
       if (!success) {
-        DLOG(ERROR) << "Failed to register shared image";
+        DLOG(ERROR) << "Failed to create shared image";
         NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
         return false;
       }
 
       // Wrap the destroy callback in a lambda that ensures that it be called on
-      // the appropriate thread.
+      // the appropriate thread. Retain the image buffer so that VideoToolbox
+      // will not reuse the IOSurface as long as the SharedImage is alive.
       auto destroy_shared_image_lambda =
           [](gpu::SharedImageStub::SharedImageDestructionCallback callback,
+             base::ScopedCFTypeRef<CVImageBufferRef> image,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
             task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
                                                             gpu::SyncToken()));
@@ -2253,13 +2231,28 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       auto destroy_shared_image_callback = base::BindOnce(
           destroy_shared_image_lambda,
           shared_image_stub->GetSharedImageDestructionCallback(mailbox),
-          gpu_task_runner_);
+          frame.image, gpu_task_runner_);
       picture_info->scoped_shared_images.push_back(
           scoped_refptr<Picture::ScopedSharedImage>(
               new Picture::ScopedSharedImage(
-                  mailbox, gl_params.target,
-                  std::move(destroy_shared_image_callback))));
+                  mailbox, target, std::move(destroy_shared_image_callback))));
     } else {
+      const gfx::Size plane_size(
+          CVPixelBufferGetWidthOfPlane(frame.image.get(), plane),
+          CVPixelBufferGetHeightOfPlane(frame.image.get(), plane));
+      gfx::BufferFormat plane_buffer_format =
+          gpu::GetPlaneBufferFormat(planes[plane], buffer_format_);
+
+      scoped_refptr<gl::GLImageIOSurface> gl_image(
+          gl::GLImageIOSurface::Create(plane_size));
+      if (!gl_image->InitializeWithCVPixelBuffer(
+              frame.image.get(), plane,
+              gfx::GenericSharedMemoryId(g_cv_pixel_buffer_ids.GetNext()),
+              plane_buffer_format, color_space)) {
+        NOTIFY_STATUS("Failed to initialize GLImageIOSurface", PLATFORM_FAILURE,
+                      SFT_PLATFORM_ERROR);
+      }
+
       if (!gl_client_.bind_image.Run(picture_info->client_texture_id,
                                      gpu::GetPlatformSpecificTextureTarget(),
                                      gl_image, false)) {
@@ -2267,8 +2260,9 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
         NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
         return false;
       }
+
+      picture_info->gl_images.push_back(gl_image);
     }
-    picture_info->gl_images.push_back(gl_image);
   }
   picture_info->bitstream_id = frame.bitstream_id;
   available_picture_ids_.pop_back();
@@ -2277,24 +2271,23 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
            << "bitstream_id=" << frame.bitstream_id << ")";
   Picture picture(picture_id, frame.bitstream_id, gfx::Rect(frame.image_size),
                   color_space, true);
-  // The GLImageIOSurface keeps the IOSurface alive as long as it exists, but
-  // bound textures do not, and they can outlive the GLImageIOSurface if they
-  // are deleted in the command buffer before they are used by the platform GL
-  // implementation. (https://crbug.com/930479#c69)
+  // Bound textures can outlive the GLImageBacking if they are deleted in the
+  // command buffer before they are used by the platform GL implementation
+  // (https://crbug.com/930479#c69). Thus a fence is required whenever a GLImage
+  // is bound, but we can't know in advance whether that will happen.
   //
-  // A fence is required whenever a GLImage is bound, but we can't know in
-  // advance whether that will happen.
-  //
-  // TODO(sandersd): Can GLImageIOSurface be responsible for fences, so that
+  // TODO(sandersd): Can GLImageBacking be responsible for fences, so that
   // we don't need to use them when the image is never bound? Bindings are
   // typically only created when WebGL is in use.
   picture.set_read_lock_fences_enabled(true);
-  for (size_t plane = 0; plane < planes.size(); ++plane) {
-    picture.set_scoped_shared_image(picture_info->scoped_shared_images[plane],
-                                    plane);
+  if (picture_info->uses_shared_images) {
+    for (size_t plane = 0; plane < planes.size(); ++plane) {
+      picture.set_scoped_shared_image(picture_info->scoped_shared_images[plane],
+                                      plane);
+    }
+    if (picture_format_ == PIXEL_FORMAT_NV12)
+      picture.set_is_webgpu_compatible(true);
   }
-  if (picture_format_ == PIXEL_FORMAT_NV12)
-    picture.set_is_webgpu_compatible(true);
 
   client_->PictureReady(std::move(picture));
   return true;
