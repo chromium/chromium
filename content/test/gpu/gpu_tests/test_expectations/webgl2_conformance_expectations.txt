@@ -267,6 +267,12 @@ crbug.com/angleproject/7109 [ win angle-d3d11 ] conformance2/renderbuffers/inval
 # Windows only.
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 
+# Win / Intel
+
+# Random deqp/functional/gles3 flakes on this hardware configuration;
+# possibly real bugs in tests/browser exposed by slower CPUs.
+crbug.com/1376608 [ win intel ] deqp/functional/gles3/* [ RetryOnFailure ]
+
 # Win / NVIDIA GeForce GTX 1660 / D3D11 flaky failures
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/tex-3d-mipmap-levels-intel-bug.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
