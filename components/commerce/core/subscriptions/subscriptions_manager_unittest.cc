@@ -200,12 +200,12 @@ class SubscriptionsManagerTest : public testing::Test {
   }
   ~SubscriptionsManagerTest() override = default;
 
-  void CreateManagerAndVerify(bool init_succeeded) {
+  void CreateManagerAndVerify(bool last_sync_succeeded) {
     subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
         identity_test_env_.identity_manager(), std::move(mock_server_proxy_),
         std::move(mock_storage_), &account_checker_);
-    ASSERT_EQ(init_succeeded,
-              subscriptions_manager_->GetInitSucceededForTesting());
+    ASSERT_EQ(last_sync_succeeded,
+              subscriptions_manager_->GetLastSyncSucceededForTesting());
   }
 
   void MockHasRequestRunning(bool has_request_running) {
@@ -232,7 +232,7 @@ class SubscriptionsManagerTest : public testing::Test {
   std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
 };
 
-TEST_F(SubscriptionsManagerTest, TestInitSucceeded) {
+TEST_F(SubscriptionsManagerTest, TestSyncSucceeded) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(true);
@@ -245,7 +245,7 @@ TEST_F(SubscriptionsManagerTest, TestInitSucceeded) {
   CreateManagerAndVerify(true);
 }
 
-TEST_F(SubscriptionsManagerTest, TestInitFailedDueToStorage) {
+TEST_F(SubscriptionsManagerTest, TestSyncFailedDueToStorage) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(false);
@@ -258,7 +258,7 @@ TEST_F(SubscriptionsManagerTest, TestInitFailedDueToStorage) {
   CreateManagerAndVerify(false);
 }
 
-TEST_F(SubscriptionsManagerTest, TestInitFailedDueToServer) {
+TEST_F(SubscriptionsManagerTest, TestSyncFailedDueToServer) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111", false);
   mock_storage_->MockUpdateResponses(true);
@@ -351,7 +351,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
   run_loop.Run();
 }
 
-TEST_F(SubscriptionsManagerTest, TestSubscribe_InitFailed) {
+TEST_F(SubscriptionsManagerTest, TestSubscribe_LastSyncFailed) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
@@ -465,7 +465,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasPendingUnsubscribeRequest) {
 
   {
     InSequence s;
-    // Init calls.
+    // Sync calls.
     EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
@@ -563,7 +563,7 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
   run_loop.Run();
 }
 
-TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
+TEST_F(SubscriptionsManagerTest, TestUnsubscribe_LastSyncFailed) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
@@ -598,7 +598,8 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
   run_loop.Run();
 }
 
-TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailedWithRequestRunning) {
+TEST_F(SubscriptionsManagerTest,
+       TestUnsubscribe_LastSyncFailedWithRequestRunning) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_server_proxy_->MockManageResponses(true);
@@ -636,12 +637,12 @@ TEST_F(SubscriptionsManagerTest, TestIdentityChange) {
 
   {
     InSequence s;
-    // First init on manager instantiation.
+    // First sync on manager instantiation.
     EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
-    // Second init on primary account change.
+    // Second sync on primary account change.
     EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
@@ -678,12 +679,12 @@ TEST_F(SubscriptionsManagerTest, TestVerifyIfSubscriptionExists_Inconsistent) {
 
   {
     InSequence s;
-    // First init on manager instantiation.
+    // First sync on manager instantiation.
     EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
-    // Second init since local subscriptions are out of sync.
+    // Second sync since local subscriptions are out of sync.
     EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,

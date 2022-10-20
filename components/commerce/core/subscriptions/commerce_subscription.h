@@ -49,6 +49,8 @@ enum class ManagementType {
   kUserManaged = 2,
 };
 
+// The user seen offer data upon price tracking subscribing, used to improve the
+// price drop notification quality.
 struct UserSeenOffer {
   UserSeenOffer(std::string offer_id,
                 long user_seen_price,
@@ -57,14 +59,19 @@ struct UserSeenOffer {
   UserSeenOffer& operator=(const UserSeenOffer&);
   ~UserSeenOffer();
 
+  // Associated offer id.
   std::string offer_id;
+  // The price upon subscribing.
   long user_seen_price;
+  // Country code of the offer.
   std::string country_code;
 };
 
 extern const int64_t kUnknownSubscriptionTimestamp;
 
 struct CommerceSubscription {
+  // The CommerceSubscription instantiation outside of this subscriptions/
+  // component should always use kUnknownSubscriptionTimestamp.
   CommerceSubscription(
       SubscriptionType type,
       IdentifierType id_type,
@@ -80,6 +87,9 @@ struct CommerceSubscription {
   IdentifierType id_type;
   std::string id;
   ManagementType management_type;
+  // The timestamp when the subscription is created on the server side. Upon
+  // successful creation on the server side, the valid timestamp will be passed
+  // back to client side and then stored locally.
   int64_t timestamp;
   absl::optional<UserSeenOffer> user_seen_offer;
 };

@@ -91,8 +91,8 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   void VerifyIfSubscriptionExists(CommerceSubscription subscription,
                                   bool should_exist);
 
-  // For tests only, return init_succeeded_.
-  bool GetInitSucceededForTesting();
+  // For tests only, return last_sync_succeeded_.
+  bool GetLastSyncSucceededForTesting();
 
   // For tests only, set has_request_running_.
   void SetHasRequestRunningForTesting(bool has_request_running);
@@ -104,7 +104,7 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
 
  private:
   enum class AsyncOperation {
-    kInit = 0,
+    kSync = 0,
     kSubscribe = 1,
     kUnsubscribe = 2,
   };
@@ -131,8 +131,7 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
 
   // Fetch all backend subscriptions and sync with local storage. This should
   // only be called on manager instantiation and user primary account changed.
-  // TODO(crbug.com/1364806): Rename to SyncSubscriptions.
-  void InitSubscriptions();
+  void SyncSubscriptions();
 
   // Check if there is any request running. If not, process the next request in
   // the queue.
@@ -146,7 +145,7 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
 
   void ProcessUnsubscribeRequest(Request request);
 
-  void ProcessInitRequest(Request request);
+  void ProcessSyncRequest(Request request);
 
   void GetRemoteSubscriptionsAndUpdateStorage(
       SubscriptionType type,
@@ -174,9 +173,9 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   // conditions.
   std::queue<Request> pending_requests_;
 
-  // Whether the initialization is successful. If not, all (un)subscribe
+  // Whether the last sync with server is successful. If not, all (un)subscribe
   // operations will fail immediately.
-  bool init_succeeded_ = false;
+  bool last_sync_succeeded_ = false;
 
   // Whether there is any request running.
   bool has_request_running_ = false;

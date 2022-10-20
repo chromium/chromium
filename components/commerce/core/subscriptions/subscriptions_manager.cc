@@ -54,7 +54,7 @@ SubscriptionsManager::SubscriptionsManager(
 // Avoid duplicate server calls on android. Remove this after we integrate
 // android implementation to shopping service.
 #if !BUILDFLAG(IS_ANDROID)
-  InitSubscriptions();
+  SyncSubscriptions();
   scoped_identity_manager_observation_.Observe(identity_manager);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -65,7 +65,7 @@ SubscriptionsManager::Request::Request(SubscriptionType type,
                                        AsyncOperation operation,
                                        SubscriptionsRequestCallback callback)
     : type(type), operation(operation), callback(std::move(callback)) {
-  CHECK(operation == AsyncOperation::kInit);
+  CHECK(operation == AsyncOperation::kSync);
 }
 SubscriptionsManager::Request::Request(
     SubscriptionType type,
@@ -87,8 +87,8 @@ void SubscriptionsManager::Subscribe(
     base::OnceCallback<void(bool)> callback) {
   // If there is a coming subscribe request but the last sync with the server
   // failed, we should re-try the sync, or this request will fail directly.
-  if (!init_succeeded_ && !HasRequestRunning()) {
-    InitSubscriptions();
+  if (!last_sync_succeeded_ && !HasRequestRunning()) {
+    SyncSubscriptions();
   }
   SubscriptionType type = (*subscriptions)[0].type;
   pending_requests_.emplace(
@@ -111,8 +111,8 @@ void SubscriptionsManager::Unsubscribe(
     base::OnceCallback<void(bool)> callback) {
   // If there is a coming unsubscribe request but the last sync with the server
   // failed, we should re-try the sync, or this request will fail directly.
-  if (!init_succeeded_ && !HasRequestRunning()) {
-    InitSubscriptions();
+  if (!last_sync_succeeded_ && !HasRequestRunning()) {
+    SyncSubscriptions();
   }
   SubscriptionType type = (*subscriptions)[0].type;
   pending_requests_.emplace(
@@ -130,18 +130,18 @@ void SubscriptionsManager::Unsubscribe(
   CheckAndProcessRequest();
 }
 
-void SubscriptionsManager::InitSubscriptions() {
-  init_succeeded_ = false;
+void SubscriptionsManager::SyncSubscriptions() {
+  last_sync_succeeded_ = false;
   storage_->DeleteAll();
   if (base::FeatureList::IsEnabled(commerce::kShoppingList) &&
       account_checker_ && account_checker_->IsSignedIn() &&
       account_checker_->IsAnonymizedUrlDataCollectionEnabled()) {
     pending_requests_.emplace(
-        SubscriptionType::kPriceTrack, AsyncOperation::kInit,
+        SubscriptionType::kPriceTrack, AsyncOperation::kSync,
         base::BindOnce(
             [](base::WeakPtr<SubscriptionsManager> manager,
                SubscriptionsRequestStatus result) {
-              manager->init_succeeded_ =
+              manager->last_sync_succeeded_ =
                   result == SubscriptionsRequestStatus::kSuccess;
               manager->OnRequestCompletion();
             },
@@ -164,8 +164,8 @@ void SubscriptionsManager::CheckAndProcessRequest() {
   last_request_operation_ = request.operation;
 
   switch (request.operation) {
-    case AsyncOperation::kInit:
-      ProcessInitRequest(std::move(request));
+    case AsyncOperation::kSync:
+      ProcessSyncRequest(std::move(request));
       break;
     case AsyncOperation::kSubscribe:
       ProcessSubscribeRequest(std::move(request));
@@ -181,13 +181,13 @@ void SubscriptionsManager::OnRequestCompletion() {
   CheckAndProcessRequest();
 }
 
-void SubscriptionsManager::ProcessInitRequest(Request request) {
+void SubscriptionsManager::ProcessSyncRequest(Request request) {
   GetRemoteSubscriptionsAndUpdateStorage(request.type,
                                          std::move(request.callback));
 }
 
 void SubscriptionsManager::ProcessSubscribeRequest(Request request) {
-  if (!init_succeeded_) {
+  if (!last_sync_succeeded_) {
     std::move(request.callback)
         .Run(SubscriptionsRequestStatus::kLastSyncFailed);
     return;
@@ -210,7 +210,7 @@ void SubscriptionsManager::ProcessSubscribeRequest(Request request) {
 }
 
 void SubscriptionsManager::ProcessUnsubscribeRequest(Request request) {
-  if (!init_succeeded_) {
+  if (!last_sync_succeeded_) {
     std::move(request.callback)
         .Run(SubscriptionsRequestStatus::kLastSyncFailed);
     return;
@@ -279,16 +279,16 @@ void SubscriptionsManager::VerifyIfSubscriptionExists(
 void SubscriptionsManager::HandleCheckLocalSubscriptionResponse(
     bool should_exist,
     bool is_subscribed) {
-  // Don't init if there is already a request running to avoid redundant server
+  // Don't sync if there is already a request running to avoid redundant server
   // calls.
   if (should_exist != is_subscribed && !HasRequestRunning()) {
-    InitSubscriptions();
+    SyncSubscriptions();
   }
 }
 
 void SubscriptionsManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  InitSubscriptions();
+  SyncSubscriptions();
 }
 
 bool SubscriptionsManager::HasRequestRunning() {
@@ -311,8 +311,8 @@ bool SubscriptionsManager::HasRequestRunning() {
   return has_request_running_;
 }
 
-bool SubscriptionsManager::GetInitSucceededForTesting() {
-  return init_succeeded_;
+bool SubscriptionsManager::GetLastSyncSucceededForTesting() {
+  return last_sync_succeeded_;
 }
 
 void SubscriptionsManager::SetHasRequestRunningForTesting(
