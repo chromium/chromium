@@ -249,7 +249,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
         hasLauncherKey ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');
   }
 
-  getExternalCommandKeyLabel_(hasLauncherKey: boolean): string {
+  private getExternalCommandKeyLabel_(hasLauncherKey: boolean): string {
     return loadTimeData.getString(
         hasLauncherKey ? 'keyboardKeyExternalCommand' : 'keyboardKeyCommand');
   }
