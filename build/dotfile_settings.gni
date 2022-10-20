@@ -7,6 +7,8 @@
 
 build_dotfile_settings = {
   exec_script_whitelist = [
+    "//build/config/android/config.gni",
+    "//build/config/android/internal_rules.gni",
     "//build/config/android/rules.gni",
     "//build/config/chromeos/rules.gni",
     "//build/config/compiler/BUILD.gn",
