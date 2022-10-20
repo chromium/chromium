@@ -3634,6 +3634,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PrivacyIndicators.NumberOfAppsAccessingCamera"
+    units="count" expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the number of apps that access the camera at the same time. Emitted
+    when there are one or more apps accessing the camera.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone"
+    units="count" expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the number of apps that access the microphone at the same time.
+    Emitted when there are one or more apps accessing the microphone.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PrivacyIndicators.ShowType" enum="PrivacyIndicatorsType"
     expires_after="2023-09-19">
   <owner>leandre@chromium.org</owner>

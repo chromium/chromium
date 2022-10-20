@@ -496,6 +496,18 @@ void PrivacyIndicatorsTrayItemView::RecordPrivacyIndicatorsType() {
   base::UmaHistogramEnumeration(
       "Ash.PrivacyIndicators.ShowType",
       static_cast<Type>(camera_used | microphone_used | screen_sharing));
+
+  if (!use_camera_apps_.empty()) {
+    base::UmaHistogramCounts100(
+        "Ash.PrivacyIndicators.NumberOfAppsAccessingCamera",
+        use_camera_apps_.size());
+  }
+
+  if (!use_microphone_apps_.empty()) {
+    base::UmaHistogramCounts100(
+        "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone",
+        use_microphone_apps_.size());
+  }
 }
 
 }  // namespace ash

@@ -26,6 +26,10 @@ const int kPrivacyIndicatorsViewSize = 8;
 
 constexpr char kPrivacyIndicatorsShowTypeHistogramName[] =
     "Ash.PrivacyIndicators.ShowType";
+constexpr char kCountAppsAccessCameraHistogramName[] =
+    "Ash.PrivacyIndicators.NumberOfAppsAccessingCamera";
+constexpr char kCountAppsAccessMicrophoneHistogramName[] =
+    "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone";
 
 // Get the expected size in expand animation, given the animation value.
 int GetExpectedSizeInExpandAnimation(double progress) {
@@ -516,6 +520,30 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
       /*is_camera_used=*/true, /*is_microphone_used=*/true,
       /*is_screen_sharing=*/true, privacy_indicators_view(),
       PrivacyIndicatorsTrayItemView::Type::kAllUsed);
+}
+
+// When multiple apps access camera and microphone, their histograms should
+// update accordingly.
+TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordAppAccessSimultaneously) {
+  base::HistogramTester histograms;
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id1",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/false);
+  histograms.ExpectBucketCount(kCountAppsAccessCameraHistogramName, 1, 1);
+  histograms.ExpectBucketCount(kCountAppsAccessMicrophoneHistogramName, 1, 0);
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id2",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
+  histograms.ExpectBucketCount(kCountAppsAccessCameraHistogramName, 2, 1);
+  histograms.ExpectBucketCount(kCountAppsAccessMicrophoneHistogramName, 1, 1);
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id3",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
+  histograms.ExpectBucketCount(kCountAppsAccessCameraHistogramName, 3, 1);
+  histograms.ExpectBucketCount(kCountAppsAccessMicrophoneHistogramName, 2, 1);
 }
 
 }  // namespace ash
