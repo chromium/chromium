@@ -105,6 +105,13 @@ BASE_DECLARE_FEATURE(kEnableExpKitAppleCalendar);
 // Feature flag to enable Phone Numbers detection.
 BASE_DECLARE_FEATURE(kEnablePhoneNumbers);
 
+// Parameter name for the parameter controlling whether or not experience kit
+// maps should be enabled in search result pages or not.
+extern const char kExperienceKitMapsVariationName[];
+
+// Variation to enable experience kit Maps in search result pages.
+extern const char kEnableExperienceKitMapsVariationSrp[];
+
 // Feature flag to enable Maps in experience kit.
 BASE_DECLARE_FEATURE(kMapsExperienceKit);
 

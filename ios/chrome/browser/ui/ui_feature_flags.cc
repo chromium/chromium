@@ -107,6 +107,9 @@ BASE_FEATURE(kEnablePhoneNumbers,
              "EnablePhoneNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kExperienceKitMapsVariationName[] = "ExperienceKitMapsVariant";
+extern const char kEnableExperienceKitMapsVariationSrp[] = "with SRP";
+
 BASE_FEATURE(kMapsExperienceKit,
              "MapsExperienceKit",
              base::FEATURE_DISABLED_BY_DEFAULT);
