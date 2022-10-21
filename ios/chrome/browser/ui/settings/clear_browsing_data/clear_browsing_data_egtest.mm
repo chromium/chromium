@@ -288,7 +288,8 @@ using chrome_test_util::WindowWithNumber;
       performAction:chrome_test_util::TapAtPointPercentage(0.95, 0.05)];
 
   // Check that the URL of the help center was opened.
-  GREYAssertEqual(kHelpCenterURL, [ChromeEarlGrey webStateVisibleURL].host(),
+  GREYAssertEqual(std::string(kHelpCenterURL),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center url.");
 }
 
@@ -315,7 +316,8 @@ using chrome_test_util::WindowWithNumber;
       performAction:chrome_test_util::TapAtPointPercentage(0.95, 0.05)];
 
   // Check that the URL of the help center was opened.
-  GREYAssertEqual(kHelpCenterURL, [ChromeEarlGrey webStateVisibleURL].host(),
+  GREYAssertEqual(std::string(kHelpCenterURL),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center url.");
 }
 
