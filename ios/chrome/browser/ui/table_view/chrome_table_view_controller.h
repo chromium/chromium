@@ -20,6 +20,8 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 @class ChromeTableViewStyler;
 @class TableViewItem;
 
+@protocol TableViewIllustratedEmptyViewDelegate;
+
 // Chrome-specific TableViewController.
 @interface ChromeTableViewController
     : UITableViewController <ChromeTableViewConsumer>
@@ -72,6 +74,16 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 - (void)addEmptyTableViewWithImage:(UIImage*)image
                              title:(NSString*)title
                           subtitle:(NSString*)subtitle;
+
+// Adds an empty table view in the center of the ChromeTableViewController which
+// displays an image, a title and an attributed string as a subtitle. This will
+// remove any existing table view background views. Nullable `delegate` argument
+// will get notified when subtile link taps occur.
+- (void)addEmptyTableViewWithImage:(UIImage*)image
+                             title:(NSString*)title
+                attributedSubtitle:(NSAttributedString*)subtitle
+                          delegate:(id<TableViewIllustratedEmptyViewDelegate>)
+                                       delegate;
 
 // Updates the accessibility label of the empty view to `newLabel`.
 - (void)updateEmptyTableViewAccessibilityLabel:(NSString*)newLabel;

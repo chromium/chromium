@@ -18,15 +18,24 @@ const CGFloat kStackViewVerticalSpacingPt = 12.0;
 const CGFloat kStackViewWidthPt = 310.0;
 // The UIImageView height.
 const CGFloat kImageHeightPt = 150.0;
+
+NSAttributedString* GetAttributedMessage(NSString* message) {
+  return [[NSAttributedString alloc]
+      initWithString:message
+          attributes:[TableViewIllustratedEmptyView
+                         defaultTextAttributesForSubtitle]];
+}
+
 }  // namespace
 
-@interface TableViewIllustratedEmptyView ()
+@interface TableViewIllustratedEmptyView () <UITextViewDelegate>
 // The image that will be displayed.
 @property(nonatomic, strong) UIImage* image;
 // The title that will be displayed under the image.
 @property(nonatomic, copy) NSString* title;
 // The subtitle that will be displayed under the title.
-@property(nonatomic, copy) NSString* subtitle;
+@property(nonatomic, copy) NSAttributedString* subtitle;
+
 // The inner ScrollView so the whole content can be seen even if it is taller
 // than the TableView.
 @property(nonatomic, strong) UIScrollView* scrollView;
@@ -43,9 +52,20 @@ const CGFloat kImageHeightPt = 150.0;
                         image:(UIImage*)image
                         title:(NSString*)title
                      subtitle:(NSString*)subtitle {
+  self = [self initWithFrame:frame
+                       image:image
+                       title:title
+          attributedSubtitle:GetAttributedMessage(subtitle)];
+  return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+                        image:(UIImage*)image
+                        title:(NSString*)title
+           attributedSubtitle:(NSAttributedString*)attributedSubtitle {
   if (self = [super initWithFrame:frame]) {
     _title = title;
-    _subtitle = subtitle;
+    _subtitle = attributedSubtitle;
     _image = image;
     self.accessibilityIdentifier = [[self class] accessibilityIdentifier];
   }
@@ -56,6 +76,19 @@ const CGFloat kImageHeightPt = 150.0;
 
 + (NSString*)accessibilityIdentifier {
   return kTableViewIllustratedEmptyViewID;
+}
+
++ (NSDictionary*)defaultTextAttributesForSubtitle {
+  NSMutableParagraphStyle* paragraph_style =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraph_style.lineBreakMode = NSLineBreakByWordWrapping;
+  paragraph_style.alignment = NSTextAlignmentCenter;
+  return @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSParagraphStyleAttributeName : paragraph_style
+  };
 }
 
 #pragma mark - ChromeEmptyTableViewBackground
@@ -83,6 +116,23 @@ const CGFloat kImageHeightPt = 150.0;
   [super willMoveToSuperview:newSuperview];
 
   [self createSubviews];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  [self.delegate tableViewIllustratedEmptyView:self didTapSubtitleLink:URL];
+
+  return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Make the textView not selectable while allowing interactions with links in
+  // it.
+  textView.selectedTextRange = nil;
 }
 
 #pragma mark - Private
@@ -113,21 +163,21 @@ const CGFloat kImageHeightPt = 150.0;
     titleLabel.numberOfLines = 0;
     titleLabel.text = self.title;
     titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+    titleLabel.adjustsFontForContentSizeCategory = YES;
     titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     titleLabel.textAlignment = NSTextAlignmentCenter;
     [subviewsArray addObject:titleLabel];
   }
 
   if ([self.subtitle length]) {
-    UILabel* subtitleLabel = [[UILabel alloc] init];
-    subtitleLabel.isAccessibilityElement = NO;
-    subtitleLabel.numberOfLines = 0;
-    subtitleLabel.text = self.subtitle;
-    subtitleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-    subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    [subviewsArray addObject:subtitleLabel];
+    UITextView* subtitleTextView = [[UITextView alloc] init];
+    subtitleTextView.isAccessibilityElement = NO;
+    subtitleTextView.attributedText = self.subtitle;
+    subtitleTextView.delegate = self;
+    subtitleTextView.scrollEnabled = NO;
+    subtitleTextView.backgroundColor = UIColor.clearColor;
+    subtitleTextView.adjustsFontForContentSizeCategory = YES;
+    [subviewsArray addObject:subtitleTextView];
   }
 
   self.isAccessibilityElement = YES;

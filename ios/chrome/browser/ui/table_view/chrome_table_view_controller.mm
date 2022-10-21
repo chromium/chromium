@@ -166,6 +166,20 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
                                                   subtitle:subtitle];
 }
 
+- (void)addEmptyTableViewWithImage:(UIImage*)image
+                             title:(NSString*)title
+                attributedSubtitle:(NSAttributedString*)subtitle
+                          delegate:(id<TableViewIllustratedEmptyViewDelegate>)
+                                       delegate {
+  TableViewIllustratedEmptyView* illustratedEmptyView =
+      [[TableViewIllustratedEmptyView alloc] initWithFrame:self.view.bounds
+                                                     image:image
+                                                     title:title
+                                        attributedSubtitle:subtitle];
+  illustratedEmptyView.delegate = delegate;
+  self.emptyView = illustratedEmptyView;
+}
+
 - (void)updateEmptyTableViewAccessibilityLabel:(NSString*)newLabel {
   self.emptyView.viewAccessibilityLabel = newLabel;
 }
