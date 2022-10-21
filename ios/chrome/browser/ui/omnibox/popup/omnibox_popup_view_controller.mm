@@ -817,6 +817,12 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
          [self.tableView numberOfRowsInSection:0] > 0;
 }
 
+#pragma mark - CarouselItemConsumer
+
+- (void)carouselItem:(CarouselItem*)carouselItem setHidden:(BOOL)hidden {
+  [self.carouselCell carouselItem:carouselItem setHidden:hidden];
+}
+
 #pragma mark - Private Methods
 
 - (id<AutocompleteSuggestion>)suggestionAtIndexPath:(NSIndexPath*)indexPath {

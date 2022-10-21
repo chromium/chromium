@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "components/favicon/core/large_icon_service.h"
+#import "components/history/core/browser/top_sites.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -14,12 +15,14 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -46,7 +49,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface OmniboxPopupCoordinator () <CarouselItemMenuProvider> {
+@interface OmniboxPopupCoordinator () <OmniboxPopupMediatorProtocolProvider> {
   std::unique_ptr<OmniboxPopupViewIOS> _popupView;
 }
 
@@ -99,6 +102,11 @@
       templateURLService && templateURLService->GetDefaultSearchProvider() &&
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+  self.mediator.protocolProvider = self;
+  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:self.browser
+             scenario:MenuScenario::kMostVisitedEntry];
+  self.mediator.mostVisitedActionFactory = actionFactory;
 
   if (IsSwiftUIPopupEnabled()) {
     NOTREACHED() << "Swift version not supported anymore.";
@@ -115,7 +123,7 @@
         self.browser->GetBrowserState());
     self.popupViewController.largeIconService = largeIconService;
     self.popupViewController.largeIconCache = cache;
-    self.popupViewController.carouselMenuProvider = self;
+    self.popupViewController.carouselMenuProvider = self.mediator;
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self.popupViewController
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
@@ -124,6 +132,7 @@
     self.popupViewController.matchPreviewDelegate =
         self.popupMatchPreviewDelegate;
     self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
+    self.mediator.carouselItemConsumer = self.popupViewController;
   }
 
   if (IsOmniboxActionsEnabled()) {
@@ -164,38 +173,16 @@
   return self.mediator.hasResults;
 }
 
-#pragma mark - CarouselItemMenuProvider
+#pragma mark - OmniboxPopupMediatorProtocolProvider
 
-// Context Menu for carousel `item` in `view`.
-- (UIContextMenuConfiguration*)
-    contextMenuConfigurationForCarouselItem:(CarouselItem*)carouselItem
-                                   fromView:(UIView*)view {
-  __weak __typeof(self) weakSelf = self;
+- (scoped_refptr<history::TopSites>)topSites {
+  return ios::TopSitesFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
+}
 
-  UIContextMenuActionProvider actionProvider = ^(
-      NSArray<UIMenuElement*>* suggestedActions) {
-    DCHECK(weakSelf);
-
-    OmniboxPopupCoordinator* strongSelf = weakSelf;
-
-    BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
-        initWithBrowser:strongSelf.browser
-               scenario:MenuScenario::kMostVisitedEntry];
-
-    NSMutableArray<UIMenuElement*>* menuElements =
-        [[NSMutableArray alloc] init];
-
-    [menuElements
-        addObject:[actionFactory actionToRemoveWithBlock:^{
-                      // TODO(crbug.com/1365374): add block to remove suggestion
-                  }]];
-
-    return [UIMenu menuWithTitle:@"" children:menuElements];
-  };
-  return
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
-                                               actionProvider:actionProvider];
+- (id<SnackbarCommands>)snackbarCommandsHandler {
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            SnackbarCommands);
 }
 
 @end

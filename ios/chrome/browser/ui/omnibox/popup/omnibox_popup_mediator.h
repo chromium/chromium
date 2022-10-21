@@ -9,19 +9,25 @@
 
 #include <memory>
 
+#import "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
-#include "ui/base/window_open_disposition.h"
+#import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
+@class BrowserActionFactory;
+@class CarouselItem;
+@protocol CarouselItemConsumer;
 @class DefaultBrowserPromoNonModalScheduler;
+class FaviconLoader;
 @class OmniboxPedalAnnotator;
 @class OmniboxPopupPresenter;
 @class PopupModel;
-class FaviconLoader;
+@protocol SnackbarCommands;
 class WebStateList;
 
 namespace image_fetcher {
@@ -39,8 +45,21 @@ class OmniboxPopupMediatorDelegate {
   virtual void OnScroll() = 0;
 };
 
+// Provider that returns protocols and services that are instantiated after
+// OmniboxPopupCoordinator.
+@protocol OmniboxPopupMediatorProtocolProvider
+
+// Returns the TopSites object to add/remove blocked URLs.
+- (scoped_refptr<history::TopSites>)topSites;
+
+// Returns command handler for SnackbarCommands;
+- (id<SnackbarCommands>)snackbarCommandsHandler;
+
+@end
+
 @interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
                                             AutocompleteResultDataSource,
+                                            CarouselItemMenuProvider,
                                             ImageRetriever,
                                             FaviconRetriever>
 
@@ -72,6 +91,11 @@ class OmniboxPopupMediatorDelegate {
 @property(nonatomic, weak) PopupModel* model;
 // The annotator to create pedals for ths mediator.
 @property(nonatomic) OmniboxPedalAnnotator* pedalAnnotator;
+
+@property(nonatomic, weak) id<OmniboxPopupMediatorProtocolProvider>
+    protocolProvider;
+@property(nonatomic, strong) BrowserActionFactory* mostVisitedActionFactory;
+@property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
 
 // Designated initializer. Takes ownership of `imageFetcher`.
 - (instancetype)initWithFetcher:

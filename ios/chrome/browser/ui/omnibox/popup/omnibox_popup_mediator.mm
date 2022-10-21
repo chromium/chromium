@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -14,12 +16,17 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
@@ -27,6 +34,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -407,6 +415,102 @@ const CGFloat kOmniboxIconSize = 16;
   AutocompleteResult::GroupSuggestionsBySearchVsURL(
       std::next(_currentResult.begin(), begin),
       std::next(_currentResult.begin(), end));
+}
+
+#pragma mark - CarouselItemMenuProvider
+
+// Context Menu for carousel `item` in `view`.
+- (UIContextMenuConfiguration*)
+    contextMenuConfigurationForCarouselItem:(CarouselItem*)carouselItem
+                                   fromView:(UIView*)view {
+  __weak __typeof(self) weakSelf = self;
+  __weak CarouselItem* weakItem = carouselItem;
+  GURL copyURL = carouselItem.URL.gurl;
+
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        DCHECK(weakSelf);
+
+        __typeof(self) strongSelf = weakSelf;
+        BrowserActionFactory* actionFactory =
+            strongSelf.mostVisitedActionFactory;
+
+        NSMutableArray<UIMenuElement*>* menuElements =
+            [[NSMutableArray alloc] init];
+
+        [menuElements addObject:[actionFactory actionToRemoveWithBlock:^{
+                        [weakSelf removeMostVisitedForURL:copyURL
+                                         withCarouselItem:weakItem];
+                      }]];
+
+        return [UIMenu menuWithTitle:@"" children:menuElements];
+      };
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
+}
+
+#pragma mark CarouselItemMenuProvider Private
+
+// Blocks `URL` so it won't appear in most visited URLs.
+- (void)blockMostVisitedURL:(GURL)URL {
+  scoped_refptr<history::TopSites> top_sites = [self.protocolProvider topSites];
+  if (top_sites) {
+    top_sites->AddBlockedUrl(URL);
+  }
+}
+
+// Unblocks `URL` so it can appear in most visited URLs.
+- (void)allowMostVisitedURL:(GURL)URL {
+  scoped_refptr<history::TopSites> top_sites = [self.protocolProvider topSites];
+  if (top_sites) {
+    top_sites->RemoveBlockedUrl(URL);
+  }
+}
+
+// Blocks `URL` in most visited sites and hides `CarouselItem` if it still
+// exist.
+- (void)removeMostVisitedForURL:(GURL)URL
+               withCarouselItem:(CarouselItem*)carouselItem {
+  if (!carouselItem) {
+    return;
+  }
+  [self blockMostVisitedURL:URL];
+  [self.carouselItemConsumer carouselItem:carouselItem setHidden:YES];
+  [self showMostVisitedUndoForURL:URL withCarouselItem:carouselItem];
+}
+
+// Shows a snackbar with an action to undo the removal of the most visited item
+// with a `URL`. Unhides CarouselItem if it still exist.
+- (void)showMostVisitedUndoForURL:(GURL)URL
+                 withCarouselItem:(CarouselItem*)carouselItem {
+  GURL copiedURL = URL;
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
+  action.accessibilityIdentifier = @"Undo";
+
+  __weak __typeof(self) weakSelf = self;
+  __weak CarouselItem* weakItem = carouselItem;
+  action.handler = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf allowMostVisitedURL:copiedURL];
+    CarouselItem* strongItem = weakItem;
+    if (strongItem) {
+      [strongSelf.carouselItemConsumer carouselItem:strongItem setHidden:NO];
+    }
+  };
+
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  MDCSnackbarMessage* message = [MDCSnackbarMessage
+      messageWithText:l10n_util::GetNSString(
+                          IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)];
+  message.action = action;
+  message.category = @"MostVisitedUndo";
+  [self.protocolProvider.snackbarCommandsHandler showSnackbarMessage:message];
 }
 
 @end

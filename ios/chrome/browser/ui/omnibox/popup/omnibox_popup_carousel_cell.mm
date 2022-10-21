@@ -128,23 +128,28 @@ UIStackView* CarouselStackView() {
     OmniboxPopupCarouselControl* control =
         self.suggestionsStackView.arrangedSubviews[i];
     CarouselItem* item = i < carouselItems.count ? carouselItems[i] : nil;
-    [control setupWithCarouselItem:item];
+    [control setCarouselItem:item];
     control.hidden = !item;
     control.menuProvider = self.menuProvider;
   }
 }
 
 - (void)updateCarouselItem:(CarouselItem*)carouselItem {
-  for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
-           .arrangedSubviews) {
-    // Check only visible controls.
-    if (control.hidden) {
-      break;
-    }
-    if (control.carouselItem == carouselItem) {
-      [control setupWithCarouselItem:carouselItem];
-    }
+  OmniboxPopupCarouselControl* control =
+      [self controlForCarouselItem:carouselItem];
+  if (!control || control.hidden) {
+    return;
   }
+  [control setCarouselItem:carouselItem];
+}
+
+- (void)carouselItem:(CarouselItem*)carouselItem setHidden:(BOOL)hidden {
+  OmniboxPopupCarouselControl* control =
+      [self controlForCarouselItem:carouselItem];
+  if (!control || control.hidden == hidden) {
+    return;
+  }
+  control.hidden = hidden;
 }
 
 #pragma mark - Private methods
@@ -152,6 +157,18 @@ UIStackView* CarouselStackView() {
 - (void)didTapCarouselControl:(OmniboxPopupCarouselControl*)control {
   DCHECK(control.carouselItem);
   [self.delegate didTapCarouselItem:control.carouselItem];
+}
+
+// Returns OmniboxPopupCarouselControl containing `carouselItem`.
+- (OmniboxPopupCarouselControl*)controlForCarouselItem:
+    (CarouselItem*)carouselItem {
+  for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
+           .arrangedSubviews) {
+    if (control.carouselItem == carouselItem) {
+      return control;
+    }
+  }
+  return nil;
 }
 
 @end

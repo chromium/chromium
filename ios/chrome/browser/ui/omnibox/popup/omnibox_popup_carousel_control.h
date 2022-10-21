@@ -16,14 +16,9 @@
 @interface OmniboxPopupCarouselControl
     : UIControl <UIContextMenuInteractionDelegate>
 
-// Updates the View with `item`'s icon and text.
-- (void)setupWithCarouselItem:(CarouselItem*)carouselItem;
-
-// Underlying CarouselItem.
-- (CarouselItem*)carouselItem;
-
 // Context menu provider for the carousel items.
 @property(nonatomic, weak) id<CarouselItemMenuProvider> menuProvider;
+@property(nonatomic, strong) CarouselItem* carouselItem;
 
 @end
 

@@ -85,7 +85,6 @@ FaviconView* CarouselItemFaviconView() {
 @property(nonatomic, strong) FaviconView* faviconView;
 // UILabel containing the text.
 @property(nonatomic, strong) UILabel* label;
-@property(nonatomic, strong) CarouselItem* carouselItem;
 
 @end
 
@@ -147,11 +146,11 @@ FaviconView* CarouselItemFaviconView() {
 
 #pragma mark - Public methods
 
-- (void)setupWithCarouselItem:(CarouselItem*)carouselItem {
+- (void)setCarouselItem:(CarouselItem*)carouselItem {
   if (self.subviews.count == 0) {
     [self addSubviews];
   }
-  self.carouselItem = carouselItem;
+  _carouselItem = carouselItem;
   [self.faviconView configureWithAttributes:carouselItem.faviconAttributes];
   self.label.text = carouselItem.title;
   self.accessibilityLabel = carouselItem.title;
