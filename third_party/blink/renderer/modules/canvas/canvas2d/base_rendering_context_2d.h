@@ -398,7 +398,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
-  BaseRenderingContext2D();
+  explicit BaseRenderingContext2D(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   ALWAYS_INLINE CanvasRenderingContext2DState& GetState() const {
     return *state_stack_.back();

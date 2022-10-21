@@ -230,6 +230,15 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
+  return Paint(compositor_input, animated_property_values,
+               worker_backing_thread_->BackingThread().GetTaskRunner());
+}
+
+sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
+    const CompositorPaintWorkletInput* compositor_input,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   const BackgroundColorPaintWorkletInput* input =
       static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
   gfx::SizeF container_size = input->ContainerSize();
@@ -291,7 +300,8 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
     PaintRenderingContext2DSettings* context_settings =
         PaintRenderingContext2DSettings::Create();
     context_ = MakeGarbageCollected<PaintRenderingContext2D>(
-        rounded_size, context_settings, 1, 1);
+        rounded_size, context_settings, /*zoom=*/1, /*device_scale_factor=*/1,
+        std::move(task_runner));
   }
   context_->GetDrawingPaintCanvas()->drawColor(current_color);
   return context_->GetRecord();
@@ -336,7 +346,8 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::PaintForTest(
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
-        animated_property_values) {
+        animated_property_values,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   gfx::SizeF container_size(100, 100);
   absl::optional<double> progress = 0;
   CompositorPaintWorkletInput::PropertyKeys property_keys;
@@ -344,7 +355,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::PaintForTest(
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
           container_size, 1u, animated_colors, offsets, progress,
           property_keys);
-  return Paint(input.get(), animated_property_values);
+  return Paint(input.get(), animated_property_values, std::move(task_runner));
 }
 
 void BackgroundColorPaintDefinition::Trace(Visitor* visitor) const {

@@ -303,7 +303,8 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::ToRoundedSize(clip_area_size), context_settings, 1, 1);
+      gfx::ToRoundedSize(clip_area_size), context_settings, 1, 1,
+      worker_backing_thread_->BackingThread().GetTaskRunner());
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);

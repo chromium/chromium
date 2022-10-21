@@ -82,17 +82,18 @@ const auto kNoOverdraw = [](const SkIRect& clip_bounds) { return false; };
 // currently set to 500ms.
 const base::TimeDelta kTryRestoreContextInterval = base::Milliseconds(500);
 
-BaseRenderingContext2D::BaseRenderingContext2D()
+BaseRenderingContext2D::BaseRenderingContext2D(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : dispatch_context_lost_event_timer_(
-          Thread::Current()->GetDeprecatedTaskRunner(),
+          task_runner,
           this,
           &BaseRenderingContext2D::DispatchContextLostEvent),
       dispatch_context_restored_event_timer_(
-          Thread::Current()->GetDeprecatedTaskRunner(),
+          task_runner,
           this,
           &BaseRenderingContext2D::DispatchContextRestoredEvent),
       try_restore_context_event_timer_(
-          Thread::Current()->GetDeprecatedTaskRunner(),
+          task_runner,
           this,
           &BaseRenderingContext2D::TryRestoreContextEvent),
       clip_antialiasing_(kNotAntiAliased),

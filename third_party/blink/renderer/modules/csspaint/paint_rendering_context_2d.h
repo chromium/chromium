@@ -31,11 +31,13 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PaintRenderingContext2D(const gfx::Size& container_size,
-                          const PaintRenderingContext2DSettings*,
-                          float zoom,
-                          float device_scale_factor,
-                          PaintWorkletGlobalScope* global_scope = nullptr);
+  PaintRenderingContext2D(
+      const gfx::Size& container_size,
+      const PaintRenderingContext2DSettings*,
+      float zoom,
+      float device_scale_factor,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      PaintWorkletGlobalScope* global_scope = nullptr);
 
   PaintRenderingContext2D(const PaintRenderingContext2D&) = delete;
   PaintRenderingContext2D& operator=(const PaintRenderingContext2D&) = delete;

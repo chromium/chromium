@@ -68,7 +68,14 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&
-          animated_property_values);
+          animated_property_values,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  sk_sp<PaintRecord> Paint(
+      const CompositorPaintWorkletInput* compositor_input,
+      const CompositorPaintWorkletJob::AnimatedPropertyValues&
+          animated_property_values,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // The instance of BackgroundColorPaintDefinition is created on the main
   // thread, which means |context_| is initialized on the main thread's heap.
