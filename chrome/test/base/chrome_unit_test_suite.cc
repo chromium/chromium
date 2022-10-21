@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/chrome_content_client.h"
@@ -164,8 +165,7 @@ void ChromeUnitTestSuite::InitializeProviders() {
 
   content::WebUIControllerFactory::RegisterFactory(
       ChromeWebUIControllerFactory::GetInstance());
-  // Ensure the WebUIConfigMap registers its WebUIControllerFactory.
-  content::WebUIConfigMap::GetInstance();
+  RegisterChromeWebUIConfigs();
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 

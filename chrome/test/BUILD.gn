@@ -208,6 +208,7 @@ static_library("test_support") {
   deps += [
     "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
+    "//chrome/browser/ui/webui:configs",
     "//chrome/common/search:mojo_bindings",
     "//components/autofill/content/renderer:test_support",
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",

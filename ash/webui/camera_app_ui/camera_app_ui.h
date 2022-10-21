@@ -8,6 +8,8 @@
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "ash/webui/camera_app_ui/camera_app_window_manager.h"
+#include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
@@ -21,6 +23,16 @@ class CameraAppDeviceProviderImpl;
 namespace ash {
 
 class CameraAppHelperImpl;
+class CameraAppUI;
+
+class CameraAppUIConfig : public SystemWebAppUIConfig<CameraAppUI> {
+ public:
+  explicit CameraAppUIConfig(
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+      : SystemWebAppUIConfig(kChromeUICameraAppHost,
+                             SystemWebAppType::CAMERA,
+                             create_controller_func) {}
+};
 
 class CameraAppUI : public ui::MojoWebUIController,
                     public content::DevToolsAgentHostObserver {

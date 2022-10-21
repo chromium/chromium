@@ -8,19 +8,43 @@
 #include "content/public/browser/webui_config_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/face_ml_app_ui/face_ml_app_ui.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
+#include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/notification_tester/notification_tester_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace content {
+class WebUI;
+class WebUIController;
+}  // namespace content
+
 namespace {
+using CreateWebUIControllerFunc =
+    std::unique_ptr<content::WebUIController> (*)(content::WebUI*);
+
+template <class Config, class Controller, class Delegate>
+std::unique_ptr<content::WebUIConfig> MakeComponentConfig() {
+  CreateWebUIControllerFunc create_controller_func =
+      [](content::WebUI* web_ui) -> std::unique_ptr<content::WebUIController> {
+    auto delegate = std::make_unique<Delegate>(web_ui);
+    return std::make_unique<Controller>(web_ui, std::move(delegate));
+  };
+
+  return std::make_unique<Config>(create_controller_func);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   auto& map = content::WebUIConfigMap::GetInstance();
+  map.AddWebUIConfig(
+      MakeComponentConfig<ash::CameraAppUIConfig, ash::CameraAppUI,
+                          ChromeCameraAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<chromeos::NotificationTesterUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::FaceMLAppUIConfig>());
