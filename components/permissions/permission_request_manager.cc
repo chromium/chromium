@@ -19,6 +19,7 @@
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/permissions/features.h"
+#include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
@@ -536,6 +537,9 @@ void PermissionRequestManager::Accept() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
+    StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
+                                (*requests_iter)->request_type(),
+                                PermissionAction::GRANTED);
     PermissionGrantedIncludingDuplicates(*requests_iter,
                                          /*is_one_time=*/false);
   }
@@ -551,6 +555,9 @@ void PermissionRequestManager::AcceptThisTime() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
+    StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
+                                (*requests_iter)->request_type(),
+                                PermissionAction::GRANTED_ONCE);
     PermissionGrantedIncludingDuplicates(*requests_iter,
                                          /*is_one_time=*/true);
   }
@@ -579,6 +586,9 @@ void PermissionRequestManager::Deny() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
+    StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
+                                (*requests_iter)->request_type(),
+                                PermissionAction::DENIED);
     PermissionDeniedIncludingDuplicates(*requests_iter);
   }
 
@@ -593,6 +603,9 @@ void PermissionRequestManager::Dismiss() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
+    StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
+                                (*requests_iter)->request_type(),
+                                PermissionAction::DISMISSED);
     CancelledIncludingDuplicates(*requests_iter);
   }
 
@@ -607,6 +620,9 @@ void PermissionRequestManager::Ignore() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
+    StorePermissionActionForUMA((*requests_iter)->requesting_origin(),
+                                (*requests_iter)->request_type(),
+                                PermissionAction::IGNORED);
     CancelledIncludingDuplicates(*requests_iter);
   }
 
@@ -1062,6 +1078,22 @@ void PermissionRequestManager::NotifyRequestDecided(
     permissions::PermissionAction permission_action) {
   for (Observer& observer : observer_list_)
     observer.OnRequestDecided(permission_action);
+}
+
+void PermissionRequestManager::StorePermissionActionForUMA(
+    const GURL& origin,
+    RequestType request_type,
+    PermissionAction permission_action) {
+  absl::optional<ContentSettingsType> content_settings_type =
+      RequestTypeToContentSettingsType(request_type);
+  if (content_settings_type.has_value()) {
+    PermissionsClient::Get()
+        ->GetOriginKeyedPermissionActionService(
+            web_contents()->GetBrowserContext())
+        ->RecordAction(PermissionUtil::GetLastCommittedOriginAsURL(
+                           web_contents()->GetPrimaryMainFrame()),
+                       content_settings_type.value(), permission_action);
+  }
 }
 
 void PermissionRequestManager::OnPermissionUiSelectorDone(

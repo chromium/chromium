@@ -63,6 +63,8 @@ source_set("permissions") {
     "notifications_engagement_service.h",
     "object_permission_context_base.cc",
     "object_permission_context_base.h",
+    "origin_keyed_permission_action_service.cc",
+    "origin_keyed_permission_action_service.h",
     "permission_actions_history.cc",
     "permission_actions_history.h",
     "permission_auditing_database.cc",

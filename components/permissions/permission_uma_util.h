@@ -269,6 +269,7 @@ enum class PageInfoDialogAccessType {
   // The user opened page info by clicking on the confirmation chip while it was
   // being displayed.
   CONFIRMATION_CHIP_CLICK = 2,
+
   // The user opened page info by clicking on the lock within
   // 'kConfirmationConsiderationDurationForUma' after confirmation chip has
   // collapsed. This click may be considered influenced by the displaying of the
@@ -280,6 +281,33 @@ enum class PageInfoDialogAccessType {
 };
 
 constexpr auto kConfirmationConsiderationDurationForUma = base::Seconds(20);
+
+// This enum backs up the
+// 'Permissions.PageInfo.ChangedWithin1m.{PermissionType}' histograms enum. It
+// is used for collecting page info permission change metrics following in the
+// first minute after a PermissionAction has been taken. Note that
+// PermissionActions  DISMISSED and IGNORED are not taken into account, as they
+// don't have an effect on the content settings.
+enum class PermissionChangeAction {
+  // PermissionAction was one of {GRANTED, GRANTED_ONCE} and the content
+  // setting is changed to CONTENT_SETTING_BLOCK.
+  REVOKED = 0,
+
+  // PermissionAction was DENIED and the content setting is changed to
+  // CONTENT_SETTING_ALLOW.
+  REALLOWED = 1,
+
+  // PermissionAction was one of {GRANTED, GRANTED_ONCE} and the content setting
+  // is changed to CONTENT_SETTING_DEFAULT.
+  RESET_FROM_ALLOWED = 2,
+
+  // PermissionAction was DENIED and the content setting is changed to
+  // CONTENT_SETTING_DEFAULT.
+  RESET_FROM_DENIED = 3,
+
+  // Always keep at the end.
+  kMaxValue = RESET_FROM_DENIED
+};
 
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
@@ -393,6 +421,11 @@ class PermissionUmaUtil {
 
   static void RecordPageInfoDialogAccessType(
       PageInfoDialogAccessType access_type);
+
+  static void RecordPageInfoPermissionChangeWithin1m(
+      ContentSettingsType type,
+      PermissionAction previous_action,
+      ContentSetting setting_after);
 
   static std::string GetPermissionActionString(
       PermissionAction permission_action);

@@ -78681,6 +78681,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="PREVIOUSLY_AUTO_REVOKED"/>
 </enum>
 
+<enum name="PermissionChangeAction">
+  <int value="0" label="Revoked"/>
+  <int value="1" label="Reallowed"/>
+  <int value="2" label="Reset from denied state"/>
+  <int value="3" label="Reset from allowed state"/>
+</enum>
+
 <enum name="PermissionEmbargoStatus">
   <int value="0" label="NOT_EMBARGOED"/>
   <int value="1" label="BLACKLISTED"/>

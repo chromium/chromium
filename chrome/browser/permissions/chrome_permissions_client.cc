@@ -20,6 +20,7 @@
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
+#include "chrome/browser/permissions/origin_keyed_permission_action_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_revocation_request.h"
@@ -192,6 +193,13 @@ ChromePermissionsClient::GetChooserContext(
       NOTREACHED();
       return nullptr;
   }
+}
+
+permissions::OriginKeyedPermissionActionService*
+ChromePermissionsClient::GetOriginKeyedPermissionActionService(
+    content::BrowserContext* browser_context) {
+  return OriginKeyedPermissionActionServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
 }
 
 permissions::PermissionActionsHistory*

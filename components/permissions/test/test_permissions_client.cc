@@ -50,6 +50,12 @@ bool TestPermissionsClient::IsSubresourceFilterActivated(
   return false;
 }
 
+OriginKeyedPermissionActionService*
+TestPermissionsClient::GetOriginKeyedPermissionActionService(
+    content::BrowserContext* browser_context) {
+  return &origin_keyed_permission_action_service_;
+}
+
 PermissionActionsHistory* TestPermissionsClient::GetPermissionActionsHistory(
     content::BrowserContext* browser_context) {
   return &permission_actions_history_;
