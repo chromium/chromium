@@ -1356,6 +1356,7 @@ source_set("unit_tests") {
     "../ash/crostini/crostini_package_service_unittest.cc",
     "../ash/crostini/crostini_port_forwarder_unittest.cc",
     "../ash/crostini/crostini_reporting_util_unittest.cc",
+    "../ash/crostini/crostini_shared_devices_unittest.cc",
     "../ash/crostini/crostini_shelf_utils_unittest.cc",
     "../ash/crostini/crostini_sshfs_unittest.cc",
     "../ash/crostini/crostini_terminal_provider_unittest.cc",

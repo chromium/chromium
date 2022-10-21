@@ -49,6 +49,7 @@ extern const char kContainerColorKey[];
 extern const char kTerminalSupportedKey[];
 // The display name to use in the terminal.
 extern const char kTerminalLabel[];
+extern const char kContainerSharedVmDevicesKey[];
 
 // Terminal
 // Dictionary of terminal UI settings such as font style, colors, etc.

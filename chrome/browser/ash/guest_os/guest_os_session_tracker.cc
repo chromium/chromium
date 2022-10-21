@@ -268,8 +268,14 @@ base::CallbackListSubscription GuestOsSessionTracker::RunOnceContainerStarted(
 }
 
 void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,
-                                               const GuestInfo& info) {
+                                               const GuestInfo& info,
+                                               bool notify) {
   guests_.insert_or_assign(id, info);
+  if (notify) {
+    for (auto& observer : container_started_observers_) {
+      observer.OnContainerStarted(id);
+    }
+  }
 }
 
 base::CallbackListSubscription GuestOsSessionTracker::RunOnShutdown(

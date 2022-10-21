@@ -180,6 +180,11 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::GetGarconSessionInfoResponse> callback) override;
+  void UpdateContainerDevices(
+      const vm_tools::cicerone::UpdateContainerDevicesRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::UpdateContainerDevicesResponse> callback)
+      override;
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 
@@ -394,6 +399,13 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
         std::move(get_garcon_session_info_response);
   }
 
+  void set_update_container_devices_response(
+      vm_tools::cicerone::UpdateContainerDevicesResponse
+          update_container_devices_response) {
+    update_container_devices_response_ =
+        std::move(update_container_devices_response);
+  }
+
   void set_send_container_starting_signal_delay(base::TimeDelta delay) {
     send_container_starting_signal_delay_ = delay;
   }
@@ -564,6 +576,8 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   vm_tools::cicerone::ListRunningContainersResponse list_containers_response_;
   vm_tools::cicerone::GetGarconSessionInfoResponse
       get_garcon_session_info_response_;
+  vm_tools::cicerone::UpdateContainerDevicesResponse
+      update_container_devices_response_;
 
   base::TimeDelta send_container_starting_signal_delay_;
   base::TimeDelta send_container_started_signal_delay_;

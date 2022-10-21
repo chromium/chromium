@@ -77,7 +77,9 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   // Returns true if a guest is running, false otherwise.
   bool IsRunning(const GuestId& id);
 
-  void AddGuestForTesting(const GuestId& id, const GuestInfo& info);
+  void AddGuestForTesting(const GuestId& id,
+                          const GuestInfo& info,
+                          bool notify = false);
 
   void AddContainerStartedObserver(ContainerStartedObserver* observer);
   void RemoveContainerStartedObserver(ContainerStartedObserver* observer);

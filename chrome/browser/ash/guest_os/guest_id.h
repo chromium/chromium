@@ -70,6 +70,13 @@ void UpdateContainerPref(Profile* profile,
                          const std::string& key,
                          base::Value value);
 
+// Merges |dict| into the existing dict pref value for |key| a specific
+// container. Sets |dict| as the value for |key| otherwise.
+void MergeContainerPref(Profile* profile,
+                        const GuestId& container_id,
+                        const std::string& key,
+                        base::Value::Dict dict);
+
 // Get "vm_type" int from pref and convert to VmType using TERMINA(0) as default
 // if field is not present.
 VmType VmTypeFromPref(const base::Value& pref);

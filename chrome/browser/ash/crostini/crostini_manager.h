@@ -580,7 +580,9 @@ class CrostiniManager : public KeyedService,
                              const vm_tools::cicerone::OsRelease& os_release);
   const vm_tools::cicerone::OsRelease* GetContainerOsRelease(
       const guest_os::GuestId& container_id) const;
-  void AddRunningContainerForTesting(std::string vm_name, ContainerInfo info);
+  void AddRunningContainerForTesting(std::string vm_name,
+                                     ContainerInfo info,
+                                     bool notify = false);
 
   // If the Crostini reporting policy is set, save the last app launch
   // time window and the Termina version in prefs for asynchronous reporting.

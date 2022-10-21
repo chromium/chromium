@@ -405,6 +405,13 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::GetGarconSessionInfoResponse> callback) = 0;
 
+  // Updates the VM devices available for a LXD container.
+  // |callback| is called when the method completes.
+  virtual void UpdateContainerDevices(
+      const vm_tools::cicerone::UpdateContainerDevicesRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::UpdateContainerDevicesResponse> callback) = 0;
+
   // Registers |callback| to run when the Cicerone service becomes available.
   // If the service is already available, or if connecting to the name-owner-
   // changed signal fails, |callback| will be run once asynchronously.

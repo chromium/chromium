@@ -72,6 +72,9 @@ FakeCiceroneClient::FakeCiceroneClient() {
 
   detach_usb_from_container_response_.set_status(
       vm_tools::cicerone::DetachUsbFromContainerResponse::OK);
+
+  update_container_devices_response_.set_status(
+      vm_tools::cicerone::UpdateContainerDevicesResponse::OK);
 }
 
 FakeCiceroneClient::~FakeCiceroneClient() {
@@ -521,6 +524,15 @@ void FakeCiceroneClient::GetGarconSessionInfo(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), get_garcon_session_info_response_));
+}
+
+void FakeCiceroneClient::UpdateContainerDevices(
+    const vm_tools::cicerone::UpdateContainerDevicesRequest& request,
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::UpdateContainerDevicesResponse> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), update_container_devices_response_));
 }
 
 void FakeCiceroneClient::NotifyLxdContainerCreated(

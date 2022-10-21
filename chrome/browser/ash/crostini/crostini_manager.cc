@@ -1195,7 +1195,8 @@ void CrostiniManager::SetUncleanStartupForTesting(bool is_unclean_startup) {
 }
 
 void CrostiniManager::AddRunningContainerForTesting(std::string vm_name,
-                                                    ContainerInfo info) {
+                                                    ContainerInfo info,
+                                                    bool notify) {
   auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
   guest_os::GuestId id{guest_os::VmType::TERMINA, vm_name, info.name};
   guest_os::GuestInfo guest_info{id,
@@ -1204,7 +1205,7 @@ void CrostiniManager::AddRunningContainerForTesting(std::string vm_name,
                                  info.homedir,
                                  info.ipv4_address,
                                  info.sftp_vsock_port};
-  tracker->AddGuestForTesting(id, guest_info);  // IN-TEST
+  tracker->AddGuestForTesting(id, guest_info, notify);  // IN-TEST
 }
 
 void CrostiniManager::UpdateLaunchMetricsForEnterpriseReporting() {

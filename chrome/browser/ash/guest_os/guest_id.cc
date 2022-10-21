@@ -35,6 +35,7 @@ static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
     prefs::kContainerColorKey,
     prefs::kTerminalSupportedKey,
     prefs::kTerminalLabel,
+    prefs::kContainerSharedVmDevicesKey,
 }};
 
 }  // namespace
@@ -189,6 +190,30 @@ void UpdateContainerPref(Profile* profile,
   if (it != updater->end()) {
     if (base::Contains(*kPropertiesAllowList, key)) {
       it->SetKey(key, std::move(value));
+    } else {
+      LOG(ERROR) << "Ignoring disallowed property: " << key;
+    }
+  }
+}
+
+void MergeContainerPref(Profile* profile,
+                        const GuestId& container_id,
+                        const std::string& key,
+                        base::Value::Dict dict) {
+  ScopedListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
+  auto it = base::ranges::find_if(*updater, [&](const auto& dict) {
+    return MatchContainerDict(dict, container_id);
+  });
+  if (it != updater->end()) {
+    if (base::Contains(*kPropertiesAllowList, key)) {
+      base::Value::Dict* old_container_dict = it->GetIfDict();
+      if (old_container_dict) {
+        base::Value::Dict wrapped;
+        wrapped.Set(key, std::move(dict));
+        old_container_dict->Merge(std::move(wrapped));
+      } else {
+        LOG(ERROR) << "Expected a dict for " << container_id;
+      }
     } else {
       LOG(ERROR) << "Ignoring disallowed property: " << key;
     }

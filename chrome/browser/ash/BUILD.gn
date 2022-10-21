@@ -831,6 +831,8 @@ source_set("ash") {
     "crostini/crostini_reporting_util.h",
     "crostini/crostini_security_delegate.cc",
     "crostini/crostini_security_delegate.h",
+    "crostini/crostini_shared_devices.cc",
+    "crostini/crostini_shared_devices.h",
     "crostini/crostini_shelf_utils.cc",
     "crostini/crostini_shelf_utils.h",
     "crostini/crostini_simple_types.cc",
