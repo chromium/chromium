@@ -7174,6 +7174,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_ALL_BOOKMARKS" desc="The name of the root bookmarks folder as displayed to the user">
         All Bookmarks
       </message>
+      <message name="IDS_BOOKMARKS_LABEL_TRACKED_PRODUCTS" desc="Label on a button within the bookmarks side panel for filtering bookmarks by price tracking data.">
+        Products
+      </message>
       <message name="IDS_BOOKMARKS_SORT_NEWEST" desc="Label for the newest-first bookmarks sort type">
         Newest
       </message>

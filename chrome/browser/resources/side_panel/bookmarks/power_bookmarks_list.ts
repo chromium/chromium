@@ -4,6 +4,7 @@
 
 import '../strings.m.js';
 import './commerce/shopping_list.js';
+import './icons.html.js';
 import './power_bookmark_chip.js';
 import './power_bookmark_row.js';
 import '//resources/cr_elements/icons.html.js';
@@ -11,13 +12,19 @@ import '//resources/cr_elements/icons.html.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BookmarkProductInfo} from './commerce/shopping_list.mojom-webui.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
+
+interface Label {
+  label: string;
+  icon: string;
+  active: boolean;
+}
 
 export interface PowerBookmarksListElement {
   $: {
@@ -51,6 +58,15 @@ export class PowerBookmarksListElement extends PolymerElement {
         value: () => [],
       },
 
+      labels_: {
+        type: Array,
+        value: () => [{
+          label: loadTimeData.getString('priceTrackingLabel'),
+          icon: 'bookmarks:price-tracking',
+          active: false,
+        }],
+      },
+
       showPriceTracking_: {
         type: Boolean,
         value: false,
@@ -79,6 +95,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private shoppingListenerIds_: number[] = [];
   private compact_: boolean;
   private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
+  private labels_: Label[];
   private descriptions_ = new Map<string, string>();
   private showPriceTracking_: boolean;
   private activeSortIndex_: number;
@@ -183,6 +200,11 @@ export class PowerBookmarksListElement extends PolymerElement {
     } else {
       shownBookmarks = this.topLevelBookmarks_;
     }
+    // Price tracking label
+    if (this.labels_[0]!.active) {
+      shownBookmarks = shownBookmarks.filter(
+          (bookmark, _) => this.isPriceTracked_(bookmark));
+    }
     this.sortBookmarks_(shownBookmarks);
     return shownBookmarks;
   }
@@ -232,6 +254,26 @@ export class PowerBookmarksListElement extends PolymerElement {
           },
           ActionSource.kBookmark);
     }
+  }
+
+  /**
+   * Returns the appropriate filter button icon depending on whether the given
+   * label is active.
+   */
+  private getLabelIcon_(label: Label): string {
+    if (label.active) {
+      return 'bookmarks:check';
+    } else {
+      return label.icon;
+    }
+  }
+
+  /**
+   * Toggles the given label between active and inactive.
+   */
+  private onLabelClicked_(event: DomRepeatEvent<Label>) {
+    const label = event.model.item;
+    this.set(`labels_.${event.model.index}.active`, !label.active);
   }
 
   /**

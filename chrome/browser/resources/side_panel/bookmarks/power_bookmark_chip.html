@@ -11,12 +11,9 @@
     }
   }
 
-  :host ::slotted(.icon) {
+  :host ::slotted(iron-icon) {
     --power-bookmark-chip-icon-size: 13px;
-    -webkit-mask-image: var(--power-bookmark-chip-icon-image);
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: var(--power-bookmark-chip-icon-size);
-    background-color: var(--power-bookmark-chip-icon-color);
+    color: var(--power-bookmark-chip-icon-color);
     height: var(--power-bookmark-chip-icon-size);
     width: var(--power-bookmark-chip-icon-size);
   }

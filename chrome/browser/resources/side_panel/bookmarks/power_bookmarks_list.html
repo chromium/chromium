@@ -1,16 +1,19 @@
 <style include="cr-icons cr-hidden-style">
   :host {
     --back-button-size: 14px;
+    --label-border-color: var(--google-grey-300);
+    --label-selected-color: var(--google-blue-50);
+    --price-tracking-chip-background: var(--google-green-50);
     --price-tracking-discount-color: var(--google-green-800);
     --price-tracking-original-color: var(--cr-secondary-text-color);
-    --price-tracking-chip-background: var(--google-green-50);
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
+      --label-border-color: var(--google-grey-700);
+      --price-tracking-chip-background: var(--google-green-900);
       --price-tracking-discount-color: white;
       --price-tracking-original-color: var(--google-green-200);
-      --price-tracking-chip-background: var(--google-green-900);
     }
   }
 
@@ -33,6 +36,11 @@
     --power-bookmark-chip-background: var(--price-tracking-chip-background);
   }
 
+  .column {
+    display: flex;
+    flex-direction: column;
+  }
+
   .icon-arrow-back {
     -webkit-mask-image: var(--cr-icon-image);
     -webkit-mask-position: center;
@@ -44,11 +52,43 @@
   }
 
   .icon-discounted {
-    background-color: var(--price-tracking-discount-color);
+    color: var(--price-tracking-discount-color);
   }
 
-  .icon-tracked {
-    --power-bookmark-chip-icon-image: url(../images/bookmarks_icon_tracked.svg);
+  .label {
+    align-items: center;
+    background-color: transparent;
+    border: 1px solid var(--label-border-color);
+    border-radius: 4px;
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    flex-direction: row;
+    font-size: var(--mwb-secondary-text-font-size);
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .label[selected] {
+    background-color: var(--label-selected-color);
+    border-color: var(--label-selected-color);
+  }
+
+  .label:hover {
+    background-color: var(--google-grey-100);
+  }
+
+  .label-icon {
+    --label-icon-size: 16px;
+    color: var(--cr-link-color);
+    height: var(--label-icon-size);
+    width: var(--label-icon-size);
+  }
+
+  .label-row {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin: 14px 14px 0 14px;
   }
 
   .price-discounted {
@@ -62,16 +102,25 @@
   }
 </style>
 
-<div id="powerBookmarksContainer">
+<div class="column" id="powerBookmarksContainer">
+  <div class="label-row">
+    <template is="dom-repeat" items="[[labels_]]">
+      <button class="label" selected$="[[item.active]]"
+          on-click="onLabelClicked_" aria-pressed="[[item.active]]">
+        <iron-icon class="label-icon"
+            icon="[[getLabelIcon_(item, item.active)]]"></iron-icon>
+        [[item.label]]
+      </button>
+    </template>
+  </div>
   <button class="back-button" on-click="onBackClicked_"
       disabled="[[!activeFolderPath_.length]]">
     <div class="icon-arrow-back" hidden="[[!activeFolderPath_.length]]"></div>
     [[getFolderSortLabel_(activeFolderPath_.*, activeSortIndex_)]]
   </button>
   <template is="dom-repeat"
-      items="[[getShownBookmarks_(
-          topLevelBookmarks_, activeFolderPath_.*, activeSortIndex_)]]"
-      id="powerBookmarksContainer">
+      items="[[getShownBookmarks_(topLevelBookmarks_, activeFolderPath_.*,
+          labels_.*, activeSortIndex_)]]">
     <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
         description="[[getBookmarkDescription_(item, descriptions_.*)]]"
         compact="[[compact_]]"
@@ -81,14 +130,15 @@
             if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
           <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
             <power-bookmark-chip class="chip-discounted">
-              <div class="icon icon-tracked icon-discounted"></div>
+              <iron-icon icon="bookmarks:price-tracking"
+                  class="icon-discounted"></iron-icon>
               <div class="price-discounted">[[getCurrentPrice_(item)]]</div>
               <div class="price-original">[[getPreviousPrice_(item)]]</div>
             </power-bookmark-chip>
           </template>
           <template is="dom-if" if="[[!showDiscountedPrice_(item)]]" restamp>
             <power-bookmark-chip>
-              <div class="icon icon-tracked"></div>
+              <iron-icon icon="bookmarks:price-tracking"></iron-icon>
               <div>[[getCurrentPrice_(item)]]</div>
             </power-bookmark-chip>
           </template>
