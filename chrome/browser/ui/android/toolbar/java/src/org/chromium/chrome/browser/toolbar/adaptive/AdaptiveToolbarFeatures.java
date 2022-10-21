@@ -172,6 +172,12 @@ public class AdaptiveToolbarFeatures {
                         ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE);
     }
 
+    public static boolean isReaderModeRateLimited() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "reader_mode_session_rate_limiting",
+                true);
+    }
+
     /**
      * @return Whether contextual page actions UI is enabled.
      */
