@@ -30,8 +30,6 @@ class WebAppTranslationManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

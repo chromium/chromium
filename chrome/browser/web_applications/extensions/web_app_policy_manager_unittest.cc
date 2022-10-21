@@ -329,8 +329,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     ChromeRenderViewHostTestHarness::SetUp();
 
     provider_ = FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
-    provider_->SetRunSubsystemStartupTasks(true);
 
     auto fake_externally_managed_app_manager =
         std::make_unique<FakeExternallyManagedAppManager>(profile());

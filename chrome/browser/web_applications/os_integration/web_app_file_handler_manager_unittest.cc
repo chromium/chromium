@@ -173,7 +173,6 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
     WebAppTest::SetUp();
 
     provider_ = FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     // This is not a WebAppProvider subsystem, so this can be

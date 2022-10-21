@@ -205,7 +205,6 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     test_pwa_delegate_ = test_pwa_delegate.get();
 
     provider_ = web_app::FakeWebAppProvider::Get(&profile_);
-    provider_->SetDefaultFakeSubsystems();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
 
     fake_externally_managed_app_manager().SetHandleInstallRequestCallback(

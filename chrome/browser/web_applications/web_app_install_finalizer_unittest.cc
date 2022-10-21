@@ -90,7 +90,6 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     WebAppTest::SetUp();
 
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
     auto install_manager = std::make_unique<WebAppInstallManager>(profile());
     install_manager_observer_ =
         std::make_unique<TestInstallManagerObserver>(install_manager.get());

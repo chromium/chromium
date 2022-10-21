@@ -107,7 +107,6 @@ class WebAppInstallManagerTest
     WebAppTest::SetUp();
 
     auto* fake_provider = web_app::FakeWebAppProvider::Get(profile());
-    fake_provider->SetDefaultFakeSubsystems();
 
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
 

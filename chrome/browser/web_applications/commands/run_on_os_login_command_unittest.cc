@@ -83,8 +83,6 @@ class RunOnOsLoginCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     provider_ = FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
-    provider_->SetRunSubsystemStartupTasks(true);
     auto os_integration_manager = std::make_unique<TestOsIntegrationManager>(
         profile(), /*app_shortcut_manager=*/nullptr,
         /*file_handler_manager=*/nullptr,

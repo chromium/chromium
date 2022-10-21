@@ -63,10 +63,8 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     fake_ui_manager_ = ui_manager.get();
 
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
     provider->SetIconManager(std::move(icon_manager));
     provider->SetWebAppUiManager(std::move(ui_manager));
-    provider->SetRunSubsystemStartupTasks(true);
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 

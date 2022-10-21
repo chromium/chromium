@@ -32,14 +32,14 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
       delete;
   ~FakeWebAppDatabaseFactory() override;
 
+  syncer::ModelTypeStore* GetStore();
+
   // AbstractWebAppDatabaseFactory interface implementation.
   syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
 
-  syncer::ModelTypeStore* store() { return store_.get(); }
+  Registry ReadRegistry();
 
-  Registry ReadRegistry() const;
-
-  std::set<AppId> ReadAllAppIds() const;
+  std::set<AppId> ReadAllAppIds();
 
   void WriteProtos(const std::vector<std::unique_ptr<WebAppProto>>& protos);
   void WriteRegistry(const Registry& registry);

@@ -54,7 +54,6 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     WebAppTest::SetUp();
 
     provider_ = web_app::FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     // This is not a WebAppProvider subsystem, so this can be

@@ -115,9 +115,6 @@ class WebKioskAppUpdateObserverTest : public BrowserWithTestWindowTest {
     // |WebKioskAppUpdateObserver| requires WebAppProvider to be ready before it
     // is created.
     fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
-    fake_web_app_provider_->SetDefaultFakeSubsystems();
-    fake_web_app_provider_->SetRunSubsystemStartupTasks(true);
-
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     app_publisher_ =

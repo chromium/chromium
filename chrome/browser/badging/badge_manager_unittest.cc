@@ -72,7 +72,6 @@ class BadgeManagerUnittest : public ::testing::Test {
     profile_ = builder.Build();
 
     provider_ = web_app::FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     badge_manager_ = std::make_unique<TestBadgeManager>(

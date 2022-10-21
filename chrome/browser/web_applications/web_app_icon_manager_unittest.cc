@@ -57,8 +57,6 @@ class WebAppIconManagerTest : public WebAppTest {
     WebAppTest::SetUp();
 
     provider_ = FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
-
     auto install_manager = std::make_unique<WebAppInstallManager>(profile());
     install_manager_ = install_manager.get();
     provider_->SetInstallManager(std::move(install_manager));

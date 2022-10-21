@@ -87,6 +87,11 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
               chrome::DIR_EXTERNAL_EXTENSIONS, data_dir().Append("external"));
     }
 
+    // This switch is set when creating a TestingProfile, but needs to be
+    // removed for some ExternalProviders to be created.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kDisableDefaultApps);
+
     ProviderCollection providers;
     extensions::ExternalProviderImpl::CreateExternalProviders(
         service_, profile_.get(), &providers);

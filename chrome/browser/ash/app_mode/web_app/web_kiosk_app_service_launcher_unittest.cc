@@ -94,14 +94,6 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
 
     fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
-    fake_web_app_provider_->SetDefaultFakeSubsystems();
-    fake_web_app_provider_->SetRunSubsystemStartupTasks(true);
-
-    auto fake_externally_managed_app_manager =
-        std::make_unique<web_app::FakeExternallyManagedAppManager>(profile());
-    fake_web_app_provider_->SetExternallyManagedAppManager(
-        std::move(fake_externally_managed_app_manager));
-
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     externally_managed_app_manager().SetSubsystems(

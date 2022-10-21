@@ -35,8 +35,6 @@ class SubAppInstallCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
-    provider->SetRunSubsystemStartupTasks(true);
     auto command_manager_url_loader = std::make_unique<TestWebAppUrlLoader>();
     command_manager_url_loader_ = command_manager_url_loader.get();
     provider->GetCommandManager().SetUrlLoaderForTesting(

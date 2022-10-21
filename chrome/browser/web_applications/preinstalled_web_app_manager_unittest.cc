@@ -134,7 +134,6 @@ class PreinstalledWebAppManagerTest : public testing::Test,
 
     if (profile_ != profile) {
       provider_ = FakeWebAppProvider::Get(profile);
-      provider_->SetDefaultFakeSubsystems();
       test::AwaitStartWebAppProviderAndSubsystems(profile);
       profile_ = profile;
     }

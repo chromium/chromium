@@ -164,8 +164,6 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
  public:
   void SetUp() override {
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
-    provider->SetRunSubsystemStartupTasks(true);
 
     auto command_manager_url_loader = std::make_unique<TestWebAppUrlLoader>();
     command_manager_url_loader->SetPrepareForLoadResultLoaded();

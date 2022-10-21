@@ -88,7 +88,7 @@ class WebAppDatabaseTest : public WebAppTest {
       std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch) {
     base::RunLoop run_loop;
 
-    database_factory().store()->CommitWriteBatch(
+    database_factory().GetStore()->CommitWriteBatch(
         std::move(write_batch),
         base::BindLambdaForTesting(
             [&](const absl::optional<syncer::ModelError>& error) {
@@ -102,7 +102,7 @@ class WebAppDatabaseTest : public WebAppTest {
   Registry WriteWebApps(const GURL& base_url, int num_apps) {
     Registry registry;
 
-    auto write_batch = database_factory().store()->CreateWriteBatch();
+    auto write_batch = database_factory().GetStore()->CreateWriteBatch();
 
     for (int i = 0; i < num_apps; ++i) {
       std::unique_ptr<WebApp> app =

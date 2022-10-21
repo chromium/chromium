@@ -429,8 +429,6 @@ class ExternallyManagedAppManagerImplTest
     WebAppTest::SetUp();
 
     provider_ = web_app::FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
-
     auto externally_managed_app_manager_impl =
         std::make_unique<TestExternallyManagedAppManager>(
             profile(), provider(), test_install_task_manager_);

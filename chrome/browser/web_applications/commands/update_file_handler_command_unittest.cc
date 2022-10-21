@@ -36,7 +36,6 @@ class UpdateFileHandlerCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     provider_ = FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
 
     auto file_handler_manager =
         std::make_unique<WebAppFileHandlerManager>(profile());

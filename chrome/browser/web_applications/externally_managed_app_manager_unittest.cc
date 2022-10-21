@@ -51,7 +51,6 @@ class ExternallyManagedAppManagerTest
   void SetUp() override {
     WebAppTest::SetUp();
     provider_ = web_app::FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     externally_installed_app_prefs_ =

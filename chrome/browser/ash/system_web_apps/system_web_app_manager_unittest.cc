@@ -171,7 +171,6 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     provider_ = web_app::FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
 
     auto install_manager =
         std::make_unique<web_app::WebAppInstallManager>(profile());

@@ -43,12 +43,10 @@ class WebAppUninstallCommandTest : public WebAppTest {
     WebAppTest::SetUp();
 
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
     file_utils_wrapper_ =
         base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
     provider->SetIconManager(
         std::make_unique<WebAppIconManager>(profile(), file_utils_wrapper_));
-    provider->SetRunSubsystemStartupTasks(true);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

@@ -67,10 +67,6 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
-    provider->SetRunSubsystemStartupTasks(true);
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
