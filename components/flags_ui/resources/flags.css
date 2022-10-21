@@ -327,7 +327,7 @@ button:not(.primary):hover {
 
 
 .match,
-.referenced h3 {
+.referenced h2 {
   /* This UI is intentionally the same in light and dark mode. */
   background: yellow;
   color: var(--google-grey-900);
