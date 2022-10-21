@@ -1312,6 +1312,11 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 <histogram
     name="Navigation.RendererInitiatedCancellation.DeferStartToCancellationWindowEnd"
     units="ms" expires_after="2022-10-21">
+  <obsolete>
+    Obsolete after 2022-10-21. All cancellation window ends within 10000ms. See
+    UMA result:
+    https://docs.google.com/document/d/1VNmvEVuaiNH3ypt6YfrYPsJJp8okCTYjooekarOiWN8/edit#heading=h.tlh3g7tofz2
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>dcheng@chromium.org</owner>
   <summary>

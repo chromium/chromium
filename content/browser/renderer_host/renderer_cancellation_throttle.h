@@ -65,9 +65,6 @@ class CONTENT_EXPORT RendererCancellationThrottle : public NavigationThrottle {
   void OnTimeout();
   void RestartTimeout();
 
-  // The time WillProcessResponse() was called.
-  base::TimeTicks will_process_response_time_;
-
   base::OneShotTimer renderer_cancellation_timeout_timer_;
 
   base::WeakPtrFactory<RendererCancellationThrottle> weak_factory_{this};
