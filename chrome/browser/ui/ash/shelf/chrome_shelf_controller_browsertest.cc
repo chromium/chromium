@@ -2157,7 +2157,11 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, CloseSystemAppByShelfContextMenu) {
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api =
       ash::SystemTrayTestApi::Create();
   tray_test_api->ShowBubble();
+
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   tray_test_api->ClickBubbleView(ash::VIEW_ID_QS_SETTINGS_BUTTON);
+  browser_opened.Wait();
 
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_EQ(web_app::kOsSettingsAppId,
@@ -2437,8 +2441,16 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
             shelf_model()->ItemByID(web_app_shelf_id)->status);
 
   // Now use the shelf controller to activate the apps.
+
+  ui_test_utils::BrowserChangeObserver browser_opened1(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   SelectApp(hosted_app->id(), ash::LAUNCH_FROM_APP_LIST);
+  browser_opened1.Wait();
+
+  ui_test_utils::BrowserChangeObserver browser_opened2(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   SelectApp(web_app_id, ash::LAUNCH_FROM_APP_LIST);
+  browser_opened2.Wait();
 
   // There should be two new browsers.
   EXPECT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
