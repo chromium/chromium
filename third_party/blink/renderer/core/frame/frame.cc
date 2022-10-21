@@ -706,7 +706,7 @@ bool Frame::FocusCrossesFencedBoundary() {
   return false;
 }
 
-bool Frame::ShouldAllowScriptFocus() {
+bool Frame::AllowFocusWithoutUserActivation() {
   const auto& ff_impl = GetPage()->FencedFramesImplementationType();
   if (!ff_impl)
     return true;

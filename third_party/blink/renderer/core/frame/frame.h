@@ -217,9 +217,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   void SetIsLoading(bool is_loading) { is_loading_ = is_loading; }
   bool IsLoading() const { return is_loading_; }
 
-  // Determines if the frame should be allowed to pull focus from a JavaScript
-  // call.
-  bool ShouldAllowScriptFocus();
+  // Determines if the frame should be allowed to pull focus without receiving
+  // user activation. A frame cannot pull focus without user activation if
+  // doing so would cross a fenced frame boundary.
+  // Note: the only time focus can be pulled across a fence without the target
+  // frame having user activation is in the case of tab-focusing. In that case,
+  // this function is not called and focus is blanket allowed.
+  bool AllowFocusWithoutUserActivation();
 
   // Tells the frame to check whether its load has completed, based on the state
   // of its subframes, etc.

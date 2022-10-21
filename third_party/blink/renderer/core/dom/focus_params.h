@@ -17,14 +17,19 @@ struct FocusParams {
 
  public:
   FocusParams() : options(FocusOptions::Create()) {}
+  explicit FocusParams(bool gate_on_user_activation)
+      : options(FocusOptions::Create()),
+        gate_on_user_activation(gate_on_user_activation) {}
   FocusParams(SelectionBehaviorOnFocus selection,
               mojom::blink::FocusType focus_type,
               InputDeviceCapabilities* capabilities,
-              const FocusOptions* focus_options = FocusOptions::Create())
+              const FocusOptions* focus_options = FocusOptions::Create(),
+              bool gate_on_user_activation = false)
       : selection_behavior(selection),
         type(focus_type),
         source_capabilities(capabilities),
-        options(focus_options) {}
+        options(focus_options),
+        gate_on_user_activation(gate_on_user_activation) {}
 
   SelectionBehaviorOnFocus selection_behavior =
       SelectionBehaviorOnFocus::kRestore;
@@ -32,6 +37,7 @@ struct FocusParams {
   InputDeviceCapabilities* source_capabilities = nullptr;
   const FocusOptions* options = nullptr;
   bool omit_blur_events = false;
+  bool gate_on_user_activation = false;
 };
 
 }  // namespace blink
