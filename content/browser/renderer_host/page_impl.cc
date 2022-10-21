@@ -5,8 +5,10 @@
 #include "content/browser/renderer_host/page_impl.h"
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/i18n/character_encoding.h"
 #include "base/trace_event/optional_trace_event.h"
+#include "cc/base/features.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_delegate.h"
@@ -249,8 +251,14 @@ void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
   if (!GetMainDocument().IsRenderFrameLive())
     return;
 
-  GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
-      constraints, current, animate);
+  if (base::FeatureList::IsEnabled(
+          features::kUpdateBrowserControlsWithoutProxy)) {
+    GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
+        constraints, current, animate);
+  } else {
+    GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
+        constraints, current, animate);
+  }
 }
 
 float PageImpl::GetPageScaleFactor() const {

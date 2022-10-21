@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "cc/input/actively_scrolling_type.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -126,6 +127,9 @@ class CompositorDelegateForInput {
   virtual float PageScaleFactor() const = 0;
   virtual gfx::Size VisualDeviceViewportSize() const = 0;
   virtual const LayerTreeSettings& GetSettings() const = 0;
+  virtual void UpdateBrowserControlsState(BrowserControlsState constraints,
+                                          BrowserControlsState current,
+                                          bool animate) = 0;
 
   // TODO(bokan): Temporary escape hatch for code that hasn't yet been
   // converted to use the input<->compositor interface. This will eventually be

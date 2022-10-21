@@ -10,6 +10,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -188,6 +189,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void SendDroppedPointerDownCounts();
 
   void ClearClient();
+
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate);
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
 

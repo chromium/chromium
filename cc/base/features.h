@@ -81,6 +81,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(
 
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
+
+// Updating browser controls state will IPC directly from browser main to the
+// compositor thread. Previously this proxied through the renderer main thread.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUpdateBrowserControlsWithoutProxy);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

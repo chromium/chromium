@@ -343,6 +343,14 @@ void LayerTreeHostImpl::SetDeferBeginMainFrame(
   client_->SetDeferBeginMainFrameFromImpl(defer_begin_main_frame);
 }
 
+void LayerTreeHostImpl::UpdateBrowserControlsState(
+    BrowserControlsState constraints,
+    BrowserControlsState current,
+    bool animate) {
+  browser_controls_offset_manager_->UpdateBrowserControlsState(
+      constraints, current, animate);
+}
+
 bool LayerTreeHostImpl::IsInHighLatencyMode() const {
   return impl_thread_phase_ == ImplThreadPhase::IDLE;
 }

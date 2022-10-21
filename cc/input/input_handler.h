@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -417,6 +418,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // hit test for a GestureScrollBegin, to avoid posting a frame before the
   // compositor thread has had a chance to update the scroll offset.
   virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const;
+
+  virtual void UpdateBrowserControlsState(BrowserControlsState constraints,
+                                          BrowserControlsState current,
+                                          bool animate);
 
   bool CanConsumeDelta(const ScrollState& scroll_state,
                        const ScrollNode& scroll_node);

@@ -88,4 +88,8 @@ BASE_FEATURE(kUseDMSAAForTiles,
              "UseDMSAAForTiles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUpdateBrowserControlsWithoutProxy,
+             "UpdateBrowserControlsWithoutProxy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

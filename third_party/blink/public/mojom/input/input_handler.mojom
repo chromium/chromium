@@ -23,6 +23,7 @@ import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 import "ui/latency/mojom/latency_info.mojom";
+import "cc/mojom/browser_controls_state.mojom";
 
 [EnableIf=is_android]
 import "third_party/blink/public/mojom/input/synchronous_compositor.mojom";
@@ -503,4 +504,11 @@ interface WidgetInputHandler {
   // serially.
   GetFrameWidgetInputHandler(
       pending_associated_receiver<FrameWidgetInputHandler> interface_request);
+
+  // Notifies the renderer whether hiding/showing the browser controls is
+  // enabled, what the current state should be, and whether or not to
+  // animate to the proper state.
+  UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
+                             cc.mojom.BrowserControlsState current,
+                             bool animate);
 };
