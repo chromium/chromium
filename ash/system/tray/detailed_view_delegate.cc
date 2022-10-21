@@ -171,7 +171,7 @@ views::Button* DetailedViewDelegate::CreateBackButton(
       std::move(callback),
       features::IsQsRevampEnabled() ? IconButton::Type::kSmall
                                     : IconButton::Type::kSmallFloating,
-      &kQuickSettingsBackIcon, IDS_ASH_STATUS_TRAY_PREVIOUS_MENU);
+      &kQuickSettingsLeftArrowIcon, IDS_ASH_STATUS_TRAY_PREVIOUS_MENU);
 }
 
 views::Button* DetailedViewDelegate::CreateInfoButton(
