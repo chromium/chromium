@@ -1599,6 +1599,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // on the specified ViewportUnitFlags.
   void AddViewportUnitFlags(unsigned flags) { viewport_unit_flags_ |= flags; }
 
+  bool HasViewportUnits() const { return viewport_unit_flags_; }
   bool HasStaticViewportUnits() const {
     return viewport_unit_flags_ &
            static_cast<unsigned>(ViewportUnitFlag::kStatic);
