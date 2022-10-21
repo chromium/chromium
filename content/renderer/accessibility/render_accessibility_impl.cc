@@ -284,31 +284,29 @@ void RenderAccessibilityImpl::HitTest(
     ax::mojom::Event event_to_fire,
     int request_id,
     blink::mojom::RenderAccessibility::HitTestCallback callback) {
-  WebAXObject ax_object;
-
   const WebDocument& document = GetMainDocument();
-  if (!document.IsNull()) {
-    if (WebAXObject::MaybeUpdateLayoutAndCheckValidity(document)) {
-      // 1. Now that layout has been updated for the entire document, try to run
-      // the hit test operation on the popup root element, if there's a popup
-      // opened. This is needed to allow hit testing within web content popups.
-      absl::optional<gfx::RectF> popup_bounds = GetPopupBounds();
-      if (popup_bounds.has_value()) {
-        auto popup_root_obj = WebAXObject::FromWebDocument(GetPopupDocument());
-        // WebAXObject::HitTest expects the point passed by parameter to be
-        // relative to the instance we call it from.
-        ax_object = popup_root_obj.HitTest(
-            point - ToRoundedVector2d(popup_bounds->OffsetFromOrigin()));
-      }
+  DCHECK(!document.IsNull());
+  ax_context_->UpdateAXForAllDocuments();
 
-      // 2. If running the hit test operation on the popup didn't returned any
-      // result (or if there was no popup), run the hit test operation from the
-      // main element.
-      if (ax_object.IsNull()) {
-        auto root_obj = WebAXObject::FromWebDocument(document);
-        ax_object = root_obj.HitTest(point);
-      }
-    }
+  WebAXObject ax_object;
+  // 1. Now that layout has been updated for the entire document, try to run
+  // the hit test operation on the popup root element, if there's a popup
+  // opened. This is needed to allow hit testing within web content popups.
+  absl::optional<gfx::RectF> popup_bounds = GetPopupBounds();
+  if (popup_bounds.has_value()) {
+    auto popup_root_obj = WebAXObject::FromWebDocument(GetPopupDocument());
+    // WebAXObject::HitTest expects the point passed by parameter to be
+    // relative to the instance we call it from.
+    ax_object = popup_root_obj.HitTest(
+        point - ToRoundedVector2d(popup_bounds->OffsetFromOrigin()));
+  }
+
+  // 2. If running the hit test operation on the popup didn't returned any
+  // result (or if there was no popup), run the hit test operation from the
+  // main element.
+  if (ax_object.IsNull()) {
+    auto root_obj = WebAXObject::FromWebDocument(document);
+    ax_object = root_obj.HitTest(point);
   }
 
   // Return if no attached accessibility object was found for the main document.
@@ -377,8 +375,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
   if (document.IsNull())
     return;
 
-  if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(document))
-    return;
+  ax_context_->UpdateAXForAllDocuments();
 
   // If an action was requested, we no longer want to defer events.
   event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
@@ -393,19 +390,9 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       AXActionTargetFactory::CreateFromNodeId(document, plugin_tree_source_,
                                               data.focus_node_id);
 
-  if (target->PerformAction(data))
-    return;
-
-  if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(document))
-    return;
-
+  // Important: keep this reconciled with AXObject::PerformAction().
+  // Actions shouldn't be handled in both places.
   switch (data.action) {
-    case ax::mojom::Action::kBlur: {
-      ui::AXActionData action_data;
-      action_data.action = ax::mojom::Action::kFocus;
-      ComputeRoot().PerformAction(action_data);
-      break;
-    }
     case ax::mojom::Action::kGetImageData:
       OnGetImageData(target.get(), data.target_rect.size());
       break;
@@ -421,6 +408,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
           data.target_rect, data.horizontal_scroll_alignment,
           data.vertical_scroll_alignment, data.scroll_behavior);
       break;
+    case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
     case ax::mojom::Action::kDecrement:
     case ax::mojom::Action::kDoDefault:
@@ -432,16 +420,13 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint:
     case ax::mojom::Action::kSetValue:
     case ax::mojom::Action::kShowContextMenu:
-      // These are all handled by PerformAction.
-      break;
-
     case ax::mojom::Action::kScrollBackward:
     case ax::mojom::Action::kScrollForward:
     case ax::mojom::Action::kScrollUp:
     case ax::mojom::Action::kScrollDown:
     case ax::mojom::Action::kScrollLeft:
     case ax::mojom::Action::kScrollRight:
-      Scroll(target.get(), data.action);
+      target->PerformAction(data);
       break;
     case ax::mojom::Action::kCustomAction:
     case ax::mojom::Action::kCollapse:
@@ -483,6 +468,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kLongClick:
       break;
   }
+  ax_context_->UpdateAXForAllDocuments();
 }
 
 void RenderAccessibilityImpl::Reset(int32_t reset_token) {
@@ -1105,6 +1091,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     // complete for the entire document, in order to initialize the browser's
     // cached accessibility tree.
     needs_initial_ax_tree_root_ = false;
+    ax_context_->UpdateAXForAllDocuments();
     auto root_obj = WebAXObject::FromWebDocument(document);
     // Always fire layout complete for a new root object.
     // TODO(aleventhal): eventually hopefully we can get rid of
@@ -1140,7 +1127,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // Update layout before snapshotting the events so that live state read from
   // the DOM during freezing (e.g. which node currently has focus) is consistent
   // with the events and node data we're about to send up.
-  WebAXObject::UpdateLayout(document);
+  ax_context_->UpdateAXForAllDocuments();
 
   ScopedFreezeAXTreeSource freeze(ax_context_.get());
   WebAXObject root = ComputeRoot();
@@ -1158,20 +1145,14 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // Save the page language.
   page_language_ = root.Language().Utf8();
 
-  // Popups have a document lifecycle managed separately from the main document
-  // but we need to return a combined accessibility tree for both.
-  // We ensured layout validity for the main document in the loop above; if a
-  // popup is open, do the same for it.
-  WebDocument popup_document = GetPopupDocument();
-  WebAXObject::UpdateLayout(popup_document);
-
 #if DCHECK_IS_ON()
   // Protect against lifecycle changes in the popup document, if any.
   // If no popup document, use the main document -- it's harmless to protect it
   // twice, and some document is needed because this cannot be done in an if
   // statement because it's scoped.
+  WebDocument popup_document = GetPopupDocument();
   WebDocument popup_or_main_document =
-      popup_document.IsNull() ? document : popup_document;
+      popup_document.IsNull() ? document : GetPopupDocument();
   std::unique_ptr<blink::WebDisallowTransitionScope> disallow2;
   if (!image_annotation_debugging_) {
     disallow = std::make_unique<blink::WebDisallowTransitionScope>(
@@ -1362,13 +1343,6 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
   }
 }
 
-void RenderAccessibilityImpl::Scroll(const ui::AXActionTarget* target,
-                                     ax::mojom::Action scroll_action) {
-  ui::AXActionData action_data;
-  action_data.action = scroll_action;
-  target->PerformAction(action_data);
-}
-
 void RenderAccessibilityImpl::AddImageAnnotationDebuggingAttributes(
     const std::vector<ui::AXTreeUpdate>& updates) {
   DCHECK(image_annotation_debugging_);
@@ -1470,6 +1444,7 @@ absl::optional<gfx::RectF> RenderAccessibilityImpl::GetPopupBounds() {
 blink::WebAXObject RenderAccessibilityImpl::GetPluginRoot() {
   if (!ax_context_)
     return WebAXObject();
+  ax_context_->UpdateAXForAllDocuments();
   ScopedFreezeAXTreeSource freeze(ax_context_.get());
   return ax_context_->GetPluginRoot();
 }

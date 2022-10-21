@@ -17,33 +17,27 @@ promise_test(() => {
   let week1 = document.getElementById('week1');
   return openPicker(week1).then(() => {
     let markDirtyCounter = 0;
-    let focusCounter = 0;
 
     let promise = new Promise((resolve, reject) => {
       accessibilityController.setNotificationListener(function(axnode, type) {
-        if (type == 'Focus') {
-          console.log('Focused: ' + accessibilityController.focusedElement.name.replace(/,/g, ''));
-          focusCounter++;
-        } else if (type == 'MarkDirty') {
-          console.log('Received MarkDirty');
-          markDirtyCounter++;
-        }
-
-        if (focusCounter == 1 && markDirtyCounter >= 3) {
+        if (type == 'MarkDirty' && ++ markDirtyCounter >= 6) {
+          assert_equals(week1.value, "2000-W14", "Arrow key in week picker should have changed value");
           resolve();
         }
       });
 
       // In case of failure, reject the promise so we get some logs instead of timing out.
       window.setTimeout(() => {
-        reject(`Didn't receive expected events.  Got ${focusCounter} Focus and ${markDirtyCounter} MarkDirty`);
+        reject(`Didn't receive expected events.  Got ${markDirtyCounter} MarkDirty`);
       }, 1500);
     });
 
     eventSender.keyDown('ArrowDown');
+    // This forces an a11y flush.
+    accessibilityController.focusedElement;
     return promise;
   });
-}, 'Tests if typing an arrow key dispatches |Focus| and |MarkDirty| a11y events.');
+}, 'Tests if typing an arrow key dispatches |MarkDirty| a11y events.');
 
 </script>
 </body>

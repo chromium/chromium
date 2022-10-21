@@ -34,9 +34,7 @@ void AXTreeSnapshotterImpl::Snapshot(bool exclude_offscreen,
                                      ui::AXTreeUpdate* response) {
   if (!render_frame_->GetWebFrame())
     return;
-  if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(
-          render_frame_->GetWebFrame()->GetDocument()))
-    return;
+  context_->UpdateAXForAllDocuments();
 
   if (context_->SerializeEntireTree(exclude_offscreen, max_node_count, timeout,
                                     response))

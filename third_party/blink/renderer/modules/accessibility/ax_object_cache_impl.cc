@@ -697,36 +697,54 @@ Node* AXObjectCacheImpl::FocusedElement() {
   if (!focused_node)
     focused_node = document_;
 
-  // See if there's a page popup, for example a calendar picker.
-  auto* input = DynamicTo<HTMLInputElement>(focused_node);
-  if (!input && focused_node->IsInUserAgentShadowRoot()) {
-    input = DynamicTo<HTMLInputElement>(focused_node->OwnerShadowHost());
-  }
-  if (input) {
-    if (AXObject* ax_popup = input->PopupRootAXObject()) {
-      if (Element* focused_element_in_popup =
-              ax_popup->GetDocument()->FocusedElement())
-        focused_node = focused_element_in_popup;
-    }
+  // A popup is showing: return the focus within instead of the focus in the
+  // main document. Do not do this for HTML <select>, which has special
+  // focus manager using the kActiveDescendantId.
+  if (GetPopupDocumentIfShowing() && !IsA<HTMLSelectElement>(focused_node)) {
+    if (Node* focus_in_popup = GetPopupDocumentIfShowing()->FocusedElement())
+      return focus_in_popup;
   }
 
   return focused_node;
 }
 
-void AXObjectCacheImpl::UpdateLifecycleIfNeeded() {
-  if (GetDocument().Lifecycle().GetState() < DocumentLifecycle::kLayoutClean) {
-    // Node is in a different, unclean document. This can occur in an open
-    // popup. Ensure the popup document has a clean layout before trying to
-    // create an AXObject from a node in it.
-    if (auto* view = GetDocument().View()) {
-      view->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kAccessibility);
-    }
+void AXObjectCacheImpl::UpdateLayoutForAllDocuments() {
+  UpdateLifecycleIfNeeded(GetDocument());
+  if (Document* popup_document = GetPopupDocumentIfShowing())
+    UpdateLifecycleIfNeeded(*popup_document);
+}
+
+void AXObjectCacheImpl::UpdateLifecycleIfNeeded(Document& document) {
+  DCHECK(document.defaultView());
+  DCHECK(document.GetFrame());
+  DCHECK(document.View());
+
+  // TODO(accessibility) This temporarily requires kPrePaintClean as
+  // WebAXObject::UpdateLayout() did. Once a11y is moved to
+  // PostRunLifecycleTasks, restore to only require kLayoutClean.
+  // TODO(accessibility) Remove conditions and just update the lifecycle.
+  if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
+      document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kAccessibility);
   }
 }
 
+void AXObjectCacheImpl::UpdateAXForAllDocuments() {
+  UpdateLayoutForAllDocuments();
+
+  if (IsMainDocumentDirty())
+    ProcessDeferredAccessibilityEvents(GetDocument());
+
+  if (IsPopupDocumentDirty())
+    ProcessDeferredAccessibilityEvents(*GetPopupDocumentIfShowing());
+}
+
 AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
-  // TODO(chrishtr): refactor to use UpdateLifecycleIfNeeded.
+  if (!node)
+    return nullptr;
+
+  // TODO(chrishtr): refactor to use UpdateLayoutForAllDocuments().
   if (node->GetDocument() != GetDocument() &&
       node->GetDocument().Lifecycle().GetState() <
           DocumentLifecycle::kLayoutClean) {
@@ -1718,6 +1736,18 @@ bool AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
   if (!layout_object)
     return false;
 
+  if (IsA<LayoutView>(layout_object)) {
+    // A document is being destroyed.
+    // This code is only reached when it is a popup being destroyed.
+    DCHECK(!popup_document_ ||
+           popup_document_ == &layout_object->GetDocument());
+    // Popup has been destroyed.
+    popup_document_ = nullptr;
+    tree_update_callback_queue_popup_.clear();
+    notifications_to_post_popup_.clear();
+    invalidated_ids_popup_.clear();
+  }
+
   auto iter = layout_object_mapping_.find(layout_object);
   if (iter == layout_object_mapping_.end())
     return false;
@@ -2198,6 +2228,12 @@ void AXObjectCacheImpl::DocumentTitleChanged() {
 void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
   DCHECK(node);
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
+  Document* document = DynamicTo<Document>(node);
+  if (document) {
+    // A popup is being shown.
+    DCHECK(IsPopup(*document));
+    popup_document_ = document;
+  }
   DeferTreeUpdate(
       &AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout, node);
 }
@@ -2477,9 +2513,9 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
     Document& document) {
   TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents");
 
-  DCHECK(document.Lifecycle().GetState() == DocumentLifecycle::kInAccessibility)
+  DCHECK(document.Lifecycle().GetState() >= DocumentLifecycle::kInAccessibility)
       << "Deferred events should only be processed during the "
-         "accessibility document lifecycle.";
+         "accessibility document lifecycle or later.";
 
   // When tree updates are paused, IsDirty() will return false. In this
   // situation we should not return early because we would never trigger the
@@ -2533,14 +2569,23 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
   PostNotifications(document);
 }
 
+bool AXObjectCacheImpl::IsMainDocumentDirty() const {
+  return !tree_update_callback_queue_main_.empty() ||
+         !notifications_to_post_main_.empty() || !invalidated_ids_main_.empty();
+}
+
+bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
+  if (!popup_document_)
+    return false;
+  return !tree_update_callback_queue_popup_.empty() ||
+         !notifications_to_post_popup_.empty() ||
+         !invalidated_ids_popup_.empty();
+}
+
 bool AXObjectCacheImpl::IsDirty() const {
   if (tree_updates_paused_)
     return false;
-  return !tree_update_callback_queue_main_.empty() ||
-         !tree_update_callback_queue_popup_.empty() ||
-         !notifications_to_post_main_.empty() ||
-         !notifications_to_post_popup_.empty() ||
-         !invalidated_ids_main_.empty() || !invalidated_ids_popup_.empty() ||
+  return IsMainDocumentDirty() || IsPopupDocumentDirty() ||
          relation_cache_->IsDirty();
 }
 
@@ -2885,7 +2930,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents,
     base::OnceClosure callback) {
-  DCHECK_EQ(document.Lifecycle().GetState(),
+  DCHECK_GE(document.Lifecycle().GetState(),
             DocumentLifecycle::kInAccessibility);
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
@@ -2903,7 +2948,7 @@ void AXObjectCacheImpl::FireAXEventImmediately(
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents) {
-  DCHECK_EQ(obj->GetDocument()->Lifecycle().GetState(),
+  DCHECK_GE(obj->GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kInAccessibility);
 
 #if DCHECK_IS_ON()
@@ -3975,7 +4020,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   size_t num_remaining_objects_to_serialize =
       dirty_objects_.size() + kMaxExtraDirtyObjectsToSerialize;
 
-  UpdateLifecycleIfNeeded();
+  UpdateLayoutForAllDocuments();
 
   while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {
     AXDirtyObject* current_dirty_object = std::move(dirty_objects_.front());
@@ -4272,9 +4317,10 @@ void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
   DCHECK(document_node);
   DCHECK(IsA<Document>(document_node));
 #if DCHECK_IS_ON()
-  Document* document = To<Document>(document_node);
+  const Document* document = To<Document>(document_node);
   DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
+  DCHECK(document == document_.Get());
 #endif  // DCHECK_IS_ON()
 
   AddPermissionStatusListener();
@@ -4464,6 +4510,7 @@ void AXObjectCacheImpl::RequestAOMEventListenerPermission() {
 void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(agents_);
   visitor->Trace(document_);
+  visitor->Trace(popup_document_);
   visitor->Trace(accessible_node_mapping_);
   visitor->Trace(layout_object_mapping_);
   visitor->Trace(node_object_mapping_);

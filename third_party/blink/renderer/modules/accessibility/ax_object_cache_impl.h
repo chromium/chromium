@@ -84,7 +84,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   ~AXObjectCacheImpl() override;
   void Trace(Visitor*) const override;
 
+  // The main document.
   Document& GetDocument() const { return *document_; }
+  // The popup document, if showing, otherwise null.
+  Document* GetPopupDocumentIfShowing() const { return popup_document_; }
+
   AXObject* FocusedObject();
 
   const ui::AXMode& GetAXMode() override;
@@ -487,7 +491,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   static constexpr int kDataTableHeuristicMinRows = 20;
 
-  void UpdateLifecycleIfNeeded();
+  void UpdateAXForAllDocuments() override;
 
  protected:
   void PostPlatformNotification(
@@ -554,6 +558,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
   void ProcessDeferredAccessibilityEventsImpl(Document&);
+  void UpdateLayoutForAllDocuments();
+  void UpdateLifecycleIfNeeded(Document& document);
+
+  bool IsMainDocumentDirty() const;
+  bool IsPopupDocumentDirty() const;
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
@@ -630,6 +639,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* InvalidateChildren(AXObject* obj);
 
   Member<Document> document_;
+  Member<Document> popup_document_;
+
   ui::AXMode ax_mode_;
   HeapHashMap<AXID, Member<AXObject>> objects_;
   // LayoutObject and AbstractInlineTextBox are not on the Oilpan heap so we

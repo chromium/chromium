@@ -27,9 +27,6 @@ svg/text/select-x-list-4.svg [ Crash ]
 crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
 
 # Failures
-# Too few events and dirty objects marked:
-fast/forms/calendar-picker/date-picker-ax.html [ Failure Pass ]
-fast/forms/month/month-picker-ax.html [ Failure Pass ]
 # isUseCounted() difference:
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Failure Pass ]
 # Unknown cause:

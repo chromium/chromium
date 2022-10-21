@@ -269,14 +269,12 @@ void BlinkAXTreeSource::Thaw() {
 AXObject* BlinkAXTreeSource::GetRoot() const {
   if (root_)
     return root_;
-  ax_object_cache_->UpdateLifecycleIfNeeded();
   return ax_object_cache_->Root();
 }
 
 AXObject* BlinkAXTreeSource::GetFocusedObject() const {
   if (focus_)
     return focus_;
-  ax_object_cache_->UpdateLifecycleIfNeeded();
   return ax_object_cache_->FocusedObject();
 }
 
@@ -427,8 +425,6 @@ void BlinkAXTreeSource::OnLoadInlineTextBoxes(AXObject& obj) {
 
 AXObject* BlinkAXTreeSource::GetPluginRoot() {
   AXObject* root = GetRoot();
-
-  ax_object_cache_->UpdateLifecycleIfNeeded();
 
   HeapDeque<Member<AXObject>> objs_to_explore;
   objs_to_explore.push_back(root);

@@ -2869,7 +2869,6 @@ crbug.com/1299212 fast/forms/week/week-picker-input-change-events.html [ Crash P
 # This might be just flaky on Windows:
 crbug.com/1299212 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html [ Failure Pass Timeout ]
 # These appear to be flaky at least on Linux:
-crbug.com/1299212 [ Linux ] fast/forms/week/week-picker-ax.html [ Failure Pass ]
 crbug.com/1299212 [ Linux ] fast/forms/select-popup/popup-menu-ax.html [ Failure Pass ]
 
 # isInputPending requires threaded compositing and layerized iframes

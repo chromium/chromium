@@ -259,7 +259,9 @@ WebAXObjectProxy::WebAXObjectProxy(const blink::WebAXObject& object,
 WebAXObjectProxy::~WebAXObjectProxy() = default;
 
 void WebAXObjectProxy::UpdateLayout() {
-  blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
+  DCHECK(factory());
+  DCHECK(factory()->GetAXContext());
+  factory()->GetAXContext()->UpdateAXForAllDocuments();
 }
 
 ui::AXNodeData WebAXObjectProxy::GetAXNodeData() const {
@@ -1804,6 +1806,7 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
 
   v8::Isolate* isolate = blink::MainThreadIsolate();
 
+  // Return existing object if there is a match.
   for (const auto& persistent : elements_) {
     auto local = v8::Local<v8::Object>::New(isolate, persistent);
 
@@ -1815,6 +1818,7 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
       return local;
   }
 
+  // Create a new object.
   v8::Local<v8::Value> value_handle =
       gin::CreateHandle(isolate, new WebAXObjectProxy(object, this)).ToV8();
   v8::Local<v8::Object> handle;
@@ -1825,6 +1829,14 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
 
   elements_.emplace_back(isolate, handle);
   return handle;
+}
+
+void WebAXObjectProxyList::SetAXContext(blink::WebAXContext* ax_context) {
+  ax_context_ = ax_context;
+}
+
+blink::WebAXContext* WebAXObjectProxyList::GetAXContext() {
+  return ax_context_;
 }
 
 }  // namespace content

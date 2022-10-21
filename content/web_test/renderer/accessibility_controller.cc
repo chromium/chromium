@@ -172,6 +172,7 @@ void AccessibilityController::Reset() {
 void AccessibilityController::Install(blink::WebLocalFrame* frame) {
   ax_context_ = std::make_unique<blink::WebAXContext>(frame->GetDocument(),
                                                       ui::kAXModeComplete);
+  elements_.SetAXContext(ax_context_.get());
   frame->View()->GetSettings()->SetInlineTextBoxAccessibilityEnabled(true);
 
   AccessibilityControllerBindings::Install(weak_factory_.GetWeakPtr(), frame);
@@ -260,9 +261,10 @@ v8::Local<v8::Object> AccessibilityController::FocusedElement() {
   CHECK(frame->IsWebLocalFrame())
       << "This function cannot be called if the main frame is not a "
          "local frame.";
+  ax_context_->UpdateAXForAllDocuments();
   blink::WebAXObject focused_element =
       blink::WebAXObject::FromWebDocumentFocused(
-          frame->ToWebLocalFrame()->GetDocument(), true);
+          frame->ToWebLocalFrame()->GetDocument());
   if (focused_element.IsNull())
     focused_element = GetAccessibilityObjectForMainFrame();
   return elements_.GetOrCreate(focused_element);
@@ -274,9 +276,7 @@ v8::Local<v8::Object> AccessibilityController::RootElement() {
 
 v8::Local<v8::Object> AccessibilityController::AccessibleElementById(
     const std::string& id) {
-  const blink::WebDocument& web_document =
-      web_view()->MainFrame()->ToWebLocalFrame()->GetDocument();
-  blink::WebAXObject::UpdateLayout(web_document);
+  ax_context_->UpdateAXForAllDocuments();
   blink::WebAXObject root_element = GetAccessibilityObjectForMainFrame();
 
   return FindAccessibleElementByIdRecursive(

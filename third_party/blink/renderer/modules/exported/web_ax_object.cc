@@ -685,7 +685,7 @@ void WebAXObject::Selection(bool& is_selection_backward,
   if (IsDetached() || GetDocument().IsNull())
     return;
 
-  WebAXObject focus = FromWebDocumentFocused(GetDocument(), false);
+  WebAXObject focus = FromWebDocumentFocused(GetDocument());
   if (focus.IsDetached())
     return;
 
@@ -1306,20 +1306,19 @@ WebAXObject::operator AXObject*() const {
 // static
 WebAXObject WebAXObject::FromWebNode(const WebNode& web_node) {
   WebDocument web_document = web_node.GetDocument();
-  const Document* doc = web_document.ConstUnwrap<Document>();
-  auto* cache = To<AXObjectCacheImpl>(doc->ExistingAXObjectCache());
+  const Document* document = web_document.ConstUnwrap<Document>();
+  auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   const Node* node = web_node.ConstUnwrap<Node>();
   return cache ? WebAXObject(cache->Get(node)) : WebAXObject();
 }
 
 // static
 WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document) {
-  if (!MaybeUpdateLayoutAndCheckValidity(web_document))
-    return WebAXObject();
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
-  return cache ? WebAXObject(cache->GetOrCreate(document->GetLayoutView()))
-               : WebAXObject();
+  DCHECK(cache);
+  cache->UpdateAXForAllDocuments();
+  return WebAXObject(cache->GetOrCreate(document));
 }
 
 // static
@@ -1332,57 +1331,13 @@ WebAXObject WebAXObject::FromWebDocumentByID(const WebDocument& web_document,
 
 // static
 WebAXObject WebAXObject::FromWebDocumentFocused(
-    const WebDocument& web_document,
-    bool update_layout_if_necessary) {
-  if (update_layout_if_necessary &&
-      !MaybeUpdateLayoutAndCheckValidity(web_document)) {
-    return WebAXObject();
-  }
-  const Document* document = web_document.ConstUnwrap<Document>();
-  auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
-  return cache ? WebAXObject(cache->FocusedObject()) : WebAXObject();
-}
-
-// static
-void WebAXObject::UpdateLayout(const WebDocument& web_document) {
-  const Document* document = web_document.ConstUnwrap<Document>();
-  if (!document || !document->View() || !document->ExistingAXObjectCache())
-    return;
-  if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
-      document->Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean ||
-      document->ExistingAXObjectCache()->IsDirty()) {
-    document->View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kAccessibility);
-  }
-}
-
-// static
-bool WebAXObject::MaybeUpdateLayoutAndCheckValidity(
     const WebDocument& web_document) {
   const Document* document = web_document.ConstUnwrap<Document>();
-  if (!document)
-    return false;
-
-  DCHECK(document->defaultView());
-  DCHECK(document->GetFrame());
-  DCHECK(document->View());
-  DCHECK(document->ExistingAXObjectCache());
-
-  if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
-      document->Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
-    // Note: this always alters the lifecycle, because
-    // RunAccessibilityLifecyclePhase() will be called.
-    if (!document->View()->UpdateAllLifecyclePhasesExceptPaint(
-            DocumentUpdateReason::kAccessibility)) {
-      return false;
-    }
-  } else {
 #if DCHECK_IS_ON()
-    CheckLayoutClean(document);
+  CheckLayoutClean(document);
 #endif
-  }
-
-  return true;
+  auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  return cache ? WebAXObject(cache->FocusedObject()) : WebAXObject();
 }
 
 // static

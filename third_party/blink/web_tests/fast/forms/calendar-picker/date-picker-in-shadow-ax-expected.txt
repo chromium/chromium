@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Tests that a11y focus is sent inside the date picker popup when the control is in a shadow DOM. assert_equals: a11y focus should have moved inside the calendar grid in the control's popup expected "AXRole: AXGrid" but got "AXRole: AXRootWebArea"
-Harness: the test ran to completion.
-

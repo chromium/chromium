@@ -118,4 +118,10 @@ bool WebAXContext::AddPendingEvent(const ui::AXEvent& event,
                                                       insert_at_beginning);
 }
 
+void WebAXContext::UpdateAXForAllDocuments() {
+  if (!private_->HasActiveDocument())
+    return;
+  return private_->GetAXObjectCache().UpdateAXForAllDocuments();
+}
+
 }  // namespace blink

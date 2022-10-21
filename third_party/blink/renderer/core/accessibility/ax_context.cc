@@ -24,7 +24,7 @@ AXContext::~AXContext() {
 AXObjectCache& AXContext::GetAXObjectCache() {
   DCHECK(document_);
   DCHECK(document_->IsActive());
-
+  DCHECK(document_->ExistingAXObjectCache());
   DCHECK_EQ(
       ax_mode_.mode(),
       document_->ExistingAXObjectCache()->GetAXMode().mode() & ax_mode_.mode());

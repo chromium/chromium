@@ -83,11 +83,7 @@ class BLINK_EXPORT WebAXObject {
   static WebAXObject FromWebNode(const WebNode&);
   static WebAXObject FromWebDocument(const WebDocument&);
   static WebAXObject FromWebDocumentByID(const WebDocument&, int);
-  static WebAXObject FromWebDocumentFocused(
-      const WebDocument&,
-      bool update_layout_if_necessary = true);
-  static bool MaybeUpdateLayoutAndCheckValidity(const WebDocument&);
-  static void UpdateLayout(const WebDocument&);
+  static WebAXObject FromWebDocumentFocused(const WebDocument&);
   static bool IsDirty(const WebDocument&);
 
   void Reset();

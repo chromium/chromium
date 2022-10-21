@@ -128,6 +128,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // no view or frame.
   blink::WebDocument GetMainDocument();
 
+  blink::WebAXContext* GetAXContext() { return ax_context_.get(); }
+
   // Returns the page language.
   std::string GetLanguage();
 
@@ -196,9 +198,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Marks all AXObjects with the given role in the current tree dirty.
   void MarkAllAXObjectsDirty(ax::mojom::Role role,
                              ax::mojom::Action event_from_action);
-
-  void Scroll(const ui::AXActionTarget* target,
-              ax::mojom::Action scroll_action);
 
   // If we are calling this from a task, scheduling is allowed even if there is
   // a running task

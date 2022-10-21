@@ -78,6 +78,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void Freeze() = 0;
   virtual void Thaw() = 0;
 
+  // Ensure that accessibility is clean and up-to-date for both the main and
+  // popup document. Ensures layout is clean as well.
+  virtual void UpdateAXForAllDocuments() = 0;
+
   virtual void SelectionChanged(Node*) = 0;
   virtual void ChildrenChanged(Node*) = 0;
   virtual void ChildrenChanged(const LayoutObject*) = 0;

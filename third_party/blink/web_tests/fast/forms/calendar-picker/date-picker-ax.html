@@ -15,46 +15,28 @@ promise_test(() => {
 
   return openPicker(date1).then(() => {
     let markDirtyCounter = 0;
-    let focusCounter = 0;
 
     let promise = new Promise((resolve, reject) => {
       accessibilityController.setNotificationListener(function(axnode, type) {
-        if (type == 'Focus') {
-          console.log('Received Focus event: ' + accessibilityController.focusedElement.name.replace(/,/g, ''));
-          focusCounter++;
-          if (focusCounter == 1) {
-            assert_equals(date1.value, "2000-01-03", "Expected arrow key to change date");
-            console.log('Open the month switcher menu.');
-            setTimeout(() => { clickMonthPopupButton(); }, 0);
-          } else if (focusCounter == 2) {
-            console.log('Highlighting 2000-02 in the month popup');
-            setTimeout(function() { eventSender.keyDown('ArrowRight'); }, 0);
-          } else if (focusCounter == 3) {
-            console.log('Pressing enter to submit month switcher menu selection');
-            setTimeout(function() { eventSender.keyDown('Enter'); }, 0);
-          }
-        } else if (type == 'MarkDirty') {
-          console.log('Received MarkDirty event');
-          markDirtyCounter++;
-        }
-
-        if (focusCounter == 5 && markDirtyCounter >= 10) {
-          assert_equals(date1.value, "2000-02-03", "Submitting month switcher should have udpated control value");
+        if (type == 'MarkDirty' && ++ markDirtyCounter >= 2) {
+          assert_equals(date1.value, "2000-01-03", "Arrow key in month picker should have udpated control value");
           resolve();
         }
       });
 
       // In case of failure, reject the promise so we get some logs instead of timing out.
       window.setTimeout(() => {
-        reject(`Didn't receive expected events.  Got ${focusCounter} Focus and ${markDirtyCounter} MarkDirty`);
+        reject(`Didn't receive expected events.  Got ${markDirtyCounter} MarkDirty`);
       }, 1500);
     });
 
     eventSender.keyDown('ArrowRight');
+    // This forces an a11y flush.
+    accessibilityController.focusedElement;
 
     return promise;
   });
-}, 'Tests that typing an arrow key and opening month switcher menu dispatches |Focus| and |MarkDirty| a11y events.');
+}, 'Tests that typing an arrow key and opening month switcher menu dispatches |MarkDirty| a11y events.');
 
 </script>
 </body>

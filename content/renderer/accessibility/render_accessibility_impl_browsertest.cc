@@ -658,7 +658,7 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   // Hide node "B" ("C" stays visible).
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'hidden';");
-  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   // Send a childrenChanged on "A".
   ClearHandledUpdates();
@@ -708,7 +708,7 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   // Show node "B", then send a childrenChanged on "A".
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
-  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   ClearHandledUpdates();
 
@@ -776,6 +776,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
   std::string js("window.scrollTo(0, " + base::NumberToString(scroll_offset_y) +
                  ");");
   ExecuteJavaScriptForTests(js.c_str());
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
@@ -844,6 +845,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kScrollPositionChanged));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
   SendPendingAccessibilityEvents();
 
   EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
@@ -1169,7 +1171,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_FALSE(IsSelected(option));
   EXPECT_TRUE(option_action_target->SetSelected(true));
   // Selecting option requires layout to be clean.
-  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
   EXPECT_TRUE(IsSelected(option));
 #endif
 
@@ -1183,7 +1185,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_EQ(value_to_set, input_text.GetValueForControl().Utf8());
 
   // Setting selection requires layout to be clean.
-  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   EXPECT_TRUE(text_one_action_target->SetSelection(
       text_one_action_target.get(), 3, text_two_action_target.get(), 4));
@@ -1293,7 +1295,7 @@ TEST_F(AXImageAnnotatorTest, OnImageAdded) {
   // Show node "B".
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
-  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
   ClearHandledUpdates();
 
   // This should update the annotations of all images on the page, including the
@@ -1350,7 +1352,7 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
 
   // Update node "A".
   ExecuteJavaScriptForTests("document.querySelector('img').src = 'test2.jpg';");
-  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   ClearHandledUpdates();
   // This should update the annotations of all images on the page, including the
