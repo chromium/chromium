@@ -282,16 +282,7 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
   }
 }
 
-std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
-                                    const std::string& guid,
-                                    bool is_affiliated,
-                                    const CertStoreService* cert_store_service,
-                                    const Profile* profile) {
-  const policy::PolicyNamespace policy_namespace(policy::POLICY_DOMAIN_CHROME,
-                                                 std::string());
-  const policy::PolicyMap& policy_map =
-      policy_service->GetPolicies(policy_namespace);
-
+base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
   base::Value::Dict filtered_policies;
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
@@ -318,9 +309,11 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
                  << app_policy_string;
     }
   }
+  return filtered_policies;
+}
 
-  // Disable all required/force-installed apps when ARC data snapshot update is
-  // in progress.
+void DisableRequiredAppsIfDataSnapshotUpdateInProgress(
+    base::Value::Dict& filtered_policies) {
   if (arc::data_snapshotd::ArcDataSnapshotdManager::Get() &&
       arc::data_snapshotd::ArcDataSnapshotdManager::Get()
           ->IsSnapshotInProgress()) {
@@ -338,21 +331,19 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     // Always reset android_id if ARC data snapshot update is in progress.
     filtered_policies.Set(ArcPolicyBridge::kResetAndroidIdEnabled, true);
   }
+}
 
-  if (profile->IsChild() &&
-      ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
-    // Adds "playStoreMode" policy. The policy value is used to restrict the
-    // user from being able to toggle between different accounts in ARC++.
-    filtered_policies.Set("playStoreMode", "SUPERVISED");
-  }
-
+void MapChromeToArcPolicies(base::Value::Dict& filtered_policies,
+                            const Profile* profile,
+                            const policy::PolicyMap& policy_map) {
   const PrefService* profile_prefs = profile->GetPrefs();
 
   // Keep them sorted by the ARC policy names.
   MapBoolToBool("cameraDisabled", policy::key::kVideoCaptureAllowed, policy_map,
                 /* invert_bool_value */ true, &filtered_policies);
-  // Use the pref for "debuggingFeaturesDisabled" to avoid duplicating the logic
-  // of handling DeveloperToolsDisabled / DeveloperToolsAvailability policies.
+  // Use the pref for "debuggingFeaturesDisabled" to avoid duplicating the
+  // logic of handling DeveloperToolsDisabled / DeveloperToolsAvailability
+  // policies.
   MapManagedIntPrefToBool(
       "debuggingFeaturesDisabled", ::prefs::kDevToolsAvailability,
       profile_prefs,
@@ -371,9 +362,16 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
                           policy_map, &filtered_policies, {"url", "hash"});
   MapBoolToBool("vpnConfigDisabled", policy::key::kVpnConfigAllowed, policy_map,
                 /* invert_bool_value */ true, &filtered_policies);
+}
 
-  // Add CA certificates.
-  AddOncCaCertsToPolicies(policy_map, &filtered_policies);
+void OverrideArcPolicies(base::Value::Dict& filtered_policies,
+                         const policy::PolicyMap& policy_map,
+                         const std::string& guid,
+                         bool is_affiliated,
+                         const Profile* profile) {
+  DisableRequiredAppsIfDataSnapshotUpdateInProgress(filtered_policies);
+
+  MapChromeToArcPolicies(filtered_policies, profile, policy_map);
 
   // If kForceDevToolsAvailable is set, then force debugging features to be
   // available for ARC as well. This must be after the initial writing of
@@ -383,25 +381,62 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     filtered_policies.Set("debuggingFeaturesDisabled", false);
   }
 
-  // Always enable APK Cache for affiliated users, and always disable it for not
-  // affiliated ones.
+  // Always enable APK Cache for affiliated users, and always disable it for
+  // not affiliated ones.
   filtered_policies.Set("apkCacheEnabled", is_affiliated);
 
   filtered_policies.Set("guid", guid);
 
-  // Always allow mounting physical media because mounts are controlled outside
-  // of ARC based on policy in file_manager::VolumeManager.
-  // Since this Android policy used to be mapped from Chrome-side policy
+  // Always allow mounting physical media because mounts are controlled
+  // outside of ARC based on policy in file_manager::VolumeManager. Since this
+  // Android policy used to be mapped from Chrome-side policy
   // policy::key::kExternalStoragePolicy before, we hard-code it to false to
   // ensure that the old policy setting does not remain on the ARC side.
   // See b/217531658 for details.
   filtered_policies.Set("mountPhysicalMediaDisabled", false);
+
+  if (profile->IsChild() &&
+      ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
+    // Adds "playStoreMode" policy. The policy value is used to restrict the
+    // user from being able to toggle between different accounts in ARC++.
+    filtered_policies.Set("playStoreMode", "SUPERVISED");
+  }
+}
+
+base::Value::Dict GetFilteredDictPolicies(
+    policy::PolicyService* const policy_service,
+    const std::string& guid,
+    bool is_affiliated,
+    const CertStoreService* cert_store_service,
+    const Profile* profile) {
+  const policy::PolicyNamespace policy_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  const policy::PolicyMap& policy_map =
+      policy_service->GetPolicies(policy_namespace);
+
+  base::Value::Dict filtered_policies = ParseArcPoliciesToDict(policy_map);
+
+  // Add CA certificates.
+  AddOncCaCertsToPolicies(policy_map, &filtered_policies);
 
   AddRequiredKeyPairs(cert_store_service, &filtered_policies);
   AddChoosePrivateKeyRuleToPolicy(policy_service, cert_store_service,
                                   &filtered_policies);
 
   ReplaceManagedConfigurationVariables(profile, &filtered_policies);
+
+  OverrideArcPolicies(filtered_policies, policy_map, guid, is_affiliated,
+                      profile);
+  return filtered_policies;
+}
+
+std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
+                                    const std::string& guid,
+                                    bool is_affiliated,
+                                    const CertStoreService* cert_store_service,
+                                    const Profile* profile) {
+  base::Value::Dict filtered_policies = GetFilteredDictPolicies(
+      policy_service, guid, is_affiliated, cert_store_service, profile);
 
   std::string policy_json;
   JSONStringValueSerializer serializer(&policy_json);
