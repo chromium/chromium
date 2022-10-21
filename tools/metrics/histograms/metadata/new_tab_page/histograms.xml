@@ -1068,7 +1068,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.Dismissed" units="count"
     expires_after="2023-03-26">
   <owner>danpeng@google.com</owner>
-  <owner>mahmadi@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1293,7 +1292,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.Restored" units="count"
     expires_after="2023-02-19">
   <owner>danpeng@google.com</owner>
-  <owner>mahmadi@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1523,8 +1521,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Promos.PromoBrowserCommand"
-    enum="PromoBrowserCommandEnum" expires_after="2022-11-20">
+    enum="PromoBrowserCommandEnum" expires_after="2023-10-21">
   <owner>mahmadi@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logs how many times various promo browser commands are executed. Triggered
