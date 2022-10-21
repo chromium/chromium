@@ -5526,7 +5526,9 @@ void Element::DefaultEventHandler(Event& event) {
           IsFocusableStyleAfterUpdate() &&
           !IsClickableControl(event.target()->ToNode())) {
         if (const ComputedStyle* style = GetComputedStyle()) {
-          if (const ToggleTriggerList* toggle_triggers =
+          // FireToggleActivation might change style too, so hold a reference
+          // to toggle_triggers.
+          if (scoped_refptr<const ToggleTriggerList> toggle_triggers =
                   style->ToggleTrigger()) {
             for (const ToggleTrigger& trigger : toggle_triggers->Triggers()) {
               CSSToggle::FireToggleActivation(*this, trigger);
