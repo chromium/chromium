@@ -969,6 +969,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     return native_widget_;
   }
 
+  // Sets the NativeWidget. The original NativeWidget may need to be cleaned up
+  // by the caller of this method.
+  void SetNativeWidgetForTesting(internal::NativeWidgetPrivate* native_widget) {
+    native_widget_ = native_widget;
+  }
+
   // Sets capture to the specified view. This makes it so that all mouse, touch
   // and gesture events go to |view|. If |view| is NULL, the widget still
   // obtains event capture, but the events will go to the view they'd normally
