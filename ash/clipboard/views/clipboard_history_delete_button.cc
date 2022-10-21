@@ -33,6 +33,8 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   SetID(clipboard_history_util::kDeleteButtonViewID);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_DELETE_BUTTON));
+  SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT));
   SetVisible(false);
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());

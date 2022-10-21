@@ -44,7 +44,9 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -240,6 +242,10 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
 
     GetEventGenerator()->MoveMouseTo(
         delete_button->GetBoundsInScreen().CenterPoint());
+    EXPECT_EQ(
+        delete_button->GetTooltipText(delete_button->bounds().CenterPoint()),
+        l10n_util::GetStringUTF16(
+            IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT));
     GetEventGenerator()->ClickLeftButton();
   }
 
