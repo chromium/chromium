@@ -17,9 +17,17 @@ using base::Time;
 
 class DIPSDatabase;
 
-class DIPSDatabaseTest : public testing::TestWithParam<bool> {
+namespace {
+enum ColumnType {
+  kSiteStorage,
+  kUserInteraction,
+  kStatefulBounce,
+  kStatelessBounce
+};
+}  // namespace
+class DIPSDatabaseTest : public testing::Test {
  public:
-  DIPSDatabaseTest() = default;
+  explicit DIPSDatabaseTest(bool in_memory) : in_memory_(in_memory) {}
 
  protected:
   base::ScopedTempDir temp_dir_;
@@ -28,7 +36,7 @@ class DIPSDatabaseTest : public testing::TestWithParam<bool> {
  private:
   // Test setup.
   void SetUp() override {
-    if (GetParam()) {
+    if (in_memory_) {
       db_ = std::make_unique<DIPSDatabase>(absl::nullopt);
     } else {
       ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -43,56 +51,118 @@ class DIPSDatabaseTest : public testing::TestWithParam<bool> {
     db_.reset();
 
     // Deletes temporary directory from on-disk tests
-    if (!GetParam())
+    if (!in_memory_)
       ASSERT_TRUE(temp_dir_.Delete());
   }
+
+  bool in_memory_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseTest, testing::Bool());
+// A test class that lets us ensure that we can add, update, and delete bounces
+// for all columns in the DIPSDatabase.
+// Parameterized over whether the db is in memory, and what column we're
+// testing.
+class DIPSDatabaseAllColumnTest
+    : public DIPSDatabaseTest,
+      public testing::WithParamInterface<std::tuple<bool, ColumnType>> {
+ public:
+  DIPSDatabaseAllColumnTest()
+      : DIPSDatabaseTest(std::get<0>(GetParam())),
+        column_(std::get<1>(GetParam())) {}
 
-// Test adding, updating, querying, and deleting entries in the bounces table
-// in the DIPSDatabase.
-TEST_P(DIPSDatabaseTest, AddUpdateQueryDeleteBounce) {
-  // Add a bounce for site1.
-  const std::string site1 = GetSiteForDIPS(GURL("http://www.youtube.com/"));
-  TimestampRange storage_times1{Time::FromDoubleT(1), Time::FromDoubleT(1)};
-  EXPECT_TRUE(db_->Write(site1, storage_times1, {}, {}, {}));
+ protected:
+  // Uses `times` to write  to the first and last columns for `column_` in the
+  // `site` row in `db`. This also writes the empty time stamps to all other
+  // columns in `db`
+  bool WriteToVariableColumn(const std::string& site,
+                             const TimestampRange& times) {
+    return db_->Write(site, column_ == kSiteStorage ? times : TimestampRange(),
+                      column_ == kUserInteraction ? times : TimestampRange(),
+                      column_ == kStatefulBounce ? times : TimestampRange(),
+                      column_ == kStatelessBounce ? times : TimestampRange());
+  }
 
-  // Add a bounce for site2.
-  const std::string site2 = GetSiteForDIPS(GURL("http://mail.google.com/"));
-  TimestampRange interaction_times2{Time::FromDoubleT(2), Time::FromDoubleT(2)};
-  EXPECT_TRUE(db_->Write(site2, {}, interaction_times2, {}, {}));
+  TimestampRange ReadValueForVariableColumn(absl::optional<StateValue> value) {
+    switch (column_) {
+      case ColumnType::kSiteStorage:
+        return value->site_storage_times;
+      case ColumnType::kUserInteraction:
+        return value->user_interaction_times;
+      case ColumnType::kStatefulBounce:
+        return value->stateful_bounce_times;
+      case ColumnType::kStatelessBounce:
+        return value->stateless_bounce_times;
+    }
+  }
 
-  // Query both of them.
-  absl::optional<StateValue> state1 = db_->Read(site1);
-  ASSERT_TRUE(state1.has_value());
-  EXPECT_EQ(state1->site_storage_times.first, storage_times1.first);
-  EXPECT_FALSE(state1->user_interaction_times.first.has_value());
+ private:
+  ColumnType column_;
+};
 
-  absl::optional<StateValue> state2 = db_->Read(site2);
-  ASSERT_TRUE(state2.has_value());
-  EXPECT_FALSE(state2->site_storage_times.first.has_value());
-  EXPECT_EQ(state2->user_interaction_times.first, interaction_times2.first);
-
-  // Update the second.
-  TimestampRange storage_times2{Time::FromDoubleT(3), absl::nullopt};
-  state2->site_storage_times = storage_times2;
-  EXPECT_TRUE(db_->Write(site2, state2->site_storage_times,
-                         state2->user_interaction_times, {}, {}));
-  // Query the second again.
-  absl::optional<StateValue> updated_state2 = db_->Read(site2);
-  ASSERT_TRUE(updated_state2.has_value());
-  EXPECT_EQ(updated_state2->site_storage_times.first, storage_times2.first);
-  EXPECT_EQ(updated_state2->user_interaction_times.first,
-            interaction_times2.first);
-
-  //  Delete the first.
-  EXPECT_EQ(db_->RemoveRow(site1), true);
-
-  // Query the first one again, making sure there is no state now.
-  EXPECT_FALSE(db_->Read(site1).has_value());
-
-  // Query a site that never had DIPS State.
-  const std::string site3 = GetSiteForDIPS(GURL("https://www.waze.com/"));
-  EXPECT_FALSE(db_->Read(site3).has_value());
+// Test adding entries in the `bounces` table of the DIPSDatabase.
+TEST_P(DIPSDatabaseAllColumnTest, AddBounce) {
+  // Add a bounce for site.
+  const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  TimestampRange bounce_1{Time::FromDoubleT(1), Time::FromDoubleT(1)};
+  EXPECT_TRUE(WriteToVariableColumn(site, bounce_1));
+  // Verify that site is in `bounces` using Read().
+  EXPECT_TRUE(db_->Read(site).has_value());
 }
+
+// Test updating entries in the `bounces` table of the DIPSDatabase.
+TEST_P(DIPSDatabaseAllColumnTest, UpdateBounce) {
+  // Add a bounce for site.
+  const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  TimestampRange bounce_1{Time::FromDoubleT(1), Time::FromDoubleT(1)};
+  EXPECT_TRUE(WriteToVariableColumn(site, bounce_1));
+
+  // Verify that site's entry in `bounces` is now at t = 1
+  EXPECT_EQ(ReadValueForVariableColumn(db_->Read(site)), bounce_1);
+
+  // Update site's entry with a bounce at t = 2
+  TimestampRange bounce_2{Time::FromDoubleT(2), Time::FromDoubleT(3)};
+  EXPECT_TRUE(WriteToVariableColumn(site, bounce_2));
+
+  // Verify that site's entry in `bounces` is now at t = 2
+  EXPECT_EQ(ReadValueForVariableColumn(db_->Read(site)), bounce_2);
+}
+
+// Test deleting an entry from the `bounces` table of the DIPSDatabase.
+TEST_P(DIPSDatabaseAllColumnTest, DeleteBounce) {
+  // Add a bounce for site.
+  const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  TimestampRange bounce{Time::FromDoubleT(1), Time::FromDoubleT(1)};
+  EXPECT_TRUE(WriteToVariableColumn(site, bounce));
+
+  // Verify that site has state tracked in bounces.
+  EXPECT_TRUE(db_->Read(site).has_value());
+
+  //  Delete site's entry in bounces.
+  EXPECT_TRUE(db_->RemoveRow(site));
+
+  // Query the bounces for site, making sure there is no state now.
+  EXPECT_FALSE(db_->Read(site).has_value());
+}
+
+// Test querying the `bounces` table of the DIPSDatabase.
+TEST_P(DIPSDatabaseAllColumnTest, QueryBounce) {
+  // Add a bounce for site.
+  const std::string site = GetSiteForDIPS(GURL("https://example.test"));
+
+  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  EXPECT_TRUE(WriteToVariableColumn(site, bounce));
+  EXPECT_EQ(ReadValueForVariableColumn(db_->Read(site)), bounce);
+
+  // Query a site that never had DIPS State, verifying
+  EXPECT_FALSE(db_->Read(GetSiteForDIPS(GURL("https://www.not-in-db.com/")))
+                   .has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DIPSDatabaseAllColumnTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(ColumnType::kSiteStorage,
+                                         ColumnType::kUserInteraction,
+                                         ColumnType::kStatefulBounce,
+                                         ColumnType::kStatelessBounce)));
