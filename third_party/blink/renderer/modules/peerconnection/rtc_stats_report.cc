@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/fullscreen/document_fullscreen.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 
 namespace blink {
@@ -30,6 +33,27 @@ v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
   return v8_object;
 }
 
+bool IsFullScreenEnabled(LocalDOMWindow* window) {
+  Document* document = window->document();
+  return document && DocumentFullscreen::fullscreenElement(*document);
+}
+
+bool IsCapturing(LocalDOMWindow* window) {
+  UserMediaClient* user_media_client = UserMediaClient::From(window);
+  return user_media_client && user_media_client->IsCapturing();
+}
+
+bool ExposeHardwareCapabilityStats(ScriptState* script_state) {
+  // According the the spec description at
+  // https://w3c.github.io/webrtc-stats/#dfn-exposing-hardware-is-allowed,
+  // hardware capabilities may be exposed if,
+  // 1. there is a full-screen element, or
+  // 2. the context capturing state is true.
+  ExecutionContext* ctx = ExecutionContext::From(script_state);
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(ctx);
+  return window && (IsCapturing(window) || IsFullScreenEnabled(window));
+}
+
 v8::Local<v8::Object> RTCStatsToV8Object(ScriptState* script_state,
                                          const RTCStats* stats) {
   V8ObjectBuilder builder(script_state);
@@ -38,10 +62,16 @@ v8::Local<v8::Object> RTCStatsToV8Object(ScriptState* script_state,
   builder.AddNumber("timestamp", stats->Timestamp());
   builder.AddString("type", stats->GetType());
 
+  const bool expose_hardware_caps = ExposeHardwareCapabilityStats(script_state);
+
   for (size_t i = 0; i < stats->MembersCount(); ++i) {
     std::unique_ptr<RTCStatsMember> member = stats->GetMember(i);
-    if (!member->IsDefined())
+    if (!member->IsDefined() ||
+        (!expose_hardware_caps &&
+         member->Restriction() ==
+             RTCStatsMember::ExposureRestriction::kHardwareCapability)) {
       continue;
+    }
     String name = member->GetName();
     switch (member->GetType()) {
       case webrtc::RTCStatsMemberInterface::kBool:

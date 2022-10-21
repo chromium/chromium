@@ -147,6 +147,7 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   estimatedPlayoutTimestamp: 'number',
   fractionLost: 'number',  // Obsolete, moved to RTCRemoteInboundRtpStreamStats.
   decoderImplementation: 'string',
+  powerEfficientDecoder: 'boolean',
   framesAssembledFromMultiplePackets: 'number',
   totalAssemblyTime: 'number',
   googTimingFrameInfo: 'string',
@@ -218,6 +219,7 @@ let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   framesSent: 'number',
   hugeFramesSent: 'number',
   active: 'boolean',
+  powerEfficientEncoder: 'boolean',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'outbound-rtp', kRTCOutboundRtpStreamStats);

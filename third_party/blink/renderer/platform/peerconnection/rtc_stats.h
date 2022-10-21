@@ -121,6 +121,9 @@ class PLATFORM_EXPORT RTCStatsMember {
   HashMap<String, uint64_t> ValueMapStringUint64() const;
   HashMap<String, double> ValueMapStringDouble() const;
 
+  enum class ExposureRestriction { kNone, kHardwareCapability };
+  ExposureRestriction Restriction() const;
+
  private:
   // Reference to keep the report that owns |member_|'s stats object alive.
   const scoped_refptr<const webrtc::RTCStatsReport> stats_owner_;

@@ -177,7 +177,7 @@ RTCStats::RTCStats(
   DCHECK(stats_owner_->Get(stats_->id()));
 }
 
-RTCStats::~RTCStats() {}
+RTCStats::~RTCStats() = default;
 
 String RTCStats::Id() const {
   return String::FromUTF8(stats_->id());
@@ -209,7 +209,7 @@ RTCStatsMember::RTCStatsMember(
   DCHECK(member_);
 }
 
-RTCStatsMember::~RTCStatsMember() {}
+RTCStatsMember::~RTCStatsMember() = default;
 
 String RTCStatsMember::GetName() const {
   return String::FromUTF8(member_->name());
@@ -335,6 +335,16 @@ HashMap<String, double> RTCStatsMember::ValueMapStringDouble() const {
     wtf_map.insert(String::FromUTF8(elem.first), elem.second);
   }
   return wtf_map;
+}
+
+RTCStatsMember::ExposureRestriction RTCStatsMember::Restriction() const {
+  switch (member_->exposure_criteria()) {
+    case webrtc::StatExposureCriteria::kHardwareCapability:
+      return ExposureRestriction::kHardwareCapability;
+    case webrtc::StatExposureCriteria::kAlways:
+    default:
+      return ExposureRestriction::kNone;
+  }
 }
 
 rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
