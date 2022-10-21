@@ -235,12 +235,12 @@ class SupervisedUserNavigationThrottleTest
         SupervisedUserSettingsServiceFactory::GetForKey(
             profile->GetProfileKey());
 
-    const base::Value& local_settings =
+    const base::Value::Dict& local_settings =
         settings_service->LocalSettingsForTest();
     std::unique_ptr<base::Value> dict_to_insert;
 
-    const base::Value* dict_value = local_settings.FindKey(
-        supervised_users::kContentPackManualBehaviorHosts);
+    const base::Value* dict_value =
+        local_settings.Find(supervised_users::kContentPackManualBehaviorHosts);
     if (dict_value) {
       dict_to_insert = std::make_unique<base::Value>(dict_value->Clone());
     } else {

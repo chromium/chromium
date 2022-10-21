@@ -20,10 +20,11 @@ namespace {
 std::unique_ptr<base::Value> GetManualBehaviorHostDict(Profile* profile) {
   SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
-  const base::Value& local_settings = settings_service->LocalSettingsForTest();
+  const base::Value::Dict& local_settings =
+      settings_service->LocalSettingsForTest();
 
   const base::Value* dict_value =
-      local_settings.FindKey(supervised_users::kContentPackManualBehaviorHosts);
+      local_settings.Find(supervised_users::kContentPackManualBehaviorHosts);
   if (dict_value)
     return base::Value::ToUniquePtrValue(dict_value->Clone());
 
