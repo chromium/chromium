@@ -564,6 +564,9 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
   it->second.running_time_in_five_minutes +=
       current_time - it->second.start_time;
   it->second.is_activated = false;
+  it->second.running_time_in_two_hours +=
+      GetRandomNoise() * it->second.running_time_in_five_minutes;
+  it->second.running_time_in_five_minutes = base::TimeDelta();
 }
 
 void WebsiteMetrics::SaveUsageTime() {
