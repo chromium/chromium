@@ -15,7 +15,6 @@ namespace updater {
 
 struct PolicyServiceProxyConfiguration;
 
-// Network fetcher factory for WinHTTP.
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
   explicit NetworkFetcherFactory(absl::optional<PolicyServiceProxyConfiguration>

@@ -6,7 +6,8 @@
 
 #include <memory>
 
-#include "base/notreached.h"
+#include "base/sequence_checker.h"
+#include "chrome/updater/linux/net/libcurl_network_fetcher.h"
 #include "chrome/updater/policy/service.h"
 #include "components/update_client/network.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,8 +20,8 @@ NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return LibcurlNetworkFetcher::Create();
 }
 
 }  // namespace updater
