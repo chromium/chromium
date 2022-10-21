@@ -13967,6 +13967,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="By Stylus"/>
 </enum>
 
+<enum name="CallbackTimeoutStatus">
+  <int value="0" label="Create"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Destructed Before Timeout"/>
+</enum>
+
 <enum name="CameraPreviewSnapPosition">
   <int value="0" label="kTopLeft"/>
   <int value="1" label="kBottomLeft"/>

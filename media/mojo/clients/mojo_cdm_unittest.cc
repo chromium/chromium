@@ -115,8 +115,11 @@ class MojoCdmTest : public ::testing::Test {
 
     mojo::Remote<mojom::ContentDecryptionModule> cdm_remote(
         cdm_receiver_->BindNewPipeAndPassRemote());
+
+    media::CdmConfig cdm_config = {"com.foo.bar", false, false, false};
+
     mojo_cdm_ = base::MakeRefCounted<MojoCdm>(
-        std::move(cdm_remote), std::move(cdm_context),
+        std::move(cdm_remote), std::move(cdm_context), cdm_config,
         base::BindRepeating(&MockCdmClient::OnSessionMessage,
                             base::Unretained(&cdm_client_)),
         base::BindRepeating(&MockCdmClient::OnSessionClosed,

@@ -26,6 +26,7 @@ namespace media {
 namespace {
 
 void OnCdmCreated(
+    const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
@@ -44,8 +45,8 @@ void OnCdmCreated(
 
   std::move(cdm_created_cb)
       .Run(base::MakeRefCounted<MojoCdm>(
-               std::move(remote), std::move(cdm_context), session_message_cb,
-               session_closed_cb, session_keys_change_cb,
+               std::move(remote), std::move(cdm_context), cdm_config,
+               session_message_cb, session_closed_cb, session_keys_change_cb,
                session_expiration_update_cb),
            "");
 }
@@ -88,8 +89,9 @@ void MojoCdmFactory::Create(
   interface_factory_->CreateCdm(
       cdm_config,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&OnCdmCreated, session_message_cb, session_closed_cb,
-                         session_keys_change_cb, session_expiration_update_cb,
+          base::BindOnce(&OnCdmCreated, cdm_config, session_message_cb,
+                         session_closed_cb, session_keys_change_cb,
+                         session_expiration_update_cb,
                          std::move(cdm_created_cb)),
           mojo::NullRemote(), nullptr, "disconnection error"));
 }

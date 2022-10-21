@@ -47,6 +47,7 @@ class MojoCdm final : public ContentDecryptionModule,
   // All parameters must be non-null.
   MojoCdm(mojo::Remote<mojom::ContentDecryptionModule> remote_cdm,
           media::mojom::CdmContextPtr cdm_context,
+          const CdmConfig& cdm_config,
           const SessionMessageCB& session_message_cb,
           const SessionClosedCB& session_closed_cb,
           const SessionKeysChangeCB& session_keys_change_cb,
@@ -146,6 +147,8 @@ class MojoCdm final : public ContentDecryptionModule,
 #if BUILDFLAG(IS_WIN)
   bool requires_media_foundation_renderer_ GUARDED_BY(lock_) = false;
 #endif  // BUILDFLAG(IS_WIN)
+
+  CdmConfig cdm_config_;
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;

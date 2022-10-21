@@ -2697,6 +2697,16 @@ chromium-metrics-reviews@google.com.
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
+<histogram name="Media.EME.{KeySystem}.GenerateRequest.MojoCdmTimeout"
+    enum="CallbackTimeoutStatus" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The timeout status of MojoCdm::CreateSessionAndGenerateRequest() call.
+  </summary>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
+</histogram>
+
 <histogram name="Media.EME.{KeySystem}.KeyStatusSystemCode"
     enum="CdmSystemCode" expires_after="2023-05-07">
   <owner>xhwang@chromium.org</owner>
