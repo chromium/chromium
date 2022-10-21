@@ -94,10 +94,17 @@ typedef void (^UIKeyCommandAction)(void);
 // Returns a symbolic description of the key command. For example: ⇧⌘T.
 @property(nonatomic, readonly) NSString* cr_symbolicDescription;
 
-// DEPRECATED - Do not use in new code. Use action selectors and the responder
-// chain.
 // Returns a key command to return in -[UIResponder keyCommands] or to pass to
 // -[UIViewController addKeyCommand:].
++ (instancetype)cr_commandWithInput:(NSString*)input
+                      modifierFlags:(UIKeyModifierFlags)modifierFlags
+                             action:(SEL)action
+                            titleID:(int)messageID;
+
+// DEPRECATED - Do not use in new code. Use
+// +cr_commandWithInput:modifierFlags:action:titleID: or
+// +keyCommandWithInput:modifierFlags:action:.
+// TODO(crbug.com/1371848): Remove all usage.
 + (instancetype)cr_keyCommandWithInput:(NSString*)input
                          modifierFlags:(UIKeyModifierFlags)modifierFlags
                                  title:(nullable NSString*)discoveryTitle

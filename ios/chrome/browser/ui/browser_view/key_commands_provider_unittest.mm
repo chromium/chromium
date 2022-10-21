@@ -181,34 +181,37 @@ TEST_F(KeyCommandsProviderTest, TestFocusNextPrevious) {
   KeyCommandsProvider* provider =
       [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
 
-  UIKeyCommandAction focusNextTabAction;
-  UIKeyCommandAction focusPreviousTabAction;
+  SEL focusNextTabAction;
+  SEL focusPreviousTabAction;
 
   NSArray<UIKeyCommand*>* commands = provider.keyCommands;
   for (UIKeyCommand* command in commands) {
     if (([command.input isEqualToString:@"\t"]) &&
         (command.modifierFlags & UIKeyModifierControl)) {
       if (command.modifierFlags & UIKeyModifierShift) {
-        focusPreviousTabAction = command.cr_action;
+        focusPreviousTabAction = command.action;
       } else {
-        focusNextTabAction = command.cr_action;
+        focusNextTabAction = command.action;
       }
     }
   }
-  focusNextTabAction();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  [provider performSelector:focusNextTabAction];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  focusNextTabAction();
+  [provider performSelector:focusNextTabAction];
   EXPECT_EQ(web_state_list_->active_index(), 1);
-  focusNextTabAction();
+  [provider performSelector:focusNextTabAction];
   EXPECT_EQ(web_state_list_->active_index(), 2);
-  focusNextTabAction();
+  [provider performSelector:focusNextTabAction];
   EXPECT_EQ(web_state_list_->active_index(), 0);
-  focusPreviousTabAction();
+  [provider performSelector:focusPreviousTabAction];
   EXPECT_EQ(web_state_list_->active_index(), 2);
-  focusPreviousTabAction();
+  [provider performSelector:focusPreviousTabAction];
   EXPECT_EQ(web_state_list_->active_index(), 1);
-  focusPreviousTabAction();
+  [provider performSelector:focusPreviousTabAction];
   EXPECT_EQ(web_state_list_->active_index(), 0);
+#pragma clang diagnostic pop
 }
 
 }  // namespace

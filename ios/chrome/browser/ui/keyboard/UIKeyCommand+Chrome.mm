@@ -6,6 +6,8 @@
 
 #import <objc/runtime.h>
 
+#import "ui/base/l10n/l10n_util_mac.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -85,6 +87,21 @@ UIKeyModifierFlags KeyModifierControlShift =
 }
 
 #pragma mark - Factory
+
++ (instancetype)cr_commandWithInput:(NSString*)input
+                      modifierFlags:(UIKeyModifierFlags)modifierFlags
+                             action:(SEL)action
+                            titleID:(int)messageID {
+  UIKeyCommand* keyCommand =
+      [self commandWithTitle:l10n_util::GetNSStringWithFixup(messageID)
+                       image:nil
+                      action:action
+                       input:input
+               modifierFlags:modifierFlags
+                propertyList:nil];
+  keyCommand.discoverabilityTitle = keyCommand.title;
+  return keyCommand;
+}
 
 + (nonnull instancetype)
 cr_keyCommandWithInput:(nonnull NSString*)input

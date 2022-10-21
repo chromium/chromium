@@ -11,6 +11,7 @@ source_set("keyboard") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui/commands",
+    "//ui/base",
   ]
 }
 
@@ -30,8 +31,10 @@ source_set("unit_tests") {
   deps = [
     ":keyboard",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/commands",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
 
