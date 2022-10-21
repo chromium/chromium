@@ -13,10 +13,12 @@ import("//build/config/gclient_args.gni")
 # in the list of CPU architectures to enable NaCl on.
 #
 # NaCl is also supported on ARM64 Chrome OS, where the ARM32 NaCl
-# sandbox is used.  We don't enable that by default here, but Chrome
-# OS builds override "enable_nacl" to enable that.
+# sandbox is used.
+# NaCl works on non-Chrome-OS ARM64 Linux, but we don't enable it by default in
+# that case.
 _cpu_is_supported =
-    target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm"
+    target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm" ||
+    (target_cpu == "arm64" && target_os == "chromeos")
 
 declare_args() {
   # Enables Native Client support.
