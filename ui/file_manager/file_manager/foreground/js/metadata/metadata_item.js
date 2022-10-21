@@ -20,276 +20,212 @@ export class MetadataItem {
   constructor() {
     /**
      * Size of the file. -1 for directory.
-     * @public {number|undefined}
+     * @type {number|undefined}
      */
     this.size;
 
-    /**
-     * @public {!Date|undefined}
-     */
+    /** @type {!Date|undefined} */
     this.modificationTime;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.modificationTimeError;
 
-    /**
-     * @public {!Date|undefined}
-     */
+    /** @type {!Date|undefined} */
     this.modificationByMeTime;
 
     /**
      * Thumbnail URL obtained from external provider.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.thumbnailUrl;
 
     /**
      * Cropped thumbnail URL obtained from external provider.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.croppedThumbnailUrl;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.croppedThumbnailUrlError;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.thumbnailUrlError;
 
-    /**
-     * @public {number|undefined}
-     */
+    /** @type {number|undefined} */
     this.imageWidth;
 
-    /**
-     * @public {number|undefined}
-     */
+    /** @type {number|undefined} */
     this.imageHeight;
 
-    /**
-     * @public {number|undefined}
-     */
+    /** @type {number|undefined} */
     this.imageRotation;
 
     /**
      * Thumbnail obtained from content provider.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.contentThumbnailUrl;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.contentThumbnailUrlError;
 
     /**
      * Thumbnail transformation obtained from content provider.
-     * @public {!ImageTransformation|undefined}
+     * @type {!ImageTransformation|undefined}
      */
     this.contentThumbnailTransform;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.contentThumbnailTransformError;
 
     /**
      * Image transformation obtained from content provider.
-     * @public {!ImageTransformation|undefined}
+     * @type {!ImageTransformation|undefined}
      */
     this.contentImageTransform;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.contentImageTransformError;
 
     /**
      * Whether the entry is pinned for ensuring it is available offline.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.pinned;
 
     /**
      * Whether the entry is cached locally.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.present;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.presentError;
 
     /**
      * Whether the entry is hosted document of google drive.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.hosted;
 
     /**
      * Whether the entry is modified locally and not synched yet.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.dirty;
 
     /**
      * Whether the entry is present or hosted;
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.availableOffline;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.availableWhenMetered;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.customIconUrl;
 
-    /**
-     * @public {Error|undefined}
-     */
+    /** @type {Error|undefined} */
     this.customIconUrlError;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.contentMimeType;
 
     /**
      * Whether the entry is shared explicitly with me.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.sharedWithMe;
 
     /**
      * Whether the entry is shared publicly.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.shared;
 
     /**
      * URL for open a file in browser tab.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.externalFileUrl;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.mediaAlbum;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.mediaArtist;
 
     /**
      * Audio or video duration in seconds.
-     * @public {number|undefined}
+     * @type {number|undefined}
      */
     this.mediaDuration;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.mediaGenre;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.mediaTitle;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.mediaTrack;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.mediaYearRecorded;
 
     /**
      * Mime type obtained by content provider based on URL.
      * TODO(hirono): Remove the mediaMimeType.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.mediaMimeType;
 
     /**
      * "Image File Directory" obtained from EXIF header.
-     * @public {!Object|undefined}
+     * @type {!Object|undefined}
      */
     this.ifd;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.exifLittleEndian;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.canCopy;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.canDelete;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.canRename;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.canAddChildren;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.canShare;
 
-    /**
-     * @public {string|undefined}
-     */
+    /** @type {string|undefined} */
     this.alternateUrl;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.isMachineRoot;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.isArbitrarySyncFolder;
 
-    /**
-     * @public {boolean|undefined}
-     */
+    /** @type {boolean|undefined} */
     this.isExternalMedia;
 
     /**
      * Whether the entry is under any DataLeakPrevention policy.
-     * @public {boolean|undefined}
+     * @type {boolean|undefined}
      */
     this.isDlpRestricted;
 
     /**
      * Source URL that can be used to check DataLeakPrevention policy.
-     * @public {string|undefined}
+     * @type {string|undefined}
      */
     this.sourceUrl;
 
