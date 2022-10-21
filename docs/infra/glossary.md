@@ -94,7 +94,8 @@ These services largely make-up the backbone of Chromium's CI.
 
 * __Milo__: A LUCI service that renders Builds in a web-browser UI. Hosted on
   https://ci.chromium.org. Alliases also include https://build.chromium.org and
-  https://luci-milo.appspot.com.
+  https://luci-milo.appspot.com. Named after the Pokemon
+  [Milotic](https://bulbapedia.bulbagarden.net/wiki/Milotic_(Pok%C3%A9mon)).
 
 * __Recipe__: A LUCI technology that defines what steps a build runs. Written in
   a domain-specific language embedded in Python. Nearly all builds run a recipe.
