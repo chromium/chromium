@@ -45,7 +45,7 @@ from diff_wpt_results import (
     _get_product_test_results)
 
 MockArgs = namedtuple('MockArgs', ['product_to_compare', 'baseline_product'])
-TEST_PRODUCT = 'android_weblayer'
+TEST_PRODUCT = 'android_webview'
 TEST_BASELINE_PRODUCT = 'chrome_android'
 
 
@@ -153,7 +153,7 @@ class CreateCsvTest(unittest.TestCase):
         def process_cmds(cmd_args):
             if 'token' in cmd_args:
                 return '00000'
-            elif (('weblayer_shell_wpt on '
+            elif (('system_webview_wpt on '
                    'Ubuntu-16.04 or Ubuntu-18.04') in cmd_args):
                 return json.dumps(actual_mp)
             elif (('chrome_public_wpt on '
@@ -167,7 +167,7 @@ class CreateCsvTest(unittest.TestCase):
         host.executive = MockExecutive(run_command_fn=process_cmds)
 
         with DataIO() as csv_out,                                                 \
-                _get_product_test_results(host, 'android_weblayer') as test_results,   \
+                _get_product_test_results(host, 'android_webview') as test_results,   \
                 _get_product_test_results(host, 'chrome_android') as baseline_results:
 
             actual_results_json = json.loads(test_results.read())

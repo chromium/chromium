@@ -57,22 +57,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-weblayer-pie-x86-wpt-fyi-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "wpt|weblayer",
-        short_name = "p-x86",
-    ),
-)
-
-ci.builder(
-    name = "android-weblayer-pie-x86-wpt-smoketest",
-    console_view_entry = consoles.console_view_entry(
-        category = "wpt|weblayer",
-        short_name = "p-x86",
-    ),
-)
-
-ci.builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "wpt|webview",

@@ -456,14 +456,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-weblayer-pie-x86-wpt-fyi-rel",
-)
-
-try_.builder(
-    name = "android-weblayer-pie-x86-wpt-smoketest",
-)
-
-try_.builder(
     name = "android-webview-12-x64-dbg",
     mirrors = [
         "ci/Android x64 Builder (dbg)",

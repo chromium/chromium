@@ -251,11 +251,6 @@
         "main": "chromium.android.fyi",
         "specifiers": ["Android", "android_webview", "Release"]
     },
-    "android-weblayer-pie-x86-wpt-fyi-rel": {
-        "port_name": "android-android-pie",
-        "main": "chromium.android.fyi",
-        "specifiers": ["Android", "android_weblayer", "Release"]
-    },
     "android-chrome-pie-x86-wpt-fyi-rel": {
         "port_name": "android-android-pie",
         "main": "chromium.android.fyi",

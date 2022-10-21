@@ -74,7 +74,6 @@ CHROME_ANDROID = 'chrome_android'
 PRODUCTS = [ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID]
 
 PRODUCTS_TO_STEPNAMES = {
-    ANDROID_WEBLAYER: 'weblayer_shell_wpt',
     ANDROID_WEBVIEW: 'system_webview_wpt',
     CHROME_ANDROID: 'chrome_public_wpt',
 }
@@ -95,7 +94,6 @@ WPT_SMOKE_TESTS_FILE = os.path.join(
     ANDROID_WEB_TESTS_DIR, 'WPTSmokeTestCases')
 
 _friendly_browser_names = {
-    'weblayershell': 'weblayer',
     'systemwebviewshell': 'webview',
     'chromepublic': 'chromium'
 }

@@ -61,7 +61,6 @@ def main():
     subprocess.check_call(['git', 'add', path_to_wpt_tools_dir])
     wpt_try_bots = ["linux-wpt-identity-fyi-rel",
                     "linux-wpt-input-fyi-rel",
-                    "android-weblayer-pie-x86-wpt-smoketest",
                     "linux-blink-rel"]
     upstream_url = "https://github.com/web-platform-tests/wpt"
     message = "Roll wpt tooling\n\nThis rolls wpt to latest commit at\n%s.\n" % upstream_url

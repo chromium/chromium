@@ -51,7 +51,6 @@ PRODUCTS_TO_STEPNAMES.update({
     'chrome_linux': 'wpt_tests_suite',
     'content_shell': 'blink_wpt_tests'})
 PRODUCTS_TO_BUILDER_NAME = {
-    'android_weblayer': 'android-weblayer-pie-x86-wpt-fyi-rel',
     'android_webview': 'android-webview-pie-x86-wpt-fyi-rel',
     'chrome_android': 'android-chrome-pie-x86-wpt-fyi-rel',
     'chrome_linux': 'linux-wpt-fyi-rel',
@@ -59,7 +58,6 @@ PRODUCTS_TO_BUILDER_NAME = {
 
 STEP_NAME_VARIANTS = {
     'chrome_public_wpt': ['chrome_public_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
-    'weblayer_shell_wpt': ['weblayer_shell_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
     'system_webview_wpt': ['system_webview_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
     'wpt_tests_suite': ['wpt_tests_suite on Ubuntu-18.04'],
     'blink_web_tests': ['blink_wpt_tests on Ubuntu-18.04']
