@@ -47,7 +47,8 @@ class DistantSession;
 @property(nonatomic, weak) id<RecentTabsPresentationDelegate>
     presentationDelegate;
 
-// Data source for images.
+// Data source for images. Must be set before the cells are configured for the
+// first time.
 @property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 // Provider of menu configurations for the recentTabs component.

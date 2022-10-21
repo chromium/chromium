@@ -99,9 +99,6 @@
   // Set the consumer first before calling [self.mediator initObservers] and
   // then [self.mediator configureConsumer].
   self.mediator.consumer = self.recentTabsTableViewController;
-  // TODO(crbug.com/845636) : Currently, the image data source must be set
-  // before the mediator starts updating its consumer. Fix this so that order of
-  // calls does not matter.
   self.recentTabsTableViewController.imageDataSource = self.mediator;
   self.recentTabsTableViewController.delegate = self.mediator;
   [self.mediator initObservers];
