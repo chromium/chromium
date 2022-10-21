@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
@@ -101,8 +102,11 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
   // original profile.
   Profile* incognito_profile =
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   ash::LaunchSystemWebAppAsync(incognito_profile,
                                ash::SystemWebAppType::SETTINGS);
+  browser_opened.Wait();
 
   // There should be a browser for the original profile, but not the incognito
   // profile.
