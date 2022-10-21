@@ -112,6 +112,7 @@ executable("flatc") {
 flatbuffer("flatbuffers_samplebuffer") {
   testonly = true
   sources = [
+    "src/tests/alignment_test.fbs",
     "src/tests/arrays_test.fbs",
     "src/tests/include_test/include_test1.fbs",
     "src/tests/include_test/sub/include_test2.fbs",
@@ -119,6 +120,7 @@ flatbuffer("flatbuffers_samplebuffer") {
     "src/tests/monster_test.fbs",
     "src/tests/namespace_test/namespace_test1.fbs",
     "src/tests/namespace_test/namespace_test2.fbs",
+    "src/tests/native_inline_table_test.fbs",
     "src/tests/native_type_test.fbs",
     "src/tests/optional_scalars.fbs",
   ]
@@ -159,10 +161,22 @@ source_set("flatbuffers_test_files") {
 
 test("flatbuffers_unittests") {
   sources = [
+    "src/tests/alignment_test.cpp",
+    "src/tests/alignment_test.h",
+    "src/tests/evolution_test.cpp",
+    "src/tests/flexbuffers_test.cpp",
+    "src/tests/fuzz_test.cpp",
+    "src/tests/json_test.cpp",
+    "src/tests/monster_test.cpp",
     "src/tests/native_type_test_impl.cpp",
+    "src/tests/optional_scalars_test.cpp",
+    "src/tests/parser_test.cpp",
+    "src/tests/proto_test.cpp",
+    "src/tests/reflection_test.cpp",
     "src/tests/test.cpp",
     "src/tests/test_assert.cpp",
     "src/tests/test_builder.cpp",
+    "src/tests/util_test.cpp",
   ]
   deps = [
     ":flatbuffers",
@@ -195,30 +209,30 @@ if (is_android) {
   android_library("flatbuffers_java") {
     chromium_code = false
     sources = [
-      "src/java/com/google/flatbuffers/ArrayReadWriteBuf.java",
-      "src/java/com/google/flatbuffers/BaseVector.java",
-      "src/java/com/google/flatbuffers/BooleanVector.java",
-      "src/java/com/google/flatbuffers/ByteBufferReadWriteBuf.java",
-      "src/java/com/google/flatbuffers/ByteBufferUtil.java",
-      "src/java/com/google/flatbuffers/ByteVector.java",
-      "src/java/com/google/flatbuffers/Constants.java",
-      "src/java/com/google/flatbuffers/DoubleVector.java",
-      "src/java/com/google/flatbuffers/FlatBufferBuilder.java",
-      "src/java/com/google/flatbuffers/FlexBuffers.java",
-      "src/java/com/google/flatbuffers/FlexBuffersBuilder.java",
-      "src/java/com/google/flatbuffers/FloatVector.java",
-      "src/java/com/google/flatbuffers/IntVector.java",
-      "src/java/com/google/flatbuffers/LongVector.java",
-      "src/java/com/google/flatbuffers/ReadBuf.java",
-      "src/java/com/google/flatbuffers/ReadWriteBuf.java",
-      "src/java/com/google/flatbuffers/ShortVector.java",
-      "src/java/com/google/flatbuffers/StringVector.java",
-      "src/java/com/google/flatbuffers/Struct.java",
-      "src/java/com/google/flatbuffers/Table.java",
-      "src/java/com/google/flatbuffers/UnionVector.java",
-      "src/java/com/google/flatbuffers/Utf8.java",
-      "src/java/com/google/flatbuffers/Utf8Old.java",
-      "src/java/com/google/flatbuffers/Utf8Safe.java",
+      "src/java/src/main/java/com/google/flatbuffers/ArrayReadWriteBuf.java",
+      "src/java/src/main/java/com/google/flatbuffers/BaseVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/BooleanVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/ByteBufferReadWriteBuf.java",
+      "src/java/src/main/java/com/google/flatbuffers/ByteBufferUtil.java",
+      "src/java/src/main/java/com/google/flatbuffers/ByteVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/Constants.java",
+      "src/java/src/main/java/com/google/flatbuffers/DoubleVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/FlatBufferBuilder.java",
+      "src/java/src/main/java/com/google/flatbuffers/FlexBuffers.java",
+      "src/java/src/main/java/com/google/flatbuffers/FlexBuffersBuilder.java",
+      "src/java/src/main/java/com/google/flatbuffers/FloatVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/IntVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/LongVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/ReadBuf.java",
+      "src/java/src/main/java/com/google/flatbuffers/ReadWriteBuf.java",
+      "src/java/src/main/java/com/google/flatbuffers/ShortVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/StringVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/Struct.java",
+      "src/java/src/main/java/com/google/flatbuffers/Table.java",
+      "src/java/src/main/java/com/google/flatbuffers/UnionVector.java",
+      "src/java/src/main/java/com/google/flatbuffers/Utf8.java",
+      "src/java/src/main/java/com/google/flatbuffers/Utf8Old.java",
+      "src/java/src/main/java/com/google/flatbuffers/Utf8Safe.java",
     ]
   }
 }
