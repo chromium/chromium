@@ -137,8 +137,7 @@ void HidDeviceManager::GetApiDevices(
   LazyInitialize();
 
   if (enumeration_ready_) {
-    std::unique_ptr<base::ListValue> devices =
-        CreateApiDeviceList(extension, filters);
+    base::Value::List devices = CreateApiDeviceList(extension, filters);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(devices)));
   } else {
@@ -147,10 +146,10 @@ void HidDeviceManager::GetApiDevices(
   }
 }
 
-std::unique_ptr<base::ListValue> HidDeviceManager::GetApiDevicesFromList(
+base::Value::List HidDeviceManager::GetApiDevicesFromList(
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::unique_ptr<base::ListValue> device_list(new base::ListValue());
+  base::Value::List device_list;
   for (const auto& device : devices) {
     const auto device_entry = resource_ids_.find(device->guid);
     DCHECK(device_entry != resource_ids_.end());
@@ -158,7 +157,7 @@ std::unique_ptr<base::ListValue> HidDeviceManager::GetApiDevicesFromList(
     hid::HidDeviceInfo device_info;
     device_info.device_id = device_entry->second;
     PopulateHidDeviceInfo(&device_info, *device);
-    device_list->Append(device_info.ToValue());
+    device_list.Append(device_info.ToValue());
   }
   return device_list;
 }
@@ -333,10 +332,10 @@ void HidDeviceManager::OverrideHidManagerBinderForTesting(
   GetHidManagerBinderOverride() = std::move(binder);
 }
 
-std::unique_ptr<base::ListValue> HidDeviceManager::CreateApiDeviceList(
+base::Value::List HidDeviceManager::CreateApiDeviceList(
     const Extension* extension,
     const std::vector<HidDeviceFilter>& filters) {
-  std::unique_ptr<base::ListValue> api_devices(new base::ListValue());
+  base::Value::List api_devices;
   for (const ResourceIdToDeviceInfoMap::value_type& map_entry : devices_) {
     int resource_id = map_entry.first;
     auto& device_info = map_entry.second;
@@ -356,7 +355,7 @@ std::unique_ptr<base::ListValue> HidDeviceManager::CreateApiDeviceList(
 
     // Expose devices with which user can communicate.
     if (api_device_info.collections.size() > 0) {
-      api_devices->Append(api_device_info.ToValue());
+      api_devices.Append(api_device_info.ToValue());
     }
   }
 
@@ -374,7 +373,7 @@ void HidDeviceManager::OnEnumerationComplete(
   enumeration_ready_ = true;
 
   for (const auto& params : pending_enumerations_) {
-    std::unique_ptr<base::ListValue> devices_list =
+    base::Value::List devices_list =
         CreateApiDeviceList(params->extension, params->filters);
     std::move(params->callback).Run(std::move(devices_list));
   }

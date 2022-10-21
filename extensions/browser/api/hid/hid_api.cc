@@ -91,16 +91,15 @@ ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
   return RespondLater();
 }
 
-void HidGetDevicesFunction::OnEnumerationComplete(
-    std::unique_ptr<base::ListValue> devices) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(devices))));
+void HidGetDevicesFunction::OnEnumerationComplete(base::Value::List devices) {
+  Respond(OneArgument(base::Value(std::move(devices))));
 }
 
-HidGetUserSelectedDevicesFunction::HidGetUserSelectedDevicesFunction() {
-}
+HidGetUserSelectedDevicesFunction::HidGetUserSelectedDevicesFunction() =
+    default;
 
-HidGetUserSelectedDevicesFunction::~HidGetUserSelectedDevicesFunction() {
-}
+HidGetUserSelectedDevicesFunction::~HidGetUserSelectedDevicesFunction() =
+    default;
 
 ExtensionFunction::ResponseAction HidGetUserSelectedDevicesFunction::Run() {
   std::unique_ptr<api::hid::GetUserSelectedDevices::Params> parameters =
@@ -139,8 +138,8 @@ void HidGetUserSelectedDevicesFunction::OnDevicesChosen(
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
   CHECK(device_manager);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
-      device_manager->GetApiDevicesFromList(std::move(devices)))));
+  Respond(OneArgument(
+      base::Value(device_manager->GetApiDevicesFromList(std::move(devices)))));
 }
 
 HidConnectFunction::HidConnectFunction() : connection_manager_(nullptr) {

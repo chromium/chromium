@@ -38,8 +38,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
                          public device::mojom::HidManagerClient,
                          public EventRouter::Observer {
  public:
-  typedef base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
-      GetApiDevicesCallback;
+  using GetApiDevicesCallback = base::OnceCallback<void(base::Value::List)>;
 
   using ConnectCallback = device::mojom::HidManager::ConnectCallback;
 
@@ -68,7 +67,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
 
   // Converts a list of device::mojom::HidDeviceInfo objects into a value that
   // can be returned through the API.
-  std::unique_ptr<base::ListValue> GetApiDevicesFromList(
+  base::Value::List GetApiDevicesFromList(
       std::vector<device::mojom::HidDeviceInfoPtr> devices);
 
   const device::mojom::HidDeviceInfo* GetDeviceInfo(int resource_id);
@@ -117,7 +116,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   // Builds a list of device info objects representing the currently enumerated
   // devices, taking into account the permissions held by the given extension
   // and the filters provided.
-  std::unique_ptr<base::ListValue> CreateApiDeviceList(
+  base::Value::List CreateApiDeviceList(
       const Extension* extension,
       const std::vector<device::HidDeviceFilter>& filters);
   void OnEnumerationComplete(

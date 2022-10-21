@@ -39,7 +39,7 @@ class HidGetDevicesFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnEnumerationComplete(std::unique_ptr<base::ListValue> devices);
+  void OnEnumerationComplete(base::Value::List devices);
 };
 
 class HidGetUserSelectedDevicesFunction : public ExtensionFunction {
