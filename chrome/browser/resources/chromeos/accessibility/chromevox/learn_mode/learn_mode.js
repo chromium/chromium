@@ -45,8 +45,6 @@ export class LearnMode {
     BackgroundBridge.BrailleCommandHandler.setEnabled(false);
     BackgroundBridge.GestureCommandHandler.setEnabled(false);
 
-    ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
-
     ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
 
     $('instruction').textContent = Msgs.getMsg('learn_mode_intro');
