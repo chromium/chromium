@@ -1260,6 +1260,7 @@
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot',
       'mac-perfetto-rel': 'perfetto_release_trybot',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
+      'mac-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-tests': 'release_trybot',

@@ -116,6 +116,33 @@ try_.orchestrator_builder(
     #use_orchestrator_pool = True,
 )
 
+try_.orchestrator_builder(
+    name = "mac-rel-inverse-fyi",
+    compilator = "mac-rel-compilator",
+    check_for_flakiness = True,
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac12 Tests",
+        "ci/GPU Mac Builder",
+        "ci/Mac Release (Intel)",
+        "ci/Mac Retina Release (AMD)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    main_list_view = "try",
+    use_clang_coverage = True,
+    coverage_test_types = ["overall", "unit"],
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+    use_orchestrator_pool = True,
+)
+
 try_.compilator_builder(
     name = "mac-rel-compilator",
     check_for_flakiness = True,

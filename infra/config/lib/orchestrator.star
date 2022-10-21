@@ -38,6 +38,7 @@ _EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME = {
     "try/linux-rel-compilator": ["try/linux-rel-inverse-fyi"],
     "try/android-nougat-x86-rel-compilator": ["try/android-nougat-x86-rel-inverse-fyi"],
     "try/win10_chromium_x64_rel_ng-compilator": ["try/win10_chromium_x64_rel_ng-inverse-fyi"],
+    "try/mac-rel-compilator": ["try/mac-rel-inverse-fyi"],
 }
 
 def register_orchestrator(bucket, name, builder_group, compilator):
