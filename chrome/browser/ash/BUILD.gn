@@ -550,8 +550,6 @@ source_set("ash") {
     "arc/tracing/arc_value_event_trimmer.h",
     "arc/tts/arc_tts_service.cc",
     "arc/tts/arc_tts_service.h",
-    "arc/usb/arc_usb_host_bridge_delegate.cc",
-    "arc/usb/arc_usb_host_bridge_delegate.h",
     "arc/user_session/arc_user_session_service.cc",
     "arc/user_session/arc_user_session_service.h",
     "arc/video/gpu_arc_video_service_host.cc",

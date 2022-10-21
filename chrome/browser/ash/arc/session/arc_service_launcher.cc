@@ -87,7 +87,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
 #include "chrome/browser/ash/arc/tts/arc_tts_service.h"
-#include "chrome/browser/ash/arc/usb/arc_usb_host_bridge_delegate.h"
 #include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
 #include "chrome/browser/ash/arc/video/gpu_arc_video_service_host.h"
 #include "chrome/browser/ash/arc/wallpaper/arc_wallpaper_service.h"
@@ -299,8 +298,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcTimerBridge::GetForBrowserContext(profile);
   ArcTracingBridge::GetForBrowserContext(profile);
   ArcTtsService::GetForBrowserContext(profile);
-  ArcUsbHostBridge::GetForBrowserContext(profile)->SetDelegate(
-      std::make_unique<ArcUsbHostBridgeDelegate>());
+  ArcUsbHostBridge::GetForBrowserContext(profile);
   ArcUsbHostPermissionManager::GetForBrowserContext(profile);
   ArcUserSessionService::GetForBrowserContext(profile);
   ArcVolumeMounterBridge::GetForBrowserContext(profile);

@@ -264,12 +264,6 @@ void ArcUsbHostBridge::SetUiDelegate(ArcUsbHostUiDelegate* ui_delegate) {
   ui_delegate_ = ui_delegate;
 }
 
-// TODO(lgcheng) Remove these part. For ARCVM the usb_host_bridge will not be
-// connected.
-void ArcUsbHostBridge::SetDelegate(std::unique_ptr<Delegate> delegate) {
-  delegate_ = std::move(delegate);
-}
-
 void ArcUsbHostBridge::InitDeviceList(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
