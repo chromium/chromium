@@ -304,7 +304,6 @@ export const CommandCategory = {
  *                  announce: boolean,
  *                  category: (undefined|!CommandCategory),
  *                  msgId: (undefined|string),
- *                  allowEvents: (undefined|boolean),
  *                  denySignedOut: (undefined|boolean)}>}
  *  announce: Whether to call finishNavCommand and announce the current
  *            position after the command is done.
@@ -312,8 +311,6 @@ export const CommandCategory = {
  *  msgId: The message resource describing the command.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
  *             other signed-out contexts. Defaults to false.
- *  allowEvents: Allows EventWatcher to continue processing events which can
- * trump TTS.
  */
 CommandStore.CMD_ALLOWLIST = {
   [Command.TOGGLE_STICKY_MODE]: {
@@ -397,12 +394,10 @@ CommandStore.CMD_ALLOWLIST = {
   },
 
   [Command.HANDLE_TAB]: {
-    allowEvents: true,
     msgId: 'handle_tab_next',
     category: CommandCategory.NAVIGATION,
   },
   [Command.HANDLE_TAB_PREV]: {
-    allowEvents: true,
     msgId: 'handle_tab_prev',
     category: CommandCategory.NAVIGATION,
   },
@@ -556,17 +551,14 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.FORCE_CLICK_ON_CURRENT_ITEM]: {
     announce: true,
-    allowEvents: true,
     msgId: 'force_click_on_current_item',
     category: CommandCategory.ACTIONS,
   },
   [Command.FORCE_LONG_CLICK_ON_CURRENT_ITEM]: {
     announce: true,
-    allowEvents: true,
     msgId: 'force_long_click_on_current_item',
   },
-  [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]:
-      {announce: true, allowEvents: true},
+  [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]: {announce: true},
 
   [Command.READ_LINK_URL]: {
     announce: false,
@@ -1003,7 +995,6 @@ CommandStore.CMD_ALLOWLIST = {
   // Braille specific commands.
   [Command.ROUTING]: {
     announce: false,
-    allowEvents: true,
     msgId: 'braille_routing',
     category: CommandCategory.BRAILLE,
   },
