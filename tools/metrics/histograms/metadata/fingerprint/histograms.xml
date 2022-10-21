@@ -102,20 +102,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Fingerprint.Reset.ResetContextMode"
-    enum="FingerprintSensorMode" expires_after="2023-04-05">
-  <owner>tomhughes@chromium.org</owner>
-  <owner>chromeos-fingerprint@google.com</owner>
-  <summary>The mode FPMCU was in when we reset context.</summary>
-</histogram>
-
-<histogram name="Fingerprint.SetContext.SetContextMode"
-    enum="FingerprintSensorMode" expires_after="2023-04-05">
-  <owner>hesling@chromium.org</owner>
-  <owner>chromeos-fingerprint@google.com</owner>
-  <summary>The mode FPMCU was in when we set its context.</summary>
-</histogram>
-
 <histogram name="Fingerprint.SetContext.Success" enum="BooleanSuccess"
     expires_after="2023-04-05">
   <owner>hesling@chromium.org</owner>
@@ -337,6 +323,25 @@ chromium-metrics-reviews@google.com.
   <token key="Outcome">
     <variant name="NoUpdate" summary="not necessary"/>
     <variant name="Update" summary="necessary"/>
+  </token>
+</histogram>
+
+<histogram name="Fingerprint.{ContextFunction}" enum="FingerprintSensorMode"
+    expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    The mode the FPMCU was in when we {ContextFunction}.
+
+    See the CrosFpDevice::SetContext and CrosFpDevice::ResetContext functions
+    for more information.
+
+    Related metrics are Fingerprint.Reset.ResetContextMode,
+    Fingerprint.SetContext.SetContextMode, and Fingerprint.SetContext.Success.
+  </summary>
+  <token key="ContextFunction">
+    <variant name="Reset.ResetContextMode" summary="reset context"/>
+    <variant name="SetContext.SetContextMode" summary="set its context"/>
   </token>
 </histogram>
 
