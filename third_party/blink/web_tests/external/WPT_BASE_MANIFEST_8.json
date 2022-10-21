@@ -4002,6 +4002,13 @@
        {}
       ]
      ],
+     "move-first-element-from-editinghost-to-outside-on-input-of-embolden.html": [
+      "6bb87c2810914d76a56492d6c86ac298cf3bade3",
+      [
+       null,
+       {}
+      ]
+     ],
      "move-legend-followed-by-textarea-into-orphan-div.html": [
       "462ff37fd628fcd3e807b535befc13268ad14c6e",
       [
@@ -93381,7 +93388,7 @@
       ]
      ],
      "t32-opacity-basic-0.6-a.xht": [
-      "13761b1bbfb1360c39054b2a106150b3f36786a3",
+      "3687d5392e30ed929fa3ab00d851b7e9754ab8ff",
       [
        null,
        [
@@ -93654,7 +93661,7 @@
       ]
      ],
      "t422-rgba-a0.6-a.xht": [
-      "c9115d6c5d63d7e8ac7b5a657f03f4878675a2d3",
+      "2274eb3c3127c76862ade6b974ca55ccea47bab4",
       [
        null,
        [
@@ -248245,6 +248252,19 @@
       {}
      ]
     ],
+    "invalidate-sibling-different-slots.html": [
+     "0846389a9e5a2c7b414a8c1346cfe3511a5a3bf3",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/invalidate-sibling-different-slots-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "layout-slot-no-longer-assigned.html": [
      "dfcac99da023ec2bbd94835f71efaef952a62341",
      [
@@ -268709,6 +268729,10 @@
      }
     },
     "css-anchor-position": {
+     "anchor-name-in-shadow-expected.txt": [
+      "f305450572a7df11c36d85ba82a09382f6cb5768",
+      []
+     ],
      "reference": {
       "anchor-scroll-nested-ref.html": [
        "124ef669a888e4edaf5fbb29b36d690e7c7fa609",
@@ -271670,7 +271694,7 @@
       []
      ],
      "t32-opacity-basic-0.6-a-ref.html": [
-      "36ba43e5da330fb8f6ca0dd738a91acd82bf3c07",
+      "fb906237b23dc65f95d5d3ab1b27f5b375bc9fa5",
       []
      ],
      "t32-opacity-basic-1.0-a-ref.html": [
@@ -345978,6 +346002,10 @@
      "98bc61ba4d16ccd8c91f4f6eb3ede84fe8c03386",
      []
     ],
+    "invalidate-sibling-different-slots-ref.html": [
+     "1fc6dd5522acbaea255f0d13c18ba4ab0a683fda",
+     []
+    ],
     "offsetParent-across-shadow-boundaries-expected.txt": [
      "9b46c721b94ae2f38049d8d7d3d5bf73ffec3f9a",
      []
@@ -391505,6 +391533,13 @@
        {}
       ]
      ],
+     "anchor-name-in-shadow.html": [
+      "7e505ed59282008bb611471fe3a3ec9ede8ed2c3",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-name-multicol-001.tentative.html": [
       "734cd69e42d5bf116274d4d1532bf111a4428ec3",
       [
@@ -391703,6 +391738,13 @@
      ],
      "anchor-position-multicol-nested-001.tentative.html": [
       "8d241063cf8327eb552d7b581a2854a42746b9d0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-position-principal-box.html": [
+      "9bb1fd4c4da814e3d621e5b65e0d3af3324333d7",
       [
        null,
        {}
