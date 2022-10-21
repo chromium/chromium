@@ -119,13 +119,6 @@ export class SearchPageElement extends SearchPageElementBase {
     /** @private {boolean} */
     this.noHelpContentDisplayed = false;
 
-    /**
-     * Record the most recent number of characters in the input for which a
-     * search has been attempted.
-     * @private {number}
-     */
-    this.lastCharCount_ = 0;
-
     /** @private {!HelpContentProviderInterface} */
     this.helpContentProvider_ = getHelpContentProvider();
 
@@ -168,6 +161,21 @@ export class SearchPageElement extends SearchPageElementBase {
      * @private {!boolean}
      */
     this.isPopularContentForTesting_;
+
+    /**
+     * Timer used to add a delay to fire a new search.
+     * @private {number}
+     */
+    this.searchTimerID_ = -1;
+
+    /**
+     * Delay in milliseconds before firing a new search.
+     *
+     * This variable needs to remain public because the unit tests need to
+     * set its value.
+     * @type {number}
+     */
+    this.searchTimoutInMs_ = 500;
   }
 
   ready() {
@@ -188,19 +196,15 @@ export class SearchPageElement extends SearchPageElementBase {
    * @private
    */
   handleInputChanged_(e) {
-    const newInput = e.target.value;
-    // Get the number of characters in the input.
-    const newCharCount = [...newInput].length;
+    clearTimeout(this.searchTimerID_);
 
-    if (newCharCount > 0) {
-      this.hideError_();
-    }
+    // As the user is typing, hide the error message.
+    this.hideError_();
 
-    if (newCharCount == 0 ||
-        Math.abs(newCharCount - this.lastCharCount_) >= MIN_CHARS_COUNT) {
-      this.lastCharCount_ = newCharCount;
-      this.fetchHelpContent_(newInput);
-    }
+    const query = e.target.value;
+    this.searchTimerID_ = setTimeout(() => {
+      this.fetchHelpContent_(query);
+    }, this.searchTimoutInMs_);
   }
 
   /**

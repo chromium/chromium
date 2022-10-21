@@ -45,6 +45,9 @@ export function searchPageTestSuite() {
     assertTrue(!!page);
     document.body.appendChild(page);
 
+    // Fire search immediately for input change.
+    page.searchTimoutInMs_ = 0;
+
     return flushTasks();
   }
 
@@ -138,14 +141,28 @@ export function searchPageTestSuite() {
     assertEquals('abc', provider.lastQuery);
     assertFalse(page.getIsPopularContentForTesting_());
 
-    // Enter 2 more characters. This should NOT trigger another search.
+    // Enter 2 more characters. This should trigger another search.
     textAreaElement.value = 'abc12';
     textAreaElement.dispatchEvent(new Event('input'));
 
     await flushTasks();
-    // Verify that getHelpContent() has NOT been called with query
+    // Verify that getHelpContent() has been called with query
     // 'abc12'.
-    assertNotEquals('abc12', provider.lastQuery);
+    assertEquals('abc12', provider.lastQuery);
+
+    // Fire search after pausing typing for 10 seconds.
+    page.searchTimoutInMs_ = 10000;
+    // Remove some chars. This should NOT trigger another search.
+    textAreaElement.value = 'a';
+    textAreaElement.dispatchEvent(new Event('input'));
+
+    await flushTasks();
+    // Verify that getHelpContent() has NOT been called with query
+    // 'a'.
+    assertNotEquals('a', provider.lastQuery);
+
+    // Fire search immediately for input change.
+    page.searchTimoutInMs_ = 0;
 
     // Enter one more characters. This should trigger another search.
     textAreaElement.value = 'abc123';
