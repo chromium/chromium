@@ -1,15 +1,15 @@
-Validate IndexeddbModel clearForStorageKey
+Validate IndexeddbModel clearForOrigin
 
 Create IndexedDB in main frame
 Database Length: 1
 Database Entries:
-  Storage key:http://127.0.0.1:8000/, Database Name:Database-main-frame
+  Security Origin:http://127.0.0.1:8000, Database Name:Database-main-frame
 **done**
 
 Removing bogus security origin...
 Database Length: 1
 Database Entries:
-  Storage key:http://127.0.0.1:8000/, Database Name:Database-main-frame
+  Security Origin:http://127.0.0.1:8000, Database Name:Database-main-frame
 **done**
 
 Removing http://127.0.0.1:8000 security origin...

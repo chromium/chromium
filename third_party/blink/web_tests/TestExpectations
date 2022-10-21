@@ -7720,6 +7720,18 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/vid
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
 
+# Temporarily disable tests to land IndexedDB reprioritisation changes
+crbug.com/1347831 http/tests/devtools/indexeddb/delete-entry.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/application-panel/resources-panel-idb-clear-for-origin.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/resources-panel.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/database-data.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/database-names.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/database-structure.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/database-version-number.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/track-valid-origin.js [ Skip ]
+crbug.com/1347831 http/tests/devtools/indexeddb/upgrade-events.js [ Skip ]
+
 # Disabled to land devtools-frontend change:
 crbug.com/1376854 http/tests/devtools/elements/accessibility/autocomplete-attribute.js [ Skip ]
 crbug.com/1376854 http/tests/devtools/elements/styles-3/style-autocomplete.js [ Skip ]

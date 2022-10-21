@@ -1,0 +1,12 @@
+Tests that IndexedDB live update only tracks valid security origins.
+
+Invalid Origins:
+http, valid = false
+test://fake, valid = false
+test://fake.origin.com, valid = false
+chrome://test, valid = false
+
+Valid Origins:
+http://fake.origin.com, valid = true
+https://fake.origin.com, valid = true
+
