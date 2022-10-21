@@ -1612,7 +1612,7 @@
   {
     "name": "eche-swa-debug-mode",
     "owners": [ "dhnishi" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 110
   },
   {
     "name": "eche-swa-disable-stun-server",
@@ -1622,12 +1622,12 @@
   {
     "name": "eche-swa-measure-latency",
     "owners": [ "paulzchen@google.com", "guanrulee@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 110
   },
   {
     "name": "eche-swa-send-start-signaling",
     "owners": [ "dhnishi", "mavishsu@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 110
   },
   {
     "name": "edit-context",
