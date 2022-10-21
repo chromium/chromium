@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
@@ -65,6 +68,8 @@ class PasswordAccessoryInfoView extends LinearLayout {
     }
 
     static void showWarningDialog(Context context) {
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (ActivityUtils.isActivityFinishingOrDestroyed(activity)) return;
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog);
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
