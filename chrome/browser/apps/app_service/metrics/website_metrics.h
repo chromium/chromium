@@ -156,13 +156,14 @@ class WebsiteMetrics : public BrowserListObserver,
 
   // Observes the root window's activation client for the OnWindowActivated
   // callback.
-  void MaybeObserveWindowActivationClient();
+  void MaybeObserveWindowActivationClient(aura::Window* window);
 
   // Removes observing the root window's activation client when the last browser
   // window is closed.
-  void MaybeRemoveObserveWindowActivationClient();
+  void MaybeRemoveObserveWindowActivationClient(aura::Window* window);
 
-  void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
+  void OnTabStripModelChangeInsert(aura::Window* window,
+                                   TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Insert& insert,
                                    const TabStripSelectionChange& selection);
   void OnTabStripModelChangeRemove(aura::Window* window,
@@ -228,6 +229,10 @@ class WebsiteMetrics : public BrowserListObserver,
   // The map from the window to the active tab contents.
   base::flat_map<aura::Window*, content::WebContents*> window_to_web_contents_;
 
+  // The map from the root window's activation client to windows.
+  std::map<wm::ActivationClient*, std::set<aura::Window*>>
+      activation_client_to_windows_;
+
   std::map<content::WebContents*, std::unique_ptr<ActiveTabWebContentsObserver>>
       webcontents_to_observer_map_;
 
@@ -253,8 +258,11 @@ class WebsiteMetrics : public BrowserListObserver,
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
 
-  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
-      activation_client_observation_{this};
+  // For Lacros browser windows, there could be multiple root windows for
+  // browser windows, and multiple ActivationClients.
+  base::ScopedMultiSourceObservation<wm::ActivationClient,
+                                     wm::ActivationChangeObserver>
+      activation_client_observations_{this};
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
