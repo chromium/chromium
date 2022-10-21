@@ -61,9 +61,6 @@ class BookmarkNode;
 // Called before the instance is deallocated.
 - (void)shutdown;
 
-// Closes the edit view as if close button was pressed.
-- (void)dismiss;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EDIT_VIEW_CONTROLLER_H_

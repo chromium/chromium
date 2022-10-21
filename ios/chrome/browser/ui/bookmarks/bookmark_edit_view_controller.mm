@@ -338,7 +338,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   [self updateFolderLabel];
 }
 
-- (void)dismiss {
+- (void)dismissBookmarkEditView {
   [self.view endEditing:YES];
 
   // Dismiss this controller.
@@ -464,12 +464,12 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)cancel {
-  [self dismiss];
+  [self dismissBookmarkEditView];
 }
 
 - (void)save {
   [self commitBookmarkChanges];
-  [self dismiss];
+  [self dismissBookmarkEditView];
 }
 
 #pragma mark - BookmarkTextFieldItemDelegate
@@ -579,7 +579,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 - (void)folderPickerDidDismiss:(BookmarkFolderViewController*)folderPicker {
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;
-  [self dismiss];
+  [self dismissBookmarkEditView];
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -687,19 +687,16 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self dismiss];
+  [self dismissBookmarkEditView];
 }
 
 #pragma mark - UIResponder
 
 - (NSArray*)keyCommands {
-  __weak BookmarkEditViewController* weakSelf = self;
-  return @[ [UIKeyCommand cr_keyCommandWithInput:UIKeyInputEscape
-                                   modifierFlags:KeyModifierNone
-                                           title:nil
-                                          action:^{
-                                            [weakSelf dismiss];
-                                          }] ];
+  return @[ [UIKeyCommand
+      keyCommandWithInput:UIKeyInputEscape
+            modifierFlags:KeyModifierNone
+                   action:@selector(dismissBookmarkEditView)] ];
 }
 
 @end
