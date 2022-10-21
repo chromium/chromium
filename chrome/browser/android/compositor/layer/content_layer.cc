@@ -74,9 +74,7 @@ void ContentLayer::SetProperties(int id,
   if (live_layer_draws)
     static_opacity = static_to_view_blend;
 
-  const cc::LayerList& layer_children = layer_->children();
-  for (unsigned i = 0; i < layer_children.size(); i++)
-    layer_children[i]->RemoveFromParent();
+  layer_->RemoveAllChildren();
 
   if (live_layer.get()) {
     live_layer->SetMasksToBounds(should_clip);
