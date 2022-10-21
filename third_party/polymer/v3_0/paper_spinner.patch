@@ -1,0 +1,25 @@
+diff --git a/components-chromium/paper-spinner/paper-spinner-styles.js b/components-chromium/paper-spinner/paper-spinner-styles.js
+index 1fe43d0e8e6ed..832d6037d2a00 100644
+--- a/components-chromium/paper-spinner/paper-spinner-styles.js
++++ b/components-chromium/paper-spinner/paper-spinner-styles.js
+@@ -8,10 +8,9 @@ found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+ part of the polymer project is also subject to an additional IP rights grant
+ found at http://polymer.github.io/PATENTS.txt
+ */
+-const $_documentContainer = document.createElement('template');
+-$_documentContainer.setAttribute('style', 'display: none;');
++import {html} from '../polymer/lib/utils/html-tag.js';
+ 
+-$_documentContainer.innerHTML = `<dom-module id="paper-spinner-styles">
++const template = html`<dom-module id="paper-spinner-styles">
+   <template>
+     <style>
+       /*
+@@ -324,6 +323,6 @@ $_documentContainer.innerHTML = `<dom-module id="paper-spinner-styles">
+   </template>
+ </dom-module>`;
+ 
+-document.head.appendChild($_documentContainer.content);
++document.head.appendChild(template.content);
+ 
+ export {};

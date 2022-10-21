@@ -20,4 +20,5 @@ js_library("paper-spinner-lite") {
 }
 
 js_library("paper-spinner-styles") {
+  deps = [ "../polymer:polymer_bundled" ]
 }
