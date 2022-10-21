@@ -53,6 +53,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
@@ -191,17 +192,19 @@ syncer::TestSyncService* CreateAndUseSyncService(Profile* profile) {
       }));
 }
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 username,
-                               base::StringPiece16 password = kPassword1,
-                               base::StringPiece16 username_element = u"") {
+PasswordForm MakeSavedPassword(
+    base::StringPiece signon_realm,
+    base::StringPiece16 username,
+    base::StringPiece16 password = kPassword1,
+    base::StringPiece16 username_element = u"",
+    PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.username_element = std::u16string(username_element);
-  form.in_store = PasswordForm::Store::kProfileStore;
+  form.in_store = store;
   return form;
 }
 
@@ -314,6 +317,7 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   TestingPrefServiceSimple prefs_;
   TestingProfile& profile() { return profile_; }
   TestPasswordStore& store() { return *store_; }
+  TestPasswordStore& account_store() { return *account_store_; }
   BulkLeakCheckService* service() { return bulk_leak_check_service_; }
   MockPasswordChangeSuccessTracker& password_change_success_tracker() {
     return *password_change_success_tracker_;
@@ -344,6 +348,8 @@ class PasswordCheckDelegateTest : public ::testing::Test {
                                        &profile_);
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
+  scoped_refptr<TestPasswordStore> account_store_ =
+      CreateAndUseTestAccountPasswordStore(&profile_);
   raw_ptr<MockPasswordChangeSuccessTracker> password_change_success_tracker_ =
       CreateAndUsePasswordChangeSuccessTracker(&profile_);
   raw_ptr<MockPasswordScriptsFetcher> password_scripts_fetcher_ =
@@ -355,7 +361,8 @@ class PasswordCheckDelegateTest : public ::testing::Test {
               password_manager::CredentialUIEntry::Less>
       credential_id_generator_;
   password_manager::MockAffiliationService affiliation_service_;
-  SavedPasswordsPresenter presenter_{&affiliation_service_, store_};
+  SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
+                                     account_store_};
   PasswordCheckDelegate delegate_{&profile_, &presenter_,
                                   &credential_id_generator_};
 };
@@ -1313,6 +1320,9 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
       password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
 
+  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillByDefault(Return(true));
+
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Disable password sync.
   sync_service().GetUserSettings()->SetSelectedTypes(
@@ -1322,12 +1332,8 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
 
   RunUntilIdle();
-
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillRepeatedly(Return(true));
 
   EXPECT_THAT(delegate().GetInsecureCredentials(),
               UnorderedElementsAre(ExpectCredentialWithScriptInfo(
@@ -1336,11 +1342,134 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
       "PasswordManager.BulkCheck.ScriptsCacheState", 0u);
 }
 
+TEST_F(PasswordCheckDelegateTest, HasStartableScript_EmptyUsername) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordChangeInSettings);
+
+  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillByDefault(Return(true));
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Enable password sync.
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
+
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, u"", kPassword1);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  store().AddLogin(form1);
+
+  RunUntilIdle();
+
+  EXPECT_THAT(delegate().GetInsecureCredentials(),
+              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                  u"", /*has_startable_script=*/false)));
+}
+
+TEST_F(PasswordCheckDelegateTest, HasStartableScript_AndroidCredential) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordChangeInSettings);
+
+  EXPECT_CALL(password_scripts_fetcher(),
+              IsScriptAvailable(url::Origin::Create(GURL(kExampleCom))))
+      .WillRepeatedly(Return(true));
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Enable password sync.
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
+
+  PasswordForm form = MakeSavedAndroidPassword(
+      kExampleApp, kUsername2, "Example App", kExampleCom, kWeakPassword2);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+
+  RunUntilIdle();
+
+  EXPECT_THAT(delegate().GetInsecureCredentials(),
+              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                  kUsername2, /*has_startable_script=*/true)));
+}
+
+TEST_F(PasswordCheckDelegateTest, HasStartableScript_AccountStoreUser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kPasswordChangeInSettings,
+       password_manager::features::kPasswordChangeAccountStoreUsers},
+      /*disabled_features=*/{});
+
+  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillByDefault(Return(true));
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Mark this user as an account store user.
+  sync_service().SetHasSyncConsent(false);
+
+  PasswordForm form1 =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1, u"",
+                        PasswordForm::Store::kAccountStore);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  account_store().AddLogin(form1);
+
+  PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword2);
+  AddIssueToForm(&form2, InsecureType::kLeaked);
+  store().AddLogin(form2);
+
+  RunUntilIdle();
+
+  // Only the account store credential is stored in a remote store - therefore
+  // the profile store credential gets marked as not having a change script.
+  EXPECT_THAT(
+      delegate().GetInsecureCredentials(),
+      UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                               kUsername1, /*has_startable_script=*/true),
+                           ExpectCredentialWithScriptInfo(
+                               kUsername2, /*has_startable_script=*/false)));
+}
+
+TEST_F(PasswordCheckDelegateTest,
+       HasStartableScript_AccountStoreUserFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kPasswordChangeInSettings},
+      /*disabled_features=*/{
+          password_manager::features::kPasswordChangeAccountStoreUsers});
+
+  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillByDefault(Return(true));
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Mark this user as an account store user.
+  sync_service().SetHasSyncConsent(false);
+
+  PasswordForm form1 =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1, u"",
+                        PasswordForm::Store::kAccountStore);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  account_store().AddLogin(form1);
+
+  RunUntilIdle();
+
+  // Only the account store credential is stored in a remote store - therefore
+  // the profile store credential gets marked as not having a change script.
+  EXPECT_THAT(delegate().GetInsecureCredentials(),
+              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                  kUsername1, /*has_startable_script=*/false)));
+}
+
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
+
+  ON_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillByDefault(Return(true));
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
@@ -1352,12 +1481,8 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
-  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
 
   RunUntilIdle();
-
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
-      .WillRepeatedly(Return(true));
 
   EXPECT_THAT(delegate().GetInsecureCredentials(),
               UnorderedElementsAre(ExpectCredentialWithScriptInfo(
@@ -1387,7 +1512,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
 
   EXPECT_CALL(password_scripts_fetcher(), IsCacheStale).WillOnce(Return(false));
   EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary).Times(0);
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(kOrigin1))
       .WillRepeatedly(Return(true));
 
   delegate().StartPasswordCheck();
@@ -1427,7 +1552,7 @@ TEST_F(PasswordCheckDelegateTest,
 
   delegate().StartPasswordCheck();
 
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(kOrigin1))
       .WillRepeatedly(Return(true));
 
   event_router_observer().ClearEvents();

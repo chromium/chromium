@@ -45,6 +45,7 @@
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
@@ -596,9 +597,8 @@ api::passwords_private::PasswordUiEntry
 PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
     const CredentialUIEntry& entry) {
   api::passwords_private::PasswordUiEntry api_credential;
-  auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-      entry.GetFirstSignonRealm());
-  api_credential.is_android_credential = facet.IsValidAndroidFacetURI();
+  api_credential.is_android_credential =
+      password_manager::IsValidAndroidFacetURI(entry.GetFirstSignonRealm());
   api_credential.username = base::UTF16ToUTF8(entry.username);
   api_credential.urls = CreateUrlCollectionFromCredential(entry);
   api_credential.stored_in = StoreSetFromCredential(entry);
@@ -612,7 +612,6 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
   copy.password_issues.erase(InsecureType::kWeak);
   copy.password_issues.erase(InsecureType::kReused);
   api_credential.id = id_generator_->GenerateId(copy);
-  GURL entry_url = entry.GetURL();
   if (api_credential.is_android_credential) {
     // |change_password_url| need special handling for Android. Here we use
     // affiliation information instead of the origin.
@@ -621,25 +620,11 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
           GetChangePasswordUrl(GURL(entry.GetAffiliatedWebRealm()));
     }
   } else {
-    api_credential.change_password_url = GetChangePasswordUrl(entry_url);
+    api_credential.change_password_url = GetChangePasswordUrl(entry.GetURL());
   }
 
-  api_credential.has_startable_script = false;
-  if (entry.username.empty() ||
-      !IsAutomatedPasswordChangeFromSettingsEnabled()) {
-    return api_credential;
-  }
-
-  if (entry.IsPhished() || entry.IsLeaked() ||
-      password_manager::features::kPasswordChangeInSettingsWeakCredentialsParam
-          .Get()) {
-    GURL url = api_credential.is_android_credential
-                   ? GURL(entry.GetAffiliatedWebRealm())
-                   : entry_url;
-    api_credential.has_startable_script =
-        !url.is_empty() && GetPasswordScriptsFetcher()->IsScriptAvailable(
-                               url::Origin::Create(entry_url));
-  }
+  api_credential.has_startable_script =
+      CredentialSupportsAutomatedPasswordChange(entry);
 
   return api_credential;
 }
@@ -655,12 +640,56 @@ PasswordScriptsFetcher* PasswordCheckDelegate::GetPasswordScriptsFetcher()
   return PasswordScriptsFetcherFactory::GetForBrowserContext(profile_);
 }
 
-bool PasswordCheckDelegate::IsAutomatedPasswordChangeFromSettingsEnabled()
-    const {
-  return password_feature_manager_
-             ->AreRequirementsForAutomatedPasswordChangeFulfilled() &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordChangeInSettings);
+bool PasswordCheckDelegate::CredentialSupportsAutomatedPasswordChange(
+    const password_manager::CredentialUIEntry& entry) const {
+  // Step 1: User requirements.
+  if (!password_feature_manager_
+           ->AreRequirementsForAutomatedPasswordChangeFulfilled() ||
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeInSettings)) {
+    return false;
+  }
+
+  // Step 2: Credential requirements.
+  // The username must be non-empty.
+  if (entry.username.empty())
+    return false;
+
+  // By default, only phished and leaked credentials are supported - weak
+  // credentials are gated behind a separate feature.
+  if (!entry.IsPhished() && !entry.IsLeaked() &&
+      !password_manager::features::kPasswordChangeInSettingsWeakCredentialsParam
+           .Get()) {
+    return false;
+  }
+
+  // The credential must be stored in a remote store.
+  switch (password_manager_util::GetPasswordSyncState(
+      SyncServiceFactory::GetForProfile(profile_))) {
+    case password_manager::SyncState::kNotSyncing:
+      return false;
+    case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
+      if (!entry.stored_in.contains(PasswordForm::Store::kAccountStore)) {
+        return false;
+      }
+      break;
+    case password_manager::SyncState::kSyncingWithCustomPassphrase:
+    case password_manager::SyncState::kSyncingNormalEncryption:
+      break;
+  }
+
+  // The URL must be non-empty.
+  // TODO(crbug.com/1377304): Adjust once credential grouping is implemented.
+  GURL url =
+      password_manager::IsValidAndroidFacetURI(entry.GetFirstSignonRealm())
+          ? GURL(entry.GetAffiliatedWebRealm())
+          : entry.GetURL();
+  if (url.is_empty())
+    return false;
+
+  // A script must be available.
+  return GetPasswordScriptsFetcher()->IsScriptAvailable(
+      url::Origin::Create(url));
 }
 
 }  // namespace extensions

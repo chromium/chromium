@@ -165,8 +165,10 @@ class PasswordCheckDelegate
   // `profile_`.
   password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher() const;
 
-  // Returns whether automatic password changes are enabled from settings.
-  bool IsAutomatedPasswordChangeFromSettingsEnabled() const;
+  // Returns whether the credential `entry` supports automated password change.
+  // It assumes that the `PasswordScriptsFetcher` cache has been fetched.
+  bool CredentialSupportsAutomatedPasswordChange(
+      const password_manager::CredentialUIEntry& entry) const;
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;
