@@ -273,3 +273,16 @@ export class NavStartText extends RepeatableKeyPressMacro {
     EventGenerator.sendKeyPress(KeyCode.LEFT, {});
   }
 }
+
+/** Macro to move the cursor to the end of the input field. */
+export class NavEndText extends RepeatableKeyPressMacro {
+  constructor() {
+    super(MacroName.NAV_END_TEXT, 1);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.A, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.RIGHT, {});
+  }
+}

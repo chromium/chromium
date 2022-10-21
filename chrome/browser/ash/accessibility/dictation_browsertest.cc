@@ -1199,6 +1199,23 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextMultiLineString) {
   SendFinalResultAndWaitForTextAreaValue("the weather outside", expected);
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextSimple) {
+  SendFinalResultAndWaitForTextAreaValue("The weather outside is", "The weather outside is");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the end");
+  std::string expected = "The weather outside is good";
+  SendFinalResultAndWaitForTextAreaValue("good", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextMultiLineString) {
+  std::string text = "The weather outside is\n";
+  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the end");
+  std::string expected = text + "good";
+  SendFinalResultAndWaitForTextAreaValue("good", expected);
+}
+
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
   SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
   SendFinalResultAndWaitForTextAreaValue("delete the previous sentence", "");

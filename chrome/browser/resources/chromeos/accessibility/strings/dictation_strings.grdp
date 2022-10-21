@@ -84,4 +84,7 @@
   <message name="DICTATION_COMMAND_NAV_START_TEXT" desc="A spoken command to move the cursor to the start of the input field." is_accessibility_with_no_ui="true">
     move to the start
   </message>
+  <message name="DICTATION_COMMAND_NAV_END_TEXT" desc="A spoken command to move the cursor to the end of the input field." is_accessibility_with_no_ui="true">
+    move to the end
+  </message>
 </grit-part>
