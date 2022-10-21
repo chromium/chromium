@@ -1565,4 +1565,23 @@ TEST_F(ComputedStyleTest, LogicalScrollPaddingUtils) {
   EXPECT_EQ(left, style->ScrollPaddingBlockEnd());
 }
 
+TEST_F(ComputedStyleTest, BasicBuilder) {
+  scoped_refptr<ComputedStyle> original = CreateComputedStyle();
+
+  Length left = Length::Fixed(1.0f);
+  Length right = Length::Fixed(2.0f);
+
+  ComputedStyleBuilder builder(*original);
+  builder.SetScrollPaddingLeft(left);
+  builder.SetScrollPaddingRight(right);
+
+  scoped_refptr<ComputedStyle> style = builder.TakeStyle();
+
+  EXPECT_NE(left, original->ScrollPaddingLeft());
+  EXPECT_NE(right, original->ScrollPaddingRight());
+
+  EXPECT_EQ(left, style->ScrollPaddingLeft());
+  EXPECT_EQ(right, style->ScrollPaddingRight());
+}
+
 }  // namespace blink

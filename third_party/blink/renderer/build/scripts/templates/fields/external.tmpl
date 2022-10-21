@@ -1,5 +1,5 @@
 {% import 'templates/fields/base.tmpl' as base %}
-{% from 'templates/fields/field.tmpl' import getter_expression, setter_expression %}
+{% from 'templates/fields/field.tmpl' import getter_expression, setter_expression, accessor_expression_prefix %}
 
 {% macro decl_public_methods(field) %}
 {{base.decl_getter_method(field)}}
@@ -10,7 +10,7 @@ void {{field.setter_method_name}}({{field.type_name}}&& v) {
   if (!({{getter_expression(field)}} == v))
     {{setter_expression(field)}} = std::move(v);
   {% else %}
-  {{field.name}} = std::move(v);
+  {{accessor_expression_prefix(field)}}{{field.name}} = std::move(v);
   {% endif %}
 }
 {% endif %}
@@ -28,7 +28,7 @@ void {{field.internal_setter_method_name}}({{field.type_name}}&& v) {
   if (!({{getter_expression(field)}} == v))
     {{setter_expression(field)}} = std::move(v);
 {% else %}
-  {{field.name}} = std::move(v);
+  {{accessor_expression_prefix(field)}}{{field.name}} = std::move(v);
 {% endif %}
 }
 {% endif %}

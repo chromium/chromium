@@ -169,6 +169,22 @@ def _create_groups(properties):
     return _dict_to_group(None, root_group_dict)
 
 
+def _mark_builder_flag(group):
+    """Set the builder flag for all fields within the specified group."""
+    for field in group.fields:
+        field.builder = True
+    for subgroup in group.subgroups:
+        _mark_builder_flag(subgroup)
+
+
+def _create_builder_groups(properties):
+    """Like _create_groups, but all fields returned by this function has
+       the builder flag set to True."""
+    groups = _create_groups(properties)
+    _mark_builder_flag(groups)
+    return groups
+
+
 def _create_diff_groups_map(diff_function_inputs, root_group):
     diff_functions_map = {}
 
@@ -556,7 +572,6 @@ def _evaluate_rare_inherit_group(properties,
             group_tree = [layers_name[0], layers_name[0] + "-sub"] + group_tree
             property_["field_group"] = "->".join(group_tree)
 
-
 class ComputedStyleBaseWriter(json5_generator.Writer):
     def __init__(self, json5_file_paths, output_dir):
         super(ComputedStyleBaseWriter, self).__init__([], output_dir)
@@ -602,6 +617,14 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
             len(group_parameters["rare_inherited_properties_rule"]),
             group_parameters["rare_inherited_properties_rule"])
         self._root_group = _create_groups(self._properties)
+        # We create separate groups/fields for generating ComputedStyle-
+        # BuilderBase. The only difference between these fields and the regular
+        # fields, is that the builder fields have the "builder" flag set, which
+        # us used to weak the code generation in the field templates.
+        #
+        # TODO(crbug.com/1377295): When the builder is fully deployed, we no
+        #                          longer need two groups.
+        self._root_builder_group = _create_builder_groups(self._properties)
         self._diff_functions_map = _create_diff_groups_map(
             json5_generator.Json5File.load_from_files(
                 [json5_file_paths[4]]).name_dictionaries, self._root_group)
@@ -628,6 +651,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
             'enums': self._generated_enums,
             'include_paths': self._include_paths,
             'computed_style': self._root_group,
+            'computed_style_builder': self._root_builder_group,
             'diff_functions_map': self._diff_functions_map,
         }
 

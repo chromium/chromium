@@ -102,7 +102,7 @@ bool StyleResolverState::IsInheritedForUnset(
 
 void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
   // FIXME: Improve RAII of StyleResolverState to remove this function.
-  style_ = std::move(style);
+  style_builder_.SetStyle(std::move(style));
   UpdateLengthConversionData();
 }
 
@@ -111,7 +111,7 @@ scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
       pseudo_request_type_ == StyleRequest::kForRenderer) {
     return nullptr;
   }
-  return std::move(style_);
+  return style_builder_.TakeStyle();
 }
 
 void StyleResolverState::UpdateLengthConversionData() {
@@ -187,32 +187,32 @@ void StyleResolverState::SetZoom(float f) {
                                     ? ParentStyle()->EffectiveZoom()
                                     : ComputedStyleInitialValues::InitialZoom();
 
-  style_->SetZoom(f);
+  StyleRef().SetZoom(f);
 
   if (f != 1.f)
     GetDocument().CountUse(WebFeature::kCascadedCSSZoomNotEqualToOne);
 
-  if (style_->SetEffectiveZoom(parent_effective_zoom * f))
+  if (StyleRef().SetEffectiveZoom(parent_effective_zoom * f))
     font_builder_.DidChangeEffectiveZoom();
 }
 
 void StyleResolverState::SetEffectiveZoom(float f) {
-  if (style_->SetEffectiveZoom(f))
+  if (StyleRef().SetEffectiveZoom(f))
     font_builder_.DidChangeEffectiveZoom();
 }
 
 void StyleResolverState::SetWritingMode(WritingMode new_writing_mode) {
-  if (style_->GetWritingMode() == new_writing_mode) {
+  if (StyleRef().GetWritingMode() == new_writing_mode) {
     return;
   }
-  style_->SetWritingMode(new_writing_mode);
+  StyleRef().SetWritingMode(new_writing_mode);
   UpdateLengthConversionData();
   font_builder_.DidChangeWritingMode();
 }
 
 void StyleResolverState::SetTextOrientation(ETextOrientation text_orientation) {
-  if (style_->GetTextOrientation() != text_orientation) {
-    style_->SetTextOrientation(text_orientation);
+  if (StyleRef().GetTextOrientation() != text_orientation) {
+    StyleRef().SetTextOrientation(text_orientation);
     font_builder_.DidChangeTextOrientation();
   }
 }

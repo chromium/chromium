@@ -89,16 +89,17 @@ class CORE_EXPORT StyleResolverState {
   }
 
   void SetStyle(scoped_refptr<ComputedStyle>);
-  const ComputedStyle* Style() const { return style_.get(); }
-  ComputedStyle* Style() { return style_.get(); }
+  const ComputedStyle* Style() const { return style_builder_.InternalStyle(); }
+  ComputedStyle* Style() { return style_builder_.MutableInternalStyle(); }
   ComputedStyle& StyleRef() {
-    DCHECK(style_);
-    return *style_;
+    DCHECK(Style());
+    return *Style();
   }
   const ComputedStyle& StyleRef() const {
-    DCHECK(style_);
-    return *style_;
+    DCHECK(Style());
+    return *Style();
   }
+  ComputedStyleBuilder& StyleBuilder() { return style_builder_; }
   scoped_refptr<ComputedStyle> TakeStyle();
 
   const CSSToLengthConversionData& CssToLengthConversionData() const {
@@ -215,8 +216,8 @@ class CORE_EXPORT StyleResolverState {
   ElementResolveContext element_context_;
   Document* document_;
 
-  // style_ is the primary output for each element's style resolve.
-  scoped_refptr<ComputedStyle> style_;
+  // The primary output for each element's style resolve.
+  ComputedStyleBuilder style_builder_;
 
   CSSToLengthConversionData css_to_length_conversion_data_;
 

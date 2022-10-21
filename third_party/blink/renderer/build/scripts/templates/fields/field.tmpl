@@ -16,18 +16,32 @@ static_cast<{{field.type_name}}>({{value}})
 {%- endif %}
 {% endmacro %}
 
-{% macro getter_expression(field) %}
+{% macro accessor_expression_prefix(field) %}
+{% if field.builder -%}
+style_->
+{%- endif %}
+{%- endmacro %}
+
+{% macro getter_expression_without_prefix(field) %}
 {% for group in field.group.path_without_root() -%}
 {{group.member_name}}->
 {%- endfor -%}
 {{field.name}}
 {%- endmacro %}
 
-{% macro setter_expression(field) %}
+{% macro setter_expression_without_prefix(field) %}
 {% for group in field.group.path_without_root() -%}
 {{group.member_name}}.Access()->
 {%- endfor -%}
 {{field.name}}
+{%- endmacro %}
+
+{% macro getter_expression(field) %}
+{{accessor_expression_prefix(field)}}{{getter_expression_without_prefix(field)}}
+{%- endmacro %}
+
+{% macro setter_expression(field) %}
+{{accessor_expression_prefix(field)}}{{setter_expression_without_prefix(field)}}
 {%- endmacro %}
 
 {% macro set_if_changed(field, value) %}
@@ -35,7 +49,7 @@ static_cast<{{field.type_name}}>({{value}})
 if (!({{getter_expression(field)}} == {{value}}))
   {{setter_expression(field)}} = {{value}};
 {%- else -%}
-{{field.name}} = {{value}};
+{{accessor_expression_prefix(field)}}{{field.name}} = {{value}};
 {%- endif %}
 {% endmacro %}
 

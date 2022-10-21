@@ -98,6 +98,7 @@ class StyleImage;
 class StyleInheritedVariables;
 class StyleInitialData;
 class StyleResolver;
+class StyleResolverState;
 class StyleSelfAlignmentData;
 class TransformationMatrix;
 
@@ -3222,6 +3223,35 @@ inline void ComputedStyle::SetHasPseudoElementStyle(PseudoId pseudo) {
   SetPseudoBitsInternal(PseudoBitsInternal() |
                         1 << (pseudo - kFirstPublicPseudoId));
 }
+
+class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ComputedStyleBuilder(const ComputedStyle& style) {
+    SetStyle(ComputedStyle::Clone(style));
+  }
+
+  // TODO(crbug.com/1377295): Eventually remove these functions.
+  ComputedStyle* MutableInternalStyle() const { return style_.get(); }
+  const ComputedStyle* InternalStyle() const { return style_.get(); }
+
+  scoped_refptr<ComputedStyle> TakeStyle() { return std::move(style_); }
+
+ private:
+  friend class StyleResolverState;
+
+  ComputedStyleBuilder() = default;
+
+  // TODO(andruud): This should be part of the constructor, but
+  // StyleResolverState does not work that way.
+  void SetStyle(scoped_refptr<ComputedStyle> style) {
+    style_ = std::move(style);
+    SetStyleBase(*style_);
+  }
+
+  scoped_refptr<ComputedStyle> style_;
+};
 
 }  // namespace blink
 
