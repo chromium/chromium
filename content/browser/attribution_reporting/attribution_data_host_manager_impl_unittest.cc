@@ -123,6 +123,10 @@ MATCHER_P(SourceIsWithinFencedFrameIs, matcher, "") {
                             result_listener);
 }
 
+MATCHER_P(SourceDebugReportingIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.debug_reporting(), result_listener);
+}
+
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   base::HistogramTester histograms;
 
@@ -130,15 +134,16 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
-  EXPECT_CALL(mock_manager_,
-              HandleSource(AllOf(
-                  SourceTypeIs(AttributionSourceType::kEvent),
-                  SourceEventIdIs(10), DestinationOriginIs(destination_origin),
-                  ImpressionOriginIs(page_origin), SourcePriorityIs(20),
-                  SourceDebugKeyIs(789),
-                  AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
-                      {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
-                  SourceIsWithinFencedFrameIs(false))));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(AllOf(
+          SourceTypeIs(AttributionSourceType::kEvent), SourceEventIdIs(10),
+          DestinationOriginIs(destination_origin),
+          ImpressionOriginIs(page_origin), SourcePriorityIs(20),
+          SourceDebugKeyIs(789),
+          AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
+              {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
+          SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
   {
     RemoteDataHost data_host_remote{.task_environment = task_environment_};
     data_host_manager_.RegisterDataHost(
@@ -157,6 +162,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
     source_data->aggregation_keys = {
         {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
     };
+    source_data->debug_reporting = true;
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
@@ -1076,14 +1082,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     EXPECT_CALL(
         mock_manager_,
-        HandleSource(
-            AllOf(SourceTypeIs(AttributionSourceType::kNavigation),
-                  SourceEventIdIs(10), DestinationOriginIs(destination_origin),
-                  ImpressionOriginIs(page_origin), SourcePriorityIs(20),
-                  SourceDebugKeyIs(789),
-                  AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
-                      {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
-                  SourceIsWithinFencedFrameIs(false))));
+        HandleSource(AllOf(
+            SourceTypeIs(AttributionSourceType::kNavigation),
+            SourceEventIdIs(10), DestinationOriginIs(destination_origin),
+            ImpressionOriginIs(page_origin), SourcePriorityIs(20),
+            SourceDebugKeyIs(789),
+            AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
+                {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
+            SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleSource).Times(0);
   }
@@ -1111,6 +1117,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->aggregation_keys = {
         {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
     };
+    source_data->debug_reporting = true;
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
 

@@ -147,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   EXPECT_FALSE(source_data.front()->debug_key);
   EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
   EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
+  EXPECT_FALSE(source_data.front()->debug_reporting);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -193,6 +194,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     EXPECT_FALSE(source_data.front()->debug_key);
     EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
     EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
+    EXPECT_FALSE(source_data.front()->debug_reporting);
   }
 }
 
@@ -527,6 +529,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(source_data.front()->filter_data->filter_values,
               UnorderedElementsAre(Pair("a", IsEmpty()),
                                    Pair("b", ElementsAre("1", "2"))));
+  EXPECT_TRUE(source_data.front()->debug_reporting);
 }
 
 IN_PROC_BROWSER_TEST_F(

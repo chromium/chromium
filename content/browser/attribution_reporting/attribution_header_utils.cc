@@ -103,6 +103,10 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());
 
+  bool debug_reporting = false;
+  if (absl::optional<bool> b = registration.FindBool("debug_reporting"))
+    debug_reporting = *b;
+
   return StorableSource(
       CommonSourceInfo(
           source_event_id, std::move(source_origin), std::move(destination),
@@ -110,7 +114,7 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
           CommonSourceInfo::GetExpiryTime(expiry, source_time, source_type),
           source_type, priority, std::move(*filter_data), debug_key,
           std::move(*aggregation_keys)),
-      is_within_fenced_frame);
+      is_within_fenced_frame, debug_reporting);
 }
 
 }  // namespace content

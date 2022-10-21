@@ -23,7 +23,9 @@ class CONTENT_EXPORT StorableSource {
     kProhibitedByBrowserPolicy,
   };
 
-  StorableSource(CommonSourceInfo common_info, bool is_within_fenced_frame);
+  StorableSource(CommonSourceInfo common_info,
+                 bool is_within_fenced_frame,
+                 bool debug_reporting);
 
   ~StorableSource();
 
@@ -39,11 +41,16 @@ class CONTENT_EXPORT StorableSource {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
+  bool debug_reporting() const { return debug_reporting_; }
+
  private:
   CommonSourceInfo common_info_;
 
   // Whether the source is registered within a fenced frame tree.
   bool is_within_fenced_frame_;
+
+  // Whether debug reporting is enabled.
+  bool debug_reporting_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

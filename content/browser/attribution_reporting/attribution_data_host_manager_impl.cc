@@ -455,7 +455,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
           data->debug_key ? absl::make_optional(data->debug_key->value)
                           : absl::nullopt,
           std::move(*aggregation_keys)),
-      context.is_within_fenced_frame);
+      context.is_within_fenced_frame, data->debug_reporting);
 
   attribution_manager_->HandleSource(std::move(storable_source));
 }

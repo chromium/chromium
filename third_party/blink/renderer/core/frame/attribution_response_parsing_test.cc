@@ -668,7 +668,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "missing_destination",
@@ -692,7 +693,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "invalid_source_event_id",
@@ -709,7 +711,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "valid_source_event_id",
@@ -726,7 +729,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "destination_not_string",
@@ -757,7 +761,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/5,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "priority_not_string",
@@ -774,7 +779,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "invalid_priority",
@@ -791,7 +797,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "valid_expiry",
@@ -808,7 +815,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "expiry_not_string",
@@ -825,7 +833,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "invalid_expiry",
@@ -842,7 +851,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "valid_debug_key",
@@ -859,7 +869,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/mojom::blink::AttributionDebugKey::New(5),
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "valid_filter_data",
@@ -879,7 +890,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               AttributionFilterDataBuilder()
                   .AddFilter("SOURCE_TYPE", {})
                   .Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
       {
           "invalid_source_type_key_in_filter_data",
@@ -904,7 +916,44 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
+      },
+      {
+          "valid_debug_reporting",
+          R"json({
+            "destination": "https://d.test",
+            "debug_reporting": true
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/0,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/true),
+      },
+      {
+          "debug_reporting_not_boolean",
+          R"json({
+            "destination": "https://d.test",
+            "debug_reporting": "true"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/0,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>(),
+              /*debug_reporting=*/false),
       },
   };
 

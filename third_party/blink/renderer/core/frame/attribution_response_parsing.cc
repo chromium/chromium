@@ -271,6 +271,11 @@ bool ParseSourceRegistrationHeader(
     return false;
   }
 
+  if (bool debug_reporting;
+      object->GetBoolean("debug_reporting", &debug_reporting)) {
+    source_data.debug_reporting = debug_reporting;
+  }
+
   return true;
 }
 

@@ -55,6 +55,9 @@ struct AttributionSourceData {
   AttributionFilterData filter_data;
 
   map<string, mojo_base.mojom.Uint128> aggregation_keys;
+
+  // Specifies whether to enable verbose debug reporting.
+  bool debug_reporting = false;
 };
 
 // Deduplication key set by a reporting origin which prevents duplicate triggers

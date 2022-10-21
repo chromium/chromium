@@ -122,7 +122,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
         "destination": "https://a.d.test",
         "expiry": "864000",
         "priority": "-5",
-        "debug_key": "14"
+        "debug_key": "14",
+        "debug_reporting": true
       }
     },
     {
@@ -183,6 +184,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .SetExpiry(base::Days(10))
                    .SetPriority(-5)
                    .SetDebugKey(14)
+                   .SetDebugReporting(true)
                    .Build(),
                _),
           Pair(SourceBuilder(kOffsetTime + base::Milliseconds(1643235573123))
@@ -197,6 +199,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .SetExpiry(base::Days(30))   // default
                    .SetPriority(0)              // default
                    .SetDebugKey(absl::nullopt)  // default
+                   .SetDebugReporting(false)    // default
                    .Build(),
                _),
           Pair(
@@ -212,6 +215,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
+                  .SetDebugReporting(false)    // default
                   .SetFilterData(
                       *AttributionFilterData::FromSourceFilterValues({
                           {"a", {}},
@@ -232,6 +236,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
+                  .SetDebugReporting(false)    // default
                   .SetAggregationKeys(
                       *AttributionAggregationKeys::FromKeys({{"a", 1}}))
                   .Build(),

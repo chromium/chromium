@@ -468,6 +468,8 @@ class SourceBuilder {
 
   SourceBuilder& SetIsWithinFencedFrame(bool is_within_fenced_frame);
 
+  SourceBuilder& SetDebugReporting(bool debug_reporting);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
@@ -496,6 +498,7 @@ class SourceBuilder {
   int64_t aggregatable_budget_consumed_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
   bool is_within_fenced_frame_ = false;
+  bool debug_reporting_ = false;
 };
 
 // Returns a AttributionTrigger with default data which matches the default

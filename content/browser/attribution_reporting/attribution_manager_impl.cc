@@ -481,10 +481,7 @@ void AttributionManagerImpl::OnSourceStored(
 
   NotifySourcesChanged();
 
-  // TODO(crbug.com/1371970): Parse debug_reporting field from the response
-  // header.
-  bool debug_reporting = false;
-  if (debug_reporting)
+  if (source.debug_reporting())
     MaybeSendVerboseDebugReport(std::move(source), result);
 }
 
