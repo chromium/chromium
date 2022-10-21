@@ -711,6 +711,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // A new profile should have been created for the forced sign-in flow.
   EXPECT_EQ(2u, g_browser_process->profile_manager()->GetNumberOfProfiles());
+  // Get the profile that was used to load the `force_signin_webui_url`.
+  Profile* force_signin_profile = Profile::FromBrowserContext(
+      content::Source<content::NavigationController>(url_observer.source())
+          .ptr()
+          ->GetBrowserContext());
+  EXPECT_TRUE(force_signin_profile);
+  // Make sure that the force_signin profile is different from the main one.
+  EXPECT_FALSE(force_signin_profile->IsSameOrParent(browser()->profile()));
 
   // The tail end of the flow is handled by inline_login_*
 }
