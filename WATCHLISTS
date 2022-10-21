@@ -259,6 +259,9 @@
     'base_allocator': {
       'filepath': '^base/allocator',
     },
+    'base_android': {
+      'filepath': '^base/android',
+    },
     'base_memory': {
       'filepath': '^base/memory',
     },
@@ -2317,6 +2320,12 @@
                 'pkotwicz+watch@chromium.org'],
     'base_allocator': ['wfh+watch@chromium.org',
                        'lizeb+watch@chromium.org'],
+    'base_android': ['agrieve+watch@chromium.org',
+                     'lizeb+watch@chromium.org',
+                     'nyquist+watch@chromium.org',
+                     'pasko+watch@chromium.org',
+                     'torne+watch@chromium.org',
+                     'yfriedman+watch@chromium.org'],
     'base_memory': ['gavinp+memory@chromium.org'],
     'base_scheduler': ['scheduler-bugs+base@chromium.org'],
     'base_thread_pool': ['fdoray+watch@chromium.org',
