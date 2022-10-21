@@ -5,10 +5,12 @@
 
 import '../../mojo_webui_test_support.js';
 import 'chrome://parent-access/parent_access_ui.js';
+import 'chrome://parent-access/strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 window.parent_access_ui_tests = {};
 parent_access_ui_tests.suiteName = 'ParentAccessUITest';

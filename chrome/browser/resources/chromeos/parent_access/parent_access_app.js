@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// strings.m.js is generated when we enable it via UseStringsJs() in webUI
+// controller. When loading it, it will populate data such as localized strings
+// into |window.loadTimeData|.
+import './strings.m.js';
 import './parent_access_after.js';
 import './parent_access_ui.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
