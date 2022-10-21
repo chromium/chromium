@@ -248,7 +248,7 @@ void ModuleSystemTestEnvironment::ShutdownModuleSystem() {
 v8::Local<v8::Object> ModuleSystemTestEnvironment::CreateGlobal(
     const std::string& name) {
   v8::EscapableHandleScope handle_scope(isolate_);
-  v8::MicrotasksScope microtasks(isolate_,
+  v8::MicrotasksScope microtasks(isolate_->GetCurrentContext(),
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Object> object = v8::Object::New(isolate_);
   isolate_->GetCurrentContext()

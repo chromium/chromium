@@ -23,6 +23,7 @@
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-json.h"
+#include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-value.h"
 
@@ -122,6 +123,8 @@ v8::Local<v8::Array> V8SchemaRegistry::GetSchemas(
   v8::EscapableHandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = GetOrCreateContext(isolate);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   v8::Local<v8::Array> v8_apis(v8::Array::New(isolate, apis.size()));
   size_t api_index = 0;
@@ -149,6 +152,8 @@ v8::Local<v8::Object> V8SchemaRegistry::GetSchema(const std::string& api) {
   v8::EscapableHandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = GetOrCreateContext(isolate);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   base::StringPiece schema_string =
       ExtensionAPI::GetSharedInstance()->GetSchemaStringPiece(api);
