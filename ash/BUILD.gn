@@ -3370,6 +3370,7 @@ test("ash_pixeltests") {
     ":run_ash_unittests",
     ":test_support",
     "//ash/app_list",
+    "//ash/app_list:test_support",
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chromeos/dbus/power:power",

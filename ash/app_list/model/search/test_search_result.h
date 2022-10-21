@@ -23,6 +23,8 @@ class TestSearchResult : public SearchResult {
   ~TestSearchResult() override;
 
   void set_result_id(const std::string& id);
+  void SetTitle(const std::u16string& title);
+  void SetDetails(const std::u16string& details);
 };
 
 }  // namespace ash
