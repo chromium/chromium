@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -105,6 +106,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             toolbarStub.setLayoutResource(toolbarLayoutId);
             toolbarStub.inflate();
         }
+    }
+
+    @Override
+    public void destroy() {
+        ((ToolbarViewResourceAdapter) getToolbarResourceAdapter()).destroy();
     }
 
     /**
@@ -235,12 +241,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             mToolbar = toolbar;
             mTabStripHeightPx = mToolbar.getTabStripHeight();
 
-            assert mConstraintsObserver == null;
-            if (constraintsSupplier != null) {
-                mConstraintsObserver = new ConstraintsChecker(this, constraintsSupplier);
-            }
+            mConstraintsObserver =
+                    new ConstraintsChecker(this, constraintsSupplier, Looper.getMainLooper());
 
-            assert mTabSupplier == null;
             mTabSupplier = tabSupplier;
         }
 
@@ -331,6 +334,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                     mToolbarContainer.getHeight() - mToolbar.getHeight() - mTabStripHeightPx;
             return ResourceFactory.createToolbarContainerResource(
                     mToolbarRect, mLocationBarRect, shadowHeight);
+        }
+
+        public void destroy() {
+            if (mConstraintsObserver != null) {
+                mConstraintsObserver.destroy();
+            }
         }
     }
 

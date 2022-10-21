@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
@@ -218,6 +219,7 @@ public class ToolbarControlContainerTest {
 
         // BOTH should cause a new onResourceRequested call.
         mConstraintsSupplier.set(BrowserControlsState.BOTH);
+        ShadowLooper.idleMainLooper();
         Assert.assertEquals(1, onResourceRequestedCount.get());
 
         // The constraints should no longer block isDirty/captures.
