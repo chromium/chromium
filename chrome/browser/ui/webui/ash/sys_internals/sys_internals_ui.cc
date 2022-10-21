@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/sys_internals/sys_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 
 #include <memory>
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/sys_internals/sys_internals_message_handler.h"
+#include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_generated_resources.h"
+
+namespace ash {
 
 SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -71,3 +73,5 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
 }
 
 SysInternalsUI::~SysInternalsUI() {}
+
+}  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/sys_internals/sys_internals_message_handler.h"
+#include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
 
 #include <inttypes.h>
 #include <cstdio>
@@ -19,6 +19,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
+
+namespace ash {
 
 namespace {
 
@@ -231,3 +233,5 @@ void SysInternalsMessageHandler::ReplySysInfo(base::Value callback_id,
 
   ResolveJavascriptCallback(callback_id, result);
 }
+
+}  // namespace ash

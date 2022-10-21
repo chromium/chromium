@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYS_INTERNALS_SYS_INTERNALS_MESSAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYS_INTERNALS_SYS_INTERNALS_MESSAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SYS_INTERNALS_SYS_INTERNALS_MESSAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SYS_INTERNALS_SYS_INTERNALS_MESSAGE_HANDLER_H_
 
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
+
+namespace ash {
 
 // The handler class for SysInternals page operations.
 class SysInternalsMessageHandler : public content::WebUIMessageHandler {
@@ -65,4 +67,6 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<SysInternalsMessageHandler> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYS_INTERNALS_SYS_INTERNALS_MESSAGE_HANDLER_H_
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SYS_INTERNALS_SYS_INTERNALS_MESSAGE_HANDLER_H_
