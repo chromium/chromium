@@ -861,7 +861,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "Failed to calculate the output height: The input size is too "
-              "small to fill the convolution window.");
+              "small to fill the window.");
   }
   {
     // Test throwing exception due to underflow when calculating the output
@@ -881,43 +881,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "Failed to calculate the output width: The input size is too "
-              "small to fill the convolution window.");
-  }
-  {
-    // Test throwing exception when the bias is not a 1-D tensor.
-    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
-                             V8MLOperandType::Enum::kFloat32);
-    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
-                                 V8MLOperandType::Enum::kFloat32);
-    auto* options = MLConv2dOptions::Create();
-    auto* bias =
-        BuildConstant(scope, builder, {1, 2}, V8MLOperandType::Enum::kFloat32);
-    options->setBias(bias);
-    auto* output =
-        builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The bias should be a 1-D tensor.");
-  }
-  {
-    // Test throwing exception when the bias is not a 1-D tensor.
-    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
-                             V8MLOperandType::Enum::kFloat32);
-    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
-                                 V8MLOperandType::Enum::kFloat32);
-    auto* options = MLConv2dOptions::Create();
-    auto* bias =
-        BuildConstant(scope, builder, {1, 2}, V8MLOperandType::Enum::kFloat32);
-    options->setBias(bias);
-    auto* output =
-        builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The bias should be a 1-D tensor.");
+              "small to fill the window.");
   }
   {
     // Test throwing exception when the bias is not a 1-D tensor.
@@ -994,6 +958,12 @@ MLOperand* BuildPool2d(
       output = builder->maxPool2d(input, options, scope.GetExceptionState());
       break;
   }
+  return output;
+}
+
+void CheckPool2dOutput(const MLOperand* input,
+                       const MLOperand* output,
+                       Pool2dKind kind) {
   EXPECT_NE(output, nullptr);
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->Type(), input->Type());
@@ -1009,7 +979,6 @@ MLOperand* BuildPool2d(
   }
   EXPECT_EQ(pool2d->IsConnected(), true);
   EXPECT_NE(pool2d->Options(), nullptr);
-  return output;
 }
 
 TEST_F(MLGraphBuilderTest, Pool2dTest) {
@@ -1018,10 +987,23 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
   const auto Pool2dKinds = {Pool2dKind::kAverage, Pool2dKind::kMax};
   for (const auto pool2d_kind : Pool2dKinds) {
     {
-      // Test pool2d without windowDimensions.
+      // Test pool2d with default options.
       auto* input = BuildInput(scope, builder, "input", {1, 3, 4, 4},
                                V8MLOperandType::Enum::kFloat32);
-      auto* output = BuildPool2d(scope, builder, pool2d_kind, input);
+      auto* options = MLPool2dOptions::Create();
+      EXPECT_TRUE(options->hasAutoPad());
+      EXPECT_EQ(options->autoPad(), V8MLAutoPad::Enum::kExplicit);
+      EXPECT_FALSE(options->hasWindowDimensions());
+      EXPECT_FALSE(options->hasPadding());
+      EXPECT_FALSE(options->hasStrides());
+      EXPECT_FALSE(options->hasDilations());
+      EXPECT_TRUE(options->hasLayout());
+      EXPECT_EQ(options->layout(), V8MLInputOperandLayout::Enum::kNchw);
+      EXPECT_TRUE(options->hasRoundingType());
+      EXPECT_EQ(options->roundingType(), V8MLRoundingType::Enum::kFloor);
+      EXPECT_FALSE(options->hasOutputSizes());
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 1, 1}));
     }
     {
@@ -1031,6 +1013,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({3, 3});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 2, 2}));
     }
     {
@@ -1041,6 +1024,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setWindowDimensions({5, 5});
       options->setPadding({2, 2, 2, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
     }
     {
@@ -1051,6 +1035,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setWindowDimensions({5, 5});
       options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
     }
     {
@@ -1061,6 +1046,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setWindowDimensions({5, 5});
       options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
     }
     {
@@ -1071,6 +1057,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setWindowDimensions({2, 2});
       options->setStrides({2, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 2, 2}));
     }
     {
@@ -1082,6 +1069,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setPadding({1, 1, 1, 1});
       options->setStrides({2, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 3, 3}));
     }
     {
@@ -1093,6 +1081,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setPadding({2, 1, 2, 1});
       options->setStrides({2, 2});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 4, 4}));
     }
     {
@@ -1105,6 +1094,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setStrides({2, 2});
       options->setRoundingType(V8MLRoundingType::Enum::kFloor);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 3, 3}));
     }
     {
@@ -1117,7 +1107,24 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setStrides({2, 2});
       options->setRoundingType(V8MLRoundingType::Enum::kCeil);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 4, 4}));
+    }
+    {
+      // Test pool2d with strides=2, padding=1 and outputSizes=[3, 3].
+      // When the output sizes are explicitly specified, the
+      // options.roundingType is ignored.
+      auto* input = BuildInput(scope, builder, "input", {1, 3, 7, 7},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({4, 4});
+      options->setPadding({1, 1, 1, 1});
+      options->setStrides({2, 2});
+      options->setRoundingType(V8MLRoundingType::Enum::kCeil);
+      options->setOutputSizes({3, 3});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 3, 3}));
     }
     {
       // Test pool2d with strides=2, padding=1 and outputSizes=[3, 3].
@@ -1129,6 +1136,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setStrides({2, 2});
       options->setOutputSizes({3, 3});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 3, 3}));
     }
     {
@@ -1141,6 +1149,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setStrides({2, 2});
       options->setOutputSizes({4, 4});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 4, 4}));
     }
     {
@@ -1151,6 +1160,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setWindowDimensions({3, 3});
       options->setLayout(V8MLInputOperandLayout::Enum::kNchw);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3, 3}));
     }
     {
@@ -1161,6 +1171,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setWindowDimensions({3, 3});
       options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 3, 2}));
     }
     {
@@ -1175,22 +1186,204 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({1, 1});
       options->setPadding({2, 2, 2, 2});
-      MLOperand* output = nullptr;
-      switch (pool2d_kind) {
-        case Pool2dKind::kAverage:
-          output =
-              builder->averagePool2d(input, options, scope.GetExceptionState());
-          break;
-        case Pool2dKind::kMax:
-          output =
-              builder->maxPool2d(input, options, scope.GetExceptionState());
-          break;
-      }
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
       EXPECT_EQ(output, nullptr);
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
                 "Invalid output operand: The byte length is too large.");
+    }
+    {
+      // Test throwing exception when the input is not a 4-D tensor.
+      auto* input = BuildInput(scope, builder, "input", {1, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The input should be a 4-D tensor.");
+    }
+    {
+      // Test throwing exception when the output size is incorrect.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({2, 2});
+      options->setPadding({2, 2, 2, 2});
+      options->setStrides({2, 2});
+      options->setOutputSizes({3, 3});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The output sizes should be either [4, 4] or [5, 5].");
+    }
+    {
+      // Test throwing exception when the length of output size is not 2.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({2, 2});
+      options->setPadding({2, 2, 2, 2});
+      options->setStrides({2, 2});
+      options->setOutputSizes({1, 2, 4, 4});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The length of output sizes should be 2.");
+    }
+    {
+      // Test throwing exception when the length of window dimensions is not 2.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({1, 1, 1, 1});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The length of window dimensions should be 2.");
+    }
+    {
+      // Test throwing exception when not all window dimensions is greater than
+      // or equal to 1.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({0, 2});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "All window dimensions should be greater than or equal to 1.");
+    }
+    {
+      // Test throwing exception when the input height is too small to fill the
+      // pool window height.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({8, 2});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "Failed to calculate the output height: The input size is too "
+                "small to fill the window.");
+    }
+    {
+      // Test throwing exception when the input width is too small to fill the
+      // pool window width.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({2, 8});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "Failed to calculate the output width: The input size is too "
+                "small to fill the window.");
+    }
+    {
+      // Test throwing exception when the calculated output height is equal to
+      // 0.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({6, 3});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "Invalid output operand: All dimensions should be positive.");
+    }
+    {
+      // Test throwing exception when the length of padding is not 4.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setPadding({2, 2});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The length of padding should be 4.");
+    }
+    {
+      // Test throwing exception when one padding value is smaller than 0.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setPadding({0, 2, 2, -1});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "All paddings should be greater than or equal to 0.");
+    }
+    {
+      // Test throwing exception when the length of strides is not 2.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setStrides({2});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The length of strides should be 2.");
+    }
+    {
+      // Test throwing exception when one stride value is smaller than 1.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setStrides({0, 2});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "All strides should be greater than or equal to 1.");
+    }
+    {
+      // Test throwing exception when the length of dilations is not 2.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setDilations({1, 1, 2});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The length of dilations should be 2.");
+    }
+    {
+      // Test throwing exception when one dilation value is smaller than 1.
+      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setDilations({1, -1});
+      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "All dilations should be greater than or equal to 1.");
     }
   }
 }

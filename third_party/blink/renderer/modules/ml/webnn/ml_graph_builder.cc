@@ -201,8 +201,7 @@ absl::optional<double> CalculateConv2dOutputSize(
       1;
 
   if (checked_output_size.ValueOrDie() < 0) {
-    error_message =
-        "The input size is too small to fill the convolution window.";
+    error_message = "The input size is too small to fill the window.";
     return absl::nullopt;
   }
 
