@@ -295,6 +295,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcSessionRunner* GetArcSessionRunnerForTesting();
   void SetAttemptUserExitCallbackForTesting(
       const base::RepeatingClosure& callback);
+  void SetAndroidManagementCheckerFactoryForTesting(
+      ArcRequirementChecker::AndroidManagementCheckerFactory
+          android_management_checker_factory) {
+    android_management_checker_factory_ = android_management_checker_factory;
+  }
 
   // Returns whether the Play Store app is requested to be launched by this
   // class. Should be used only for tests.
@@ -314,10 +319,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnExpandPropertyFilesAndReadSaltForTesting(bool result) {
     OnExpandPropertyFilesAndReadSalt(ExpansionResult{{}, result});
   }
-
-  // Invokes OnBackgroundAndroidManagementChecked as if the check is done.
-  void OnBackgroundAndroidManagementCheckedForTesting(
-      ArcAndroidManagementChecker::CheckResult result);
 
   void reset_property_files_expansion_result() {
     property_files_expansion_result_.reset();
@@ -459,6 +460,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<ArcDataRemover> data_remover_;
 
+  ArcRequirementChecker::AndroidManagementCheckerFactory
+      android_management_checker_factory_;
   std::unique_ptr<ArcRequirementChecker> requirement_checker_;
 
   std::unique_ptr<ScopedOptInFlowTracker> scoped_opt_in_tracker_;

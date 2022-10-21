@@ -74,9 +74,19 @@ std::unique_ptr<ArcAndroidManagementChecker> CreateAndroidManagementChecker(
 
 }  // namespace
 
-ArcRequirementChecker::ArcRequirementChecker(Profile* profile,
-                                             ArcSupportHost* support_host)
-    : profile_(profile), support_host_(support_host) {}
+// static
+ArcRequirementChecker::AndroidManagementCheckerFactory
+ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory() {
+  return base::BindRepeating(&CreateAndroidManagementChecker);
+}
+
+ArcRequirementChecker::ArcRequirementChecker(
+    Profile* profile,
+    ArcSupportHost* support_host,
+    AndroidManagementCheckerFactory android_management_checker_factory)
+    : profile_(profile),
+      support_host_(support_host),
+      android_management_checker_factory_(android_management_checker_factory) {}
 
 ArcRequirementChecker::~ArcRequirementChecker() {
   profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
@@ -115,11 +125,6 @@ void ArcRequirementChecker::EmulateRequirementCheckCompletionForTesting() {
     OnAndroidManagementChecked(
         ArcAndroidManagementChecker::CheckResult::ALLOWED);
   }
-}
-
-void ArcRequirementChecker::OnBackgroundAndroidManagementCheckedForTesting(
-    ArcAndroidManagementChecker::CheckResult result) {
-  OnBackgroundAndroidManagementChecked(result);
 }
 
 void ArcRequirementChecker::StartRequirementChecks(
@@ -179,8 +184,8 @@ void ArcRequirementChecker::StartBackgroundChecks(
   if (!g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
     return;
 
-  android_management_checker_ =
-      CreateAndroidManagementChecker(profile_, true /* retry_on_error */);
+  android_management_checker_ = android_management_checker_factory_.Run(
+      profile_, true /* retry_on_error */);
   android_management_checker_->StartCheck(base::BindOnce(
       &ArcRequirementChecker::OnBackgroundAndroidManagementChecked,
       weak_ptr_factory_.GetWeakPtr()));
@@ -238,8 +243,8 @@ void ArcRequirementChecker::StartAndroidManagementCheck() {
   if (!g_ui_enabled)
     return;
 
-  android_management_checker_ =
-      CreateAndroidManagementChecker(profile_, false /* retry_on_error */);
+  android_management_checker_ = android_management_checker_factory_.Run(
+      profile_, false /* retry_on_error */);
   android_management_checker_->StartCheck(
       base::BindOnce(&ArcRequirementChecker::OnAndroidManagementChecked,
                      weak_ptr_factory_.GetWeakPtr()));

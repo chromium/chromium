@@ -459,6 +459,8 @@ ArcSessionManager::ArcSessionManager(
     : arc_session_runner_(std::move(arc_session_runner)),
       adb_sideloading_availability_delegate_(
           std::move(adb_sideloading_availability_delegate)),
+      android_management_checker_factory_(
+          ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory()),
       attempt_user_exit_callback_(
           base::BindRepeating(chrome::AttemptUserExit)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -928,14 +930,6 @@ bool ArcSessionManager::IsPlaystoreLaunchRequestedForTesting() const {
   return playstore_launcher_.get();
 }
 
-void ArcSessionManager::OnBackgroundAndroidManagementCheckedForTesting(
-    ArcAndroidManagementChecker::CheckResult result) {
-  DCHECK(requirement_checker_);
-  requirement_checker_
-      ->OnBackgroundAndroidManagementCheckedForTesting(  // IN-TEST
-          result);
-}
-
 void ArcSessionManager::OnVmStarted(
     const vm_tools::concierge::VmStartedSignal& vm_signal) {
   // When an ARCVM starts, store the vm info.
@@ -1181,8 +1175,8 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
     // faster.
     StartMiniArc();
   }
-  requirement_checker_ =
-      std::make_unique<ArcRequirementChecker>(profile_, support_host_.get());
+  requirement_checker_ = std::make_unique<ArcRequirementChecker>(
+      profile_, support_host_.get(), android_management_checker_factory_);
   requirement_checker_->AddObserver(this);
   requirement_checker_->StartRequirementChecks(
       is_terms_of_service_negotiation_needed,
@@ -1262,8 +1256,8 @@ void ArcSessionManager::StartBackgroundRequirementChecks() {
     return;
   }
 
-  requirement_checker_ =
-      std::make_unique<ArcRequirementChecker>(profile_, support_host_.get());
+  requirement_checker_ = std::make_unique<ArcRequirementChecker>(
+      profile_, support_host_.get(), android_management_checker_factory_);
   requirement_checker_->StartBackgroundChecks(
       base::BindOnce(&ArcSessionManager::OnBackgroundRequirementChecksDone,
                      weak_ptr_factory_.GetWeakPtr()));

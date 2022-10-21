@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -35,7 +36,17 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
     virtual void OnArcOptInManagementCheckStarted() = 0;
   };
 
-  ArcRequirementChecker(Profile* profile, ArcSupportHost* support_host);
+  using AndroidManagementCheckerFactory =
+      base::RepeatingCallback<std::unique_ptr<ArcAndroidManagementChecker>(
+          Profile* profile,
+          bool retry_on_error)>;
+  static AndroidManagementCheckerFactory
+  GetDefaultAndroidManagementCheckerFactory();
+
+  ArcRequirementChecker(
+      Profile* profile,
+      ArcSupportHost* support_host,
+      AndroidManagementCheckerFactory android_management_checker_factory);
   ArcRequirementChecker(const ArcRequirementChecker&) = delete;
   const ArcRequirementChecker& operator=(const ArcRequirementChecker&) = delete;
   ~ArcRequirementChecker() override;
@@ -49,10 +60,6 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
 
   // Invokes functions as if requirement checks are completed for testing.
   void EmulateRequirementCheckCompletionForTesting();
-
-  // Invokes OnBackgroundAndroidManagementChecked as if the check is done.
-  void OnBackgroundAndroidManagementCheckedForTesting(
-      ArcAndroidManagementChecker::CheckResult result);
 
   // Starts negotiating the terms of service to user, and checking Android
   // management. This is for first boot case (= Opt-in or OOBE flow case). On a
@@ -111,6 +118,7 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
 
   Profile* const profile_;
   ArcSupportHost* const support_host_;
+  const AndroidManagementCheckerFactory android_management_checker_factory_;
 
   State state_ = State::kStopped;
 

@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/arc/fake_android_management_client.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -63,6 +64,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -77,6 +79,10 @@
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+// TODO(b/254819616): Replace base::RunLoop().RunUntilIdle() with
+// task_environment_.RunUntilIdle() or Run() & Quit() to make the tests less
+// fragile.
 
 namespace arc {
 
@@ -286,7 +292,7 @@ class ArcSessionManagerTestBase : public testing::Test {
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName("user@gmail.com");
+    profile_builder.SetProfileName("user@example.com");
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestArcProfile"));
 
     profile_ = profile_builder.Build();
@@ -1990,6 +1996,31 @@ class ArcTransitionToManagedTest
   ArcTransitionToManagedTest& operator=(const ArcTransitionToManagedTest&) =
       delete;
 
+  void SetUp() override {
+    ArcSessionManagerTest::SetUp();
+    ArcSessionManager::SetUiEnabledForTesting(true);
+
+    const std::string profile_name = profile()->GetProfileUserName();
+    identity_test_environment_.MakeAccountAvailable(profile_name);
+    signin::IdentityManager* identity_manager =
+        identity_test_environment_.identity_manager();
+    CoreAccountId account_id = identity_manager->PickAccountIdForAccount(
+        signin::GetTestGaiaIdForEmail(profile_name), profile_name);
+
+    // Inject a fake AndroidManagementClient to return MANAGED as the result.
+    arc_session_manager()->SetAndroidManagementCheckerFactoryForTesting(
+        base::BindLambdaForTesting([=](Profile* profile, bool retry_on_error) {
+          auto fake_client =
+              std::make_unique<policy::FakeAndroidManagementClient>();
+          fake_client->SetResult(
+              policy::AndroidManagementClient::Result::MANAGED);
+
+          return std::make_unique<ArcAndroidManagementChecker>(
+              profile, identity_manager, account_id, retry_on_error,
+              std::move(fake_client));
+        }));
+  }
+
   bool transition_feature_enabled() const { return std::get<0>(GetParam()); }
 
   bool user_become_managed() const { return std::get<1>(GetParam()); }
@@ -1997,13 +2028,12 @@ class ArcTransitionToManagedTest
   bool ShouldArcTransitionToManaged() const {
     return transition_feature_enabled() && user_become_managed();
   }
+
+ protected:
+  signin::IdentityTestEnvironment identity_test_environment_;
 };
 
 TEST_P(ArcTransitionToManagedTest, TransitionFlow) {
-  // Here we only test OnBackgroundAndroidManagementChecked impl, not the actual
-  // Android management check.
-  ArcSessionManager::EnableCheckAndroidManagementForTesting(false);
-
   // Initialize feature state.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureState(kEnableUnmanagedToManagedTransitionFeature,
@@ -2024,10 +2054,7 @@ TEST_P(ArcTransitionToManagedTest, TransitionFlow) {
   // Emulate user management state change.
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       user_become_managed());
-
-  // Android management check response.
-  arc_session_manager()->OnBackgroundAndroidManagementCheckedForTesting(
-      ArcAndroidManagementChecker::CheckResult::DISALLOWED);
+  base::RunLoop().RunUntilIdle();
 
   // Verify ARC state and ARC transition value.
   EXPECT_EQ(profile()->GetPrefs()->GetBoolean(prefs::kArcEnabled),
