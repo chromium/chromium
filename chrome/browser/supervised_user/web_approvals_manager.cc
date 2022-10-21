@@ -25,7 +25,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #endif
 
@@ -54,6 +53,23 @@ std::string EnumLocalWebApprovalFlowOutcomeToString(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Helper method for getting human readable outcome for a local web approval.
+std::string ParentAccessResultToLoggingStringChromeOS(
+    ash::ParentAccessDialog::Result::Status outcome) {
+  switch (outcome) {
+    case ash::ParentAccessDialog::Result::Status::kApproved:
+      return "Approved";
+    case ash::ParentAccessDialog::Result::Status::kDeclined:
+      return "Declined";
+    case ash::ParentAccessDialog::Result::Status::kCancelled:
+      return "Cancelled";
+    case ash::ParentAccessDialog::Result::Status::kError:
+      return "Error";
+  }
+}
+#endif
+
 // TODO(b/250947827): Record the
 // "ManagedUsers.LocalWebApprovalCompleteRequestTotalDuration" metric for
 // completed verification flows on Chrome OS.
@@ -77,6 +93,10 @@ void WebApprovalsManager::RequestLocalApproval(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(b/250954669): replace this with call to the ParentAccess crosapi with
   // appropriate parameters and handle the ParentAccess crosapi result.
+  SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetForKey(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetProfileKey());
   std::vector<uint8_t> favicon_bytes;
   gfx::PNGCodec::FastEncodeBGRASkBitmap(*favicon.bitmap(), false,
                                         &favicon_bytes);
@@ -90,8 +110,10 @@ void WebApprovalsManager::RequestLocalApproval(
   ash::ParentAccessDialogProvider provider;
   ash::ParentAccessDialogProvider::ShowError result = provider.Show(
       std::move(params),
-      base::BindOnce([](std::unique_ptr<ash::ParentAccessDialog::Result> result)
-                         -> void {}));
+      base::BindOnce(
+          &WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS,
+          weak_ptr_factory_.GetWeakPtr(), settings_service, url,
+          base::TimeTicks::Now()));
 
   if (result != ash::ParentAccessDialogProvider::ShowError::kNone) {
     LOG(ERROR) << "Error showing ParentAccessDialog: " << result;
@@ -200,3 +222,20 @@ void WebApprovalsManager::OnLocalApprovalRequestCompleted(
     settings_service->RecordLocalWebsiteApproval(url.host());
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS(
+    SupervisedUserSettingsService* settings_service,
+    const GURL& url,
+    base::TimeTicks start_time,
+    std::unique_ptr<ash::ParentAccessDialog::Result> result) {
+  VLOG(0) << "Local URL approval final result: "
+          << ParentAccessResultToLoggingStringChromeOS(result->status);
+
+  // TODO(b/250947827) Add ChromeOS Metric
+
+  if (result->status == ash::ParentAccessDialog::Result::Status::kApproved) {
+    settings_service->RecordLocalWebsiteApproval(url.host());
+  }
+}
+#endif

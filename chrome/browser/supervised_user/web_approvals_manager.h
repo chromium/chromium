@@ -17,6 +17,10 @@
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#endif
+
 class GURL;
 class PermissionRequestCreator;
 class SupervisedUserSettingsService;
@@ -109,9 +113,25 @@ class WebApprovalsManager {
       base::TimeTicks start_time,
       AndroidLocalWebApprovalFlowOutcome request_outcome);
 
-  // Helper for private method testing.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnLocalApprovalRequestCompletedChromeOS(
+      SupervisedUserSettingsService* settings_service,
+      const GURL& url,
+      base::TimeTicks start_time,
+      std::unique_ptr<ash::ParentAccessDialog::Result> result);
+#endif
+
+  // Helpers for private method testing.
   FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
                            LocalWebApprovalDurationHistogramTest);
+  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
+                           LocalWebApprovalApprovedChromeOSTest);
+  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
+                           LocalWebApprovalDeclinedChromeOSTest);
+  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
+                           LocalWebApprovalCancelledChromeOSTest);
+  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
+                           LocalWebApprovalErrorChromeOSTest);
 
   // Stores remote approval request creators.
   // The creators are cleared during shutdown.

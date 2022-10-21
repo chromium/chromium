@@ -20,6 +20,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#endif
+
 namespace {
 
 class AsyncResultHolder {
@@ -83,6 +87,12 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
   bool enabled_ = false;
   std::vector<GURL> requested_urls_;
   std::vector<SuccessCallback> callbacks_;
+};
+
+class MockSupervisedUserSettingsService
+    : public ::SupervisedUserSettingsService {
+ public:
+  MOCK_METHOD1(RecordLocalWebsiteApproval, void(const std::string& host));
 };
 
 constexpr char kLocalWebApprovalDurationHistogramName[] =
@@ -203,12 +213,6 @@ TEST_F(WebApprovalsManagerTest, CreatePermissionRequest) {
   }
 }
 
-class MockSupervisedUserSettingsService
-    : public ::SupervisedUserSettingsService {
- public:
-  MOCK_METHOD1(RecordLocalWebsiteApproval, void(const std::string& host));
-};
-
 TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
   base::HistogramTester histogram_tester;
 
@@ -253,3 +257,76 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
   histogram_tester.ExpectTimeBucketCount(kLocalWebApprovalDurationHistogramName,
                                          elapsed_time, 1);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WebApprovalsManagerTest, LocalWebApprovalApprovedChromeOSTest) {
+  std::string host = "www.example.com";
+  GURL url("http://" + host);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  testing::NiceMock<MockSupervisedUserSettingsService>
+      supervisedUserSettingsServiceMock;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
+
+  EXPECT_CALL(supervisedUserSettingsServiceMock,
+              RecordLocalWebsiteApproval(host));
+
+  web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
+      &supervisedUserSettingsServiceMock, url, start_time,
+      std::move(dialog_result));
+}
+
+TEST_F(WebApprovalsManagerTest, LocalWebApprovalDeclinedChromeOSTest) {
+  std::string host = "www.example.com";
+  GURL url("http://" + host);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  testing::NiceMock<MockSupervisedUserSettingsService>
+      supervisedUserSettingsServiceMock;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kDeclined;
+
+  EXPECT_CALL(supervisedUserSettingsServiceMock,
+              RecordLocalWebsiteApproval(host))
+      .Times(0);
+
+  web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
+      &supervisedUserSettingsServiceMock, url, start_time,
+      std::move(dialog_result));
+}
+
+TEST_F(WebApprovalsManagerTest, LocalWebApprovalCancelledChromeOSTest) {
+  std::string host = "www.example.com";
+  GURL url("http://" + host);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  testing::NiceMock<MockSupervisedUserSettingsService>
+      supervisedUserSettingsServiceMock;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCancelled;
+
+  EXPECT_CALL(supervisedUserSettingsServiceMock,
+              RecordLocalWebsiteApproval(host))
+      .Times(0);
+
+  web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
+      &supervisedUserSettingsServiceMock, url, start_time,
+      std::move(dialog_result));
+}
+
+TEST_F(WebApprovalsManagerTest, LocalWebApprovalErrorChromeOSTest) {
+  std::string host = "www.example.com";
+  GURL url("http://" + host);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  testing::NiceMock<MockSupervisedUserSettingsService>
+      supervisedUserSettingsServiceMock;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kError;
+
+  EXPECT_CALL(supervisedUserSettingsServiceMock,
+              RecordLocalWebsiteApproval(host))
+      .Times(0);
+
+  web_approvals_manager().OnLocalApprovalRequestCompletedChromeOS(
+      &supervisedUserSettingsServiceMock, url, start_time,
+      std::move(dialog_result));
+}
+#endif
