@@ -695,29 +695,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 #pragma mark - Model Items
 
-- (TableViewItem*)signInTextItem {
-  if (_signinPromoViewMediator) {
-    TableViewSigninPromoItem* signinPromoItem =
-        [[TableViewSigninPromoItem alloc]
-            initWithType:SettingsItemTypeSigninPromo];
-    signinPromoItem.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY);
-    signinPromoItem.configurator =
-        [_signinPromoViewMediator createConfigurator];
-    signinPromoItem.delegate = _signinPromoViewMediator;
-    [_signinPromoViewMediator signinPromoViewIsVisible];
-    return signinPromoItem;
-  }
-  if (!_hasRecordedSigninImpression) {
-    // Once the Settings are open, this button impression will at most be
-    // recorded once until they are closed.
-    signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
-        signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
-    _hasRecordedSigninImpression = YES;
-  }
-  return [self accountSignInItem];
-}
-
 - (TableViewItem*)accountSignInItem {
   AccountSignInItem* signInTextItem =
       [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
