@@ -256840,6 +256840,10 @@
      "027b606e85066d301eb68498f40b62ddc6835e05",
      []
     ],
+    "__dir__.ini": [
+     "9f10f08bafd1fa1b28e88823365926eb2d7c3405",
+     []
+    ],
     "generate.py": [
      "505375d55fede4f613f4c37b938c4f4b9e16e3c9",
      []
@@ -394150,36 +394154,6 @@
        {}
       ]
      ],
-     "color-resolving-hsl.html": [
-      "d33701759d6068e3d335a9bf17795df1a4235cd0",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "color-resolving-hwb.html": [
-      "c40aa4c7e8e1c9d9a4046da7f6edb7722c1d97c1",
-      [
-       null,
-       {}
-      ]
-     ],
-     "color-resolving-keywords.html": [
-      "5cbdcbe4b078a8d5a2db857e68fa00a764ec8660",
-      [
-       null,
-       {}
-      ]
-     ],
-     "color-resolving.html": [
-      "b3d1c740c57bab9b8daf8842d6f50e1435aa75a4",
-      [
-       null,
-       {}
-      ]
-     ],
      "inheritance.html": [
       "2928bfa3bbf7686f17d28f4ef31ecb3674d0439c",
       [
@@ -394209,15 +394183,22 @@
         {}
        ]
       ],
+      "color-computed-hex-color.html": [
+       "7485b34a1df318a25cfaafdf762f6977594f0d69",
+       [
+        null,
+        {}
+       ]
+      ],
       "color-computed-hsl.html": [
-       "56ae39b1747b76ea1ba1cfa0ba6f70e7b43657d7",
+       "3c9e01338befdab1cd47f9c4efed86a137fc7185",
        [
         null,
         {}
        ]
       ],
       "color-computed-hwb.html": [
-       "23964495c297b8195e0199d2bdf5ad68d193b9f9",
+       "d51351bb6d107b5e21f3a20e1189d1cf12d68c6f",
        [
         null,
         {}
@@ -394225,6 +394206,13 @@
       ],
       "color-computed-lab.html": [
        "82f61cb43f4a331984b0b5039f6c35076702f59d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "color-computed-named-color.html": [
+       "0fe639093a41aabb2b6b11fda26d2c7f2c12c2f7",
        [
         null,
         {}
@@ -394238,7 +394226,7 @@
        ]
       ],
       "color-computed-rgb.html": [
-       "d934c0f40e68a4cea3e153cd7dc7ff295649c79d",
+       "1205d005125e25c2472330993367f71c8074d924",
        [
         null,
         {}
@@ -394272,15 +394260,22 @@
         {}
        ]
       ],
+      "color-invalid-hex-color.html": [
+       "f879f334a1e69680f4bb7957aa39747eb43da279",
+       [
+        null,
+        {}
+       ]
+      ],
       "color-invalid-hsl.html": [
-       "a942164f403f993d1832152a870753326a592585",
+       "1ea5cf3518d3c46624b6c0cde25f9b9d3bf34100",
        [
         null,
         {}
        ]
       ],
       "color-invalid-hwb.html": [
-       "674d798e48ffc7470508d1bc7c474d3e7ebce6a9",
+       "058ec03b681b6e6ea31561a3f4f0ad3435e12f93",
        [
         null,
         {}
@@ -394288,6 +394283,13 @@
       ],
       "color-invalid-lab.html": [
        "36b93c6c5c3aa1a7084668ac184d041007ef48cd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "color-invalid-named-color.html": [
+       "8e3f1f2ba7e8b1703f40fcaa497884f510aa0681",
        [
         null,
         {}
@@ -394301,7 +394303,7 @@
        ]
       ],
       "color-invalid-rgb.html": [
-       "5a441ef4b261f98d9339d3f6bb66a8fd2b9d6d81",
+       "81facf91a36f84af9fdd818e4ebb26dd0b0ddd60",
        [
         null,
         {}
@@ -413025,6 +413027,13 @@
      ],
      "toggle-shorthand-serialization.tentative.html": [
       "682945c2e2bf930f8cbba606a1c7e7be37d6e7a4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "toggle-trigger-multiple.tentative.html": [
+      "bc972bd729dd264787211e8914a955341bd3c7d4",
       [
        null,
        {}
