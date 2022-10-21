@@ -1177,12 +1177,9 @@ if (!limit_android_deps) {
         "libs/com_google_android_material_material/material-1.7.0-alpha02.aar"
     info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
 
-    # Material Design is pulled in via Doubledown, thus this target should not
-    # be directly depended on. Please use :material_design_java instead.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
+    # Target is swapped out when internal code is enabled.
+    # Please depend on //third_party/android_deps:material_design_java instead.
+    visibility = [ "//third_party/android_deps:*" ]
     deps = [
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -1278,6 +1275,10 @@ if (!limit_android_deps) {
     jar_path = "libs/com_google_guava_guava_android/guava-31.1-android.jar"
     output_name = "com_google_guava_guava_android"
     supports_android = true
+
+    # Target is swapped out when internal code is enabled.
+    # Please depend on //third_party/android_deps:guava_android_java instead.
+    visibility = [ "//third_party/android_deps:*" ]
     deps = [
       ":com_google_code_findbugs_jsr305_java",
       ":com_google_errorprone_error_prone_annotations_java",
@@ -1308,12 +1309,9 @@ if (!limit_android_deps) {
     output_name = "com_google_protobuf_protobuf_javalite"
     supports_android = true
 
-    # Protobuf runtime is pulled in via Doubledown, thus this target should not
-    # be directly depended on. Please use :protobuf_lite_runtime_java instead.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
+    # Target is swapped out when internal code is enabled.
+    # Please depend on //third_party/android_deps:protobuf_lite_runtime_java instead.
+    visibility = [ "//third_party/android_deps:*" ]
 
     # Prebuilt protos in the runtime library.
     # If you want to use these protos, you should create a proto_java_library

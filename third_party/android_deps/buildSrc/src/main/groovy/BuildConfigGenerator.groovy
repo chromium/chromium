@@ -544,23 +544,17 @@ class BuildConfigGenerator extends DefaultTask {
 
     String generateBuildTargetVisibilityDeclaration(ChromiumDepGraph.DependencyDescription dependency) {
         StringBuilder sb = new StringBuilder()
-        switch (dependency.id) {
-            case 'com_google_android_material_material':
-                sb.append('  # Material Design is pulled in via Doubledown, thus this target should not\n')
-                sb.append('  # be directly depended on. Please use :material_design_java instead.\n')
-                sb.append(generateInternalTargetVisibilityLine())
-                return sb.toString()
-            case 'com_google_protobuf_protobuf_javalite':
-                sb.append('  # Protobuf runtime is pulled in via Doubledown, thus this target should not\n')
-                sb.append('  # be directly depended on. Please use :protobuf_lite_runtime_java instead.\n')
-                sb.append(generateInternalTargetVisibilityLine())
-                return sb.toString()
-        }
-
-        if (!dependency.visible) {
+        String aliasedLib = ALIASED_LIBS.get(dependency.id)
+        if (aliasedLib) {
+            // Cannot add only the specific target because doing so breaks nested template target.
+            String visibilityLabel = aliasedLib.replaceAll(":.*", ":*")
+            sb.append("  # Target is swapped out when internal code is enabled.\n")
+            sb.append("  # Please depend on $aliasedLib instead.\n")
+            sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
+        } else if (!dependency.visible) {
             sb.append('  # To remove visibility constraint, add this dependency to\n')
             sb.append("  # //${repositoryPath}/build.gradle.\n")
-            sb.append(generateInternalTargetVisibilityLine())
+            sb.append("visibility = ${makeGnArray(internalTargetVisibility)}\n")
         }
         return sb.toString()
     }
@@ -1052,10 +1046,6 @@ class BuildConfigGenerator extends DefaultTask {
                 }
             }
         }
-    }
-
-    private String generateInternalTargetVisibilityLine() {
-        return "visibility = ${makeGnArray(internalTargetVisibility)}\n"
     }
 
     private void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdBucket,
