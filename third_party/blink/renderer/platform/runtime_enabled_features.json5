@@ -819,7 +819,7 @@
     },
     {
       name: "CSSPositionStickyStaticScrollPosition",
-      status: "experimental",
+      status: "test",
     },
     {
       // Match input elements which have been autofilled by user agent.
