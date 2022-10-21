@@ -9,10 +9,12 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -378,6 +380,10 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
   ASSERT_EQ(dict->size(), 2u);
   EXPECT_TRUE(dict->contains("event-source"));
   EXPECT_TRUE(dict->contains("trigger"));
+
+  EXPECT_TRUE(client_->request_head()
+                  .HttpHeaderField(http_names::kAttributionReportingSupport)
+                  .IsNull());
 }
 
 TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
@@ -397,6 +403,10 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   ASSERT_TRUE(dict);
   ASSERT_EQ(dict->size(), 1u);
   EXPECT_TRUE(dict->contains("navigation-source"));
+
+  EXPECT_TRUE(client_->request_head()
+                  .HttpHeaderField(http_names::kAttributionReportingSupport)
+                  .IsNull());
 }
 
 // Regression test for crbug.com/1336797, where we didn't eagerly disconnect a
@@ -416,6 +426,55 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
   auto* mock_data_host = host.mock_data_host();
   ASSERT_TRUE(mock_data_host);
   EXPECT_EQ(mock_data_host->disconnects(), 1u);
+}
+
+class AttributionSrcLoaderCrossAppWebEnabledTest
+    : public AttributionSrcLoaderTest {
+ public:
+  AttributionSrcLoaderCrossAppWebEnabledTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kAttributionReportingCrossAppWeb};
+};
+
+TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
+  KURL url = ToKURL("https://example1.com/foo.html");
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  const AtomicString& support = client_->request_head().HttpHeaderField(
+      http_names::kAttributionReportingSupport);
+  EXPECT_EQ(support, "web");
+
+  absl::optional<net::structured_headers::Dictionary> dict =
+      net::structured_headers::ParseDictionary(support.Utf8());
+  ASSERT_TRUE(dict);
+  ASSERT_EQ(dict->size(), 1u);
+  EXPECT_TRUE(dict->contains("web"));
+}
+
+TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
+       SupportHeader_RegisterNavigation) {
+  KURL url = ToKURL("https://example1.com/foo.html");
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  attribution_src_loader_->RegisterNavigation(url, /*element=*/nullptr);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  const AtomicString& support = client_->request_head().HttpHeaderField(
+      http_names::kAttributionReportingSupport);
+  EXPECT_EQ(support, "web");
+
+  absl::optional<net::structured_headers::Dictionary> dict =
+      net::structured_headers::ParseDictionary(support.Utf8());
+  ASSERT_TRUE(dict);
+  ASSERT_EQ(dict->size(), 1u);
+  EXPECT_TRUE(dict->contains("web"));
 }
 
 }  // namespace

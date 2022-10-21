@@ -6,8 +6,10 @@
 
 #include <memory>
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
@@ -101,7 +103,8 @@ struct AttributionSrcTestCase {
   bool use_secure_document_url;
   const char* base_url;
   const char* input_html;
-  const char* expected_header;
+  const char* expected_eligible_header;
+  const char* expected_support_header;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -243,13 +246,18 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
   }
 
   void AttributionSrcRequestVerification(Document* document,
-                                         const char* expected_header) {
+                                         const char* expected_eligible_header,
+                                         const char* expected_support_header) {
     ASSERT_TRUE(preload_request_.get());
     Resource* resource = preload_request_->Start(document);
     ASSERT_TRUE(resource);
 
-    EXPECT_EQ(expected_header, resource->GetResourceRequest().HttpHeaderField(
-                                   http_names::kAttributionReportingEligible));
+    EXPECT_EQ(expected_eligible_header,
+              resource->GetResourceRequest().HttpHeaderField(
+                  http_names::kAttributionReportingEligible));
+    EXPECT_EQ(expected_support_header,
+              resource->GetResourceRequest().HttpHeaderField(
+                  http_names::kAttributionReportingSupport));
   }
 
  protected:
@@ -430,8 +438,9 @@ class HTMLPreloadScannerTest : public PageTestBase {
     scanner_->AppendToEnd(String(test_case.input_html));
     std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
     preloader.TakePreloadData(std::move(preload_data));
-    preloader.AttributionSrcRequestVerification(&GetDocument(),
-                                                test_case.expected_header);
+    preloader.AttributionSrcRequestVerification(
+        &GetDocument(), test_case.expected_eligible_header,
+        test_case.expected_support_header);
   }
 
  private:
@@ -1088,6 +1097,9 @@ TEST_F(HTMLPreloadScannerTest, testNonce) {
 }
 
 TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kAttributionReportingCrossAppWeb};
+
   static constexpr bool kSecureDocumentUrl = true;
   static constexpr bool kInsecureDocumentUrl = false;
 
@@ -1097,28 +1109,29 @@ TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
   AttributionSrcTestCase test_cases[] = {
       // Insecure context
       {kInsecureDocumentUrl, kSecureBaseURL,
-       "<img src='/image' attributionsrc>", nullptr},
+       "<img src='/image' attributionsrc>", nullptr, nullptr},
       {kInsecureDocumentUrl, kSecureBaseURL,
-       "<script src='/script' attributionsrc></script>", nullptr},
+       "<script src='/script' attributionsrc></script>", nullptr, nullptr},
       // No attributionsrc attribute
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr},
-      {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr,
        nullptr},
+      {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
+       nullptr, nullptr},
       // Irrelevant element type
       {kSecureDocumentUrl, kSecureBaseURL,
-       "<video poster='/image' attributionsrc>", nullptr},
+       "<video poster='/image' attributionsrc>", nullptr, nullptr},
       // Not potentially trustworthy reporting origin
       {kSecureDocumentUrl, kInsecureBaseURL,
-       "<img src='/image' attributionsrc>", nullptr},
+       "<img src='/image' attributionsrc>", nullptr, nullptr},
       {kSecureDocumentUrl, kInsecureBaseURL,
-       "<script src='/script' attributionsrc></script>", nullptr},
+       "<script src='/script' attributionsrc></script>", nullptr, nullptr},
       // Secure context, potentially trustworthy reporting origin,
       // attributionsrc attribute
       {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-       kAttributionEligibleEventSourceAndTrigger},
+       kAttributionEligibleEventSourceAndTrigger, "web"},
       {kSecureDocumentUrl, kSecureBaseURL,
        "<script src='/script' attributionsrc></script>",
-       kAttributionEligibleEventSourceAndTrigger},
+       kAttributionEligibleEventSourceAndTrigger, "web"},
   };
 
   for (const auto& test_case : test_cases) {

@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -46,6 +47,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -615,6 +617,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   EXPECT_EQ(register_response1->http_request()->headers.at(
                 "Attribution-Reporting-Eligible"),
             "navigation-source");
+  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
+                              "Attribution-Reporting-Support"));
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -627,6 +631,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   ASSERT_EQ(register_response2->http_request()->headers.at(
                 "Attribution-Reporting-Eligible"),
             "navigation-source");
+  ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
+                              "Attribution-Reporting-Support"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
@@ -657,6 +663,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   register_response1->WaitForRequest();
   EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
                               "Attribution-Reporting-Eligible"));
+  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
+                              "Attribution-Reporting-Support"));
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
@@ -1552,6 +1560,62 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
   // Confirm that reports work as expected, and impressions were retrieved from
   // the pre-rendered page, once it became a primary page.
   expected_report.WaitForReport();
+}
+
+class AttributionsCrossAppWebEnabledBrowserTest
+    : public AttributionsBrowserTest {
+ public:
+  AttributionsCrossAppWebEnabledBrowserTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kAttributionReportingCrossAppWeb};
+};
+
+IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebEnabledBrowserTest,
+                       AttributionEligibleNavigation_SetsSupportHeader) {
+  auto register_response1 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect");
+  auto register_response2 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect2");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_source_url =
+      https_server()->GetURL("d.test", "/register_source_redirect");
+
+  // Don't use `CreateAndClickSource()` as we need to observe navigation
+  // redirects prior to the navigation finishing.
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: '',
+                        target: $2});)",
+                                               register_source_url, "_top")));
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  // Verify the navigation redirects contain the support header.
+  register_response1->WaitForRequest();
+  EXPECT_EQ(register_response1->http_request()->headers.at(
+                "Attribution-Reporting-Support"),
+            "web");
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader("Location", "/register_source_redirect2");
+  register_response1->Send(http_response->ToResponseString());
+  register_response1->Done();
+
+  // Ensure that redirect requests also contain the header.
+  register_response2->WaitForRequest();
+  ASSERT_EQ(register_response2->http_request()->headers.at(
+                "Attribution-Reporting-Support"),
+            "web");
 }
 
 }  // namespace content

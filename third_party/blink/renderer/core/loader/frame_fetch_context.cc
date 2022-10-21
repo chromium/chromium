@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -289,6 +290,21 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 
   if (GetResourceFetcherProperties().IsDetached())
     return;
+
+  // TODO(crbug.com/1375791): Consider overriding Attribution-Reporting-Support
+  // header.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAttributionReportingCrossAppWeb) &&
+      !request.HttpHeaderField(http_names::kAttributionReportingEligible)
+           .IsNull() &&
+      request.HttpHeaderField(http_names::kAttributionReportingSupport)
+          .IsNull()) {
+    if (AttributionSrcLoader* attribution_src_loader =
+            GetFrame()->GetAttributionSrcLoader()) {
+      request.AddHttpHeaderField(http_names::kAttributionReportingSupport,
+                                 attribution_src_loader->GetSupportHeader());
+    }
+  }
 }
 
 // TODO(toyoshim, arthursonzogni): PlzNavigate doesn't use this function to set

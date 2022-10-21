@@ -25,6 +25,7 @@
     "Access-Control-Request-Method",
     "Allow-CSP-From",
     "Attribution-Reporting-Eligible",
+    "Attribution-Reporting-Support",
     "Attribution-Reporting-Register-Source",
     "Attribution-Reporting-Register-Trigger",
     "Cache-Control",

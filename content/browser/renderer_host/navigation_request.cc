@@ -465,6 +465,14 @@ void AddAdditionalRequestHeaders(
 
   if (has_attribution_src_token) {
     headers->SetHeader("Attribution-Reporting-Eligible", "navigation-source");
+
+    if (base::FeatureList::IsEnabled(
+            blink::features::kAttributionReportingCrossAppWeb)) {
+      // TODO(crbug.com/1373536): Populate `support_os` properly.
+      bool support_os = false;
+      headers->SetHeader("Attribution-Reporting-Support",
+                         support_os ? "web, os" : "web");
+    }
   }
 }
 

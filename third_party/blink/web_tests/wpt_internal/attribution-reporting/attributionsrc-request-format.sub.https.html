@@ -1,12 +1,15 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name=variant content="?method=a&expected=navigation-source">
-<meta name=variant content="?method=img&expected=event-source, trigger">
-<meta name=variant content="?method=img&eligible&expected=event-source, trigger">
-<meta name=variant content="?method=open&expected=navigation-source">
-<meta name=variant content="?method=script&expected=event-source, trigger">
-<meta name=variant content="?method=script&eligible&expected=event-source, trigger">
+<meta name=variant content="?method=a&expected-eligible=navigation-source&expected-support=web">
+<meta name=variant content="?method=img&expected-eligible=event-source, trigger&expected-support=web">
+<meta name=variant content="?method=img&eligible&expected-eligible=event-source, trigger&expected-support=web">
+<meta name=variant content="?method=open&expected-eligible=navigation-source&expected-support=web">
+<meta name=variant content="?method=script&expected-eligible=event-source, trigger&expected-support=web">
+<meta name=variant content="?method=script&eligible&expected-eligible=event-source, trigger&expected-support=web">
+<meta name=variant content="?method=fetch">
+<meta name=variant content="?method=fetch&eligible=event-source&expected-eligible=event-source&expected-support=web">
+<meta name=variant content="?method=fetch&eligible=event-source&support=dummy&expected-eligible=event-source&expected-support=dummy">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
@@ -14,7 +17,11 @@
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-const expected = (new URLSearchParams(location.search)).get('expected');
+const searchParams = new URLSearchParams(location.search);
+const expected_eligible =
+    searchParams.get('expected-eligible') === null ? undefined : searchParams.get('expected-eligible');
+const expected_support =
+    searchParams.get('expected-support') === null ? undefined : searchParams.get('expected-support');
 
 promise_test(async t => {
   const reg = await navigator.serviceWorker.register(
@@ -37,7 +44,8 @@ promise_test(async t => {
 
   const message = await p;
   assert_equals(message.method, 'GET');
-  assert_equals(message.headers['attribution-reporting-eligible'], expected);
+  assert_equals(message.headers['attribution-reporting-eligible'], expected_eligible);
+  assert_equals(message.headers['attribution-reporting-support'], expected_support);
   assert_equals(message.referrer, location.toString());
 
   // TODO(apaseltiner): Test various referrer policies.

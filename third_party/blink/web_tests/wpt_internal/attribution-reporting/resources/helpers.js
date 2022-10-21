@@ -57,6 +57,7 @@ const blankURLWithHeaders = (headers, status) => {
 };
 
 const eligibleHeader = 'Attribution-Reporting-Eligible';
+const supportHeader = 'Attribution-Reporting-Support';
 
 const registerAttributionSrc = async (t, {
   source,
@@ -173,6 +174,10 @@ const registerAttributionSrc = async (t, {
       const headers = {};
       if (eligible !== null) {
         headers[eligibleHeader] = eligible;
+      }
+      const support = searchParams.get('support');
+      if (support !== null) {
+        headers[supportHeader] = support;
       }
       await fetch(url, {headers});
       return 'event';

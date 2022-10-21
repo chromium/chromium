@@ -77,6 +77,11 @@ class CORE_EXPORT AttributionSrcLoader
 
   void Trace(Visitor* visitor) const;
 
+  // Returns proper value to populate `Attribution-Reporting-Support` request
+  // header. If OS-level attribution is supported, returns "web, os", otherwise
+  // returns "web".
+  AtomicString GetSupportHeader() const;
+
   static constexpr size_t kMaxConcurrentRequests = 30;
 
  private:
@@ -103,6 +108,9 @@ class CORE_EXPORT AttributionSrcLoader
                                        HTMLElement* element,
                                        SrcType src_type,
                                        bool associated_with_navigation);
+
+  // Returns whether OS-level attribution is supported.
+  bool HasOsSupport() const;
 
   const Member<LocalFrame> local_frame_;
   size_t num_resource_clients_ = 0;

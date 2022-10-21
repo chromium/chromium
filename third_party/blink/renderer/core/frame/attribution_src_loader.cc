@@ -415,6 +415,22 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
   return !!ReportingOriginForUrlIfValid(url, element, request_id, log_issues);
 }
 
+AtomicString AttributionSrcLoader::GetSupportHeader() const {
+  static constexpr const char kAttributionSupportWeb[] = "web";
+  static constexpr const char kAttributionSupportWebAndOs[] = "web, os";
+
+  if (HasOsSupport()) {
+    return kAttributionSupportWebAndOs;
+  } else {
+    return kAttributionSupportWeb;
+  }
+}
+
+bool AttributionSrcLoader::HasOsSupport() const {
+  // TODO(crbug.com/1373536): Implement this method properly.
+  return false;
+}
+
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     const ResourceRequest& request,
     const ResourceResponse& response,
@@ -573,6 +589,12 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
                                             /*element=*/nullptr, request_id);
   if (!reporting_origin)
     return;
+
+  if (loader_->HasOsSupport()) {
+    // TODO(crbug.com/1366863): Read and handle
+    // Attribution-Reporting-Register-OS-Source and
+    // Attribution-Reporting-Register-OS-Trigger headers.
+  }
 
   HandleResponseHeaders(std::move(reporting_origin), source_json, trigger_json,
                         request_id);

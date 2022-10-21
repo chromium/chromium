@@ -70,7 +70,8 @@
     "prefix": "attribution-reporting-debug-mode",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/attribution-reporting"],
-    "args": ["--attribution-reporting-debug-mode"]
+    "args": ["--attribution-reporting-debug-mode",
+             "--enable-features=AttributionReportingCrossAppWeb"]
   },
   {
     "prefix": "off-main-thread-css-paint",
