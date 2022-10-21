@@ -40,8 +40,11 @@ Ed25519Signature::Ed25519Signature(std::array<uint8_t, kLength>& bytes)
 [[nodiscard]] bool Ed25519Signature::Verify(
     base::span<const uint8_t> message,
     const Ed25519PublicKey& public_key) const {
-  return ED25519_verify(message.data(), message.size(), bytes().data(),
-                        public_key.bytes().data());
+  const std::array<uint8_t, ED25519_PUBLIC_KEY_LEN>& public_key_bytes =
+      public_key.bytes();
+  const std::array<uint8_t, ED25519_SIGNATURE_LEN>& signature_bytes = bytes();
+  return ED25519_verify(message.data(), message.size(), signature_bytes.data(),
+                        public_key_bytes.data());
 }
 
 }  // namespace web_package

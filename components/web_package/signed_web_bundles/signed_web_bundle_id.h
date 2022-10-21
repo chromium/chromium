@@ -78,6 +78,10 @@ class SignedWebBundleId {
     return decoded_id_ == other.decoded_id_;
   }
 
+  bool operator!=(const SignedWebBundleId& other) const {
+    return !(*this == other);
+  }
+
  private:
   SignedWebBundleId(Type type,
                     base::StringPiece encoded_id,

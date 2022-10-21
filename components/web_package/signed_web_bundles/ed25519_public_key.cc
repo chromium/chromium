@@ -17,6 +17,14 @@ Ed25519PublicKey::Ed25519PublicKey(const Ed25519PublicKey&) = default;
 
 Ed25519PublicKey::~Ed25519PublicKey() = default;
 
+bool Ed25519PublicKey::operator==(const Ed25519PublicKey& other) const {
+  return bytes_ == other.bytes_;
+}
+
+bool Ed25519PublicKey::operator!=(const Ed25519PublicKey& other) const {
+  return !(*this == other);
+}
+
 base::expected<Ed25519PublicKey, std::string> Ed25519PublicKey::Create(
     base::span<const uint8_t> key) {
   if (key.size() != kLength) {
