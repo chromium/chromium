@@ -2,17 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '../components/common_styles/common_styles.m.js';
+import './assistant_common_styles.m.js';
 
-/**
- * @polymer
- */
-class SettingZippy extends Polymer.Element {
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AssistantNativeIconType} from './utils.m.js';
+
+
+/** @polymer */
+class SettingZippy extends PolymerElement {
   static get is() {
     return 'setting-zippy';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {

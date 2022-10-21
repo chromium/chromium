@@ -15,7 +15,7 @@ import './assistant_loading.m.js';
 import './assistant_related_info.m.js';
 import './assistant_voice_match.m.js';
 import './assistant_value_prop.m.js';
-import './setting_zippy.m.js';
+import './setting_zippy.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

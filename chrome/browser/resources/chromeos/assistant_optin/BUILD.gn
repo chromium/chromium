@@ -92,8 +92,6 @@ preprocess_if_expr("preprocess") {
     "browser_proxy.html",
     "browser_proxy.js",
     "assistant_icon.html",
-    "setting_zippy.html",
-    "setting_zippy.js",
     "utils.html",
     "utils.js",
     "voice_match_entry.html",
@@ -117,7 +115,6 @@ preprocess_if_expr("preprocess_generated") {
     "browser_proxy.m.js",
     "utils.m.js",
     "voice_match_entry.m.js",
-    "setting_zippy.m.js",
   ]
 }
 
@@ -128,7 +125,10 @@ preprocess_if_expr("preprocess_gen_js_files") {
   out_folder = "$target_gen_dir/$preprocessed_folder"
   out_manifest = "$target_gen_dir/$web_components_manifest"
 
-  in_files = [ "assistant_optin_flow.js" ]
+  in_files = [
+    "assistant_optin_flow.js",
+    "setting_zippy.js",
+  ]
 }
 
 #############################
@@ -216,7 +216,6 @@ group("polymer3_elements") {
     ":assistant_value_prop_module",
     ":assistant_voice_match_module",
     ":modulize",
-    ":setting_zippy_module",
     ":voice_match_entry_module",
   ]
 }
@@ -268,15 +267,6 @@ polymer_modulizer("assistant_voice_match") {
   namespace_rewrites = assistant_namespace_rewrites
 }
 
-polymer_modulizer("setting_zippy") {
-  js_file = "setting_zippy.js"
-  html_file = "setting_zippy.html"
-  html_type = "dom-module"
-  auto_imports = assistant_auto_imports
-  migrated_imports = assistant_migrated_imports
-  namespace_rewrites = assistant_namespace_rewrites
-}
-
 polymer_modulizer("voice_match_entry") {
   js_file = "voice_match_entry.js"
   html_file = "voice_match_entry.html"
@@ -294,5 +284,8 @@ js_modulizer("modulize") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "assistant_optin_flow.js" ]
+  js_files = [
+    "assistant_optin_flow.js",
+    "setting_zippy.js",
+  ]
 }
