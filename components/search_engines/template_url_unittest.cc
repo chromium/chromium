@@ -645,6 +645,8 @@ TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
     EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
     ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
     TemplateURLRef::SearchTermsArgs search_terms_args(test_data[i].search_term);
+    // searchbox_stats is expected to be set when assisted_query_stats is.
+    search_terms_args.searchbox_stats.set_client_name("chrome");
     search_terms_args.assisted_query_stats = test_data[i].aqs;
     search_terms_data_.set_google_base_url(test_data[i].base_url);
     GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
@@ -716,6 +718,8 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
     EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
     ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
     TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
+    // assisted_query_stats is expected to be set when searchbox_stats is.
+    search_terms_args.assisted_query_stats = "chrome";
     search_terms_args.searchbox_stats.MergeFrom(entry.searchbox_stats);
     search_terms_data_.set_google_base_url(entry.base_url);
     GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,

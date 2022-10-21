@@ -1054,6 +1054,8 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_ASSISTED_QUERY_STATS:
         DCHECK(!replacement.is_post_param);
         if (!search_terms_args.assisted_query_stats.empty()) {
+          DCHECK(search_terms_args.searchbox_stats.ByteSizeLong() > 0)
+              << "searchbox_stats must be set when assisted_query_stats is.";
           // Get the base URL without substituting AQS and gs_lcrp to avoid
           // infinite recursion and unwanted replacement respectively. We need
           // the URL to find out if it meets all AQS requirements (e.g. HTTPS
@@ -1081,6 +1083,8 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_SEARCHBOX_STATS: {
         DCHECK(!replacement.is_post_param);
         if (search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
+          DCHECK(!search_terms_args.assisted_query_stats.empty())
+              << "assisted_query_stats must be set when searchbox_stats is.";
           // Get the base URL without substituting gs_lcrp and AQS to avoid
           // infinite recursion and unwanted replacement respectively. We need
           // the URL to find out if it meets all gs_lcrp requirements (e.g.
@@ -1107,6 +1111,8 @@ std::string TemplateURLRef::HandleReplacements(
               base::UmaHistogramCounts1000(
                   "Omnibox.SearchboxStats.Length",
                   static_cast<int>(encoded_searchbox_stats.length()));
+            } else {
+              base::UmaHistogramCounts1000("Omnibox.SearchboxStats.Length", 0);
             }
           }
         }

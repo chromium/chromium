@@ -1509,15 +1509,9 @@ TEST_F(AutocompleteProviderTest,
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
-  // If searchbox_stats is not set, assisted_query_stats is not reported either.
+  // Both assisted_query_stats and searchbox_stats need to have been set.
   match.search_terms_args->assisted_query_stats =
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  match.search_terms_args->searchbox_stats.clear_client_name();
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // Both assisted_query_stats and searchbox_stats need to have been set.
-  match.search_terms_args->searchbox_stats.set_client_name("chrome");
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ(
       "//"

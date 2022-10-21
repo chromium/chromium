@@ -810,13 +810,17 @@ void AutocompleteController::
     UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         base::TimeDelta query_formulation_time,
         AutocompleteMatch* match) const {
-  // We expect the assisted_query_stats and the searchbox_stats to have been
-  // previously set when this method is called. If that is not the case, this
-  // method is being called by mistake and assisted_query_stats and the
-  // searchbox_stats should not be updated with additional information.
+  // The assisted_query_stats is expected to have been previously set when this
+  // method is called. If that is not the case, this method is being called by
+  // mistake and assisted_query_stats (and searchbox_stats) should not be
+  // updated with additional information.
   if (!match->search_terms_args ||
-      match->search_terms_args->assisted_query_stats.empty() ||
-      match->search_terms_args->searchbox_stats.ByteSizeLong() == 0) {
+      match->search_terms_args->assisted_query_stats.empty()) {
+    return;
+  }
+
+  if (match->search_terms_args->searchbox_stats.ByteSizeLong() == 0) {
+    NOTREACHED() << "searchbox_stats must be set when assisted_query_stats is.";
     return;
   }
 
