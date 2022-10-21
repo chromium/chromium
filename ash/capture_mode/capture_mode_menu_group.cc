@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -35,31 +36,11 @@ namespace {
 
 constexpr auto kMenuGroupPadding = gfx::Insets::VH(8, 0);
 
-constexpr auto kMenuHeaderPadding = gfx::Insets::VH(8, 16);
-
 constexpr auto kOptionPadding = gfx::Insets::TLBR(8, 52, 8, 16);
 
 constexpr auto kMenuItemPadding = gfx::Insets::TLBR(10, 52, 10, 16);
 
 constexpr int kSpaceBetweenMenuItem = 0;
-
-constexpr gfx::Size kIconSize{20, 20};
-
-void ConfigLabelView(views::Label* label_view) {
-  label_view->SetEnabledColorId(kColorAshTextColorPrimary);
-  label_view->SetBackgroundColor(SK_ColorTRANSPARENT);
-  label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label_view->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
-}
-
-views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
-  auto* box_layout = view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-      capture_mode::kBetweenChildSpacing));
-  box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  return box_layout;
-}
 
 void SetInkDropForButton(views::Button* button) {
   StyleUtil::SetUpInkDropForButton(button, gfx::Insets(),
@@ -91,23 +72,23 @@ class CaptureModeMenuHeader
             managed_by_policy
                 ? AddChildView(std::make_unique<views::ImageView>())
                 : nullptr) {
-    icon_view_->SetImageSize(kIconSize);
-    icon_view_->SetPreferredSize(kIconSize);
+    icon_view_->SetImageSize(capture_mode::kSettingsIconSize);
+    icon_view_->SetPreferredSize(capture_mode::kSettingsIconSize);
     icon_view_->SetImage(
         ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconColor));
 
     if (managed_icon_view_) {
-      managed_icon_view_->SetImageSize(kIconSize);
-      managed_icon_view_->SetPreferredSize(kIconSize);
+      managed_icon_view_->SetImageSize(capture_mode::kSettingsIconSize);
+      managed_icon_view_->SetPreferredSize(capture_mode::kSettingsIconSize);
       managed_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
           kCaptureModeManagedIcon, kColorAshIconColorSecondary));
       managed_icon_view_->SetTooltipText(
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MANAGED_BY_POLICY));
     }
 
-    SetBorder(views::CreateEmptyBorder(kMenuHeaderPadding));
-    ConfigLabelView(label_view_);
-    auto* box_layout = CreateAndInitBoxLayoutForView(this);
+    SetBorder(views::CreateEmptyBorder(capture_mode::kSettingsMenuBorderSize));
+    capture_mode_util::ConfigLabelView(label_view_);
+    auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
   }
 
@@ -159,8 +140,8 @@ class CaptureModeMenuItem
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(item_label)))) {
     SetBorder(views::CreateEmptyBorder(kMenuItemPadding));
-    ConfigLabelView(label_view_);
-    CreateAndInitBoxLayoutForView(this);
+    capture_mode_util::ConfigLabelView(label_view_);
+    capture_mode_util::CreateAndInitBoxLayoutForView(this);
     SetInkDropForButton(this);
     GetViewAccessibility().OverrideIsLeaf(true);
     SetAccessibleName(label_view_->GetText());
@@ -203,12 +184,12 @@ class CaptureModeOption
             std::make_unique<views::Label>(std::move(option_label)))),
         checked_icon_view_(AddChildView(std::make_unique<views::ImageView>())),
         id_(option_id) {
-    checked_icon_view_->SetImageSize(kIconSize);
-    checked_icon_view_->SetPreferredSize(kIconSize);
+    checked_icon_view_->SetImageSize(capture_mode::kSettingsIconSize);
+    checked_icon_view_->SetPreferredSize(capture_mode::kSettingsIconSize);
 
     SetBorder(views::CreateEmptyBorder(kOptionPadding));
-    ConfigLabelView(label_view_);
-    auto* box_layout = CreateAndInitBoxLayoutForView(this);
+    capture_mode_util::ConfigLabelView(label_view_);
+    auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
     SetInkDropForButton(this);
     GetViewAccessibility().OverrideIsLeaf(true);

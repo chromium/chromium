@@ -98,6 +98,7 @@ class ASH_EXPORT CaptureModeController
            (video_recording_watcher_ &&
             !video_recording_watcher_->is_shutting_down());
   }
+  bool enable_demo_tools() const { return enable_demo_tools_; }
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
@@ -121,7 +122,15 @@ class ASH_EXPORT CaptureModeController
   // recordings (cannot be set mid recording), or to a future capture mode
   // session when Start() is called. The effective enabled state takes into
   // account the `AudioCaptureAllowed` policy.
-  void EnableAudioRecording(bool enable_audio_recording);
+  void EnableAudioRecording(bool enable_audio_recording) {
+    enable_audio_recording_ = enable_audio_recording;
+  }
+
+  // Sets the flag to enable the demo tools feature, which will be applied to
+  // any future recordings (cannot be set mid recording), or to a future capture
+  // mode session when Start() is called. Currently the demo tools feature is
+  // behind the feature flag.
+  void EnableDemoTools(bool enable) { enable_demo_tools_ = enable; }
 
   // Starts a new capture session with the most-recently used |type_| and
   // |source_|. Also records what |entry_type| that started capture mode.
@@ -580,6 +589,11 @@ class ASH_EXPORT CaptureModeController
   bool is_initializing_recording_ = false;
 
   absl::optional<CaptureSessionConfigs> cached_normal_session_configs_;
+
+  // Remember the user preference of whether to enable demo tools feature or
+  // not in video recording mode, between sessions. Initially, this value is set
+  // to false, ensuring that this is an opt-in feature.
+  bool enable_demo_tools_ = false;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

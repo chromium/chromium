@@ -13,12 +13,14 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "capture_mode_menu_toggle_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -106,9 +108,23 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
                      camera_managed_by_policy);
   }
 
-  if (!is_in_projector_mode) {
+  if (features::AreCaptureModeDemoToolsEnabled()) {
     separator_2_ = AddChildView(std::make_unique<views::Separator>());
     separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+    demo_tools_menu_toggle_button_ =
+        AddChildView(std::make_unique<CaptureModeMenuToggleButton>(
+            kCaptureModeDemoToolsSettingsMenuEntryPointIcon,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_SCREEN_CAPTURE_DEMO_TOOLS_SHOW_KEYS_AND_CLICKS),
+            CaptureModeController::Get()->enable_demo_tools(),
+            base::BindRepeating(
+                &CaptureModeSettingsView::OnDemoToolsButtonToggled,
+                base::Unretained(this))));
+  }
+
+  if (!is_in_projector_mode) {
+    separator_3_ = AddChildView(std::make_unique<views::Separator>());
+    separator_3_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
 
     save_to_menu_group_ = AddChildView(std::make_unique<CaptureModeMenuGroup>(
         this, kCaptureModeFolderIcon,
@@ -356,6 +372,11 @@ void CaptureModeSettingsView::AddCameraOptions(const CameraInfoList& cameras,
 void CaptureModeSettingsView::UpdateCameraMenuGroupVisibility(bool visible) {
   separator_1_->SetVisible(visible);
   camera_menu_group_->SetVisible(visible);
+}
+
+void CaptureModeSettingsView::OnDemoToolsButtonToggled() {
+  const bool was_on = CaptureModeController::Get()->enable_demo_tools();
+  CaptureModeController::Get()->EnableDemoTools(!was_on);
 }
 
 BEGIN_METADATA(CaptureModeSettingsView, views::View)

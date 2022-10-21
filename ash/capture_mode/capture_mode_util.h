@@ -31,6 +31,8 @@ class Layer;
 namespace views {
 class View;
 class Widget;
+class Label;
+class BoxLayout;
 }  // namespace views
 
 namespace ash {
@@ -166,6 +168,12 @@ bool SetWidgetVisibility(views::Widget* widget,
 // gets the root window associated with the `CursorManager`.
 aura::Window* GetPreferredRootWindow(
     absl::optional<gfx::Point> location_in_screen = absl::nullopt);
+
+// Configures style for the `label_view` in the settings menu.
+void ConfigLabelView(views::Label* label_view);
+
+// Initializes the box layout for the `view` in the settings menu.
+views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view);
 
 }  // namespace capture_mode_util
 

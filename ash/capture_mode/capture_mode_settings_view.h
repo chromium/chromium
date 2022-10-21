@@ -23,6 +23,7 @@ namespace ash {
 class CaptureModeBarView;
 class CaptureModeMenuGroup;
 class CaptureModeSession;
+class CaptureModeMenuToggleButton;
 
 // All the options in the CaptureMode settings view.
 enum CaptureSettingsOption {
@@ -83,6 +84,10 @@ class ASH_EXPORT CaptureModeSettingsView
   void OnAvailableCamerasChanged(const CameraInfoList& cameras) override;
   void OnSelectedCameraChanged(const CameraId& camera_id) override;
 
+  CaptureModeMenuToggleButton* demo_tools_menu_toggle_button_for_testing() {
+    return demo_tools_menu_toggle_button_;
+  }
+
  private:
   friend class CaptureModeSettingsTestApi;
 
@@ -115,6 +120,8 @@ class ASH_EXPORT CaptureModeSettingsView
 
   void UpdateCameraMenuGroupVisibility(bool visible);
 
+  void OnDemoToolsButtonToggled();
+
   // A reference to the session that owns this view indirectly by owning its
   // containing widget.
   CaptureModeSession* const capture_mode_session_;  // Not null;
@@ -136,9 +143,16 @@ class ASH_EXPORT CaptureModeSettingsView
   // A mapping from option id to camera id for camera devices.
   base::flat_map<int, CameraId> option_camera_id_map_;
 
+  // `demo_tools_menu_toggle_button_` will be used as the entry point to enable
+  // the capture mode demo tools feature. Currently
+  // `demo_tools_menu_toggle_button_` and `separator_2_` are guarded by the
+  // feature flag and will only be visible when the feature is enabled.
+  views::Separator* separator_2_ = nullptr;
+  CaptureModeMenuToggleButton* demo_tools_menu_toggle_button_ = nullptr;
+
   // Can be null when in Projector mode, since then it's not needed as the
   // "Save-to" menu group will not be added at all.
-  views::Separator* separator_2_ = nullptr;
+  views::Separator* separator_3_ = nullptr;
 
   // "Save to" menu group that users can select a folder to save the captured
   // files to. It will include the "Downloads" folder as the default one and

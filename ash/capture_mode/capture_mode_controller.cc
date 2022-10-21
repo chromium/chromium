@@ -493,13 +493,6 @@ void CaptureModeController::SetType(CaptureModeType type) {
     capture_mode_session_->OnCaptureTypeChanged(type_);
 }
 
-void CaptureModeController::EnableAudioRecording(bool enable_audio_recording) {
-  if (enable_audio_recording_ == enable_audio_recording)
-    return;
-
-  enable_audio_recording_ = enable_audio_recording;
-}
-
 void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   if (capture_mode_session_ || pending_dlp_check_)
     return;

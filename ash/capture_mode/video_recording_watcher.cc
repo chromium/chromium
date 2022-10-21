@@ -245,8 +245,10 @@ VideoRecordingWatcher::VideoRecordingWatcher(
                                                      GetOverlayWidgetBounds());
   }
 
-  if (features::AreCaptureModeDemoToolsEnabled())
+  if (features::AreCaptureModeDemoToolsEnabled() &&
+      controller_->enable_demo_tools()) {
     demo_tools_controller_ = std::make_unique<CaptureModeDemoToolsController>();
+  }
 
   if (features::IsProjectorEnabled()) {
     ProjectorControllerImpl::Get()->OnRecordingStarted(current_root_,

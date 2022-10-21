@@ -7,7 +7,6 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 
 namespace ash {
@@ -71,6 +70,11 @@ void CaptureModeSettingsTestApi::SetOnSettingsMenuRefreshedCallback(
     base::OnceClosure callback) {
   settings_view_->on_settings_menu_refreshed_callback_for_test_ =
       std::move(callback);
+}
+
+CaptureModeMenuToggleButton*
+CaptureModeSettingsTestApi::GetDemoToolsMenuToggleButton() {
+  return settings_view_->demo_tools_menu_toggle_button_for_testing();
 }
 
 }  // namespace ash

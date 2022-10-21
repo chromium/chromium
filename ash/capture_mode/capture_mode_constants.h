@@ -85,6 +85,12 @@ constexpr base::TimeDelta kResizeButtonShowDuration = base::Milliseconds(4500);
 // preview easier to see.
 constexpr float kCaptureUiOverlapOpacity = 0.15f;
 
+// Size of the icon in the capture mode settings menu.
+constexpr gfx::Size kSettingsIconSize{20, 20};
+
+// Border value used for each section of the settings menu.
+constexpr auto kSettingsMenuBorderSize = gfx::Insets::VH(8, 16);
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

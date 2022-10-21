@@ -46,6 +46,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "capture_mode_circle_stop.icon",
     "capture_mode_close.icon",
     "capture_mode_copied_to_clipboard.icon",
+    "capture_mode_demo_tools_settings_menu_entry_point.icon",
     "capture_mode_folder.icon",
     "capture_mode_fullscreen.icon",
     "capture_mode_image.icon",

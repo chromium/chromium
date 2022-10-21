@@ -302,6 +302,8 @@ component("ash") {
     "capture_mode/capture_mode_feature_pod_controller.h",
     "capture_mode/capture_mode_menu_group.cc",
     "capture_mode/capture_mode_menu_group.h",
+    "capture_mode/capture_mode_menu_toggle_button.cc",
+    "capture_mode/capture_mode_menu_toggle_button.h",
     "capture_mode/capture_mode_metrics.cc",
     "capture_mode/capture_mode_metrics.h",
     "capture_mode/capture_mode_notification_view.cc",

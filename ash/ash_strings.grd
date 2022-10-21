@@ -4896,6 +4896,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER" desc="The label of the menu item button for selecting a folder to store the captured images and videos.">
         Select folder...
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DEMO_TOOLS_SHOW_KEYS_AND_CLICKS" desc="The label of the menu item toggle button to show keyboard shortcut and clicks during video recording.">
+        Show keys and clicks
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE" desc="The label of window hosting the screen capture toolbar that will be read by ChromeVox when prompted for title.">
         Screen capture, tools to take screenshots and screen recordings
       </message>

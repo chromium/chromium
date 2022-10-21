@@ -15,6 +15,7 @@ namespace ash {
 
 class CaptureModeSettingsView;
 class CaptureModeMenuGroup;
+class CaptureModeMenuToggleButton;
 
 // Test APIs to test the UI of the settings menu. Can only be created
 // while a capture mode session is active, and the settings menu is shown.
@@ -48,6 +49,10 @@ class CaptureModeSettingsTestApi {
 
   // Sets a callback that will be triggered once the settings menu is refreshed.
   void SetOnSettingsMenuRefreshedCallback(base::OnceClosure callback);
+
+  // Returns the demo tools menu with toggle button section in the settings
+  // menu.
+  CaptureModeMenuToggleButton* GetDemoToolsMenuToggleButton();
 
  private:
   // Valid only while the settings menu is shown.

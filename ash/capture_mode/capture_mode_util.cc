@@ -470,4 +470,20 @@ aura::Window* GetPreferredRootWindow(
   return Shell::GetRootWindowForDisplayId(display_id);
 }
 
+void ConfigLabelView(views::Label* label_view) {
+  label_view->SetEnabledColorId(kColorAshTextColorPrimary);
+  label_view->SetBackgroundColor(SK_ColorTRANSPARENT);
+  label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label_view->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
+}
+
+views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
+  auto* box_layout = view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      capture_mode::kBetweenChildSpacing));
+  box_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  return box_layout;
+}
+
 }  // namespace ash::capture_mode_util

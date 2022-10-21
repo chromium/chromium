@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/capture_mode/capture_mode_session_test_api.h"
+
 #include "ash/capture_mode/capture_mode_session.h"
 
 namespace ash {
