@@ -246,8 +246,10 @@ void AudioBuffer::copyFromChannel(NotShared<DOMFloat32Array> destination,
 
   size_t data_length = channel_data->length();
 
-  if (buffer_offset >= data_length) {
-    // Nothing to copy if the buffer offset is past the end of the AudioBuffer.
+  // We don't need to copy anything if a) the buffer offset is past the end of
+  // the AudioBuffer or b) the internal `Data()` of is a zero-length
+  // `Float32Array`, which can result a nullptr.
+  if (buffer_offset >= data_length || destination->length() <= 0) {
     return;
   }
 
