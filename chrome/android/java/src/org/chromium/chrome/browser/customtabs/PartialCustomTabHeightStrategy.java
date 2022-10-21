@@ -164,9 +164,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
 
-    // Window attributes backed up for HTML fullscreen mode.
-    private WindowManager.LayoutParams mPreFullscreenAttrs;
-
     // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
     @Nullable
     private Runnable mFinishRunnable;
@@ -1120,10 +1117,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
         // TODO(jinsukkim): Handle fullscreen in non-'window-above-navbar' version as well.
-        if (mPreFullscreenAttrs != null || !mWindowAboveNavbar) return;
-        mPreFullscreenAttrs = mActivity.getWindow().getAttributes();
+        if (!mWindowAboveNavbar) return;
         WindowManager.LayoutParams attrs = new WindowManager.LayoutParams();
-        attrs.copyFrom(mPreFullscreenAttrs);
+        attrs.copyFrom(mActivity.getWindow().getAttributes());
         attrs.x = 0;
         attrs.y = 0;
         attrs.height = MATCH_PARENT;
@@ -1134,10 +1130,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @Override
     public void onExitFullscreen(Tab tab) {
-        if (mPreFullscreenAttrs == null || !mWindowAboveNavbar) return;
-        mActivity.getWindow().setAttributes(mPreFullscreenAttrs);
-        mPreFullscreenAttrs = null;
+        if (!mWindowAboveNavbar) return;
         setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
+        initializeHeight();
     }
 
     @Override

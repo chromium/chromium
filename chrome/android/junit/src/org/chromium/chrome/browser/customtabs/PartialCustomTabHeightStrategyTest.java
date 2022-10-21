@@ -1008,12 +1008,14 @@ public class PartialCustomTabHeightStrategyTest {
 
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
         assertFalse(isFullscreen());
+        int height = getWindowAttributes().height;
 
         strategy.onEnterFullscreen(null, null);
         assertTrue(isFullscreen());
 
         strategy.onExitFullscreen(null);
         assertFalse(isFullscreen());
+        assertEquals(height, getWindowAttributes().height);
     }
 
     @Test
