@@ -4,24 +4,17 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
-// (http://crbug/642336)
-
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.Region;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,7 +25,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -72,7 +64,6 @@ import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Test suite for verifying the behavior of various fullscreen actions.
@@ -467,58 +458,6 @@ public class FullscreenManagerTest {
         // Ensure we don't still think we're scrolling.
         Assert.assertFalse(
                 "Failed to reset scrolling state", gestureListenerManager.isScrollInProgress());
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Fullscreen"})
-    @Features.DisableFeatures({ChromeFeatureList.OFFLINE_INDICATOR})
-    public void testHidingBrowserControlsRemovesSurfaceFlingerOverlay() {
-        FullscreenManagerTestUtils.disableBrowserOverrides();
-        mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
-
-        final BrowserControlsManager browserControlsManager =
-                mActivityTestRule.getActivity().getBrowserControlsManager();
-
-        CriteriaHelper.pollUiThread(
-                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
-
-        // Detect layouts. Note this doesn't actually need to be atomic (just final).
-        final AtomicInteger layoutCount = new AtomicInteger();
-        mActivityTestRule.getActivity()
-                .getWindow()
-                .getDecorView()
-                .getViewTreeObserver()
-                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        layoutCount.incrementAndGet();
-                    }
-                });
-
-        // When the top-controls are removed, we need a layout to trigger the
-        // transparent region for the app to be updated.
-        FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule, false);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(layoutCount.get(), Matchers.greaterThan(0)));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Check that when the browser controls are gone, the entire decorView is contained
-            // in the transparent region of the app.
-            Rect visibleDisplayFrame = new Rect();
-            Region transparentRegion = new Region();
-            ViewGroup decorView =
-                    (ViewGroup) mActivityTestRule.getActivity().getWindow().getDecorView();
-            decorView.getWindowVisibleDisplayFrame(visibleDisplayFrame);
-            decorView.gatherTransparentRegion(transparentRegion);
-            Assert.assertTrue("Transparent region " + transparentRegion.getBounds()
-                            + " should contain " + visibleDisplayFrame,
-                    transparentRegion.quickContains(visibleDisplayFrame));
-        });
-
-        // Additional manual test that this is working:
-        // - adb shell dumpsys SurfaceFlinger
-        // - Observe that there is no 'Chrome' related overlay listed, only 'Surfaceview'.
     }
 
     @Test
