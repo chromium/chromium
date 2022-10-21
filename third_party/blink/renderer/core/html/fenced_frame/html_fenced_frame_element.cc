@@ -475,6 +475,7 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
 }
 
 void HTMLFencedFrameElement::Navigate() {
+  TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
   if (!isConnected())
     return;
 
@@ -542,6 +543,8 @@ void HTMLFencedFrameElement::Navigate() {
 }
 
 void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
+  TRACE_EVENT0("navigation",
+               "HTMLFencedFrameElement::CreateDelegateAndNavigate");
   // We may queue up several calls to CreateDelegateAndNavigate while
   // prerendering, but we should only actually create the delegate once. Note,
   // this will also mean that we skip calling Navigate() again, but the result
