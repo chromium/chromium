@@ -55,7 +55,7 @@ generated manually.
     <structures fallback_to_english="true">
       <!-- List of policies and placeholder texts. This item should precede any
       message definitions. -->
-      <structure name="IDD_POLICY_SOURCE_FILE" file="${root_gen_dir}/chrome/app/policy/policy_templates.json" type="policy_template_metafile" encoding="utf-8" />
+      <structure name="IDD_POLICY_SOURCE_FILE" file="policy_templates.py" type="policy_template_metafile" encoding="utf-8" />
     </structures>
   </release>
 </grit>

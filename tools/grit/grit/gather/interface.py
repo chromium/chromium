@@ -101,6 +101,11 @@ class GathererBase(object):
     '''Returns the MessageClique objects for all translateable portions.'''
     return []
 
+  def GetAbsoluteInputPath(self):
+    if os.path.isabs(self.GetInputPath()):
+      return self.GetInputPath()
+    return self.grd_node.ToRealPath(self.GetInputPath())
+
   def GetInputPath(self):
     return self.rc_file
 
@@ -163,10 +168,6 @@ class GathererBase(object):
     input file.
     '''
     if isinstance(self.rc_file, six.string_types):
-      path = self.GetInputPath()
-      # Hack: some unit tests supply an absolute path and no root node.
-      if not os.path.isabs(path):
-        path = self.grd_node.ToRealPath(path)
-      return util.ReadFile(path, self.encoding)
+      return util.ReadFile(self.GetAbsoluteInputPath(), self.encoding)
     else:
       return self.rc_file.read()

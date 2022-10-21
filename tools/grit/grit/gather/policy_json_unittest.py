@@ -37,10 +37,8 @@ class PolicyJsonUnittest(unittest.TestCase):
     gatherer = policy_json.PolicyJson(StringIO(json.dumps(original)))
     gatherer.Parse()
     self.failUnless(len(gatherer.GetCliques()) == 0)
-    self.failUnless(
-        json.dumps(original) == json.dumps(
-            json.loads(gatherer.Translate('en'),
-                       object_hook=policy_json.JsonToUtf8Encoding)))
+    self.failUnless(json.dumps(original) == json.dumps(
+            json.loads(gatherer.Translate('en'))))
 
   def testGeneralPolicy(self):
     original = {

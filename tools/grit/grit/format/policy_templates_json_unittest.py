@@ -40,48 +40,51 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
     schema_key_description = "Number of users"
     schema_key_description_translation = "Anzahl der Nutzer"
 
-    policy_templates = {
-        'policy_definitions': [
-            {
-                'name': 'MainPolicy',
-                'type': 'main',
-                'owners': ['foo@bar.com'],
-                'schema': {
-                    'properties': {
-                        'default_launch_container': {
-                            'enum': [
-                                'tab',
-                                'window',
-                            ],
-                            'type': 'string',
+    policy_templates_script = '''
+      def GetPolicyTemplates():
+        policy_template = {
+            'policy_definitions': [
+                {
+                    'name': 'MainPolicy',
+                    'type': 'main',
+                    'owners': ['foo@bar.com'],
+                    'schema': {
+                        'properties': {
+                            'default_launch_container': {
+                                'enum': [
+                                    'tab',
+                                    'window',
+                                ],
+                                'type': 'string',
+                            },
+                            'users_number': {
+                                'description': '%s',
+                                'type': 'integer',
+                            },
                         },
-                        'users_number': {
-                            'description': schema_key_description,
-                            'type': 'integer',
-                        },
+                        'type': 'object',
                     },
-                    'type': 'object',
+                    'supported_on': ['chrome_os:29-'],
+                    'features': {
+                        'can_be_recommended': True,
+                        'dynamic_refresh': True,
+                    },
+                    'example_value': True,
+                    'caption': '%s',
+                    'tags': [],
+                    'desc': 'This policy does stuff.'
                 },
-                'supported_on': ['chrome_os:29-'],
-                'features': {
-                    'can_be_recommended': True,
-                    'dynamic_refresh': True,
-                },
-                'example_value': True,
-                'caption': caption,
-                'tags': [],
-                'desc': 'This policy does stuff.'
-            },
-        ],
-        'policy_atomic_group_definitions': [],
-        'placeholders': [],
-        'messages': {
-            'message_string_id': {
-                'desc': 'The description is removed from the grit output',
-                'text': message
+            ],
+            'policy_atomic_group_definitions': [],
+            'placeholders': [],
+            'messages': {
+                'message_string_id': {
+                    'desc': 'The description is removed from the grit output',
+                    'text': '%s',
+                }
             }
         }
-    }
+        return policy_template''' % (schema_key_description, caption, message)
 
     # Create translations. The translation IDs are hashed from the English text.
     caption_id = grit.extern.tclib.GenerateMessageId(caption);
@@ -103,9 +106,9 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
     # Write both to a temp file.
     tmp_dir_name = tempfile.gettempdir()
 
-    json_file_path = os.path.join(tmp_dir_name, 'test.json')
-    with open(json_file_path, 'w') as f:
-      json.dump(policy_templates, f)
+    policy_templates_py = os.path.join(tmp_dir_name, 'policy_templates.py')
+    with open(policy_templates_py, 'w') as f:
+      f.write(policy_templates_script.strip())
 
     xtb_file_path = os.path.join(tmp_dir_name, 'test.xtb')
     with open(xtb_file_path, 'w') as f:
@@ -122,7 +125,7 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
           <structure name="IDD_POLICY_SOURCE_FILE" file="%s" type="policy_template_metafile" />
         </structures>
       </release>
-    </grit>''' % (xtb_file_path, json_file_path)
+    </grit>''' % (xtb_file_path, policy_templates_py)
     grd_string_io = StringIO(grd_text)
 
     # Parse the grit tree and load the policies' JSON with a gatherer.
@@ -132,7 +135,7 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
 
     # Remove the temp files.
     os.unlink(xtb_file_path)
-    os.unlink(json_file_path)
+    os.unlink(policy_templates_py)
 
     # Run grit with en->de translation.
     env_lang = 'en'

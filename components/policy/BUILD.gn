@@ -214,7 +214,9 @@ grit("translate_policy_templates") {
   outputs = policy_templates_translation_outputs
   grit_flags = [
     "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, "resources"),
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
   ]
 }
 
