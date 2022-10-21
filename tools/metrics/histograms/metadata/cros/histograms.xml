@@ -104,6 +104,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.UnmountError.{FileSystem}" enum="PopularOSErrno"
+    expires_after="2023-12-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The error returned by the umount() system call when the ChromeOS cros-disks
+    daemon tries to unmount a file system.
+  </summary>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs"/>
+    <variant name="exfat"/>
+    <variant name="ext2"/>
+    <variant name="ext3"/>
+    <variant name="ext4"/>
+    <variant name="fusebox"/>
+    <variant name="hfsplus"/>
+    <variant name="iso9660"/>
+    <variant name="ntfs"/>
+    <variant name="rar"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
+    <variant name="udf"/>
+    <variant name="vfat"/>
+    <variant name="zip"/>
+  </token>
+</histogram>
+
 <histogram name="CrosDisksClient.FormatCompletedError"
     enum="CrosDisksClientFormatError" expires_after="2023-04-09">
   <owner>austinct@chromium.org</owner>
