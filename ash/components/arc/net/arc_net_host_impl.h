@@ -200,6 +200,9 @@ class ArcNetHostImpl : public KeyedService,
       base::OnceCallback<void(base::Value)> callback,
       base::Value dict);
 
+  base::Value::Dict TranslateProxyConfiguration(
+      const mojom::ArcProxyInfoPtr& http_proxy);
+
   // Synchronously calls Chrome OS to add passpoint credentials from ARC with
   // the properties values translated taken from mojo.
   void AddPasspointCredentialsWithProperties(base::Value properties);

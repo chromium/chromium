@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 21
+// Next MinVersion: 22
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -595,6 +595,12 @@ struct AndroidVpnConfiguration {
 
   // A list of search domains for DNS resolution.
   array<string> domains@8;
+
+  // The proxy configuration provided by the Android VPN when running
+  // on ARC R or later. Android only allows manual proxy configurations
+  // by IP address and port. PAC URL configurations are not supported.
+  // On ARC P, Android VPNs cannot specify a proxy configuration.
+  [MinVersion=21] ArcProxyInfo? http_proxy@9;
 };
 
 // Result object that is returned to the caller of the ARC DNS

@@ -710,7 +710,6 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
   std::unique_ptr<base::DictionaryValue> wifi_dict(new base::DictionaryValue);
   std::unique_ptr<base::DictionaryValue> ipconfig_dict(
       new base::DictionaryValue);
-  std::unique_ptr<base::DictionaryValue> proxy_dict(new base::DictionaryValue);
 
   if (!cfg->hexssid.has_value() || !cfg->details) {
     NET_LOG(ERROR)
@@ -776,28 +775,10 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
     ipconfig_dict->SetKey(onc::ipconfig::kRoutingPrefix,
                           base::Value(cfg->static_ipv4_config->prefix_length));
   }
-  // Set up proxy info. If proxy auto discovery pac url is available,
-  // we set up proxy auto discovery pac url, otherwise we set up
-  // host, port and exclusion list.
   if (cfg->http_proxy) {
-    if (cfg->http_proxy->get_pac_url_proxy()) {
-      proxy_dict->SetKey(onc::proxy::kType, base::Value(onc::proxy::kPAC));
-      proxy_dict->SetKey(
-          onc::proxy::kPAC,
-          base::Value(cfg->http_proxy->get_pac_url_proxy()->pac_url.spec()));
-    } else {
-      std::unique_ptr<base::DictionaryValue> manual(new base::DictionaryValue);
-      manual->SetKey(onc::proxy::kHost,
-                     base::Value(cfg->http_proxy->get_manual_proxy()->host));
-      manual->SetKey(onc::proxy::kPort,
-                     base::Value(cfg->http_proxy->get_manual_proxy()->port));
-      manual->SetKey(onc::proxy::kExcludeDomains,
-                     TranslateStringListToValue(std::move(
-                         cfg->http_proxy->get_manual_proxy()->exclusion_list)));
-      proxy_dict->SetKey(onc::proxy::kType, base::Value(onc::proxy::kManual));
-      proxy_dict->SetKey(onc::proxy::kManual,
-                         base::Value::FromUniquePtrValue(std::move(manual)));
-    }
+    properties->GetDict().Set(
+        onc::network_config::kProxySettings,
+        TranslateProxyConfiguration(cfg->http_proxy));
   }
 
   // Set up meteredness based on meteredOverride config from mojom.
@@ -812,10 +793,6 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
     properties->SetKey(
         onc::network_config::kStaticIPConfig,
         base::Value::FromUniquePtrValue(std::move(ipconfig_dict)));
-  }
-  if (!proxy_dict->DictEmpty()) {
-    properties->SetKey(onc::network_config::kProxySettings,
-                       base::Value::FromUniquePtrValue(std::move(proxy_dict)));
   }
 
   std::string user_id_hash = chromeos::LoginState::Get()->primary_user_hash();
@@ -1060,7 +1037,10 @@ ArcNetHostImpl::TranslateVpnConfigurationToOnc(
 
   top_dict->SetKey(onc::network_config::kVPN,
                    base::Value::FromUniquePtrValue(std::move(vpn_dict)));
-
+  if (cfg.http_proxy) {
+    top_dict->SetKey(onc::network_config::kProxySettings,
+                     base::Value(TranslateProxyConfiguration(cfg.http_proxy)));
+  }
   return top_dict;
 }
 
@@ -1259,6 +1239,31 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated(
                     cred->package_name);
 
   std::move(callback).Run(std::move(dict));
+}
+
+// Set up proxy configuration. If proxy auto discovery pac url is available,
+// we set up proxy auto discovery pac url, otherwise we set up
+// host, port and exclusion list.
+base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
+    const arc::mojom::ArcProxyInfoPtr& http_proxy) {
+  base::Value::Dict proxy_dict;
+  if (http_proxy->get_pac_url_proxy()) {
+    proxy_dict.Set(onc::proxy::kType, onc::proxy::kPAC);
+    proxy_dict.Set(onc::proxy::kPAC,
+                   http_proxy->get_pac_url_proxy()->pac_url.spec());
+  } else {
+    base::Value::Dict manual;
+    manual.Set(onc::proxy::kHost,
+               base::Value(http_proxy->get_manual_proxy()->host));
+    manual.Set(onc::proxy::kPort,
+               base::Value(http_proxy->get_manual_proxy()->port));
+    manual.Set(onc::proxy::kExcludeDomains,
+               TranslateStringListToValue(
+                   std::move(http_proxy->get_manual_proxy()->exclusion_list)));
+    proxy_dict.Set(onc::proxy::kType, onc::proxy::kManual);
+    proxy_dict.Set(onc::proxy::kManual, std::move(manual));
+  }
+  return proxy_dict;
 }
 
 void ArcNetHostImpl::AddPasspointCredentials(
