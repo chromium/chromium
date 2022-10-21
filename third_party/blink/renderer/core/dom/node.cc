@@ -140,6 +140,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace v8 { extern std::string RecordReplayGetScriptedCaller(); }
+
 namespace blink {
 
 namespace {
@@ -2007,6 +2009,20 @@ void Node::setTextContent(const StringOrTrustedScript& string_or_trusted_script,
           : string_or_trusted_script.IsTrustedScript()
                 ? string_or_trusted_script.GetAsTrustedScript()->toString()
                 : g_empty_string;
+
+  // Force the text length to match when replaying, as a workaround for
+  // differences in the assigned text which cause the replay to fail as
+  // layout behavior diverges afterwards.
+  recordreplay::Assert("Node::setTextContent %zu %s", value.length(),
+                       v8::RecordReplayGetScriptedCaller().c_str());
+  if (recordreplay::IsRecordingOrReplaying("values")) {
+    std::string contents = value.Utf8();
+    size_t recordedLength = recordreplay::RecordReplayValue("Node::setTextContent length", contents.length());
+    contents.resize(recordedLength, ' ');
+    recordreplay::RecordReplayBytes("Node::setTextContent string", &contents[0], recordedLength);
+    value = String::FromUTF8(&contents[0], recordedLength);
+  }
+
   setTextContent(value);
 }
 
