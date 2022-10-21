@@ -208,7 +208,7 @@ public final class WebFeedFollowIntroControllerTest {
     public void
     meetsShowingRequirements_butPageNavigationIsFromRecommendation_acceleratorShownOnlyOnce() {
         // Mock the navigation entry to indicate the current entry contains a recommended web feed.
-        when(mTab.getUserDataHost()).thenReturn(mTestUserDataHost);
+        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
         when(mNavigationHandle.getUserDataHost()).thenReturn(mTestUserDataHost);
         setWebFeedIntroLastShownTimeMsPref(0);
         setWebFeedIntroWebFeedIdShownTimeMsPref(0);

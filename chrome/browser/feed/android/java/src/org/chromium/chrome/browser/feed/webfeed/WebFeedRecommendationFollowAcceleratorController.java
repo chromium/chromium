@@ -36,9 +36,9 @@ import org.chromium.url.GURL;
 public class WebFeedRecommendationFollowAcceleratorController {
     private static final String TAG = "WebFeedAccCon";
 
-    // We use UserData to put the web feed name into the tab and the NavigationHandle.
+    /** We use UserData to put the web feed name into the tab and the NavigationHandle. */
     @VisibleForTesting
-    public static class AssociatedWebFeedData implements UserData {
+    private static class AssociatedWebFeedData implements UserData {
         byte[] mWebFeedName;
 
         public AssociatedWebFeedData(byte[] webFeedName) {
@@ -47,6 +47,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
     }
 
     @VisibleForTesting
+    /** Put the web feed name into a passed in UserDataHost. */
     public static void associateWebFeedWithUserData(UserDataHost host, byte[] webFeedName) {
         host.setUserData(AssociatedWebFeedData.class, new AssociatedWebFeedData(webFeedName));
     }
@@ -99,8 +100,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
 
         byte[] webFeedName = getWebFeedNameIfNavigationIsForRecommendation(navigationHandle);
         if (webFeedName != null) {
-            AssociatedWebFeedData userData = new AssociatedWebFeedData(webFeedName);
-            tab.getUserDataHost().setUserData(AssociatedWebFeedData.class, userData);
+            associateWebFeedWithUserData(tab.getUserDataHost(), webFeedName);
         } else {
             if (tab.getUserDataHost() != null
                     && tab.getUserDataHost().getUserData(AssociatedWebFeedData.class) != null) {
@@ -204,8 +204,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
      */
     public static void updateUrlParamsForRecommendedWebFeed(
             LoadUrlParams params, byte[] webFeedName) {
-        AssociatedWebFeedData userData = new AssociatedWebFeedData(webFeedName);
-        params.getNavigationHandleUserData().setUserData(AssociatedWebFeedData.class, userData);
+        associateWebFeedWithUserData(params.getNavigationHandleUserData(), webFeedName);
     }
 
     @VisibleForTesting
