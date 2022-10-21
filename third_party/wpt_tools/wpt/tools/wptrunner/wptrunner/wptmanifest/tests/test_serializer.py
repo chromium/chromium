@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import textwrap
 import unittest
 
 from .. import parser, serializer
@@ -145,6 +146,15 @@ class TokenizerTest(unittest.TestCase):
         self.compare(br"""key: \]
         """, """key: ]
 """)
+
+    def test_atom_as_default(self):
+        self.compare(
+            textwrap.dedent(
+                """\
+                key:
+                  if a == 1: @True
+                  @False
+                """).encode())
 
     def test_escape_0(self):
         self.compare(br"""k\t\:y: \a\b\f\n\r\t\v""",

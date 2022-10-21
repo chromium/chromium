@@ -599,6 +599,8 @@ class Parser:
             self.expression_values()
             if self.token[0] == token_types.string:
                 self.value()
+            elif self.token[0] == token_types.atom:
+                self.atom()
             elif self.token[0] == token_types.list_start:
                 self.consume()
                 self.list_value()
