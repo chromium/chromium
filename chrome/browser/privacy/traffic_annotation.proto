@@ -133,6 +133,75 @@ message NetworkTrafficAnnotation {
     }
     // TODO(b/254273300): add contacts tag in auditor.py
     repeated Contact contacts = 7;
+
+    // Types of user data sent in this network request
+    message UserData {
+      enum UserDataType {
+        // Placeholder, do not use this value.
+        UNSPECIFIED = 0;
+
+        // Any token that identifies an account or
+        // requests resources on behalf of a particular user.
+        // Example: OAuth2 token.
+        ACCESS_TOKEN = 1;
+
+        ADDRESS = 2;
+        ANDROID_ID = 3;
+        AGE = 4;
+
+        // When a request could contain any arbitrary data,
+        // to include personal data. Helpful to provide more
+        // specifics in the description.
+        ARBITRARY_DATA = 5;
+
+        BIRTH_DATE = 6;
+        CREDENTIALS = 7;
+        CREDIT_CARD_DATA = 8;
+        DEVICE_ID = 9;
+        EMAIL = 10;
+        FILE_DATA = 11;
+        GAIA_ID = 12;
+        GENDER = 13;
+        GOVERNMENT_ID = 14;
+        IMAGE = 15;
+        IP_ADDRESS = 16;
+        LOCATION_COARSE = 17;
+        LOCATION_PRECISE = 18;
+        NAME = 19;
+        PHONE = 20;
+
+        // Any data synced from a profile like History,
+        // Bookmarks, Autofill, etc.
+        PROFILE_DATA = 21;
+
+        // Any URL which reveals personal data or information
+        // about a user's browsing habits, like the URL of a
+        // website they're visiting/have visited before.
+        SENSITIVE_URL = 22;
+
+        SESSION_ID = 23;
+        TIMESTAMP = 24;
+        USER_AGENT = 25;
+
+        // Any data entered by a user and collected
+        // incidentally, such as a search query.
+        USER_CONTENT = 26;
+
+        USERNAME = 27;
+
+        // If none of the below apply, use this and provide
+        // more info in the data field.
+        OTHER = 999;
+      }
+      UserDataType type = 1;
+    }
+    // TODO(b/254273300): add user_data tag in auditor.py
+    repeated UserData user_data = 8;
+
+    // Date when this annotation was last reviewed
+    // in YYYY-MM-DD format.
+    // TODO(b/254273300): add last_reviewed tag in auditor.py
+    string last_reviewed = 9;
   }
 
   TrafficSemantics semantics = 3;
@@ -176,6 +245,9 @@ message NetworkTrafficAnnotation {
 
     // Justification for not having a policy that disables this feature.
     string policy_exception_justification = 5;
+
+    // TODO(b/254273300): add deprecated_policies tag in auditor.py
+    repeated string deprecated_policies = 6;
   }
 
   TrafficPolicy policy = 4;

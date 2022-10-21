@@ -108,8 +108,14 @@ in the `NetworkTrafficAnnotation` message of
      well.
    * `trigger`: What user action triggered the network request. Use a textual
      description. This should be a human readable string.
-   * `data`: What nature of data is being sent. This should be a human readable
-     string. Any user data and/or PII should be pointed out.
+   * `user_data`: What nature of data is being sent, as enums. 
+      Any personally identifiable (PII) data, provided by user or generated 
+      by Google, should be pointed out. You can include multiple 
+      values, and you may want to supplement this with the data field. 
+      All available User data enums can be found [here](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/privacy/traffic_annotation.proto?q=UserDataType).
+   * `data`: Textual description of data being sent, for things that aren't 
+      covered by user_data enum values. You can also use this field if 
+      more context needs to be provided to describe user_data.
    * `destination`: Target of the network request. It can be either the website
      that user visits and interacts with, a Google service, a request that does
      not go to network and just fetches a local resource, or other endpoints
@@ -129,6 +135,7 @@ in the `NetworkTrafficAnnotation` message of
       for questions, issues, or bugs related to this network request. 
       This field is meant for internal use and should not be used in any 
       external reports.
+   * `last_reviewed`: Date when this annotation was last reviewed in YYYY-MM-DD format.
 * `policy`: These set of fields specify the controls that a user may have
   on disabling or limiting the network request and its trace.
    * `cookies_allowed`: Specifies if this request stores and uses cookies or
@@ -157,6 +164,10 @@ in the `NetworkTrafficAnnotation` message of
      list of policies.
    * `policy_exception_justification`: If there is no policy to disable or limit
      this request, a justification can be presented here.
+   * `deprecated_policies`: Policy names disabling or limiting this network request
+      which are currently deprecated. These should be a subset of the policies in the
+      `chrome_policy` field. If a policy is removed from the `chrome_policy` field, 
+      then it should be removed from this field also.
 * `comments`: If required, any human readable extra comments.
 
 ### Format and Examples
@@ -181,9 +192,13 @@ all other fields bundled together as a serialized protobuf string.
             "suggested spellings, which will be displayed in the context menu."
           trigger: "User types text into a text field or asks to correct a "
                    "misspelled word."
+          user_data {
+            type: USER_CONTENT
+          }
           data: "Text a user has typed into a text field. No user identifier "
                 "is sent along with the text."
           destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2022-10-17"
         }
         policy {
           cookies_allowed: NO
@@ -291,8 +306,6 @@ change list. These checks include:
 * Annotations are not incorrectly defined.
    * e.g., traffic_annotation = NetworkTrafficAnnotation({1}).
 * All usages from Chrome have annotation.
-* Unique ids are unique, through history (even if an annotation gets deprecated,
-  its unique id cannot be reused to keep the stats sound).
 * That the annotation appears in
   `tools/traffic_annotation/summary/grouping.xml`. When adding a new annotation,
   it must also be included in `grouping.xml` for reporting purposes (please
