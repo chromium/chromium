@@ -1,0 +1,68 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_KEYBOARD_INPUT_DATA_EVENT_WATCHER_H_
+#define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_KEYBOARD_INPUT_DATA_EVENT_WATCHER_H_
+
+#include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
+#include "base/message_loop/message_pump_for_ui.h"
+
+namespace ash::diagnostics {
+
+// Class for dispatching relevant events from evdev to the input_data_provider.
+// While it would be nice to re-use EventConverterEvdevImpl for this purpose,
+// it has a lot of connections (ui::Cursor, full ui::DeviceEventDispatcherEvdev
+// interface) that take more room to stub out rather than just implementing
+// another evdev FdWatcher from scratch.
+class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
+                                      base::MessagePumpForUI::FdWatcher {
+ public:
+  KeyboardInputDataEventWatcher(
+      uint32_t id,
+      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher);
+  ~KeyboardInputDataEventWatcher() override;
+
+  void ConvertKeyEvent(uint32_t key_code,
+                       uint32_t key_state,
+                       uint32_t scan_code);
+  void ProcessEvent(const input_event& input);
+  void Start();
+  void Stop();
+
+ protected:
+  // base::MessagePumpForUI::FdWatcher:
+  void OnFileCanReadWithoutBlocking(int fd) override;
+  void OnFileCanWriteWithoutBlocking(int fd) override;
+
+  // Device id
+  const uint32_t id_;
+
+  // Path to input device.
+  const base::FilePath path_;
+
+  // File descriptor to read.
+  const int fd_;
+
+  // Scoped auto-closer for FD.
+  const base::ScopedFD input_device_fd_;
+
+  // Whether we're polling for input on the device.
+  bool watching_ = false;
+
+  // EV_ information pending for SYN_REPORT to dispatch.
+  uint32_t pending_scan_code_;
+  uint32_t pending_key_code_;
+  uint32_t pending_key_state_;
+
+  base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher_;
+
+  // Controller for watching the input fd.
+  base::MessagePumpForUI::FdWatchController controller_;
+};
+
+}  // namespace ash::diagnostics
+
+#endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_KEYBOARD_INPUT_DATA_EVENT_WATCHER_H_

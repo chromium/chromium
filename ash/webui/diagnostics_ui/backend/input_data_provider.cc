@@ -11,12 +11,11 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
+#include "ash/webui/diagnostics_ui/backend/input_device_information.h"
+#include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/logging.h"
-#include "base/message_loop/message_pump_for_ui.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/current_thread.h"
-#include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
@@ -42,209 +41,12 @@ bool IsTouchInputDevice(InputDeviceInformation* device_info) {
            !device_info->event_device_info.HasStylus()));
 }
 
-const int kKeyReleaseValue = 0;
-
 }  // namespace
-
-// Class for dispatching relevant events from evdev to the input_data_provider.
-// While it would be nice to re-use EventConverterEvdevImpl for this purpose,
-// it has a lot of connections (ui::Cursor, full ui::DeviceEventDispatcherEvdev
-// interface) that take more room to stub out rather than just implementing
-// another evdev FdWatcher from scratch.
-class InputDataEventWatcherImpl : public InputDataEventWatcher,
-                                  base::MessagePumpForUI::FdWatcher {
- public:
-  InputDataEventWatcherImpl(
-      uint32_t id,
-      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher);
-  ~InputDataEventWatcherImpl() override;
-  void ConvertKeyEvent(uint32_t key_code,
-                       uint32_t key_state,
-                       uint32_t scan_code);
-  void ProcessEvent(const input_event& input);
-  void Start();
-  void Stop();
-
- protected:
-  // base::MessagePumpForUI::FdWatcher:
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override;
-
-  // Device id
-  const uint32_t id_;
-
-  // Path to input device.
-  const base::FilePath path_;
-
-  // File descriptor to read.
-  const int fd_;
-
-  // Scoped auto-closer for FD.
-  const base::ScopedFD input_device_fd_;
-
-  // Whether we're polling for input on the device.
-  bool watching_ = false;
-
-  // EV_ information pending for SYN_REPORT to dispatch.
-  uint32_t pending_scan_code_;
-  uint32_t pending_key_code_;
-  uint32_t pending_key_state_;
-
-  base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher_;
-
-  // Controller for watching the input fd.
-  base::MessagePumpForUI::FdWatchController controller_;
-};
-
-class InputDataEventWatcherFactoryImpl : public InputDataEventWatcher::Factory {
- public:
-  InputDataEventWatcherFactoryImpl() = default;
-  InputDataEventWatcherFactoryImpl(const InputDataEventWatcherFactoryImpl&) =
-      delete;
-  InputDataEventWatcherFactoryImpl& operator=(
-      const InputDataEventWatcherFactoryImpl&) = delete;
-  ~InputDataEventWatcherFactoryImpl() override = default;
-
-  std::unique_ptr<InputDataEventWatcher> MakeWatcher(
-      uint32_t id,
-      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher) override {
-    return std::make_unique<InputDataEventWatcherImpl>(id,
-                                                       std::move(dispatcher));
-  }
-};
-
-InputDataEventWatcher::~InputDataEventWatcher() = default;
-InputDataEventWatcher::Factory::~Factory() = default;
-
-InputDataEventWatcherImpl::InputDataEventWatcherImpl(
-    uint32_t id,
-    base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher)
-    : id_(id),
-      path_(base::FilePath(base::StringPrintf("/dev/input/event%d", id_))),
-      fd_(open(path_.value().c_str(), O_RDWR | O_NONBLOCK)),
-      input_device_fd_(fd_),
-      dispatcher_(dispatcher),
-      controller_(FROM_HERE) {
-  if (fd_ == -1) {
-    PLOG(ERROR) << "Unable to open event device " << id_
-                << ", not forwarding events for input diagnostics.";
-    // Leave un-Started(), so we never enable the fd watcher.
-    return;
-  }
-
-  Start();
-}
-
-InputDataEventWatcherImpl::~InputDataEventWatcherImpl() = default;
-
-void InputDataEventWatcherImpl::Start() {
-  base::CurrentUIThread::Get()->WatchFileDescriptor(
-      fd_, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);
-  watching_ = true;
-}
-
-void InputDataEventWatcherImpl::Stop() {
-  controller_.StopWatchingFileDescriptor();
-  watching_ = false;
-}
-
-void InputDataEventWatcherImpl::OnFileCanReadWithoutBlocking(int fd) {
-  while (true) {
-    input_event input;
-    ssize_t read_size = read(fd, &input, sizeof(input));
-    if (read_size != sizeof(input)) {
-      if (errno == EINTR || errno == EAGAIN)
-        return;
-      if (errno != ENODEV)
-        PLOG(ERROR) << "error reading device " << path_.value();
-      Stop();
-      return;
-    }
-
-    ProcessEvent(input);
-  }
-}
-
-void InputDataEventWatcherImpl::OnFileCanWriteWithoutBlocking(int fd) {}
-
-// Once we have an entire keypress/release, dispatch it.
-void InputDataEventWatcherImpl::ConvertKeyEvent(uint32_t key_code,
-                                                uint32_t key_state,
-                                                uint32_t scan_code) {
-  bool down = key_state != kKeyReleaseValue;
-  if (dispatcher_)
-    dispatcher_->SendInputKeyEvent(id_, key_code, scan_code, down);
-}
-
-// Process evdev event structures directly from the kernel.
-void InputDataEventWatcherImpl::ProcessEvent(const input_event& input) {
-  // Accumulate relevant data about an event until a SYN_REPORT event releases
-  // the full report. For more information, see kernel documentation for
-  // input/event-codes.rst.
-  switch (input.type) {
-    case EV_MSC:
-      if (input.code == MSC_SCAN)
-        pending_scan_code_ = input.value;
-      break;
-    case EV_KEY:
-      pending_key_code_ = input.code;
-      pending_key_state_ = input.value;
-      break;
-    case EV_SYN:
-      if (input.code == SYN_REPORT)
-        ConvertKeyEvent(pending_key_code_, pending_key_state_,
-                        pending_scan_code_);
-
-      pending_key_code_ = 0;
-      pending_key_state_ = 0;
-      pending_scan_code_ = 0;
-      break;
-  }
-}
-
-// All blockings calls for identifying hardware need to go here: both
-// EventDeviceInfo::Initialize and ui::GetInputPathInSys can block in
-// base::MakeAbsoluteFilePath.
-std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
-    int id,
-    base::FilePath path) {
-  base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
-  if (fd.get() < 0) {
-    PLOG(ERROR) << "Couldn't open device path " << path << ".";
-    return nullptr;
-  }
-
-  auto info = std::make_unique<InputDeviceInformation>();
-
-  if (!info->event_device_info.Initialize(fd.get(), path)) {
-    LOG(ERROR) << "Failed to get device info for " << path << ".";
-    return nullptr;
-  }
-
-  const base::FilePath sys_path = ui::GetInputPathInSys(path);
-
-  info->path = path;
-  info->evdev_id = id;
-  info->connection_type = InputDataProvider::ConnectionTypeFromInputDeviceType(
-      info->event_device_info.device_type());
-  info->input_device = ui::InputDevice(
-      id, info->event_device_info.device_type(), info->event_device_info.name(),
-      info->event_device_info.phys(), sys_path,
-      info->event_device_info.vendor_id(), info->event_device_info.product_id(),
-      info->event_device_info.version());
-
-  if (info->event_device_info.HasKeyboard()) {
-    ui::EventRewriterChromeOS::IdentifyKeyboard(
-        info->input_device, &info->keyboard_type,
-        &info->keyboard_top_row_layout, &info->keyboard_scan_code_map);
-  }
-
-  return info;
-}
 
 InputDataProvider::InputDataProvider(aura::Window* window)
     : device_manager_(ui::CreateDeviceManager()),
-      watcher_factory_(std::make_unique<InputDataEventWatcherFactoryImpl>()) {
+      watcher_factory_(std::make_unique<
+                       ash::diagnostics::InputDataEventWatcherFactoryImpl>()) {
   Initialize(window);
 }
 
@@ -506,9 +308,6 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
     }
   }
 }
-
-InputDeviceInformation::InputDeviceInformation() = default;
-InputDeviceInformation::~InputDeviceInformation() = default;
 
 void InputDataProvider::ProcessDeviceInfo(
     std::unique_ptr<InputDeviceInformation> device_info) {

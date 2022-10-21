@@ -6,8 +6,10 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_touch.h"
+#include "ash/webui/diagnostics_ui/backend/input_device_information.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -28,64 +30,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash::diagnostics {
-
-// Interfaces for watching and dispatching relevant events from evdev to the
-// input_data_provider.
-class InputDataEventWatcher {
- public:
-  class Dispatcher {
-   public:
-    virtual void SendInputKeyEvent(uint32_t id,
-                                   uint32_t key_code,
-                                   uint32_t scan_code,
-                                   bool down) = 0;
-  };
-
-  class Factory {
-   public:
-    virtual ~Factory() = 0;
-
-    virtual std::unique_ptr<InputDataEventWatcher> MakeWatcher(
-        uint32_t evdev_id,
-        base::WeakPtr<Dispatcher> dispatcher) = 0;
-  };
-
-  virtual ~InputDataEventWatcher() = 0;
-};
-
-// Wrapper for tracking several pieces of information about an evdev-backed
-// device.
-class InputDeviceInformation {
- public:
-  InputDeviceInformation();
-  InputDeviceInformation(const InputDeviceInformation& other) = delete;
-  InputDeviceInformation& operator=(const InputDeviceInformation& other) =
-      delete;
-  ~InputDeviceInformation();
-
-  int evdev_id;
-  ui::EventDeviceInfo event_device_info;
-  ui::InputDevice input_device;
-  mojom::ConnectionType connection_type;
-  base::FilePath path;
-
-  // Keyboard-only fields:
-  ui::EventRewriterChromeOS::DeviceType keyboard_type;
-  ui::EventRewriterChromeOS::KeyboardTopRowLayout keyboard_top_row_layout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      keyboard_scan_code_map;
-};
-
-// Class for running GetDeviceInfo in its own sequence, to allow it to block.
-class InputDeviceInfoHelper {
- public:
-  InputDeviceInfoHelper() {}
-  virtual ~InputDeviceInfoHelper() {}
-
-  virtual std::unique_ptr<InputDeviceInformation> GetDeviceInfo(
-      int evdev_id,
-      base::FilePath path);
-};
 
 // Provides information about input devices connected to the system. Implemented
 // in the browser process, constructed within the Diagnostics_UI in the browser
