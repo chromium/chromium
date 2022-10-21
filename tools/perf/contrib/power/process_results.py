@@ -215,8 +215,7 @@ def _ProcessStory(story_results_path, build_out_path):
 
 
 def _IsPowerStory(name):
-  name_without_repetition_count = '_'.join(name.split('_')[:-1])
-  return name_without_repetition_count in _POWER_STORIES
+  return name.startswith("contrib_power_mobile")
 
 
 def _IterateRunPaths():
@@ -244,8 +243,11 @@ def _ProcessRun(run_path):
                combined_profile_path[len(ARTIFACTS_DIR) + 1:])
   profiles = []
   for s in _IterateStoryPaths(run_path):
-    for p in os.scandir(
-        os.path.join(s, 'trace', 'traceEvents', 'processed_profile')):
+    processed_profile_path = os.path.join(s, 'trace', 'traceEvents',
+                                          'processed_profile')
+    if not os.path.isdir(processed_profile_path):
+      continue
+    for p in os.scandir(processed_profile_path):
       profiles.append(p.path)
   if len(profiles) == 0:
     return
