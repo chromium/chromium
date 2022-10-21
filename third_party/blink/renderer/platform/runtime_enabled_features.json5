@@ -1217,6 +1217,16 @@
       public: true,
     },
     {
+      name: "FencedFramesInnerConfig",
+      // The `innerConfig` IDL attribute on the <fencedframe> element.
+      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
+      origin_trial_allows_third_party: true,
+      base_feature: "FencedFramesInnerConfig",
+      base_feature_status: "disabled",
+      copied_from_base_feature_if: "overridden",
+      public: true,
+    },
+    {
       name: "FetchUploadStreaming",
       status: "stable",
     },
