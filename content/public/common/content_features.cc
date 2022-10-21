@@ -98,6 +98,12 @@ BASE_FEATURE(kBackForwardCacheMediaSessionService,
              "BackForwardCacheMediaSessionService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Set a time limit for the page to enter the cache. Disabling this prevents
+// flakes during testing.
+BASE_FEATURE(kBackForwardCacheEntryTimeout,
+             "BackForwardCacheEntryTimeout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable back/forward cache for screen reader users. This flag should be
 // removed once the https://crbug.com/1271450 is resolved.
 BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
