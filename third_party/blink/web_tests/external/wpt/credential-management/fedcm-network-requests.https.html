@@ -9,8 +9,6 @@
 <script type="module">
 import {default_request_options, fedcm_test, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
 
-const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/fedcm/';
-
 fedcm_test(async t => {
   const cred = await navigator.credentials.get(default_request_options());
   assert_equals(cred.token, "token");
@@ -102,8 +100,7 @@ fedcm_test(async t => {
 }, 'Test that COEP policy do not apply to FedCM requests');
 
 fedcm_test(async t => {
-  let test_options = default_request_options();
-  test_options.identity.providers[0].configURL = url_prefix + 'manifest-not-in-list.json';
+  let test_options = default_request_options('manifest-not-in-list.json');
   const cred = navigator.credentials.get(test_options);
   return promise_rejects_dom(t, 'NetworkError', cred);
 }, 'Test that the promise is rejected if the manifest is not in the manifest list');

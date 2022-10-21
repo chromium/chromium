@@ -10,12 +10,16 @@ export function set_fedcm_cookie() {
 
 // Returns FedCM CredentialRequestOptions for which navigator.credentials.get()
 // succeeds.
-export function default_request_options() {
-  const manifest_origin = 'https://{{hosts[][]}}:{{ports[https][0]}}';
+export function default_request_options(manifest_filename) {
+  if (manifest_filename === undefined) {
+    manifest_filename = "manifest.py";
+  }
+  const manifest_path = `https://{{host}}:{{ports[https][0]}}/\
+credential-management/support/fedcm/${manifest_filename}`;
   return {
     identity: {
       providers: [{
-        configURL: manifest_origin + '/credential-management/support/fedcm/manifest.py',
+        configURL: manifest_path,
         clientId: '1',
         nonce: '2',
       }]
