@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/modules/nfc/ndef_reader.h"
 
+#include <memory>
+
 #include "services/device/public/mojom/nfc.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -13,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_write_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -178,13 +182,17 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  if (scan_signal_ && scan_abort_handle_) {
+    scan_signal_->RemoveAlgorithm(scan_abort_handle_);
+    scan_abort_handle_.Clear();
+  }
   scan_signal_ = options->getSignalOr(nullptr);
   if (scan_signal_) {
     if (scan_signal_->aborted()) {
       return ScriptPromise::Reject(script_state,
                                    scan_signal_->reason(script_state));
     }
-    scan_signal_->AddAlgorithm(
+    scan_abort_handle_ = scan_signal_->AddAlgorithm(
         MakeGarbageCollected<ReadAbortAlgorithm>(this, scan_signal_));
   }
 
@@ -279,15 +287,19 @@ void NDEFReader::OnReadingError(const String& message) {
 
 void NDEFReader::ContextDestroyed() {
   GetNfcProxy()->StopReading(this);
+  scan_abort_handle_.Clear();
 }
 
 void NDEFReader::ReadAbort(AbortSignal* signal) {
-  // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
-  // bound to this callback to the one last passed to scan().
-  if (scan_signal_ != signal)
-    return;
+  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
+    // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
+    // bound to this callback to the one last passed to scan().
+    if (scan_signal_ != signal)
+      return;
+  }
 
   GetNfcProxy()->StopReading(this);
+  scan_abort_handle_.Clear();
 
   if (!scan_resolver_)
     return;
@@ -321,13 +333,16 @@ ScriptPromise NDEFReader::write(ScriptState* script_state,
   }
 
   write_signal_ = options->getSignalOr(nullptr);
+  std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
   if (write_signal_) {
     if (write_signal_->aborted()) {
       return ScriptPromise::Reject(script_state,
                                    write_signal_->reason(script_state));
     }
-    write_signal_->AddAlgorithm(
+    auto* handle = write_signal_->AddAlgorithm(
         MakeGarbageCollected<WriteAbortAlgorithm>(this, write_signal_));
+    scoped_abort_state =
+        std::make_unique<ScopedAbortState>(write_signal_, handle);
   }
 
   // Step 11.2: Run "create NDEF message", if this throws an exception,
@@ -352,14 +367,15 @@ ScriptPromise NDEFReader::write(ScriptState* script_state,
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
       WTF::BindOnce(&NDEFReader::WriteOnRequestPermission, WrapPersistent(this),
-                    WrapPersistent(resolver), WrapPersistent(options),
-                    std::move(message)));
+                    WrapPersistent(resolver), std::move(scoped_abort_state),
+                    WrapPersistent(options), std::move(message)));
 
   return resolver->Promise();
 }
 
 void NDEFReader::WriteOnRequestPermission(
     ScriptPromiseResolver* resolver,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
     const NDEFWriteOptions* options,
     device::mojom::blink::NDEFMessagePtr message,
     PermissionStatus status) {
@@ -386,9 +402,9 @@ void NDEFReader::WriteOnRequestPermission(
     return;
   }
 
-  auto callback = WTF::BindOnce(&NDEFReader::WriteOnRequestCompleted,
-                                WrapPersistent(this), WrapPersistent(resolver),
-                                WrapPersistent(write_signal_.Get()));
+  auto callback =
+      WTF::BindOnce(&NDEFReader::WriteOnRequestCompleted, WrapPersistent(this),
+                    WrapPersistent(resolver), std::move(scoped_abort_state));
   GetNfcProxy()->Push(std::move(message),
                       device::mojom::blink::NDEFWriteOptions::From(options),
                       std::move(callback));
@@ -396,7 +412,7 @@ void NDEFReader::WriteOnRequestPermission(
 
 void NDEFReader::WriteOnRequestCompleted(
     ScriptPromiseResolver* resolver,
-    AbortSignal* signal,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
     device::mojom::blink::NDEFErrorPtr error) {
   DCHECK(write_requests_.Contains(resolver));
 
@@ -408,6 +424,9 @@ void NDEFReader::WriteOnRequestCompleted(
                                      script_state)) {
     return;
   }
+
+  AbortSignal* signal =
+      scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
 
   ScriptState::Scope script_state_scope(script_state);
 
@@ -422,10 +441,12 @@ void NDEFReader::WriteOnRequestCompleted(
 }
 
 void NDEFReader::WriteAbort(AbortSignal* signal) {
-  // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
-  // bound to this callback to the one last passed to write().
-  if (write_signal_ != signal)
-    return;
+  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
+    // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
+    // bound to this callback to the one last passed to write().
+    if (write_signal_ != signal)
+      return;
+  }
 
   // WriteOnRequestCompleted() should always be called whether the push
   // operation is cancelled successfully or not.
@@ -444,14 +465,17 @@ ScriptPromise NDEFReader::makeReadOnly(ScriptState* script_state,
   }
 
   make_read_only_signal_ = options->getSignalOr(nullptr);
+  std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
   if (make_read_only_signal_) {
     if (make_read_only_signal_->aborted()) {
       return ScriptPromise::Reject(
           script_state, make_read_only_signal_->reason(script_state));
     }
-    make_read_only_signal_->AddAlgorithm(
+    auto* handle = make_read_only_signal_->AddAlgorithm(
         MakeGarbageCollected<MakeReadOnlyAbortAlgorithm>(
             this, make_read_only_signal_));
+    scoped_abort_state =
+        std::make_unique<ScopedAbortState>(make_read_only_signal_, handle);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -466,13 +490,14 @@ ScriptPromise NDEFReader::makeReadOnly(ScriptState* script_state,
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
       WTF::BindOnce(&NDEFReader::MakeReadOnlyOnRequestPermission,
                     WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(options)));
+                    std::move(scoped_abort_state), WrapPersistent(options)));
 
   return resolver->Promise();
 }
 
 void NDEFReader::MakeReadOnlyOnRequestPermission(
     ScriptPromiseResolver* resolver,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
     const NDEFMakeReadOnlyOptions* options,
     PermissionStatus status) {
   DCHECK(resolver);
@@ -500,13 +525,13 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
 
   auto callback = WTF::BindOnce(&NDEFReader::MakeReadOnlyOnRequestCompleted,
                                 WrapPersistent(this), WrapPersistent(resolver),
-                                WrapPersistent(make_read_only_signal_.Get()));
+                                std::move(scoped_abort_state));
   GetNfcProxy()->MakeReadOnly(std::move(callback));
 }
 
 void NDEFReader::MakeReadOnlyOnRequestCompleted(
     ScriptPromiseResolver* resolver,
-    AbortSignal* signal,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
     device::mojom::blink::NDEFErrorPtr error) {
   DCHECK(make_read_only_requests_.Contains(resolver));
 
@@ -518,6 +543,9 @@ void NDEFReader::MakeReadOnlyOnRequestCompleted(
                                      script_state)) {
     return;
   }
+
+  AbortSignal* signal =
+      scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
 
   ScriptState::Scope script_state_scope(script_state);
 
@@ -532,10 +560,12 @@ void NDEFReader::MakeReadOnlyOnRequestCompleted(
 }
 
 void NDEFReader::MakeReadOnlyAbort(AbortSignal* signal) {
-  // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
-  // bound to this callback to the one last passed to makeReadOnly().
-  if (make_read_only_signal_ != signal)
-    return;
+  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
+    // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
+    // bound to this callback to the one last passed to makeReadOnly().
+    if (make_read_only_signal_ != signal)
+      return;
+  }
 
   // MakeReadOnlyOnRequestCompleted() should always be called whether the
   // makeReadOnly operation is cancelled successfully or not.
@@ -551,6 +581,7 @@ void NDEFReader::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(scan_resolver_);
   visitor->Trace(scan_signal_);
+  visitor->Trace(scan_abort_handle_);
   visitor->Trace(write_requests_);
   visitor->Trace(write_signal_);
   visitor->Trace(make_read_only_requests_);

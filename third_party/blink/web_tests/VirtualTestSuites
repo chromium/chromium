@@ -1339,7 +1339,8 @@
     "prefix": "abort-signal-remove",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/eyedropper"
+      "external/wpt/eyedropper",
+      "external/wpt/web-nfc"
     ],
     "args": ["--disable-features=AbortSignalHandleBasedRemoval"]
   }
