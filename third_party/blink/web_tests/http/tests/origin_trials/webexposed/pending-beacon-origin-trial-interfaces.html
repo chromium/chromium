@@ -22,8 +22,6 @@ tools/origin_trials/generate_token.py http://127.0.0.1:8000 PendingBeaconAPI --e
   //    `third_party/blink/tools/run_web_tests.py -t Default http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html`
   //    Note that in this case, the APIs are actually not working as the Chromium part of feature is
   //    not enabled.
-  // If the RuntimeEnabledFeature is disabled, the Web APIs won't be available, which is covered by
-  //    `third_party/blink/tools/run_web_tests.py -t Default virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html`
   test(t => {
     OriginTrialsHelper.check_interfaces_exist(this, ['PendingBeacon']);
     OriginTrialsHelper.check_properties_exist(this,

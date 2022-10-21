@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL PendingBeacon API interfaces and properties in Origin-Trial enabled document. assert_equals: Interface PendingBeacon exists on provided object expected true but got false
-FAIL PendingGetBeacon API interfaces and properties in Origin-Trial enabled document. assert_equals: Interface PendingGetBeacon exists on provided object expected true but got false
-FAIL PendingPostBeacon API interfaces and properties in Origin-Trial enabled document. assert_equals: Interface PendingPostBeacon exists on provided object expected true but got false
-Harness: the test ran to completion.
-
