@@ -17,6 +17,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
-    "typeRoots": []
+
+    "typeRoots": [
+        "./../../third_party/node/node_modules/@types"
+    ],
+    "types": ["trusted-types"]
   }
 }

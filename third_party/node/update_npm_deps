@@ -18,11 +18,9 @@ rm -rf node_modules
 
 npm install --no-bin-links --only=prod
 
-# Apply local patch to d3.
 patch -d node_modules/@types/d3/ -p1 < chromium_d3_types_index.patch
-
-# Apply local patch to html-minifier
 patch -d node_modules/html-minifier/ -p1 < html_minifier.patch
+patch -p1 < typescript.patch
 
 rsync -c --delete -r -q --include-from="npm_include.txt" --exclude-from="npm_exclude.txt" \
       --prune-empty-dirs "node_modules/" "node_modules_filtered/"

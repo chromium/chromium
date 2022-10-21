@@ -1,0 +1,16 @@
+diff --git a/node_modules/typescript/lib/lib.dom.d.ts b/node_modules/typescript/lib/lib.dom.d.ts
+index 7d9146827ea12..4a5e93e7b473f 100644
+--- a/node_modules/typescript/lib/lib.dom.d.ts
++++ b/node_modules/typescript/lib/lib.dom.d.ts
+@@ -8774,7 +8774,10 @@ declare var ImageData: {
+ };
+ 
+ interface InnerHTML {
+-    innerHTML: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get innerHTML(): string;
++    set innerHTML(html: string|TrustedHTML);
+ }
+ 
+ interface InputDeviceInfo extends MediaDeviceInfo {
