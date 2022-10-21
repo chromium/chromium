@@ -12,8 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/updater/browser_updater_client.h"
@@ -32,11 +31,8 @@ void CheckProcessExit(base::Process process, base::OnceClosure callback) {
       process.WaitForExitWithTimeout(base::TimeDelta(), nullptr)) {
     std::move(callback).Run();
   } else {
-    base::ThreadPool::PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-         base::WithBaseSyncPrimitives(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&CheckProcessExit, std::move(process),
                        std::move(callback)),
         base::Minutes(1));
