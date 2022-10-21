@@ -32,6 +32,8 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
   }
 };

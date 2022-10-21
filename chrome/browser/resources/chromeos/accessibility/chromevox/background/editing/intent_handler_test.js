@@ -17,6 +17,8 @@ ChromeVoxIntentHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'IntentHandler', '/chromevox/background/editing/intent_handler.js');
     await importModule('Output', '/chromevox/background/output/output.js');

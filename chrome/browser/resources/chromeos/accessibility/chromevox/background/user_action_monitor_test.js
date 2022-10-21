@@ -12,16 +12,18 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         'BackgroundKeyboardHandler',
         '/chromevox/background/keyboard_handler.js');
     await importModule(
-        'ChromeVoxKbHandler', '/chromevox/common/keyboard_handler.js');
-    await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
-    await importModule('KeySequence', '/chromevox/common/key_sequence.js');
-    await importModule(
         'UserActionMonitor', '/chromevox/background/user_action_monitor.js');
+    await importModule(
+        'ChromeVoxKbHandler', '/chromevox/common/keyboard_handler.js');
+    await importModule('KeySequence', '/chromevox/common/key_sequence.js');
     await importModule('KeyCode', '/common/key_code.js');
   }
 

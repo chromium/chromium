@@ -11,6 +11,8 @@ ChromeVoxPhoneticDataTest = class extends AccessibilityTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'PhoneticData', '/chromevox/background/phonetic_data.js');
 

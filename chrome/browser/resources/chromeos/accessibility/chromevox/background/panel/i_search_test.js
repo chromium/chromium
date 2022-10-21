@@ -19,6 +19,8 @@ ChromeVoxISearchTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule('ISearch', '/chromevox/background/panel/i_search.js');
     await importModule('Cursor', '/common/cursors/cursor.js');
   }

@@ -12,6 +12,8 @@ ChromeVoxLogStoreTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'LogStore', '/chromevox/background/logging/log_store.js');
   }

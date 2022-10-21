@@ -88,12 +88,14 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
+
+    // Alphabetical based on file path.
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         ['ChromeVoxEditableTextBase', 'TextChangedEvent', 'TypingEcho'],
         '/chromevox/background/editing/editable_text_base.js');
-    await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
 
     // TODO: These tests are all assuming we used the IBeam cursor.
     // We need to add coverage for block cursor.

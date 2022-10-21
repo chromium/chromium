@@ -12,12 +12,15 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         'BackgroundKeyboardHandler',
         '/chromevox/background/keyboard_handler.js');
-    await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule('KeyCode', '/common/key_code.js');
+
     window.keyboardHandler = new BackgroundKeyboardHandler();
   }
 };

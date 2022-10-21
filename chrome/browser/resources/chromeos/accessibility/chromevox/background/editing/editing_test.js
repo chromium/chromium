@@ -14,26 +14,28 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'BrailleBackground',
         '/chromevox/background/braille/braille_background.js');
     await importModule(
+        'BrailleCommandHandler',
+        '/chromevox/background/braille/braille_command_handler.js');
+    await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
     await importModule(
         'EditableLine', '/chromevox/background/editing/editable_line.js');
     await importModule(
         'TextEditHandler', '/chromevox/background/editing/editing.js');
     await importModule(
         'TtsBackground', '/chromevox/background/tts_background.js');
-    await importModule('KeyCode', '/common/key_code.js');
-    await importModule(
-        'BrailleCommandHandler',
-        '/chromevox/background/braille/braille_command_handler.js');
     await importModule(
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');
+    await importModule('EventGenerator', '/common/event_generator.js');
+    await importModule('KeyCode', '/common/key_code.js');
   }
 
   press(keyCode, modifiers) {

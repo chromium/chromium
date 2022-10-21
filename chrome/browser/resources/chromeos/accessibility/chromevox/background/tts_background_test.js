@@ -14,6 +14,8 @@ ChromeVoxTtsBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
@@ -22,6 +24,7 @@ ChromeVoxTtsBackgroundTest = class extends ChromeVoxE2ETest {
     await importModule(
         ['QueueMode', 'TtsSpeechProperties'],
         '/chromevox/common/tts_interface.js');
+
     window.tts = new TtsBackground();
   }
 

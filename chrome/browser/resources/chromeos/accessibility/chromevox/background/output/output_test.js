@@ -98,26 +98,28 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
+    await importModule(
+        'EventSourceState', '/chromevox/background/event_source.js');
     await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
     await importModule('Output', '/chromevox/background/output/output.js');
     await importModule(
         'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
     await importModule(
         'OUTPUT_RULES', '/chromevox/background/output/output_rules.js');
-    await importModule('CursorRange', '/common/cursors/range.js');
-    await importModule('Cursor', '/common/cursors/cursor.js');
     await importModule(
         ['OutputEarconAction', 'OutputNodeSpan', 'OutputSelectionSpan'],
         '/chromevox/background/output/output_types.js');
+    await importModule(
+        'EventSourceType', '/chromevox/common/event_source_type.js');
     await importModule('Msgs', '/chromevox/common/msgs.js');
-    await importModule('AutomationUtil', '/common/automation_util.js');
     await importModule('TtsCategory', '/chromevox/common/tts_interface.js');
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
-    await importModule(
-        'EventSourceState', '/chromevox/background/event_source.js');
-    await importModule(
-        'EventSourceType', '/chromevox/common/event_source_type.js');
+    await importModule('AutomationUtil', '/common/automation_util.js');
+    await importModule('Cursor', '/common/cursors/cursor.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
 
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();
