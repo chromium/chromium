@@ -43,14 +43,12 @@ ClientId OfflinePageClientId(sql::Statement& statement) {
 OfflinePageItem MakeOfflinePageItem(sql::Statement& statement) {
   OfflinePageItem item;
   item.offline_id = statement.ColumnInt64(0);
-  item.creation_time = store_utils::FromDatabaseTime(statement.ColumnInt64(1));
+  item.creation_time = statement.ColumnTime(1);
   item.file_size = statement.ColumnInt64(2);
-  item.last_access_time =
-      store_utils::FromDatabaseTime(statement.ColumnInt64(3));
+  item.last_access_time = statement.ColumnTime(3);
   item.access_count = statement.ColumnInt(4);
   item.system_download_id = statement.ColumnInt64(5);
-  item.file_missing_time =
-      store_utils::FromDatabaseTime(statement.ColumnInt64(6));
+  item.file_missing_time = statement.ColumnTime(6);
   item.client_id = OfflinePageClientId(statement);
   item.url = GURL(statement.ColumnString(9));
   item.file_path = base::FilePath(

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
-#include "components/offline_pages/core/offline_store_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -29,7 +28,7 @@ CleanupVisualsTask::Result CleanupVisualsSync(base::Time now,
       "  AND pt.expiration < ?"
       ")";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, store_utils::ToDatabaseTime(now));
+  statement.BindTime(0, now);
   if (!statement.Run())
     return CleanupVisualsTask::Result();
 

@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
-#include "components/offline_pages/core/offline_store_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -31,7 +30,7 @@ bool EnsureRowExistsSync(sql::Database* db,
       " (offline_id,expiration,thumbnail,favicon) VALUES(?,?,x'',x'')";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindInt64(0, offline_id);
-  statement.BindInt64(1, store_utils::ToDatabaseTime(expiration));
+  statement.BindTime(1, expiration);
 
   return statement.Run();
 }
@@ -43,7 +42,7 @@ bool StoreThumbnailSync(sql::Database* db,
   static const char kUpdateSql[] =
       "UPDATE page_thumbnails SET expiration=?,thumbnail=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
-  statement.BindInt64(0, store_utils::ToDatabaseTime(expiration));
+  statement.BindTime(0, expiration);
   statement.BindBlob(1, thumbnail);
   statement.BindInt64(2, offline_id);
   return statement.Run();
@@ -56,7 +55,7 @@ bool StoreFaviconSync(sql::Database* db,
   static const char kUpdateSql[] =
       "UPDATE page_thumbnails SET expiration=?,favicon=? WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
-  statement.BindInt64(0, store_utils::ToDatabaseTime(expiration));
+  statement.BindTime(0, expiration);
   statement.BindBlob(1, favicon);
   statement.BindInt64(2, offline_id);
   return statement.Run();

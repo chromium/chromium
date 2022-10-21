@@ -11,7 +11,6 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
-#include "components/offline_pages/core/offline_store_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -40,8 +39,7 @@ void ReportAccessHistogram(int64_t offline_id,
     UMA_HISTOGRAM_ENUMERATION("OfflinePages.AccessPageCount",
                               model_utils::ToNamespaceEnum(name_space));
 
-    base::Time last_access_time =
-        store_utils::FromDatabaseTime(statement.ColumnInt64(1));
+    base::Time last_access_time = statement.ColumnTime(1);
     base::UmaHistogramCustomCounts(
         model_utils::AddHistogramSuffix(name_space,
                                         "OfflinePages.PageAccessInterval"),
@@ -63,7 +61,7 @@ bool MarkPageAccessedSync(const base::Time& access_time,
       " SET last_access_time = ?, access_count = access_count + 1"
       " WHERE offline_id = ?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, store_utils::ToDatabaseTime(access_time));
+  statement.BindTime(0, access_time);
   statement.BindInt64(1, offline_id);
   if (!statement.Run())
     return false;

@@ -18,7 +18,6 @@
 #include "components/offline_pages/core/model/get_pages_task.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
-#include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/core/page_criteria.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -50,7 +49,7 @@ bool SetItemsFileMissingTimeSync(const std::vector<int64_t>& item_ids,
 
   for (auto offline_id : item_ids) {
     sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindInt64(0, store_utils::ToDatabaseTime(missing_time));
+    statement.BindTime(0, missing_time);
     statement.BindInt64(1, offline_id);
     if (!statement.Run())
       return false;

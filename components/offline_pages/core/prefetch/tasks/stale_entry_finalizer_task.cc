@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_clock.h"
-#include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_downloader.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -97,13 +96,13 @@ bool FinalizeStaleItems(PrefetchItemState state,
   static const char kSql[] =
       "UPDATE prefetch_items SET state = ?, error_code = ?"
       " WHERE state = ? AND freshness_time < ?";
-  const int64_t earliest_fresh_db_time =
-      store_utils::ToDatabaseTime(now - FreshnessPeriodForState(state));
+  const base::Time earliest_fresh_db_time =
+      now - FreshnessPeriodForState(state);
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::FINISHED));
   statement.BindInt(1, static_cast<int>(ErrorCodeForState(state)));
   statement.BindInt(2, static_cast<int>(state));
-  statement.BindInt64(3, earliest_fresh_db_time);
+  statement.BindTime(3, earliest_fresh_db_time);
 
   return statement.Run();
 }
@@ -132,15 +131,14 @@ bool FinalizeFutureItems(PrefetchItemState state,
   static const char kSql[] =
       "UPDATE prefetch_items SET state = ?, error_code = ?"
       " WHERE state = ? AND freshness_time > ?";
-  const int64_t future_fresh_db_time_limit =
-      store_utils::ToDatabaseTime(now + kFutureItemTimeLimit);
+  const base::Time future_fresh_db_time_limit = now + kFutureItemTimeLimit;
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::FINISHED));
   statement.BindInt(
       1, static_cast<int>(
              PrefetchItemErrorCode::MAXIMUM_CLOCK_BACKWARD_SKEW_EXCEEDED));
   statement.BindInt(2, static_cast<int>(state));
-  statement.BindInt64(3, future_fresh_db_time_limit);
+  statement.BindTime(3, future_fresh_db_time_limit);
 
   return statement.Run();
 }
@@ -150,22 +148,20 @@ bool DeleteExpiredAndFutureZombies(base::Time now, sql::Database* db) {
       "DELETE FROM prefetch_items"
       " WHERE state = ? "
       " AND (freshness_time < ? OR freshness_time > ?)";
-  const int64_t earliest_zombie_db_time =
-      store_utils::ToDatabaseTime(now - kZombieItemLifetime);
-  const int64_t future_zombie_db_time =
-      store_utils::ToDatabaseTime(now + kFutureItemTimeLimit);
+  const base::Time earliest_zombie_db_time = now - kZombieItemLifetime;
+  const base::Time future_zombie_db_time = now + kFutureItemTimeLimit;
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::ZOMBIE));
-  statement.BindInt64(1, earliest_zombie_db_time);
-  statement.BindInt64(2, future_zombie_db_time);
+  statement.BindTime(1, earliest_zombie_db_time);
+  statement.BindTime(2, future_zombie_db_time);
   return statement.Run();
 }
 
 // If there is a bug in our code, an item might be stuck in the queue waiting
 // on an event that didn't happen.  If so, finalize that item and report it.
 void ReportAndFinalizeStuckItems(base::Time now, sql::Database* db) {
-  const int64_t earliest_valid_creation_time =
-      store_utils::ToDatabaseTime(now - base::Days(kStuckTimeLimitInDays));
+  const base::Time earliest_valid_creation_time =
+      now - base::Days(kStuckTimeLimitInDays);
   // Report.
   {
     static constexpr char kSql[] =
@@ -173,7 +169,7 @@ void ReportAndFinalizeStuckItems(base::Time now, sql::Database* db) {
         " WHERE creation_time < ?"
         " AND state NOT IN (?, ?)";  // (ZOMBIE, FINISHED);
     sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindInt64(0, earliest_valid_creation_time);
+    statement.BindTime(0, earliest_valid_creation_time);
     statement.BindInt64(1, static_cast<int>(PrefetchItemState::FINISHED));
     statement.BindInt64(2, static_cast<int>(PrefetchItemState::ZOMBIE));
 
@@ -194,7 +190,7 @@ void ReportAndFinalizeStuckItems(base::Time now, sql::Database* db) {
     sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
     statement.BindInt64(0, static_cast<int>(PrefetchItemState::FINISHED));
     statement.BindInt64(1, static_cast<int>(PrefetchItemErrorCode::STUCK));
-    statement.BindInt64(2, earliest_valid_creation_time);
+    statement.BindTime(2, earliest_valid_creation_time);
     statement.BindInt64(3, static_cast<int>(PrefetchItemState::FINISHED));
     statement.BindInt64(4, static_cast<int>(PrefetchItemState::ZOMBIE));
 

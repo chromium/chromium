@@ -53,14 +53,14 @@ ItemActionStatus AddOfflinePageSync(const OfflinePageItem& item,
   statement.BindString(3, item.client_id.id);
   statement.BindString(4, store_utils::ToDatabaseFilePath(item.file_path));
   statement.BindInt64(5, item.file_size);
-  statement.BindInt64(6, store_utils::ToDatabaseTime(item.creation_time));
-  statement.BindInt64(7, store_utils::ToDatabaseTime(item.last_access_time));
+  statement.BindTime(6, item.creation_time);
+  statement.BindTime(7, item.last_access_time);
   statement.BindInt(8, item.access_count);
   statement.BindString16(9, item.title);
   statement.BindString(10, item.original_url_if_different.spec());
   statement.BindString(11, item.request_origin);
   statement.BindInt64(12, item.system_download_id);
-  statement.BindInt64(13, store_utils::ToDatabaseTime(item.file_missing_time));
+  statement.BindTime(13, item.file_missing_time);
   statement.BindString(14, item.digest);
   statement.BindString(15, item.snippet);
   statement.BindString(16, item.attribution);

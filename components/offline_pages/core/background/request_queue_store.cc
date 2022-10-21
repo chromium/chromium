@@ -20,7 +20,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/offline_page_item_utils.h"
-#include "components/offline_pages/core/offline_store_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -219,10 +218,8 @@ offline_items_collection::FailState ToFailState(int value) {
 std::unique_ptr<SavePageRequest> MakeSavePageRequest(
     sql::Statement& statement) {
   const int64_t id = statement.ColumnInt64(0);
-  const base::Time creation_time =
-      store_utils::FromDatabaseTime(statement.ColumnInt64(1));
-  const base::Time last_attempt_time =
-      store_utils::FromDatabaseTime(statement.ColumnInt64(3));
+  const base::Time creation_time = statement.ColumnTime(1);
+  const base::Time last_attempt_time = statement.ColumnTime(3);
   const int64_t started_attempt_count = statement.ColumnInt64(4);
   const int64_t completed_attempt_count = statement.ColumnInt64(5);
   const SavePageRequest::RequestState state =
@@ -288,10 +285,9 @@ AddRequestResult InsertSync(sql::Database* db, const SavePageRequest& request) {
 
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt64(0, request.request_id());
-  statement.BindInt64(1, store_utils::ToDatabaseTime(request.creation_time()));
+  statement.BindTime(1, request.creation_time());
   statement.BindInt64(2, 0);
-  statement.BindInt64(3,
-                      store_utils::ToDatabaseTime(request.last_attempt_time()));
+  statement.BindTime(3, request.last_attempt_time());
   statement.BindInt64(4, request.started_attempt_count());
   statement.BindInt64(5, request.completed_attempt_count());
   statement.BindInt64(6, static_cast<int64_t>(request.request_state()));
@@ -322,10 +318,9 @@ ItemActionStatus UpdateSync(sql::Database* db, const SavePageRequest& request) {
 
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   // SET columns:
-  statement.BindInt64(0, store_utils::ToDatabaseTime(request.creation_time()));
+  statement.BindTime(0, request.creation_time());
   statement.BindInt64(1, 0);
-  statement.BindInt64(2,
-                      store_utils::ToDatabaseTime(request.last_attempt_time()));
+  statement.BindTime(2, request.last_attempt_time());
   statement.BindInt64(3, request.started_attempt_count());
   statement.BindInt64(4, request.completed_attempt_count());
   statement.BindInt64(5, static_cast<int64_t>(request.request_state()));
