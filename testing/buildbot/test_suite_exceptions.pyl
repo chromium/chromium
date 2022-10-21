@@ -908,7 +908,7 @@
       },
       'Linux MSan Tests': {
         'swarming': {
-          'shards': 12,
+          'shards': 15,
         },
       },
       'Linux Tests': {
