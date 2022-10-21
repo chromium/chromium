@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/feedback/features.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_switches.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -300,6 +301,14 @@ void FeedbackUploader::UpdateUploadTimer() {
     return;
 
   scoped_refptr<FeedbackReport> report = reports_queue_.top();
+
+  // Don't send reports in Tast tests so that they don't spam Listnr.
+  if (feedback::features::IsSkipSendingFeedbackReportInTastTestsEnabled()) {
+    report->DeleteReportOnDisk();
+    reports_queue_.pop();
+    return;
+  }
+
   const base::Time now = base::Time::Now();
   if (report->upload_at() <= now && !is_dispatching_) {
     reports_queue_.pop();

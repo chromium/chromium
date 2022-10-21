@@ -17,6 +17,10 @@ BASE_DECLARE_FEATURE(kOsFeedbackSaveReportToLocalForE2ETesting);
 
 extern bool IsOsFeedbackSaveReportToLocalForE2ETestingEnabled();
 
+BASE_DECLARE_FEATURE(kSkipSendingFeedbackReportInTastTests);
+
+extern bool IsSkipSendingFeedbackReportInTastTestsEnabled();
+
 }  // namespace feedback::features
 
 #endif  // COMPONENTS_FEEDBACK_FEATURES_H_

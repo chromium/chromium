@@ -13,9 +13,11 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/feedback/features.h"
 #include "components/feedback/feedback_report.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -139,10 +141,16 @@ class FeedbackUploaderTest : public testing::Test {
 
   MockFeedbackUploader* uploader() const { return uploader_.get(); }
 
+  void SetupTastTestFeature() {
+    scoped_feature_list_.InitWithFeatures(
+        {feedback::features::kSkipSendingFeedbackReportInTastTests}, {});
+  }
+
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<MockFeedbackUploader> uploader_;
 };
@@ -223,6 +231,13 @@ TEST_F(FeedbackUploaderTest, MAYBE_SimulateOfflineReports) {
   // queue is now empty.
   EXPECT_EQ(uploader()->dispatched_reports().size(), 3u);
   EXPECT_TRUE(uploader()->QueueEmpty());
+}
+
+TEST_F(FeedbackUploaderTest, TastTestsDontSendReports) {
+  SetupTastTestFeature();
+  QueueReport(kReportOne);
+
+  EXPECT_EQ(uploader()->dispatched_reports().size(), 0u);
 }
 
 }  // namespace feedback

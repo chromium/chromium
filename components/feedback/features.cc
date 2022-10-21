@@ -19,4 +19,13 @@ bool IsOsFeedbackSaveReportToLocalForE2ETestingEnabled() {
       kOsFeedbackSaveReportToLocalForE2ETesting);
 }
 
+// Disables dispatching reports in Tast tests.
+BASE_FEATURE(kSkipSendingFeedbackReportInTastTests,
+             "SkipSendingFeedbackReportInTastTests",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSkipSendingFeedbackReportInTastTestsEnabled() {
+  return base::FeatureList::IsEnabled(kSkipSendingFeedbackReportInTastTests);
+}
+
 }  // namespace feedback::features
