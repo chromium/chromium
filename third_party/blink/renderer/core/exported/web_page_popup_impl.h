@@ -54,6 +54,7 @@ class Layer;
 }
 
 namespace blink {
+class AgentGroupScheduler;
 class Element;
 class EmptyLocalFrameClient;
 class Node;
@@ -129,7 +130,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
       WebViewImpl* opener_impl,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      AgentGroupScheduler& agent_group_scheduler,
       const display::ScreenInfos& screen_infos,
       PagePopupClient*);
 
@@ -172,10 +173,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetFocus(bool) override;
   bool HasFocus() override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override { return {}; }
-  void InitializeCompositing(
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      const display::ScreenInfos& screen_infos,
-      const cc::LayerTreeSettings* settings) override;
+  void InitializeCompositing(const display::ScreenInfos& screen_infos,
+                             const cc::LayerTreeSettings* settings) override;
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
   void SetHandlingInputEvent(bool handling) override;
@@ -233,7 +232,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
       WebViewImpl* opener_impl,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      AgentGroupScheduler& agent_group_scheduler,
       const display::ScreenInfos& screen_infos,
       PagePopupClient*);
 

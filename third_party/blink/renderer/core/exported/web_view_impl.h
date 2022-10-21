@@ -599,6 +599,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // words, after the frame has painted something.
   void DidFirstVisuallyNonEmptyPaint();
 
+  scheduler::WebAgentGroupScheduler& GetWebAgentGroupScheduler();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest,
@@ -942,6 +944,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // the viewport meta tag.
   ui::mojom::blink::VirtualKeyboardMode virtual_keyboard_mode_ =
       ui::mojom::blink::VirtualKeyboardMode::kUnset;
+
+  scheduler::WebAgentGroupScheduler& web_agent_group_scheduler_;
 
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;

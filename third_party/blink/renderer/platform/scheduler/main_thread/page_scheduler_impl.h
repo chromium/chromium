@@ -266,7 +266,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   TraceableVariableController tracing_controller_;
   HashSet<FrameSchedulerImpl*> frame_schedulers_;
   MainThreadSchedulerImpl* main_thread_scheduler_;
-  AgentGroupSchedulerImpl& agent_group_scheduler_;
+  Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   PageVisibilityState page_visibility_;
   base::TimeTicks page_visibility_changed_time_;

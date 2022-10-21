@@ -36,9 +36,8 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(LoadingTaskRunner,
                scoped_refptr<base::SingleThreadTaskRunner>());
   MOCK_METHOD0(IPCTaskRunner, scoped_refptr<base::SingleThreadTaskRunner>());
-  MOCK_METHOD0(CreateAgentGroupScheduler,
+  MOCK_METHOD0(CreateWebAgentGroupScheduler,
                std::unique_ptr<WebAgentGroupScheduler>());
-  MOCK_METHOD0(GetCurrentAgentGroupScheduler, WebAgentGroupScheduler*());
   MOCK_METHOD1(SetRendererHidden, void(bool));
   MOCK_METHOD1(SetRendererBackgrounded, void(bool));
 #if BUILDFLAG(IS_ANDROID)

@@ -275,10 +275,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   struct QueueCreationParams {
     explicit QueueCreationParams(QueueType queue_type)
-        : queue_type(queue_type),
-          spec(NameForQueueType(queue_type)),
-          agent_group_scheduler(nullptr),
-          frame_scheduler(nullptr) {}
+        : queue_type(queue_type), spec(NameForQueueType(queue_type)) {}
 
     QueueCreationParams SetWebSchedulingPriority(
         absl::optional<WebSchedulingPriority> priority) {
@@ -367,8 +364,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     QueueType queue_type;
     TaskQueue::Spec spec;
-    AgentGroupSchedulerImpl* agent_group_scheduler;
-    FrameSchedulerImpl* frame_scheduler;
+    WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler;
+    FrameSchedulerImpl* frame_scheduler = nullptr;
     QueueTraits queue_traits;
     absl::optional<WebSchedulingPriority> web_scheduling_priority;
 
@@ -435,7 +432,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   void ShutdownTaskQueue();
 
-  WebAgentGroupScheduler* GetAgentGroupScheduler();
+  AgentGroupScheduler* GetAgentGroupScheduler();
 
   FrameSchedulerImpl* GetFrameScheduler() const;
 
@@ -555,7 +552,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // Needed to notify renderer scheduler about completed tasks.
   MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
 
-  AgentGroupSchedulerImpl* agent_group_scheduler_{nullptr};  // NOT OWNED
+  WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   // Set in the constructor. Cleared in ClearReferencesToSchedulers(). Can never
   // be set to a different value afterwards (except in tests).

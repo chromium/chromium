@@ -145,18 +145,16 @@ HeapVector<Member<Page>> Page::RelatedPages() {
   return result;
 }
 
-Page* Page::CreateNonOrdinary(
-    ChromeClient& chrome_client,
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
+Page* Page::CreateNonOrdinary(ChromeClient& chrome_client,
+                              AgentGroupScheduler& agent_group_scheduler) {
   return MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
                                     agent_group_scheduler,
                                     /*is_ordinary=*/false);
 }
 
-Page* Page::CreateOrdinary(
-    ChromeClient& chrome_client,
-    Page* opener,
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
+Page* Page::CreateOrdinary(ChromeClient& chrome_client,
+                           Page* opener,
+                           AgentGroupScheduler& agent_group_scheduler) {
   Page* page = MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
                                           agent_group_scheduler,
                                           /*is_ordinary=*/true);
@@ -179,7 +177,7 @@ Page* Page::CreateOrdinary(
 
 Page::Page(base::PassKey<Page>,
            ChromeClient& chrome_client,
-           scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+           AgentGroupScheduler& agent_group_scheduler,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -228,8 +226,7 @@ Page::Page(base::PassKey<Page>,
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
-  page_scheduler_ =
-      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(this);
+  page_scheduler_ = agent_group_scheduler_->CreatePageScheduler(this);
   // The scheduler should be set before the main frame.
   DCHECK(!main_frame_);
   if (auto* virtual_time_controller =
@@ -957,6 +954,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(plugins_changed_observers_);
   visitor->Trace(next_related_page_);
   visitor->Trace(prev_related_page_);
+  visitor->Trace(agent_group_scheduler_);
   Supplementable<Page>::Trace(visitor);
 }
 
@@ -1031,8 +1029,8 @@ ScrollbarTheme& Page::GetScrollbarTheme() const {
   return ScrollbarTheme::GetTheme();
 }
 
-scheduler::WebAgentGroupScheduler& Page::GetAgentGroupScheduler() const {
-  return agent_group_scheduler_;
+AgentGroupScheduler& Page::GetAgentGroupScheduler() const {
+  return *agent_group_scheduler_;
 }
 
 PageScheduler* Page::GetPageScheduler() const {

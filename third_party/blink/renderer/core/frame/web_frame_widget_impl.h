@@ -369,10 +369,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ResetMeaningfulLayoutStateForMainFrame();
 
   // WebWidget overrides.
-  void InitializeCompositing(
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      const display::ScreenInfos& screen_infos,
-      const cc::LayerTreeSettings* settings) override;
+  void InitializeCompositing(const display::ScreenInfos& screen_infos,
+                             const cc::LayerTreeSettings* settings) override;
   void SetCompositorVisible(bool visible) override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size_with_dsf) override;

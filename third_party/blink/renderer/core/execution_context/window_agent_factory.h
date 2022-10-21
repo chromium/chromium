@@ -14,10 +14,7 @@
 
 namespace blink {
 
-namespace scheduler {
-class WebAgentGroupScheduler;
-}
-
+class AgentGroupScheduler;
 class SecurityOrigin;
 class WindowAgent;
 
@@ -32,8 +29,7 @@ class WindowAgent;
 // https://html.spec.whatwg.org/C#auxiliary-browsing-context
 class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
  public:
-  explicit WindowAgentFactory(
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+  explicit WindowAgentFactory(AgentGroupScheduler& agent_group_scheduler);
 
   // Returns an instance of WindowAgent for |origin|.
   // This returns the same instance for origin A and origin B if either:
@@ -116,7 +112,7 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
                                         SchemeAndRegistrableDomainHash,
                                         SchemeAndRegistrableDomainTraits>;
   TupleOriginAgents tuple_origin_agents_;
-  scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
+  Member<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 }  // namespace blink

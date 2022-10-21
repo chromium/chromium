@@ -12,9 +12,9 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+class AgentGroupScheduler;
 
 namespace scheduler {
-class WebAgentGroupScheduler;
 class WebThreadScheduler;
 }  // namespace scheduler
 
@@ -49,15 +49,13 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   virtual scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() = 0;
 
   // Creates a AgentGroupScheduler implementation.
-  virtual std::unique_ptr<scheduler::WebAgentGroupScheduler>
-  CreateAgentGroupScheduler() = 0;
+  virtual AgentGroupScheduler* CreateAgentGroupScheduler() = 0;
 
   // The current active AgentGroupScheduler is set when the task gets
   // started (i.e., OnTaskStarted) and unset when the task gets
   // finished (i.e., OnTaskCompleted). GetCurrentAgentGroupScheduler()
   // returns nullptr in task observers.
-  virtual scheduler::WebAgentGroupScheduler*
-  GetCurrentAgentGroupScheduler() = 0;
+  virtual AgentGroupScheduler* GetCurrentAgentGroupScheduler() = 0;
 
   virtual void AddRAILModeObserver(RAILModeObserver* observer) = 0;
 

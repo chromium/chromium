@@ -29,13 +29,9 @@ WebFakeThreadScheduler::CompositorTaskRunner() {
 }
 
 std::unique_ptr<WebAgentGroupScheduler>
-WebFakeThreadScheduler::CreateAgentGroupScheduler() {
-  return std::make_unique<FakeAgentGroupScheduler>(*this);
-}
-
-WebAgentGroupScheduler*
-WebFakeThreadScheduler::GetCurrentAgentGroupScheduler() {
-  return nullptr;
+WebFakeThreadScheduler::CreateWebAgentGroupScheduler() {
+  return std::make_unique<WebAgentGroupScheduler>(
+      MakeGarbageCollected<FakeAgentGroupScheduler>(*this));
 }
 
 void WebFakeThreadScheduler::SetRendererHidden(bool hidden) {}

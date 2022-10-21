@@ -17,7 +17,7 @@
 namespace blink {
 
 WindowAgentFactory::WindowAgentFactory(
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler)
+    AgentGroupScheduler& agent_group_scheduler)
     : agent_group_scheduler_(agent_group_scheduler) {}
 
 WindowAgent* WindowAgentFactory::GetAgentForOrigin(
@@ -32,7 +32,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
     DCHECK(!is_origin_agent_cluster);
     if (!universal_access_agent_) {
       universal_access_agent_ =
-          MakeGarbageCollected<WindowAgent>(agent_group_scheduler_);
+          MakeGarbageCollected<WindowAgent>(*agent_group_scheduler_);
     }
     return universal_access_agent_;
   }
@@ -45,7 +45,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
     DCHECK(!is_origin_agent_cluster);
     if (!file_url_agent_) {
       file_url_agent_ =
-          MakeGarbageCollected<WindowAgent>(agent_group_scheduler_);
+          MakeGarbageCollected<WindowAgent>(*agent_group_scheduler_);
     }
     return file_url_agent_;
   }
@@ -55,7 +55,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
     auto inserted = opaque_origin_agents_.insert(origin, nullptr);
     if (inserted.is_new_entry) {
       inserted.stored_value->value =
-          MakeGarbageCollected<WindowAgent>(agent_group_scheduler_);
+          MakeGarbageCollected<WindowAgent>(*agent_group_scheduler_);
     }
     return inserted.stored_value->value;
   }
@@ -67,7 +67,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
     auto inserted = origin_keyed_agent_cluster_agents_.insert(origin, nullptr);
     if (inserted.is_new_entry) {
       inserted.stored_value->value = MakeGarbageCollected<WindowAgent>(
-          agent_group_scheduler_, is_origin_agent_cluster,
+          *agent_group_scheduler_, is_origin_agent_cluster,
           origin_agent_cluster_left_as_default);
     }
     return inserted.stored_value->value;
@@ -92,7 +92,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
   auto inserted = tuple_origin_agents->insert(key, nullptr);
   if (inserted.is_new_entry) {
     inserted.stored_value->value = MakeGarbageCollected<WindowAgent>(
-        agent_group_scheduler_, is_origin_agent_cluster,
+        *agent_group_scheduler_, is_origin_agent_cluster,
         origin_agent_cluster_left_as_default);
   }
   return inserted.stored_value->value;
@@ -104,6 +104,7 @@ void WindowAgentFactory::Trace(Visitor* visitor) const {
   visitor->Trace(opaque_origin_agents_);
   visitor->Trace(origin_keyed_agent_cluster_agents_);
   visitor->Trace(tuple_origin_agents_);
+  visitor->Trace(agent_group_scheduler_);
 }
 
 // static

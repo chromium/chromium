@@ -33,8 +33,7 @@ class WebThreadScheduler;
 
 PLATFORM_EXPORT std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler();
 PLATFORM_EXPORT std::unique_ptr<PageScheduler> CreateDummyPageScheduler();
-PLATFORM_EXPORT std::unique_ptr<AgentGroupScheduler>
-CreateDummyAgentGroupScheduler();
+PLATFORM_EXPORT AgentGroupScheduler* CreateDummyAgentGroupScheduler();
 PLATFORM_EXPORT std::unique_ptr<WebThreadScheduler>
 CreateDummyWebMainThreadScheduler();
 

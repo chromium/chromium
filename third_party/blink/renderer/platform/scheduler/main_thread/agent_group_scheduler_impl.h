@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
@@ -27,12 +28,18 @@ class WebThreadScheduler;
 // AgentGroupScheduler implementation which schedules per-AgentSchedulingGroup
 // tasks.
 class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
+  // TODO(dtapuska): Remove usage of this prefinalizer. The MainThreadTaskQueues
+  // need to be removed from the MainThreadScheduler and are created from both
+  // oilpanned objects and non-oilpanned objects. This finalizer should be able
+  // to be removed once more scheduling classes are moved to oilpan.
+  USING_PRE_FINALIZER(AgentGroupSchedulerImpl, Dispose);
+
  public:
   explicit AgentGroupSchedulerImpl(
       MainThreadSchedulerImpl& main_thread_scheduler);
   AgentGroupSchedulerImpl(const AgentGroupSchedulerImpl&) = delete;
   AgentGroupSchedulerImpl& operator=(const AgentGroupSchedulerImpl&) = delete;
-  ~AgentGroupSchedulerImpl() override;
+  ~AgentGroupSchedulerImpl() override = default;
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
@@ -40,7 +47,6 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
   WebThreadScheduler& GetMainThreadScheduler() override;
-  AgentGroupScheduler& AsAgentGroupScheduler() override;
   v8::Isolate* Isolate() override;
 
   void BindInterfaceBroker(
@@ -48,8 +54,11 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
       override;
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
   void AddAgent(Agent* agent) override;
+  void Trace(Visitor*) const override;
 
   void PerformMicrotaskCheckpoint();
+
+  void Dispose();
 
  private:
   scoped_refptr<MainThreadTaskQueue> default_task_queue_;
@@ -57,7 +66,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   MainThreadSchedulerImpl& main_thread_scheduler_;  // Not owned.
-  Persistent<HeapHashSet<WeakMember<Agent>>> agents_;
+  HeapHashSet<WeakMember<Agent>> agents_;
 
   BrowserInterfaceBrokerProxy broker_;
 };

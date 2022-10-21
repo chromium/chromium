@@ -157,6 +157,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // WebThreadScheduler implementation:
   std::unique_ptr<MainThread> CreateMainThread() override;
+  std::unique_ptr<WebAgentGroupScheduler> CreateWebAgentGroupScheduler()
+      override;
   // Note: this is also shared by the ThreadScheduler interface.
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
@@ -192,8 +194,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                            Thread::IdleTask) override;
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
-  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
-  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
+  AgentGroupScheduler* CreateAgentGroupScheduler() override;
+  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
   void SetV8Isolate(v8::Isolate* isolate) override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
 
@@ -443,8 +445,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   struct AgentGroupSchedulerScope {
     std::unique_ptr<base::ThreadTaskRunnerHandleOverride>
         thread_task_runner_handle_override;
-    WebAgentGroupScheduler* previous_agent_group_scheduler;
-    WebAgentGroupScheduler* current_agent_group_scheduler;
+    WeakPersistent<AgentGroupScheduler> previous_agent_group_scheduler;
+    WeakPersistent<AgentGroupScheduler> current_agent_group_scheduler;
     scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner;
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner;
     const char* trace_event_scope_name;
@@ -452,7 +454,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   };
 
   void BeginAgentGroupSchedulerScope(
-      WebAgentGroupScheduler* next_agent_group_scheduler);
+      AgentGroupScheduler* next_agent_group_scheduler);
   void EndAgentGroupSchedulerScope();
 
   bool IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint() const;
@@ -860,7 +862,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter;
 
     std::unique_ptr<TaskAttributionTracker> task_attribution_tracker;
-    WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers;
+    Persistent<HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>
+        agent_group_schedulers;
   };
 
   struct AnyThread {
@@ -937,7 +940,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   }
 
   PollableThreadSafeFlag policy_may_need_update_;
-  WebAgentGroupScheduler* current_agent_group_scheduler_{nullptr};
+  WeakPersistent<AgentGroupScheduler> current_agent_group_scheduler_;
 
   base::WeakPtrFactory<MainThreadSchedulerImpl> weak_factory_{this};
 };

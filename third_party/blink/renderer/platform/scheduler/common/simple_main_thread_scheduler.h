@@ -56,10 +56,10 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override;
 
   // Unsupported. Return nullptr.
-  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
+  AgentGroupScheduler* CreateAgentGroupScheduler() override;
 
   // Return nullptr
-  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
+  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
 
   // Return the current time.
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;

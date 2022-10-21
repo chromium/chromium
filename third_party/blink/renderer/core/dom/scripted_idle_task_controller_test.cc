@@ -93,7 +93,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   PageScheduler* GetPageScheduler() const override {
     return page_scheduler_.get();
   }
-  scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() override {
+  AgentGroupScheduler* GetAgentGroupScheduler() override {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
 

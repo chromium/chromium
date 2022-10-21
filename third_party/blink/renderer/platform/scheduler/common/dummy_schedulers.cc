@@ -24,7 +24,7 @@ class VirtualTimeController;
 namespace scheduler {
 namespace {
 
-std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupSchedulerWithIsolate(
+AgentGroupScheduler* CreateDummyAgentGroupSchedulerWithIsolate(
     v8::Isolate* isolate);
 
 class DummyWidgetScheduler final : public WidgetScheduler {
@@ -76,7 +76,7 @@ class DummyFrameScheduler : public FrameScheduler {
   PageScheduler* GetPageScheduler() const override {
     return page_scheduler_.get();
   }
-  WebAgentGroupScheduler* GetAgentGroupScheduler() override {
+  AgentGroupScheduler* GetAgentGroupScheduler() override {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
 
@@ -187,7 +187,7 @@ class DummyPageScheduler : public PageScheduler {
   }
   bool IsInBackForwardCache() const override { return false; }
   bool RequestBeginMainFrameNotExpected(bool) override { return false; }
-  WebAgentGroupScheduler& GetAgentGroupScheduler() override {
+  AgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }
   VirtualTimeController* GetVirtualTimeController() override { return nullptr; }
@@ -196,7 +196,7 @@ class DummyPageScheduler : public PageScheduler {
   }
 
  private:
-  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
@@ -269,8 +269,14 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return std::make_unique<SimpleThread>(this);
   }
 
-  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
+  AgentGroupScheduler* CreateAgentGroupScheduler() override {
     return CreateDummyAgentGroupSchedulerWithIsolate(isolate_);
+  }
+
+  std::unique_ptr<WebAgentGroupScheduler> CreateWebAgentGroupScheduler()
+      override {
+    return std::make_unique<WebAgentGroupScheduler>(
+        CreateAgentGroupScheduler());
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
@@ -278,7 +284,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return base::ThreadTaskRunnerHandle::Get();
   }
 
-  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
+  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
     return nullptr;
   }
 
@@ -306,7 +312,6 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
   DummyAgentGroupScheduler& operator=(const DummyAgentGroupScheduler&) = delete;
 
-  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override {
     return CreateDummyPageScheduler();
@@ -333,9 +338,9 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   std::unique_ptr<DummyWebMainThreadScheduler> main_thread_scheduler_;
 };
 
-std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupSchedulerWithIsolate(
+AgentGroupScheduler* CreateDummyAgentGroupSchedulerWithIsolate(
     v8::Isolate* isolate) {
-  return std::make_unique<DummyAgentGroupScheduler>(isolate);
+  return MakeGarbageCollected<DummyAgentGroupScheduler>(isolate);
 }
 
 }  // namespace
@@ -348,8 +353,8 @@ std::unique_ptr<PageScheduler> CreateDummyPageScheduler() {
   return std::make_unique<DummyPageScheduler>();
 }
 
-std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupScheduler() {
-  return std::make_unique<DummyAgentGroupScheduler>(/*isolate=*/nullptr);
+AgentGroupScheduler* CreateDummyAgentGroupScheduler() {
+  return CreateDummyAgentGroupSchedulerWithIsolate(/*isolate=*/nullptr);
 }
 
 std::unique_ptr<WebThreadScheduler> CreateDummyWebMainThreadScheduler() {

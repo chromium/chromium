@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_PAGE_SCHEDULER_H_
 
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 
 namespace blink {
@@ -16,7 +17,7 @@ class FakePageScheduler : public PageScheduler {
   FakePageScheduler(bool is_audio_playing, bool is_throttling_exempt)
       : is_audio_playing_(is_audio_playing),
         is_throttling_exempt_(is_throttling_exempt),
-        agent_group_scheduler_(WebAgentGroupScheduler::CreateForTesting()) {}
+        agent_group_scheduler_(CreateDummyAgentGroupScheduler()) {}
   FakePageScheduler(const FakePageScheduler&) = delete;
   FakePageScheduler& operator=(const FakePageScheduler&) = delete;
 
@@ -73,7 +74,7 @@ class FakePageScheduler : public PageScheduler {
   bool RequestBeginMainFrameNotExpected(bool new_state) override {
     return false;
   }
-  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override {
+  AgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }
   VirtualTimeController* GetVirtualTimeController() override { return nullptr; }
@@ -86,7 +87,7 @@ class FakePageScheduler : public PageScheduler {
  private:
   bool is_audio_playing_;
   bool is_throttling_exempt_;
-  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 }  // namespace scheduler

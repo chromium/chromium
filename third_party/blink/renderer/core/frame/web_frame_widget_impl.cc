@@ -2061,7 +2061,6 @@ void WebFrameWidgetImpl::ResetMeaningfulLayoutStateForMainFrame() {
 }
 
 void WebFrameWidgetImpl::InitializeCompositing(
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const display::ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings) {
   DCHECK(View()->does_composite());

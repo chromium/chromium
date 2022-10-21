@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_private_ptr.h"
 
 namespace v8 {
 class Isolate;
@@ -17,7 +18,6 @@ class Isolate;
 namespace blink {
 class AgentGroupScheduler;
 namespace scheduler {
-class WebThreadScheduler;
 
 // WebAgentGroupScheduler schedules per-AgentSchedulingGroup tasks.
 // AgentSchedulingGroup is Blink's unit of scheduling and performance isolation.
@@ -30,30 +30,33 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
   static std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
   CreateForTesting();
 
-  virtual ~WebAgentGroupScheduler() = default;
-
-  virtual AgentGroupScheduler& AsAgentGroupScheduler() = 0;
+  WebAgentGroupScheduler() = delete;
+  ~WebAgentGroupScheduler();
 
   // Bind this AgentSchedulingGroup's BrowserInterfaceBroker.
-  virtual void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) = 0;
+  void BindInterfaceBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>);
 
   // Default task runner for an AgentSchedulingGroup.
   // Default task runners for different AgentSchedulingGroup would be
   // independent and won't have any ordering guarantees between them.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() = 0;
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
 
   // Compositor task runner for an AgentSchedulingGroup.
   // Compositor task runners for different AgentSchedulingGroup would be
   // independent and won't have any ordering guarantees between them.
-  virtual scoped_refptr<base::SingleThreadTaskRunner>
-  CompositorTaskRunner() = 0;
-
-  // The main thread scheduler related to this WebAgentGroupScheduler.
-  virtual WebThreadScheduler& GetMainThreadScheduler() = 0;
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner();
 
   // The isolate for this WebAgentGroupScheduler.
-  virtual v8::Isolate* Isolate() = 0;
+  v8::Isolate* Isolate();
+
+#if INSIDE_BLINK
+  explicit WebAgentGroupScheduler(AgentGroupScheduler*);
+  AgentGroupScheduler& GetAgentGroupScheduler();
+#endif
+
+ protected:
+  WebPrivatePtr<AgentGroupScheduler> private_;
 };
 
 }  // namespace scheduler

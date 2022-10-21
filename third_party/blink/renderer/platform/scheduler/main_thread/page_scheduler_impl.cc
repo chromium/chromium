@@ -785,7 +785,7 @@ MainThreadSchedulerImpl* PageSchedulerImpl::GetMainThreadScheduler() const {
 }
 
 AgentGroupSchedulerImpl& PageSchedulerImpl::GetAgentGroupScheduler() {
-  return agent_group_scheduler_;
+  return *agent_group_scheduler_;
 }
 
 VirtualTimeController* PageSchedulerImpl::GetVirtualTimeController() {

@@ -571,7 +571,8 @@ WebViewImpl::WebViewImpl(
       receiver_(this,
                 std::move(page_handle),
                 agent_group_scheduler.DefaultTaskRunner()),
-      session_storage_namespace_id_(session_storage_namespace_id) {
+      session_storage_namespace_id_(session_storage_namespace_id),
+      web_agent_group_scheduler_(agent_group_scheduler) {
   if (receiver_) {
     // Typically, the browser process closes the corresponding peer handle
     // to signal the renderer process to destroy `this`. In certain
@@ -585,7 +586,7 @@ WebViewImpl::WebViewImpl(
     DCHECK(!does_composite_);
   page_ = Page::CreateOrdinary(*chrome_client_,
                                opener ? opener->GetPage() : nullptr,
-                               agent_group_scheduler);
+                               agent_group_scheduler.GetAgentGroupScheduler());
   CoreInitializer::GetInstance().ProvideModulesToPage(
       *page_, session_storage_namespace_id_);
 
@@ -1023,7 +1024,7 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
       std::move(widget));
   WebFrameWidgetImpl* opener_widget = web_opener_frame->LocalRootFrameWidget();
 
-  scheduler::WebAgentGroupScheduler& agent_group_scheduler =
+  AgentGroupScheduler& agent_group_scheduler =
       opener_frame->GetPage()->GetPageScheduler()->GetAgentGroupScheduler();
   // The returned WebPagePopup is self-referencing, so the pointer here is not
   // an owning pointer. It is de-referenced by the PopupWidgetHost disconnecting
@@ -3915,6 +3916,10 @@ void WebViewImpl::CreateRemoteMainFrame(
   DidAttachRemoteMainFrame(
       std::move(remote_main_frame_interfaces->main_frame_host),
       std::move(remote_main_frame_interfaces->main_frame));
+}
+
+scheduler::WebAgentGroupScheduler& WebViewImpl::GetWebAgentGroupScheduler() {
+  return web_agent_group_scheduler_;
 }
 
 }  // namespace blink

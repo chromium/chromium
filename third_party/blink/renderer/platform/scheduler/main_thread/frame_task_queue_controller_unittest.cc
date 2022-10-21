@@ -50,9 +50,7 @@ class FrameTaskQueueControllerTest : public testing::Test,
             nullptr, task_environment_.GetMainThreadTaskRunner(),
             task_environment_.GetMockTickClock()));
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
-    page_scheduler_ =
-        agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
-            nullptr);
+    page_scheduler_ = agent_group_scheduler_->CreatePageScheduler(nullptr);
     frame_scheduler_ = page_scheduler_->CreateFrameScheduler(
         nullptr, /*is_in_embedded_frame_tree=*/false,
         FrameScheduler::FrameType::kSubframe);
@@ -65,7 +63,7 @@ class FrameTaskQueueControllerTest : public testing::Test,
     frame_task_queue_controller_.reset();
     frame_scheduler_.reset();
     page_scheduler_.reset();
-    agent_group_scheduler_.reset();
+    agent_group_scheduler_ = nullptr;
     scheduler_->Shutdown();
     scheduler_.reset();
   }
@@ -115,7 +113,7 @@ class FrameTaskQueueControllerTest : public testing::Test,
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
-  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
   std::unique_ptr<PageScheduler> page_scheduler_;
   std::unique_ptr<FrameScheduler> frame_scheduler_;
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;

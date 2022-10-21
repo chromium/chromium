@@ -17,8 +17,9 @@
 
 namespace blink {
 
+class AgentGroupScheduler;
+
 namespace scheduler {
-class WebAgentGroupScheduler;
 class WidgetScheduler;
 }  // namespace scheduler
 
@@ -78,8 +79,8 @@ class PLATFORM_EXPORT PageScheduler {
   // compositor.
   virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;
 
-  // Returns WebAgentGroupScheduler
-  virtual scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() = 0;
+  // Returns AgentGroupScheduler
+  virtual AgentGroupScheduler& GetAgentGroupScheduler() = 0;
 
   // Guaranteed to be non-null for real PageScheduler implementation, but may
   // be null in unit tests.

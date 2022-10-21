@@ -225,7 +225,7 @@ void MainThreadTaskQueue::ShutdownTaskQueue() {
   task_queue_->ShutdownTaskQueue();
 }
 
-WebAgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
+AgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
   DCHECK(task_queue_->task_runner()->BelongsToCurrentThread());
 
   if (agent_group_scheduler_) {

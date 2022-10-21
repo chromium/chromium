@@ -14,25 +14,41 @@
 
 namespace blink {
 
+namespace scheduler {
+class WebThreadScheduler;
+}  // namespace scheduler
+
 // AgentGroupScheduler schedules per-AgentSchedulingGroup tasks.
 // AgentSchedulingGroup is Blink's unit of scheduling and performance isolation.
 class BLINK_PLATFORM_EXPORT AgentGroupScheduler
-    : public scheduler::WebAgentGroupScheduler {
+    : public GarbageCollected<AgentGroupScheduler> {
  public:
   class Agent : public GarbageCollectedMixin {
    public:
     virtual void PerformMicrotaskCheckpoint() = 0;
-    virtual void SchedulerDestroyed() = 0;
   };
+
+  virtual ~AgentGroupScheduler() = default;
 
   // Creates a new PageScheduler for a given Page. Must be called from the
   // associated WebThread.
   virtual std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) = 0;
 
+  virtual void BindInterfaceBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+          remote_broker) = 0;
   virtual BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() = 0;
 
   virtual void AddAgent(Agent* agent) = 0;
+
+  virtual void Trace(Visitor*) const {}
+
+  virtual scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() = 0;
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  CompositorTaskRunner() = 0;
+  virtual scheduler::WebThreadScheduler& GetMainThreadScheduler() = 0;
+  virtual v8::Isolate* Isolate() = 0;
 };
 
 }  // namespace blink

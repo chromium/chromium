@@ -128,7 +128,7 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
 
   MemoryUsage mock_memory_usage_;
   std::vector<Persistent<Page>> dummy_pages_;
-  std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 class HighestPmfReporterTest : public PageTestBase {

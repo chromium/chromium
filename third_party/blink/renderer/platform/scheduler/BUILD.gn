@@ -111,6 +111,7 @@ blink_platform_sources("scheduler") {
     "main_thread/use_case.h",
     "main_thread/user_model.cc",
     "main_thread/user_model.h",
+    "main_thread/web_agent_group_scheduler.cc",
     "main_thread/web_scoped_virtual_time_pauser.cc",
     "main_thread/widget_scheduler_impl.cc",
     "main_thread/widget_scheduler_impl.h",

@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -107,19 +108,17 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
  public:
   // Any pages not owned by a web view should be created using this method.
-  static Page* CreateNonOrdinary(
-      ChromeClient& chrome_client,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+  static Page* CreateNonOrdinary(ChromeClient& chrome_client,
+                                 AgentGroupScheduler& agent_group_scheduler);
 
   // An "ordinary" page is a fully-featured page owned by a web view.
-  static Page* CreateOrdinary(
-      ChromeClient& chrome_client,
-      Page* opener,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+  static Page* CreateOrdinary(ChromeClient& chrome_client,
+                              Page* opener,
+                              AgentGroupScheduler& agent_group_scheduler);
 
   Page(base::PassKey<Page>,
        ChromeClient& chrome_client,
-       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+       AgentGroupScheduler& agent_group_scheduler,
        bool is_ordinary);
   Page(const Page&) = delete;
   Page& operator=(const Page&) = delete;
@@ -327,7 +326,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   ScrollbarTheme& GetScrollbarTheme() const;
 
-  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() const;
+  AgentGroupScheduler& GetAgentGroupScheduler() const;
   PageScheduler* GetPageScheduler() const;
 
   // PageScheduler::Delegate implementation.
@@ -440,7 +439,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // The type of fenced frames being used.
   absl::optional<features::FencedFramesImplementationType> fenced_frames_impl_;
 
-  scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
+  Member<AgentGroupScheduler> agent_group_scheduler_;
   Member<PageAnimator> animator_;
   const Member<AutoscrollController> autoscroll_controller_;
   Member<ChromeClient> chrome_client_;

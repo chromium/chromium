@@ -42,6 +42,7 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
@@ -1112,19 +1113,30 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   // default EventLoop for the isolate.
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
+
+  if (!main_thread_only().agent_group_schedulers)
+    return;
+
   // Perform a microtask checkpoint for each AgentSchedulingGroup. This
   // really should only be the ones that are not frozen but AgentSchedulingGroup
   // does not have that concept yet.
   // TODO(dtapuska): Move this to EndAgentGroupSchedulerScope so that we only
   // run the microtask checkpoint for a given AgentGroupScheduler.
-  WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers(
-      main_thread_only().agent_group_schedulers);
-  for (AgentGroupSchedulerImpl* agent_group_scheduler :
-       agent_group_schedulers) {
-    if (!main_thread_only().agent_group_schedulers.Contains(
-            agent_group_scheduler)) {
-      continue;
-    }
+  //
+  // This code is performance sensitive so we do not wish to allocate
+  // memory, use an inline vector of 10. 10 is an appropriate size as typically
+  // we only see a few AgentGroupSchedulers (this will change in the future).
+  // We use an inline HeapVector here because cloning to a HeapHashSet was
+  // causing floating garbage even with ClearCollectionScope. See
+  // crbug.com/1376394.
+  HeapVector<Member<AgentGroupSchedulerImpl>, 10> schedulers;
+  for (AgentGroupSchedulerImpl* scheduler :
+       *main_thread_only().agent_group_schedulers) {
+    schedulers.push_back(scheduler);
+  }
+  for (AgentGroupSchedulerImpl* agent_group_scheduler : schedulers) {
+    DCHECK(main_thread_only().agent_group_schedulers->Contains(
+        agent_group_scheduler));
     agent_group_scheduler->PerformMicrotaskCheckpoint();
   }
 }
@@ -2103,22 +2115,27 @@ MainThreadSchedulerImpl::NonWakingTaskRunner() {
   return non_waking_task_runner_;
 }
 
-std::unique_ptr<WebAgentGroupScheduler>
-MainThreadSchedulerImpl::CreateAgentGroupScheduler() {
-  auto agent_group_scheduler = std::make_unique<AgentGroupSchedulerImpl>(*this);
-  AddAgentGroupScheduler(agent_group_scheduler.get());
+AgentGroupScheduler* MainThreadSchedulerImpl::CreateAgentGroupScheduler() {
+  auto* agent_group_scheduler =
+      MakeGarbageCollected<AgentGroupSchedulerImpl>(*this);
+  AddAgentGroupScheduler(agent_group_scheduler);
   return agent_group_scheduler;
+}
+
+std::unique_ptr<WebAgentGroupScheduler>
+MainThreadSchedulerImpl::CreateWebAgentGroupScheduler() {
+  return std::make_unique<WebAgentGroupScheduler>(CreateAgentGroupScheduler());
 }
 
 void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
-  DCHECK(main_thread_only().agent_group_schedulers.Contains(
+  DCHECK(main_thread_only().agent_group_schedulers);
+  DCHECK(main_thread_only().agent_group_schedulers->Contains(
       agent_group_scheduler));
-  main_thread_only().agent_group_schedulers.erase(agent_group_scheduler);
+  main_thread_only().agent_group_schedulers->erase(agent_group_scheduler);
 }
 
-WebAgentGroupScheduler*
-MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
+AgentGroupScheduler* MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
   helper_.CheckOnValidThread();
   return current_agent_group_scheduler_;
 }
@@ -2136,7 +2153,7 @@ base::TimeTicks MainThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
 }
 
 void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
-    WebAgentGroupScheduler* next_agent_group_scheduler) {
+    AgentGroupScheduler* next_agent_group_scheduler) {
   scoped_refptr<base::SingleThreadTaskRunner> next_task_runner;
   const char* trace_event_scope_name;
   void* trace_event_scope_id;
@@ -2162,7 +2179,7 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
       trace_event_scope_id, "agent_group_scheduler",
       static_cast<void*>(next_agent_group_scheduler));
 
-  WebAgentGroupScheduler* previous_agent_group_scheduler =
+  AgentGroupScheduler* previous_agent_group_scheduler =
       current_agent_group_scheduler_;
   current_agent_group_scheduler_ = next_agent_group_scheduler;
 
@@ -2239,8 +2256,13 @@ base::TimeTicks MainThreadSchedulerImpl::NowTicks() const {
 
 void MainThreadSchedulerImpl::AddAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
+  if (!main_thread_only().agent_group_schedulers) {
+    main_thread_only().agent_group_schedulers = MakeGarbageCollected<
+        HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>();
+  }
+
   bool is_new_entry = main_thread_only()
-                          .agent_group_schedulers.insert(agent_group_scheduler)
+                          .agent_group_schedulers->insert(agent_group_scheduler)
                           .is_new_entry;
   DCHECK(is_new_entry);
 }

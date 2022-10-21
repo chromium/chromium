@@ -129,7 +129,7 @@ class WebRtcAudioRendererTest : public testing::Test {
       : source_(new MockAudioRendererSource()),
         agent_group_scheduler_(
             blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-                ->CreateAgentGroupScheduler()),
+                ->CreateWebAgentGroupScheduler()),
         web_view_(blink::WebView::Create(
             /*client=*/nullptr,
             /*is_hidden=*/false,

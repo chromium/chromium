@@ -18,8 +18,6 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
       : web_thread_scheduler_(web_thread_scheduler) {}
   ~FakeAgentGroupScheduler() override = default;
 
-  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
-
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
     return base::ThreadTaskRunnerHandle::Get();
   }

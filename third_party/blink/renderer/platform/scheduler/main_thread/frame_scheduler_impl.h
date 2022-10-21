@@ -111,7 +111,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override;
-  WebAgentGroupScheduler* GetAgentGroupScheduler() override;
+  AgentGroupScheduler* GetAgentGroupScheduler() override;
   PageScheduler* GetPageScheduler() const override;
   void DidStartProvisionalLoad() override;
   void DidCommitProvisionalLoad(bool is_web_history_inert_commit,

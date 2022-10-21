@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -332,7 +333,7 @@ WebPagePopupImpl::WebPagePopupImpl(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     WebViewImpl* opener_web_view,
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+    AgentGroupScheduler& agent_group_scheduler,
     const display::ScreenInfos& screen_infos,
     PagePopupClient* popup_client)
     : opener_web_view_(opener_web_view),
@@ -362,7 +363,7 @@ WebPagePopupImpl::WebPagePopupImpl(
     }
   }
 
-  InitializeCompositing(agent_group_scheduler, screen_infos,
+  InitializeCompositing(screen_infos,
                         /*settings=*/nullptr);
 
   popup_client_->AdjustSettings(page_->GetSettings());
@@ -450,7 +451,6 @@ void WebPagePopupImpl::DidSetBounds() {
 }
 
 void WebPagePopupImpl::InitializeCompositing(
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const display::ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings) {
   // Careful Initialize() is called after InitializeCompositing, so don't do
@@ -1076,7 +1076,7 @@ WebPagePopupImpl* WebPagePopupImpl::Create(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     WebViewImpl* opener_webview,
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+    AgentGroupScheduler& agent_group_scheduler,
     const display::ScreenInfos& screen_infos,
     PagePopupClient* popup_client) {
   // A WebPagePopupImpl instance usually has two references.

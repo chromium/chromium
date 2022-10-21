@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_PAGE_HOLDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_PAGE_HOLDER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/time/default_tick_clock.h"
@@ -103,7 +101,7 @@ class DummyPageHolder {
   CrossThreadPersistent<LocalFrame> frame_;
 
   Persistent<LocalFrameClient> local_frame_client_;
-  std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 }  // namespace blink

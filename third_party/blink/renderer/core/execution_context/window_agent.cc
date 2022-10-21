@@ -20,35 +20,34 @@ std::unique_ptr<v8::MicrotaskQueue> CreateMicroTaskQueue(v8::Isolate* isolate) {
 
 }  // namespace
 
-WindowAgent::WindowAgent(
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler)
+WindowAgent::WindowAgent(AgentGroupScheduler& agent_group_scheduler)
     : blink::Agent(agent_group_scheduler.Isolate(),
                    base::UnguessableToken::Create(),
                    CreateMicroTaskQueue(agent_group_scheduler.Isolate())),
       agent_group_scheduler_(&agent_group_scheduler) {
-  agent_group_scheduler_->AsAgentGroupScheduler().AddAgent(this);
+  agent_group_scheduler_->AddAgent(this);
 }
 
-WindowAgent::WindowAgent(
-    scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    bool is_origin_agent_cluster,
-    bool origin_agent_cluster_left_as_default)
+WindowAgent::WindowAgent(AgentGroupScheduler& agent_group_scheduler,
+                         bool is_origin_agent_cluster,
+                         bool origin_agent_cluster_left_as_default)
     : blink::Agent(agent_group_scheduler.Isolate(),
                    base::UnguessableToken::Create(),
                    CreateMicroTaskQueue(agent_group_scheduler.Isolate()),
                    is_origin_agent_cluster,
                    origin_agent_cluster_left_as_default),
       agent_group_scheduler_(&agent_group_scheduler) {
-  agent_group_scheduler_->AsAgentGroupScheduler().AddAgent(this);
+  agent_group_scheduler_->AddAgent(this);
 }
 
 WindowAgent::~WindowAgent() = default;
 
 void WindowAgent::Trace(Visitor* visitor) const {
   blink::Agent::Trace(visitor);
+  visitor->Trace(agent_group_scheduler_);
 }
 
-scheduler::WebAgentGroupScheduler& WindowAgent::GetAgentGroupScheduler() {
+AgentGroupScheduler& WindowAgent::GetAgentGroupScheduler() {
   DCHECK(agent_group_scheduler_);
   return *agent_group_scheduler_;
 }
@@ -59,10 +58,6 @@ bool WindowAgent::IsWindowAgent() const {
 
 void WindowAgent::PerformMicrotaskCheckpoint() {
   blink::Agent::PerformMicrotaskCheckpoint();
-}
-
-void WindowAgent::SchedulerDestroyed() {
-  agent_group_scheduler_ = nullptr;
 }
 
 }  // namespace blink

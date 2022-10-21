@@ -75,10 +75,9 @@ constexpr base::TimeDelta kDelayForHighPriorityRendering =
 std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
     ThreadSchedulerBase* scheduler,
-    WebAgentGroupScheduler& agent_group_scheduler) {
+    AgentGroupScheduler& agent_group_scheduler) {
   std::unique_ptr<PageScheduler> page_scheduler =
-      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(
-          page_scheduler_delegate);
+      agent_group_scheduler.CreatePageScheduler(page_scheduler_delegate);
   std::unique_ptr<PageSchedulerImpl> page_scheduler_impl(
       static_cast<PageSchedulerImpl*>(page_scheduler.release()));
   return page_scheduler_impl;
@@ -456,17 +455,15 @@ class MainThreadSchedulerImplTest : public testing::Test {
     v8_task_runner_ =
         scheduler_->V8TaskQueue()->GetTaskRunnerWithDefaultTaskType();
 
-    agent_group_scheduler_ = std::unique_ptr<AgentGroupSchedulerImpl>(
-        static_cast<AgentGroupSchedulerImpl*>(
-            scheduler_->CreateAgentGroupScheduler().release()));
+    agent_group_scheduler_ = static_cast<AgentGroupSchedulerImpl*>(
+        scheduler_->CreateAgentGroupScheduler());
     if (scheduler_->scheduling_settings()
             .mbi_compositor_task_runner_per_agent_scheduling_group) {
       compositor_task_runner_ = agent_group_scheduler_->CompositorTaskQueue()
                                     ->GetTaskRunnerWithDefaultTaskType();
     }
     page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
-        scheduler_.get(),
-        static_cast<AgentGroupSchedulerImpl&>(*agent_group_scheduler_));
+        scheduler_.get(), *agent_group_scheduler_);
     main_frame_scheduler_ =
         CreateFrameScheduler(page_scheduler_.get(), nullptr,
                              /*is_in_embedded_frame_tree=*/false,
@@ -533,7 +530,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
     widget_scheduler_.reset();
     main_frame_scheduler_.reset();
     page_scheduler_.reset();
-    agent_group_scheduler_.reset();
+    agent_group_scheduler_ = nullptr;
     scheduler_->Shutdown();
     base::RunLoop().RunUntilIdle();
     scheduler_.reset();
@@ -1008,7 +1005,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 
   std::unique_ptr<MainThreadSchedulerImplForTest> scheduler_;
-  std::unique_ptr<AgentGroupSchedulerImpl> agent_group_scheduler_;
+  Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
   std::unique_ptr<MockPageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler_;
   scoped_refptr<WidgetScheduler> widget_scheduler_;
@@ -3339,12 +3336,10 @@ TEST_F(MainThreadSchedulerImplTest, FreezesCompositorQueueWhenAllPagesFrozen) {
   page_scheduler_.reset();
 
   std::unique_ptr<PageScheduler> sched_1 =
-      agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
-          nullptr);
+      agent_group_scheduler_->CreatePageScheduler(nullptr);
   sched_1->SetPageVisible(false);
   std::unique_ptr<PageScheduler> sched_2 =
-      agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
-          nullptr);
+      agent_group_scheduler_->CreatePageScheduler(nullptr);
   sched_2->SetPageVisible(false);
 
   Vector<String> run_order;
@@ -3363,8 +3358,7 @@ TEST_F(MainThreadSchedulerImplTest, FreezesCompositorQueueWhenAllPagesFrozen) {
 
   run_order.clear();
   std::unique_ptr<PageScheduler> sched_3 =
-      agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
-          nullptr);
+      agent_group_scheduler_->CreatePageScheduler(nullptr);
   sched_3->SetPageVisible(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("C2"));

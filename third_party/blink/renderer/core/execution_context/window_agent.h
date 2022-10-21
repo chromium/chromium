@@ -27,8 +27,7 @@ class WindowAgent final : public Agent, public AgentGroupScheduler::Agent {
   // other frames. Use this constructor only if:
   //   - An appropriate instance of WindowAgentFactory is not available
   //     (this should only happen in tests).
-  explicit WindowAgent(
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+  explicit WindowAgent(AgentGroupScheduler& agent_group_scheduler);
 
   // Normally you don't want to call this constructor; instead, use
   // WindowAgentFactory::GetAgentForOrigin() so you can get the agent shared
@@ -36,7 +35,7 @@ class WindowAgent final : public Agent, public AgentGroupScheduler::Agent {
   //
   // This constructor calls WindowAgent::WindowAgent(isolate), but also stores
   // the state of origin agent clustering.
-  WindowAgent(scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+  WindowAgent(AgentGroupScheduler& agent_group_scheduler,
               bool is_origin_agent_cluster,
               bool origin_agent_cluster_left_as_default);
 
@@ -48,16 +47,15 @@ class WindowAgent final : public Agent, public AgentGroupScheduler::Agent {
 
   // AgentGroupScheduler::Agent overrides.
   void PerformMicrotaskCheckpoint() override;
-  void SchedulerDestroyed() override;
 
-  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler();
+  AgentGroupScheduler& GetAgentGroupScheduler();
 
  private:
   // Note clients may attach per-agent data via Supplementable.
   // MutationObservers are attached this way.
   // TODO(keishi): Move per-agent data here with the correct granularity.
   // E.g. CustomElementReactionStack should move here.
-  scheduler::WebAgentGroupScheduler* agent_group_scheduler_ = nullptr;
+  Member<AgentGroupScheduler> agent_group_scheduler_;
 };
 
 template <>
