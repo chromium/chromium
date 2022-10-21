@@ -176,12 +176,6 @@ std::unique_ptr<DesktopCapturer>
 BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  // TODO(joedow): Determine whether we can migrate additional platforms to
-  // using the DesktopCaptureWrapper instead of the DesktopCaptureProxy. Then
-  // clean up DesktopCapturerProxy::Core::CreateCapturer().
-#if BUILDFLAG(IS_LINUX) && !defined(REMOTING_USE_WAYLAND)
-  auto desktop_capturer = std::make_unique<DesktopCapturerWrapper>();
-#else
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   capture_task_runner = ui_task_runner_;
@@ -200,7 +194,6 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
   auto desktop_capturer =
       std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
-#endif  // !BUILDFLAG(IS_LINUX) || defined(REMOTING_USE_WAYLAND)
 
 #if defined(REMOTING_USE_X11)
   // Workaround for http://crbug.com/1361502: Run each capturer (and
