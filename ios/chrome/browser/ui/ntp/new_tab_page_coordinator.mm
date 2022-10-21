@@ -845,6 +845,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 - (void)handleFeedSelected:(FeedType)feedType {
   DCHECK([self isFollowingFeedAvailable]);
 
+  self.selectedFeed = feedType;
+
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.ntpViewController scrollPosition];
 
@@ -856,11 +858,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
     self.discoverFeedService->SetFollowingFeedContentSeen();
   }
 
-  self.selectedFeed = feedType;
   [self updateNTPForFeed];
-  [self updateFeedLayout];
-
-  [self.ntpViewController updateFeedInsetsForMinimumHeight];
 
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
@@ -1261,6 +1259,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
       self.feedWrapperViewController;
 
   [self.ntpViewController layoutContentInParentCollectionView];
+
   [self updateFeedLayout];
 }
 

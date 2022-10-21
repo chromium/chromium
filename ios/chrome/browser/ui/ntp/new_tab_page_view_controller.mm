@@ -424,6 +424,9 @@
 
 - (void)updateNTPLayout {
   [self updateFeedInsetsForContentAbove];
+  if (self.feedVisible) {
+    [self updateFeedInsetsForMinimumHeight];
+  }
 
   // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
   // positioned, in particular during a rotation while a ViewController is
