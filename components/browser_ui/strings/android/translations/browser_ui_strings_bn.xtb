@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">সেরা অভিজ্ঞতা পাওয়ার জন্য সাজেস্ট করা হচ্ছে</translation>
 <translation id="1818308510395330587">তাছাড়া, যাতে <ph name="APP_NAME" /> এ আর (AR) ব্যবহার করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও ক্যামেরা চালু করে দিন।</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> থেকে</translation>
+<translation id="187227595286001730">সম্পর্কিত সাইটগুলি গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পাবে</translation>
 <translation id="1887786770086287077">এই ডিভাইসে লোকেশন অ্যাক্সেস বন্ধ আছে। চালু করতে <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> যান।</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1919345977826869612">বিজ্ঞাপন</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">এই ডোমেনে থাকা সবকটি সাইট অন্তর্ভুক্ত করুন</translation>
 <translation id="4883854917563148705">ম্যানেজ করা সেটিংস রিসেট করা যায় না</translation>
 <translation id="4887024562049524730">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেওয়ার আগে অনুমতি নিতে বলুন (সাজেস্ট করা হয়েছে)</translation>
+<translation id="4955223779495905865">আপনি যে সাইটটি দেখছেন সেটি অন্য সাইট থেকে কন্টেন্ট এম্বেড করতে পারে, যেমন ছবি, বিজ্ঞাপন এবং টেক্সট। আপনার অভিজ্ঞতাকে পছন্দমতো করতে এই সাইটগুলির মধ্যে যেকোনও সাইট কুকি এবং অন্যান্য ডেটা সেভ করতে পারে।</translation>
 <translation id="4962975101802056554">ডিভাইসের ক্ষেত্রে সমস্ত অনুমতি সরিয়ে দিন</translation>
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
 <translation id="4976702386844183910"><ph name="DATE" />-এ শেষবার দেখেছেন</translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">সাইটকে মোশন সেন্সর অ্যাক্সেস করার অনুমতি দিন (সাজেস্ট করা হয়)</translation>
 <translation id="5050380848339752099">এই সাইট ছদ্মবেশী মোডের বাইরে একটি অ্যাপের সাথে তথ্য শেয়ার করতে চলেছে।</translation>
 <translation id="5063480226653192405">ব্যবহার</translation>
+<translation id="5082281938627763039">এটি <ph name="FPS_MEMBER" /> এবং <ph name="FPS_OWNER" />-এর সাইটের গ্রুপের সাইটগুলির জন্য কুকি এবং অন্যান্য সাইট ডেটা মুছে দেয়</translation>
 <translation id="5091013926750941408">মোবাইল সাইট</translation>
 <translation id="509133520954049755">ডেস্কটপ ভিউয়ের জন্য অনুরোধ করুন</translation>
 <translation id="5100237604440890931">সঙ্কুচিত - প্রসারিত করতে ক্লিক করুন৷</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">অবরুদ্ধ</translation>
 <translation id="5689516760719285838">লোকেশন</translation>
 <translation id="5690795753582697420">Android সেটিংসে ক্যামেরা বন্ধ করা আছে</translation>
+<translation id="5706552988683188916">এটি <ph name="WEBSITE" />-এর জন্য কুকি এবং অন্যান্য সাইট ডেটা মুছে ফেলে</translation>
 <translation id="5719847187258001597">এটি করলে, আপনার হোম স্ক্রিনে <ph name="ORIGIN" />-এর মাধ্যমে বা এর সাইট ও অ্যাপের মাধ্যমে সেভ হওয়া সব ডেটা এবং কুকি মুছে যাবে।</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ব্লক করা হয়েছে</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">একটি নির্দিষ্ট সাইটের জন্য সাউন্ড প্লে করার অনুমতি দিন।</translation>
 <translation id="789180354981963912">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন:</translation>
 <translation id="7940722705963108451">আমাকে মনে করিয়ে দিও</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}one{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}other{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}}</translation>
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
 <translation id="7999064672810608036">আপনি কি এই ওয়েবসাইটের কুকি সহ সমস্ত ডেটা পরিষ্কার করার এবং এটির সমস্ত অনুমতি রিসেট করার বিষয়ে নিশ্চিত?</translation>
 <translation id="8007176423574883786">এই ডিভাইসের জন্য বন্ধ করা আছে</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">মাইক্রোফোন আনমিউট করুন</translation>
 <translation id="851751545965956758">সাইটকে ডিভাইসের সাথে কানেক্ট করা থেকে ব্লক করুন</translation>
 <translation id="8525306231823319788">পূর্ণ স্ক্রীণ</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}}</translation>
 <translation id="857943718398505171">অনুমোদিত (প্রস্তাবিত)</translation>
 <translation id="8609465669617005112">উপরে যান</translation>
 <translation id="8676374126336081632">ইনপুট সাফ করুন</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">ভুলে যান</translation>
 <translation id="9019902583201351841">আপনার পিতামাতার দ্বারা পরিচালিত</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
+<translation id="9090268041676521955">এই সাইটটি একটি গ্রুপে রয়েছে যা আপনার অ্যাক্টিভিটি দেখতে পাবে। <ph name="FPS_OWNER" /> দ্বারা গ্রুপ সংজ্ঞায়িত করা হয়</translation>
+<translation id="9106233582039520022">কুকি মুছবেন?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতিগুলি চালু করুন।</translation>
 <translation id="9162462602695099906">এই পৃষ্ঠাটি বিপজ্জনক</translation>

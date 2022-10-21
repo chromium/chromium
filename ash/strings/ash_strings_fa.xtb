@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">هنوز چیزی برای دیدن وجود ندارد</translation>
 <translation id="3428447136709161042">قطع ارتباط از <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">برای برگشتن به عقب از سمت چپ تند بکشید</translation>
+<translation id="3431517721463707585">میزکار ۱۴</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="343571671045587506">ویرایش یادآوری</translation>
 <translation id="3435967511775410570">اثر انگشت شناخته شد</translation>
@@ -672,6 +673,7 @@
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (چپ)</translation>
 <translation id="4734965478015604180">افقی</translation>
+<translation id="4735944890391795473">میزکار ۱۲</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4740516757091333363">میزکار ذخیره‌شده حذف شود؟</translation>
 <translation id="4752784485658729358">تنها ۶ میزکار ذخیره‌شده مجاز است. برای ذخیره میزکار جدید، یکی‌از میزکارها را بردارید.</translation>
@@ -692,6 +694,7 @@
 <translation id="4860284199500934869">برای بارگیری <ph name="FILENAME" />، اتصال شبکه را بررسی کنید</translation>
 <translation id="486056901304535126">‏بارگیری بعداً انجام خواهد شد. تا وقتی بارگیری کامل شود، گفتار برای پردازش به Google ارسال خواهد شد.</translation>
 <translation id="4864369630010738180">در حال ورود به سیستم...</translation>
+<translation id="4864648187878336334">میزکار ۱۵</translation>
 <translation id="4868492592575313542">فعال شد</translation>
 <translation id="4872237917498892622">‏Alt+جستجو یا Shift</translation>
 <translation id="4881695831933465202">باز کردن</translation>
@@ -718,6 +721,7 @@
         <ph name="NOTIFICATION_1" />،
         <ph name="NOTIFICATION_2" />،
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">میزکار ۱۶</translation>
 <translation id="5003993274120026347">جمله بعدی</translation>
 <translation id="5016558321564993266">روشن/ خاموش کردن نشانگر. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">وقت تمام شد</translation>
@@ -733,6 +737,7 @@
 <translation id="5098537242461068432">میزکار و پنجره‌ها دوباره باز شدند</translation>
 <translation id="5104236669533825617">ضبط ویدیویی از صفحه ایجاد نشد</translation>
 <translation id="5107522548814527560">وب</translation>
+<translation id="5111318697104479778"><ph name="DESC" />، <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">نمایش ماه بعدی</translation>
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
 <translation id="5147567197700016471">قفل‌نشده</translation>
@@ -820,6 +825,7 @@
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5648021990716966815">فیش میکروفون</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> به توجه شما نیاز دارد.</translation>
+<translation id="5662075790140998213">میزکار ۱۰</translation>
 <translation id="5662709761327382534">ضبط میکروفون <ph name="CURRENT_STATE" /> است، کلید ورود را فشار دهید تا ضبط میکروفون <ph name="NEW_STATE" /> شود</translation>
 <translation id="5669267381087807207">فعالسازی</translation>
 <translation id="5673434351075758678">از «<ph name="FROM_LOCALE" />» به «<ph name="TO_LOCALE" />» بعد از همگام‌سازی تنظیمات.</translation>
@@ -1019,6 +1025,8 @@
 <translation id="6753390234084146956">برگه‌ها</translation>
 <translation id="6757237461819837179">هیچ رسانه‌ای درحال پخش نیست</translation>
 <translation id="6777216307882431711">‏درحال تأمین برق دستگاه‌های USB-C متصل</translation>
+<translation id="6781002679438061620">میزکار ۹</translation>
+<translation id="6782182743534150858">میزکار ۱۳</translation>
 <translation id="6786750046913594791">بستن پوشه</translation>
 <translation id="6787595647772650851">بازیابی آخرین جلسه</translation>
 <translation id="6790428901817661496">پخش</translation>
@@ -1080,6 +1088,7 @@
 <translation id="7098053464892629930">‏برای دیدن همه ویژگی‌های موجود، برنامه مرتبط با <ph name="NAME" /> را از Google Play بارگیری کنید.</translation>
 <translation id="7098389117866926363">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="7106330611027933926">نمایش نوار میزکار</translation>
+<translation id="7116969082764510092">میزکار ۱۱</translation>
 <translation id="7118268675952955085">نماگرفت</translation>
 <translation id="7126996685418858413">هفته گذشته باز شده است</translation>
 <translation id="7130207228079676353">به احتمال خیلی زیاد</translation>
@@ -1178,6 +1187,7 @@
 <translation id="7662283695561029522">برای پیکربندی ضربه بزنید</translation>
 <translation id="7670953955701272011">‏باز کردن این تاریخ در «تقویم Google»</translation>
 <translation id="7671610481353807627">برنامه‌ها براساس رنگ مرتب شده‌اند</translation>
+<translation id="7672095158465655885">متصل به <ph name="NAME" />، <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ورودی دوربین روی <ph name="CAMERA_NAME" /> تنظیم شد.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">افزودن شبکه تلفن همراه جدید</translation>
@@ -1462,5 +1472,6 @@
 <translation id="974545358917229949">نمایش <ph name="RESULT_COUNT" /> نتیجه برای <ph name="QUERY" /></translation>
 <translation id="98515147261107953">افقی</translation>
 <translation id="990277280839877440">پنجره <ph name="WINDOW_TITILE" /> بسته شد.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />، <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">جدیدترین ویژگی‌ها و قابلیت‌های امنیتی بهبودیافته را دریافت می‌کنید. به‌روزرسانی در پس‌زمینه انجام می‌شود.</translation>
 </translationbundle>

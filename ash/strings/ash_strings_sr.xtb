@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">Још увек нема шта да се види</translation>
 <translation id="3428447136709161042">Прекините везу са мрежом <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Превуците са десне стране да бисте се вратили</translation>
+<translation id="3431517721463707585">Радна површина 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Измени подсетник</translation>
 <translation id="3435967511775410570">Отисак је препознат</translation>
@@ -674,6 +675,7 @@
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лева)</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4735944890391795473">Радна површина 12</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4740516757091333363">Желите да избришете сачувану радну површину?</translation>
 <translation id="4752784485658729358">Дозвољено је само 6 сачуваних радних површина. Уклоните неку радну површину да бисте сачували нову.</translation>
@@ -694,6 +696,7 @@
 <translation id="4860284199500934869">Проверите мрежну везу да бисте преузели <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Пробаћемо преузимање касније. Говор ће бити послат Google-у ради обраде док се преузимање не заврши.</translation>
 <translation id="4864369630010738180">Пријављивање...</translation>
+<translation id="4864648187878336334">Радна површина 15</translation>
 <translation id="4868492592575313542">активирано</translation>
 <translation id="4872237917498892622">Alt + тастер за претрагу или Shift</translation>
 <translation id="4881695831933465202">Отвори</translation>
@@ -720,6 +723,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Радна површина 16</translation>
 <translation id="5003993274120026347">Следећа реченица</translation>
 <translation id="5016558321564993266">Укључите/искључите маркер. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Време је истекло</translation>
@@ -735,6 +739,7 @@
 <translation id="5098537242461068432">Радна површина и прозори су поново отворени</translation>
 <translation id="5104236669533825617">Прављење видео снимка екрана није успело</translation>
 <translation id="5107522548814527560">Веб</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Прикажи следећи месец</translation>
 <translation id="5136175204352732067">Нека друга тастатура је повезана</translation>
 <translation id="5147567197700016471">Откључано</translation>
@@ -822,6 +827,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Утикач за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> захтева вашу пажњу.</translation>
+<translation id="5662075790140998213">Радна површина 10</translation>
 <translation id="5662709761327382534">Подешавање Снимај помоћу микрофона је <ph name="CURRENT_STATE" />, притисните enter да би снимање помоћу микрофона било <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5673434351075758678">Са језика „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ после синхронизације уређаја.</translation>
@@ -1021,6 +1027,8 @@
 <translation id="6753390234084146956">картице</translation>
 <translation id="6757237461819837179">Медији се не репродукују</translation>
 <translation id="6777216307882431711">Напаја повезане уређаје са USB прикључком типа C</translation>
+<translation id="6781002679438061620">Радна површина 9</translation>
+<translation id="6782182743534150858">Радна површина 13</translation>
 <translation id="6786750046913594791">Затворите директоријум</translation>
 <translation id="6787595647772650851">Вратите последњу сесију</translation>
 <translation id="6790428901817661496">Пусти</translation>
@@ -1082,6 +1090,7 @@
 <translation id="7098053464892629930">Преузмите апликацију за <ph name="NAME" /> на Google Play-у да бисте видели све доступне функције</translation>
 <translation id="7098389117866926363">Уређај са USB прикључком типа C (леви задњи порт)</translation>
 <translation id="7106330611027933926">Прикажи траку за радне површине</translation>
+<translation id="7116969082764510092">Радна површина 11</translation>
 <translation id="7118268675952955085">снимак екрана</translation>
 <translation id="7126996685418858413">Отварано протекле недеље</translation>
 <translation id="7130207228079676353">НАЈВЕРОВАТНИЈЕ</translation>
@@ -1180,6 +1189,7 @@
 <translation id="7662283695561029522">Додирните да бисте конфигурисали</translation>
 <translation id="7670953955701272011">Отворите овај датум у Google календару</translation>
 <translation id="7671610481353807627">Апликације су сортиране према боји</translation>
+<translation id="7672095158465655885">Успостављена је веза са: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Унос помоћу камере је подешен на <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Додајте нову мобилну мрежу</translation>
@@ -1465,5 +1475,6 @@
 <translation id="974545358917229949">Приказују се резултати (<ph name="RESULT_COUNT" />) за: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Хоризонтално</translation>
 <translation id="990277280839877440">Прозор <ph name="WINDOW_TITILE" /> је затворен.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Добијајте најновије функције и безбедносна побољшања. Ажурирања се врше у позадини.</translation>
 </translationbundle>

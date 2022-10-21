@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
 <translation id="3428447136709161042">断开与<ph name="NETWORK_NAME" />的连接</translation>
 <translation id="3430396595145920809">从右向左滑动手指即可返回</translation>
+<translation id="3431517721463707585">桌面 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">修改提醒</translation>
 <translation id="3435967511775410570">已识别指纹</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4734965478015604180">横向</translation>
+<translation id="4735944890391795473">桌面 12</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">要删除已保存的桌面吗？</translation>
 <translation id="4752784485658729358">最多只能保存 6 个桌面。若要保存一个新桌面，请先移除一个已存桌面。</translation>
@@ -693,6 +695,7 @@
 <translation id="4860284199500934869">请检查您的网络连接状况以下载“<ph name="FILENAME" />”</translation>
 <translation id="486056901304535126">系统会于晚些时候再次尝试下载。系统会将语音发送给 Google 以供处理，直到下载完毕。</translation>
 <translation id="4864369630010738180">正在登录…</translation>
+<translation id="4864648187878336334">桌面 15</translation>
 <translation id="4868492592575313542">已启用</translation>
 <translation id="4872237917498892622">Alt + 搜索键或 Shift</translation>
 <translation id="4881695831933465202">打开</translation>
@@ -719,6 +722,7 @@
         <ph name="NOTIFICATION_1" />；
         <ph name="NOTIFICATION_2" />；
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">桌面 16</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5016558321564993266">开启/关闭标记工具。<ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">时间到</translation>
@@ -734,6 +738,7 @@
 <translation id="5098537242461068432">已重新打开桌面和窗口</translation>
 <translation id="5104236669533825617">无法创建抓屏</translation>
 <translation id="5107522548814527560">网页</translation>
+<translation id="5111318697104479778"><ph name="DESC" />，<ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5147567197700016471">已解锁</translation>
@@ -821,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />中有需要您关注的新动态。</translation>
+<translation id="5662075790140998213">桌面 10</translation>
 <translation id="5662709761327382534">麦克风录音功能已<ph name="CURRENT_STATE" />，按 Enter 键即可<ph name="NEW_STATE" />此功能</translation>
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
@@ -1020,6 +1026,8 @@
 <translation id="6753390234084146956">标签页</translation>
 <translation id="6757237461819837179">目前未播放任何媒体</translation>
 <translation id="6777216307882431711">正在为已连接的 USB-C 设备充电</translation>
+<translation id="6781002679438061620">桌面 9</translation>
+<translation id="6782182743534150858">桌面 13</translation>
 <translation id="6786750046913594791">关闭文件夹</translation>
 <translation id="6787595647772650851">恢复上次的会话</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -1081,6 +1089,7 @@
 <translation id="7098053464892629930">请前往 Google Play 下载“<ph name="NAME" />”应用以查看所有可用功能</translation>
 <translation id="7098389117866926363">USB-C 设备（背面左侧端口）</translation>
 <translation id="7106330611027933926">显示桌面栏</translation>
+<translation id="7116969082764510092">桌面 11</translation>
 <translation id="7118268675952955085">屏幕截图</translation>
 <translation id="7126996685418858413">过去一周内打开过</translation>
 <translation id="7130207228079676353">很可能会点击的应用</translation>
@@ -1176,6 +1185,7 @@
 <translation id="7662283695561029522">点按即可配置</translation>
 <translation id="7670953955701272011">在 Google 日历中打开此日期</translation>
 <translation id="7671610481353807627">应用已按颜色排序</translation>
+<translation id="7672095158465655885">已连接到网络“<ph name="NAME" />”，<ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">相机输入已设为“<ph name="CAMERA_NAME" />”。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">添加新的移动网络</translation>
@@ -1461,5 +1471,6 @@
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="98515147261107953">横向</translation>
 <translation id="990277280839877440">已关闭窗口“<ph name="WINDOW_TITILE" />”。</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />，<ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">获取最新的功能和安全性方面的改进。更新在后台进行。</translation>
 </translationbundle>

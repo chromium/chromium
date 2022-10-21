@@ -433,6 +433,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3413817803639110246">Veel ei ole midagi kuvada</translation>
 <translation id="3428447136709161042">Katkesta ühendus võrguga <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Tagasiliikumiseks pühkige paremalt vasakule</translation>
+<translation id="3431517721463707585">Töölaud 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Meeldetuletuse muutmine</translation>
 <translation id="3435967511775410570">Sõrmejälg tunti ära</translation>
@@ -674,6 +675,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vasak)</translation>
 <translation id="4734965478015604180">Horisontaalne</translation>
+<translation id="4735944890391795473">Töölaud 12</translation>
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="4740516757091333363">Kas kustutada salvestatud töölaud?</translation>
 <translation id="4752784485658729358">Lubatud on ainult kuni 6 salvestatud töölauda. Uue töölaua salvestamiseks peate mõne eemaldama.</translation>
@@ -694,6 +696,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4860284199500934869">Kontrollige oma võrguühendust, et fail <ph name="FILENAME" /> alla laadida</translation>
 <translation id="486056901304535126">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse Google'ile töötlemiseks, kui allalaadimine on lõpetatud.</translation>
 <translation id="4864369630010738180">Sisselogimine ...</translation>
+<translation id="4864648187878336334">Töölaud 15</translation>
 <translation id="4868492592575313542">aktiveeritud</translation>
 <translation id="4872237917498892622">Alt + otsinguklahv või tõstuklahv</translation>
 <translation id="4881695831933465202">Ava</translation>
@@ -720,6 +723,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Töölaud 16</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
 <translation id="5016558321564993266">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Aeg on läbi</translation>
@@ -735,6 +739,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5098537242461068432">Töölaud ja aknad avati uuesti</translation>
 <translation id="5104236669533825617">Ekraaniülekannet ei saa luua</translation>
 <translation id="5107522548814527560">Veeb</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Järgmise kuu kuvamine</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
 <translation id="5147567197700016471">Avatud</translation>
@@ -822,6 +827,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vajab teie tähelepanu.</translation>
+<translation id="5662075790140998213">Töölaud 10</translation>
 <translation id="5662709761327382534">Mikrofoni salvestamine: <ph name="CURRENT_STATE" />, vajutage sisestusklahvi, et mikrofoni salvestamine <ph name="NEW_STATE" /> lülitada</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5673434351075758678">Pärast seadete sünkroonimist lokaadist „<ph name="FROM_LOCALE" />” lokaati „<ph name="TO_LOCALE" />”.</translation>
@@ -1021,6 +1027,8 @@ Uus installimine</translation>
 <translation id="6753390234084146956">vahelehti</translation>
 <translation id="6757237461819837179">Meediat ei esitata</translation>
 <translation id="6777216307882431711">Ühendatud USB-C-tüüpi seadmete toitega varustamine</translation>
+<translation id="6781002679438061620">Töölaud 9</translation>
+<translation id="6782182743534150858">Töölaud 13</translation>
 <translation id="6786750046913594791">Kausta sulgemine</translation>
 <translation id="6787595647772650851">Taasta eelmine seanss</translation>
 <translation id="6790428901817661496">Esita</translation>
@@ -1082,6 +1090,7 @@ Uus installimine</translation>
 <translation id="7098053464892629930">Laadige teenuse <ph name="NAME" /> rakendus Google Playst alla, et näha kõiki saadaolevaid funktsioone</translation>
 <translation id="7098389117866926363">C-tüüpi USB-seade (vasakpoolne port taga)</translation>
 <translation id="7106330611027933926">Kuva töölauariba</translation>
+<translation id="7116969082764510092">Töölaud 11</translation>
 <translation id="7118268675952955085">ekraanipilt</translation>
 <translation id="7126996685418858413">Avatud viimase nädala jooksul</translation>
 <translation id="7130207228079676353">KÕIGE TÕENÄOLISEMAD</translation>
@@ -1180,6 +1189,7 @@ Uus installimine</translation>
 <translation id="7662283695561029522">Puudutage seadistamiseks</translation>
 <translation id="7670953955701272011">Avage see kuupäev Google'i kalendris</translation>
 <translation id="7671610481353807627">Rakendused on sorditud värvi järgi</translation>
+<translation id="7672095158465655885">Ühendatud võrguga <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kaamerasisendiks on määratud <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lisa uus mobiilsidevõrk</translation>
@@ -1465,5 +1475,6 @@ Uus installimine</translation>
 <translation id="974545358917229949">Kuvatud on <ph name="RESULT_COUNT" /> tulemust päringule <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horisontaalpaigutus</translation>
 <translation id="990277280839877440">Aken <ph name="WINDOW_TITILE" /> on suletud.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Hankige uusimad funktsioonid ja turvatäiustused. Värskendamine toimub taustal.</translation>
 </translationbundle>

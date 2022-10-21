@@ -276,6 +276,7 @@
 <translation id="1244303850296295656">확장 프로그램 오류</translation>
 <translation id="1245628370644070008">로컬 데이터 복구</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> VM을 설치할 수 없습니다. 이미지 URL이 <ph name="HTTP_ERROR" /> 오류 코드를 반환했습니다. 관리자에게 문의해 주세요.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{사이트 1개에 알림이 허용되지 않음}other{사이트 {NUM_SITES}개에 알림이 허용되지 않음}}</translation>
 <translation id="1251366534849411931">열림 중괄호 누락: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="1251578593170406502">모바일 데이터 네트워크를 스캔하는 중...</translation>
@@ -1657,6 +1658,7 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />을 제거하려면 Windows를 종료하세요.</translation>
 <translation id="2477065602824695373">여러 스위치를 설정했으므로 자동 스캔이 사용 중지되었습니다.</translation>
 <translation id="2478176599153288112">'<ph name="EXTENSION" />'의 미디어 파일 권한</translation>
+<translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
@@ -4219,6 +4221,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4901154724271753917">최근에 닫은 탭 펼치기</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요.</translation>
 <translation id="49027928311173603">서버에서 다운로드한 정책이 잘못됨: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">부드러운 스크롤 등의 시각 효과와 백그라운드 활동을 제한하여 배터리 사용 시간을 연장합니다.</translation>
 <translation id="4906490889887219338">네트워크 파일 공유를 설정하거나 관리합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">확장 프로그램에서 사이트 데이터를 읽고 변경할 수 있는 경우 선택</translation>
 <translation id="4907161631261076876">이 파일은 위험할 수 있기 때문에 일반적으로 다운로드하지 않습니다.</translation>
@@ -5325,6 +5328,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5971037678316050792">블루투스 어댑터 상태 및 페어링을 제어합니다.</translation>
 <translation id="597235323114979258">대상 더보기</translation>
 <translation id="5972543790327947908">지원되는 링크 일부는 <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> 또는 <ph name="APP_NAME_3" />에서 계속 열 수 있습니다.</translation>
+<translation id="5972559880616357748"><ph name="SITE_GROUP" />의 작업 메뉴 더보기</translation>
 <translation id="5972666587303800813">작동하지 않는 서비스</translation>
 <translation id="5972708806901999743">가장 위로 이동</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> 시작</translation>
@@ -8511,6 +8515,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8987927404178983737">월</translation>
 <translation id="8989359959810288806">테더링 상태 새로고침</translation>
 <translation id="8991520179165052608">사이트에서 마이크를 사용할 수 있습니다.</translation>
+<translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> 비밀번호를 잊어버린 경우에도 로컬 데이터를 복원할 수 있습니다. Google 계정에 로그인하거나 계정 복구를 사용해야 합니다.</translation>
 <translation id="899384117894244799">제한된 사용자 삭제</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">어디에서나 나만의 Chrome을 사용하세요</translation>
@@ -8610,6 +8615,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9078316009970372699">인스턴트 테더링 사용 중지</translation>
 <translation id="9078842827190780028">측면 패널에 더 많은 검색결과 표시</translation>
 <translation id="9079267182985899251">이 옵션은 곧 지원 중단됩니다. 탭을 발표하려면 <ph name="GOOGLE_MEET" />을 사용하세요.</translation>
+<translation id="9080175821499742274">메모리 절약 모드는 활성 탭과 기타 앱에 사용할 수 있도록 비활성 탭에서 메모리를 확보합니다.</translation>
 <translation id="9080971985541434310">관심분야를 예측합니다. Chrome에서 내 관심분야를 예측합니다.</translation>
 <translation id="9081543426177426948">시크릿 모드에서는 방문한 사이트가 저장되지 않음</translation>
 <translation id="9084064520949870008">창으로 열기</translation>
@@ -8799,6 +8805,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="964790508619473209">화면 배치</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" />에서 SMS를 보내고 받으세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast 문제 신고</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 사이트 1개를 검토합니다.}other{최근에 알림을 많이 보낸 사이트 {NUM_SITES}개를 검토합니다.}}</translation>
 <translation id="967398046773905967">모든 사이트의 HID 기기 액세스를 허용하지 않음</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
 <translation id="96774243435178359">관리되는 프린터</translation>

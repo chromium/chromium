@@ -433,6 +433,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3413817803639110246">Hozircha hech narsa yo‘q</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> aloqasini uzish</translation>
 <translation id="3430396595145920809">Orqaga qaytish uchun oʻngdan chapga suring</translation>
+<translation id="3431517721463707585">Desk 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Eslatmani tahrirlash</translation>
 <translation id="3435967511775410570">Barmoq izi aniqlandi</translation>
@@ -673,6 +674,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (chap)</translation>
 <translation id="4734965478015604180">Gorizontal</translation>
+<translation id="4735944890391795473">Desk 12</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4740516757091333363">Saqlangan ish stoli oʻchirilsinmi?</translation>
 <translation id="4752784485658729358">Faqat 6 tagacha ish stolini saqlash mumkin. Yangisini saqlash uchun eskilarini oʻchiring.</translation>
@@ -693,6 +695,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> faylini yuklab olish uchun internetga ulanishni tekshiring</translation>
 <translation id="486056901304535126">Keyinroq yuklab olinadi. Yuklab olinguncha nutq qayta ishlanishi uchun Googlega yuboriladi.</translation>
 <translation id="4864369630010738180">Kirilmoqda…</translation>
+<translation id="4864648187878336334">Desk 15</translation>
 <translation id="4868492592575313542">faollashtirildi</translation>
 <translation id="4872237917498892622">Alt+Search yoki Shift</translation>
 <translation id="4881695831933465202">Ochish</translation>
@@ -719,6 +722,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Desk 16</translation>
 <translation id="5003993274120026347">Keyingi gap</translation>
 <translation id="5016558321564993266">Marker holatini oʻzgartirish. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Vaqt tugadi</translation>
@@ -734,6 +738,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5098537242461068432">Ish stoli va oynalar qaytadan ochildi</translation>
 <translation id="5104236669533825617">Skrinkast yaratilmadi</translation>
 <translation id="5107522548814527560">Veb</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Keyingi oyni ko‘rsatish</translation>
 <translation id="5136175204352732067">Boshqa klaviatura ulandi</translation>
 <translation id="5147567197700016471">Ochiq</translation>
@@ -821,6 +826,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon teshigi</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ilovasiga diqqat qaratishingiz zarur.</translation>
+<translation id="5662075790140998213">Desk 10</translation>
 <translation id="5662709761327382534">Mikrofon bilan yozib olish <ph name="CURRENT_STATE" />, mikrofon bilan yozib olishni <ph name="NEW_STATE" /> qilish uchun Enter tugmasini bosing</translation>
 <translation id="5669267381087807207">Faollashmoqda</translation>
 <translation id="5673434351075758678">Sinxronlash natijasida “<ph name="FROM_LOCALE" />” o‘rniga “<ph name="TO_LOCALE" />” asosiy til etib tayinlandi.</translation>
@@ -1020,6 +1026,8 @@ yangi oʻrnatilgan</translation>
 <translation id="6753390234084146956">varaqlar</translation>
 <translation id="6757237461819837179">Hech narsa ijro qilinmayapti</translation>
 <translation id="6777216307882431711">Ulangan USB-C qurilmalar quvvatlanmoqda</translation>
+<translation id="6781002679438061620">Desk 9</translation>
+<translation id="6782182743534150858">Desk 13</translation>
 <translation id="6786750046913594791">Jildni yopish</translation>
 <translation id="6787595647772650851">Oxirgi seansni tiklash</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
@@ -1081,6 +1089,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7098053464892629930">Barcha funksiyalardan foydalanish uchun Google Play Market orqali <ph name="NAME" /> ilovasini yuklab oling</translation>
 <translation id="7098389117866926363">USB-C qurilma (orqa tomondagi chap port)</translation>
 <translation id="7106330611027933926">Ish panelini ochish</translation>
+<translation id="7116969082764510092">Desk 11</translation>
 <translation id="7118268675952955085">skrinshot</translation>
 <translation id="7126996685418858413">Oxirgi haftada ochilgan</translation>
 <translation id="7130207228079676353">ENG SEVIMLI</translation>
@@ -1179,6 +1188,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7662283695561029522">Sozlash uchun bosing</translation>
 <translation id="7670953955701272011">Bu sanani Google Taqvimda ochish</translation>
 <translation id="7671610481353807627">Ilovalar rangi asosida saralandi</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> qurilmasiga ulangan, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067"><ph name="CAMERA_NAME" /> uchun kameradan kiritish sozlandi.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Yangi mobil tarmoq kiritish</translation>
@@ -1464,5 +1474,6 @@ yangi oʻrnatilgan</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> – <ph name="RESULT_COUNT" /> natija chiqdi</translation>
 <translation id="98515147261107953">Manzara</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> oynasi yopildi.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Eng oxirgi funksiyalar va xavfsizlikka oid yangilanishlarni olish Yangilanish fonda bajariladi</translation>
 </translationbundle>

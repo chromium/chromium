@@ -275,6 +275,7 @@
 <translation id="1244303850296295656">擴充功能錯誤</translation>
 <translation id="1245628370644070008">本機資料復原</translation>
 <translation id="1246863218384630739">無法安裝「<ph name="VM_NAME" />」：圖片網址已傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請聯絡您的管理員。</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{已禁止 1 個網站傳送通知}other{已禁止 {NUM_SITES} 個網站傳送通知}}</translation>
 <translation id="1251366534849411931">缺少預期的開頭大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作會清除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
 <translation id="1251578593170406502">正在掃瞄流動數據網絡…</translation>
@@ -1652,6 +1653,7 @@
 <translation id="2476974672882258506">關閉 Windows 即可解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由於您已設定多個按鈕裝置，因此自動掃瞄已關閉。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
+<translation id="24786041351753425">啟用資料復原服務。</translation>
 <translation id="2480868415629598489">修改您複製並貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
@@ -4210,6 +4212,7 @@
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="4903967893652864401">在此模式下，系統會限制背景活動和視覺效果 (例如平滑捲動) 以延長電池電量</translation>
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">選擇這個擴充程式何時可讀取並變更網站資料</translation>
 <translation id="4907161631261076876">此檔案不常下載，代表此檔案可能不安全。</translation>
@@ -5311,6 +5314,7 @@
 <translation id="5971037678316050792">控制藍牙介面卡狀態與連線配對功能</translation>
 <translation id="597235323114979258">顯示更多目的地</translation>
 <translation id="5972543790327947908">部分支援連結將仍會在 <ph name="APP_NAME" />、<ph name="APP_NAME_2" /> 或 <ph name="APP_NAME_3" /> 中開啟。</translation>
+<translation id="5972559880616357748">可以對　<ph name="SITE_GROUP" />　執行嘅其他操作</translation>
 <translation id="5972666587303800813">無操作服務</translation>
 <translation id="5972708806901999743">移至頂部</translation>
 <translation id="5972826969634861500">啟動 <ph name="PRODUCT_NAME" /></translation>
@@ -8488,6 +8492,7 @@
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">重新整理網絡共享狀態</translation>
 <translation id="8991520179165052608">網站可以使用您的麥克風</translation>
+<translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，您仍可還原本機資料。您需要登入 Google 帳戶或使用復原帳戶功能。</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
 <translation id="899657321862108550">隨時隨地使用 Chrome</translation>
@@ -8587,6 +8592,7 @@
 <translation id="9078316009970372699">停用「即時網絡共享」</translation>
 <translation id="9078842827190780028">透過側面板查看更多搜尋結果</translation>
 <translation id="9079267182985899251">系統即將停止支援此選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="9080175821499742274">「記憶體節省模式」會從閒置分頁釋出記憶體，給使用中的分頁和其他應用程式。</translation>
 <translation id="9080971985541434310">推測您的興趣 - Chrome 可以推測您的興趣</translation>
 <translation id="9081543426177426948">在無痕模式下無法儲存您瀏覽的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
@@ -8775,6 +8781,7 @@
 <translation id="964790508619473209">螢幕安排</translation>
 <translation id="965211523698323809">在 <ph name="DEVICE_TYPE" /> 上收發短訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">報告 Google Cast 的問題</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{審核最近曾傳送大量通知的 1 個網站}other{審核最近曾傳送大量通知的 {NUM_SITES} 個網站}}</translation>
 <translation id="967398046773905967">禁止任何網站存取 HID 裝置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的打印機</translation>

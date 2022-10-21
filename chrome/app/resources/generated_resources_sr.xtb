@@ -276,6 +276,7 @@
 <translation id="1244303850296295656">Грешка додатка</translation>
 <translation id="1245628370644070008">Враћање локалних података</translation>
 <translation id="1246863218384630739">Инсталирање <ph name="VM_NAME" />-а није успело: URL слике је приказао кôд грешке <ph name="HTTP_ERROR" />. Обратите се администратору.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{Обавештења нису дозвољена за 1 сајт}one{Обавештења нису дозвољена за {NUM_SITES} сајт}few{Обавештења нису дозвољена за {NUM_SITES} сајта}other{Обавештења нису дозвољена за {NUM_SITES} сајтова}}</translation>
 <translation id="1251366534849411931">Недостаје отворена витичаста заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају сајтови и инсталиране апликације</translation>
 <translation id="1251578593170406502">Траже се мобилне мреже за пренос података...</translation>
@@ -1640,6 +1641,7 @@
 <translation id="2476974672882258506">Искључите Windows да бисте деинсталирали <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Пошто сте подесили више прекидача, аутоматско скенирање је искључено.</translation>
 <translation id="2478176599153288112">Дозволе за медијске датотеке за „<ph name="EXTENSION" />“</translation>
+<translation id="24786041351753425">Омогућите услугу враћања података.</translation>
 <translation id="2480868415629598489">Мењање података које прекопирате</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2482895651873876648">Картица је премештена у групу <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -4203,6 +4205,7 @@
 <translation id="4901154724271753917">Прошири недавно затворено</translation>
 <translation id="4901309472892185668">Изаберите стање за експеримент <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Смернице преузете са сервера су неважеће: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Ово штеди батерију ограничавањем активности у позадини и визуелних ефеката као што је глатко скроловање.</translation>
 <translation id="4906490889887219338">Подесите дељења датотека на мрежи или управљајте њима. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Одаберите када овај додатак може да чита и мења податке о сајтовима</translation>
 <translation id="4907161631261076876">Ова датотека се не преузима често и може да буде опасна.</translation>
@@ -5309,6 +5312,7 @@
 <translation id="5971037678316050792">Контрола стања и упаривања Bluetooth адаптера</translation>
 <translation id="597235323114979258">Погледајте још дестинација</translation>
 <translation id="5972543790327947908">Неки подржани линкови ће се и даље отварати у <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> или <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">Још радњи за <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Услуга без операције</translation>
 <translation id="5972708806901999743">Премести на врх</translation>
 <translation id="5972826969634861500">Покрени <ph name="PRODUCT_NAME" /></translation>
@@ -8500,6 +8504,7 @@
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8989359959810288806">Освежи статус привезивања</translation>
 <translation id="8991520179165052608">Сајт може да користи микрофон</translation>
+<translation id="8993059306046735527">Ако заборавите лозинку за <ph name="DEVICE_TYPE" />, и даље можете да вратите локалне податке. Морате да се пријавите на Google налог или да употребите враћање приступа налогу.</translation>
 <translation id="899384117894244799">Уклоните корисника са ограниченим приступом</translation>
 <translation id="899403249577094719">Основна URL адреса за Netscape сертификат</translation>
 <translation id="899657321862108550">Ваш Chrome, свуда</translation>
@@ -8599,6 +8604,7 @@
 <translation id="9078316009970372699">Онемогући тренутно привезивање</translation>
 <translation id="9078842827190780028">Погледајте још резултата претраге на бочној табли</translation>
 <translation id="9079267182985899251">Ова опција ускоро више неће бити подржана. Да бисте приказали картицу, користите <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">Уштеда меморије ослобађа меморију са неактивних картица да би могле да је користе активне картице и друге апликације.</translation>
 <translation id="9080971985541434310">процењује интересовања – Chrome може да процени ваша интересовања</translation>
 <translation id="9081543426177426948">Сајтови које посећујете се не чувају у режиму без архивирања</translation>
 <translation id="9084064520949870008">Отвори као прозор</translation>
@@ -8788,6 +8794,7 @@
 <translation id="964790508619473209">Распоред на екрану</translation>
 <translation id="965211523698323809">Шаљите и примајте SMS-ове са уређаја <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Пријавите проблем са Google Cast-ом</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Прегледајте 1 сајт који је недавно послао много обавештења}one{Прегледајте {NUM_SITES} сајт који је недавно послао много обавештења}few{Прегледајте {NUM_SITES} сајта која су недавно послала много обавештења}other{Прегледајте {NUM_SITES} сајтова који су недавно послали много обавештења}}</translation>
 <translation id="967398046773905967">Не дозвољавај сајтовима да приступају уређајима са интерфејсом</translation>
 <translation id="967624055006145463">Сачувани подаци</translation>
 <translation id="96774243435178359">Управљани штампачи</translation>

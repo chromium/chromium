@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Aanbevolen voor de beste functionaliteit</translation>
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Van <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Gerelateerde sites kunnen je activiteit in de groep bekijken</translation>
 <translation id="1887786770086287077">Locatietoegang staat uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1919345977826869612">Advertenties</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Alle sites in dit domein opnemen</translation>
 <translation id="4883854917563148705">Beheerde instellingen kunnen niet worden gereset</translation>
 <translation id="4887024562049524730">Vragen voordat sites je virtualreality-apparaat en -gegevens mogen gebruiken (aanbevolen)</translation>
+<translation id="4955223779495905865">Een site die je bezoekt, kan content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Al deze sites kunnen cookies en andere gegevens opslaan om je gebruikerservaring te personaliseren.</translation>
 <translation id="4962975101802056554">Alle rechten voor apparaat intrekken</translation>
 <translation id="497421865427891073">Naar voren gaan</translation>
 <translation id="4976702386844183910">Laatst bezocht: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Sites toegang geven tot bewegingssensoren (aanbevolen)</translation>
 <translation id="5050380848339752099">Deze site staat op het punt buiten de incognitomodus informatie met een app te delen.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
+<translation id="5082281938627763039">Hiermee worden cookies en andere sitegegevens verwijderd voor <ph name="FPS_MEMBER" /> en voor sites in de groep sites van <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Mobiele site</translation>
 <translation id="509133520954049755">Desktopweergave opvragen</translation>
 <translation id="5100237604440890931">Samengevouwen; klik om uit te vouwen.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Geblokkeerd</translation>
 <translation id="5689516760719285838">Locatie</translation>
 <translation id="5690795753582697420">Camera staat uit in de Android-instellingen</translation>
+<translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
 <translation id="5719847187258001597">Hiermee wis je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" /> of de bijbehorende app op je startscherm.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Geluid toestaan voor een specifieke site.</translation>
 <translation id="789180354981963912">Cookies van derden blokkeren in incognito:</translation>
 <translation id="7940722705963108451">Herinner me eraan</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site in de groep sites van <ph name="FPS_OWNER" /> die je activiteit in de groep kunnen bekijken}other{<ph name="FPS_MEMBERS_COUNT" /> sites in de groep sites van <ph name="FPS_OWNER" /> die je activiteit in de groep kunnen bekijken}}</translation>
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7999064672810608036">Weet je zeker dat je alle gegevens, inclusief cookies, voor deze website wilt wissen en alle rechten opnieuw wilt instellen?</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Microfoon aanzetten</translation>
 <translation id="851751545965956758">Voorkomen dat sites verbinding maken met apparaten</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> site van <ph name="FPS_OWNER" />}other{Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> sites van <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Toegestaan (aanbevolen)</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Vergeten</translation>
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Cookies verwijderen?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>

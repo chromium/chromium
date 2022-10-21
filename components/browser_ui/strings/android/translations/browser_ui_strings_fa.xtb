@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">توصیه‌شده برای داشتن بهترین تجربه</translation>
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="1864927262126810325">از <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">سایت‌های مرتبط می‌توانند فعالیت شما را در گروه ببینند</translation>
 <translation id="1887786770086287077">‏دسترسی به مکان برای این دستگاه خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1919345977826869612">آگهی‌ها</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">لحاظ کردن همه سایت‌های تحت این دامنه</translation>
 <translation id="4883854917563148705">تنظیمات مدیریت‌شده بازنشانی نشدند</translation>
 <translation id="4887024562049524730">قبل از اینکه به سایت‌ها اجازه داده شود به دستگاه و داده‌های واقعیت مجازی دسترسی یابند سؤال شود (توصیه می‌شود)</translation>
+<translation id="4955223779495905865">یکی از سایت‌هایی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. هریک از این سایت‌ها می‌توانند برای شخصی کردن تجربه شما کوکی و داده‌های دیگر ذخیره کنند.</translation>
 <translation id="4962975101802056554">لغو همه مجوزها برای دستگاه</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
 <translation id="4976702386844183910">آخرین بازدید: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">مجاز بودن دسترسی سایت‌ها به حسگرهای حرکتی (توصیه می‌شود)</translation>
 <translation id="5050380848339752099">این سایت می‌خواهد خارج از «حالت ناشناس»، اطلاعاتی را با برنامه‌ای هم‌رسانی کند.</translation>
 <translation id="5063480226653192405">کاربر </translation>
+<translation id="5082281938627763039">با این کار کوکی‌ها و دیگر داده‌های سایت برای <ph name="FPS_MEMBER" /> و سایت‌های موجود در گروه <ph name="FPS_OWNER" /> حذف می‌شوند</translation>
 <translation id="5091013926750941408">سایت ویژه تلفن همراه</translation>
 <translation id="509133520954049755">درخواست نمای رایانه</translation>
 <translation id="5100237604440890931">کوچک شده - برای بزرگ کردن کلیک کنید.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">مسدود است</translation>
 <translation id="5689516760719285838">مکان</translation>
 <translation id="5690795753582697420">‏«دوربین» در تنظیمات Android خاموش است</translation>
+<translation id="5706552988683188916">با این کار کوکی‌ها و دیگر داده‌های سایت برای <ph name="WEBSITE" /> حذف می‌شود</translation>
 <translation id="5719847187258001597">با این کار همه داده‌ها و کوکی‌هایی که <ph name="ORIGIN" /> و برنامه آن در صفحه اصلی ذخیره کرده‌اند پاک می‌شود.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">مجوزها</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">پخش صدا برای سایت خاصی مجاز شود.</translation>
 <translation id="789180354981963912">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»:</translation>
 <translation id="7940722705963108451">به من یادآوری شود</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="FPS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}one{<ph name="FPS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="FPS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}other{<ph name="FPS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="FPS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}}</translation>
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
 <translation id="7999064672810608036">مطمئنید که می‌خواهید تمام داده‌های محلی، شامل کوکی‌ها را حذف کنید و تمام مجوزهای این وب‌سایت را بازنشانی کنید؟</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">باصدا کردن میکروفون</translation>
 <translation id="851751545965956758">مسدود کردن سایت‌ها برای اتصال به دستگاه‌ها</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}one{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}other{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}}</translation>
 <translation id="857943718398505171">مجاز (توصیه می‌شود)</translation>
 <translation id="8609465669617005112">انتقال به بالا</translation>
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="9019902583201351841">مدیریت شده توسط والدین شما</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
+<translation id="9090268041676521955">این سایت در گروهی است که می‌تواند فعالیت شما را ببیند. <ph name="FPS_OWNER" /> این گروه را تعریف کرده است</translation>
+<translation id="9106233582039520022">کوکی‌ها حذف شود؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}}</translation>
 <translation id="913657688200966289">‏اجازه‌های <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="9162462602695099906">این صفحه خطرناک است</translation>

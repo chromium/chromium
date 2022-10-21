@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">Itt most nem látható semmi</translation>
 <translation id="3428447136709161042">Kapcsolat bontása: <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">A visszalépéshez csúsztasson jobbról balra</translation>
+<translation id="3431517721463707585">14. asztal</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Emlékeztető szerkesztése</translation>
 <translation id="3435967511775410570">Ujjlenyomat felismerve</translation>
@@ -674,6 +675,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (bal)</translation>
 <translation id="4734965478015604180">Vízszintes</translation>
+<translation id="4735944890391795473">12. asztal</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4740516757091333363">Törli a mentett asztalt?</translation>
 <translation id="4752784485658729358">Csak hat mentett asztal engedélyezett. Távolítsa el valamelyiket, ha új asztalt szeretne menteni.</translation>
@@ -694,6 +696,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4860284199500934869">Ellenőrizze a hálózati kapcsolatot a(z) <ph name="FILENAME" /> letöltéséhez</translation>
 <translation id="486056901304535126">A letöltést később kísérli meg a rendszer. A beszédet a rendszer a letöltés befejezéséig elküldi a Google-nak feldolgozásra.</translation>
 <translation id="4864369630010738180">Bejelentkezés...</translation>
+<translation id="4864648187878336334">15. asztal</translation>
 <translation id="4868492592575313542">aktiválva</translation>
 <translation id="4872237917498892622">Alt + Keresés vagy Shift</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
@@ -720,6 +723,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">16. asztal</translation>
 <translation id="5003993274120026347">Következő mondat</translation>
 <translation id="5016558321564993266">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Lejárt az idő</translation>
@@ -735,6 +739,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5098537242461068432">Asztal és ablakok újra megnyitva</translation>
 <translation id="5104236669533825617">Nem sikerült létrehozni a képernyőfelvételt</translation>
 <translation id="5107522548814527560">Internet</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
 <translation id="5147567197700016471">Feloldva</translation>
@@ -822,6 +827,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon jack csatlakozója</translation>
 <translation id="5652575806481723716">A(z) <ph name="FOCUSED_APP_NAME" /> alkalmazás a figyelmét igényli.</translation>
+<translation id="5662075790140998213">10. asztal</translation>
 <translation id="5662709761327382534">A mikrofon általi hangrögzítés jelenleg <ph name="CURRENT_STATE" /> állásban van. Ha <ph name="NEW_STATE" /> állásba szeretné állítani, nyomja meg az Enter billentyűt</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5673434351075758678">Módosítás <ph name="FROM_LOCALE" /> nyelvről <ph name="TO_LOCALE" /> nyelvre a beállítások szinkronizálása után.</translation>
@@ -1021,6 +1027,8 @@ Frissen telepítve</translation>
 <translation id="6753390234084146956">lapok</translation>
 <translation id="6757237461819837179">Nincs lejátszott médiatartalom</translation>
 <translation id="6777216307882431711">Csatlakoztatott USB-C-eszközök töltése…</translation>
+<translation id="6781002679438061620">9. asztal</translation>
+<translation id="6782182743534150858">13. asztal</translation>
 <translation id="6786750046913594791">Mappa bezárása</translation>
 <translation id="6787595647772650851">Legutóbbi munkamenet visszaállítása</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
@@ -1082,6 +1090,7 @@ Frissen telepítve</translation>
 <translation id="7098053464892629930">Az összes rendelkezésre álló funkció megtekintéséhez töltse le a(z) <ph name="NAME" /> eszközhöz tartozó alkalmazást a Google Playről.</translation>
 <translation id="7098389117866926363">C típusú USB-vel kompatibilis eszköz (bal hátsó port)</translation>
 <translation id="7106330611027933926">Deskbar megjelenítése</translation>
+<translation id="7116969082764510092">11. asztal</translation>
 <translation id="7118268675952955085">képernyőkép</translation>
 <translation id="7126996685418858413">Az elmúlt héten nyitotta meg</translation>
 <translation id="7130207228079676353">NAGY VALÓSZÍNŰSÉGGEL</translation>
@@ -1180,6 +1189,7 @@ Frissen telepítve</translation>
 <translation id="7662283695561029522">Koppintson a konfiguráláshoz</translation>
 <translation id="7670953955701272011">Ennek a napnak a megnyitása a Google Naptárban</translation>
 <translation id="7671610481353807627">Az alkalmazások szín szerint rendezettek</translation>
+<translation id="7672095158465655885">Csatlakozva <ph name="NAME" /> hálózathoz, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamerás bevitel a következőre állítva: <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Új mobilhálózat hozzáadása</translation>
@@ -1465,5 +1475,6 @@ Frissen telepítve</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> találat megjelenítése a következő lekérdezésre: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Fekvő</translation>
 <translation id="990277280839877440">Bezárta a következő ablakot: <ph name="WINDOW_TITILE" />.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket. A frissítés a háttérben történik.</translation>
 </translationbundle>

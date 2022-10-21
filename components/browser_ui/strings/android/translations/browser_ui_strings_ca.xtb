@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Opció recomanada per gaudir de la millor experiència</translation>
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">De: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Els llocs web relacionats poden veure la teva activitat al grup</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Penja</translation>
 <translation id="1919345977826869612">Anuncis</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Inclou tots els llocs web d'aquest domini</translation>
 <translation id="4883854917563148705">Les opcions de configuració gestionades no es poden restablir</translation>
 <translation id="4887024562049524730">Pregunta abans de permetre que els llocs web utilitzin el teu dispositiu i les teves dades de realitat virtual (opció recomanada)</translation>
+<translation id="4955223779495905865">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Qualsevol d'aquests llocs web pot desar galetes i altres dades per personalitzar-te l'experiència.</translation>
 <translation id="4962975101802056554">Revoca tots els permisos del dispositiu</translation>
 <translation id="497421865427891073">Ves endavant</translation>
 <translation id="4976702386844183910">Darrera visita: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Permet que els llocs web accedeixin als sensors de moviment (opció recomanada)</translation>
 <translation id="5050380848339752099">Aquest lloc web està a punt de compartir informació amb una aplicació fora del mode d'incògnit.</translation>
 <translation id="5063480226653192405">Ús</translation>
+<translation id="5082281938627763039">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="FPS_MEMBER" /> i per als llocs web que hi ha al grup de llocs web de <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Lloc web per a mòbils</translation>
 <translation id="509133520954049755">Sol·licita la visualització per a ordinadors</translation>
 <translation id="5100237604440890931">Vista replegada (feu clic per desplegar-la)</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Bloquejat</translation>
 <translation id="5689516760719285838">Ubicació</translation>
 <translation id="5690795753582697420">La càmera està desactivada a la configuració d'Android</translation>
+<translation id="5706552988683188916">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Amb aquesta acció s'esborraran totes les dades i galetes emmagatzemades per <ph name="ORIGIN" /> o per la seva aplicació de la pantalla d'inici.</translation>
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
 <translation id="789180354981963912">Bloqueja les galetes de tercers en mode d'incògnit:</translation>
 <translation id="7940722705963108451">Recorda-m'ho</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> lloc web al grup de llocs web de <ph name="FPS_OWNER" /> que poden veure la teva activitat al grup}other{<ph name="FPS_MEMBERS_COUNT" /> llocs web al grup de llocs web de <ph name="FPS_OWNER" /> que poden veure la teva activitat al grup}}</translation>
 <translation id="7986741934819883144">Selecciona un contacte</translation>
 <translation id="7999064672810608036">Confirmes que vols esborrar d'aquest lloc web totes les dades locals, incloses les galetes, i restablir-ne tots els permisos?</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Deixa de silenciar el micròfon</translation>
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> lloc web de <ph name="FPS_OWNER" />}other{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> llocs web de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>
 <translation id="8676374126336081632">Esborra l'entrada</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="9019902583201351841">Gestionat pels pares</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Aquest lloc web forma part d'un grup que pot veure la teva activitat. <ph name="FPS_OWNER" /> defineix el grup.</translation>
+<translation id="9106233582039520022">Vols suprimir les galetes?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>

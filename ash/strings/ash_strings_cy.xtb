@@ -433,6 +433,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3413817803639110246">Dim byd i'w weld eto</translation>
 <translation id="3428447136709161042">Datgysylltwyd o <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Sweipiwch o'r dde i fynd yn ôl</translation>
+<translation id="3431517721463707585">Desg 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Golygu nodyn atgoffa</translation>
 <translation id="3435967511775410570">Rydym wedi adnabod eich ôl bys</translation>
@@ -673,6 +674,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4731797938093519117">Mynediad rhieni</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Chwith)</translation>
 <translation id="4734965478015604180">Llorweddol</translation>
+<translation id="4735944890391795473">Desg 12</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4740516757091333363">Dileu'r ddesg sydd wedi'i chadw?</translation>
 <translation id="4752784485658729358">Dim ond 6 desg sydd wedi'u cadw a ganiateir. Tynnwch ddesg i gadw un newydd.</translation>
@@ -693,6 +695,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4860284199500934869">Gwiriwch eich cysylltiad rhwydwaith i lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Ceisir lawrlwytho yn nes ymlaen. Anfonir lleferydd at Google i'w brosesu nes bod y lawrlwythiad wedi'i gwblhau.</translation>
 <translation id="4864369630010738180">Wrthi'n mewngofnodi...</translation>
+<translation id="4864648187878336334">Desg 15</translation>
 <translation id="4868492592575313542">wedi gweithredu</translation>
 <translation id="4872237917498892622">Alt+Search neu Shift</translation>
 <translation id="4881695831933465202">Agor</translation>
@@ -719,6 +722,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Desg 16</translation>
 <translation id="5003993274120026347">Brawddeg nesaf</translation>
 <translation id="5016558321564993266">Toglo'r marciwr. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Amser ar ben</translation>
@@ -734,6 +738,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5098537242461068432">Desg a ffenestri wedi'u hailagor</translation>
 <translation id="5104236669533825617">Methu â chreu sgrinlediad</translation>
 <translation id="5107522548814527560">Y We</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Dangos y mis nesaf</translation>
 <translation id="5136175204352732067">Mae bysellfwrdd gwahanol wedi'i gysylltu</translation>
 <translation id="5147567197700016471">Wedi'i ddatgloi</translation>
@@ -821,6 +826,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Cysylltydd meic</translation>
 <translation id="5652575806481723716">Mae angen eich sylw ar <ph name="FOCUSED_APP_NAME" />.</translation>
+<translation id="5662075790140998213">Desg 10</translation>
 <translation id="5662709761327382534">Mae recordio meicroffon <ph name="CURRENT_STATE" />, pwyswch Enter i droi recordio meicroffon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Yn gweithredu</translation>
 <translation id="5673434351075758678">O "<ph name="FROM_LOCALE" />" i "<ph name="TO_LOCALE" />" ar ôl cysoni eich gosodiadau.</translation>
@@ -1020,6 +1026,8 @@ Gosodiad newydd</translation>
 <translation id="6753390234084146956">tabiau</translation>
 <translation id="6757237461819837179">Nid oes unrhyw gyfryngau yn chwarae</translation>
 <translation id="6777216307882431711">Wrthi'n rhoi pŵer i ddyfeisiau USB-C</translation>
+<translation id="6781002679438061620">Desg 9</translation>
+<translation id="6782182743534150858">Desg 13</translation>
 <translation id="6786750046913594791">Cau'r ffolder</translation>
 <translation id="6787595647772650851">Adfer y sesiwn diwethaf</translation>
 <translation id="6790428901817661496">Chwarae</translation>
@@ -1081,6 +1089,7 @@ Gosodiad newydd</translation>
 <translation id="7098053464892629930">Lawrlwythwch yr ap ar gyfer <ph name="NAME" /> ar Google Play i weld pob nodwedd sydd ar gael</translation>
 <translation id="7098389117866926363">Dyfais USB-C (porth chwith ar y cefn)</translation>
 <translation id="7106330611027933926">Dangos y bar desg</translation>
+<translation id="7116969082764510092">Desg 11</translation>
 <translation id="7118268675952955085">sgrinlun</translation>
 <translation id="7126996685418858413">Agorwyd yn yr wythnos ddiwethaf</translation>
 <translation id="7130207228079676353">MWYAF TEBYGOL</translation>
@@ -1179,6 +1188,7 @@ Gosodiad newydd</translation>
 <translation id="7662283695561029522">Tapiwch i ffurfweddu</translation>
 <translation id="7670953955701272011">Agor y dyddiad hwn yn Google Calendar</translation>
 <translation id="7671610481353807627">Mae apiau'n cael eu trefnu yn ôl lliw</translation>
+<translation id="7672095158465655885">Wedi cysylltu â <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Mae mewnbwn y camera wedi'i osod i <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ychwanegu rhwydwaith symudol newydd</translation>
@@ -1464,5 +1474,6 @@ Gosodiad newydd</translation>
 <translation id="974545358917229949">Wrthi'n dangos <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Llorweddol</translation>
 <translation id="990277280839877440">Caewyd y ffenestr <ph name="WINDOW_TITILE" />.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Cewch y nodweddion a'r gwelliannau diogelwch diweddaraf. Mae diweddariadau yn digwydd yn y cefndir.</translation>
 </translationbundle>

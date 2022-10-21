@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Gestionnaire d'onglets</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> avis de Google}one{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}other{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}}</translation>
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille plein écran</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partager <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Partager <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Partager <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7792771145871471484">Examiner les suggestions.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Regrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Regrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Regrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> avis}one{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}other{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}}</translation>
