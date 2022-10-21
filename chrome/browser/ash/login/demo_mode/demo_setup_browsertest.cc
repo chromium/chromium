@@ -297,6 +297,8 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   DemoSetupArcSupportedTest() {
     statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
                                              "us");
+    statistics_provider_.SetVpdStatus(
+        system::StatisticsProvider::VpdStatus::kValid);
   }
   ~DemoSetupArcSupportedTest() override = default;
 
