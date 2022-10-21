@@ -47,6 +47,10 @@ NET_EXPORT extern const CertErrorId kUnconsumedCriticalExtension;
 // however does not have a keyUsage consistent with being a CA (keyCertSign).
 NET_EXPORT extern const CertErrorId kTargetCertInconsistentCaBits;
 
+// The target certificate appears to be a CA (has Basic Constraints CA=true)
+// but is being used for TLS client or server authentication.
+NET_EXPORT extern const CertErrorId kTargetCertShouldNotBeCa;
+
 // The certificate is being used to sign other certificates, however the
 // keyCertSign KeyUsage was not set.
 NET_EXPORT extern const CertErrorId kKeyCertSignBitNotSet;
@@ -115,6 +119,29 @@ NET_EXPORT extern const CertErrorId kUnacceptablePublicKey;
 // The certificate's EKU is missing serverAuth. However Netscape Server Gated
 // Crypto is present instead.
 NET_EXPORT extern const CertErrorId kEkuLacksServerAuthButHasGatedCrypto;
+
+// The certificate's EKU is missing serverAuth. However EKU ANY is present
+// instead.
+NET_EXPORT extern const CertErrorId kEkuLacksServerAuthButHasAnyEKU;
+
+// The certificate's EKU is missing clientAuth. However EKU ANY is present
+// instead.
+NET_EXPORT extern const CertErrorId kEkuLacksClientAuthButHasAnyEKU;
+
+// The certificate's EKU is missing both clientAuth and serverAuth.
+NET_EXPORT extern const CertErrorId kEkuLacksClientAuthOrServerAuth;
+
+// The certificate's EKU has OSCP Signing when it should not.
+NET_EXPORT extern const CertErrorId kEkuHasProhibitedOCSPSigning;
+
+// The certificate's EKU has Time Stamping when it should not.
+NET_EXPORT extern const CertErrorId kEkuHasProhibitedTimeStamping;
+
+// The certificate's EKU has Code Signing when it should not.
+NET_EXPORT extern const CertErrorId kEkuHasProhibitedCodeSigning;
+
+// The certificate does not have EKU.
+NET_EXPORT extern const CertErrorId kEkuNotPresent;
 
 // The certificate has been revoked.
 NET_EXPORT extern const CertErrorId kCertificateRevoked;

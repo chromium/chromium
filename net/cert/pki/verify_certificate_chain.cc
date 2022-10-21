@@ -175,44 +175,144 @@ bool VerifySignatureAlgorithmsMatch(const ParsedCertificate& cert,
 // Verify that |cert| can be used for |required_key_purpose|.
 void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
                             KeyPurpose required_key_purpose,
-                            CertErrors* errors) {
+                            CertErrors* errors,
+                            bool is_target_cert,
+                            bool is_target_cert_issuer) {
+  // We treat a required KeyPurpose of ANY_EKU to mean "Do not check EKU"
+  if (required_key_purpose == KeyPurpose::ANY_EKU) {
+    return;
+  }
+  bool has_any_eku = false;
+  bool has_server_auth_eku = false;
+  bool has_client_auth_eku = false;
+  bool has_code_signing_eku = false;
+  bool has_time_stamping_eku = false;
+  bool has_ocsp_signing_eku = false;
+  bool has_nsgc = false;
+  if (cert.has_extended_key_usage()) {
+    for (const auto& key_purpose_oid : cert.extended_key_usage()) {
+      if (key_purpose_oid == der::Input(kAnyEKU)) {
+        has_any_eku = true;
+      }
+      if (key_purpose_oid == der::Input(kServerAuth)) {
+        has_server_auth_eku = true;
+      }
+      if (key_purpose_oid == der::Input(kClientAuth)) {
+        has_client_auth_eku = true;
+      }
+      if (key_purpose_oid == der::Input(kCodeSigning)) {
+        has_code_signing_eku = true;
+      }
+      if (key_purpose_oid == der::Input(kTimeStamping)) {
+        has_time_stamping_eku = true;
+      }
+      if (key_purpose_oid == der::Input(kOCSPSigning)) {
+        has_ocsp_signing_eku = true;
+      }
+      if (key_purpose_oid == der::Input(kNetscapeServerGatedCrypto)) {
+        has_nsgc = true;
+      }
+    }
+  }
+
+  auto add_error_if_strict = [&](CertErrorId id) {
+    if (required_key_purpose == KeyPurpose::SERVER_AUTH_STRICT ||
+        required_key_purpose == KeyPurpose::CLIENT_AUTH_STRICT) {
+      errors->AddError(id);
+    } else {
+      errors->AddWarning(id);
+    }
+  };
+  if (is_target_cert) {
+    // Loosely based upon CABF BR version 1.8.4, 7.1.2.3(f).  We are more
+    // permissive in that we still allow EKU any to be present in a leaf
+    // certificate, but we ignore it for purposes of server or client auth.  We
+    // are less permissive in that we prohibit Code Signing, OCSP Signing, and
+    // Time Stamping which are currently only a SHOULD NOT. The BR does
+    // explicitly allow Email authentication to be present, as this still exists
+    // in the wild (2022), so we do not prohibit Email authentication here (and
+    // by extension must allow it to be present in the signer, below).
+    if (!cert.has_extended_key_usage()) {
+      // This is added as a warning, an error will be added in STRICT modes
+      // if we then lack client or server auth due to this not being present.
+      errors->AddWarning(cert_errors::kEkuNotPresent);
+    } else {
+      if (has_code_signing_eku) {
+        add_error_if_strict(cert_errors::kEkuHasProhibitedCodeSigning);
+      }
+      if (has_ocsp_signing_eku) {
+        add_error_if_strict(cert_errors::kEkuHasProhibitedOCSPSigning);
+      }
+      if (has_time_stamping_eku) {
+        add_error_if_strict(cert_errors::kEkuHasProhibitedTimeStamping);
+      }
+    }
+  } else if (is_target_cert_issuer) {
+    // Handle the decision to overload EKU as a constraint on issuers.
+    //
+    // CABF BR version 1.8.4, 7.1.2.2(g) pertains to the case of "Certs used to
+    // issue TLS certificates", While the BR refers to the entire chain of
+    // intermediates, there are a number of exceptions regarding CA ownership
+    // and cross signing which are impossible for us to know or enforce here.
+    // Therefore, we can only enforce at the level of the intermediate that
+    // issued our target certificate. This means we we differ in the following
+    // ways:
+    // - We only enforce at the issuer of the TLS certificate.
+    // - We allow email protection to exist in the issuer, since without
+    //   this it can not be allowed in the client (other than via EKU any))
+    // - As in the leaf certificate case, we allow EKU any to be present, but
+    //   we ignore it for the purposes of server or client auth.
+    //
+    // At this time (until at least 2023) some intermediates are lacking EKU in
+    // the world at large from common CA's, so we allow the noEKU case to permit
+    // everything.
+    // TODO(bbe): enforce requiring EKU in the issuer when we can manage it.
+    if (cert.has_extended_key_usage()) {
+      if (has_code_signing_eku) {
+        add_error_if_strict(cert_errors::kEkuHasProhibitedCodeSigning);
+      }
+      if (has_time_stamping_eku) {
+        add_error_if_strict(cert_errors::kEkuHasProhibitedTimeStamping);
+      }
+    }
+  }
+  // Otherwise, we are a parent of an issuer of a TLS certificate.  The CABF
+  // BR version 1.8.4, 7.1.2.2(g) goes as far as permitting EKU any in certain
+  // cases of Cross Signing and CA Ownership, having permitted cases where EKU
+  // is permitted to not be present at all. These cases are not practical to
+  // differentiate here and therefore we don't attempt to enforce any further
+  // EKU "constraints" on such certificates. Unlike the above cases we also
+  // allow the use of EKU any for client or server auth constraint purposes.
+
   switch (required_key_purpose) {
     case KeyPurpose::ANY_EKU:
+      assert(0);  // NOTREACHED
       return;
-    case KeyPurpose::SERVER_AUTH: {
-      // TODO(eroman): Is it OK for the target certificate to omit the EKU?
-      if (!cert.has_extended_key_usage())
-        return;
-
-      for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == der::Input(kAnyEKU))
-          return;
-        if (key_purpose_oid == der::Input(kServerAuth))
-          return;
-      }
-
-      // Check if the certificate contains Netscape Server Gated Crypto.
-      // nsSGC is a deprecated mechanism, and not part of RFC 5280's
-      // profile. Some unexpired certificate chains still rely on it though
-      // (there are intermediates valid until 2020 that use it).
-      bool has_nsgc = false;
-
-      for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == der::Input(kNetscapeServerGatedCrypto)) {
-          has_nsgc = true;
-          break;
+    case KeyPurpose::SERVER_AUTH:
+    case KeyPurpose::SERVER_AUTH_STRICT: {
+      bool nsgc_hack = false;
+      if (has_any_eku && !has_server_auth_eku) {
+        if (is_target_cert || is_target_cert_issuer) {
+          errors->AddWarning(cert_errors::kEkuLacksServerAuthButHasAnyEKU);
+        } else {
+          // Accept anyEKU for server auth below target issuer.
+          has_server_auth_eku = true;
         }
       }
-
-      if (has_nsgc) {
+      if (is_target_cert_issuer && !cert.has_extended_key_usage()) {
+        // Accept noEKU for server auth in target issuer.
+        // TODO(bbe): remove this once BR requirements catch up with CA's.
+        has_server_auth_eku = true;
+      }
+      if (has_nsgc && !has_server_auth_eku) {
         errors->AddWarning(cert_errors::kEkuLacksServerAuthButHasGatedCrypto);
 
-        // Allow NSGC for legacy RSA SHA1 intermediates, for compatibility with
-        // platform verifiers.
+        // Allow NSGC for legacy RSA SHA1 intermediates, for compatibility
+        // with platform verifiers.
         //
         // In practice the chain will be rejected with or without this
-        // compatibility hack. The difference is whether the final error will be
-        // ERR_CERT_WEAK_SIGNATURE_ALGORITHM  (with compatibility hack) vs
+        // compatibility hack. The difference is whether the final error will
+        // be ERR_CERT_WEAK_SIGNATURE_ALGORITHM  (with compatibility hack) vs
         // ERR_CERT_INVALID (without hack).
         //
         // TODO(https://crbug.com/843735): Remove this once error-for-error
@@ -220,26 +320,43 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
         // important.
         if ((cert.has_basic_constraints() && cert.basic_constraints().is_ca) &&
             cert.signature_algorithm() == SignatureAlgorithm::kRsaPkcs1Sha1) {
-          return;
+          nsgc_hack = true;
         }
       }
-
-      errors->AddError(cert_errors::kEkuLacksServerAuth);
+      if (required_key_purpose == KeyPurpose::SERVER_AUTH) {
+        // Legacy compatible.
+        if (cert.has_extended_key_usage() && !has_server_auth_eku &&
+            !has_any_eku && !nsgc_hack) {
+          errors->AddError(cert_errors::kEkuLacksServerAuth);
+        }
+      } else {
+        if (!has_server_auth_eku) {
+          errors->AddError(cert_errors::kEkuLacksServerAuth);
+        }
+      }
       break;
     }
-    case KeyPurpose::CLIENT_AUTH: {
-      // TODO(eroman): Is it OK for the target certificate to omit the EKU?
-      if (!cert.has_extended_key_usage())
-        return;
-
-      for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == der::Input(kAnyEKU))
-          return;
-        if (key_purpose_oid == der::Input(kClientAuth))
-          return;
+    case KeyPurpose::CLIENT_AUTH:
+    case KeyPurpose::CLIENT_AUTH_STRICT: {
+      if (has_any_eku && !has_client_auth_eku) {
+        if (is_target_cert || is_target_cert_issuer) {
+          errors->AddWarning(cert_errors::kEkuLacksClientAuthButHasAnyEKU);
+        } else {
+          // accept anyEKU for client auth.
+          has_client_auth_eku = true;
+        }
       }
-
-      errors->AddError(cert_errors::kEkuLacksClientAuth);
+      if (required_key_purpose == KeyPurpose::CLIENT_AUTH) {
+        // Legacy-compatible.
+        if (cert.has_extended_key_usage() && !has_client_auth_eku &&
+            !has_any_eku) {
+          errors->AddError(cert_errors::kEkuLacksClientAuth);
+        }
+      } else {
+        if (!has_client_auth_eku) {
+          errors->AddError(cert_errors::kEkuLacksClientAuth);
+        }
+      }
       break;
     }
   }
@@ -469,6 +586,7 @@ class PathVerifier {
   // Processing" procedure.
   void BasicCertificateProcessing(const ParsedCertificate& cert,
                                   bool is_target_cert,
+                                  bool is_target_cert_issuer,
                                   const der::GeneralizedTime& time,
                                   KeyPurpose required_key_purpose,
                                   CertErrors* errors,
@@ -481,7 +599,9 @@ class PathVerifier {
 
   // This function corresponds with RFC 5280 section 6.1.5's "Wrap-Up
   // Procedure". It does processing for the final certificate (the target cert).
-  void WrapUp(const ParsedCertificate& cert, CertErrors* errors);
+  void WrapUp(const ParsedCertificate& cert,
+              KeyPurpose required_key_purpose,
+              CertErrors* errors);
 
   // Enforces trust anchor constraints compatibile with RFC 5937.
   //
@@ -797,6 +917,7 @@ void PathVerifier::VerifyPolicyMappings(const ParsedCertificate& cert,
 void PathVerifier::BasicCertificateProcessing(
     const ParsedCertificate& cert,
     bool is_target_cert,
+    bool is_target_cert_issuer,
     const der::GeneralizedTime& time,
     KeyPurpose required_key_purpose,
     CertErrors* errors,
@@ -864,7 +985,8 @@ void PathVerifier::BasicCertificateProcessing(
   // also interpreted as a constraint when it appears in intermediates. This
   // goes beyond what RFC 5280 describes, but is the de-facto standard. See
   // https://wiki.mozilla.org/CA:CertificatePolicyV2.1#Frequently_Asked_Questions
-  VerifyExtendedKeyUsage(cert, required_key_purpose, errors);
+  VerifyExtendedKeyUsage(cert, required_key_purpose, errors, is_target_cert,
+                         is_target_cert_issuer);
 }
 
 void PathVerifier::PrepareForNextCertificate(const ParsedCertificate& cert,
@@ -1023,6 +1145,7 @@ void PathVerifier::PrepareForNextCertificate(const ParsedCertificate& cert,
 // for compatibility reasons. Investigate if we need to similarly relax this
 // constraint.
 void VerifyTargetCertHasConsistentCaBits(const ParsedCertificate& cert,
+                                         KeyPurpose required_key_purpose,
                                          CertErrors* errors) {
   // Check if the certificate contains any property specific to CAs.
   bool has_ca_property =
@@ -1042,11 +1165,32 @@ void VerifyTargetCertHasConsistentCaBits(const ParsedCertificate& cert,
     if (!success) {
       // TODO(eroman): Add DER for basic constraints and key usage.
       errors->AddError(cert_errors::kTargetCertInconsistentCaBits);
+    } else {
+      // In spite of RFC 5280 4.2.1.9 which says the CA properties MAY exist in
+      // an end entity certificate, the CABF Baseline Requirements version
+      // 1.8.4, 7.1.2.3(d) prohibit the CA bit being set in an end entity
+      // certificate.
+      if (cert.has_basic_constraints() && cert.basic_constraints().is_ca) {
+        switch (required_key_purpose) {
+          case KeyPurpose::ANY_EKU:
+            break;
+          case KeyPurpose::SERVER_AUTH:
+          case KeyPurpose::CLIENT_AUTH:
+            errors->AddWarning(cert_errors::kTargetCertShouldNotBeCa);
+            break;
+          case KeyPurpose::SERVER_AUTH_STRICT:
+          case KeyPurpose::CLIENT_AUTH_STRICT:
+            errors->AddError(cert_errors::kTargetCertShouldNotBeCa);
+            break;
+        }
+      }
     }
   }
 }
 
-void PathVerifier::WrapUp(const ParsedCertificate& cert, CertErrors* errors) {
+void PathVerifier::WrapUp(const ParsedCertificate& cert,
+                          KeyPurpose required_key_purpose,
+                          CertErrors* errors) {
   // From RFC 5280 section 6.1.5:
   //      (a)  If explicit_policy is not 0, decrement explicit_policy by 1.
   if (explicit_policy_ > 0)
@@ -1087,7 +1231,7 @@ void PathVerifier::WrapUp(const ParsedCertificate& cert, CertErrors* errors) {
 
   // The following check is NOT part of RFC 5280 6.1.5's "Wrap-Up Procedure",
   // however is implied by RFC 5280 section 4.2.1.9.
-  VerifyTargetCertHasConsistentCaBits(cert, errors);
+  VerifyTargetCertHasConsistentCaBits(cert, required_key_purpose, errors);
 
   // Check the public key for the target certificate. The public key for the
   // other certificates is already checked by PrepareForNextCertificate().
@@ -1100,7 +1244,9 @@ void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
                                                CertErrors* errors) {
   // This is not part of RFC 5937 nor RFC 5280, but matches the EKU handling
   // done for intermediates (described in Web PKI's Baseline Requirements).
-  VerifyExtendedKeyUsage(cert, required_key_purpose, errors);
+  VerifyExtendedKeyUsage(cert, required_key_purpose, errors,
+                         /*is_target_cert=*/false,
+                         /*is_target_cert_issuer=*/false);
 
   // The following enforcements follow from RFC 5937 (primarily section 3.2):
 
@@ -1272,6 +1418,7 @@ void PathVerifier::Run(
     // certificate being verified. The target certificate isn't necessarily an
     // end-entity certificate.
     const bool is_target_cert = index_into_certs == 0;
+    const bool is_target_cert_issuer = index_into_certs == 1;
     const bool is_root_cert = i == 0;
 
     const ParsedCertificate& cert = *certs[index_into_certs];
@@ -1303,8 +1450,9 @@ void PathVerifier::Run(
     //  * If it is the last certificate in the path (target certificate)
     //     - Then run "Wrap up"
     //     - Otherwise run "Prepare for Next cert"
-    BasicCertificateProcessing(cert, is_target_cert, time, required_key_purpose,
-                               cert_errors, &shortcircuit_chain_validation);
+    BasicCertificateProcessing(cert, is_target_cert, is_target_cert_issuer,
+                               time, required_key_purpose, cert_errors,
+                               &shortcircuit_chain_validation);
     if (shortcircuit_chain_validation) {
       // Signature errors should short-circuit the rest of the verification, as
       // accumulating more errors from untrusted certificates would not be
@@ -1316,7 +1464,7 @@ void PathVerifier::Run(
     if (!is_target_cert) {
       PrepareForNextCertificate(cert, cert_errors);
     } else {
-      WrapUp(cert, cert_errors);
+      WrapUp(cert, required_key_purpose, cert_errors);
     }
   }
 

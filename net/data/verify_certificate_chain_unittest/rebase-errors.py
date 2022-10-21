@@ -51,7 +51,7 @@ def read_file_to_string(path):
 
 def write_string_to_file(data, path):
   """Writes a string to a file"""
-  print "Writing file %s ..." % (path)
+  print("Writing file %s ..." % (path))
   with open(path, "w") as f:
     f.write(data)
 
@@ -70,7 +70,7 @@ def get_src_root():
       break
     cur_dir = parent_dir
 
-  print "Couldn't find src dir"
+  print("Couldn't find src dir")
   sys.exit(1)
 
 
@@ -86,7 +86,7 @@ def fixup_errors_for_file(actual_errors, test_file_path):
   header = "\nexpected_errors:\n"
   index = contents.find(header)
   if index < 0:
-    print "Couldn't find expected_errors"
+    print("Couldn't find expected_errors")
     sys.exit(1)
 
   # The rest of the file contains the errors (overwrite).
@@ -97,7 +97,7 @@ def fixup_errors_for_file(actual_errors, test_file_path):
 
 def main():
   if len(sys.argv) > 2:
-    print 'Usage: %s [path-to-unittest-stdout]' % (sys.argv[0])
+    print('Usage: %s [path-to-unittest-stdout]' % (sys.argv[0]))
     sys.exit(1)
 
   # Read the input either from a file, or from stdin.
@@ -105,7 +105,7 @@ def main():
   if len(sys.argv) == 2:
     test_stdout = read_file_to_string(sys.argv[1])
   else:
-    print 'Reading input from stdin...'
+    print('Reading input from stdin...')
     test_stdout = sys.stdin.read()
 
   for m in failed_test_regex.finditer(test_stdout):
@@ -118,7 +118,7 @@ def main():
     elif errors_path.endswith(".txt"):
       write_string_to_file(actual_errors, errors_path)
     else:
-      print 'Unknown file extension'
+      print('Unknown file extension')
       sys.exit(1)
 
 

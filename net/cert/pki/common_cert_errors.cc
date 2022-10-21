@@ -26,6 +26,9 @@ DEFINE_CERT_ERROR_ID(kKeyCertSignBitNotSet, "keyCertSign bit is not set");
 DEFINE_CERT_ERROR_ID(kMaxPathLengthViolated, "max_path_length reached");
 DEFINE_CERT_ERROR_ID(kBasicConstraintsIndicatesNotCa,
                      "Basic Constraints indicates not a CA");
+DEFINE_CERT_ERROR_ID(kTargetCertShouldNotBeCa,
+                     "Certificate has Basic Constraints indicating it is a CA "
+                     "when it should not be a CA");
 DEFINE_CERT_ERROR_ID(kMissingBasicConstraints,
                      "Does not have Basic Constraints");
 DEFINE_CERT_ERROR_ID(kNotPermittedByNameConstraints,
@@ -43,8 +46,28 @@ DEFINE_CERT_ERROR_ID(kEkuLacksServerAuth,
 DEFINE_CERT_ERROR_ID(kEkuLacksServerAuthButHasGatedCrypto,
                      "The extended key usage does not include server auth but "
                      "instead includes Netscape Server Gated Crypto");
+DEFINE_CERT_ERROR_ID(kEkuLacksServerAuthButHasAnyEKU,
+                     "The extended key usage does not include server auth but "
+                     "instead includes anyExtendeKeyUsage");
 DEFINE_CERT_ERROR_ID(kEkuLacksClientAuth,
                      "The extended key usage does not include client auth");
+DEFINE_CERT_ERROR_ID(kEkuLacksClientAuthButHasAnyEKU,
+                     "The extended key usage does not include client auth but "
+                     "instead includes anyExtendedKeyUsage");
+DEFINE_CERT_ERROR_ID(kEkuLacksClientAuthOrServerAuth,
+                     "The extended key usage does not include client auth "
+                     "or server auth");
+DEFINE_CERT_ERROR_ID(kEkuHasProhibitedOCSPSigning,
+                     "The extended key usage includes OCSP signing which "
+                     "is not permitted for this use");
+DEFINE_CERT_ERROR_ID(kEkuHasProhibitedTimeStamping,
+                     "The extended key usage includes time stamping which "
+                     "is not permitted for this use");
+DEFINE_CERT_ERROR_ID(kEkuHasProhibitedCodeSigning,
+                     "The extended key usage includes code signing which "
+                     "is not permitted for this use");
+DEFINE_CERT_ERROR_ID(kEkuNotPresent,
+                     "Certificate does not have extended key usage");
 DEFINE_CERT_ERROR_ID(kCertIsNotTrustAnchor,
                      "Certificate is not a trust anchor");
 DEFINE_CERT_ERROR_ID(kNoValidPolicy, "No valid policy");

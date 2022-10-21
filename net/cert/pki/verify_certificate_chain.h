@@ -28,6 +28,10 @@ enum class KeyPurpose {
   ANY_EKU,
   SERVER_AUTH,
   CLIENT_AUTH,
+  SERVER_AUTH_STRICT,  // Skip ANY_EKU when checking, require EKU present in
+                       // certificate.
+  CLIENT_AUTH_STRICT,  // Skip ANY_EKU when checking, require EKU present in
+                       // certificate.
 };
 
 enum class InitialExplicitPolicy {
