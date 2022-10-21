@@ -25,7 +25,10 @@ constexpr char kPreferencesTypeName[] = "preferences";
 constexpr char kPasswordsTypeName[] = "passwords";
 constexpr char kAutofillTypeName[] = "autofill";
 constexpr char kThemesTypeName[] = "themes";
-constexpr char kTypedUrlsTypeName[] = "typedUrls";
+// Note: The type name for History is "typedUrls" for historic reasons. This
+// name is used in JS (sync settings) and in the SyncTypesListDisabled policy,
+// so it's fairly hard to change.
+constexpr char kHistoryTypeName[] = "typedUrls";
 constexpr char kExtensionsTypeName[] = "extensions";
 constexpr char kAppsTypeName[] = "apps";
 constexpr char kReadingListTypeName[] = "readingList";
@@ -69,7 +72,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       if (base::FeatureList::IsEnabled(kSyncEnableHistoryDataType)) {
         types.Remove(SESSIONS);
       }
-      return {kTypedUrlsTypeName, TYPED_URLS, types};
+      return {kHistoryTypeName, TYPED_URLS, types};
     }
     case UserSelectableType::kExtensions:
       return {
@@ -148,7 +151,7 @@ absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
   if (type == kThemesTypeName) {
     return UserSelectableType::kThemes;
   }
-  if (type == kTypedUrlsTypeName) {
+  if (type == kHistoryTypeName) {
     return UserSelectableType::kHistory;
   }
   if (type == kExtensionsTypeName) {
