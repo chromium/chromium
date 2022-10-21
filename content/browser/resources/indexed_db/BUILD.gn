@@ -1,11 +1,23 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-copy("copy_mojo") {
+build_webui("build") {
+  grd_prefix = "indexed_db"
+
+  static_files = [
+    "indexeddb_internals.html",
+    "indexeddb_internals.css",
+  ]
+
+  non_web_component_files = [ "indexeddb_internals.ts" ]
+
+  ts_deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+
   mojom_folder = "$root_gen_dir/mojom-webui"
   indexeddb_internal_folder = "content/browser/indexed_db"
   indexeddb_bucket_folder = "components/services/storage/privileged/mojom"
@@ -14,7 +26,7 @@ copy("copy_mojo") {
   storage_key_folder = "third_party/blink/public/mojom/storage_key"
   schemeful_site_folder = "services/network/public/mojom"
 
-  sources = [
+  mojo_files = [
     "$mojom_folder/$buckets_folder/bucket_id.mojom-webui.js",
     "$mojom_folder/$buckets_folder/bucket_locator.mojom-webui.js",
     "$mojom_folder/$indexeddb_bucket_folder/indexed_db_bucket_types.mojom-webui.js",
@@ -25,7 +37,7 @@ copy("copy_mojo") {
     "$mojom_folder/$storage_key_folder/storage_key.mojom-webui.js",
   ]
 
-  deps = [
+  mojo_files_deps = [
     "//$buckets_folder:buckets_webui_js",
     "//$indexeddb_bucket_folder:mojom_bucket_webui_js",
     "//$indexeddb_internal_folder:mojo_bindings_webui_js",
@@ -34,53 +46,5 @@ copy("copy_mojo") {
     "//$storage_key_folder:storage_key_webui_js",
   ]
 
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/indexed_db_resources.h",
-    "grit/indexed_db_resources_map.cc",
-    "grit/indexed_db_resources_map.h",
-    "indexed_db_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/content"
-}
-
-mojo_grdp_file = "$target_gen_dir/mojo_resources.grdp"
-
-generate_grd("mojo_grdp") {
-  grd_prefix = "indexed_db"
-  out_grd = mojo_grdp_file
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = []
-
-  # Add each mojo file to input_files without the directory name
-  foreach(file, get_target_outputs(":copy_mojo")) {
-    input_files += [ get_path_info(file, "file") ]
-  }
-
-  deps = [ ":copy_mojo" ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "indexed_db"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files_base_dir = rebase_path(".", "//")
-  input_files = [
-    "indexeddb_internals.css",
-    "indexeddb_internals.html",
-    "indexeddb_internals.js",
-  ]
-
-  grdp_files = [ mojo_grdp_file ]
-
-  deps = [ ":mojo_grdp" ]
+  grit_output_dir = "$root_gen_dir/content"
 }
