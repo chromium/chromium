@@ -5,6 +5,7 @@
 #include "components/navigation_metrics/navigation_metrics.h"
 
 #include <iterator>
+#include <string>
 
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
@@ -17,6 +18,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
+#include "url/url_canon.h"
 
 namespace navigation_metrics {
 
@@ -94,10 +96,30 @@ std::u16string GetEtldPlusOne16(const std::u16string& hostname16) {
   std::vector<std::u16string> labels16 =
       base::SplitString(separator_replaced_hostname, u".",
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  CHECK_LE(label_count, labels16.size());
+
+  // If the canonicalized eTLD+1 has *more* labels than the full
+  // noncanonicalized hostname, then there are some unexpected characters in the
+  // noncanonicalized hostname (such as a user inputting %-encoded separators).
+  // For simplicity (there are limits on how many edge cases it is worth
+  // accounting for), just drop these cases and return early.
+  if (label_count > labels16.size()) {
+    return std::u16string();
+  }
+
   size_t extra_label_count = labels16.size() - label_count;
   labels16.erase(labels16.begin(), labels16.begin() + extra_label_count);
-  return base::JoinString(labels16, u".");
+  std::u16string noncanon_etld_plus_one = base::JoinString(labels16, u".");
+
+  // If the extracted non-canonicalized eTLD+1 doesn't match the canonicalized
+  // eTLD+1, then something is odd (e.g., mixed "." and "%2e" separators). Drop
+  // these cases to avoid emitting potentially incorrect metrics.
+  url::CanonHostInfo host_info;
+  if (net::CanonicalizeHost(base::UTF16ToUTF8(noncanon_etld_plus_one),
+                            &host_info) != etld_plus_one) {
+    return std::u16string();
+  }
+
+  return noncanon_etld_plus_one;
 }
 
 }  // namespace
