@@ -31,7 +31,7 @@
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "base/check_op.h"
 #include "base/functional/callback_forward.h"
-#include "chromeos/ui/base/display_util.h"
+#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -40,11 +40,14 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-#include "ui/wm/core/window_util.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -53,6 +56,18 @@ constexpr float kTuckHandleCornerRadius = 12;
 constexpr int kTuckHandleIconSize = 16;
 constexpr int kTuckHandleWidth = 24;
 constexpr int kTuckHandleHeight = 100;
+
+// The distance from the edge of the tucked window to the edge of the screen
+// during the bounce.
+constexpr int kTuckOffscreenPaddingDp = 20;
+
+// The duration for the tucked window to slide offscreen during the bounce.
+constexpr base::TimeDelta kTuckWindowBounceStartDuration =
+    base::Milliseconds(400);
+
+// The duration for the tucked window to bounce back to the edge of the screen.
+constexpr base::TimeDelta kTuckWindowBounceEndDuration =
+    base::Milliseconds(533);
 
 // Disables the window's position auto management and returns its original
 // value.
@@ -133,16 +148,13 @@ class FloatController::TuckHandle : public views::ImageButton {
 // tuck handle widget that will bring the hidden window back onscreen.
 class FloatController::ScopedWindowTucker {
  public:
-  explicit ScopedWindowTucker(aura::Window* window) : window_(window) {
+  // Creates an instance for `window` where `left` is the side of the screen
+  // that the tuck handle is on.
+  // TODO(sophiewen): Remove `left` from constructor after tuck handle UI is
+  // updated.
+  ScopedWindowTucker(aura::Window* window, bool left) : window_(window) {
     DCHECK(window_);
-  }
-  ScopedWindowTucker(const ScopedWindowTucker&) = delete;
-  ScopedWindowTucker& operator=(const ScopedWindowTucker&) = delete;
-  ~ScopedWindowTucker() = default;
 
-  views::Widget* tuck_handle_widget() { return tuck_handle_widget_.get(); }
-
-  void ShowTuckHandle(const MagnetismCorner magnetism_corner) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
     params.activatable = views::Widget::InitParams::Activatable::kYes;
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -154,24 +166,6 @@ class FloatController::ScopedWindowTucker {
     params.name = "TuckHandleWidget";
     tuck_handle_widget_->Init(std::move(params));
 
-    // The window should already be tucked offscreen.
-    gfx::Point tuck_handle_origin = window_->GetTargetBounds().left_center();
-    bool left = true;
-    switch (magnetism_corner) {
-      case MagnetismCorner::kTopLeft:
-      case MagnetismCorner::kBottomLeft:
-        tuck_handle_origin = window_->GetTargetBounds().right_center() -
-                             gfx::Vector2d(0, kTuckHandleHeight / 2);
-
-        break;
-      case MagnetismCorner::kTopRight:
-      case MagnetismCorner::kBottomRight:
-        tuck_handle_origin =
-            window_->GetTargetBounds().left_center() -
-            gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
-        left = false;
-        break;
-    }
     tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(
         base::BindRepeating(&ScopedWindowTucker::OnButtonPressed,
                             base::Unretained(this)),
@@ -187,8 +181,65 @@ class FloatController::ScopedWindowTucker {
           {kTuckHandleCornerRadius, 0, 0, kTuckHandleCornerRadius});
     }
     tuck_handle_widget_->Show();
-    tuck_handle_widget_->SetBounds(gfx::Rect(
-        tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight)));
+  }
+  ScopedWindowTucker(const ScopedWindowTucker&) = delete;
+  ScopedWindowTucker& operator=(const ScopedWindowTucker&) = delete;
+  ~ScopedWindowTucker() = default;
+
+  views::Widget* tuck_handle_widget() { return tuck_handle_widget_.get(); }
+
+  void AnimateTuck(bool left) {
+    // The final window bounds will be aligned with the edge of the screen.
+    const gfx::Rect target_bounds =
+        Shell::Get()->float_controller()->GetPreferredFloatWindowTabletBounds(
+            window_);
+
+    const gfx::Rect initial_bounds(window_->bounds());
+
+    // Set the final tucked bounds after the animation.
+    // TODO(sammiequon): Consider checking parent layout manager and minimum
+    // size in `TabletModeWindowState` instead of using `SetBounds` directly.
+    window_->SetBounds(target_bounds);
+
+    // Align the tuck handle with the window.
+    aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
+    const gfx::Point tuck_handle_origin =
+        left ? target_bounds.right_center() -
+                   gfx::Vector2d(0, kTuckHandleHeight / 2)
+             : target_bounds.left_center() -
+                   gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
+    const gfx::Rect tuck_handle_bounds(
+        tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight));
+    tuck_handle->SetBounds(tuck_handle_bounds);
+    tuck_handle->layer()->SetOpacity(1.f);
+
+    // Set the window back to its initial floated bounds.
+    const gfx::Transform initial_transform =
+        gfx::Transform::MakeTranslation(initial_bounds.x() - target_bounds.x(),
+                                        initial_bounds.y() - target_bounds.y());
+
+    // Set the transform during the bounce.
+    const gfx::Transform offset_transform = gfx::Transform::MakeTranslation(
+        left ? -kTuckOffscreenPaddingDp : kTuckOffscreenPaddingDp, 0);
+
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(base::TimeDelta())
+        .SetTransform(window_, initial_transform)
+        .SetTransform(tuck_handle, initial_transform)
+        .Then()
+        .SetDuration(kTuckWindowBounceStartDuration)
+        .SetTransform(window_, offset_transform,
+                      gfx::Tween::ACCEL_30_DECEL_20_85)
+        .SetTransform(tuck_handle, offset_transform,
+                      gfx::Tween::ACCEL_30_DECEL_20_85)
+        .Then()
+        .SetDuration(kTuckWindowBounceEndDuration)
+        .SetTransform(window_, gfx::Transform(), gfx::Tween::ACCEL_20_DECEL_100)
+        .SetTransform(tuck_handle, gfx::Transform(),
+                      gfx::Tween::ACCEL_20_DECEL_100);
   }
 
   void OnButtonPressed() {
@@ -241,15 +292,12 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     magnetism_corner_ = magnetism_corner;
   }
 
-  void MaybeTuckWindow() {
+  void MaybeTuckWindow(bool left) {
+    // `scoped_window_tucker_` must be initialized before `AnimateTuck()` to get
+    // the tucked window bounds from `GetPreferredFloatWindowTabletBounds()`.
     scoped_window_tucker_ =
-        std::make_unique<ScopedWindowTucker>(floated_window_);
-
-    UpdateWindowBoundsForTablet(floated_window_);
-
-    // Must be called after the tucked window bounds are updated, to align the
-    // handle with the window.
-    scoped_window_tucker_->ShowTuckHandle(magnetism_corner_);
+        std::make_unique<ScopedWindowTucker>(floated_window_, left);
+    scoped_window_tucker_->AnimateTuck(left);
   }
 
   void MaybeUntuckWindow() { scoped_window_tucker_.reset(); }
@@ -475,7 +523,7 @@ void FloatController::OnFlingOrSwipeForTablet(aura::Window* floated_window,
   }
 
   floated_window_info->set_magnetism_corner(magnetism_corner);
-  floated_window_info->MaybeTuckWindow();
+  floated_window_info->MaybeTuckWindow(left);
 }
 
 const Desk* FloatController::FindDeskOfFloatedWindow(
