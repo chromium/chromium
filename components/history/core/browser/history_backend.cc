@@ -2662,6 +2662,7 @@ void HistoryBackend::SendFaviconChangedNotificationForIconURL(
 }
 
 void HistoryBackend::Commit() {
+  TRACE_EVENT0("browser", "HistoryBackend::Commit");
   if (!db_)
     return;
 
@@ -2689,6 +2690,7 @@ void HistoryBackend::Commit() {
 }
 
 void HistoryBackend::ScheduleCommit() {
+  TRACE_EVENT0("browser", "HistoryBackend::ScheduleCommit");
   // Non-cancelled means there's an already scheduled commit. Note that
   // CancelableOnceClosure starts cancelled with the default constructor.
   if (!scheduled_commit_.IsCancelled())
@@ -2702,6 +2704,7 @@ void HistoryBackend::ScheduleCommit() {
 }
 
 void HistoryBackend::CancelScheduledCommit() {
+  TRACE_EVENT0("browser", "HistoryBackend::CancelScheduledCommit");
   scheduled_commit_.Cancel();
 }
 
@@ -2740,6 +2743,7 @@ void HistoryBackend::ProcessDBTaskImpl() {
 }
 
 void HistoryBackend::BeginSingletonTransaction() {
+  TRACE_EVENT0("browser", "HistoryBackend::BeginSingletonTransaction");
   // TODO(crbug.com/1321483): Convert to DCHECKs after sussing out all the
   // transaction bugs in History.
   CHECK(!singleton_transaction_);
@@ -2747,7 +2751,9 @@ void HistoryBackend::BeginSingletonTransaction() {
   CHECK_EQ(db_->transaction_nesting(), 0);
   singleton_transaction_ = db_->CreateTransaction();
 
-  if (singleton_transaction_->Begin()) {
+  bool success = singleton_transaction_->Begin();
+  UMA_HISTOGRAM_BOOLEAN("History.Backend.TransactionBeginSuccess", success);
+  if (success) {
     CHECK_EQ(db_->transaction_nesting(), 1);
   } else {
     // Failing to begin the transaction is weird but it's not the end of the
@@ -2764,6 +2770,8 @@ void HistoryBackend::BeginSingletonTransaction() {
 }
 
 void HistoryBackend::CommitSingletonTransactionIfItExists() {
+  TRACE_EVENT0("browser",
+               "HistoryBackend::CommitSingletonTransactionIfItExists");
   // This can happen if the transaction was not successfully started.
   // TODO(crbug.com/1321483): Convert to DCHECKs after sussing out all the
   // transaction bugs in History.
@@ -2775,7 +2783,10 @@ void HistoryBackend::CommitSingletonTransactionIfItExists() {
 
   CHECK_EQ(db_->transaction_nesting(), 1)
       << "Someone opened multiple transactions.";
-  if (singleton_transaction_->Commit()) {
+
+  bool success = singleton_transaction_->Commit();
+  UMA_HISTOGRAM_BOOLEAN("History.Backend.TransactionCommitSuccess", success);
+  if (success) {
     CHECK_EQ(db_->transaction_nesting(), 0)
         << "Someone left a transaction open.";
   } else {
@@ -2992,6 +3003,7 @@ void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
 }
 
 void HistoryBackend::KillHistoryDatabase() {
+  TRACE_EVENT0("browser", "HistoryBackend::KillHistoryDatabase");
   scheduled_kill_db_ = false;
   if (!db_)
     return;

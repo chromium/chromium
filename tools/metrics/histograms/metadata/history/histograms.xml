@@ -39,6 +39,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Backend.TransactionBeginSuccess" enum="BooleanSuccess"
+    expires_after="2023-10-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    Recorded after attempting to begin a singleton transaction within
+    HistoryBackend. Records whether it was successfully begun or not.
+  </summary>
+</histogram>
+
+<histogram name="History.Backend.TransactionCommitSuccess"
+    enum="BooleanSuccess" expires_after="2023-10-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    Recorded after attempting to commit a singleton transaction within
+    HistoryBackend. Records whether it was successfully committed or not.
+  </summary>
+</histogram>
+
 <histogram name="History.BrowsingDataLifetime.Duration.BrowserShutdownDeletion"
     units="ms" expires_after="2023-04-01">
   <owner>ydago@chromium.org</owner>
