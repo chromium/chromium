@@ -5,9 +5,10 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_WEB_RUNTIME_APPLICATION_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_WEB_RUNTIME_APPLICATION_H_
 
+#include <vector>
+
 #include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
 #include "components/cast_receiver/browser/page_state_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -21,21 +22,17 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
                                     public cast_receiver::PageStateObserver {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
-  WebRuntimeApplication(
-      std::string cast_session_id,
-      cast::common::ApplicationConfig app_config,
-      CastWebService* web_service,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      RuntimeApplicationPlatform::Factory runtime_application_factory);
+  WebRuntimeApplication(std::string cast_session_id,
+                        cast::common::ApplicationConfig app_config,
+                        CastWebService* web_service);
   ~WebRuntimeApplication() override;
 
  private:
-  void OnAllBindingsReceived(
-      absl::optional<cast::bindings::GetAllResponse> response);
+  void OnAllBindingsReceived(bool success, std::vector<std::string> bindings);
 
-  // RuntimeApplicationBase implementation:
+  // RuntimeApplication implementation:
+  void Launch(StatusCallback callback) override;
   bool OnMessagePortMessage(cast::web::Message message) override;
-  void OnApplicationLaunched() override;
   bool IsStreamingApplication() const override;
 
   // cast_receiver::PageStateObserver implementation:

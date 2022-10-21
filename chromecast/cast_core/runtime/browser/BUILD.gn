@@ -110,8 +110,9 @@ cast_source_set("runtime_application") {
   public_deps = [
     "//base",
     "//components/cast_receiver/common",
-    "//third_party/cast_core/public/src/proto/common:application_config_proto",
-    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
+    "//components/url_rewrite/common",
+    "//third_party/cast_core/public/src/proto/common:application_state_proto",
+    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     "//url",
   ]
 }
@@ -169,8 +170,7 @@ cast_source_set("runtime_application_dispatcher") {
     "runtime_application_base.h",
     "runtime_application_dispatcher.cc",
     "runtime_application_dispatcher.h",
-    "runtime_application_dispatcher_platform.h",
-    "runtime_application_platform.h",
+    "runtime_application_dispatcher_base.h",
     "streaming_runtime_application.cc",
     "streaming_runtime_application.h",
     "web_runtime_application.cc",
@@ -178,8 +178,8 @@ cast_source_set("runtime_application_dispatcher") {
   ]
 
   public_deps = [
-    ":grpc_webui",
     ":runtime_application",
+    ":streaming_receiver_session_client",
     "//base",
     "//chromecast/browser",
     "//chromecast/common:feature_constants",
@@ -188,19 +188,11 @@ cast_source_set("runtime_application_dispatcher") {
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
     "//third_party/abseil-cpp:absl",
-    "//third_party/cast_core/public/src/proto/common:application_state_proto",
-    "//third_party/cast_core/public/src/proto/common:value_proto",
-    "//third_party/cast_core/public/src/proto/core:cast_core_service_proto_castcore",
-    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto_castcore",
-    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto_castcore",
-    "//third_party/cast_core/public/src/proto/v2:core_message_port_application_service_proto_castcore",
-    "//third_party/cast_core/public/src/proto/v2:runtime_application_service_proto_castcore",
-    "//third_party/cast_core/public/src/proto/v2:runtime_message_port_application_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/common:application_config_proto",
   ]
 
   deps = [
     ":core_service_bindings",
-    ":streaming_receiver_session_client",
     "//chromecast/cast_core/runtime/browser/url_rewrite",
     "//components/cast/message_port",
     "//components/cast_receiver/browser:page_state_observer",
@@ -209,6 +201,8 @@ cast_source_set("runtime_application_dispatcher") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
+    "//third_party/cast_core/public/src/proto/common:application_state_proto",
+    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     "//third_party/openscreen/src/cast/common:public",
   ]
 }
@@ -229,6 +223,7 @@ cast_source_set("runtime_application_dispatcher_grpc") {
     "//base",
     "//chromecast/browser",
     "//chromecast/common:feature_constants",
+    "//chromecast/cast_core:cast_core_switches",
     "//components/cast_receiver/browser",
     "//components/cast_receiver/browser:page_state_observer",
     "//components/cast_receiver/common",

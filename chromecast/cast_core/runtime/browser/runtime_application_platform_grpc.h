@@ -9,14 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/memory/raw_ref.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
-#include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "third_party/cast_core/public/src/proto/common/application_state.pb.h"
 #include "third_party/cast_core/public/src/proto/common/value.pb.h"
+#include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/runtime_application_service.castcore.pb.h"
@@ -31,24 +28,29 @@ namespace chromecast {
 
 class MessagePortService;
 
-class RuntimeApplicationPlatformGrpc : public RuntimeApplicationPlatform {
+class RuntimeApplicationPlatformGrpc : public RuntimeApplication::Delegate {
  public:
   RuntimeApplicationPlatformGrpc(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      std::string cast_session_id,
-      Client& client);
+      std::unique_ptr<RuntimeApplication> runtime_application,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~RuntimeApplicationPlatformGrpc() override;
 
-  // RuntimeApplicationPlatform implementation:
-  void Load(cast::runtime::LoadApplicationRequest request,
-            RuntimeApplication::StatusCallback callback) override;
-  void Launch(cast::runtime::LaunchApplicationRequest request,
-              RuntimeApplication::StatusCallback callback) override;
+  const std::string& app_id() const {
+    DCHECK(runtime_application_);
+    return runtime_application_->GetAppId();
+  }
+
+  void Load(const cast::runtime::LoadApplicationRequest& request,
+            RuntimeApplication::StatusCallback callback);
+  void Launch(const cast::runtime::LaunchApplicationRequest& request,
+              RuntimeApplication::StatusCallback callback);
+
+  // RuntimeApplication::Delegate implementation:
   void NotifyApplicationStarted() override;
   void NotifyApplicationStopped(cast::common::StopReason::Type stop_reason,
                                 int32_t net_error_code) override;
   void NotifyMediaPlaybackChanged(bool playing) override;
-  void GetAllBindingsAsync(GetAllBindingsCB callback) override;
+  void GetAllBindings(GetAllBindingsCallback callback) override;
   std::unique_ptr<MessagePortService> CreateMessagePortService() override;
   std::unique_ptr<content::WebUIControllerFactory> CreateWebUIControllerFactory(
       std::vector<std::string> hosts) override;
@@ -77,14 +79,11 @@ class RuntimeApplicationPlatformGrpc : public RuntimeApplicationPlatform {
                          cast::v2::RuntimeMessagePortApplicationServiceHandler::
                              PostMessage::Reactor* reactor);
 
-  // GetAllBindingsAsync() callback.
   void OnAllBindingsReceived(
-      GetAllBindingsCB callback,
+      GetAllBindingsCallback callback,
       cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
 
-  base::raw_ref<Client> const client_;
-  std::string session_id_;
-
+  std::unique_ptr<RuntimeApplication> const runtime_application_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   absl::optional<cast::utils::GrpcServer> grpc_server_;

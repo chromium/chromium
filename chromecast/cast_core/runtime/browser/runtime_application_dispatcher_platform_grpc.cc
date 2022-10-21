@@ -5,45 +5,48 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_platform_grpc.h"
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/logging.h"
-#include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
+#include "chromecast/cast_core/cast_core_switches.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_platform_grpc.h"
-#include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
-#include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
 #include "chromecast/metrics/cast_event_builder_simple.h"
+#include "components/cast_receiver/browser/public/application_client.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
-#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
 namespace {
 
 constexpr base::TimeDelta kDefaultMetricsReportInterval = base::Seconds(60);
 
-std::unique_ptr<RuntimeApplicationPlatform>
-CreateRuntimeApplicationPlatformFactory(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::string session_id,
-    RuntimeApplicationPlatform::Client& client) {
-  return std::make_unique<RuntimeApplicationPlatformGrpc>(
-      std::move(task_runner), std::move(session_id), client);
-}
-
 }  // namespace
+
+std::unique_ptr<RuntimeApplicationDispatcher>
+RuntimeApplicationDispatcher::Create(
+    cast_receiver::ApplicationClient& application_client,
+    CastWebService* web_service) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  std::string runtime_id =
+      command_line->GetSwitchValueASCII(cast::core::kCastCoreRuntimeIdSwitch);
+  std::string runtime_service_path =
+      command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
+
+  LOG(INFO) << "gRPC platform created";
+  return std::make_unique<RuntimeApplicationDispatcherPlatformGrpc>(
+      application_client, web_service, runtime_id, runtime_service_path);
+}
 
 RuntimeApplicationDispatcherPlatformGrpc::
     RuntimeApplicationDispatcherPlatformGrpc(
-        RuntimeApplicationDispatcherPlatform::Client& client,
+        cast_receiver::ApplicationClient& application_client,
         CastWebService* web_service,
         std::string runtime_id,
         std::string runtime_service_endpoint)
-    : client_(client),
+    : Base(application_client, web_service),
       runtime_id_(std::move(runtime_id)),
       runtime_service_endpoint_(std::move(runtime_service_endpoint)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
@@ -57,7 +60,7 @@ RuntimeApplicationDispatcherPlatformGrpc::
   Stop();
 }
 
-bool RuntimeApplicationDispatcherPlatformGrpc::Start() {
+cast_receiver::Status RuntimeApplicationDispatcherPlatformGrpc::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!grpc_server_);
 
@@ -110,7 +113,7 @@ bool RuntimeApplicationDispatcherPlatformGrpc::Start() {
   return true;
 }
 
-void RuntimeApplicationDispatcherPlatformGrpc::Stop() {
+cast_receiver::Status RuntimeApplicationDispatcherPlatformGrpc::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   action_recorder_.reset();
@@ -134,6 +137,7 @@ void RuntimeApplicationDispatcherPlatformGrpc::Stop() {
   }
 
   LOG(INFO) << "Runtime service stopped";
+  return true;
 }
 
 std::unique_ptr<CastEventBuilder>
@@ -153,9 +157,7 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleLoadApplication(
     return;
   }
 
-  std::string session_id = request.cast_session_id();
-  if (client_->HasApplication(session_id)) {
-    LOG(ERROR) << "Application already exists";
+  if (GetApplication(request.cast_session_id())) {
     reactor->Write(grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
                                 "Application already exist"));
     return;
@@ -167,15 +169,24 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleLoadApplication(
     return;
   }
 
-  client_->LoadApplication(
-      std::move(request),
+  RuntimeApplicationPlatformGrpc* platform_app = CreateApplication(
+      request.cast_session_id(), request.application_config(),
+      base::BindOnce(
+          [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+             std::unique_ptr<RuntimeApplication> runtime_application) {
+            return std::make_unique<RuntimeApplicationPlatformGrpc>(
+                std::move(runtime_application), std::move(task_runner));
+          },
+          task_runner_));
+
+  platform_app->Load(
+      request,
       base::BindPostTask(
           task_runner_,
           base::BindOnce(
               &RuntimeApplicationDispatcherPlatformGrpc::OnApplicationLoaded,
-              weak_factory_.GetWeakPtr(), std::move(session_id),
-              std::move(reactor))),
-      base::BindOnce(&CreateRuntimeApplicationPlatformFactory));
+              weak_factory_.GetWeakPtr(), request.cast_session_id(),
+              std::move(reactor))));
 }
 
 void RuntimeApplicationDispatcherPlatformGrpc::HandleLaunchApplication(
@@ -190,15 +201,16 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleLaunchApplication(
   }
 
   std::string session_id = request.cast_session_id();
-  if (!client_->HasApplication(session_id)) {
+  RuntimeApplicationPlatformGrpc* platform_app = GetApplication(session_id);
+  if (!platform_app) {
     LOG(ERROR) << "Application does not exist";
     reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                                 "Application does not exists"));
     return;
   }
 
-  client_->LaunchApplication(
-      std::move(request),
+  platform_app->Launch(
+      request,
       base::BindPostTask(
           task_runner_,
           base::BindOnce(
@@ -218,9 +230,9 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleStopApplication(
     return;
   }
 
-  std::unique_ptr<RuntimeApplication> app =
-      client_->StopApplication(request.cast_session_id());
-  if (!app) {
+  RuntimeApplicationPlatformGrpc* platform_app =
+      GetApplication(request.cast_session_id());
+  if (!platform_app) {
     LOG(ERROR) << "Application doesn't exist anymore: session_id="
                << request.cast_session_id();
     reactor->Write(
@@ -230,9 +242,11 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleStopApplication(
 
   // Reset the app only after the response is constructed.
   cast::runtime::StopApplicationResponse response;
-  response.set_app_id(app->GetAppId());
-  response.set_cast_session_id(app->GetCastSessionId());
+  response.set_app_id(platform_app->app_id());
+  response.set_cast_session_id(request.cast_session_id());
   reactor->Write(std::move(response));
+
+  DestroyApplication(request.cast_session_id());
 }
 
 void RuntimeApplicationDispatcherPlatformGrpc::HandleHeartbeat(
@@ -313,7 +327,7 @@ void RuntimeApplicationDispatcherPlatformGrpc::OnApplicationLoaded(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
     cast_receiver::Status success) {
-  if (!client_->HasApplication(session_id)) {
+  if (!GetApplication(session_id)) {
     LOG(ERROR) << "Application doesn't exist anymore: session_id="
                << session_id;
     reactor->Write(
@@ -336,7 +350,7 @@ void RuntimeApplicationDispatcherPlatformGrpc::OnApplicationLaunching(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
     cast_receiver::Status success) {
-  if (!client_->HasApplication(session_id)) {
+  if (!GetApplication(session_id)) {
     LOG(ERROR) << "Application doesn't exist anymore: session_id="
                << session_id;
     reactor->Write(

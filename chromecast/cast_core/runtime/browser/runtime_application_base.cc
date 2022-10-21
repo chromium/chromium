@@ -4,16 +4,11 @@
 
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/bind_post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/browser/cast_web_service.h"
-#include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/browser/visibility_types.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
-#include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
 
 namespace chromecast {
@@ -37,17 +32,12 @@ RuntimeApplicationBase::RuntimeApplicationBase(
     std::string cast_session_id,
     cast::common::ApplicationConfig app_config,
     mojom::RendererType renderer_type_used,
-    CastWebService* web_service,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    RuntimeApplicationPlatform::Factory runtime_application_factory)
-    : platform_(std::move(runtime_application_factory)
-                    .Run(task_runner, cast_session_id, *this)),
-      cast_session_id_(std::move(cast_session_id)),
+    CastWebService* web_service)
+    : cast_session_id_(std::move(cast_session_id)),
       app_config_(std::move(app_config)),
       renderer_type_(renderer_type_used),
       web_service_(web_service),
-      task_runner_(std::move(task_runner)) {
-  DCHECK(platform_);
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(web_service_);
   DCHECK(task_runner_);
 }
@@ -55,6 +45,11 @@ RuntimeApplicationBase::RuntimeApplicationBase(
 RuntimeApplicationBase::~RuntimeApplicationBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_application_running_);
+}
+
+void RuntimeApplicationBase::SetDelegate(Delegate& delegate) {
+  DCHECK(!delegate_);
+  delegate_ = &delegate;
 }
 
 const std::string& RuntimeApplicationBase::GetDisplayName() const {
@@ -69,55 +64,14 @@ const std::string& RuntimeApplicationBase::GetCastSessionId() const {
   return cast_session_id_;
 }
 
-void RuntimeApplicationBase::Load(cast::runtime::LoadApplicationRequest request,
-                                  RuntimeApplication::StatusCallback callback) {
+void RuntimeApplicationBase::Load(RuntimeApplication::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  platform_->Load(
-      std::move(request),
-      base::BindOnce(&RuntimeApplicationBase::OnApplicationLoading,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void RuntimeApplicationBase::OnApplicationLoading(
-    RuntimeApplication::StatusCallback callback,
-    cast_receiver::Status success) {
-  if (!success) {
-    // TODO(crbug.com/1360597): Add details of this failure to the new Status
-    // object returned.
-    std::move(callback).Run(false);
-    return;
-  }
 
   is_application_running_ = true;
   cast_web_view_ = CreateCastWebView();
 
   LOG(INFO) << "Loaded application" << *this;
   std::move(callback).Run(true);
-}
-
-void RuntimeApplicationBase::OnApplicationLaunching(
-    RuntimeApplication::StatusCallback callback,
-    cast_receiver::Status success) {
-  std::move(callback).Run(success);
-  if (success) {
-    LOG(INFO) << "Launched application" << *this;
-    OnApplicationLaunched();
-  }
-}
-
-void RuntimeApplicationBase::OnUrlRewriteRulesSet(
-    url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) {
-  cast_web_contents()->SetUrlRewriteRules(std::move(mojom_rules));
-}
-
-void RuntimeApplicationBase::Launch(
-    cast::runtime::LaunchApplicationRequest request,
-    RuntimeApplication::StatusCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  platform_->Launch(
-      std::move(request),
-      base::BindOnce(&RuntimeApplicationBase::OnApplicationLaunching,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 base::Value RuntimeApplicationBase::GetRendererFeatures() const {
@@ -284,7 +238,7 @@ void RuntimeApplicationBase::OnPageLoaded() {
                                            VisibilityPriority::HIDDEN);
   }
 
-  platform_->NotifyApplicationStarted();
+  delegate().NotifyApplicationStarted();
 }
 
 CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
@@ -300,7 +254,12 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   return web_service_->CreateWebViewInternal(std::move(params));
 }
 
-void RuntimeApplicationBase::OnMediaStateSet(
+void RuntimeApplicationBase::SetUrlRewriteRules(
+    url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) {
+  cast_web_contents()->SetUrlRewriteRules(std::move(mojom_rules));
+}
+
+void RuntimeApplicationBase::SetMediaState(
     cast::common::MediaState::Type media_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (media_state == cast::common::MediaState::UNDEFINED) {
@@ -337,7 +296,7 @@ void RuntimeApplicationBase::OnMediaStateSet(
   }
 }
 
-void RuntimeApplicationBase::OnVisibilitySet(
+void RuntimeApplicationBase::SetVisibility(
     cast::common::Visibility::Type visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (visibility == cast::common::Visibility::UNDEFINED) {
@@ -371,7 +330,7 @@ void RuntimeApplicationBase::OnVisibilitySet(
   }
 }
 
-void RuntimeApplicationBase::OnTouchInputSet(
+void RuntimeApplicationBase::SetTouchInput(
     cast::common::TouchInput::Type touch_input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (touch_input == cast::common::TouchInput::UNDEFINED) {
@@ -392,7 +351,7 @@ void RuntimeApplicationBase::OnTouchInputSet(
                                              cast::common::TouchInput::ENABLED);
 }
 
-bool RuntimeApplicationBase::IsApplicationRunning() {
+bool RuntimeApplicationBase::IsApplicationRunning() const {
   return is_application_running_;
 }
 
@@ -414,7 +373,7 @@ void RuntimeApplicationBase::StopApplication(
     }
   }
 
-  platform_->NotifyApplicationStopped(stop_reason, net_error_code);
+  delegate().NotifyApplicationStopped(stop_reason, net_error_code);
 
   LOG(INFO) << "Application is stopped: stop_reason="
             << cast::common::StopReason::Type_Name(stop_reason) << ", "

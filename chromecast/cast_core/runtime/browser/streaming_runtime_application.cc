@@ -4,13 +4,9 @@
 
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 
-#include "base/bind.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/bind_post_task.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/public/application_client.h"
-#include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -39,15 +35,11 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
     std::string cast_session_id,
     cast::common::ApplicationConfig app_config,
     CastWebService* web_service,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    cast_receiver::ApplicationClient& application_client,
-    RuntimeApplicationPlatform::Factory runtime_application_factory)
+    cast_receiver::ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(app_config),
                              mojom::RendererType::MOJO_RENDERER,
-                             web_service,
-                             std::move(task_runner),
-                             std::move(runtime_application_factory)),
+                             web_service),
       application_client_(application_client) {}
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
@@ -91,10 +83,10 @@ void StreamingRuntimeApplication::OnResolutionChanged(
   application_client_->OnStreamingResolutionChanged(size, transformation);
 }
 
-void StreamingRuntimeApplication::OnApplicationLaunched() {
+void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  message_port_service_ = application_platform().CreateMessagePortService();
+  message_port_service_ = delegate().CreateMessagePortService();
 
   // Bind Cast Transport.
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
@@ -116,6 +108,8 @@ void StreamingRuntimeApplication::OnApplicationLaunched() {
   LoadPage(GURL(base::StringPrintf(
       kStreamingPageUrlTemplate,
       cast_streaming::GetCastStreamingMediaSourceUrl().spec().c_str())));
+
+  std::move(callback).Run(true);
 }
 
 void StreamingRuntimeApplication::StopApplication(

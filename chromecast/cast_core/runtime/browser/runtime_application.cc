@@ -6,6 +6,8 @@
 
 namespace chromecast {
 
+RuntimeApplication::Delegate::~Delegate() = default;
+
 RuntimeApplication::~RuntimeApplication() = default;
 
 std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app) {

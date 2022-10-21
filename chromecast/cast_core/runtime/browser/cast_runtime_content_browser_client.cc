@@ -13,7 +13,6 @@
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_platform.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_platform_grpc.h"
 #include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast_receiver/browser/public/application_client.h"
@@ -23,21 +22,6 @@
 namespace chromecast {
 
 namespace {
-
-std::unique_ptr<RuntimeApplicationDispatcherPlatform>
-CreateApplicationDispatcherPlatform(
-    RuntimeApplicationDispatcherPlatform::Client& client,
-    CastWebService* web_service) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string runtime_id =
-      command_line->GetSwitchValueASCII(cast::core::kCastCoreRuntimeIdSwitch);
-  std::string runtime_service_path =
-      command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
-
-  LOG(INFO) << "gRPC platform created";
-  return std::make_unique<RuntimeApplicationDispatcherPlatformGrpc>(
-      client, web_service, runtime_id, runtime_service_path);
-}
 
 // CastServiceSimple impl for Cast Core that allows correct dispatcher start up
 // and tear down.
@@ -166,8 +150,7 @@ CastRuntimeContentBrowserClient::GetNetworkContextGetter() {
 
 void CastRuntimeContentBrowserClient::InitializeCoreComponents(
     CastWebService* web_service) {
-  app_dispatcher_ = std::make_unique<RuntimeApplicationDispatcher>(
-      base::BindOnce(&CreateApplicationDispatcherPlatform), web_service, *this);
+  app_dispatcher_ = RuntimeApplicationDispatcher::Create(*this, web_service);
 }
 
 }  // namespace chromecast

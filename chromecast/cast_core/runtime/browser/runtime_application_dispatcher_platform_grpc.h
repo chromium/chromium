@@ -7,20 +7,17 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_action_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder_service.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_platform.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_base.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_platform_grpc.h"
+#include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/common/public/status.h"
-#include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
@@ -29,29 +26,31 @@ namespace chromecast {
 
 class CastWebService;
 
-// A gRPC-based implementation of RuntimeApplicationDispatcherPlatform for use
+// A gRPC-based implementation of RuntimeApplicationDispatcher for use
 // with Cast Core.
 class RuntimeApplicationDispatcherPlatformGrpc final
-    : public RuntimeApplicationDispatcherPlatform,
+    : public RuntimeApplicationDispatcherBase<RuntimeApplicationPlatformGrpc>,
       public CastRuntimeMetricsRecorder::EventBuilderFactory {
  public:
   // |application_client| is expected to persist for the lifetime of this
   // instance.
   RuntimeApplicationDispatcherPlatformGrpc(
-      RuntimeApplicationDispatcherPlatform::Client& client,
+      cast_receiver::ApplicationClient& application_client,
       CastWebService* web_service,
       std::string runtime_id,
       std::string runtime_service_endpoint);
   ~RuntimeApplicationDispatcherPlatformGrpc() override;
 
-  // RuntimeApplicationDispatcherPlatform implementation.
-  bool Start() override;
-  void Stop() override;
+  // RuntimeApplicationDispatcher implementation.
+  cast_receiver::Status Start() override;
+  cast_receiver::Status Stop() override;
 
   // CastRuntimeMetricsRecorder::EventBuilderFactory overrides:
   std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
 
  private:
+  using Base = RuntimeApplicationDispatcherBase<RuntimeApplicationPlatformGrpc>;
+
   // RuntimeService gRPC handlers:
   void HandleLoadApplication(
       cast::runtime::LoadApplicationRequest request,
@@ -99,8 +98,6 @@ class RuntimeApplicationDispatcherPlatformGrpc final
   void OnMetricsRecorderServiceStopped(
       cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
           reactor);
-
-  base::raw_ref<RuntimeApplicationDispatcherPlatform::Client> client_;
 
   const std::string runtime_id_;
   const std::string runtime_service_endpoint_;

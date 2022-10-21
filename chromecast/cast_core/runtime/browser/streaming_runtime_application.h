@@ -5,10 +5,7 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_RUNTIME_APPLICATION_H_
 
-#include "base/memory/raw_ref.h"
-#include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
 #include "chromecast/cast_core/runtime/browser/streaming_receiver_session_client.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 
@@ -30,15 +27,13 @@ class StreamingRuntimeApplication final
       std::string cast_session_id,
       cast::common::ApplicationConfig app_config,
       CastWebService* web_service,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      cast_receiver::ApplicationClient& application_client,
-      RuntimeApplicationPlatform::Factory runtime_application_factory);
+      cast_receiver::ApplicationClient& application_client);
   ~StreamingRuntimeApplication() override;
 
  private:
   // RuntimeApplicationBase implementation:
+  void Launch(StatusCallback callback) override;
   bool OnMessagePortMessage(cast::web::Message message) override;
-  void OnApplicationLaunched() override;
   void StopApplication(cast::common::StopReason::Type stop_reason,
                        int32_t net_error_code) override;
   bool IsStreamingApplication() const override;
