@@ -304,7 +304,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxSecurityChipSecure] = {kColorOmniboxText};
   mixer[kColorOmniboxText] = {ui::kColorTextfieldForeground};
   mixer[kColorOmniboxTextDimmed] = {kColorOmniboxText};
-  mixer[kColorTabBackgroundActiveFrameActive] = {kColorToolbar};
+  mixer[kColorTabBackgroundActiveFrameActive] = {ui::kColorNativeHighlight};
   mixer[kColorTabBackgroundActiveFrameInactive] = {
       kColorTabBackgroundActiveFrameActive};
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorNativeHighlightText};
