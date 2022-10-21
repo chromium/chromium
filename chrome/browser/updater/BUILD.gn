@@ -34,6 +34,7 @@ source_set("browser_updater_client") {
     deps += [
       "//chrome/browser/google",
       "//chrome/common:channel_info",
+      "//chrome/common:chrome_features",
     ]
   }
 
@@ -49,13 +50,12 @@ source_set("scheduler") {
   deps = [ "//base" ]
 
   if (is_mac) {
-    if (enable_chromium_updater) {
+    if (enable_chromium_updater || is_chrome_branded) {
       sources += [ "scheduler_mac.cc" ]
-      deps += [ ":browser_updater_client" ]
-    } else if (is_chrome_branded) {
-      sources += [ "scheduler_mac_keystone.cc" ]
       deps += [
+        ":browser_updater_client",
         "//chrome/browser/mac:keystone_glue",
+        "//chrome/common",
         "//chrome/updater:browser_sources",
       ]
     } else {

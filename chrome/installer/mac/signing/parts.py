@@ -45,6 +45,13 @@ def get_parts(config):
                 identifier_requirement=False,
                 entitlements='app-entitlements.plist',
                 verify_options=verify_options),
+        'privileged-helper':
+            CodeSignedProduct(
+                '{.app_product}.app/Contents/Library/LaunchServices/{}.UpdaterPrivilegedHelper'
+                .format(config, uncustomized_bundle_id),
+                '{}.UpdaterPrivilegedHelper'.format(uncustomized_bundle_id),
+                options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+                verify_options=verify_options),
         'framework':
             CodeSignedProduct(
                 # The framework is a dylib, so options= flags are meaningless.

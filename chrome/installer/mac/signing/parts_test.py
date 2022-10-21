@@ -103,6 +103,12 @@ class TestGetParts(unittest.TestCase):
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
             all_parts['app-mode-app'].options)
+        self.assertEqual(
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION
+            | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['privileged-helper'].options)
 
 
 def _get_plist_read(other_version):

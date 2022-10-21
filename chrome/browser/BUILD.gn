@@ -94,7 +94,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
-    "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
     "USE_THIN_LTO=$use_thin_lto",
   ]
 
@@ -6234,6 +6233,8 @@ static_library("browser") {
       "mac/initial_prefs.mm",
       "mac/install_from_dmg.h",
       "mac/install_from_dmg.mm",
+      "mac/install_updater.h",
+      "mac/install_updater.mm",
       "mac/key_window_notifier.cc",
       "mac/key_window_notifier.h",
       "mac/mac_startup_profiler.cc",
@@ -6322,13 +6323,6 @@ static_library("browser") {
       "UserNotifications.framework",  # macOS 10.14
     ]
     public_deps += [ "//chrome/browser/mac:keystone_glue" ]
-
-    if (enable_chromium_updater) {
-      sources += [
-        "mac/install_updater.h",
-        "mac/install_updater.mm",
-      ]
-    }
   }
 
   if (is_win || is_linux || is_android || is_chromeos) {
@@ -6618,13 +6612,10 @@ static_library("browser") {
     ]
 
     deps += [
+      "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/updater:browser_sources",
     ]
-
-    if (enable_chromium_updater) {
-      deps += [ "//chrome/browser/updater:browser_updater_client" ]
-    }
   } else {
     # On other platforms, use the generic implementation.
     sources += [ "hang_monitor/hang_crash_dump.cc" ]

@@ -6262,6 +6262,7 @@ test("unit_tests") {
       "../browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller_unittest.mm",
       "../browser/ui/cocoa/window_size_autosaver_unittest.mm",
       "../browser/ui/content_settings/content_setting_media_image_model_unittest.mm",
+      "../browser/updater/browser_updater_client_mac_unittest.mm",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../utility/importer/safari_importer_unittest.mm",
     ]
@@ -6272,6 +6273,7 @@ test("unit_tests") {
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/renderer_host:history_swiper",
+      "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/common/safe_browsing:disk_image_type_sniffer_mac",
@@ -6298,14 +6300,6 @@ test("unit_tests") {
       "//chrome/tools/convert_dict:lib",
       "//third_party/hunspell",
     ]
-  }
-
-  if (enable_chromium_updater) {
-    deps += [ "//chrome/browser/updater:browser_updater_client" ]
-
-    if (is_mac) {
-      sources += [ "../browser/updater/browser_updater_client_mac_unittest.mm" ]
-    }
   }
 
   if (enable_paint_preview) {

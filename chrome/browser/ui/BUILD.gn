@@ -3895,10 +3895,6 @@ static_library("ui") {
       "Quartz.framework",
     ]
     weak_frameworks = [ "ScreenTime.framework" ]
-
-    if (enable_chromium_updater) {
-      deps += [ "//chrome/browser/updater:browser_updater_client" ]
-    }
   }
 
   if (is_win) {

@@ -7,25 +7,22 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
-#include "chrome/browser/buildflags.h"
 #include "chrome/browser/mac/keystone_glue.h"
-
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 #include "chrome/browser/updater/browser_updater_client_util.h"
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+#include "chrome/common/chrome_features.h"
 
 namespace {
 
 InstalledAndCriticalVersion GetInstalledVersionSynchronous() {
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-  return InstalledAndCriticalVersion(
-      base::Version(CurrentlyInstalledVersion()));
-#else
+  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
+    return InstalledAndCriticalVersion(
+        base::Version(CurrentlyInstalledVersion()));
+  }
   return InstalledAndCriticalVersion(base::Version(
       base::UTF16ToASCII(keystone_glue::CurrentlyInstalledVersion())));
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 }
 
 }  // namespace

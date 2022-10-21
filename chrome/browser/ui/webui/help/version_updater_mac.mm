@@ -15,33 +15,31 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/mac/authorization_util.h"
 #include "base/mac/foundation_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
-#include "chrome/grit/chromium_strings.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-#include "base/cxx17_backports.h"
-#include "base/mac/authorization_util.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/browser_updater_helper_client_mac.h"
-#include "chrome/updater/update_service.h"  // nogncheck
-#include "chrome/updater/updater_scope.h"   // nogncheck
+#include "chrome/common/chrome_features.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 // KeystoneObserver is a simple notification observer for Keystone status
 // updates. It will be created and managed by VersionUpdaterMac.
@@ -83,7 +81,6 @@
 
 @end  // @implementation KeystoneObserver
 
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 namespace {
 
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
@@ -94,7 +91,6 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
 }
 
 }  // namespace
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 VersionUpdater* VersionUpdater::Create(
     content::WebContents* /* web_contents */) {
@@ -109,107 +105,111 @@ VersionUpdaterMac::~VersionUpdaterMac() {}
 
 void VersionUpdaterMac::CheckForUpdate(StatusCallback status_callback,
                                        PromoteCallback promote_callback) {
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetUpdaterScope),
-      base::BindOnce(
-          [](base::RepeatingCallback<void(
-                 updater::UpdaterScope,
-                 const updater::UpdateService::UpdateState&)> status_callback,
-             updater::UpdaterScope scope) {
-            BrowserUpdaterClient::Create(scope)->CheckForUpdate(
-                base::BindRepeating(status_callback, scope));
-          },
-          base::BindRepeating(
-              &VersionUpdaterMac::UpdateStatusFromChromiumUpdater,
-              weak_factory_.GetWeakPtr(), status_callback, promote_callback)));
-#else
-  status_callback_ = std::move(status_callback);
-  promote_callback_ = std::move(promote_callback);
-
-  KeystoneGlue* keystone_glue = [KeystoneGlue defaultKeystoneGlue];
-  if (keystone_glue && ![keystone_glue isOnReadOnlyFilesystem]) {
-    AutoupdateStatus recent_status = [keystone_glue recentStatus];
-    if ([keystone_glue asyncOperationPending] ||
-        recent_status == kAutoupdateRegisterFailed ||
-        recent_status == kAutoupdateNeedsPromotion) {
-      // If an asynchronous update operation is currently pending, such as a
-      // check for updates or an update installation attempt, set the status
-      // up correspondingly without launching a new update check.
-      //
-      // If registration failed, no other operations make sense, so just go
-      // straight to the error.
-      UpdateStatus([[keystone_glue recentNotification] userInfo]);
-    } else {
-      // Launch a new update check, even if one was already completed, because
-      // a new update may be available or a new update may have been installed
-      // in the background since the last time the Help page was displayed.
-      [keystone_glue checkForUpdate];
-
-      // Immediately, kAutoupdateStatusNotification will be posted, with status
-      // kAutoupdateChecking.
-      //
-      // Upon completion, kAutoupdateStatusNotification will be posted with a
-      // status indicating the result of the check.
-    }
-
-    UpdateShowPromoteButton();
+  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetUpdaterScope),
+        base::BindOnce(
+            [](base::RepeatingCallback<void(
+                   updater::UpdaterScope,
+                   const updater::UpdateService::UpdateState&)> status_callback,
+               updater::UpdaterScope scope) {
+              BrowserUpdaterClient::Create(scope)->CheckForUpdate(
+                  base::BindRepeating(status_callback, scope));
+            },
+            base::BindRepeating(
+                &VersionUpdaterMac::UpdateStatusFromChromiumUpdater,
+                weak_factory_.GetWeakPtr(), status_callback,
+                promote_callback)));
   } else {
-    // There is no glue, or the application is on a read-only filesystem.
-    // Updates and promotions are impossible.
-    status_callback_.Run(DISABLED, 0, false, false, std::string(), 0,
-                         std::u16string());
+    status_callback_ = std::move(status_callback);
+    promote_callback_ = std::move(promote_callback);
+
+    KeystoneGlue* keystone_glue = [KeystoneGlue defaultKeystoneGlue];
+    if (keystone_glue && ![keystone_glue isOnReadOnlyFilesystem]) {
+      AutoupdateStatus recent_status = [keystone_glue recentStatus];
+      if ([keystone_glue asyncOperationPending] ||
+          recent_status == kAutoupdateRegisterFailed ||
+          recent_status == kAutoupdateNeedsPromotion) {
+        // If an asynchronous update operation is currently pending, such as a
+        // check for updates or an update installation attempt, set the status
+        // up correspondingly without launching a new update check.
+        //
+        // If registration failed, no other operations make sense, so just go
+        // straight to the error.
+        UpdateStatus([[keystone_glue recentNotification] userInfo]);
+      } else {
+        // Launch a new update check, even if one was already completed, because
+        // a new update may be available or a new update may have been installed
+        // in the background since the last time the Help page was displayed.
+        [keystone_glue checkForUpdate];
+
+        // Immediately, kAutoupdateStatusNotification will be posted, with
+        // status kAutoupdateChecking.
+        //
+        // Upon completion, kAutoupdateStatusNotification will be posted with a
+        // status indicating the result of the check.
+      }
+
+      UpdateShowPromoteButton();
+    } else {
+      // There is no glue, or the application is on a read-only filesystem.
+      // Updates and promotions are impossible.
+      status_callback_.Run(DISABLED, 0, false, false, std::string(), 0,
+                           std::u16string());
+    }
   }
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 }
 
 void VersionUpdaterMac::PromoteUpdater() {
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-  NSString* prompt = l10n_util::GetNSStringFWithFixup(
-      IDS_PROMOTE_AUTHENTICATION_PROMPT,
-      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  base::mac::ScopedAuthorizationRef authorization(
-      base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt)));
-  if (!authorization.get()) {
-    VLOG(0) << "Could not get authorization to run as root.";
-    return;
+  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
+    NSString* prompt = l10n_util::GetNSStringFWithFixup(
+        IDS_PROMOTE_AUTHENTICATION_PROMPT,
+        l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
+    base::mac::ScopedAuthorizationRef authorization(
+        base::mac::AuthorizationCreateToRunAsRoot(
+            base::mac::NSToCFCast(prompt)));
+    if (!authorization.get()) {
+      VLOG(0) << "Could not get authorization to run as root.";
+      return;
+    }
+
+    base::ScopedCFTypeRef<CFErrorRef> error;
+    Boolean result =
+        SMJobBless(kSMDomainSystemLaunchd,
+                   base::SysUTF8ToCFStringRef(kPrivilegedHelperName),
+                   authorization, error.InitializeInto());
+    if (!result) {
+      base::ScopedCFTypeRef<CFStringRef> desc(CFErrorCopyDescription(error));
+      VLOG(0) << "Could not bless the privileged helper. Resulting error: "
+              << base::SysCFStringRefToUTF8(desc);
+    }
+
+    if (!update_helper_client_) {
+      update_helper_client_ =
+          base::MakeRefCounted<BrowserUpdaterHelperClientMac>();
+    }
+
+    update_helper_client_->SetupSystemUpdater(base::BindOnce([](int result) {
+      VLOG_IF(1, result != 0)
+          << "There was a problem with performing the system "
+             "updater tasks. Result: "
+          << result;
+    }));
+  } else {
+    // Tell Keystone to make software updates available for all users.
+    [[KeystoneGlue defaultKeystoneGlue] promoteTicket];
+
+    // Immediately, kAutoupdateStatusNotification will be posted, and
+    // UpdateStatus() will be called with status kAutoupdatePromoting.
+    //
+    // Upon completion, kAutoupdateStatusNotification will be posted, and
+    // UpdateStatus() will be called with a status indicating a result of the
+    // installation attempt.
+    //
+    // If the promotion was successful, KeystoneGlue will re-register the ticket
+    // and UpdateStatus() will be called again indicating first that
+    // registration is in progress and subsequently that it has completed.
   }
-
-  base::ScopedCFTypeRef<CFErrorRef> error;
-  Boolean result = SMJobBless(kSMDomainSystemLaunchd,
-                              base::SysUTF8ToCFStringRef(kPrivilegedHelperName),
-                              authorization, error.InitializeInto());
-  if (!result) {
-    base::ScopedCFTypeRef<CFStringRef> desc(CFErrorCopyDescription(error));
-    VLOG(0) << "Could not bless the privileged helper. Resulting error: "
-            << base::SysCFStringRefToUTF8(desc);
-  }
-
-  if (!update_helper_client_) {
-    update_helper_client_ =
-        base::MakeRefCounted<BrowserUpdaterHelperClientMac>();
-  }
-
-  update_helper_client_->SetupSystemUpdater(base::BindOnce([](int result) {
-    VLOG_IF(1, result != 0) << "There was a problem with performing the system "
-                               "updater tasks. Result: "
-                            << result;
-  }));
-#else
-  // Tell Keystone to make software updates available for all users.
-  [[KeystoneGlue defaultKeystoneGlue] promoteTicket];
-
-  // Immediately, kAutoupdateStatusNotification will be posted, and
-  // UpdateStatus() will be called with status kAutoupdatePromoting.
-  //
-  // Upon completion, kAutoupdateStatusNotification will be posted, and
-  // UpdateStatus() will be called with a status indicating a result of the
-  // installation attempt.
-  //
-  // If the promotion was successful, KeystoneGlue will re-register the ticket
-  // and UpdateStatus() will be called again indicating first that
-  // registration is in progress and subsequently that it has completed.
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 }
 
 void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
@@ -356,7 +356,6 @@ void VersionUpdaterMac::UpdateShowPromoteButton() {
   }
 }
 
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
     VersionUpdater::StatusCallback status_callback,
     VersionUpdater::PromoteCallback promote_callback,
@@ -444,5 +443,3 @@ void VersionUpdaterMac::UpdatePromotionStatusFromChromiumUpdater(
           : (enable_promote_button ? VersionUpdater::PROMOTE_ENABLED
                                    : VersionUpdater::PROMOTE_DISABLED));
 }
-
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)

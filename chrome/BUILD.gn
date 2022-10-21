@@ -464,6 +464,7 @@ if (is_win) {
       "--breakpad=0",
       "--scm=1",
       "--bundle_id=$chrome_mac_bundle_id",
+      "--privileged_helper_id=$privileged_helper_name",
     ]
     if (is_chrome_branded) {
       args += [ "--keystone=1" ]
@@ -472,9 +473,6 @@ if (is_win) {
       }
     } else {
       args += [ "--keystone=0" ]
-    }
-    if (enable_chromium_updater) {
-      args += [ "--privileged_helper_id=$privileged_helper_name" ]
     }
   }
 
@@ -496,6 +494,7 @@ if (is_win) {
       ":chrome_app_strings_bundle_data",
       ":chrome_resources",
       ":chrome_versioned_bundle_data",
+      ":chromium_updater_privileged_helper",
       "//base/allocator:early_zone_registration_mac",
       "//build:branding_buildflags",
       "//chrome/common:buildflags",
@@ -525,10 +524,6 @@ if (is_win) {
       # This is a bit of a hack, since GN deliberately terminates its search
       # for runtime_deps at create_bundle nodes (https://crbug.com/1010347).
       data_deps = [ ":chrome_framework" ]
-    }
-
-    if (enable_chromium_updater) {
-      deps += [ ":chromium_updater_privileged_helper" ]
     }
   }
 
@@ -654,15 +649,13 @@ if (is_win) {
     }
   }
 
-  if (enable_chromium_updater) {
-    bundle_data("chromium_updater_privileged_helper") {
-      sources = [ "$root_out_dir/$privileged_helper_name" ]
-      outputs = [
-        "{{bundle_contents_dir}}/Library/LaunchServices/{{source_file_part}}",
-      ]
+  bundle_data("chromium_updater_privileged_helper") {
+    sources = [ "$root_out_dir/$privileged_helper_name" ]
+    outputs = [
+      "{{bundle_contents_dir}}/Library/LaunchServices/{{source_file_part}}",
+    ]
 
-      public_deps = [ "//chrome/updater/mac:privileged_helper" ]
-    }
+    public_deps = [ "//chrome/updater/mac:privileged_helper" ]
   }
 
   action("clean_up_old_versions") {
@@ -894,18 +887,16 @@ if (is_win) {
       }
     }
 
-    if (enable_chromium_updater) {
-      if (is_chrome_branded) {
-        sources += [ "//third_party/updater/chrome_mac_universal_prod/${updater_product_full_name}.app" ]
-      } else {
-        sources += [ "$root_out_dir/${updater_product_full_name}.app" ]
+    if (is_chrome_branded) {
+      sources += [ "//third_party/updater/chrome_mac_universal_prod/${updater_product_full_name}.app" ]
+    } else {
+      sources += [ "$root_out_dir/${updater_product_full_name}.app" ]
 
-        public_deps += [
-          "//chrome/updater/mac:browser_install_script",
-          "//chrome/updater/mac:updater_bundle",
-          "//chrome/updater/mac:updater_install_script",
-        ]
-      }
+      public_deps += [
+        "//chrome/updater/mac:browser_install_script",
+        "//chrome/updater/mac:updater_bundle",
+        "//chrome/updater/mac:updater_install_script",
+      ]
     }
   }
 

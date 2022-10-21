@@ -5,7 +5,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleIdentifier</key>
-	<string>${UPDATER_HELPER_BUNDLE_ID}</string>
+	<string>${BROWSER_BUNDLE_IDENTIFIER}.UpdaterPrivilegedHelper</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

@@ -13,8 +13,8 @@ if (is_chrome_branded) {
   keystone_app_name = "GoogleSoftwareUpdate"
   mac_browser_bundle_identifier = "com.google.Chrome"
   mac_updater_bundle_identifier = "com.google.GoogleUpdater"
-  privileged_helper_bundle_name = "GoogleUpdaterHelper"
-  privileged_helper_name = "com.google.GoogleUpdater.helper"
+  privileged_helper_bundle_name = "GoogleChromeUpdaterPrivilegedHelper"
+  privileged_helper_name = "com.google.Chrome.UpdaterPrivilegedHelper"
   updater_company_full_name = "Google LLC"
   updater_company_short_name = "Google"
   updater_copyright =
@@ -30,8 +30,8 @@ if (is_chrome_branded) {
   keystone_app_name = "ChromiumSoftwareUpdate"
   mac_browser_bundle_identifier = "org.chromium.Chromium"
   mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
-  privileged_helper_bundle_name = "ChromiumUpdaterHelper"
-  privileged_helper_name = "org.chromium.ChromiumUpdater.helper"
+  privileged_helper_bundle_name = "ChromiumUpdaterPrivilegedHelper"
+  privileged_helper_name = "org.chromium.Chromium.UpdaterPrivilegedHelper"
   updater_company_full_name = "Chromium Authors"
   updater_company_short_name = "Chromium"
   updater_copyright =

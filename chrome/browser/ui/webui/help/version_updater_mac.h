@@ -7,20 +7,16 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/mac/scoped_nsobject.h"
-#include "chrome/browser/buildflags.h"
-#include "chrome/browser/ui/webui/help/version_updater.h"
-
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 #include <string.h>
 
+#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/help/version_updater.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 
 class BrowserUpdaterHelperClientMac;
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 @class KeystoneObserver;
 
@@ -53,7 +49,6 @@ class VersionUpdaterMac : public VersionUpdater {
   // Update the visibility state of promote button.
   void UpdateShowPromoteButton();
 
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
   // Updates the status from the Chromium Updater.
   void UpdateStatusFromChromiumUpdater(
       VersionUpdater::StatusCallback status_callback,
@@ -66,7 +61,6 @@ class VersionUpdaterMac : public VersionUpdater {
       updater::UpdaterScope scope,
       bool enable_promote_button,
       const std::string& version);
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
   // Callback used to communicate update status to the client.
   StatusCallback status_callback_;
@@ -80,10 +74,8 @@ class VersionUpdaterMac : public VersionUpdater {
   // The observer that will receive keystone status updates.
   base::scoped_nsobject<KeystoneObserver> keystone_observer_;
 
-#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
   scoped_refptr<BrowserUpdaterHelperClientMac> update_helper_client_;
   base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
-#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_MAC_H_
