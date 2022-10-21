@@ -31,21 +31,15 @@ if (is_android || is_chromeos) {
     }
   }
 
-  has_chrome_android_internal =
-      exec_script("//build/dir_exists.py",
-                  [ rebase_path("//clank", root_build_dir) ],
-                  "string") == "True"
-
   # We are using a separate declare_args block for only this argument so that
   # we can decide if we have to pull in definitions from the internal config
   # early.
   declare_args() {
     # Enables using the internal Chrome for Android repository. The default
-    # value depends on whether the repository is available, and if it's not but
-    # this argument is manually set to True, the generation will fail.
-    # The main purpose of this argument is to avoid having to maintain 2
-    # repositories to support both public only and internal builds.
-    enable_chrome_android_internal = has_chrome_android_internal
+    # is set from gclient vars, with target_os needed for chromeos.
+    # Can be set to false to disable all internal android things.
+    enable_chrome_android_internal =
+        build_with_chromium && checkout_src_internal && target_os == "android"
 
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
