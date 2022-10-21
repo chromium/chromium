@@ -14,7 +14,6 @@ public class HierarchySnapshotter {
      * Initialize a HierarchySnapshotter.
      */
     public static void initialize() {
-        // TODO(mschillaci): Implement once internal repo has been updated.
-        // new HierarchySnapshotterDelegateImpl().initialize();
+        new HierarchySnapshotterDelegateImpl().initialize();
     }
 }
