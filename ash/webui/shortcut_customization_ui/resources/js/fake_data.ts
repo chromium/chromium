@@ -23,88 +23,67 @@ export const fakeSubCategories: Map<number, string> = new Map([
   [2, 'Tabs'],
 ]);
 
-export const fakeAcceleratorConfig: AcceleratorConfig = new Map([
-  [
-    AcceleratorSource.ASH,
-    new Map([
-      // Snap Window Left
-      [
-        0,
-        [{
-          type: AcceleratorType.DEFAULT,
-          state: AcceleratorState.ENABLED,
-          locked: true,
-          accelerator: {
-            modifiers: Modifier.ALT,
-            key: 219,
-            keyDisplay: '[',
-          },
-        }],
-      ],
-      // Snap Window Right
-      [
-        1,
-        [{
-          type: AcceleratorType.DEFAULT,
-          state: AcceleratorState.ENABLED,
-          locked: false,
-          accelerator: {
-            modifiers: Modifier.ALT,
-            key: 221,
-            keyDisplay: ']',
-          },
-        }],
-      ],
-      // New Desk
-      [
-        2,
-        [{
-          type: AcceleratorType.DEFAULT,
-          state: AcceleratorState.ENABLED,
-          locked: false,
-          accelerator: {
-            modifiers: Modifier.COMMAND | Modifier.SHIFT,
-            key: 187,
-            keyDisplay: '+',
-          },
-        }],
-      ],
-      // Remove Desk
-      [
-        3,
-        [{
-          type: AcceleratorType.DEFAULT,
-          state: AcceleratorState.ENABLED,
-          locked: false,
-          accelerator: {
-            modifiers: Modifier.COMMAND | Modifier.SHIFT,
-            key: 189,
-            keyDisplay: '-',
-          },
-        }],
-      ],
-    ]),
-  ],
-  [
-    AcceleratorSource.BROWSER,
-    new Map([
-      // New Tab
-      [
-        1001,
-        [{
-          type: AcceleratorType.DEFAULT,
-          state: AcceleratorState.ENABLED,
-          locked: true,
-          accelerator: {
-            modifiers: Modifier.CONTROL,
-            key: 84,
-            keyDisplay: 't',
-          },
-        }],
-      ],
-    ]),
-  ],
-]);
+export const fakeAcceleratorConfig: AcceleratorConfig = {
+  [AcceleratorSource.ASH]: {
+    // Snap Window Left
+    [0]: [{
+      type: AcceleratorType.DEFAULT,
+      state: AcceleratorState.ENABLED,
+      locked: true,
+      accelerator: {
+        modifiers: Modifier.ALT,
+        key: 219,
+        keyDisplay: '[',
+      },
+    }],
+    // Snap Window Right
+    [1]: [{
+      type: AcceleratorType.DEFAULT,
+      state: AcceleratorState.ENABLED,
+      locked: false,
+      accelerator: {
+        modifiers: Modifier.ALT,
+        key: 221,
+        keyDisplay: ']',
+      },
+    }],
+    // New Desk
+    [2]: [{
+      type: AcceleratorType.DEFAULT,
+      state: AcceleratorState.ENABLED,
+      locked: false,
+      accelerator: {
+        modifiers: Modifier.COMMAND | Modifier.SHIFT,
+        key: 187,
+        keyDisplay: '+',
+      },
+    }],
+    // Remove Desk
+    [3]: [{
+      type: AcceleratorType.DEFAULT,
+      state: AcceleratorState.ENABLED,
+      locked: false,
+      accelerator: {
+        modifiers: Modifier.COMMAND | Modifier.SHIFT,
+        key: 189,
+        keyDisplay: '-',
+      },
+    }],
+  },
+  [AcceleratorSource.BROWSER]: {
+    // New Tab
+    [1001]: [{
+      type: AcceleratorType.DEFAULT,
+      state: AcceleratorState.ENABLED,
+      locked: true,
+      accelerator: {
+        modifiers: Modifier.CONTROL,
+        key: 84,
+        keyDisplay: 't',
+      },
+    }],
+  },
+};
 
 export const fakeLayoutInfo: LayoutInfoList = [
   {

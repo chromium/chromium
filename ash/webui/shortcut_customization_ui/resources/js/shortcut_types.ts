@@ -76,8 +76,9 @@ export interface AcceleratorInfo {
  * level identifying the source of the shortcuts, and second level the integer
  * id for the action with the leaf value being a list of Accelerator Info.
  */
-export type AcceleratorConfig =
-    Map<AcceleratorSource, Map<number, AcceleratorInfo[]>>;
+export type AcceleratorConfig = {
+  [source in AcceleratorSource]?: {[actionId: number]: AcceleratorInfo[]}
+};
 
 /** Enumeration of layout styles.*/
 export enum LayoutStyle {

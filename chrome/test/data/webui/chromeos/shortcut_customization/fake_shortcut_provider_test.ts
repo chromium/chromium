@@ -25,7 +25,7 @@ suite('fakeShortcutProviderTest', function() {
     return provider as FakeShortcutProvider;
   }
   test('GetAcceleratorsEmpty', () => {
-    const expected = new Map();
+    const expected = {};
     getProvider().setFakeAcceleratorConfig(expected);
     return getProvider().getAccelerators().then((result) => {
       assertDeepEquals(expected, result.config);

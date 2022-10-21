@@ -53,7 +53,8 @@ export class AcceleratorLookupManager {
    */
   private reverseAcceleratorLookup_: ReverseAcceleratorLookupMap = new Map();
 
-  getAccelerators(source: number, action: number): AcceleratorInfo[] {
+  getAccelerators(source: number|string, action: number|string):
+      AcceleratorInfo[] {
     const uuid = `${source}-${action}`;
     const accelerator = this.acceleratorLookup_.get(uuid);
     assert(accelerator);
@@ -72,7 +73,7 @@ export class AcceleratorLookupManager {
     return this.acceleratorLayoutLookup_.get(category);
   }
 
-  getAcceleratorName(source: number, action: number): string {
+  getAcceleratorName(source: number|string, action: number|string): string {
     const uuid = `${source}-${action}`;
     const acceleratorName = this.acceleratorNameLookup_.get(uuid);
     assert(acceleratorName);
@@ -88,8 +89,8 @@ export class AcceleratorLookupManager {
   }
 
   setAcceleratorLookup(acceleratorConfig: AcceleratorConfig) {
-    for (const [source, accelInfoMap] of acceleratorConfig.entries()) {
-      for (const [actionId, accelInfos] of accelInfoMap.entries()) {
+    for (const [source, accelInfoMap] of Object.entries(acceleratorConfig)) {
+      for (const [actionId, accelInfos] of Object.entries(accelInfoMap)) {
         const id = `${source}-${actionId}`;
         if (!this.acceleratorLookup_.has(id)) {
           this.acceleratorLookup_.set(id, []);
