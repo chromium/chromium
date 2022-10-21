@@ -25,6 +25,7 @@ extensions_api_schema_files_ = [
   "extension_options_internal.idl",
   "extension_types.json",
   "feedback_private.idl",
+  "file_handlers.idl",
   "file_system.idl",
   "guest_view_internal.json",
   "management.json",

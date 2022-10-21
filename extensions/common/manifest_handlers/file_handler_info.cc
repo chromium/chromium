@@ -5,16 +5,18 @@
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 
 #include <stddef.h>
-
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 
 namespace extensions {
 
@@ -33,6 +35,11 @@ bool IsSupportedVerb(const std::string& verb) {
          verb == apps::file_handler_verbs::kShareWith;
 }
 
+bool IsFileHandlersMV3(int manifest_version) {
+  return manifest_version >= 3 &&
+         base::FeatureList::IsEnabled(extensions_features::kFileHandlersMV3);
+}
+
 }  // namespace
 
 FileHandlerMatch::FileHandlerMatch() = default;
@@ -40,6 +47,16 @@ FileHandlerMatch::~FileHandlerMatch() = default;
 
 FileHandlers::FileHandlers() = default;
 FileHandlers::~FileHandlers() = default;
+
+// static
+const FileHandlersInfoMV3* FileHandlers::GetFileHandlersMV3(
+    const Extension* extension) {
+  if (!IsFileHandlersMV3(extension->manifest_version()))
+    return nullptr;
+  FileHandlersMV3* info = static_cast<FileHandlersMV3*>(
+      extension->GetManifestData(keys::kFileHandlers));
+  return info ? &info->file_handlers : nullptr;
+}
 
 // static
 const FileHandlersInfo* FileHandlers::GetFileHandlers(
@@ -157,6 +174,10 @@ bool LoadFileHandler(const std::string& handler_id,
 }
 
 bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
+  // If this is an MV3 extension, use the generated `file_handlers` object.
+  if (IsFileHandlersMV3(extension->manifest_version()))
+    return FileHandlersParserMV3().Parse(extension, error);
+
   std::unique_ptr<FileHandlers> info(new FileHandlers);
   const base::Value* all_handlers = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kFileHandlers,

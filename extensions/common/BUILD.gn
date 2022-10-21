@@ -356,6 +356,8 @@ static_library("common") {
     "manifest_handlers/externally_connectable.h",
     "manifest_handlers/file_handler_info.cc",
     "manifest_handlers/file_handler_info.h",
+    "manifest_handlers/file_handler_info_mv3.cc",
+    "manifest_handlers/file_handler_info_mv3.h",
     "manifest_handlers/icons_handler.cc",
     "manifest_handlers/icons_handler.h",
     "manifest_handlers/incognito_info.cc",

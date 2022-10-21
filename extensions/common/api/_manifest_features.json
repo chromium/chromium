@@ -167,6 +167,11 @@
         "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
         "12E618C3C6E97495AAECF2AC12DEB082353241C6"   // QO component extension
       ]
+    },
+    {
+      "channel": "canary",
+      "extension_types": ["extension"],
+      "min_manifest_version": 3
     }
   ],
   "host_permissions": {

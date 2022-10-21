@@ -136,4 +136,9 @@ BASE_FEATURE(kExtensionsFSPInServiceWorkers,
              "ExtensionsFSPInServiceWorkers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// File Handlers.
+BASE_FEATURE(kFileHandlersMV3,
+             "FileHandlersMV3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

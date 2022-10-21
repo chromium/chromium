@@ -12,6 +12,7 @@
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/manifest_handlers/file_handler_info_mv3.h"
 
 namespace extensions {
 
@@ -34,8 +35,11 @@ struct FileHandlers : public Extension::ManifestData {
   ~FileHandlers() override;
 
   FileHandlersInfo file_handlers;
+  FileHandlersInfoMV3 file_handlers_mv3;
 
   static const FileHandlersInfo* GetFileHandlers(const Extension* extension);
+  static const FileHandlersInfoMV3* GetFileHandlersMV3(
+      const Extension* extension);
 };
 
 // Parses the "file_handlers" manifest key.
