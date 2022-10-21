@@ -104,16 +104,6 @@ bool KeySetFilter(const base::flat_set<std::string>& key_set,
   return key_set.find(key) != key_set.end();
 }
 
-bool CheckAllPathsExist(
-    const std::vector<base::FilePath>& file_paths_to_check) {
-  for (const base::FilePath& file_path : file_paths_to_check) {
-    if (!base::PathExists(file_path)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 }  // namespace
 
 OptimizationGuideStore::OptimizationGuideStore(

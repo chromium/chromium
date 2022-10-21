@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -114,6 +115,10 @@ base::FilePath GetBaseFileNameForModels() {
   return base::FilePath(FILE_PATH_LITERAL("model.tflite"));
 }
 
+base::FilePath GetBaseFileNameForModelInfo() {
+  return base::FilePath(FILE_PATH_LITERAL("model-info.pb"));
+}
+
 std::string ModelOverrideSeparator() {
   return kModelOverrideSeparator;
 }
@@ -178,6 +183,16 @@ GetModelOverrideForOptimizationTarget(
     return file_path_and_metadata;
   }
   return absl::nullopt;
+}
+
+bool CheckAllPathsExist(
+    const std::vector<base::FilePath>& file_paths_to_check) {
+  for (const base::FilePath& file_path : file_paths_to_check) {
+    if (!base::PathExists(file_path)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace optimization_guide

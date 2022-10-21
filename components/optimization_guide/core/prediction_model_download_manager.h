@@ -76,10 +76,6 @@ class PredictionModelDownloadManager {
   // Returns whether the downloader can download models.
   virtual bool IsAvailableForDownloads() const;
 
-  // Returns the basename of the model info file when it is packaged in a crx
-  // archive.
-  static base::FilePath::StringType ModelInfoFileName();
-
   // Adds and removes observers.
   //
   // All methods called on observers will be invoked on the UI thread.

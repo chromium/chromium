@@ -32,8 +32,8 @@ std::unique_ptr<proto::PredictionModel> ProcessModelOverrideOnBGThread(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& unzipped_dir_path) {
   // Unpack and verify model info file.
-  base::FilePath model_info_path = unzipped_dir_path.Append(
-      PredictionModelDownloadManager::ModelInfoFileName());
+  base::FilePath model_info_path =
+      unzipped_dir_path.Append(GetBaseFileNameForModelInfo());
   std::string binary_model_info_pb;
   if (!base::ReadFileToString(model_info_path, &binary_model_info_pb)) {
     LOG(ERROR) << "Failed to read " << FilePathToString(model_info_path);

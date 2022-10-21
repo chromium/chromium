@@ -149,12 +149,6 @@ void OptimizationGuideKeyedService::Initialize() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-  // Regardless of whether the profile is off the record or not, we initialize
-  // the Optimization Guide with the database associated with the original
-  // profile.
-  auto* proto_db_provider = profile->GetOriginalProfile()
-                                ->GetDefaultStoragePartition()
-                                ->GetProtoDatabaseProvider();
   base::FilePath profile_path = profile->GetOriginalProfile()->GetPath();
 
   // We have different behavior if |this| is created for an incognito profile.
@@ -173,6 +167,10 @@ void OptimizationGuideKeyedService::Initialize() {
     prediction_model_and_features_store =
         original_ogks->GetPredictionManager()->model_and_features_store();
   } else {
+    // Use the database associated with the original profile.
+    auto* proto_db_provider = profile->GetOriginalProfile()
+                                  ->GetDefaultStoragePartition()
+                                  ->GetProtoDatabaseProvider();
     url_loader_factory = profile->GetDefaultStoragePartition()
                              ->GetURLLoaderFactoryForBrowserProcess();
 
