@@ -2875,8 +2875,7 @@ void QuotaManagerImpl::DidGetBucketForUsage(QuotaClientType client_type,
   DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
 
   if (!result.ok()) {
-    if (callback)
-      std::move(callback).Run();
+    std::move(callback).Run();
     return;
   }
 
@@ -2887,8 +2886,7 @@ void QuotaManagerImpl::DidGetBucketForUsage(QuotaClientType client_type,
 
   // Return once usage cache is updated for callers waiting for quota changes to
   // be reflected before querying for usage.
-  if (callback)
-    std::move(callback).Run();
+  std::move(callback).Run();
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
@@ -2901,7 +2899,6 @@ void QuotaManagerImpl::DidGetBucketForUsage(QuotaClientType client_type,
           bucket.id, modification_time),
       base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
-  return;
 }
 
 void QuotaManagerImpl::DidGetStorageKeys(

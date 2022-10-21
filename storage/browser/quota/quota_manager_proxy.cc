@@ -450,16 +450,17 @@ void QuotaManagerProxy::NotifyStorageModified(
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_) {
-    base::OnceClosure manager_callback;
-    if (callback) {
-      manager_callback = base::BindPostTask(std::move(callback_task_runner),
-                                            std::move(callback));
-    }
-    quota_manager_impl_->NotifyStorageModified(client_id, storage_key, type,
-                                               delta, modification_time,
-                                               std::move(manager_callback));
+  auto manager_callback =
+      base::BindPostTask(std::move(callback_task_runner), std::move(callback));
+
+  if (!quota_manager_impl_) {
+    std::move(manager_callback).Run();
+    return;
   }
+
+  quota_manager_impl_->NotifyStorageModified(client_id, storage_key, type,
+                                             delta, modification_time,
+                                             std::move(manager_callback));
 }
 
 void QuotaManagerProxy::NotifyBucketModified(
@@ -482,16 +483,17 @@ void QuotaManagerProxy::NotifyBucketModified(
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_) {
-    base::OnceClosure manager_callback;
-    if (callback) {
-      manager_callback = base::BindPostTask(std::move(callback_task_runner),
-                                            std::move(callback));
-    }
-    quota_manager_impl_->NotifyBucketModified(client_id, bucket_id, delta,
-                                              modification_time,
-                                              std::move(manager_callback));
+  auto manager_callback =
+      base::BindPostTask(std::move(callback_task_runner), std::move(callback));
+
+  if (!quota_manager_impl_) {
+    std::move(manager_callback).Run();
+    return;
   }
+
+  quota_manager_impl_->NotifyBucketModified(client_id, bucket_id, delta,
+                                            modification_time,
+                                            std::move(manager_callback));
 }
 
 void QuotaManagerProxy::NotifyWriteFailed(const StorageKey& storage_key) {
@@ -519,9 +521,10 @@ void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClientType client_id,
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
+  if (quota_manager_impl_) {
     quota_manager_impl_->SetUsageCacheEnabled(client_id, storage_key, type,
                                               enabled);
+  }
 }
 
 void QuotaManagerProxy::GetUsageAndQuota(
@@ -632,9 +635,10 @@ void QuotaManagerProxy::OverrideQuotaForStorageKey(
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
+  if (quota_manager_impl_) {
     quota_manager_impl_->OverrideQuotaForStorageKey(handle_id, storage_key,
                                                     quota_size);
+  }
 
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
