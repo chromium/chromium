@@ -29,27 +29,27 @@ DIPSState::~DIPSState() {
 }
 
 void DIPSState::update_site_storage_time(base::Time time) {
-  if (time == first_site_storage_time() || time == last_site_storage_time())
+  if (time == site_storage_times().first || time == site_storage_times().last)
     return;
 
-  if (!first_site_storage_time().has_value())
+  if (!site_storage_times().first.has_value())
     state_.site_storage_times.first = time;
 
-  DCHECK_GE(time, first_site_storage_time().value());
+  DCHECK_GE(time, site_storage_times().first.value());
   state_.site_storage_times.last = time;
   dirty_ = true;
 }
 
 void DIPSState::update_user_interaction_time(base::Time time) {
-  if (time == first_user_interaction_time() ||
-      time == last_user_interaction_time()) {
+  if (time == user_interaction_times().first ||
+      time == user_interaction_times().last) {
     return;
   }
 
-  if (!first_user_interaction_time().has_value())
+  if (!user_interaction_times().first.has_value())
     state_.user_interaction_times.first = time;
 
-  DCHECK_GE(time, first_user_interaction_time().value());
+  DCHECK_GE(time, user_interaction_times().first.value());
   state_.user_interaction_times.last = time;
   dirty_ = true;
 }

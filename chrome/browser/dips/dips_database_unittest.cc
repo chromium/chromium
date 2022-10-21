@@ -55,35 +55,36 @@ INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseTest, testing::Bool());
 TEST_P(DIPSDatabaseTest, AddUpdateQueryDeleteBounce) {
   // Add a bounce for site1.
   const std::string site1 = GetSiteForDIPS(GURL("http://www.youtube.com/"));
-  absl::optional<base::Time> storage_time1 = Time::FromDoubleT(1);
-  EXPECT_TRUE(db_->Write(site1, storage_time1, absl::nullopt));
+  TimestampRange storage_times1{Time::FromDoubleT(1), Time::FromDoubleT(1)};
+  EXPECT_TRUE(db_->Write(site1, storage_times1, {}, {}, {}));
 
   // Add a bounce for site2.
   const std::string site2 = GetSiteForDIPS(GURL("http://mail.google.com/"));
-  absl::optional<base::Time> interaction_time2 = Time::FromDoubleT(2);
-  EXPECT_TRUE(db_->Write(site2, absl::nullopt, interaction_time2));
+  TimestampRange interaction_times2{Time::FromDoubleT(2), Time::FromDoubleT(2)};
+  EXPECT_TRUE(db_->Write(site2, {}, interaction_times2, {}, {}));
 
   // Query both of them.
   absl::optional<StateValue> state1 = db_->Read(site1);
   ASSERT_TRUE(state1.has_value());
-  EXPECT_EQ(state1->site_storage_times.first, storage_time1);
+  EXPECT_EQ(state1->site_storage_times.first, storage_times1.first);
   EXPECT_FALSE(state1->user_interaction_times.first.has_value());
 
   absl::optional<StateValue> state2 = db_->Read(site2);
   ASSERT_TRUE(state2.has_value());
   EXPECT_FALSE(state2->site_storage_times.first.has_value());
-  EXPECT_EQ(state2->user_interaction_times.first, interaction_time2);
+  EXPECT_EQ(state2->user_interaction_times.first, interaction_times2.first);
 
   // Update the second.
-  absl::optional<base::Time> storage_time2 = Time::FromDoubleT(3);
-  state2->site_storage_times.first = storage_time2;
-  EXPECT_TRUE(db_->Write(site2, state2->site_storage_times.first,
-                         state2->user_interaction_times.first));
+  TimestampRange storage_times2{Time::FromDoubleT(3), absl::nullopt};
+  state2->site_storage_times = storage_times2;
+  EXPECT_TRUE(db_->Write(site2, state2->site_storage_times,
+                         state2->user_interaction_times, {}, {}));
   // Query the second again.
   absl::optional<StateValue> updated_state2 = db_->Read(site2);
   ASSERT_TRUE(updated_state2.has_value());
-  EXPECT_EQ(updated_state2->site_storage_times.first, storage_time2);
-  EXPECT_EQ(updated_state2->user_interaction_times.first, interaction_time2);
+  EXPECT_EQ(updated_state2->site_storage_times.first, storage_times2.first);
+  EXPECT_EQ(updated_state2->user_interaction_times.first,
+            interaction_times2.first);
 
   //  Delete the first.
   EXPECT_EQ(db_->RemoveRow(site1), true);

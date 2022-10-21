@@ -10,15 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/statement.h"
-
-namespace base {
-class Time;
-}
 
 // TODO(crbug.com/1342228): This is currently in-memory only. Add support for a
 // persistent SQLite database to be used for non-OTR profiles.
@@ -44,17 +39,10 @@ class DIPSDatabase {
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
-             absl::optional<base::Time> first_storage_time,
-             absl::optional<base::Time> first_interaction_time) {
-    return Write(site, first_storage_time, first_storage_time,
-                 first_interaction_time, first_interaction_time);
-  }
-
-  bool Write(const std::string& site,
-             absl::optional<base::Time> first_storage_time,
-             absl::optional<base::Time> last_storage_time,
-             absl::optional<base::Time> first_interaction_time,
-             absl::optional<base::Time> last_interaction_time);
+             const TimestampRange& storage_times,
+             const TimestampRange& interaction_times,
+             const TimestampRange& stateful_bounce_times,
+             const TimestampRange& stateless_bounce_times);
 
   absl::optional<StateValue> Read(const std::string& site);
 

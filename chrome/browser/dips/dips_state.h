@@ -48,20 +48,19 @@ class DIPSState {
   // default-initialized for a new site).
   bool was_loaded() const { return was_loaded_; }
 
-  absl::optional<base::Time> first_site_storage_time() const {
-    return state_.site_storage_times.first;
+  TimestampRange site_storage_times() const {
+    return state_.site_storage_times;
   }
-  absl::optional<base::Time> last_site_storage_time() const {
-    return state_.site_storage_times.last;
+  TimestampRange user_interaction_times() const {
+    return state_.user_interaction_times;
+  }
+  TimestampRange stateful_bounce_times() const {
+    return state_.stateful_bounce_times;
+  }
+  TimestampRange stateless_bounce_times() const {
+    return state_.stateless_bounce_times;
   }
   void update_site_storage_time(base::Time time);
-
-  absl::optional<base::Time> first_user_interaction_time() const {
-    return state_.user_interaction_times.first;
-  }
-  absl::optional<base::Time> last_user_interaction_time() const {
-    return state_.user_interaction_times.last;
-  }
   void update_user_interaction_time(base::Time time);
 
   StateValue ToStateValue() const { return state_; }
