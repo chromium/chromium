@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/services/multidevice_setup/privileged_host_device_setter_base.h"
+#include "chromeos/ash/services/multidevice_setup/privileged_host_device_setter_base.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {

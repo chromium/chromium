@@ -15,7 +15,6 @@
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
-#include "ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -126,6 +125,7 @@
 #include "chrome/grit/oobe_unconditional_resources.h"
 #include "chrome/grit/oobe_unconditional_resources_map.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
+#include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"

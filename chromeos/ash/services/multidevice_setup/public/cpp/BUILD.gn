@@ -119,7 +119,7 @@ static_library("test_support") {
     ":android_sms_pairing_state_tracker",
     ":auth_token_validator",
     ":cpp",
-    "//ash/services/multidevice_setup",
+    "//chromeos/ash/services/multidevice_setup",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
     "//url",
   ]
@@ -135,12 +135,12 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     ":test_support",
-    "//ash/services/multidevice_setup",
-    "//ash/services/multidevice_setup:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice:test_support",
+    "//chromeos/ash/services/multidevice_setup",
+    "//chromeos/ash/services/multidevice_setup:test_support",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
     "//testing/gtest",
   ]

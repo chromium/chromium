@@ -142,8 +142,9 @@ struct HostDevice {
 };
 
 // Delegate used to notify Chrome OS UI (//ash) of multidevice account changes
-// from the multidevice setup service (//ash/services/multidevice_setup).
-// Both sides currently live in the Chrome process.
+// from the multidevice setup service
+// (//chromeos/ash/services/multidevice_setup). Both sides currently live in the
+// Chrome process.
 interface AccountStatusChangeDelegate {
   // Callback which indicates that one or more MultiDevice host phones are
   // available for setup with the MultiDevice setup flow. This function is only

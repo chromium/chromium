@@ -8,8 +8,6 @@
 #include <tuple>
 #include <utility>
 
-#include "ash/services/multidevice_setup/multidevice_setup_initializer.h"
-#include "ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -17,6 +15,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/services/multidevice_setup/multidevice_setup_initializer.h"
+#include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
