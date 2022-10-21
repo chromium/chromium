@@ -14,8 +14,6 @@
 
 namespace ash {
 
-constexpr int32_t NUMBER_OF_VOLUME_STEPS_DEFAULT = 25;
-
 AudioNode::AudioNode() = default;
 
 AudioNode::AudioNode(bool is_input,

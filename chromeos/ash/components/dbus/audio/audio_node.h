@@ -14,6 +14,8 @@
 
 namespace ash {
 
+constexpr int32_t NUMBER_OF_VOLUME_STEPS_DEFAULT = 25;
+
 // Structure to hold AudioNode data received from cras.
 struct COMPONENT_EXPORT(DBUS_AUDIO) AudioNode {
   bool is_input = false;

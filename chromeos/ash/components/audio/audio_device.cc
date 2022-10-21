@@ -179,9 +179,14 @@ std::string AudioDevice::ToString() const {
   base::StringAppendF(&result, "device_name = %s ", device_name.c_str());
   base::StringAppendF(&result, "type = %s ", GetTypeString(type).c_str());
   base::StringAppendF(&result, "active = %s ", active ? "true" : "false");
-  base::StringAppendF(&result, "plugged_time= %s ",
+  base::StringAppendF(&result, "plugged_time = %s ",
                       base::NumberToString(plugged_time).c_str());
-
+  base::StringAppendF(&result, "max_supported_channels = %s ",
+                      base::NumberToString(max_supported_channels).c_str());
+  base::StringAppendF(&result, "audio_effect = %s ",
+                      base::NumberToString(audio_effect).c_str());
+  base::StringAppendF(&result, "number_of_volume_steps = %s ",
+                      base::NumberToString(number_of_volume_steps).c_str());
   return result;
 }
 
