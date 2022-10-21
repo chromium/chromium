@@ -199,6 +199,32 @@ try_.orchestrator_builder(
     #use_orchestrator_pool = True,
 )
 
+try_.orchestrator_builder(
+    name = "win10_chromium_x64_rel_ng-inverse-fyi",
+    check_for_flakiness = True,
+    compilator = "win10_chromium_x64_rel_ng-compilator",
+    mirrors = [
+        "ci/Win x64 Builder",
+        "ci/Win10 Tests x64",
+        "ci/GPU Win x64 Builder",
+        "ci/Win10 x64 Release (NVIDIA)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+    use_orchestrator_pool = True,
+)
+
 try_.compilator_builder(
     name = "win10_chromium_x64_rel_ng-compilator",
     check_for_flakiness = True,
