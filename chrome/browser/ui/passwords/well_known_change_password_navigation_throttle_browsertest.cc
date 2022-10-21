@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
@@ -110,9 +111,13 @@ class ChangePasswordNavigationThrottleBrowserTestBase
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(test_server_->Start());
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  void ExpectUkmMetric(WellKnownChangePasswordResult expected) {
+  void ExpectUmaAndUkmMetric(WellKnownChangePasswordResult expected) {
+    histogram_tester_->ExpectUniqueSample(
+        "PasswordManager.WellKnownChangePasswordResult", expected, 1u);
+
     auto entries = test_recorder_->GetEntriesByName(UkmBuilder::kEntryName);
     // Expect one recorded metric.
     ASSERT_EQ(1, static_cast<int>(entries.size()));
@@ -121,7 +126,12 @@ class ChangePasswordNavigationThrottleBrowserTestBase
         static_cast<int64_t>(expected));
   }
 
-  ukm::TestAutoSetUkmRecorder* test_recorder() { return test_recorder_.get(); }
+  void ExpectNeitherUmaNorUkmMetric() {
+    histogram_tester_->ExpectTotalCount(
+        "PasswordManager.WellKnownChangePasswordResult", 0u);
+    EXPECT_TRUE(
+        test_recorder_->GetEntriesByName(UkmBuilder::kEntryName).empty());
+  }
 
   ui::PageTransition page_transition() const { return std::get<0>(GetParam()); }
   ResponseDelayParams response_delays() const {
@@ -157,6 +167,7 @@ class ChangePasswordNavigationThrottleBrowserTestBase
   // |path_response_map_|.
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request);
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_recorder_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 std::unique_ptr<HttpResponse>
@@ -261,11 +272,10 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
   TestNavigationThrottleForLocalhost(
       /*expected_path=*/kWellKnownChangePasswordPath);
   if (page_transition() & ui::PAGE_TRANSITION_FROM_API) {
-    ExpectUkmMetric(
+    ExpectUmaAndUkmMetric(
         WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
   } else {
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -293,11 +303,10 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
 
   TestNavigationThrottleForLocalhost(/*expected_path=*/"/change-password");
   if (page_transition() & ui::PAGE_TRANSITION_FROM_API) {
-    ExpectUkmMetric(
+    ExpectUmaAndUkmMetric(
         WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
   } else {
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -327,7 +336,8 @@ IN_PROC_BROWSER_TEST_P(
       navigate_url, expected_url,
       url::Origin::Create(GURL("chrome://settings/passwords/check")));
 
-  ExpectUkmMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
+  ExpectUmaAndUkmMetric(
+      WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
 }
 
 // Tests that the throttle behaves correctly for all types of page transitions
@@ -356,7 +366,8 @@ IN_PROC_BROWSER_TEST_P(
       navigate_url, expected_url,
       url::Origin::Create(GURL("https://passwords.google.com/checkup")));
 
-  ExpectUkmMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
+  ExpectUmaAndUkmMetric(
+      WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
 }
 
 IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
@@ -381,11 +392,10 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
   TestNavigationThrottleForLocalhost(
       /*expected_path=*/kWellKnownChangePasswordPath);
   if (page_transition() & ui::PAGE_TRANSITION_FROM_API) {
-    ExpectUkmMetric(
+    ExpectUmaAndUkmMetric(
         WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
   } else {
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -420,11 +430,10 @@ IN_PROC_BROWSER_TEST_P(
   TestNavigationThrottle(test_server_->GetURL(kWellKnownChangePasswordPath),
                          change_password_url);
   if (page_transition() & ui::PAGE_TRANSITION_FROM_API) {
-    ExpectUkmMetric(
+    ExpectUmaAndUkmMetric(
         WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
   } else {
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -445,15 +454,14 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
             test_server_->GetURL(kWellKnownChangePasswordPath),
             PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow));
     TestNavigationThrottleForLocalhost(/*expected_path=*/"/");
-    ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
+    ExpectUmaAndUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
   } else {
     EXPECT_CALL(*password_change_success_tracker_,
                 OnChangePasswordFlowModified(_, _))
         .Times(0);
     TestNavigationThrottleForLocalhost(
         /*expected_path=*/kWellKnownChangePasswordPath);
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -475,15 +483,15 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
                         kManualChangePasswordUrlFlow));
     TestNavigationThrottleForLocalhost(
         /*expected_path=*/kMockChangePasswordPath);
-    ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
+    ExpectUmaAndUkmMetric(
+        WellKnownChangePasswordResult::kFallbackToOverrideUrl);
   } else {
     EXPECT_CALL(*password_change_success_tracker_,
                 OnChangePasswordFlowModified(_, _))
         .Times(0);
     TestNavigationThrottleForLocalhost(
         /*expected_path=*/kWellKnownChangePasswordPath);
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -505,15 +513,14 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
             test_server_->GetURL(kWellKnownChangePasswordPath),
             PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow));
     TestNavigationThrottleForLocalhost(/*expected_path=*/"/");
-    ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
+    ExpectUmaAndUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
   } else {
     EXPECT_CALL(*password_change_success_tracker_,
                 OnChangePasswordFlowModified(_, _))
         .Times(0);
     TestNavigationThrottleForLocalhost(
         /*expected_path=*/kWellKnownChangePasswordPath);
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -543,15 +550,14 @@ IN_PROC_BROWSER_TEST_P(
             test_server_->GetURL(kWellKnownChangePasswordPath),
             PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow));
     TestNavigationThrottleForLocalhost(/*expected_path=*/"/");
-    ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
+    ExpectUmaAndUkmMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
   } else {
     EXPECT_CALL(*password_change_success_tracker_,
                 OnChangePasswordFlowModified(_, _))
         .Times(0);
     TestNavigationThrottle(test_server_->GetURL(kWellKnownChangePasswordPath),
                            not_found_url);
-    EXPECT_TRUE(
-        test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+    ExpectNeitherUmaNorUkmMetric();
   }
 }
 
@@ -580,8 +586,7 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
 
   EXPECT_EQ(observer.last_navigation_url(), url);
   // Expect no UKMs saved.
-  EXPECT_TRUE(
-      test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+  ExpectNeitherUmaNorUkmMetric();
 }
 
 IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
@@ -611,7 +616,8 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
       navigate_url, expected_url,
       url::Origin::Create(GURL("https://passwords.google.com/checkup")));
 
-  ExpectUkmMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
+  ExpectUmaAndUkmMetric(
+      WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
 }
 
 // Harness for testing the throttle with prerendering involved.
@@ -708,8 +714,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderingChangePasswordNavigationThrottleBrowserTest,
   observer.WaitForDestroyed();
 
   // Ensure we didn't run the throttle.
-  EXPECT_TRUE(
-      test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+  ExpectNeitherUmaNorUkmMetric();
 
   // Ensure we canceled the prerender.
   EXPECT_EQ(prerender_helper_.GetHostForUrl(kWellKnownUrl),
