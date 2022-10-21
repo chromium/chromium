@@ -112,8 +112,8 @@ DocumentTransitionRequest::ConstructDirective(
     shared_elements.back().shared_element_resource_id = empty_resource_id;
   }
 
-  // TODO(vmpstr): Clean up the directive parameters.
-  return viz::CompositorFrameTransitionDirective(sequence_id_, type_,
+  return viz::CompositorFrameTransitionDirective(viz::NavigationID::Null(),
+                                                 sequence_id_, type_,
                                                  std::move(shared_elements));
 }
 

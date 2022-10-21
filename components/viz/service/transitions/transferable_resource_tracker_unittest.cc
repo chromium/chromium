@@ -20,9 +20,10 @@ namespace {
 
 std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult() {
   CompositorFrameTransitionDirective directive(
-      1, CompositorFrameTransitionDirective::Type::kSave);
+      NavigationID::Null(), 1, CompositorFrameTransitionDirective::Type::kSave);
   auto frame = std::make_unique<SurfaceSavedFrame>(
-      std::move(directive), base::BindRepeating([](uint32_t sequence_id) {}));
+      std::move(directive),
+      base::BindRepeating([](const CompositorFrameTransitionDirective&) {}));
   frame->CompleteSavedFrameForTesting();
   return frame;
 }

@@ -25,7 +25,7 @@ class Surface;
 class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  public:
   using TransitionDirectiveCompleteCallback =
-      base::OnceCallback<void(uint32_t)>;
+      base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
 
   struct RenderPassDrawData {
     RenderPassDrawData();

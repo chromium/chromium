@@ -39,7 +39,7 @@ struct TransferableResource;
 class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
  public:
   using TransitionDirectiveCompleteCallback =
-      base::OnceCallback<void(uint32_t)>;
+      base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
 
   static std::unique_ptr<SurfaceAnimationManager> CreateWithSave(
       const CompositorFrameTransitionDirective& directive,

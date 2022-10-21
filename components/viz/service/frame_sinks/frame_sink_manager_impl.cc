@@ -808,4 +808,31 @@ void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
   UpdateThrottlingRecursively(id, base::TimeDelta());
 }
 
+void FrameSinkManagerImpl::CacheSurfaceAnimationManager(
+    NavigationID navigation_id,
+    std::unique_ptr<SurfaceAnimationManager> manager) {
+  if (navigation_to_animation_manager_.contains(navigation_id)) {
+    LOG(ERROR)
+        << "SurfaceAnimationManager already exists for |navigation_id| : "
+        << navigation_id;
+    return;
+  }
+
+  navigation_to_animation_manager_[navigation_id] = std::move(manager);
+}
+
+std::unique_ptr<SurfaceAnimationManager>
+FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationID navigation_id) {
+  auto it = navigation_to_animation_manager_.find(navigation_id);
+  if (it == navigation_to_animation_manager_.end()) {
+    LOG(ERROR) << "SurfaceAnimationManager missing for |navigation_id| : "
+               << navigation_id;
+    return nullptr;
+  }
+
+  auto manager = std::move(it->second);
+  navigation_to_animation_manager_.erase(it);
+  return manager;
+}
+
 }  // namespace viz

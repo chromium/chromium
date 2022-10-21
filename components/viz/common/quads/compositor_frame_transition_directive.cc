@@ -15,10 +15,12 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
     default;
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
+    NavigationID navigation_id,
     uint32_t sequence_id,
     Type type,
     std::vector<SharedElement> shared_elements)
-    : sequence_id_(sequence_id),
+    : navigation_id_(navigation_id),
+      sequence_id_(sequence_id),
       type_(type),
       shared_elements_(std::move(shared_elements)) {}
 
@@ -46,5 +48,16 @@ CompositorFrameTransitionDirective::SharedElement::SharedElement(
 CompositorFrameTransitionDirective::SharedElement&
 CompositorFrameTransitionDirective::SharedElement::operator=(SharedElement&&) =
     default;
+
+bool CompositorFrameTransitionDirective::SharedElement::operator==(
+    const SharedElement& other) const {
+  return render_pass_id == other.render_pass_id &&
+         shared_element_resource_id == other.shared_element_resource_id;
+}
+
+bool CompositorFrameTransitionDirective::SharedElement::operator!=(
+    const SharedElement& other) const {
+  return !(other == *this);
+}
 
 }  // namespace viz

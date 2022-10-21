@@ -11,6 +11,7 @@
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
@@ -72,15 +73,18 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
          viz::CompositorFrameTransitionDirective* out) {
   uint32_t sequence_id = data.sequence_id();
 
+  absl::optional<viz::NavigationID> navigation_id;
   viz::CompositorFrameTransitionDirective::Type type;
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements;
-  if (!data.ReadType(&type) || !data.ReadSharedElements(&shared_elements)) {
+  if (!data.ReadNavigationId(&navigation_id) || !data.ReadType(&type) ||
+      !data.ReadSharedElements(&shared_elements)) {
     return false;
   }
 
-  *out = viz::CompositorFrameTransitionDirective(sequence_id, type,
-                                                 std::move(shared_elements));
+  *out = viz::CompositorFrameTransitionDirective(
+      navigation_id ? *navigation_id : viz::NavigationID::Null(), sequence_id,
+      type, std::move(shared_elements));
   return true;
 }
 

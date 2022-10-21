@@ -1150,6 +1150,9 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
     Surface* surface) {
   switch (directive.type()) {
     case CompositorFrameTransitionDirective::Type::kSave:
+      // Initialize this before creating the SurfaceAnimationManager since the
+      // save operation may execute synchronously.
+      in_flight_save_sequence_id_ = directive.sequence_id();
       surface_animation_manager_ = SurfaceAnimationManager::CreateWithSave(
           directive, surface, frame_sink_manager_->shared_bitmap_manager(),
           base::BindOnce(&CompositorFrameSinkSupport::
@@ -1157,10 +1160,31 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
                          base::Unretained(this)));
       break;
     case CompositorFrameTransitionDirective::Type::kAnimateRenderer:
+      // The save operation must have been executed before we see an animate
+      // directive.
+      if (in_flight_save_sequence_id_ != 0) {
+        LOG(ERROR)
+            << "Ignoring animate directive, save operation pending completion";
+        break;
+      }
+
+      if (directive.navigation_id()) {
+        if (surface_animation_manager_) {
+          LOG(ERROR) << "Deleting existing SurfaceAnimationManager for "
+                        "transition with navigation_id : "
+                     << directive.navigation_id();
+        }
+
+        surface_animation_manager_ =
+            frame_sink_manager_->TakeSurfaceAnimationManager(
+                directive.navigation_id());
+      }
+
       if (surface_animation_manager_)
         surface_animation_manager_->Animate();
       else
         LOG(ERROR) << "Animate directive with no saved data.";
+
       break;
     case CompositorFrameTransitionDirective::Type::kRelease:
       surface_animation_manager_.reset();
@@ -1169,9 +1193,28 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
 }
 
 void CompositorFrameSinkSupport::OnCompositorFrameTransitionDirectiveProcessed(
-    uint32_t sequence_id) {
-  if (client_)
-    client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
+    const CompositorFrameTransitionDirective& directive) {
+  DCHECK_EQ(directive.type(), CompositorFrameTransitionDirective::Type::kSave)
+      << "Only save directives need to be ack'd back to the client";
+
+  if (client_) {
+    client_->OnCompositorFrameTransitionDirectiveProcessed(
+        directive.sequence_id());
+  }
+
+  // There could be an ID mismatch if there are consecutive save operations
+  // before the first one is ack'd. This should never happen but handled safely
+  // here since the directives are untrusted input from the renderer.
+  if (in_flight_save_sequence_id_ == directive.sequence_id() &&
+      directive.navigation_id()) {
+    // Note that this can fail if there is already a cached
+    // SurfaceAnimationManager for this |navigation_id|. Should never happen
+    // but handled safely because its untrusted input from the renderer.
+    frame_sink_manager_->CacheSurfaceAnimationManager(
+        directive.navigation_id(), std::move(surface_animation_manager_));
+  }
+
+  in_flight_save_sequence_id_ = 0;
 }
 
 bool CompositorFrameSinkSupport::IsEvicted(

@@ -12,16 +12,20 @@ namespace {
 using Type = CompositorFrameTransitionDirective::Type;
 
 TEST(CompositorFrameTransitionDirective, GettersReflectParameters) {
-  CompositorFrameTransitionDirective save_directive(1u, Type::kSave);
+  auto navigation_id = NavigationID::Create();
+  CompositorFrameTransitionDirective save_directive(navigation_id, 1u,
+                                                    Type::kSave);
 
   EXPECT_EQ(1u, save_directive.sequence_id());
   EXPECT_EQ(Type::kSave, save_directive.type());
+  EXPECT_EQ(navigation_id, save_directive.navigation_id());
 
-  CompositorFrameTransitionDirective animate_directive(2,
+  CompositorFrameTransitionDirective animate_directive(navigation_id, 2,
                                                        Type::kAnimateRenderer);
 
   EXPECT_EQ(2u, animate_directive.sequence_id());
   EXPECT_EQ(Type::kAnimateRenderer, animate_directive.type());
+  EXPECT_EQ(navigation_id, animate_directive.navigation_id());
 }
 
 }  // namespace

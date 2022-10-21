@@ -169,6 +169,7 @@ void SurfaceAnimationManager::Animate() {
   animating_ = true;
   if (!saved_frame_ || !saved_frame_->IsValid()) {
     LOG(ERROR) << "Failure in caching shared element snapshots";
+    saved_frame_.reset();
     return;
   }
 

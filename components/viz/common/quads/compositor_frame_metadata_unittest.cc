@@ -82,7 +82,8 @@ TEST(CompositorFrameMetadata, Clone) {
       gfx::PointF(88.8, 44.4), 1.f, SK_ColorRED,
       base::TimeTicks() + base::Seconds(125), gfx::RectF(1, 2, 3, 4), true);
   metadata.transition_directives.emplace_back(
-      4u, CompositorFrameTransitionDirective::Type::kSave);
+      NavigationID::Create(), 4u,
+      CompositorFrameTransitionDirective::Type::kSave);
 
   CompositorFrameMetadata clone = metadata.Clone();
   EXPECT_FLOAT_EQ(clone.device_scale_factor, metadata.device_scale_factor);
