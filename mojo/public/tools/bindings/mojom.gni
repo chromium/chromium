@@ -79,6 +79,7 @@ mojom_parser_script = "$_mojom_tools_root/mojom/mojom_parser.py"
 mojom_parser_sources = [
   "$_mojom_library_root/__init__.py",
   "$_mojom_library_root/error.py",
+  "$_mojom_library_root/fileutil.py",
   "$_mojom_library_root/generate/__init__.py",
   "$_mojom_library_root/generate/check.py",
   "$_mojom_library_root/generate/generator.py",
@@ -88,8 +89,10 @@ mojom_parser_sources = [
   "$_mojom_library_root/generate/translate.py",
   "$_mojom_library_root/parse/__init__.py",
   "$_mojom_library_root/parse/ast.py",
+  "$_mojom_library_root/parse/conditional_features.py",
   "$_mojom_library_root/parse/lexer.py",
   "$_mojom_library_root/parse/parser.py",
+  "//tools/diagnosis/crbug_1001171.py",
 ]
 
 mojom_generator_root = "$_mojom_tools_root/bindings"
@@ -98,6 +101,7 @@ mojom_generator_sources =
     mojom_parser_sources + [
       "$mojom_generator_root/checks/__init__.py",
       "$mojom_generator_root/checks/mojom_attributes_check.py",
+      "$mojom_generator_root/checks/mojom_definitions_check.py",
       "$mojom_generator_root/checks/mojom_restrictions_check.py",
       "$mojom_generator_root/generators/__init__.py",
       "$mojom_generator_root/generators/cpp_util.py",
