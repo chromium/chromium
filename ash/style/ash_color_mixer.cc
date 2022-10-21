@@ -248,7 +248,7 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
   mixer[cros_tokens::kColorSelection] = {
       cros_tokens::kCrosSysOnPrimaryContainer};
 
-  mixer[cros_tokens::kBgColor] = {cros_tokens::kCrosSysAppBase2};
+  mixer[cros_tokens::kBgColor] = {cros_tokens::kCrosSysAppBase};
   mixer[cros_tokens::kBgColorElevation1] = {
       cros_tokens::kCrosSysAppBaseElevated};
   mixer[cros_tokens::kBgColorElevation2Light] = {
@@ -262,9 +262,9 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
   mixer[cros_tokens::kBgColorElevation5] = {
       cros_tokens::kCrosSysAppBaseElevated};
   mixer[cros_tokens::kBgColorDroppedElevation1] = {
-      cros_tokens::kCrosSysAppBase1};
+      cros_tokens::kCrosSysAppBaseShaded};
   mixer[cros_tokens::kBgColorDroppedElevation2] = {
-      cros_tokens::kCrosSysAppBase1};
+      cros_tokens::kCrosSysAppBaseShaded};
 }
 
 // Adds the dynamic color palette tokens based on user_color. This is the base

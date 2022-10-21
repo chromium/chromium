@@ -116,11 +116,11 @@
       light: '$cros.ref.secondary90',
       dark:  '$cros.ref.secondary20',
     },
-    'app-base1': {
-      light: '$cros.ref.neutralvariant90',
+    'app-base-shaded': {
+      light: '$cros.ref.neutralvariant95',
       dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)'
     },
-    'app-base2': {
+    'app-base': {
       light: '$cros.ref.neutral99',
       dark:  '$cros.ref.neutral10',
     },

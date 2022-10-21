@@ -18,5 +18,5 @@ SkColor ash::GetSystemBackgroundColor() {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   auto* color_provider = ui::ColorProviderManager::Get().GetColorProviderFor(
       native_theme->GetColorProviderKey(nullptr));
-  return color_provider->GetColor(cros_tokens::kCrosSysAppBase2);
+  return color_provider->GetColor(cros_tokens::kCrosSysAppBase);
 }
