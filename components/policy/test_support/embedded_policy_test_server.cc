@@ -20,6 +20,7 @@
 #include "components/policy/test_support/request_handler_for_auto_enrollment.h"
 #include "components/policy/test_support/request_handler_for_check_android_management.h"
 #include "components/policy/test_support/request_handler_for_chrome_desktop_report.h"
+#include "components/policy/test_support/request_handler_for_client_cert_provisioning.h"
 #include "components/policy/test_support/request_handler_for_device_attribute_update.h"
 #include "components/policy/test_support/request_handler_for_device_attribute_update_permission.h"
 #include "components/policy/test_support/request_handler_for_device_initial_enrollment_state.h"
@@ -88,6 +89,8 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
   RegisterHandler(
       std::make_unique<RequestHandlerForCheckAndroidManagement>(this));
   RegisterHandler(std::make_unique<RequestHandlerForChromeDesktopReport>(this));
+  RegisterHandler(
+      std::make_unique<RequestHandlerForClientCertProvisioning>(this));
   RegisterHandler(
       std::make_unique<RequestHandlerForDeviceAttributeUpdate>(this));
   RegisterHandler(
