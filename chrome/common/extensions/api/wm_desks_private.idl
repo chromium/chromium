@@ -36,9 +36,14 @@ namespace wmDesksPrivate {
   callback VoidCallback = void ();
   callback GetDeskTemplateJsonCallback = void (DOMString templateJson);
   callback GetAllDesksCallback = void (Desk[] desks);
+  callback GetSavedDesksCallback = void (Desk[] saveDesks);
   callback SaveActiveDeskCallback = void (Desk desk);
 
   interface Functions {
+    // Returns all available previously-saved desks.
+    [supportsPromises] static void getSavedDesks(
+        GetSavedDesksCallback callback);
+
     // Launches a desk, if `templateUuid` is present in the options, launches a
     // desk template, otherwise launches an empty desk. If `deskName` is present
     // in the options, using provided name as desk name, otherwise launches with

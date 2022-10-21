@@ -26,6 +26,14 @@ constexpr char kApiRemoveDeskResult[] = "Ash.DeskApi.RemoveDesk.Result";
 constexpr char kApiSwitchDeskResult[] = "Ash.DeskApi.SwitchDesk.Result";
 constexpr char kApiAllDeskResult[] = "Ash.DeskApi.AllDesk.Result";
 
+api::wm_desks_private::Desk FromAshDeskTemplate(
+    const ash::DeskTemplate& desk_template) {
+  api::wm_desks_private::Desk out_api_template;
+  out_api_template.desk_uuid = desk_template.uuid().AsLowercaseString();
+  out_api_template.desk_name = base::UTF16ToUTF8(desk_template.template_name());
+  return out_api_template;
+}
+
 api::wm_desks_private::Desk FromAshDesk(const ash::Desk& ash_desk) {
   api::wm_desks_private::Desk target;
   target.desk_name = base::UTF16ToUTF8(ash_desk.name());
@@ -42,6 +50,37 @@ api::wm_desks_private::Desk GetSavedDeskFromAshDeskTemplate(
 }
 
 }  // namespace
+
+WmDesksPrivateGetSavedDesksFunction::WmDesksPrivateGetSavedDesksFunction() =
+    default;
+WmDesksPrivateGetSavedDesksFunction::~WmDesksPrivateGetSavedDesksFunction() =
+    default;
+
+ExtensionFunction::ResponseAction WmDesksPrivateGetSavedDesksFunction::Run() {
+  DesksClient::Get()->GetDeskTemplates(base::BindOnce(
+      &WmDesksPrivateGetSavedDesksFunction::OnGetSavedDesks, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void WmDesksPrivateGetSavedDesksFunction::OnGetSavedDesks(
+    const std::vector<const ash::DeskTemplate*>& desk_templates,
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+
+  // Construct the value.
+  std::vector<api::wm_desks_private::Desk> api_templates;
+  for (auto* desk_template : desk_templates) {
+    api::wm_desks_private::Desk api_template =
+        FromAshDeskTemplate(*desk_template);
+    api_templates.push_back(std::move(api_template));
+  }
+
+  Respond(ArgumentList(
+      api::wm_desks_private::GetSavedDesks::Results::Create(api_templates)));
+}
 
 WmDesksPrivateGetDeskTemplateJsonFunction::
     WmDesksPrivateGetDeskTemplateJsonFunction() = default;

@@ -273,4 +273,37 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest,
   histogram_tester.ExpectBucketCount("Ash.DeskApi.AllDesk.Result", 0, 1);
 }
 
+// Tests save and recall a desk.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndRecallDeskTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // Save a desk.
+  auto save_desk_function =
+      base::MakeRefCounted<WmDesksPrivateSaveActiveDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter save_desk_waiter;
+  // Asserts no error.
+  auto result = extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      save_desk_function.get(), R"([])", new_browser);
+  EXPECT_TRUE(result->is_dict());
+  auto desk_id = result->GetDict().Find("deskUuid")->GetString();
+  EXPECT_TRUE(base::GUID::ParseCaseInsensitive(desk_id).is_valid());
+
+  // Waiting for desk launch animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    save_desk_waiter.Wait();
+  }
+
+  // List saved desks.
+  auto list_desk_function =
+      base::MakeRefCounted<WmDesksPrivateGetSavedDesksFunction>();
+
+  // Asserts no error.
+  auto result_1 =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          list_desk_function.get(), R"([])", new_browser);
+  EXPECT_TRUE(result_1->is_list());
+  EXPECT_EQ(1u, result_1->GetList().size());
+}
+
 }  // namespace extensions
