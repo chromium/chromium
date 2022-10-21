@@ -24,6 +24,9 @@ class RuntimeManager;
 constexpr char kUmaKeyFastCheckoutRunOutcome[] =
     "Autofill.FastCheckout.RunOutcome";
 
+// The command line switch for specifying a custom server URL.
+constexpr char kAutofillAssistantUrl[] = "autofill-assistant-url";
+
 // Enum defining possible outcomes of a Fast Checkout run. Must be kept in sync
 // with enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and

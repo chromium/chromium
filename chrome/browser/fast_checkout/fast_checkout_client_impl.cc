@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -61,21 +62,32 @@ std::vector<autofill::AutofillProfile*> GetValidAddressProfiles(
 base::flat_map<std::string, std::string> CreateScriptParameters(
     bool run_consentless,
     GURL url) {
-  return {{autofill_assistant::public_script_parameters::kIntentParameterName,
-           kIntentValue},
-          {autofill_assistant::public_script_parameters::
-               kOriginalDeeplinkParameterName,
-           url.spec()},
-          {autofill_assistant::public_script_parameters::kEnabledParameterName,
-           kTrue},
-          {autofill_assistant::public_script_parameters::
-               kStartImmediatelyParameterName,
-           kTrue},
-          {autofill_assistant::public_script_parameters::kCallerParameterName,
-           kCaller},
-          {autofill_assistant::public_script_parameters::kSourceParameterName,
-           kSource},
-          {kIsNoRoundTrip, run_consentless ? kTrue : kFalse}};
+  base::flat_map<std::string, std::string> script_parameters = {
+      {autofill_assistant::public_script_parameters::kIntentParameterName,
+       kIntentValue},
+      {autofill_assistant::public_script_parameters::
+           kOriginalDeeplinkParameterName,
+       url.spec()},
+      {autofill_assistant::public_script_parameters::kEnabledParameterName,
+       kTrue},
+      {autofill_assistant::public_script_parameters::
+           kStartImmediatelyParameterName,
+       kTrue},
+      {autofill_assistant::public_script_parameters::kCallerParameterName,
+       kCaller},
+      {autofill_assistant::public_script_parameters::kSourceParameterName,
+       kSource},
+      {kIsNoRoundTrip, run_consentless ? kTrue : kFalse}};
+
+  // TODO(b/251365675): Remove once all endpoints support RPC signing.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kAutofillAssistantUrl)) {
+    script_parameters.insert({autofill_assistant::public_script_parameters::
+                                  kDisableRpcSigningParameterName,
+                              kTrue});
+  }
+
+  return script_parameters;
 }
 
 }  // namespace

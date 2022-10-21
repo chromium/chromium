@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/test/gmock_move_support.h"
@@ -29,6 +30,7 @@
 #include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
+#include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "ui/gfx/native_widget_types.h"
 
 using ::autofill::AutofillDriver;
@@ -37,6 +39,7 @@ using ::autofill::CreditCard;
 using ::testing::_;
 using ::testing::Pointee;
 using ::testing::Return;
+using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
 
 namespace {
@@ -404,6 +407,7 @@ TEST_P(FastCheckoutClientImplTestParametrized,
       autofill_assistant::HeadlessScriptController::ScriptResult)>
       external_script_controller_callback;
   base::OnceCallback<void()> onboarding_successful_callback;
+  base::flat_map<std::string, std::string> script_params;
 
   EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(true));
   EXPECT_CALL(*external_script_controller(),
@@ -424,6 +428,7 @@ TEST_P(FastCheckoutClientImplTestParametrized,
                 std::move(script_ended_callback);
             onboarding_successful_callback =
                 std::move(onboarding_successful_callback_parameter);
+            script_params = script_parameters;
           });
 
   // Expect bottomsheet to show up.
@@ -436,6 +441,11 @@ TEST_P(FastCheckoutClientImplTestParametrized,
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(
       delegate(), GURL(kUrl), GetParam().script_supports_consentless));
+
+  // By default script parameters should not include "DISABLE_RPC_SIGNING".
+  EXPECT_FALSE(
+      script_params.contains(autofill_assistant::public_script_parameters::
+                                 kDisableRpcSigningParameterName));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -466,6 +476,30 @@ TEST_P(FastCheckoutClientImplTestParametrized,
 
   histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutRunOutcome,
                                        FastCheckoutRunOutcome::kSuccess, 1u);
+}
+
+TEST_F(
+    FastCheckoutClientImplTest,
+    Start_AutofillAssistantUrlSwitchSet_ScriptParametersContainDisableRpcSigning) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kAutofillAssistantUrl)) {
+    command_line->AppendSwitch(kAutofillAssistantUrl);
+  }
+
+  base::flat_map<std::string, std::string> script_params;
+
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _, _))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&script_params));
+
+  // Starting the run successfully.
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), true));
+
+  // With the corresponding command line switch set script parameters should
+  // include "DISABLE_RPC_SIGNING".
+  EXPECT_TRUE(
+      script_params.contains(autofill_assistant::public_script_parameters::
+                                 kDisableRpcSigningParameterName));
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_OnboardingRejected_NotStartableAgain) {
