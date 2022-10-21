@@ -596,6 +596,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1552752544932680961">Gerenciar extensão</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1555130319947370107">Azul</translation>
+<translation id="1556127816860282890">A atividade em segundo plano e alguns efeitos visuais, como a rolagem suave, podem ser limitados</translation>
 <translation id="1556537182262721003">Não foi possível mover o diretório de extensões para o perfil.</translation>
 <translation id="1558391695376153246">Fechar guias anônimas</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -2531,6 +2532,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3308852433423051161">Carregando o Google Assistente…</translation>
 <translation id="3309330461362844500">ID do perfil de certificado</translation>
 <translation id="3311445899360743395">Os dados associados a esse app poderão ser removidos deste dispositivo.</translation>
+<translation id="3312470654018965389">Configurando o contêiner Linux</translation>
 <translation id="3312883087018430408">Para pesquisar em um site específico ou em uma parte do Chrome, digite o atalho dele na barra de endereço, seguido da tecla de atalho da sua preferência. Por exemplo, para pesquisar apenas nos Favoritos, digite "@favoritos" e depois pressione Tab ou a barra de espaço.</translation>
 <translation id="3313622045786997898">Valor da assinatura do certificado</translation>
 <translation id="3313950410573257029">Verificar conexão</translation>
@@ -4160,6 +4162,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4852916668365817106">Cor do mouse</translation>
 <translation id="4853020600495124913">Abrir em &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolha uma conta de pai/mãe para aprovação</translation>
+<translation id="4854603338816296098">O endereço foi removido</translation>
 <translation id="485480310608090163">Mais configurações e permissões</translation>
 <translation id="4858792381671956233">Você perguntou aos seus responsáveis se pode visitar este site</translation>
 <translation id="4858913220355269194">Pelé</translation>

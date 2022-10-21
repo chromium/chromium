@@ -422,6 +422,7 @@
 <translation id="1397594434718759194">Olet kirjautunut Chromeen näillä laitteilla, joten voit käyttää niitä suojausavaimina.</translation>
 <translation id="1398853756734560583">Suurenna</translation>
 <translation id="139911022479327130">Avaa puhelimen lukitus ja vahvista henkilöllisyytesi</translation>
+<translation id="1401216725754314428">Lue lisää aiheeseen liittyvistä sivustoista uudella välilehdellä</translation>
 <translation id="1401308693935339022">Käytä sijaintia. Salli laitteen sijainnin käyttäminen sovelluksille ja palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
 <translation id="1403222014593521787">Välityspalvelimeen ei saada yhteyttä</translation>
 <translation id="1405779994569073824">Kaatui</translation>
@@ -594,6 +595,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1552752544932680961">Hallinnoi laajennusta</translation>
 <translation id="1553538517812678578">rajoittamaton</translation>
 <translation id="1555130319947370107">Sininen</translation>
+<translation id="1556127816860282890">Taustatoimintaa ja joitakin visuaalisia tehosteita, esim. sujuvaa vierittämistä, saatetaan rajoittaa</translation>
 <translation id="1556537182262721003">Laajennushakemiston siirtäminen profiiliin ei onnistunut.</translation>
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
 <translation id="155865706765934889">Kosketuslevy</translation>
@@ -2528,6 +2530,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3308852433423051161">Ladataan Google Assistantia…</translation>
 <translation id="3309330461362844500">Varmenneprofiilin tunnus</translation>
 <translation id="3311445899360743395">Tähän sovellukseen liittyvä data saatetaan poistaa tältä laitteelta.</translation>
+<translation id="3312470654018965389">Määritetään Linux-säilöä</translation>
 <translation id="3312883087018430408">Etsi tiettyä sivustoa tai Chromen osaa kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi pikanäppäintä. Hae esimerkiksi kirjanmerkeistä kirjoittamalla "@bookmarks" ja painamalla sarkainta tai välilyöntiä.</translation>
 <translation id="3313622045786997898">Varmenteen allekirjoituksen arvo</translation>
 <translation id="3313950410573257029">Tarkista yhteys</translation>
@@ -4153,6 +4156,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4852916668365817106">Hiiren väri</translation>
 <translation id="4853020600495124913">Avaa uudessa ikkunassa</translation>
 <translation id="4854317507773910281">Valitse vanhemman tili hyväksymistä varten</translation>
+<translation id="4854603338816296098">Osoite poistettu</translation>
 <translation id="485480310608090163">Lisää asetuksia ja käyttöoikeuksia</translation>
 <translation id="4858792381671956233">Pyysit vanhemmiltasi lupaa käydä tällä sivustolla.</translation>
 <translation id="4858913220355269194">Litti</translation>
@@ -7692,6 +7696,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8206745257863499010">Muusikko</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8207404892907560325">Valitse avainkoodi</translation>
+<translation id="8208188204689616705">Nämä sivustot kuuluvat ryhmään, jonka <ph name="FPS_OWNER" /> on määritellyt. Ryhmään kuuluvat sivustot voivat nähdä toimintasi ryhmässä</translation>
 <translation id="8208216423136871611">Älä tallenna</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Uusi ilmoitus}other{# uutta ilmoitusta}}</translation>
 <translation id="821119981794423735">Jos haluat siirtää salasanoja Google Salasanoihin (tili: <ph name="USER_EMAIL" />), valitse CSV-tiedosto</translation>

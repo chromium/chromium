@@ -270,6 +270,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2496180316473517155">Hanes pori</translation>
 <translation id="2497852260688568942">Mae Cysoni wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="250020030759455918">Byddwch yn gweld eich statws mewngofnodi, pori data, a data gwefan <ph name="SITE_NAME" /> yn Chrome</translation>
+<translation id="2510106555128151389">Wrthi'n gosod <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, gweler <ph name="BEGIN_LINK" />Cysoni a gwasanaethau Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Sganio</translation>
 <translation id="2523184218357549926">Yn anfon URL o dudalennau rydych yn ymweld â nhw at Google</translation>
@@ -903,6 +904,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5956665950594638604">Agor Canolfan Gymorth Chrome mewn tab newydd</translation>
 <translation id="5957442310066583693">I weld eich hoff wefannau, tapiwch y botwm Hafan</translation>
 <translation id="5958275228015807058">Gallwch ddod o hyd i'ch ffeiliau a'ch tudalennau yn Lawrlwythiadau</translation>
+<translation id="5958994127112619898">Symleiddio'r dudalen</translation>
 <translation id="5962718611393537961">Tapiwch i grebachu</translation>
 <translation id="5964869237734432770">Stopio disgrifio lluniau</translation>
 <translation id="5966233851250124270">Bydd Chrome yn cofio eich dewis</translation>
@@ -1279,6 +1281,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="7887334752153342268">Dyblygu</translation>
 <translation id="789763218334337857">Sut i ddefnyddio Chrome</translation>
 <translation id="7903184275147100332">Gall hyn gymryd munud</translation>
+<translation id="7914399737746719723">Gosodwyd ap</translation>
 <translation id="7919123827536834358">Cyfieithu'r ieithoedd hyn yn awtomatig</translation>
 <translation id="7926975587469166629">Llysenw cerdyn</translation>
 <translation id="7929962904089429003">Agorwch y ddewislen</translation>

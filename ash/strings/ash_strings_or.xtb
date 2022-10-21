@@ -436,6 +436,7 @@
 <translation id="3413817803639110246">ଏପର୍ଯ୍ୟନ୍ତ ଦେଖିବା ପାଇଁ କିଛି ନାହିଁ</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />ରୁ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="3430396595145920809">ପଛକୁ ଫେରିବାକୁ ଡାହାଣ ପାର୍ଶ୍ୱରୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
+<translation id="3431517721463707585">ଡେସ୍କ 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">ରିମାଇଣ୍ଡର୍ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="3435967511775410570">ଟିପଚିହ୍ନ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -676,6 +677,7 @@
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ବାମ)</translation>
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
+<translation id="4735944890391795473">ଡେସ୍କ 12</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="4740516757091333363">ସେଭ ହୋଇଥିବା ଡେସ୍କକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="4752784485658729358">କେବଳ 6ଟି ସେଭ କରାଯାଇଥିବା ଡେସ୍କକୁ ଅନୁମତି ଦିଆଯାଇଛି। ଏକ ନୂଆ ଡେସ୍କ ସେଭ କରିବା ପାଇଁ ଗୋଟିଏ ଡେସ୍କ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
@@ -696,6 +698,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ପାଇଁ ଆପଣଙ୍କ ନେଟୱାର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="486056901304535126">ଡାଉନଲୋଡ କରିବା ପାଇଁ ପରେ ଚେଷ୍ଟା କରାଯିବ। ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ୟନ୍ତ ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ Googleକୁ ସ୍ପିଚ ପଠାଯିବ।</translation>
 <translation id="4864369630010738180">ସାଇନ୍ ଇନ୍ ହେଉଛି…</translation>
+<translation id="4864648187878336334">ଡେସ୍କ 15</translation>
 <translation id="4868492592575313542">ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="4872237917498892622">Alt+Search କିମ୍ବା Shift</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
@@ -723,6 +726,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">ଡେସ୍କ 16</translation>
 <translation id="5003993274120026347">ପରବର୍ତ୍ତୀ ବାକ୍ୟ</translation>
 <translation id="5016558321564993266">ମାର୍କରକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">ସମୟ ଶେଷ ହୋ‍ଇଛି</translation>
@@ -739,6 +743,7 @@
 <translation id="5098537242461068432">ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପୁଣି ଖୋଲାଯାଇଛି</translation>
 <translation id="5104236669533825617">ସ୍କ୍ରିନକାଷ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5107522548814527560">ୱେବ</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">ପରବର୍ତ୍ତୀ ମାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
 <translation id="5147567197700016471">ଅନଲକ୍ କରାଯାଇଛି</translation>
@@ -829,6 +834,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ମାଇକ୍ ଜ୍ୟାକ୍</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ଆପଣଙ୍କୁ ଧ୍ୟାନ ଦେବା ପାଇଁ ଅନୁରୋଧ କରୁଛି।</translation>
+<translation id="5662075790140998213">ଡେସ୍କ 10</translation>
 <translation id="5662709761327382534">ମାଇକ୍ରୋଫୋନରେ ରେକର୍ଡ କରନ୍ତୁ <ph name="CURRENT_STATE" />, ମାଇକ୍ରୋଫୋନରେ ରେକର୍ଡିଂ ଚାଲୁ କରିବାକୁ Enter କୀ'କୁ ଦବାନ୍ତୁ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5673434351075758678">ଆପଣଙ୍କର ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବା ପରେ "<ph name="FROM_LOCALE" />"ରୁ "<ph name="TO_LOCALE" />" ପର୍ଯ୍ୟନ୍ତ।</translation>
@@ -1029,6 +1035,8 @@
 <translation id="6753390234084146956">ଟାବଗୁଡ଼ିକ</translation>
 <translation id="6757237461819837179">କୌଣସି ମିଡିଆ ଚାଲୁନାହିଁ</translation>
 <translation id="6777216307882431711">ସଂଯୁକ୍ତ ଥିବା USB-C ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଚାଲୁ କରୁଛି</translation>
+<translation id="6781002679438061620">ଡେସ୍କ 9</translation>
+<translation id="6782182743534150858">ଡେସ୍କ 13</translation>
 <translation id="6786750046913594791">ଫୋଲ୍ଡର୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6787595647772650851">ଗତ ସେସନକୁ ରିଷ୍ଟୋର କରନ୍ତୁ</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
@@ -1090,6 +1098,7 @@
 <translation id="7098053464892629930">ଉପଲବ୍ଧ ଥିବା ସମସ୍ତ ଫିଚର ଦେଖିବାକୁ Google Playରେ <ph name="NAME" /> ପାଇଁ ଥିବା ଆପ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="7098389117866926363">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ )</translation>
 <translation id="7106330611027933926">ଡେସ୍କବାର୍ ଦେଖାନ୍ତୁ</translation>
+<translation id="7116969082764510092">ଡେସ୍କ 11</translation>
 <translation id="7118268675952955085">ସ୍କ୍ରିନସଟ୍</translation>
 <translation id="7126996685418858413">ଗତ ସପ୍ତାହରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="7130207228079676353">ସବୁଠୁ ଲୋକପ୍ରିୟ</translation>
@@ -1188,6 +1197,7 @@
 <translation id="7662283695561029522">କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଟାପ୍‍ କରନ୍ତୁ</translation>
 <translation id="7670953955701272011">Google Calendarରେ ଏହି ତାରିଖ ଖୋଲନ୍ତୁ</translation>
 <translation id="7671610481353807627">ଆପଗୁଡ଼ିକୁ ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରାଯାଇଛି</translation>
+<translation id="7672095158465655885"><ph name="NAME" />, <ph name="SUBTEXT" /> ସହ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="7684531502177797067">କ୍ୟାମେରା ଇନପୁଟ <ph name="CAMERA_NAME" />ରେ ସେଟ ହୋଇଛି।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ନୂଆ ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କ ଯୋଗ କରନ୍ତୁ</translation>
@@ -1472,5 +1482,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> ପାଇଁ <ph name="RESULT_COUNT" />ଟି ଫଳାଫଳ ଡିସ୍‌ପ୍ଲେ ହେଉଛି</translation>
 <translation id="98515147261107953">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> ବନ୍ଦ କରାଯାଇଛି।</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ନବୀନତମ ଫିଚର ଏବଂ ସୁରକ୍ଷା ଉନ୍ନତିଗୁଡ଼ିକୁ ପାଆନ୍ତୁ। ପୃଷ୍ଠପଟରେ ଅପଡେଟଗୁଡ଼ିକ ହୋଇଥାଏ।</translation>
 </translationbundle>

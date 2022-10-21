@@ -277,6 +277,7 @@
 <translation id="1244303850296295656">خطای افزونه</translation>
 <translation id="1245628370644070008">بازیابی داده‌های محلی</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> نصب نشد: نشانی وب تصویر کد خطای <ph name="HTTP_ERROR" /> را برگرداند. لطفاً با سرپرست تماس بگیرید.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{اعلان‌های یک سایت مجاز نیستند}one{اعلان‌های {NUM_SITES} سایت مجاز نیستند}other{اعلان‌های {NUM_SITES} سایت مجاز نیستند}}</translation>
 <translation id="1251366534849411931">اینجا باید آکولاد باز باشد: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌ها و برنامه‌های نصب‌شده ذخیره کرده‌اند پاک می‌شود</translation>
 <translation id="1251578593170406502">درحال اسکن کردن شبکه‌های داده تلفن همراه…</translation>
@@ -593,6 +594,7 @@
 <translation id="1552752544932680961">مدیریت برنامه افزودنی</translation>
 <translation id="1553538517812678578">نامحدود</translation>
 <translation id="1555130319947370107">آبی</translation>
+<translation id="1556127816860282890">فعالیت پس‌زمینه و برخی جلوه‌های بصری، مثل پیمایش روان، ممکن است محدود شوند</translation>
 <translation id="1556537182262721003">انتقال دایرکتوری برنامهٔ افزودنی به نمایه ممکن نیست.</translation>
 <translation id="1558391695376153246">بستن «برگه‌های ناشناس»</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
@@ -1654,6 +1656,7 @@
 <translation id="2476974672882258506">‏برای حذف نصب <ph name="PARALLELS_DESKTOP" />، ‏Windows را خاموش کنید.</translation>
 <translation id="2477065602824695373">چون چند کلید راه‌اندازی کرده‌اید، اسکن خودکار خاموش شده است.</translation>
 <translation id="2478176599153288112">مجوزهای فایل رسانه‌ای برای «<ph name="EXTENSION" />»</translation>
+<translation id="24786041351753425">فعال کردن سرویس بازیابی داده.</translation>
 <translation id="2480868415629598489">اصلاح داده‌هایی که کپی و جای‌گذاری می‌کنید</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2482895651873876648">برگه به گروه <ph name="GROUP_NAME" /> منتقل شد - <ph name="GROUP_CONTENTS" /></translation>
@@ -2269,6 +2272,7 @@
 <translation id="3024374909719388945">استفاده از ساعت ۲۴ ساعته</translation>
 <translation id="3027296729579831126">روشن کردن «هم‌رسانی با اطراف»</translation>
 <translation id="3029466929721441205">نمایش ابزارهای قلم در قفسه</translation>
+<translation id="3029808567601324798">زمان قفل کردن</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> از شما می‌خواهد به‌روزرسانی را امروز بارگیری کنید. وقتی به اینترنت متصل شوید، به‌روزرسانی به‌طور خودکار بارگیری خواهد شد.}one{<ph name="MANAGER" /> از شما می‌خواهد به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. وقتی به اینترنت متصل شوید، به‌روزرسانی به‌طور خودکار بارگیری خواهد شد.}other{<ph name="MANAGER" /> از شما می‌خواهد به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. وقتی به اینترنت متصل شوید، به‌روزرسانی به‌طور خودکار بارگیری خواهد شد.}}</translation>
 <translation id="3030967311408872958">غروب تا طلوع</translation>
 <translation id="3031417829280473749">‏مأمور X</translation>
@@ -2527,6 +2531,7 @@
 <translation id="3308852433423051161">‏درحال بارگیری «دستیار Google»…</translation>
 <translation id="3309330461362844500">شناسه نمایه گواهینامه</translation>
 <translation id="3311445899360743395">داده‌های مرتبط با این برنامه ممکن است از این دستگاه پاک شود.</translation>
+<translation id="3312470654018965389">‏درحال پیکربندی محتوی Linux</translation>
 <translation id="3312883087018430408">‏برای جستجوی بخش یا سایتی خاص در Chrome، میان‌بر آن را در نوار نشانی تایپ کنید و به‌دنبال آن میان‌بر ترجیحی صفحه‌کلید را فشار دهید. برای مثال، برای اینکه فقط Bookmarks (نشانک‌ها) را جستجو کنید، «‎@bookmarks» را تایپ کنید و سپس کلید «جهش» یا «فاصله» را فشار دهید.</translation>
 <translation id="3313622045786997898">ارزش امضای گواهی</translation>
 <translation id="3313950410573257029">بررسی اتصال</translation>
@@ -4155,6 +4160,7 @@
 <translation id="4852916668365817106">رنگ موشواره</translation>
 <translation id="4853020600495124913">باز کردن در پنجره &amp;جدید</translation>
 <translation id="4854317507773910281">حساب ولی را برای تأیید انتخاب کنید</translation>
+<translation id="4854603338816296098">نشانی برداشته شد</translation>
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
 <translation id="4858792381671956233">از والدینتان پرسیدید آیا اجازه بازدید از این سایت را دارید</translation>
 <translation id="4858913220355269194">فوتبالی</translation>
@@ -4217,6 +4223,7 @@
 <translation id="4901154724271753917">ازهم بازکردن موارد اخیراً بسته‌شده</translation>
 <translation id="4901309472892185668">وضعیت آزمایش را برای آزمایش <ph name="EXPERIMENT_NAME" /> انتخاب کنید.</translation>
 <translation id="49027928311173603">خط‌مشی بارگیری‌شده از سرور نامعتبر است: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">این ویژگی با محدود کردن فعالیت پس‌زمینه و جلوه‌های بصری مثل پیمایش روان، ماندگاری شارژ باتری را افزایش می‌دهد.</translation>
 <translation id="4906490889887219338">راه‌اندازی یا مدیریت دستگاه‌های ذخیره‌سازی متصل به شبکه. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">انتخاب کنید این افزونه چه زمانی می‌توانید داده‌های سایتتان را بخواند و تغییر دهد</translation>
 <translation id="4907161631261076876">این فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد.</translation>
@@ -5323,6 +5330,7 @@
 <translation id="5971037678316050792">کنترل حالت آداپتور بلوتوث و مرتبط‌سازی</translation>
 <translation id="597235323114979258">دیدن مقصدهای بیشتر</translation>
 <translation id="5972543790327947908">برخی‌از پیوندهای پشتیبانی‌شده همچنان در <ph name="APP_NAME" />، <ph name="APP_NAME_2" />، یا <ph name="APP_NAME_3" /> باز خواهد شد.</translation>
+<translation id="5972559880616357748">کنش‌های بیشتر برای <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">سرویس غیرفعال</translation>
 <translation id="5972708806901999743">انتقال به بالا</translation>
 <translation id="5972826969634861500">شروع <ph name="PRODUCT_NAME" /></translation>
@@ -8511,6 +8519,7 @@
 <translation id="8987927404178983737">ماه</translation>
 <translation id="8989359959810288806">بازآوری وضعیت اشتراک‌گذاری اینترنت</translation>
 <translation id="8991520179165052608">سایت می‌تواند از میکروفن شما استفاده کند</translation>
+<translation id="8993059306046735527">‏اگر گذرواژه <ph name="DEVICE_TYPE" /> را فراموش کنید، همچنان می‌توانید داده‌های محلی‌تان را بازیابی کنید. باید به سیستم «حساب Google» خود وارد شوید یا از بازیابی حساب استفاده کنید.</translation>
 <translation id="899384117894244799">برداشتن کاربر محدودشده</translation>
 <translation id="899403249577094719">‏نشانی وب گواهی Netscape</translation>
 <translation id="899657321862108550">‏Chrome شما، در همه‌جا</translation>
@@ -8610,6 +8619,7 @@
 <translation id="9078316009970372699">غیرفعال کردن «اشتراک‌گذاری اینترنت فوری»</translation>
 <translation id="9078842827190780028">نتایج جستجوی بیشتری در پانل کناری ببینید</translation>
 <translation id="9079267182985899251">به‌زودی دیگر از این گزینه پشتیبانی نخواهد شد. برای ارائه برگه، از <ph name="GOOGLE_MEET" /> استفاده کنید.</translation>
+<translation id="9080175821499742274">«بهینه‌سازی حافظه» حافظه را از برگه‌های غیرفعال آزاد می‌کند تا برگه‌های فعال و برنامه‌های دیگر بتوانند از آن استفاده کنند.</translation>
 <translation id="9080971985541434310">‏علایقتان را تخمین می‌زند - Chrome می‌تواند علایق شما را حدس بزند</translation>
 <translation id="9081543426177426948">سایت‌هایی که بازدید می‌کنید در «حالت ناشناس» ذخیره نمی‌شود</translation>
 <translation id="9084064520949870008">بازکردن به‌عنوان پنجره</translation>
@@ -8799,6 +8809,7 @@
 <translation id="964790508619473209">تنظیم صفحه‌نمایش</translation>
 <translation id="965211523698323809">ارسال و دریافت پیامک از <ph name="DEVICE_TYPE" /> شما. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏گزارش مشکل در Google Cast</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{مرور سایتی که اخیراً تعداد زیادی اعلان ارسال کرده است}one{مرور {NUM_SITES} سایت که اخیراً تعداد زیادی اعلان ارسال کرده است}other{مرور {NUM_SITES} سایت که اخیراً تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="967398046773905967">‏به هیچ سایتی اجازه دسترسی به دستگاه‌های HID داده نشود</translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>
 <translation id="96774243435178359">چاپگرهای مدیریت‌شده</translation>

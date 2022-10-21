@@ -92,6 +92,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1407069428457324124">Koyu tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Tarihler arasında gezinmek için ok tuşlarını kullanın.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Yüklü Uygulama</translation>
+<translation id="1415846719612499304">Ağ listesini göster. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Bildirim işlemi gerçekleştirmek için cihazın kilidini açın</translation>
 <translation id="1420408895951708260">Gece Işığı'nı aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Telefonunuzdaki son fotoğrafları ve medya içeriklerini <ph name="DEVICE_TYPE" /> cihazınızda görün</translation>
@@ -252,6 +253,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2322173485024759474">Harf bazında geri git</translation>
 <translation id="2339073806695260576">Not veya ekran görüntüsü almak, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="2341729377289034582">Dikey olarak kilitlendi</translation>
+<translation id="2345226652884463045">Düzenlenecek metni seçmek için Enter'a veya arama + boşluk tuşlarına basın.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> konuşma artık yerel olarak işlenir ve çevrimdışı olarak çalışır. Dikte dilinizi Ayarlar &gt; Erişilebilirlik bölümünden değiştirebilirsiniz.</translation>
 <translation id="2352467521400612932">Ekran kalemi ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> etkinleştiriliyor</translation>
@@ -308,6 +310,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2678852583403169292">Seç ve Dinle menüsü</translation>
 <translation id="2689613560355655046">Masa 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Klavye ayarlarını göster. <ph name="KEYBOARD_NAME" /> seçildi.</translation>
 <translation id="2700493154570097719">Klavyenizi ayarlayın</translation>
 <translation id="2704781753052663061">Başka kablosuz ağlara katıl</translation>
 <translation id="2705001408393684014">Mikrofonu aç/kapat. <ph name="STATE_TEXT" /></translation>
@@ -777,6 +780,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5327248766486351172">Ad</translation>
 <translation id="5329548388331921293">Bağlanıyor...</translation>
 <translation id="5331975486040154427">USB-C cihaz (sol arka bağlantı noktası)</translation>
+<translation id="533282197239610265">Yayın cihazlarını göster</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (Sağ)</translation>
 <translation id="5352250171825660495">Koyu tema açık</translation>
 <translation id="5356963482258194581">Koyu ve açık tema arasında geçiş yapın. Masaüstünü sağ tıklayıp Duvar kağıdı ve stil'i seçin</translation>
@@ -808,10 +812,12 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="553675580533261935">Oturum kapatılıyor</translation>
 <translation id="5537725057119320332">Yayınla</translation>
 <translation id="554893713779400387">Dikte özelliğini aç/kapat</translation>
+<translation id="5558091555391176027">Yakındakilerle Paylaş özelliğinin yüksek görünürlüğünü aç/kapat</translation>
 <translation id="5560420195677022218">Telefonunuzdaki uygulamaları <ph name="DEVICE_TYPE" /> cihazınızda görün</translation>
 <translation id="556042886152191864">Düğme</translation>
 <translation id="5571066253365925590">Bluetooth etkin</translation>
 <translation id="557563299383177668">Sonraki paragraf</translation>
+<translation id="5577082622442191756">Bluetooth'u aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Telefon Merkezi'ni kullanmak için telefonunuzda Bluetooth'un açık olup olmadığını kontrol edin</translation>
 <translation id="5580000943347215299">Kitaplık</translation>
 <translation id="558849140439112033">Ekran görüntüsü alınacak alanı seçmek için sürükleyin</translation>
@@ -880,6 +886,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Denetlenen kullanıcı</translation>
+<translation id="5965524703725988602">Koyu temayı aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Pencereyi kaydetmek için enter tuşuna basın</translation>
 <translation id="5977415296283489383">Kulaklık</translation>
 <translation id="5978382165065462689">Ekranınızın kontrolü Uzaktan Yardım kullanılarak paylaşılıyor.</translation>
@@ -1123,6 +1130,7 @@ Yeni yüklenmiş</translation>
 <translation id="7378889811480108604">Pil tasarrufu modu kapalı</translation>
 <translation id="7382680553121047388">Açık</translation>
 <translation id="7384028040782072252">Uygulamalarınızı yeniden sıralamak için herhangi bir yeri sağ tıklayın</translation>
+<translation id="7386767620098596324">Ağ bağlantısını aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Phone Hub'ı daha sonra istediğiniz zaman Ayarlar'da kurabilirsiniz.</translation>
 <translation id="7405710164030118432">Bu cihazın kilidini açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="7406608787870898861">Mobil ağınızın kurulumunu tamamlayın</translation>
@@ -1262,6 +1270,7 @@ Yeni yüklenmiş</translation>
 <translation id="8142441511840089262">Çift tıklama</translation>
 <translation id="8142699993796781067">Özel ağ</translation>
 <translation id="8144760705599030999">Diğer cihazlarınızla daha hızlı eşlemek için <ph name="NAME" /> cihazını <ph name="EMAIL" /> adresine kaydedin</translation>
+<translation id="8149413265954228307">Bluetooth ayarlarını göster. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Kapatmak için Ctrl + W tuşlarına basın.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Otomatik tamamlama</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Bu ayar, yöneticiniz tarafından yönetilir.</translation>
@@ -1322,6 +1331,7 @@ Yeni yüklenmiş</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> özelliğine sahip.</translation>
 <translation id="8477270416194247200">İptal etmek için Alt+Ara veya Üst Karakter tuşuna basın.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
+<translation id="8496402167048257517">Yakındakilerle Paylaşım ayarlarını göster</translation>
 <translation id="85123341071060231">Chromebook’unuzun Bluetooth'u kapalı. Chromebook'unuzun kilidini açmak için şifreyi girin.</translation>
 <translation id="8513108775083588393">Oto. döndür</translation>
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>

@@ -460,6 +460,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
            • Xóa cookie và dữ liệu trang web tạm thời khác
             <ph name="LINE_BREAKS" />
            Dấu trang, nhật ký duyệt web và mật khẩu đã lưu sẽ không bị ảnh hưởng.</translation>
+<translation id="1425040197660226913">Không tải lên được. Hãy dùng hình ảnh có kích thước nhỏ hơn 20 MB.</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="142655739075382478">Đã chặn <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">Hãy nhấp vào Thử lại rồi chấp nhận lời nhắc trên máy tính của bạn</translation>
@@ -587,6 +588,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1545177026077493356">Chế độ kiosk tự động</translation>
 <translation id="1545749641540134597">Quét mã QR</translation>
 <translation id="1545775234664667895">Đã cài đặt chủ đề "<ph name="THEME_NAME" />"</translation>
+<translation id="1546031833947068368">{COUNT,plural, =1{Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{# cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="1546280085599573572">Tiện ích này đã thay đổi trang nào sẽ hiển thị khi bạn nhấp vào nút Trang chủ.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> muốn cài đặt một <ph name="EXTENSION_TYPE" /> có thể:</translation>
 <translation id="1547808936554660006">Tôi hiểu rằng các hồ sơ eSIM đã cài đặt sẽ không bị xóa bằng chức năng Powerwash</translation>
@@ -596,6 +598,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1552752544932680961">Quản lý tiện ích</translation>
 <translation id="1553538517812678578">không giới hạn</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
+<translation id="1556127816860282890">Hoạt động trong nền và một số hiệu ứng hình ảnh như cuộn mượt có thể bị hạn chế</translation>
 <translation id="1556537182262721003">Không thể di chuyển thư mục tiện ích vào hồ sơ.</translation>
 <translation id="1558391695376153246">Đóng các thẻ Ẩn danh</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
@@ -1016,6 +1019,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1908591798274282246">Mở lại nhóm đã đóng</translation>
 <translation id="1909880997794698664">Bạn có chắc chắn bạn muốn giữ vĩnh viễn thiết bị này ở chế độ kiosk không?</translation>
 <translation id="1910721550319506122">Chào mừng bạn!</translation>
+<translation id="1910736334623230603">Không tìm được nhiều hình ảnh. Hãy thêm một hình ảnh mỗi lần.</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1916502483199172559">Hình đại diện màu đỏ mặc định</translation>
@@ -1532,6 +1536,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2352810082280059586">Ghi chú trên màn hình khóa được tự động lưu vào <ph name="LOCK_SCREEN_APP_NAME" />. Ghi chú mới nhất của bạn sẽ vẫn còn trên màn hình khóa.</translation>
 <translation id="2353297238722298836">Cho phép máy ảnh và micrô</translation>
 <translation id="2355314311311231464">Không cấp phép được do không thể lấy thông tin chi tiết về tài khoản của bạn. Vui lòng thử lại. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Các tuỳ chọn về trình tiết kiệm năng lượng</translation>
 <translation id="2355604387869345912">Bật tính năng Chia sẻ Internet tức thì</translation>
 <translation id="2356070529366658676">Yêu cầu</translation>
 <translation id="2357330829548294574">Xóa <ph name="USER_NAME" /></translation>
@@ -1780,6 +1785,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2591895621127187078">Kiểm tra email của bạn để chọn mật khẩu mới</translation>
 <translation id="2593499352046705383">Trước khi bắt đầu, hãy đảm bảo rằng bạn đã sao lưu dữ liệu. Quá trình cài đặt <ph name="DEVICE_OS" /> sẽ ghi đè lên ổ đĩa cứng. Tìm hiểu thêm tại g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Tìm kiếm trên Google hoặc nhập URL</translation>
+<translation id="25957578727513093">Để truy cập nhanh hơn, hãy thêm lối tắt vào Trình quản lý mật khẩu của Google</translation>
 <translation id="2599048253926156421">Đã sao chép tên người dùng vào bảng nhớ tạm</translation>
 <translation id="2602501489742255173">Vuốt lên để bắt đầu</translation>
 <translation id="2603115962224169880">Dọn dẹp máy tính</translation>
@@ -2533,6 +2539,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3308852433423051161">Đang tải Trợ lý Google...</translation>
 <translation id="3309330461362844500">Mã hồ sơ chứng chỉ</translation>
 <translation id="3311445899360743395">Dữ liệu liên quan đến ứng dụng này có thể bị xóa khỏi thiết bị.</translation>
+<translation id="3312470654018965389">Đang định cấu hình vùng chứa Linux</translation>
 <translation id="3312883087018430408">Để tìm kiếm một trang web cụ thể hoặc một phần của Chrome, hãy nhập lối tắt của trang web hoặc phần đó vào thanh địa chỉ, sau đó là phím tắt ưu tiên của bạn. Ví dụ: để chỉ tìm kiếm Dấu trang, hãy nhập "@bookmarks", rồi nhấn phím Tab hoặc phím cách.</translation>
 <translation id="3313622045786997898">Giá trị Chữ ký Chứng chỉ</translation>
 <translation id="3313950410573257029">Kiểm tra kết nối</translation>
@@ -2882,6 +2889,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3642699533549879077">Khi người khác nhìn vào màn hình của bạn, bạn sẽ nhận được cảnh báo và nội dung của thông báo sẽ bị ẩn đi.</translation>
 <translation id="3643962751030964445">Thiết bị này do <ph name="DEVICE_MANAGER" /> quản lý. <ph name="DEVICE_MANAGER" /> yêu cầu hồ sơ mới cho tài khoản <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Nhẹ nhàng di chuyển ngón tay để hệ thống quét các phần của vân tay.</translation>
+<translation id="3647654707956482440">Không dùng được đường liên kết này. Hãy kiểm tra lỗi chính tả hoặc dùng một đường liên kết khác để thử lại.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Đã nhận <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}other{Đã nhận <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Đã phát hiện thấy <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3650753875413052677">Lỗi đăng ký</translation>
@@ -4161,6 +4169,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4852916668365817106">Màu chuột</translation>
 <translation id="4853020600495124913">Mở trong &amp;cửa sổ mới</translation>
 <translation id="4854317507773910281">Chọn tài khoản của cha mẹ sẽ dùng để phê duyệt</translation>
+<translation id="4854603338816296098">Đã xoá địa chỉ</translation>
 <translation id="485480310608090163">Các quyền và tùy chọn cài đặt khác</translation>
 <translation id="4858792381671956233">Bạn đã hỏi cha mẹ mình xem có thể truy cập vào trang này hay không</translation>
 <translation id="4858913220355269194">Nam cầu thủ Fritz</translation>
@@ -6778,6 +6787,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7371490947952970241">Bạn có thể tắt Vị trí bằng cách tắt tùy chọn cài đặt Vị trí chính trên thiết bị này. Bạn cũng có thể tắt tùy chọn sử dụng mạng Wi-Fi, mạng di động và cảm biến cho vị trí trong phần cài đặt vị trí.</translation>
 <translation id="7371917887111892735">Các thẻ sẽ thu gọn theo chiều rộng của thẻ được ghim</translation>
 <translation id="7374376573160927383">Quản lý các thiết bị USB</translation>
+<translation id="7376124766545122644">Không dùng được đường liên kết này. Hãy kiểm tra xem đường liên kết bắt đầu bằng "http:/" hay "https://" rồi thử lại.</translation>
 <translation id="7376553024552204454">Đánh dấu con trỏ chuột khi đang di chuyển</translation>
 <translation id="737728204345822099">Khóa bảo mật có thể lưu giữ bản ghi lượt truy cập của bạn vào trang web này.</translation>
 <translation id="7377451353532943397">Tiếp tục chặn quyền sử dụng cảm biến</translation>
@@ -6788,6 +6798,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7380622428988553498">Tên thiết bị chứa các ký tự không hợp lệ</translation>
 <translation id="7380768571499464492">Đã cập nhật <ph name="PRINTER_NAME" /></translation>
 <translation id="7382085868019811559">Tiện ích Hỗ trợ Trình duyệt cũ (LBS) cho phép mở một số mẫu URL cụ thể trong một trình duyệt thay thế có hỗ trợ các tính năng cũ cần thiết để chạy được các trang web đó.</translation>
+<translation id="738322632977123193">Không tải lên được. Sử dụng hình ảnh ở một trong các định dạng sau: .jpg, .gif, .png, .bmp, .tif hoặc .webp</translation>
 <translation id="73843634555824551">Các phương thức nhập và bàn phím</translation>
 <translation id="7384687527486377545">Tự động lặp lại trên bàn phím</translation>
 <translation id="7385490373498027129">Tất cả tệp và dữ liệu dành cho mọi người dùng trên <ph name="DEVICE_TYPE" /> này sẽ bị xóa vĩnh viễn.</translation>
@@ -6916,6 +6927,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7495778526395737099">Quên mật khẩu cũ của bạn?</translation>
 <translation id="7497981768003291373">Bạn không ghi nhật ký văn bản WebRTC nào gần đây.</translation>
 <translation id="7501957181231305652">hoặc</translation>
+<translation id="7502220299952823578">Thêm vào danh sách "luôn duy trì các trang web này ở trạng thái hoạt động"</translation>
 <translation id="7503191893372251637">Loại Chứng chỉ Netscape</translation>
 <translation id="7503985202154027481">Khóa bảo mật sẽ lưu giữ bản ghi lượt truy cập của bạn vào trang web này.</translation>
 <translation id="750509436279396091">Mở thư mục tệp đã tải xuống</translation>

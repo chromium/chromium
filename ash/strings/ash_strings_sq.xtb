@@ -92,6 +92,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Përdor tastet e shigjetave për të naviguar ndërmjet datave.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplikacion i instaluar</translation>
+<translation id="1415846719612499304">Shfaq listën e rrjeteve. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Shkyç pajisjen për të kryer veprimin e njoftimit</translation>
 <translation id="1420408895951708260">Ndrysho "Dritën e natës". <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Shiko fotografitë dhe mediat më të fundit të telefonin tënd në <ph name="DEVICE_TYPE" /></translation>
@@ -252,6 +253,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2322173485024759474">Një shkronjë pas</translation>
 <translation id="2339073806695260576">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur treguesin me lazer ose xhamin zmadhues.</translation>
 <translation id="2341729377289034582">U kyç vertikalisht</translation>
+<translation id="2345226652884463045">Shtyp "Enter" ose "Kërko" + "Hapësirë" për të zgjedhur tekstin për redaktim.</translation>
 <translation id="2350794187831162545">Ligjërimi në <ph name="LANGUAGE" /> përpunohet tani lokalisht dhe punon jashtë linje. Mund ta ndryshosh gjuhën e "Diktimit" te "Cilësimet &gt; Qasshmëria".</translation>
 <translation id="2352467521400612932">Cilësimet e stilolapsit</translation>
 <translation id="2354174487190027830">Po aktivizon <ph name="NAME" /></translation>
@@ -308,6 +310,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2678852583403169292">Menyja e "Zgjidh që të thuhet"</translation>
 <translation id="2689613560355655046">Tavolina e punës 8</translation>
 <translation id="2695305337569143674">uebi</translation>
+<translation id="2697697418792422688">Shfaq cilësimet e tastierës. Është zgjedhur <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Vendos tastierën</translation>
 <translation id="2704781753052663061">Bashkohu me rrjete të tjera Wi-Fi</translation>
 <translation id="2705001408393684014">Aktivizo/çaktivizo mikrofonin. <ph name="STATE_TEXT" /></translation>
@@ -777,6 +780,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5327248766486351172">Emri</translation>
 <translation id="5329548388331921293">Po lidhet...</translation>
 <translation id="5331975486040154427">Pajisja USB-C (porta e pasme, majtas)</translation>
+<translation id="533282197239610265">Shfaq pajisjet e transmetimit</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (djathtas)</translation>
 <translation id="5352250171825660495">"Tema e errët" është aktive</translation>
 <translation id="5356963482258194581">Ndërro mes temës së errët dhe temës së ndriçuar. Kliko me butonin djathtas në desktop dhe zgjidh "Imazhi i sfondit dhe stili".</translation>
@@ -808,10 +812,12 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="553675580533261935">Po del nga seanca</translation>
 <translation id="5537725057119320332">Transmeto</translation>
 <translation id="554893713779400387">Ndërro diktimin</translation>
+<translation id="5558091555391176027">Aktivizo/çaktivizo dukshmërinë e lartë për "Ndarjen në afërsi"</translation>
 <translation id="5560420195677022218">Shiko aplikacionet e telefonit në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5571066253365925590">Bluetooth-i u aktivizua</translation>
 <translation id="557563299383177668">Paragrafi tjetër</translation>
+<translation id="5577082622442191756">Aktivizo/çaktivizo Bluetooth-in. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Kontrollo që Bluetooth-i të jetë i aktivizuar në telefon për të përdorur Phone Hub.</translation>
 <translation id="5580000943347215299">Biblioteka</translation>
 <translation id="558849140439112033">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
@@ -880,6 +886,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
 <translation id="5955304353782037793">aplikacion</translation>
 <translation id="5958529069007801266">Përdorues i mbikëqyrur</translation>
+<translation id="5965524703725988602">Aktivizo/çaktivizo "Temën e errët". <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Shtyp "Enter" për të regjistruar një video për dritaren</translation>
 <translation id="5977415296283489383">Kufjet</translation>
 <translation id="5978382165065462689">Po ndan kontrollin e ekranit përmes "Ndihmës në distancë".</translation>
@@ -1123,6 +1130,7 @@ Instalim i ri</translation>
 <translation id="7378889811480108604">Modaliteti i "Kursyesit të baterisë" është joaktiv</translation>
 <translation id="7382680553121047388">Aktiv</translation>
 <translation id="7384028040782072252">Kliko me butonin djathtas kudo për të rirenditur aplikacionet</translation>
+<translation id="7386767620098596324">Aktivizo/çaktivizo lidhjen e rrjetit. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Mund ta konfigurosh gjithmonë më vonë nga "Cilësimet".</translation>
 <translation id="7405710164030118432">Për të shkyçur pajisjen, fut kodin e qasjes së prindit për Family Link</translation>
 <translation id="7406608787870898861">Përfundo konfigurimin e rrjetit tënd celular</translation>
@@ -1262,6 +1270,7 @@ Instalim i ri</translation>
 <translation id="8142441511840089262">Kliko dy herë</translation>
 <translation id="8142699993796781067">Rrjet privat</translation>
 <translation id="8144760705599030999">Ruaj <ph name="NAME" /> te <ph name="EMAIL" /> për një çiftim më të shpejtë me pajisjet e tua të tjera</translation>
+<translation id="8149413265954228307">Shfaq cilësimet e Bluetooth-it. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Shtyp Ctrl + W për ta mbyllur</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, plotësimi automatik</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ky cilësim menaxhohet nga administratori yt.</translation>
@@ -1322,6 +1331,7 @@ Instalim i ri</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ka <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Shtyp Alt+"Kërko" ose "Shift" për të anuluar.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />. Kliko te "Konfirmo" për t'i mbajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Shfaq cilësimet e "Ndarjes në afërsi"</translation>
 <translation id="85123341071060231">Bluetooth-i i Chromebook-ut është joaktiv. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>
 <translation id="8513108775083588393">Autorrotullim</translation>
 <translation id="851458219935658693">Shfaq dritaret nga tavolina aktuale e punës, butoni i radios i zgjedhur</translation>

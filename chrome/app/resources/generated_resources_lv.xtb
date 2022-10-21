@@ -556,7 +556,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1517467582299994451">Lai varētu apraidīt saturu, izmantojot kodu, ieslēdziet pārlūka Chrome sinhronizācijas iestatījumus</translation>
 <translation id="1521442365706402292">Pārvaldīt sertifikātus</translation>
 <translation id="1521774566618522728">Aktīvs šodien</translation>
-<translation id="152234381334907219">Jaunākie saglabātie</translation>
+<translation id="152234381334907219">Netiek saglabātas</translation>
 <translation id="1523279371236772909">Skatīts pēdējā mēneša laikā</translation>
 <translation id="1523978563989812243">Teksta pārvēršanas runā programmas</translation>
 <translation id="1524430321211440688">Tastatūra</translation>
@@ -594,6 +594,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1552752544932680961">Pārvaldīt paplašinājumu</translation>
 <translation id="1553538517812678578">neierobežots</translation>
 <translation id="1555130319947370107">Zila</translation>
+<translation id="1556127816860282890">Var būt ierobežotas darbības fonā un noteikti vizuālie efekti, piemēram, vienmērīga ritināšana.</translation>
 <translation id="1556537182262721003">Nevarēja pārvietot paplašinājuma katalogu uz profilu.</translation>
 <translation id="1558391695376153246">Aizvērt inkognito cilnes</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
@@ -4144,6 +4145,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4852916668365817106">Peles kursora krāsa</translation>
 <translation id="4853020600495124913">Atvērt &amp;jaunā logā</translation>
 <translation id="4854317507773910281">Izvēlieties vecāku kontu apstiprinājuma saņemšanai.</translation>
+<translation id="4854603338816296098">Tika noņemta adrese</translation>
 <translation id="485480310608090163">Citi iestatījumi un atļaujas</translation>
 <translation id="4858792381671956233">Jūs lūdzāt vecākiem atļauju apmeklēt šo lapu</translation>
 <translation id="4858913220355269194">Futbolbumba</translation>
@@ -6391,7 +6393,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6991665348624301627">Printera atlase</translation>
 <translation id="6992554835374084304">Uzlabotās pareizrakstības pārbaudes ieslēgšana</translation>
 <translation id="6993000214273684335">Cilne tika noņemta no grupas bez nosaukuma — <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpums dēļ</translation>
+<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpuma dēļ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />— darbību žurnāls</translation>
 <translation id="6997707937646349884">Jūsu ierīcēs:</translation>
 <translation id="6998793565256476099">Reģistrēt ierīci videokonferencēm</translation>

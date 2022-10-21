@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1220509181886849806">Выкарыстоўваць захаваны пароль?</translation>
+<translation id="1580351948163139119">Пароль для карыстальніка <ph name="USERNAME" /></translation>
 <translation id="1717486229951421299">Спіс уліковых даных, якія трэба ўнесці па націсканні, адкрыты на палову экрана.</translation>
 <translation id="207576718733492531">Спіс уліковых даных, якія трэба ўнесці па націсканні, закрыты.</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Спіс уліковых даных, якія трэба ўнесці па націсканні, адкрыты на ўвесь экран.</translation>
 <translation id="5591247451101092906">Выкарыстаць захаваны пароль або ключ доступу?</translation>
 <translation id="5624120631404540903">Кіраваць паролямі</translation>
+<translation id="7736236483645733578">Ключ доступу для карыстальніка <ph name="USERNAME" />. Выкарыстайце блакіроўку экрана.</translation>
 <translation id="804577341878669140">Працягнуць, выкарыстаўшы ўліковы запіс</translation>
 </translationbundle>

@@ -270,6 +270,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2497852260688568942">Synkronisering har inaktiverats av administratören</translation>
 <translation id="250020030759455918">Din inloggningsstatus, webbdata och webbplatsdata för <ph name="SITE_NAME" /> visas i Chrome</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> installeras …</translation>
 <translation id="2513403576141822879">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synkronisering och Googles tjänster<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
@@ -1281,6 +1282,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="7887334752153342268">Duplicera</translation>
 <translation id="789763218334337857">Så här använder du Chrome</translation>
 <translation id="7903184275147100332">Det här kan ta någon minut</translation>
+<translation id="7914399737746719723">Appen har installerats</translation>
 <translation id="7919123827536834358">Översätt dessa språk automatiskt</translation>
 <translation id="7926975587469166629">Kortets namn</translation>
 <translation id="7929962904089429003">Öppna menyn</translation>

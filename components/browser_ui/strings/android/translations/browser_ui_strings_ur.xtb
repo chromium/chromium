@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">بہترین تجربے کے لیے تجویز کردہ</translation>
 <translation id="1818308510395330587">‏<ph name="APP_NAME" /> کو AR کا استعمال کرنے دینے کے لیے، <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> سے</translation>
+<translation id="187227595286001730">متعلقہ سائٹس گروپ میں آپ کی سرگرمی دیکھ سکتی ہیں</translation>
 <translation id="1887786770086287077">‏مقام کی رسائی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1919345977826869612">اشتہارات</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">اس ڈومین کے تحت تمام سائٹس کو شامل کریں</translation>
 <translation id="4883854917563148705">نظم کردہ ترتیبات کو دوبارہ سیٹ نہیں کیا جا سکتا</translation>
 <translation id="4887024562049524730">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="4955223779495905865">آپ جس سائٹ پر جاتے ہیں وہ دوسری سائٹس سے مواد کو سرایت کر سکتی ہے، مثال کے طور پر تصاویر، اشتہارات اور متن۔ ان میں سے کوئی بھی سائٹ آپ کے تجربے کو ذاتی نوعیت کا بنانے کے لیے کوکیز اور دیگر ڈیٹا کو محفوظ کر سکتی ہے۔</translation>
 <translation id="4962975101802056554">آلہ کے لیے سبھی اجازتوں کو کالعدم کریں</translation>
 <translation id="497421865427891073">آگے جائیں</translation>
 <translation id="4976702386844183910">آخری بار ملاحظہ کردہ <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">سائٹس کو موشن سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="5050380848339752099">یہ سائٹ پوشیدگی وضع سے باہر ایک ایپ کے ساتھ معلومات کا اشتراک کرنے والی ہے۔</translation>
 <translation id="5063480226653192405">استعمال</translation>
+<translation id="5082281938627763039">یہ <ph name="FPS_MEMBER" /> کے لیے اور <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں موجود سائٹس کے لیے کوکیز اور دیگر سائٹ کے ڈیٹا کو حذف کر دیتا ہے</translation>
 <translation id="5091013926750941408">موبائل سائٹ</translation>
 <translation id="509133520954049755">ڈیسک ٹاپ منظر کی درخواست کریں</translation>
 <translation id="5100237604440890931">سکیڑ دیا گیا - پھیلانے کیلئے کلک کریں۔</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">مسدود کردہ</translation>
 <translation id="5689516760719285838">مقام</translation>
 <translation id="5690795753582697420">‏Android کی ترتیبات میں کیمرا آف ہے</translation>
+<translation id="5706552988683188916">اس سے <ph name="WEBSITE" /> کی کوکیز اور سائٹ کا دیگر ڈیٹا حذف ہو جاتا ہے</translation>
 <translation id="5719847187258001597">اس سے <ph name="ORIGIN" /> یا اس ایپ کے ذریعے آپ کی ہوم اسکرین پر اسٹور کردہ سبھی ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود ہو گیا</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">کسی مخصوص سائٹ کیلئے آواز کی اجازت دیں۔</translation>
 <translation id="789180354981963912">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں:</translation>
 <translation id="7940722705963108451">مجھے یاد دلائیں</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> سائٹ <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}other{<ph name="FPS_MEMBERS_COUNT" /> سائٹس <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}}</translation>
 <translation id="7986741934819883144">رابطہ منتخب کریں</translation>
 <translation id="7999064672810608036">کیا آپ واقعی کوکیز سمیت سبھی مقامی ڈيٹا صاف کرنا اور اس ویب سائٹ کیلئے سبھی اجازتیں دوبارہ ترتیب دینا چاہتے ہیں؟</translation>
 <translation id="8007176423574883786">اس آلے کیلئے آف کر دیا گیا</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">مائیکروفون کی آواز چالو کریں</translation>
 <translation id="851751545965956758">سائٹس کو آلات سے منسلک ہونے سے مسدود کریں</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> سائٹ کے لیے کوکیز کی اجازت ہے}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> سائٹس کے لیے کوکیز کی اجازت ہے}}</translation>
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>
 <translation id="8609465669617005112">اوپر منتقل کریں</translation>
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">بھول جائیں</translation>
 <translation id="9019902583201351841">آپ کے والدین کے زیر انتظام</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
+<translation id="9090268041676521955">یہ سائٹ ایک گروپ میں موجود ہے، جو آپ کی سرگرمی دیکھ سکتا ہے۔ گروپ کی وضاحت <ph name="FPS_OWNER" /> نے کی ہے</translation>
+<translation id="9106233582039520022">کوکیز حذف کریں؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}}</translation>
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>
 <translation id="9162462602695099906">یہ صفحہ خطرناک ہے</translation>

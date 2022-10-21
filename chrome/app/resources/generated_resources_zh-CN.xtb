@@ -273,6 +273,7 @@
 <translation id="1244303850296295656">扩展程序错误</translation>
 <translation id="1245628370644070008">本地数据恢复</translation>
 <translation id="1246863218384630739">无法安装 <ph name="VM_NAME" />：图片网址返回了 <ph name="HTTP_ERROR" /> 错误代码。请与您的管理员联系。</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{1 个网站不得发送通知}other{{NUM_SITES} 个网站不得发送通知}}</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作会清除网站及安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="1251578593170406502">正在搜寻移动数据网络…</translation>
@@ -584,6 +585,7 @@
 <translation id="1552752544932680961">管理扩展程序</translation>
 <translation id="1553538517812678578">无限制</translation>
 <translation id="1555130319947370107">蓝色</translation>
+<translation id="1556127816860282890">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="155865706765934889">触控板</translation>
@@ -1631,6 +1633,7 @@
 <translation id="2476974672882258506">请关闭 Windows 以卸载 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由于您设置了多个开关，“自动扫描”功能已关闭。</translation>
 <translation id="2478176599153288112">“<ph name="EXTENSION" />”的媒体文件权限</translation>
+<translation id="24786041351753425">启用数据恢复服务。</translation>
 <translation id="2480868415629598489">修改您复制和粘贴的数据</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">此标签页已移至“<ph name="GROUP_NAME" />”组中 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
@@ -2244,6 +2247,7 @@
 <translation id="3024374909719388945">使用24小时制</translation>
 <translation id="3027296729579831126">开启“附近分享”功能</translation>
 <translation id="3029466929721441205">在任务栏中显示触控笔工具</translation>
+<translation id="3029808567601324798">锁定时间</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天下载更新。当您连接到互联网后，系统会自动下载更新。}other{<ph name="MANAGER" /> 要求您在截止日期前下载更新。当您连接到互联网后，系统会自动下载更新。}}</translation>
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">女特工</translation>
@@ -2501,6 +2505,7 @@
 <translation id="3308852433423051161">正在加载 Google 助理…</translation>
 <translation id="3309330461362844500">证书 ID</translation>
 <translation id="3311445899360743395">系统可能会从此设备上移除与该应用相关的数据。</translation>
+<translation id="3312470654018965389">正在配置 Linux 容器</translation>
 <translation id="3312883087018430408">若要在某一特定网站或 Chrome 的某个部分中进行搜索，请先在地址栏中输入相应的快捷字词，然后按您的首选键盘快捷键。例如，若要仅在“书签”部分中进行搜索，请先输入“@bookmarks”，然后按 Tab 键或空格键。</translation>
 <translation id="3313622045786997898">证书签名值</translation>
 <translation id="3313950410573257029">检查连接状况</translation>
@@ -4121,6 +4126,7 @@
 <translation id="4852916668365817106">鼠标光标颜色</translation>
 <translation id="4853020600495124913">在新窗口中打开(&amp;O)</translation>
 <translation id="4854317507773910281">请选择家长帐号以寻求批准</translation>
+<translation id="4854603338816296098">地址已移除</translation>
 <translation id="485480310608090163">更多设置和权限</translation>
 <translation id="4858792381671956233">您已向父母发送请求，询问他们是否允许您访问此网站</translation>
 <translation id="4858913220355269194">足球</translation>
@@ -4183,6 +4189,7 @@
 <translation id="4901154724271753917">展开“最近关闭的标签页”部分</translation>
 <translation id="4901309472892185668">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。</translation>
 <translation id="49027928311173603">从服务器下载的策略无效：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="4903967893652864401">开启此设置后，系统会通过限制后台活动和视觉效果（例如流畅滚动）来节省电池电量。</translation>
 <translation id="4906490889887219338">设置或管理网络文件共享。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">选择此扩展程序何时可以读取和更改您的网站数据</translation>
 <translation id="4907161631261076876">此文件属于不常下载的内容，可能存在危险。</translation>
@@ -5284,6 +5291,7 @@
 <translation id="5971037678316050792">控制蓝牙适配器状态和配对</translation>
 <translation id="597235323114979258">查看更多目的地</translation>
 <translation id="5972543790327947908">部分受支持的链接仍会在“<ph name="APP_NAME" />”、“<ph name="APP_NAME_2" />”或“<ph name="APP_NAME_3" />”中打开。</translation>
+<translation id="5972559880616357748">可对 <ph name="SITE_GROUP" /> 执行的更多操作</translation>
 <translation id="5972666587303800813">无运维服务</translation>
 <translation id="5972708806901999743">移到顶部</translation>
 <translation id="5972826969634861500">启动<ph name="PRODUCT_NAME" /></translation>
@@ -8461,6 +8469,7 @@
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">刷新网络共享状态</translation>
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>
+<translation id="8993059306046735527">如果您忘记了 <ph name="DEVICE_TYPE" /> 密码，您仍然可以恢复本地数据。您需要登录自己的 Google 帐号或使用帐号恢复功能。</translation>
 <translation id="899384117894244799">移除受限用户</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>
 <translation id="899657321862108550">您的“专属”Chrome 浏览器，走到哪带到哪</translation>
@@ -8560,6 +8569,7 @@
 <translation id="9078316009970372699">停用“即时网络共享”</translation>
 <translation id="9078842827190780028">在侧边栏中查看更多搜索结果</translation>
 <translation id="9079267182985899251">即将不再支持此选项。若要演示某个标签页，请使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="9080175821499742274">省内存模式会释放闲置标签页占用的内存，以供使用中的标签页和其他应用使用。</translation>
 <translation id="9080971985541434310">推测您的兴趣 - Chrome 可以推测您的兴趣</translation>
 <translation id="9081543426177426948">在无痕模式下，系统不会保存您访问过的网站</translation>
 <translation id="9084064520949870008">在窗口中打开</translation>
@@ -8748,6 +8758,7 @@
 <translation id="964790508619473209">屏幕排列方式</translation>
 <translation id="965211523698323809">通过您的<ph name="DEVICE_TYPE" />收发短信。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了很多通知的 1 个网站}other{查看最近发送了很多通知的 {NUM_SITES} 个网站}}</translation>
 <translation id="967398046773905967">禁止任何网站访问 HID 设备</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 <translation id="96774243435178359">受管理的打印机</translation>

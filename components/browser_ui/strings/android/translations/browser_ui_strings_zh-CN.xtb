@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">建议勾选此选项以获得最佳体验</translation>
 <translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
 <translation id="1864927262126810325">来自<ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">相关网站能查看您在该群组中的活动记录</translation>
 <translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="1915307458270490472">中止</translation>
 <translation id="1919345977826869612">广告</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">包含该网域下的所有网站</translation>
 <translation id="4883854917563148705">无法重置受管理的设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟实境设备和数据（推荐）</translation>
+<translation id="4955223779495905865">您访问的网站可以嵌入其他网站的内容，例如图片、广告和文字。其中任何网站都可以保存 Cookie 和其他数据来为您提供个性化体验。</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">允许网站使用移动传感器（推荐）</translation>
 <translation id="5050380848339752099">该网站即将与某个并非处于无痕模式下的应用共享信息。</translation>
 <translation id="5063480226653192405">空间占用量</translation>
+<translation id="5082281938627763039">此操作会删除 <ph name="FPS_MEMBER" /> 以及 <ph name="FPS_OWNER" /> 网站群组中的网站的 Cookie 和其他网站数据</translation>
 <translation id="5091013926750941408">移动网站</translation>
 <translation id="509133520954049755">请求获取桌面版视图</translation>
 <translation id="5100237604440890931">已收起 - 点击此处即可展开。</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">已禁止</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
+<translation id="5706552988683188916">此操作会删除 <ph name="WEBSITE" /> 的 Cookie 和其他网站数据</translation>
 <translation id="5719847187258001597">此操作会清除 <ph name="ORIGIN" /> 或其在主屏幕中安装的应用所存储的全部数据和 Cookie。</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5804241973901381774">权限</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
 <translation id="789180354981963912">阻止无痕模式下的第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> 的网站群组中有 <ph name="FPS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="FPS_OWNER" /> 的网站群组中有 <ph name="FPS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7999064672810608036">确定要清除该网站的所有本地数据（包括 Cookie）并重置该网站的所有权限吗？</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">将麦克风取消静音</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{允许 <ph name="FPS_MEMBERS_COUNT" /> 个 <ph name="FPS_OWNER" /> 网站使用 Cookie}other{允许 <ph name="FPS_MEMBERS_COUNT" /> 个 <ph name="FPS_OWNER" /> 网站使用 Cookie}}</translation>
 <translation id="857943718398505171">允许（推荐）</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">不保存</translation>
 <translation id="9019902583201351841">由您父母管理</translation>
 <translation id="9074739597929991885">蓝牙</translation>
+<translation id="9090268041676521955">此网站属于由 <ph name="FPS_OWNER" /> 定义的群组，因此能查看您的活动记录。</translation>
+<translation id="9106233582039520022">删除 Cookie？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="913657688200966289">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这些权限。</translation>
 <translation id="9162462602695099906">这是一个危险网页</translation>

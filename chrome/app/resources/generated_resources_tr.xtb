@@ -420,6 +420,7 @@
 <translation id="1397594434718759194">Bu cihazları kullanarak Chrome'da oturum açtığınız için cihazlar güvenlik anahtarı olarak kullanılabilir.</translation>
 <translation id="1398853756734560583">Büyüt</translation>
 <translation id="139911022479327130">Telefonunuzun kilidini açıp kimliğinizi doğrulayın</translation>
+<translation id="1401216725754314428">Yeni bir sekmedeki ilgili siteler hakkında daha fazla bilgi</translation>
 <translation id="1401308693935339022">Konumu kullan. Konum izni olan uygulama ve hizmetlerin bu cihazın konumunu kullanmasına izin verin. Google, konum verilerini düzenli olarak toplayabilir ve konum doğruluğu ile konuma dayalı hizmetleri iyileştirmek için bu verileri anonim bir şekilde kullanabilir.</translation>
 <translation id="1403222014593521787">Proxy'ye bağlanılamıyor</translation>
 <translation id="1405779994569073824">Yüklenemedi.</translation>
@@ -591,6 +592,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1552752544932680961">Uzantıyı yönet</translation>
 <translation id="1553538517812678578">sınırsız</translation>
 <translation id="1555130319947370107">Mavi</translation>
+<translation id="1556127816860282890">Arka plan etkinliği ve yumuşak kaydırma gibi bazı görsel efektler sınırlı olabilir</translation>
 <translation id="1556537182262721003">Uzantı dizini profile taşınamadı.</translation>
 <translation id="1558391695376153246">Gizli sekmeleri kapat</translation>
 <translation id="155865706765934889">Dokunmatik Tuş Takımı</translation>
@@ -2512,6 +2514,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Google Asistan yükleniyor...</translation>
 <translation id="3309330461362844500">Sertifika Profil Kimliği</translation>
 <translation id="3311445899360743395">Bu uygulamayla ilişkili veriler bu cihazdan kaldırılacak.</translation>
+<translation id="3312470654018965389">Linux kapsayıcı yapılandırılıyor</translation>
 <translation id="3312883087018430408">Belirli bir sitede veya Chrome'un bir bölümünde arama yapmak için ilgili kısayolu adres çubuğuna yazdıktan sonra tercih ettiğiniz klavye kısayoluna basın. Örneğin, yalnızca Google Bookmarks'ta arama yapmak için "@bookmarks" yazıp Sekme veya Boşluk tuşuna basın.</translation>
 <translation id="3313622045786997898">Sertifika İmza Değeri</translation>
 <translation id="3313950410573257029">Bağlantıyı kontrol et</translation>
@@ -4139,6 +4142,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4852916668365817106">Fare rengi</translation>
 <translation id="4853020600495124913">&amp;Yeni pencerede aç</translation>
 <translation id="4854317507773910281">Onay için ebeveyn hesabı seçin</translation>
+<translation id="4854603338816296098">Adres kaldırıldı</translation>
 <translation id="485480310608090163">Diğer ayarlar ve izinler</translation>
 <translation id="4858792381671956233">Ebeveynlerinize bu siteyi ziyaret etmenizin uygun olup olmadığını sordunuz</translation>
 <translation id="4858913220355269194">Futbolcu</translation>
@@ -7680,6 +7684,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8206745257863499010">Melodi</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8207404892907560325">Bir şifre anahtarı seçin</translation>
+<translation id="8208188204689616705">Bu siteler, <ph name="FPS_OWNER" /> tarafından tanımlanmış bir grupta bulunuyor. Gruptaki siteler gruptaki etkinliğinizi görebilir.</translation>
 <translation id="8208216423136871611">Kaydetme</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yeni bildirim}other{# yeni bildirim}}</translation>
 <translation id="821119981794423735">Bir CSV dosyası seçerek şifreleri <ph name="USER_EMAIL" /> için Google Şifre Yöneticisi'ne aktarın</translation>

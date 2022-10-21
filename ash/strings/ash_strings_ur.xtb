@@ -253,6 +253,7 @@
 <translation id="2322173485024759474">ایک حرف پیچھے جائیں</translation>
 <translation id="2339073806695260576">ایک نوٹ، اسکرین شاٹ لینے، لیزر پوائنٹر یا میگنیفائنگ گلاس استعمال کرنے کے لیے شیلف پر اسٹائلس بٹن تھپتھپائیں۔</translation>
 <translation id="2341729377289034582">عمودی پر مقفل ہے</translation>
+<translation id="2345226652884463045">ترمیم کی خاطر ٹیکسٹ کو منتخب کرنے کے لیے اینٹر یا تلاش + اسپیس دبائیں۔</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> اسپیچ اب مقامی طور پر پروسیس کی جاتی ہے اور آف لائن کام کرتی ہے۔ آپ اپنی ڈکٹیشن کی زبان کو ترتیبات &gt; ایکسیسبیلٹی میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="2352467521400612932">اسٹائلس کی ترتیبات</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> کو فعال کیا جا رہا ہے</translation>
@@ -435,6 +436,7 @@
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> سے غیر منسلک کریں</translation>
 <translation id="3430396595145920809">پیچھے جانے کیلئے دائیں سے سوائپ کریں</translation>
+<translation id="3431517721463707585">ڈیسک 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">یاد دہانی میں ترمیم کریں</translation>
 <translation id="3435967511775410570">فنگر پرنٹ کی شناخت ہوگئی</translation>
@@ -675,6 +677,7 @@
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (بائیں)</translation>
 <translation id="4734965478015604180">افقی</translation>
+<translation id="4735944890391795473">ڈیسک 12</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4740516757091333363">محفوظ کردہ ڈیسک کو حذف کریں؟</translation>
 <translation id="4752784485658729358">صرف 6 محفوظ کردہ ڈیسکس کی اجازت ہے۔ نئی محفوظ کرنے کے لیے ڈیسک کو ہٹا دیں۔</translation>
@@ -695,6 +698,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> کو ڈاؤن لوڈ کرنے کے ليے اپنا نیٹ ورک کنکشن چیک کریں</translation>
 <translation id="486056901304535126">‏بعد میں ڈاؤن لوڈ کرنے کی کوشش کی جائے گی۔ اسپیچ پروسیسنگ کے لیے Google کو بھیجی جائے گی جب تک کہ ڈاؤن لوڈ مکمل نہ ہو جائے۔</translation>
 <translation id="4864369630010738180">سائن ان کر رہا ہے…</translation>
+<translation id="4864648187878336334">ڈیسک 15</translation>
 <translation id="4868492592575313542">فعال</translation>
 <translation id="4872237917498892622">‏Alt+تلاش یا Shift</translation>
 <translation id="4881695831933465202">کھولیں</translation>
@@ -722,6 +726,7 @@
         <ph name="NOTIFICATION_1" />،
         <ph name="NOTIFICATION_2" />،
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">ڈیسک 16</translation>
 <translation id="5003993274120026347">اگلا جملہ</translation>
 <translation id="5016558321564993266">مارکر ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">وقت ختم ہو گیا</translation>
@@ -738,6 +743,7 @@
 <translation id="5098537242461068432">ڈیسک اور ونڈوز کو دوبارہ کھولا گیا</translation>
 <translation id="5104236669533825617">اسکرین شاٹ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="5107522548814527560">ویب</translation>
+<translation id="5111318697104479778"><ph name="DESC" />، <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">اگلا مہینہ دکھائیں</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
 <translation id="5147567197700016471">غیر مقفل</translation>
@@ -828,6 +834,7 @@
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5648021990716966815">مائیک جیک</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> کو آپ کی توجہ درکار ہے۔</translation>
+<translation id="5662075790140998213">ڈیسک 10</translation>
 <translation id="5662709761327382534">‏مائیکروفون کے ذریعے ریکارڈ کریں <ph name="CURRENT_STATE" />، مائیکروفون کے ذریعے ریکارڈنگ کرنے کیلئے Enter دبائیں <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5673434351075758678">‏آپ کی ترتیبات کی مطابقت پذیری کے بعد '<ph name="FROM_LOCALE" />' سے '‎'‎<ph name="TO_LOCALE" />‎ میں۔</translation>
@@ -1028,6 +1035,8 @@
 <translation id="6753390234084146956">ٹیبز</translation>
 <translation id="6757237461819837179">کوئی میڈیا نہیں چل رہا ہے</translation>
 <translation id="6777216307882431711">‏منسلک USB-C آلات کو پاور دی جا رہی ہے</translation>
+<translation id="6781002679438061620">ڈیسک 9</translation>
+<translation id="6782182743534150858">ڈیسک 13</translation>
 <translation id="6786750046913594791">فولڈر بند کریں</translation>
 <translation id="6787595647772650851">آخری سیشن بحال کریں</translation>
 <translation id="6790428901817661496">چلائیں</translation>
@@ -1089,6 +1098,7 @@
 <translation id="7098053464892629930">‏تمام دستیاب خصوصیات کو دیکھنے کے لیے Google Play پر <ph name="NAME" /> کے لیے ایپ ڈاؤن لوڈ کریں</translation>
 <translation id="7098389117866926363">‏USB-C آلہ (پیچھے موجود بایاں پورٹ)</translation>
 <translation id="7106330611027933926">ڈیسک بار دکھائیں</translation>
+<translation id="7116969082764510092">ڈیسک 11</translation>
 <translation id="7118268675952955085">اسکرین شاٹ</translation>
 <translation id="7126996685418858413">پچھلے ہفتے میں کھولا گیا</translation>
 <translation id="7130207228079676353">غالبأ</translation>
@@ -1187,6 +1197,7 @@
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
 <translation id="7670953955701272011">‏Google کیلنڈر میں اس تاریخ کو کھولیں</translation>
 <translation id="7671610481353807627">ایپس رنگ کے لحاظ سے ترتیب دی گئی ہیں</translation>
+<translation id="7672095158465655885"><ph name="NAME" />، <ph name="SUBTEXT" /> سے منسلک ہیں</translation>
 <translation id="7684531502177797067">کیمرا ان پٹ <ph name="CAMERA_NAME" /> پر سیٹ ہے۔</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">نیا سیلولر نیٹ ورک شامل کریں</translation>
@@ -1471,5 +1482,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> کے <ph name="RESULT_COUNT" /> نتائج دکھائے جا رہے ہیں</translation>
 <translation id="98515147261107953">لینڈ اسکیپ</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> ونڈو بند ہے۔</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />، <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">تازہ ترین خصوصیات اور سیکیورٹی میں بہتریاں حاصل کریں۔ اپ ڈیٹس پس منظر میں ہوتے ہیں۔</translation>
 </translationbundle>

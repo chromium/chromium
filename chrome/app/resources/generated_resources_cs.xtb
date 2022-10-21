@@ -1519,6 +1519,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2352810082280059586">Poznámky na obrazovce uzamčení se automaticky ukládají do aplikace <ph name="LOCK_SCREEN_APP_NAME" />. Poslední poznámka na obrazovce uzamčení zůstane.</translation>
 <translation id="2353297238722298836">Kamera a mikrofon jsou povoleny</translation>
 <translation id="2355314311311231464">Nastavení se nezdařilo, protože nebylo možné načíst podrobnosti účtu. Zkuste to znovu. Kód chyby: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Možnosti úspory energie</translation>
 <translation id="2355604387869345912">Zapnout dynamický tethering</translation>
 <translation id="2356070529366658676">Zeptat se</translation>
 <translation id="2357330829548294574">Odstranit uživatele <ph name="USER_NAME" /></translation>
@@ -2518,6 +2519,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Načítání Asistenta Google...</translation>
 <translation id="3309330461362844500">ID profilu certifikátu</translation>
 <translation id="3311445899360743395">Je možné, že z tohoto zařízení budou odstraněna data přidružená k této aplikaci.</translation>
+<translation id="3312470654018965389">Probíhá konfigurace kontejneru Linuxu</translation>
 <translation id="3312883087018430408">Pokud chcete prohledat konkrétní web nebo část Chromu, zadejte do adresního řádku jejich zkratku a poté stiskněte svoji preferovanou klávesovou zkratku. Pokud například chcete vyhledávat pouze v záložkách, zadejte „@bookmarks“ a potom stiskněte tabulátor nebo mezerník.</translation>
 <translation id="3313622045786997898">Hodnota podpisu certifikátu</translation>
 <translation id="3313950410573257029">Zkontrolovat připojení</translation>
@@ -6899,6 +6901,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7495778526395737099">Zapomněli jste své staré heslo?</translation>
 <translation id="7497981768003291373">Nemáte žádné nedávno zaznamenané textové protokoly WebRTC.</translation>
 <translation id="7501957181231305652">nebo</translation>
+<translation id="7502220299952823578">Přidat do seznamu „Vždy udržovat tyto weby aktivní“</translation>
 <translation id="7503191893372251637">Certifikát typu Netscape</translation>
 <translation id="7503985202154027481">Na bezpečnostním klíči zůstane záznam o návštěvě tohoto webu.</translation>
 <translation id="750509436279396091">Otevřít složku stažených souborů</translation>

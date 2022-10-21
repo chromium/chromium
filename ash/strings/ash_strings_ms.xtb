@@ -92,6 +92,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gunakan kekunci anak panah untuk menavigasi antara tarikh.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Apl yang Dipasang</translation>
+<translation id="1415846719612499304">Tunjukkan senarai rangkaian. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Buka kunci peranti untuk melaksanakan tindakan pemberitahuan</translation>
 <translation id="1420408895951708260">Togol Cahaya Malam. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Lihat foto dan media baru-baru ini telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
@@ -309,6 +310,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2678852583403169292">Menu Pilih untuk bercakap</translation>
 <translation id="2689613560355655046">Meja 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Tunjukkan tetapan papan kekunci. <ph name="KEYBOARD_NAME" /> dipilih.</translation>
 <translation id="2700493154570097719">Tetapkan papan kekunci anda</translation>
 <translation id="2704781753052663061">Sertai rangkaian Wi-Fi yang lain</translation>
 <translation id="2705001408393684014">Togol Mikrofon. <ph name="STATE_TEXT" /></translation>
@@ -779,6 +781,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5329548388331921293">Menyambung…</translation>
 <translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
+<translation id="533282197239610265">Tunjukkan peranti cast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="5352250171825660495">Tema gelap dihidupkan</translation>
 <translation id="5356963482258194581">Beralih antara tema gelap dengan cerah. Klik kanan pada desktop dan pilih Kertas dinding &amp; gaya.</translation>
@@ -810,10 +813,12 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="553675580533261935">Keluar daripada sesi</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Togol pengimlakan</translation>
+<translation id="5558091555391176027">Togol keterlihatan tinggi Kongsi Berdekatan</translation>
 <translation id="5560420195677022218">Lihat apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5571066253365925590">Bluetooth didayakan</translation>
 <translation id="557563299383177668">Perenggan seterusnya</translation>
+<translation id="5577082622442191756">Togol Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Pastikan Bluetooth didayakan pada telefon anda untuk menggunakan Hab Telefon</translation>
 <translation id="5580000943347215299">Pustaka</translation>
 <translation id="558849140439112033">Seret untuk memilih kawasan yang hendak ditangkap</translation>
@@ -882,6 +887,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="595202126637698455">Penjejakan prestasi didayakan</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5958529069007801266">Pengguna diselia</translation>
+<translation id="5965524703725988602">Togol tema Gelap. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Tekan kekunci enter untuk merakam skrin tetingkap</translation>
 <translation id="5977415296283489383">Fon kepala</translation>
 <translation id="5978382165065462689">Berkongsi kawalan skrin anda melalui Bantuan Jauh.</translation>
@@ -1125,6 +1131,7 @@ Pemasangan baharu</translation>
 <translation id="7378889811480108604">Mod penjimat bateri dimatikan</translation>
 <translation id="7382680553121047388">Hidup</translation>
 <translation id="7384028040782072252">Klik kanan di mana-mana untuk menyusun semula apl anda</translation>
+<translation id="7386767620098596324">Togol sambungan rangkaian. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Anda boleh menyediakan Hab Telefon daripada Tetapan pada bila-bila masa selepas ini.</translation>
 <translation id="7405710164030118432">Untuk membuka kunci peranti, masukkan kod akses ibu bapa Family Link anda</translation>
 <translation id="7406608787870898861">Selesaikan persediaan rangkaian mudah alih anda</translation>
@@ -1264,6 +1271,7 @@ Pemasangan baharu</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>
 <translation id="8142699993796781067">Rangkaian persendirian</translation>
 <translation id="8144760705599030999">Simpan <ph name="NAME" /> anda pada <ph name="EMAIL" /> untuk penggandingan yang lebih pantas dengan peranti anda yang lain</translation>
+<translation id="8149413265954228307">Tunjukkan tetapan Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Tekan Ctrl + W untuk tutup.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Autolengkap</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Tetapan ini diurus oleh pentadbir anda.</translation>
@@ -1324,6 +1332,7 @@ Pemasangan baharu</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> mempunyai <ph name="FEATURE_NAME" /> yang <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Tekan Alt+Search atau Shift untuk membatalkan.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" />. Peleraian telah ditukar kepada <ph name="FALLBACK_RESOLUTION" />. Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Paparkan tetapan Kongsi Berdekatan</translation>
 <translation id="85123341071060231">Bluetooth Chromebook anda dimatikan. Untuk membuka kunci Chromebook anda, masukkan kata laluan.</translation>
 <translation id="8513108775083588393">Autoputar</translation>
 <translation id="851458219935658693">Tunjukkan tetingkap daripada meja semasa, butang radio dipilih</translation>

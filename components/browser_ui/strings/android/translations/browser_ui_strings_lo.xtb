@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">ແນະນຳສຳລັບປະສົບການການນຳໃຊ້ທີ່ດີທີ່ສຸດ</translation>
 <translation id="1818308510395330587">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ໃຊ້ AR, ກະລຸນາເປີດກ້ອງໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="1864927262126810325">ຈາກ <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">ເວັບໄຊທີ່ກ່ຽວຂ້ອງຈະສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໄດ້ໃນກຸ່ມ</translation>
 <translation id="1887786770086287077">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">ວາງສາຍ</translation>
 <translation id="1919345977826869612">ໂຄສະນາ</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">ຮວບຮວມເວັບໄຊທັງໝົດໄວ້ພາຍໃຕ້ໂດເມນນີ້</translation>
 <translation id="4883854917563148705">ບໍ່ສາມາດຣີເຊັດການຕັ້ງຄ່າທີ່ມີການຈັດການໄດ້</translation>
 <translation id="4887024562049524730">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນ ເວີຊົວ ຣິອາລິຕີຂອງທ່ານ (ແນະນຳ)</translation>
+<translation id="4955223779495905865">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດຝັງເນື້ອຫາຈາກເວັບໄຊອື່ນໄດ້, ຕົວຢ່າງ: ຮູບ, ໂຄສະນາ ແລະ ຂໍ້ຄວາມ. ເວັບໄຊໃດກໍຕາມເຫຼົ່ານີ້ສາມາດບັນທຶກຄຸກກີ້ ແລະ ຂໍ້ມູນອື່ນໆເພື່ອປັບແຕ່ງປະສົບການຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວໄດ້.</translation>
 <translation id="4962975101802056554">ຖອນການອະນຸຍາດທັງໝົດສຳລັບອຸປະກອນ</translation>
 <translation id="497421865427891073">ໄປຂ້າງ​ຫນ້າ</translation>
 <translation id="4976702386844183910">ເຂົ້າເບິ່ງຫຼ້າສຸດ <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">ອະນຸຍາດໃຫ້ເວັບໄຊເຂົ້າເຖິງເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ (ແນະນຳ)</translation>
 <translation id="5050380848339752099">ເວັບໄຊນີ້ກຳລັງຈະແບ່ງປັນຂໍ້ມູນກັບແອັບນອກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="5063480226653192405">ການນໍາໃຊ້</translation>
+<translation id="5082281938627763039">ນີ້ຈະລຶບຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນໆສຳລັບ <ph name="FPS_MEMBER" /> ແລະ ສຳລັບເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="FPS_OWNER" /> ອອກ</translation>
 <translation id="5091013926750941408">ເວັບໄຊມືຖື</translation>
 <translation id="509133520954049755">ຮ້ອງຂໍມຸມມອງເດັສທັອບ</translation>
 <translation id="5100237604440890931">ຫຍໍ້ລົງແລ້ວ - ຄລິກ​ເພື່ອ​ຂະ​ຫຍາຍ.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">ບລັອກແລ້ວ</translation>
 <translation id="5689516760719285838">ສະຖານທີ່</translation>
 <translation id="5690795753582697420">ກ້ອງປິດຢູ່ໃນການຕັ້ງຄ່າ Android</translation>
+<translation id="5706552988683188916">ນີ້ຈະລຶບຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນສຳລັບ <ph name="WEBSITE" /> ອອກ</translation>
 <translation id="5719847187258001597">ນີ້ຈະລຶບລ້າງຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ເກັບໄວ້ໂດຍ <ph name="ORIGIN" /> ຫຼື ໂດຍແອັບຂອງມັນໃນໜ້າຈໍຫຼັກຂອງທ່ານ.</translation>
 <translation id="5771720122942595109">ບລັອກ <ph name="PERMISSION_1" /> ໄວ້ແລ້ວ</translation>
 <translation id="5804241973901381774">ການ​ອະ​ນຸ​ຍາດ</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">ອະນຸຍາດສຽງສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="789180354981963912">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:</translation>
 <translation id="7940722705963108451">ແຈ້ງເຕືອນຂ້ອຍ</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="FPS_OWNER" /> ທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມ}other{<ph name="FPS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="FPS_OWNER" /> ທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມ}}</translation>
 <translation id="7986741934819883144">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="7999064672810608036">ທ່ານ​ແນ່​ໃຈ​ບໍ​ວ່າ ທ່ານ​ຕ້ອງ​ການ​ລຶບ​ຂໍ້​ມູນໃນ​ເຄື່ອງ​ທັງ​ໝົດ, ລວມ​ທັງ​ຄຸກ​ກີ້, ແລະ​ຕັ້ງ​ຄ່າ​ການ​ອະ​ນຸ​ຍາດ​ທັງ​ໝົດສຳ​ລັບ​ເວັບ​ໄຊ​ທ໌​ນີ້?</translation>
 <translation id="8007176423574883786">ປິດ​ສຳ​ລັບ​ອຸ​ປະ​ກອນ​ນີ້</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">ເຊົາປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="851751545965956758">ບລັອກບໍ່ໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ກັບອຸປະກອນ</translation>
 <translation id="8525306231823319788">ເຕັມຫນ້າ​ຈໍ​</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ເວັບໄຊແລ້ວ}other{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ເວັບໄຊແລ້ວ}}</translation>
 <translation id="857943718398505171">ອະ​ນຸ​ຍາດ​ແລ້ວ (ແນະ​ນຳ​ໃຫ້)</translation>
 <translation id="8609465669617005112">ຍ້າຍຂຶ້ນ</translation>
 <translation id="8676374126336081632">ລຶບການປ້ອນເຂົ້າ</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">ລືມ</translation>
 <translation id="9019902583201351841">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">ເວັບໄຊນີ້ແມ່ນຢູ່ໃນກຸ່ມທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໄດ້. ກຸ່ມນີ້ແມ່ນກຳນົດໂດຍ <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">ລຶບຄຸກກີ້ອອກບໍ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການ}}</translation>
 <translation id="913657688200966289">ເປີດການອະນຸຍາດສຳລັບ <ph name="APP_NAME" /> ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">ໜ້ານີ້ອັນຕະລາຍ</translation>

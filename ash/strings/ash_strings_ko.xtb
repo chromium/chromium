@@ -253,6 +253,7 @@
 <translation id="2322173485024759474">한 글자 뒤로 이동</translation>
 <translation id="2339073806695260576">실행기에서 스타일러스 버튼을 탭하여 메모를 작성하거나, 스크린샷을 찍거나, 레이저 포인터 또는 돋보기를 활용할 수 있습니다.</translation>
 <translation id="2341729377289034582">세로로 잠김</translation>
+<translation id="2345226652884463045">Enter 또는 검색과 스페이스바를 동시에 눌러 수정할 텍스트를 선택하세요.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> 음성이 이제 로컬에서 처리되고 오프라인에서 작동합니다. 설정 &gt; 접근성에서 음성기록 언어를 변경할 수 있습니다.</translation>
 <translation id="2352467521400612932">스타일러스 설정</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> 활성화 중</translation>
@@ -435,6 +436,7 @@
 <translation id="3413817803639110246">표시할 내용 없음</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />에서 연결 해제</translation>
 <translation id="3430396595145920809">돌아가려면 오른쪽에서 스와이프하세요.</translation>
+<translation id="3431517721463707585">데스크 14</translation>
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">알림 수정</translation>
 <translation id="3435967511775410570">지문 인식됨</translation>
@@ -675,6 +677,7 @@
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%(왼쪽)</translation>
 <translation id="4734965478015604180">가로</translation>
+<translation id="4735944890391795473">데스크 12</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4740516757091333363">저장된 데스크를 삭제하시겠습니까?</translation>
 <translation id="4752784485658729358">데스크는 6개까지만 저장할 수 있습니다. 새 데스크를 저장하려면 이전 데스크를 삭제하세요.</translation>
@@ -695,6 +698,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> 파일을 다운로드하려면 네트워크 연결 상태를 확인하세요.</translation>
 <translation id="486056901304535126">다운로드가 나중에 시도됩니다. 다운로드가 완료될 때까지는 음성이 Google로 전송되어 처리됩니다.</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
+<translation id="4864648187878336334">데스크 15</translation>
 <translation id="4868492592575313542">활성화됨</translation>
 <translation id="4872237917498892622">Alt+검색 또는 Shift 키</translation>
 <translation id="4881695831933465202">열기</translation>
@@ -722,6 +726,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">데스크 16</translation>
 <translation id="5003993274120026347">다음 문장</translation>
 <translation id="5016558321564993266">마커를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">시간이 다 됨</translation>
@@ -738,6 +743,7 @@
 <translation id="5098537242461068432">데스크 및 창 다시 열림</translation>
 <translation id="5104236669533825617">스크린캐스트를 만들 수 없음</translation>
 <translation id="5107522548814527560">웹</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">다음 달 표시</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
@@ -828,6 +834,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> 알림이 있습니다.</translation>
+<translation id="5662075790140998213">데스크 10</translation>
 <translation id="5662709761327382534">마이크 녹음 <ph name="CURRENT_STATE" />, 마이크 녹음을 <ph name="NEW_STATE" /> 상태로 변경하려면 Enter 키를 누르세요.</translation>
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5673434351075758678">설정 동기화 후 ‘<ph name="FROM_LOCALE" />’에서 ‘<ph name="TO_LOCALE" />’(으)로 변경합니다.</translation>
@@ -1029,6 +1036,8 @@
 <translation id="6753390234084146956">탭</translation>
 <translation id="6757237461819837179">재생 중인 미디어 없음</translation>
 <translation id="6777216307882431711">연결된 USB-C 기기 전원 공급 중</translation>
+<translation id="6781002679438061620">데스크 9</translation>
+<translation id="6782182743534150858">데스크 13</translation>
 <translation id="6786750046913594791">폴더 닫기</translation>
 <translation id="6787595647772650851">마지막 세션 복원</translation>
 <translation id="6790428901817661496">재생</translation>
@@ -1090,6 +1099,7 @@
 <translation id="7098053464892629930">사용할 수 있는 모든 기능을 보려면 Google Play에서 <ph name="NAME" /> 앱을 다운로드하세요</translation>
 <translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="7106330611027933926">데스크바 표시</translation>
+<translation id="7116969082764510092">데스크 11</translation>
 <translation id="7118268675952955085">스크린샷</translation>
 <translation id="7126996685418858413">지난주에 열림</translation>
 <translation id="7130207228079676353">사용할 만한 앱</translation>
@@ -1188,6 +1198,7 @@
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7670953955701272011">Google Calendar에서 이 날짜를 엽니다.</translation>
 <translation id="7671610481353807627">앱이 색상별로 정렬됩니다.</translation>
+<translation id="7672095158465655885"><ph name="NAME" />에 연결됨, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">카메라 입력이 <ph name="CAMERA_NAME" /> 카메라로 설정되었습니다.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">새 셀룰러 네트워크 추가</translation>
@@ -1472,5 +1483,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> 검색결과 <ph name="RESULT_COUNT" />개 표시 중</translation>
 <translation id="98515147261107953">가로 방향</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> 창이 닫혔습니다.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">최신 기능과 보안 개선 사항을 받습니다. 업데이트는 백그라운드에서 이루어집니다.</translation>
 </translationbundle>

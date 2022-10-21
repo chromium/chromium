@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
 <translation id="1220509181886849806">සුරැකි මුරපදය භාවිත කරන්නද?</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> සඳහා මුරපදය.</translation>
 <translation id="1717486229951421299">ස්පර්ශය මත පිරවිය යුතු අක්තපත්‍ර ලැයිස්තුව අඩ උසින් විවෘත වී ඇත.</translation>
 <translation id="207576718733492531">ස්පර්ශය මත පිරවිය යුතු අක්තපත්‍ර ලැයිස්තුව වසා ඇත.</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">ස්පර්ශය මත පිරවිය යුතු අක්තපත්‍ර ලැයිස්තුව පූර්ණ උසින් විවෘත වී ඇත.</translation>
 <translation id="5591247451101092906">සුරකින ලද මුරපදය හෝ මුරයතුර භාවිතා කරන්න ද?</translation>
 <translation id="5624120631404540903">මුරපද පාලනය</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> සඳහා මුරයතුර, ඔබේ තිර අගුල භාවිත කරන්න.</translation>
 <translation id="804577341878669140">ගිණුම සමඟ ඉදිරියට යන්න</translation>
 </translationbundle>

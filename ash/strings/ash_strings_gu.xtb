@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. તારીખો વચ્ચે નૅવિગેટ કરવા માટે, ઍરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ઇન્સ્ટૉલ કરેલી ઍપ</translation>
+<translation id="1415846719612499304">નેટવર્કની સૂચિ બતાવો. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને અનલૉક કરો</translation>
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જુઓ</translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">એક અક્ષર પાછળ જાઓ</translation>
 <translation id="2339073806695260576">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, લેઝર પૉઇન્ટર અથવા મૅગ્નિફાયિંગ ગ્લાસનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટન પર ટૅપ કરો.</translation>
 <translation id="2341729377289034582">ઊભી સ્થિતિ પર લૉક કરેલું છે</translation>
+<translation id="2345226652884463045">ફેરફાર કરવાની ટેક્સ્ટ પસંદ કરવા માટે Enter અથવા Search + Space કી દબાવો.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> ભાષા પર હવે ડિવાઇસમાં જ પ્રક્રિયા કરવામાં આવે છે અને તે ઑફલાઇન કામ કરે છે. તમે સેટિંગ &gt; ઍક્સેસિબિલિટીમાં જઈને તમારી ડિક્ટેશન ભાષાને બદલી શકો છો.</translation>
 <translation id="2352467521400612932">સ્ટાઇલસની સેટિંગ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ને સક્રિય કરી રહ્યું છે</translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">સાંભળવા માટે પસંદ કરો મેનૂ</translation>
 <translation id="2689613560355655046">ડેસ્ક 8</translation>
 <translation id="2695305337569143674">વેબ</translation>
+<translation id="2697697418792422688">કીબોર્ડ સેટિંગ બતાવો. <ph name="KEYBOARD_NAME" /> પસંદ કર્યું.</translation>
 <translation id="2700493154570097719">તમારું કીબોર્ડ સેટ કરો</translation>
 <translation id="2704781753052663061">બીજા વાઇ-ફાઇ નેટવર્ક સાથે જોડાઓ</translation>
 <translation id="2705001408393684014">માઇક્રોફોનના વિકલ્પને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
@@ -433,6 +436,7 @@
 <translation id="3413817803639110246">હજુ સુધી જોવા માટે કંઈ નથી</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />માંથી ડિસ્કનેક્ટ કરો</translation>
 <translation id="3430396595145920809">પાછળ જવા માટે, જમણેથી ડાબે સ્વાઇપ કરો</translation>
+<translation id="3431517721463707585">ડેસ્ક 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">રિમાઇન્ડરમાં ફેરફાર કરો</translation>
 <translation id="3435967511775410570">ફિંગરપ્રિન્ટ ઓળખવામાં આવી છે</translation>
@@ -673,6 +677,7 @@
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ડાબે)</translation>
 <translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
+<translation id="4735944890391795473">ડેસ્ક 12</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4740516757091333363">શું સાચવેલી ડેસ્ક ડિલીટ કરીએ?</translation>
 <translation id="4752784485658729358">માત્ર 6 ડેસ્ક સાચવવાની મંજૂરી છે. કોઈ નવી ડેસ્ક સાચવવા માટે, કોઈ એક ડેસ્ક કાઢી નાખો.</translation>
@@ -693,6 +698,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> ડાઉનલોડ કરવા માટે, તમારું નેટવર્ક કનેક્શન ચેક કરો</translation>
 <translation id="486056901304535126">થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. ડાઉનલોડ પૂર્ણ થાય ત્યાં સુધી, Googleને પ્રક્રિયા કરવા માટે સ્પીચ મોકલવામાં આવશે.</translation>
 <translation id="4864369630010738180">સાઇન ઇન થઈ રહ્યું છે...</translation>
+<translation id="4864648187878336334">ડેસ્ક 15</translation>
 <translation id="4868492592575313542">સક્રિય કરેલું</translation>
 <translation id="4872237917498892622">Alt+Search અથવા Shift</translation>
 <translation id="4881695831933465202">ખોલો</translation>
@@ -720,6 +726,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">ડેસ્ક 16</translation>
 <translation id="5003993274120026347">આગલું વાક્ય</translation>
 <translation id="5016558321564993266">માર્કરને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">સમય પૂરો થયો</translation>
@@ -736,6 +743,7 @@
 <translation id="5098537242461068432">ડેસ્ક અને વિન્ડો ફરીથી ખોલવામાં આવી</translation>
 <translation id="5104236669533825617">સ્ક્રીનકાસ્ટ બનાવી શકાતું નથી</translation>
 <translation id="5107522548814527560">વેબ</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">આગલો મહિનો દર્શાવો</translation>
 <translation id="5136175204352732067">અલગ કીબોર્ડ કનેક્ટ કર્યું</translation>
 <translation id="5147567197700016471">અનલૉક કર્યું</translation>
@@ -777,6 +785,7 @@
 <translation id="5327248766486351172">નામ</translation>
 <translation id="5329548388331921293">કનેક્ટ થઈ રહ્યું છે…</translation>
 <translation id="5331975486040154427">USB-C ડિવાઇસ (ડાબી બાજુનું પાછળનું પોર્ટ)</translation>
+<translation id="533282197239610265">કાસ્ટ કરી શકતા ડિવાઇસ બતાવો</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (જમણે)</translation>
 <translation id="5352250171825660495">ઘેરી થીમ ચાલુ છે</translation>
 <translation id="5356963482258194581">ઘેરી અને ઝાંખી થીમ વચ્ચે સ્વિચ કરો. ડેસ્કટૉપ આઇકન પર રાઇટ ક્લિક કરો અને વૉલપેપર અને સ્ટાઇલ પસંદ કરો.</translation>
@@ -808,10 +817,12 @@
 <translation id="553675580533261935">સત્રથી બહાર નીકળી રહ્યાં છે</translation>
 <translation id="5537725057119320332">કાસ્ટ કરો</translation>
 <translation id="554893713779400387">શ્રુતલેખન ટૉગલ કરો</translation>
+<translation id="5558091555391176027">નજીકના શેર સુવિધાની ઉચ્ચ દૃશ્યતા ટૉગલ કરો</translation>
 <translation id="5560420195677022218">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનની ઍપ જુઓ</translation>
 <translation id="556042886152191864">બટન</translation>
 <translation id="5571066253365925590">Bluetooth સક્ષમ છે</translation>
 <translation id="557563299383177668">આગલો ફકરો</translation>
+<translation id="5577082622442191756">બ્લૂટૂથ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ફોન હબનો ઉપયોગ કરવા માટે, ચેક કરો કે તમારા ફોન પર બ્લૂટૂથ ચાલુ કરવામાં આવ્યું છે</translation>
 <translation id="5580000943347215299">લાઇબ્રેરી</translation>
 <translation id="558849140439112033">કૅપ્ચર કરવાના વિસ્તારને પસંદ કરવા માટે ખેંચો</translation>
@@ -823,6 +834,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
+<translation id="5662075790140998213">ડેસ્ક 10</translation>
 <translation id="5662709761327382534">માઇક્રોફોનથી રેકોર્ડ કરો <ph name="CURRENT_STATE" /> છે, માઇક્રોફોનથી રેકોર્ડિંગ <ph name="NEW_STATE" /> કરવા માટે enter દબાવો</translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
 <translation id="5673434351075758678">તમારી સેટિંગને સિંક કર્યા પછી "<ph name="FROM_LOCALE" />" થી "<ph name="TO_LOCALE" />"માં ફેરવો.</translation>
@@ -880,6 +892,7 @@
 <translation id="595202126637698455">ભજવણી ટ્રેસિંગ સક્ષમ</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">નિરીક્ષણ કરેલ વપરાશકર્તા</translation>
+<translation id="5965524703725988602">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">વિન્ડો રેકોર્ડ કરવા માટે Enter કી દબાવો</translation>
 <translation id="5977415296283489383">હેડફોન</translation>
 <translation id="5978382165065462689">દૂરસ્થ સહાય વડે તમારી સ્ક્રીનનું નિયંત્રણ શેર કરવું.</translation>
@@ -1023,6 +1036,8 @@
 <translation id="6753390234084146956">ટૅબ</translation>
 <translation id="6757237461819837179">કોઈ મીડિયા ચલાવી રહ્યાં નથી</translation>
 <translation id="6777216307882431711">કનેક્ટ કરેલા બધા USB-C ડિવાઇસને પાવર સપ્લાય આપી રહ્યાં છીએ</translation>
+<translation id="6781002679438061620">ડેસ્ક 9</translation>
+<translation id="6782182743534150858">ડેસ્ક 13</translation>
 <translation id="6786750046913594791">ફોલ્ડર બંધ કરો</translation>
 <translation id="6787595647772650851">છેલ્લું સત્ર મેનૂ રિસ્ટોર કરો</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
@@ -1084,6 +1099,7 @@
 <translation id="7098053464892629930">બધી ઉપલબ્ધ સુવિધાઓ જોવા માટે, Google Play પરથી <ph name="NAME" />ની ઍપ ડાઉનલોડ કરો</translation>
 <translation id="7098389117866926363">USB-C ડિવાઇસ (પાછળની બાજુએ ડાબું પોર્ટ)</translation>
 <translation id="7106330611027933926">ડેસ્કબાર બતાવો</translation>
+<translation id="7116969082764510092">ડેસ્ક 11</translation>
 <translation id="7118268675952955085">સ્ક્રીનશૉટ</translation>
 <translation id="7126996685418858413">ગયા અઠવાડિયે ખોલેલી</translation>
 <translation id="7130207228079676353">સૌથી વધુ શક્ય</translation>
@@ -1123,6 +1139,7 @@
 <translation id="7378889811480108604">બૅટરી સેવર મોડ બંધ છે</translation>
 <translation id="7382680553121047388">ચાલુ છે</translation>
 <translation id="7384028040782072252">તમારી ઍપનો ક્રમ બદલવા માટે ગમે ત્યાં રાઇટ ક્લિક કરો</translation>
+<translation id="7386767620098596324">નેટવર્ક કનેક્શન ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">તમે સેટિંગમાંથી કોઈપણ સમયે પછીથી સેટઅપ કરી શકશો.</translation>
 <translation id="7405710164030118432">ડિવાઇસને અનલૉક કરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
 <translation id="7406608787870898861">તમારા મોબાઇલ નેટવર્કનું સેટઅપ કરવાનું પૂર્ણ કરો</translation>
@@ -1181,6 +1198,7 @@
 <translation id="7662283695561029522">ગોઠવવા માટે ટૅપ કરો</translation>
 <translation id="7670953955701272011">Google Calendarમાં આ તારીખ ખોલો</translation>
 <translation id="7671610481353807627">ઍપને રંગ અનુસાર સૉર્ટ કરવામાં આવી છે</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> સાથે કનેક્ટેડ, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">કૅમેરા ઇનપુટને <ph name="CAMERA_NAME" /> પર સેટ કર્યું.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">નવું સેલ્યુલર નેટવર્ક ઉમેરો</translation>
@@ -1262,6 +1280,7 @@
 <translation id="8142441511840089262">ડબલ ક્લિક કરો</translation>
 <translation id="8142699993796781067">ખાનગી નેટવર્ક</translation>
 <translation id="8144760705599030999">તમારા અન્ય ડિવાઇસ સાથે ઝડપી જોડાણ માટે, તમારા <ph name="NAME" />ને <ph name="EMAIL" /> પર સાચવો</translation>
+<translation id="8149413265954228307">બ્લૂટૂથ સેટિંગ બતાવો. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">બંધ કરવા માટે Ctrl + W દબાવો.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ઑટોમેટિક રીતે પૂર્ણ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે.</translation>
@@ -1322,6 +1341,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />માં <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />છે.</translation>
 <translation id="8477270416194247200">રદ કરવા માટે Alt+Search અથવા Shift દબાવો.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને <ph name="FALLBACK_RESOLUTION" /> પર બદલવામાં આવ્યું હતું. ફેરફારો રાખવા માટે કન્ફર્મ પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
+<translation id="8496402167048257517">નજીકના શેર સુવિધાના સેટિંગ બતાવો</translation>
 <translation id="85123341071060231">તમારી Chromebookનું બ્લૂટૂથ બંધ છે. તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો.</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
@@ -1463,5 +1483,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="98515147261107953">લેન્ડસ્કૅપ</translation>
 <translation id="990277280839877440">વિંડો <ph name="WINDOW_TITILE" /> બંધ કરેલી છે.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">નવીનતમ સુવિધાઓ અને સુરક્ષા સંબંધિત સુધારણાઓ મેળવો. અપડેટ બૅકગ્રાઉન્ડમાં મેળવવામાં આવે છે.</translation>
 </translationbundle>

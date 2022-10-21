@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">டார்க் தீம்</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. தேதிகளுக்கு இடையே ஃபோகஸை நகர்த்த, அம்புக்குறி பட்டன்களைப் பயன்படுத்தவும்.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, நிறுவப்பட்ட ஆப்ஸ்</translation>
+<translation id="1415846719612499304">நெட்வொர்க் பட்டியலைக் காட்டும். <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை அன்லாக் செய்யுங்கள்</translation>
 <translation id="1420408895951708260">நைட் லைட்டை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">மொபைலில் உள்ள சமீபத்திய படங்களையும் மீடியாவையும் <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">எழுத்து வாரியாகப் பின்செல்</translation>
 <translation id="2339073806695260576">குறிப்பெடுக்க, ஸ்கிரீன்ஷாட்டை எடுக்க, லேசர் பாயிண்டர் அல்லது உருப்பெருக்கி ஆகியவற்றைப் பயன்படுத்த, ஷெல்ஃபில் உள்ள ஸ்டைலஸ் பட்டனைத் தட்டவும்.</translation>
 <translation id="2341729377289034582">செங்குத்து நிலையில் பூட்டப்பட்டது</translation>
+<translation id="2345226652884463045">திருத்தம் செய்யவேண்டிய உரையைத் தேர்ந்தெடுக்க enter அல்லது search + space விசைகளை அழுத்தவும்.</translation>
 <translation id="2350794187831162545">சாதனம் ஆஃப்லைனில் இருந்தாலும் நீங்கள் <ph name="LANGUAGE" /> மொழியில் பேசியவை செயலாக்கப்படுவதுடன் அந்த மொழியிலேயே எழுதப்படும். சொல்வது எழுதப்படும் மொழியை ‘அமைப்புகள் &gt; அணுகல்தன்மை’ என்பதற்குச் சென்று மாற்றலாம்.</translation>
 <translation id="2352467521400612932">ஸ்டைலஸ் அமைப்புகள்</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ஐச் செயல்படுத்துகிறது</translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">பேசும் திரையின் மெனு</translation>
 <translation id="2689613560355655046">டெஸ்க் 8</translation>
 <translation id="2695305337569143674">இணையம்</translation>
+<translation id="2697697418792422688">கீபோர்டு அமைப்புகளைக் காட்டும். <ph name="KEYBOARD_NAME" /> தேர்ந்தெடுக்கப்பட்டது.</translation>
 <translation id="2700493154570097719">எனது கீபோர்டை அமை</translation>
 <translation id="2704781753052663061">பிற வைஃபை நெட்வொர்க்குகளில் இணையுங்கள்</translation>
 <translation id="2705001408393684014">மைக்கை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
@@ -340,6 +343,7 @@
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2878884018241093801">சமீபத்திய உருப்படிகள் எதுவுமில்லை</translation>
+<translation id="2885950158625301909">மேலும் அறிக</translation>
 <translation id="2891209721153296020">“தேர்வுநீக்கும்”</translation>
 <translation id="2894949423239620203">செயல்திறனை, கேபிள் பாதிக்கக்கூடும்</translation>
 <translation id="2914580577416829331">ஸ்கிரீன்ஷாட்டுகள்</translation>
@@ -781,6 +785,7 @@
 <translation id="5327248766486351172">பெயர்</translation>
 <translation id="5329548388331921293">இணைக்கப்படுகிறது...</translation>
 <translation id="5331975486040154427">USB-C சாதனம் (இடது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
+<translation id="533282197239610265">அனுப்பும் சாதனங்களைக் காட்டும்</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (வலதுபக்கம்)</translation>
 <translation id="5352250171825660495">டார்க் தீம் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5356963482258194581">டார்க், லைட் ஆகிய தீம்களுக்கு இடையே மாறுதல். டெஸ்க்டாப்பில் வலது கிளிக் செய்து 'வால்பேப்பர் &amp; ஸ்டைல்' என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
@@ -812,10 +817,12 @@
 <translation id="553675580533261935">அமர்விலிருந்து வெளியேறுதல்</translation>
 <translation id="5537725057119320332">அலைபரப்பு</translation>
 <translation id="554893713779400387">சொல்வதை எழுதுவதை நிலைமாற்று</translation>
+<translation id="5558091555391176027">அருகிலுள்ளவற்றுடன் பகிர்தல் அம்சத்தின் அதிகத் தெரிவுநிலைப் பயன்முறையை இயக்கும்/முடக்கும்.</translation>
 <translation id="5560420195677022218">மொபைல் ஆப்ஸை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
 <translation id="556042886152191864">பட்டன்</translation>
 <translation id="5571066253365925590">புளூடூத் இயக்கப்பட்டது</translation>
 <translation id="557563299383177668">அடுத்த பத்தி</translation>
+<translation id="5577082622442191756">புளூடூத்தை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ஃபோன் ஹப்பைப் பயன்படுத்த உங்கள் மொபைலில் புளுடூத் இயக்கப்பட்டுள்ளதா எனச் சோதிக்கவும்</translation>
 <translation id="5580000943347215299">லைப்ரரி</translation>
 <translation id="558849140439112033">படமெடுப்பதற்கான பகுதியைத் தேர்ந்தெடுக்க இழுக்கவும்</translation>
@@ -885,6 +892,7 @@
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5955304353782037793">ஆப்ஸ்</translation>
 <translation id="5958529069007801266">மேற்பார்வையிடப்படும் பயனர்</translation>
+<translation id="5965524703725988602">டார்க் தீமினை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">சாளரத்தை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
 <translation id="5977415296283489383">ஹெட்ஃபோன்</translation>
 <translation id="5978382165065462689">தொலைநிலை உதவி மூலம் உங்கள் திரையின் கட்டுப்பாட்டைப் பகிர்கிறது.</translation>
@@ -1061,6 +1069,7 @@
 <translation id="6961121602502368900">பணிக் கணக்கின் மூலம், மொபைலை நிசப்தமாக்குதல் அம்சத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="6961840794482373852">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Alt + மேல்நோக்கிய அம்புக்குறி. Page Up பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல்நோக்கிய அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="696267987219125751">'கேமரா ஃபிரேமிங்' அம்சம் முடக்கப்பட்டுள்ளது.</translation>
+<translation id="6964690557625666701">பின்செய்த அனைத்தும் நடனமாடுகின்றன</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6972754398087986839">தொடங்குக</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1139,7 @@
 <translation id="7378889811480108604">பேட்டரி சேமிப்பான் பயன்முறை முடக்கத்தில் உள்ளது</translation>
 <translation id="7382680553121047388">இயக்கு</translation>
 <translation id="7384028040782072252">உங்கள் ஆப்ஸை மறுவரிசைப்படுத்த, எங்கேயாவது வலது கிளிக் செய்யவும்</translation>
+<translation id="7386767620098596324">நெட்வொர்க் இணைப்பை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">அமைப்புகளுக்குச் சென்று பிறகு எப்போது வேண்டுமானாலும் அமைத்துக்கொள்ளலாம்.</translation>
 <translation id="7405710164030118432">இந்தச் சாதனத்தை அன்லாக் செய்ய உங்கள் Family Linkகின் முதல்நிலை அணுகல் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="7406608787870898861">மொபைல் நெட்வொர்க் அமைவை நிறைவு செய்யுங்கள்</translation>
@@ -1270,6 +1280,7 @@
 <translation id="8142441511840089262">இரு கிளிக்</translation>
 <translation id="8142699993796781067">தனிப்பட்ட நெட்வொர்க்</translation>
 <translation id="8144760705599030999">பிற சாதனங்களுடன் இனி விரைவாக இணைக்க, உங்கள் <ph name="NAME" /> சாதனத்தை <ph name="EMAIL" /> கணக்கில் சேமிக்கவும்</translation>
+<translation id="8149413265954228307">புளூடூத் அமைப்புகளைக் காட்டும். <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">மூடுவதற்கு Ctrl + W விசைகளை அழுத்தவும்.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, தானே நிரப்பியது</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
@@ -1330,6 +1341,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ஐ கொண்டுள்ளது.</translation>
 <translation id="8477270416194247200">ரத்துசெய்ய, Alt+தேடல் அல்லது Shift விசையை அழுத்தவும்.</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" />க்கு மாற்றப்பட்டது. மாற்றங்களை உறுதிசெய்ய 'உறுதிப்படுத்து' என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகளுக்கு மீட்டமைக்கப்படும்.</translation>
+<translation id="8496402167048257517">அருகிலுள்ளவற்றுடன் பகிர்தல் அமைப்புகளைக் காட்டும்</translation>
 <translation id="85123341071060231">உங்கள் Chromebookகில் புளூடூத் முடக்கப்பட்டுள்ளது. Chromebookகை அன்லாக் செய்ய, கடவுச்சொல்லை டைப் செய்யவும்.</translation>
 <translation id="8513108775083588393">தானாகச் சுழற்று</translation>
 <translation id="851458219935658693">தற்போதைய டெஸ்கில் உள்ள சாளரங்களைக் காட்டும், ரேடியோ பட்டன் தேர்ந்தெடுக்கப்பட்டது</translation>
@@ -1368,6 +1380,8 @@
 <translation id="8724318433625452070">முழுத்திரையைப் படமெடுக்கும்</translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
 <translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">கேமராவைப் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள ஆப்ஸிலும் இணையப் பக்கங்களிலும் இந்தச் சாதனத்தில் இணைக்கப்பட்டுள்ள கேமராக்களைப் பயன்படுத்த கேமரா அணுகலை இயக்கவும்.</translation>
 <translation id="8755498163081687682">உங்கள் அடையாளத்தைச் சரிபாருங்கள்: இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="875593634123171288">VPN அமைப்புகளைக் காண்பிக்கும்</translation>

@@ -270,7 +270,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="2496180316473517155">Historija pregledanja</translation>
 <translation id="2497852260688568942">Sinhronizaciju je onemogućio vaš administrator</translation>
 <translation id="250020030759455918">Vidjet ćete svoj status prijave na web lokaciji <ph name="SITE_NAME" />, podatke pregledanja i podatke web lokacije na Chromeu</translation>
-<translation id="2510106555128151389">Instalira se <ph name="WEBAPK_NAME" />...</translation>
+<translation id="2510106555128151389">Instaliranje aplikacije <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljku <ph name="BEGIN_LINK" />Sinkronizacija i prilagodba<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2523184218357549926">URL-ove stranica koje posjećujete šalje Googleu</translation>
@@ -1377,6 +1377,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="8387617938027387193">Potvrdite identitet</translation>
 <translation id="8393700583063109961">Pošalji poruku</translation>
 <translation id="8394720698884623075">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu</translation>
+<translation id="8402673309244746971">Idi na Praćenje</translation>
 <translation id="8410695015584479363">Prati cijene</translation>
 <translation id="8413126021676339697">Pokaži cijelu povijest</translation>
 <translation id="8414396119627470038">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /> pomoću <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

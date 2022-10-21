@@ -270,6 +270,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="2497852260688568942">Sinkronizimi është çaktivizuar nga administratori</translation>
 <translation id="250020030759455918">Do të shikosh statusin e identifikimit për <ph name="SITE_NAME" />, të dhënat e shfletimit dhe të dhënat e sajtit në Chrome</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> po instalohet...</translation>
 <translation id="2513403576141822879">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Sinkronizimi dhe shërbimet e Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2523184218357549926">Dërgon te Google URL-të e faqeve që ti viziton</translation>
@@ -1280,6 +1281,7 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="7887334752153342268">Dublikatë</translation>
 <translation id="789763218334337857">Si ta përdorësh Chrome</translation>
 <translation id="7903184275147100332">Kjo mund të zgjasë një minutë</translation>
+<translation id="7914399737746719723">Aplikacioni u instalua</translation>
 <translation id="7919123827536834358">Përkthe automatikisht këto gjuhë</translation>
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>
 <translation id="7929962904089429003">Hap menynë</translation>

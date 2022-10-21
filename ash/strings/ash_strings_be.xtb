@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Для пераходу паміж датамі выкарыстоўвайце клавішы са стрэлкамі</translation>
 <translation id="1414271762428216854">Усталяваная праграма (<ph name="APP_NAME" />)</translation>
+<translation id="1415846719612499304">Паказаць спіс сетак. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Каб выканаць дзеянне па апавяшчэнні, разблакіруйце прыладу</translation>
 <translation id="1420408895951708260">Уключыць або выключыць Начную падсветку. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Праглядайце на прыладзе <ph name="DEVICE_TYPE" /> нядаўнія медыяфайлы і фота з тэлефона</translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">Назад на адну літару</translation>
 <translation id="2339073806695260576">Націсніце кнопку стыла на паліцы, каб зрабіць нататку, здымак экрана, выкарыстаць лазерную ўказку або павелічальнае шкло.</translation>
 <translation id="2341729377289034582">Зафіксаваны вертыкальны фармат</translation>
+<translation id="2345226652884463045">Націсніце Увод або Пошук + Прабел, каб выбраць тэкст, які трэба змяніць.</translation>
 <translation id="2350794187831162545">Галасавы ўвод на гэтай мове (<ph name="LANGUAGE" />) апрацоўваецца толькі на вашай прыладзе. Функцыя працуе па-за сеткай. Задаць іншую мову для галасавога ўводу можна ў раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="2352467521400612932">Налады стыла</translation>
 <translation id="2354174487190027830">Ідзе актывацыя сеткі <ph name="NAME" /></translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">Меню функцыі "Чытаць уголас"</translation>
 <translation id="2689613560355655046">Працоўны стол 8</translation>
 <translation id="2695305337569143674">інтэрнэт</translation>
+<translation id="2697697418792422688">Паказаць налады клавіятуры. Выбрана: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Наладзьце клавіятуру</translation>
 <translation id="2704781753052663061">Падключыцца да іншых сетак Wi-Fi</translation>
 <translation id="2705001408393684014">Уключыць або выключыць мікрафон. <ph name="STATE_TEXT" /></translation>
@@ -777,6 +780,7 @@
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5329548388331921293">Ідзе падключэнне...</translation>
 <translation id="5331975486040154427">Прылада USB-C (задні порт злева)</translation>
+<translation id="533282197239610265">Паказаць прылады для трансляцыі</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (правы)</translation>
 <translation id="5352250171825660495">Цёмная тэма ўключана</translation>
 <translation id="5356963482258194581">Вы можаце пераключацца паміж цёмнай і светлай тэмамі. Націсніце правай кнопкай мышы на працоўны стол і выберыце "Шпалеры і стыль".</translation>
@@ -808,10 +812,12 @@
 <translation id="553675580533261935">Выконваецца выхад з сеанса</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="554893713779400387">Уключыць або выключыць галасавы ўвод</translation>
+<translation id="5558091555391176027">Уключыць або выключыць рэжым высокай бачнасці для функцыі "Абагульванне паблізу"</translation>
 <translation id="5560420195677022218">Прагляд на прыладзе <ph name="DEVICE_TYPE" /> праграм з тэлефона</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5571066253365925590">Bluetooth уключаны</translation>
 <translation id="557563299383177668">Наступны абзац</translation>
+<translation id="5577082622442191756">Уключыць або выключыць Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Каб выкарыстоўваць функцыю "Тэлефонны цэнтр", упэўніцеся, што на тэлефоне ўключаны Bluetooth</translation>
 <translation id="5580000943347215299">Бібліятэка</translation>
 <translation id="558849140439112033">Выберыце вобласць здымкі з дапамогай перацягвання</translation>
@@ -880,6 +886,7 @@
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
 <translation id="5955304353782037793">праграма</translation>
 <translation id="5958529069007801266">Падкантрольны карыстальнік</translation>
+<translation id="5965524703725988602">Уключыць або выключыць цёмную тэму. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Каб запісаць акно, націсніце Увод</translation>
 <translation id="5977415296283489383">Навушнікі</translation>
 <translation id="5978382165065462689">Абагульванне кантролю над экранам праз Аддаленую дапамогу.</translation>
@@ -1123,6 +1130,7 @@
 <translation id="7378889811480108604">Рэжым эканоміі зараду выключаны</translation>
 <translation id="7382680553121047388">Укл.</translation>
 <translation id="7384028040782072252">Каб змяніць парадак размяшчэння праграм, націсніце правай кнопкай мышы ў любым месцы экрана</translation>
+<translation id="7386767620098596324">Уключыць або выключыць падключэнне да сеткі. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Гэта можна зрабіць пазней у Наладах.</translation>
 <translation id="7405710164030118432">Каб разблакіраваць прыладу, увядзіце бацькоўскі код доступу Family Link.</translation>
 <translation id="7406608787870898861">Завяршыце наладжванне мабільнай сеткі</translation>
@@ -1262,6 +1270,7 @@
 <translation id="8142441511840089262">Падвойнае націсканне</translation>
 <translation id="8142699993796781067">Прыватная сетка</translation>
 <translation id="8144760705599030999">Захавайце прыладу "<ph name="NAME" />" ва ўліковым запісе <ph name="EMAIL" /> для хутчэйшага спалучэння з іншымі прыладамі</translation>
+<translation id="8149413265954228307">Паказаць налады Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Каб закрыць, націсніце Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, аўтазапаўненне</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
@@ -1322,6 +1331,7 @@
 <translation id="8473301994082929012">Арганізацыя <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцыю "<ph name="FEATURE_NAME" />".</translation>
 <translation id="8477270416194247200">Каб скасаваць, націсніце "Alt+Пошук" або "Shift".</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Паказаць налады функцыі "Абагульванне паблізу"</translation>
 <translation id="85123341071060231">Bluetooth на прыладзе Chromebook выключаны. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
 <translation id="8513108775083588393">Аўтапаварот</translation>
 <translation id="851458219935658693">Паказ вокнаў бягучага працоўнага стала, выбраны пераключальнік</translation>

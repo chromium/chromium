@@ -253,6 +253,7 @@
 <translation id="2322173485024759474">ថយក្រោយ​មួយតួអក្សរ</translation>
 <translation id="2339073806695260576">ចុច​ប៊ូតុង​ប៊ិច​នៅ​លើ​ធ្នើ ដើម្បី​កត់​ចំណាំ ថត​រូបអេក្រង់ ប្រើ​សញ្ញាព្រួញ​ឡាស៊ែរ ឬ​កែវពង្រីក។</translation>
 <translation id="2341729377289034582">បាន​ចាក់សោ​ឱ្យ​ស្ថិត​ក្នុងទិសដៅបញ្ឈរ</translation>
+<translation id="2345226652884463045">ចុច enter ឬស្វែងរក + ដកឃ្លា ដើម្បី​ជ្រើសរើស​​អក្សរ​​សម្រាប់កែ។</translation>
 <translation id="2350794187831162545">ឥឡូវនេះ ការនិយាយជាភាសា<ph name="LANGUAGE" />ត្រូវបានដំណើរការ​នៅក្នុងឧបករណ៍ និងដំណើរការដោយគ្មានអ៊ីនធឺណិត។ អ្នកអាចប្ដូរភាសាសរសេរ​តាមអានរបស់អ្នកនៅក្នុងការកំណត់ &gt; ភាពងាយស្រួល។</translation>
 <translation id="2352467521400612932">ការកំណត់ប៊ិច</translation>
 <translation id="2354174487190027830">កំពុងធ្វើសកម្មភាព <ph name="NAME" /></translation>
@@ -364,6 +365,7 @@
 <translation id="3009178788565917040">ទិន្នផល</translation>
 <translation id="3009958530611748826">ជ្រើសរើសថត ដើម្បីរក្សាទុកឯកសារស្កេន</translation>
 <translation id="301282384882049174">បានចែករំលែកដោយអ្នកគ្រប់គ្រង​របស់អ្នក</translation>
+<translation id="3023826154041300060">បញ្ឈប់ការនិយាយ</translation>
 <translation id="3033545621352269033">បើក</translation>
 <translation id="3033912566804961911">រួមជាមួយ <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">បើកឯកសារ</translation>
@@ -867,6 +869,7 @@
 <translation id="5804651031882187592">បិទការកំណត់ "ចាក់សោស៊ីម"</translation>
 <translation id="5805809050170488595">ចុចដើម្បីបើកដំណើរការ <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
+<translation id="5826319843084741655">ចុច ហើយអូសដើម្បីជ្រើសរើសអក្សរ</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">សង្កត់ឱ្យជាប់​ដើម្បីពង្រីក</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> មិនត្រូវបានបើកដំណើរការទេ។</translation>

@@ -253,6 +253,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2322173485024759474">Retroceder unha letra</translation>
 <translation id="2339073806695260576">Toca o botón do lapis óptico no estante para crear unha nota, facer unha captura de pantalla, utilizar o punteiro láser ou aplicar a lupa.</translation>
 <translation id="2341729377289034582">Pantalla bloqueada en posición vertical</translation>
+<translation id="2345226652884463045">Premer Intro ou Buscar + Espazo para seleccionar texto e editalo.</translation>
 <translation id="2350794187831162545">O que se diga neste idioma (<ph name="LANGUAGE" />) procésase de xeito local e funciona sen conexión. Podes cambiar o idioma de ditado en Configuración &gt; Accesibilidade.</translation>
 <translation id="2352467521400612932">Configuración do lapis óptico</translation>
 <translation id="2354174487190027830">Activando <ph name="NAME" /></translation>
@@ -435,6 +436,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3413817803639110246">Aínda non hai contido</translation>
 <translation id="3428447136709161042">Desconectarse de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Pasa o dedo desde a dereita para volver</translation>
+<translation id="3431517721463707585">Escritorio 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Editar recordatorio</translation>
 <translation id="3435967511775410570">Recoñeceuse a impresión dixital</translation>
@@ -676,6 +678,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (dispositivo esquerdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735944890391795473">Escritorio 12</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4740516757091333363">Queres eliminar o escritorio gardado?</translation>
 <translation id="4752784485658729358">Só se poden gardar 6 escritorios. Para gardar un novo, antes tes que quitar un.</translation>
@@ -696,6 +699,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4860284199500934869">Para descargar o ficheiro <ph name="FILENAME" />, comproba a túa conexión de rede</translation>
 <translation id="486056901304535126">Tentarase de novo máis tarde. Ata que finalice a descarga, enviaráselle a Google o que se fale para que o procese.</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
+<translation id="4864648187878336334">Escritorio 15</translation>
 <translation id="4868492592575313542">activou</translation>
 <translation id="4872237917498892622">Alt+Busca ou Maiús</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -723,6 +727,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Escritorio 16</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
 <translation id="5016558321564993266">Activar/Desactivar marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Rematou o tempo</translation>
@@ -739,6 +744,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5098537242461068432">Abríronse de novo o escritorio e as ventás</translation>
 <translation id="5104236669533825617">Non se puido crear a gravación da pantalla</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
@@ -829,6 +835,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> require a túa atención.</translation>
+<translation id="5662075790140998213">Escritorio 10</translation>
 <translation id="5662709761327382534">Estado da gravación dos sons do micrófono: <ph name="CURRENT_STATE" />. Premer Introducir para que a gravación dos sons do micrófono pase ao estado <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" tras sincronizar a configuración.</translation>
@@ -1030,6 +1037,8 @@ Nova instalación</translation>
 <translation id="6753390234084146956">pestanas</translation>
 <translation id="6757237461819837179">Non se está reproducindo contido multimedia</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
+<translation id="6781002679438061620">Escritorio 9</translation>
+<translation id="6782182743534150858">Escritorio 13</translation>
 <translation id="6786750046913594791">Pechar cartafol</translation>
 <translation id="6787595647772650851">Restaurar última sesión</translation>
 <translation id="6790428901817661496">Reproducir</translation>
@@ -1091,6 +1100,7 @@ Nova instalación</translation>
 <translation id="7098053464892629930">Descarga a aplicación para <ph name="NAME" /> en Google Play e descubre todas as funcións dispoñibles</translation>
 <translation id="7098389117866926363">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="7106330611027933926">Mostrar barra de escritorio</translation>
+<translation id="7116969082764510092">Escritorio 11</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7126996685418858413">Abriuse durante a última semana</translation>
 <translation id="7130207228079676353">MÁIS PROBABLES</translation>
@@ -1189,6 +1199,7 @@ Nova instalación</translation>
 <translation id="7662283695561029522">Toca para configurar a conexión compartida</translation>
 <translation id="7670953955701272011">Abrir esta data en Google Calendar</translation>
 <translation id="7671610481353807627">As aplicacións están ordenadas por cor</translation>
+<translation id="7672095158465655885">Conexión establecida con <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Definiuse a entrada por cámara como <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Engadir nova rede de telefonía móbil</translation>
@@ -1473,5 +1484,6 @@ Nova instalación</translation>
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">Pechouse a ventá <ph name="WINDOW_TITILE" />.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Goza das últimas funcións e melloras de seguranza. As actualizacións realízanse en segundo plano.</translation>
 </translationbundle>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1220509181886849806">Kas kasutada salvestatud parooli?</translation>
+<translation id="1580351948163139119">Kasutaja <ph name="USERNAME" /> parool.</translation>
 <translation id="1717486229951421299">Loend mandaatidest, mis tuleb puudutusega täita, on avatud poolele kõrgusele.</translation>
 <translation id="207576718733492531">Loend mandaatidest, mis tuleb puudutusega täita, on suletud.</translation>
 <translation id="2359808026110333948">Jätka</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Loend mandaatidest, mis tuleb puudutusega täita, on avatud täiskõrgusele.</translation>
 <translation id="5591247451101092906">Kas kasutada salvestatud parooli või pääsukoodi?</translation>
 <translation id="5624120631404540903">Paroolide haldamine</translation>
+<translation id="7736236483645733578">Kasutaja <ph name="USERNAME" /> pääsukood, kasutage ekraanilukku.</translation>
 <translation id="804577341878669140">Jätkake selle kontoga</translation>
 </translationbundle>

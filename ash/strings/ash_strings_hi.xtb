@@ -253,6 +253,7 @@
 <translation id="2322173485024759474">एक वर्ण पीछे जाएं</translation>
 <translation id="2339073806695260576">नोट लेने, स्क्रीनशॉट लेने, लेज़र पॉइंटर या आवर्धक ग्लास का इस्तेमाल करने के लिए शेल्फ़ पर मौजूद स्टाइलस बटन पर टैप करें.</translation>
 <translation id="2341729377289034582">लंबवत पर लॉक किया गया</translation>
+<translation id="2345226652884463045">जिस टेक्स्ट में बदलाव करना है उसे चुनने के लिए Enter या Search + Space दबाएं.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> भाषा को स्थानीय तौर पर प्रोसेस किया जाता है और यह ऑफ़लाइन काम करती है. आप अपनी लिखी जाने वाली भाषा को सेटिंग &gt; सुलभता में जाकर बदल सकते हैं.</translation>
 <translation id="2352467521400612932">स्टाइलस की सेटिंग</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> सक्रिय हो रहा है</translation>
@@ -586,7 +587,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. End बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + राइट ऐरो दबाएं.</translation>
 <translation id="4279490309300973883">स्क्रीन शेयर करने की सुविधा चालू है</translation>
 <translation id="4283888303416325161">ज़्यादा सुरक्षा के लिए पासवर्ड डालें</translation>
-<translation id="4285498937028063278">टैब बड़ी करें</translation>
+<translation id="4285498937028063278">अनपिन करें</translation>
 <translation id="4294319844246081198">गुड मॉर्निंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सभी <ph name="COUNT" /> सूचनाएं हटाएं</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> को <ph name="FOLDER_NAME" /> में ले जाया गया</translation>
@@ -1459,7 +1460,7 @@
 <translation id="9211490828691860325">सभी डेस्क</translation>
 <translation id="9211681782751733685">बैटरी के पूरी तरह से चार्ज होने में<ph name="TIME_REMAINING" /> का समय बाकी है.</translation>
 <translation id="9215934040295798075">वॉलपेपर सेट करें</translation>
-<translation id="9219103736887031265">Images</translation>
+<translation id="9219103736887031265">इमेज</translation>
 <translation id="921989828232331238">आपके अभिभावक ने आज के लिए यह डिवाइस लॉक कर दिया है</translation>
 <translation id="9220525904950070496">खाता हटाएं</translation>
 <translation id="923686485342484400">साइन आउट करने के लिए दो बार Control Shift Q दबाएं.</translation>

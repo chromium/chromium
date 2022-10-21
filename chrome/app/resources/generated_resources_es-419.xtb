@@ -420,6 +420,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1397594434718759194">Accediste a Chrome desde estos dispositivos. Puedes usarlos como llaves de seguridad.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquea el teléfono y confirma que eres tú</translation>
+<translation id="1401216725754314428">Más información sobre los sitios relacionados en una pestaña nueva</translation>
 <translation id="1401308693935339022">Usa la ubicación. Permite que las apps y los servicios con permiso de ubicación usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos de forma periódica y los use para mejorar la precisión de la ubicación y los servicios basados en ella.</translation>
 <translation id="1403222014593521787">No se pudo establecer conexión con el proxy.</translation>
 <translation id="1405779994569073824">Falló</translation>
@@ -588,6 +589,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1552752544932680961">Administrar extensión</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1555130319947370107">Azul</translation>
+<translation id="1556127816860282890">Es posible que se limiten la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave</translation>
 <translation id="1556537182262721003">No se pudo mover el directorio de extensiones al perfil</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="155865706765934889">Panel táctil</translation>
@@ -2511,6 +2513,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3308852433423051161">Cargando el Asistente de Google…</translation>
 <translation id="3309330461362844500">ID del perfil del certificado</translation>
 <translation id="3311445899360743395">Es posible que los datos asociados a esta app se quiten de este dispositivo.</translation>
+<translation id="3312470654018965389">Configurando el contenedor de Linux</translation>
 <translation id="3312883087018430408">Si quieres realizar una búsqueda en un sitio específico o en una parte de Chrome, escribe el atajo correspondiente en la barra de direcciones seguido de la combinación de teclas que hayas elegido. Por ejemplo, para realizar una búsqueda solo en Favoritos, escribe "@bookmarks" y, luego, presiona Tab o la barra espaciadora.</translation>
 <translation id="3313622045786997898">Valor de firma del certificado</translation>
 <translation id="3313950410573257029">Verificar conexión</translation>
@@ -4138,6 +4141,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4852916668365817106">Color del mouse</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige la cuenta parental para la aprobación</translation>
+<translation id="4854603338816296098">Se quitó la dirección</translation>
 <translation id="485480310608090163">Más opciones de configuración y permisos</translation>
 <translation id="4858792381671956233">Les preguntaste a tus padres si puedes visitar este sitio</translation>
 <translation id="4858913220355269194">Balón</translation>
@@ -7678,6 +7682,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8206745257863499010">Musical</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8207404892907560325">Elige una llave de acceso</translation>
+<translation id="8208188204689616705">Estos sitios están en un grupo, definido por <ph name="FPS_OWNER" />. Los sitios de un grupo pueden ver tu actividad allí.</translation>
 <translation id="8208216423136871611">No guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="821119981794423735">Para importar contraseñas al Administrador de contraseñas de Google de <ph name="USER_EMAIL" />, selecciona un archivo CSV</translation>

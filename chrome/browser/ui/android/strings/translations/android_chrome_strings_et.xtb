@@ -270,6 +270,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2496180316473517155">Sirvimise ajalugu</translation>
 <translation id="2497852260688568942">Administraator on sünkroonimise keelanud</translation>
 <translation id="250020030759455918">Näete Chrome'is oma saidi <ph name="SITE_NAME" /> sisselogimise olekut, sirvimisandmeid ja saidi andmeid</translation>
+<translation id="2510106555128151389">Rakenduse <ph name="WEBAPK_NAME" /> installimine …</translation>
 <translation id="2513403576141822879">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks avage valik <ph name="BEGIN_LINK" />Sünkroonimine ja Google'i teenused<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2523184218357549926">Saadab Google'ile teie külastatud lehtede URL-id</translation>
@@ -1280,6 +1281,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="7887334752153342268">Tee koopia</translation>
 <translation id="789763218334337857">Chrome'i kasutamine</translation>
 <translation id="7903184275147100332">See võib võtta minuti</translation>
+<translation id="7914399737746719723">Rakendus on installitud</translation>
 <translation id="7919123827536834358">Need keeled tõlgitakse automaatselt</translation>
 <translation id="7926975587469166629">Kaardi hüüdnimi</translation>
 <translation id="7929962904089429003">Menüü avamine</translation>

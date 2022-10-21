@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Direkomendasikan untuk mendapatkan pengalaman terbaik</translation>
 <translation id="1818308510395330587">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan Augmented Reality (AR), aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Dari <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Situs terkait dapat melihat aktivitas Anda di grup</translation>
 <translation id="1887786770086287077">Akses lokasi dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1919345977826869612">Iklan</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Sertakan semua situs di domain ini</translation>
 <translation id="4883854917563148705">Setelan yang dikelola tidak dapat direset</translation>
 <translation id="4887024562049524730">Tanyakan sebelum mengizinkan situs untuk menggunakan perangkat dan data virtual reality Anda (direkomendasikan)</translation>
+<translation id="4955223779495905865">Situs yang Anda buka dapat menyematkan konten dari situs lain, misalnya gambar, iklan, dan teks. Situs tersebut dapat menyimpan cookie dan data lainnya untuk mempersonalisasi pengalaman Anda.</translation>
 <translation id="4962975101802056554">Cabut semua izin untuk perangkat</translation>
 <translation id="497421865427891073">Maju</translation>
 <translation id="4976702386844183910">Terakhir dibuka <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Mengizinkan situs mengakses sensor gerakan (disarankan)</translation>
 <translation id="5050380848339752099">Situs ini akan membagikan informasi ke aplikasi di luar mode Samaran.</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
+<translation id="5082281938627763039">Tindakan ini akan menghapus cookie dan data situs lainnya untuk <ph name="FPS_MEMBER" /> dan situs di grup situs <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Situs seluler</translation>
 <translation id="509133520954049755">Minta tampilan desktop</translation>
 <translation id="5100237604440890931">Diciutkan - klik untuk memperluas.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Diblokir</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="5690795753582697420">Kamera dinonaktifkan di setelan Android</translation>
+<translation id="5706552988683188916">Tindakan ini akan menghapus cookie dan data situs lainnya untuk <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Ini akan menghapus semua data dan cookie yang disimpan oleh <ph name="ORIGIN" /> atau aplikasinya di Layar utama Anda.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> diblokir</translation>
 <translation id="5804241973901381774">Izin</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Izinkan suara untuk situs tertentu.</translation>
 <translation id="789180354981963912">Blokir cookie pihak ketiga dalam mode Samaran:</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> situs di grup situs <ph name="FPS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}other{<ph name="FPS_MEMBERS_COUNT" /> situs di grup situs <ph name="FPS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}}</translation>
 <translation id="7986741934819883144">Pilih kontak</translation>
 <translation id="7999064672810608036">Yakin ingin menghapus semua data lokal, termasuk cookie, dan menyetel ulang semua izin untuk situs web ini?</translation>
 <translation id="8007176423574883786">Dinonaktifkan untuk perangkat ini</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Aktifkan mikrofon</translation>
 <translation id="851751545965956758">Blokir situs agar tidak terhubung ke perangkat</translation>
 <translation id="8525306231823319788">Layar penuh</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookie diizinkan untuk <ph name="FPS_MEMBERS_COUNT" /> situs di <ph name="FPS_OWNER" />}other{Cookie diizinkan untuk <ph name="FPS_MEMBERS_COUNT" /> situs di <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Diizinkan (disarankan)</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8676374126336081632">Hapus masukan</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Lupakan</translation>
 <translation id="9019902583201351841">Dikelola oleh orang tua Anda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Situs ini berada dalam grup yang dapat melihat aktivitas Anda. Grup ditentukan oleh <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Hapus cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya}}</translation>
 <translation id="913657688200966289">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>

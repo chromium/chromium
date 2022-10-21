@@ -270,6 +270,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2497852260688568942">Järjestelmänvalvoja on poistanut synkronoinnin käytöstä.</translation>
 <translation id="250020030759455918">Näet kirjautumisen tilan, selausdatan ja sivustodatan (<ph name="SITE_NAME" />) Chromessa</translation>
+<translation id="2510106555128151389">Asennetaan sovellusta <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Synkronointi ja Google-palvelut<ph name="END_LINK" /> ‑kohdassa.</translation>
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2523184218357549926">Lähettää avaamiesi sivujen URL-osoitteet Googlelle</translation>
@@ -1280,6 +1281,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="7887334752153342268">Monista</translation>
 <translation id="789763218334337857">Miten Chromea käytetään</translation>
 <translation id="7903184275147100332">Tämä voi kestää hetken</translation>
+<translation id="7914399737746719723">Sovellus asennettu</translation>
 <translation id="7919123827536834358">Käännä nämä kielet automaattisesti</translation>
 <translation id="7926975587469166629">Kortin lyhytnimi</translation>
 <translation id="7929962904089429003">Avaa valikko</translation>

@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">최적의 경험을 위해 권장됨</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="1864927262126810325">출처: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">관련 사이트에서 그룹 내 활동을 볼 수 있습니다.</translation>
 <translation id="1887786770086287077">이 기기의 위치 액세스가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1919345977826869612">광고</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">이 도메인의 모든 사이트 포함</translation>
 <translation id="4883854917563148705">관리 설정은 재설정할 수 없습니다.</translation>
 <translation id="4887024562049524730">사이트에서 내 가상 현실 기기 및 데이터를 사용하도록 허용하기 전에 확인(권장)</translation>
+<translation id="4955223779495905865">내가 방문한 사이트에서는 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 이러한 사이트는 쿠키 및 기타 데이터를 저장하여 사용 환경을 맞춤설정할 수 있습니다.</translation>
 <translation id="4962975101802056554">기기에서 모든 권한을 취소합니다.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
 <translation id="4976702386844183910">최근 방문: <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">사이트의 움직임 감지 센서 액세스 허용(권장)</translation>
 <translation id="5050380848339752099">이 사이트에서 시크릿 모드 외부의 앱을 사용하여 정보를 공유하려고 합니다.</translation>
 <translation id="5063480226653192405">사용</translation>
+<translation id="5082281938627763039"><ph name="FPS_MEMBER" /> 및 <ph name="FPS_OWNER" />의 사이트 그룹에 있는 사이트의 쿠키와 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="5091013926750941408">모바일 사이트</translation>
 <translation id="509133520954049755">데스크톱 뷰 요청</translation>
 <translation id="5100237604440890931">접힘 - 펼치려면 클릭</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">차단</translation>
 <translation id="5689516760719285838">위치</translation>
 <translation id="5690795753582697420">Android 설정에서 카메라가 사용 중지됩니다.</translation>
+<translation id="5706552988683188916"><ph name="WEBSITE" />의 쿠키 및 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="5719847187258001597">이렇게 하면 <ph name="ORIGIN" /> 또는 홈 화면의 앱에 저장한 데이터 및 쿠키가 모두 삭제됩니다.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">특정 사이트에서 소리를 재생하도록 허용합니다.</translation>
 <translation id="789180354981963912">시크릿 모드에서 서드 파티 쿠키 차단:</translation>
 <translation id="7940722705963108451">알림</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{사이트 <ph name="FPS_MEMBERS_COUNT" />개는 <ph name="FPS_OWNER" />의 사이트 그룹에 있으며, 여기에서는 그룹 내 활동을 볼 수 있습니다.}other{사이트 <ph name="FPS_MEMBERS_COUNT" />개는 <ph name="FPS_OWNER" />의 사이트 그룹에 있으며, 여기에서는 그룹 내 활동을 볼 수 있습니다.}}</translation>
 <translation id="7986741934819883144">연락처 선택</translation>
 <translation id="7999064672810608036">쿠키를 포함하여 이 웹사이트의 모든 로컬 데이터를 삭제하고 모든 권한을 재설정하시겠습니까?</translation>
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">마이크 음소거 해제</translation>
 <translation id="851751545965956758">사이트에서 기기에 연결하지 못하도록 차단</translation>
 <translation id="8525306231823319788">전체화면</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> 사이트 <ph name="FPS_MEMBERS_COUNT" />개에 쿠키가 허용됨}other{<ph name="FPS_OWNER" /> 사이트 <ph name="FPS_MEMBERS_COUNT" />개에 쿠키가 허용됨}}</translation>
 <translation id="857943718398505171">허용(권장)</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="9019902583201351841">부모님이 관리합니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>
+<translation id="9090268041676521955">이 사이트는 내 활동을 볼 수 있는 그룹에 있습니다. 그룹 정의 기준: <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">쿠키를 삭제하시겠습니까?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 허용하세요.</translation>
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>

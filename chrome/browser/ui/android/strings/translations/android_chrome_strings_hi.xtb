@@ -343,7 +343,7 @@
 <translation id="2886836735871983413">वेब को ब्राउज़ करने पर, यहां साइटों की एक सूची दिखेगी</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
 <translation id="2891154217021530873">पेज को लोड करना रोकें</translation>
-<translation id="2893180576842394309">खोज और दूसरी Google सेवाओं को मनमुताबिक बनाने के लिए, Google आपके इतिहास का इस्तेमाल कर सकता है</translation>
+<translation id="2893180576842394309">Search और अन्य Google सेवाओं को आपके हिसाब से बनाने के लिए, Google आपका ब्राउज़िंग इतिहास इस्तेमाल कर सकता है.</translation>
 <translation id="2900528713135656174">इवेंट बनाएं</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> के लिए सुझाव दिखाए जा रहे हैं</translation>
 <translation id="2904414404539560095">टैब शेयर करने वाले डिवाइस की सूची पूरी खुली हुई है.</translation>
@@ -1341,9 +1341,9 @@
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
 <translation id="8153351135626613369">कुछ वेबसाइटों पर Assistant आपकी मदद कर सकती है. जब आप इनमें से किसी वेबसाइट पर जाएंगे, तब Assistant अपने-आप स्क्रीन पर दिखेगी</translation>
 <translation id="8156139159503939589">आप किन भाषाओं में पढ़ सकते हैं?</translation>
-<translation id="8168435359814927499">सामग्री</translation>
+<translation id="8168435359814927499">कॉन्टेंट</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फ़ाइलें बची हैं</translation>
-<translation id="8189750580333936930">निजता सैंडबॉक्स</translation>
+<translation id="8189750580333936930">प्राइवसी सैंडबॉक्स</translation>
 <translation id="8190358571722158785">1 दिन शेष</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />आपके डिवाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
@@ -1542,7 +1542,7 @@
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">कॉल नहीं कर पा रहे</translation>
 <translation id="9212845824145208577">इससे नीचे नहीं जा सकते. पेज पर नीचे से शुरुआत करके देखें.</translation>
-<translation id="9219103736887031265">Images</translation>
+<translation id="9219103736887031265">इमेज</translation>
 <translation id="9219582468404818260">वेब को बेहतर बनाने में हमारी मदद करें</translation>
 <translation id="92381315203627188">जब कोई साइट अपने पेज पर, लिंक को निजी तौर पर पहले से लोड करने के लिए कहती है, तो Chrome, Google के सर्वर की मदद से पेजों को एन्क्रिप्ट करके पहले से लोड कर देता है. इसके लिए, Chrome कुकी का इस्तेमाल नहीं करता है. इससे, पहले से लोड की गई साइट से आपकी पहचान को छिपाया जा सकता है.</translation>
 <translation id="926205370408745186">'डिजिटल वेलबीइंग' से अपनी Chrome गतिविधि हटाएं</translation>

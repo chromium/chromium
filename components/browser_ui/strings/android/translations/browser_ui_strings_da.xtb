@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
 <translation id="1864927262126810325">Fra <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Relaterede websites kan se din aktivitet i gruppen</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1919345977826869612">Annoncer</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
+<translation id="4955223779495905865">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Ethvert af disse websites kan gemme cookies og andre data for at tilpasse din oplevelse.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Tillad, at websites kan få adgang til bevægelsessensorer (anbefales)</translation>
 <translation id="5050380848339752099">Dette website skal til at dele oplysninger med en app uden for inkognitotilstand.</translation>
 <translation id="5063480226653192405">Databrug</translation>
+<translation id="5082281938627763039">Denne handling sletter cookies og andre websitedata for <ph name="FPS_MEMBER" /> og for websites i gruppen af websites, der tilhører <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Mobilwebsite</translation>
 <translation id="509133520954049755">Anmod om computervenlig visning</translation>
 <translation id="5100237604440890931">Skjult – klik for at udvide.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Blokeret</translation>
 <translation id="5689516760719285838">Placering</translation>
 <translation id="5690795753582697420">Kameraet er deaktiveret i Android-indstillingerne</translation>
+<translation id="5706552988683188916">Denne handling sletter cookies og andre websitedata for <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Dette rydder alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startskærm.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Tillad, at et bestemt website afspiller lyd.</translation>
 <translation id="789180354981963912">Bloker tredjepartscookies i inkognitotilstand:</translation>
 <translation id="7940722705963108451">Påmind mig</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{Der er <ph name="FPS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="FPS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="FPS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="7999064672810608036">Er du sikker på, at du vil slette alle lokale data, herunder cookies, og nulstille alle tilladelser for dette website?</translation>
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Slå mikrofon til</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}one{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}other{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites tilhørende <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Glem</translation>
 <translation id="9019902583201351841">Administreret af dine forældre</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Vil du slette cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere}}</translation>
 <translation id="913657688200966289">Aktivér tilladelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>

@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">ସର୍ବୋତ୍ତମ ଅନୁଭୂତି ପାଇଁ ସୁପାରିଶ କରାଯାଇଛି</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />କୁ AR ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ କ୍ୟାମେରା ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />ରୁ</translation>
+<translation id="187227595286001730">ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକ ଗୋଷ୍ଠୀରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିପାରିବ</translation>
 <translation id="1887786770086287077">ଏହି ଡିଭାଇସ୍ ପାଇଁ ଲୋକେସନ୍ ଆକ୍ସେସ୍ ବନ୍ଦ ଅଛି। <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‍<ph name="END_LINK" />ରେ ଏହାକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1919345977826869612">ବିଜ୍ଞାପନ</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">ଏହି ଡୋମେନରେ ଥିବା ସମସ୍ତ ସାଇଟକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="4883854917563148705">ପରିଚାଳିତ ସେଟିଂଗୁଡ଼ିକୁ ରିସେଟ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4887024562049524730">ସାଇଟଗୁଡ଼ିକୁ ଆପଣଙ୍କର ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ଆଗରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
+<translation id="4955223779495905865">ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକରୁ ବିଷୟବସ୍ତୁକୁ ଏମ୍ବେଡ କରିପାରିବ, ଉଦାହରଣ ସ୍ଵରୂପ ଇମେଜ, ବିଜ୍ଞାପନ ଏବଂ ଟେକ୍ସଟ। ଆପଣଙ୍କ ଅନୁଭୂତିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଏହି ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରୁ ଯେ କୌଣସି ସାଇଟ କୁକୀ ଏବଂ ଅନ୍ୟ ଡାଟାକୁ ସେଭ କରିପାରିବେ।</translation>
 <translation id="4962975101802056554">ଡିଭାଇସ୍‌ପାଇଁ ଥିବା ସମସ୍ତ ଅନୁମତିଗୁଡ଼ିକ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ</translation>
 <translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4976702386844183910">ଗତ ଥର <ph name="DATE" />ରେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">ମୋସନ୍ ସେନ୍‌ସର୍ ଆକ୍ସେସ୍ କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="5050380848339752099">ଇନକଗ୍ନିଟୋ ମୋଡ୍ ବାହାରେ କୌଣସି ଏକ ଆପ୍ ସହ ଏହି ସାଇଟ୍ ସୂଚନା ସେୟାର୍ କରିବାକୁ ଯାଉଛି।</translation>
 <translation id="5063480226653192405">ବ୍ୟବହାର</translation>
+<translation id="5082281938627763039">ଏହା <ph name="FPS_MEMBER" /> ଏବଂ <ph name="FPS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା ସାଇଟ ପାଇଁ କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟାକୁ ଡିଲିଟ କରେ</translation>
 <translation id="5091013926750941408">ମୋବାଇଲ ସାଇଟ</translation>
 <translation id="509133520954049755">ଡେସ୍କଟପ ଭ୍ୟୁ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="5100237604440890931">ସଙ୍କୁଚିତ ହୋଇଯାଇଛି - ବିସ୍ତାର କରିବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5689516760719285838">ଲୋକେସନ୍</translation>
 <translation id="5690795753582697420">Android ସେଟିଂସରେ କ୍ୟାମେରା ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="5706552988683188916">ଏହା <ph name="WEBSITE" /> ପାଇଁ କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟାକୁ ଡିଲିଟ କରେ</translation>
 <translation id="5719847187258001597">ଆପଣଙ୍କ ମୂଳ ସ୍କ୍ରିନରେ <ph name="ORIGIN" /> କିମ୍ବା ଏହାର ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଏହା ଖାଲି କରିଦେବ।</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ସାଇଟ୍‌ରେ ଧ୍ୱନୀ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="789180354981963912">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ:</translation>
 <translation id="7940722705963108451">ମୋତେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="FPS_MEMBERS_COUNT" />ଟି ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}other{<ph name="FPS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="FPS_MEMBERS_COUNT" />ଟି ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}}</translation>
 <translation id="7986741934819883144">ଗୋଟିଏ ଯୋଗାଯୋଗ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7999064672810608036">ଆପଣ କ’ଣ ସୁନିଶ୍ଚିତ ଯେ ଆପଣ କୁକୀ ସହିତ ଏହି ୱେବ୍‌ସାଇଟ୍‌ର ସମସ୍ତ ସ୍ଥାନୀୟ ଡାଟା ଖାଲି କରିବା ଏବଂ ଏହାର ସମସ୍ତ ଅନୁମତି ରିସେଟ୍‍ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="8007176423574883786">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">ମାଇକ୍ରୋଫୋନକୁ ଅନମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="851751545965956758">ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ ହେବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" />ଟି <ph name="FPS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="FPS_MEMBERS_COUNT" />ଟି <ph name="FPS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="857943718398505171">ଅନୁମୋଦିତ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="8609465669617005112">ଉପରକୁ ଚଳନ କରନ୍ତୁ</translation>
 <translation id="8676374126336081632">ଇନ୍‌ପୁଟ୍ ଖାଲି କରନ୍ତୁ</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">ଭୁଲିଗଲେ</translation>
 <translation id="9019902583201351841">ଆପଣଙ୍କ ମାତା-ପିତାଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ କରାଯାଉଛି</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
+<translation id="9090268041676521955">ଏହି ସାଇଟ ଏକ ଗୋଷ୍ଠୀରେ ଅଛି, ଯାହା ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିପାରିବ। ଗୋଷ୍ଠୀଟି <ph name="FPS_OWNER" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥାଏ</translation>
+<translation id="9106233582039520022">କୁକୀଗୁଡ଼ିକ ଡିଲିଟ କରିବେ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଓ ଅଧିକ <ph name="NUM_MORE" />ଟି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଓ ଅଧିକ <ph name="NUM_MORE" />ଟି}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ <ph name="APP_NAME" /> ପାଇଁ ଅନୁମତି ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="9162462602695099906">ଏହି ପୃଷ୍ଠାଟି ବିପଦଜନକ ଅଟେ</translation>

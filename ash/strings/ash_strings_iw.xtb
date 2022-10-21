@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">עיצוב כהה</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. אפשר לעבור בין תאריכים באמצעות מקשי החיצים.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, אפליקציה מותקנת</translation>
+<translation id="1415846719612499304">צפייה ברשימת הרשתות. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">כדי לבצע את פעולת ההודעה יש לבטל את נעילת המכשיר</translation>
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">הצגת המדיה והתמונות שבטלפון מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">אות אחת אחורה</translation>
 <translation id="2339073806695260576">הקשה על לחצן הסטיילוס במדף מאפשרת לכתוב הערות, לצלם את המסך ולהשתמש בסמן הלייזר או בזכוכית המגדלת.</translation>
 <translation id="2341729377289034582">נעול במצב אנכי</translation>
+<translation id="2345226652884463045">‏יש להקיש על Enter או על מקש החיפוש + מקש הרווח כדי לבחור את הטקסט לעריכה.</translation>
 <translation id="2350794187831162545">העיבוד של דיבור ב<ph name="LANGUAGE" /> נעשה עכשיו באופן מקומי ונשאר בזיכרון המכשיר. יש לך אפשרות לשנות את שפת ההכתבה ב'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="2352467521400612932">הגדרות סטיילוס</translation>
 <translation id="2354174487190027830">המערכת מפעילה את <ph name="NAME" /></translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">תפריט הקראה</translation>
 <translation id="2689613560355655046">שולחן עבודה וירטואלי 8</translation>
 <translation id="2695305337569143674">אינטרנט</translation>
+<translation id="2697697418792422688">צפייה בהגדרות המקלדת. בחרת את <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">בחירת מקלדת</translation>
 <translation id="2704781753052663061">‏הצטרפות לרשתות Wi-Fi אחרות</translation>
 <translation id="2705001408393684014">החלפת מצב המיקרופון. <ph name="STATE_TEXT" /></translation>
@@ -776,6 +779,7 @@
 <translation id="5327248766486351172">שם</translation>
 <translation id="5329548388331921293">מתבצעת התחברות…</translation>
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
+<translation id="533282197239610265">‏הצגת מכשירי CAST</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (ימין)</translation>
 <translation id="5352250171825660495">עיצוב כהה פועל</translation>
 <translation id="5356963482258194581">אפשר להחליף בין עיצוב כהה לעיצוב בהיר. לוחצים לחיצה ימנית על שולחן העבודה ובוחרים באפשרות 'טפט וסגנון'.</translation>
@@ -807,10 +811,12 @@
 <translation id="553675580533261935">יציאה מההפעלה</translation>
 <translation id="5537725057119320332">העברה</translation>
 <translation id="554893713779400387">הפעלת הכתבה או הפסקתה</translation>
+<translation id="5558091555391176027">החלפת מצב השיתוף בקרבת מקום במידת חשיפה גבוהה</translation>
 <translation id="5560420195677022218">הצגת האפליקציות שבטלפון ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">לחצן</translation>
 <translation id="5571066253365925590">‏Bluetooth מופעל</translation>
 <translation id="557563299383177668">הפסקה הבאה</translation>
+<translation id="5577082622442191756">‏הפעלה או השבתה של Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">‏יש לבדוק שה-Bluetooth פועל בטלפון כדי להשתמש ב-Phone Hub</translation>
 <translation id="5580000943347215299">ספרייה</translation>
 <translation id="558849140439112033">יש לגרור כדי לבחור אזור לצילום</translation>
@@ -879,6 +885,7 @@
 <translation id="595202126637698455">מעקב אחר הביצועים מופעל</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">משתמש בפיקוח</translation>
+<translation id="5965524703725988602">הפעלה או השבתה של עיצוב כהה. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">‏כדי להקליט את החלון, מקישים על Enter</translation>
 <translation id="5977415296283489383">אוזניות</translation>
 <translation id="5978382165065462689">שיתוף שליטה במסך דרך סיוע מרחוק.</translation>
@@ -1121,6 +1128,7 @@
 <translation id="7378889811480108604">מצב חסכון בסוללה כבוי</translation>
 <translation id="7382680553121047388">מופעל</translation>
 <translation id="7384028040782072252">לוחצים לחיצה ימנית במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
+<translation id="7386767620098596324">הפעלה או השבתה של החיבור לרשת. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">תמיד אפשר להגדיר מאוחר יותר דרך 'הגדרות'.</translation>
 <translation id="7405710164030118432">‏כדי לבטל את נעילת המכשיר, יש להזין את קוד גישת ההורה של Family Link</translation>
 <translation id="7406608787870898861">סיום ההגדרה של הרשת הסלולרית</translation>
@@ -1262,6 +1270,7 @@
 <translation id="8142441511840089262">לחיצה כפולה</translation>
 <translation id="8142699993796781067">רשת פרטית</translation>
 <translation id="8144760705599030999">שמירה של <ph name="NAME" /> בחשבון <ph name="EMAIL" /> מאפשרת התאמה מהירה יותר למכשירים אחרים</translation>
+<translation id="8149413265954228307">‏צפייה בהגדרות Bluetooth‏. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">‏כדי לסגור, יש להקיש על Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, השלמה אוטומטית</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
@@ -1322,6 +1331,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">‏יש להקיש על Alt+Search או על Shift כדי לבטל.</translation>
 <translation id="8492573885090281069">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">הצגת ההגדרות של שיתוף בקרבת מקום</translation>
 <translation id="85123341071060231">‏החיבור של ה-Chromebook ל-Bluetooth כבוי. צריך להזין סיסמה כדי לפתוח את ה-Chromebook.</translation>
 <translation id="8513108775083588393">סיבוב אוטומטי</translation>
 <translation id="851458219935658693">הצגת חלונות משולחן העבודה הווירטואלי הנוכחי, לחצן הבחירה נבחר</translation>

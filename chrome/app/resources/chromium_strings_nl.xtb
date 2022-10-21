@@ -64,6 +64,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2560420686485554789">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">Alle Chromium-gegevens die worden gegenereerd bij het gebruik van dit profiel (zoals bookmarks, geschiedenis, wachtwoorden en andere instellingen) kunnen worden verwijderd door de beheerder van het werkprofiel. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Chromium blijven gebruiken</translation>
 <translation id="2648074677641340862">Er is tijdens de installatie een fout opgetreden in het besturingssysteem. Download Chromium opnieuw.</translation>
 <translation id="2661879430930417727">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium instellen zoals zij dat willen.</translation>
 <translation id="2669853942967761236">Chromium heeft dit archiefbestand geblokkeerd omdat het misschien malware bevat</translation>
@@ -105,6 +106,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Overschakelen naar bestaand Chromium-profiel?</translation>
 <translation id="3412460710772753638">In Wachtwoordmanager op dit apparaat</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Je beheerder heeft ingesteld dat Chromium wordt gesloten als het langer dan 1 minuut inactief is.}other{Je beheerder heeft ingesteld dat Chromium wordt gesloten als het langer dan # minuten inactief is.}}</translation>
 <translation id="3430503420100763906">Met Chromium-profielen kun je alle Chromium-gegevens gescheiden houden. Maak profielen voor vrienden en familie of maak onderscheid tussen werk en privé.</translation>
 <translation id="347328004046849135">Chromium laat het je weten als je inlogt met een gehackt wachtwoord</translation>
 <translation id="3474745554856756813">Hiermee worden <ph name="ITEMS_COUNT" /> items verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
@@ -186,6 +188,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="538767207339317086">Inloggen bij Chromium toestaan</translation>
 <translation id="5398878173008909840">Er is een nieuwe versie van Chromium beschikbaar.</translation>
 <translation id="5405650547142096840">Verwijderen uit Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium wordt nu gesloten.}=1{Chromium wordt over 1 seconde gesloten.}other{Chromium wordt over # seconden gesloten.}}</translation>
 <translation id="5427571867875391349">Chromium instellen als je standaardbrowser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium bèta</translation>
 <translation id="5473971139929175403">Chromium werkt misschien niet goed omdat dit niet meer wordt ondersteund op deze Linux-distributie</translation>
@@ -273,6 +276,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6940431691900807093">Later kan een site die je bezoekt Chromium vragen om je interesses te bekijken zodat de advertenties die je ziet, kunnen worden gepersonaliseerd. Chromium kan maximaal 3 interesses delen.</translation>
 <translation id="6964305034639999644">Link openen in een Chromium-inco&amp;gnitovenster</translation>
 <translation id="6978145336957848883">Zwakke wachtwoorden zijn makkelijk te raden. Laat Chromium <ph name="BEGIN_LINK" />sterke wachtwoorden voor je instellen en onthouden<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium is inactief</translation>
 <translation id="6985329841647292029">Voorwaarden van Chromium OS</translation>
 <translation id="6990124437352146030">Chromium heeft toegangsrechten voor je microfoon nodig voor deze site</translation>
 <translation id="7025789849649390912">Installatie gestopt.</translation>

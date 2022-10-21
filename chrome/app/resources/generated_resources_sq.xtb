@@ -420,6 +420,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1397594434718759194">Je identifikuar në Chrome në këto pajisje, kështu që mund t'i përdorësh si çelësa sigurie.</translation>
 <translation id="1398853756734560583">Zmadho</translation>
 <translation id="139911022479327130">Shkyçe telefonin dhe konfirmo që je ti</translation>
+<translation id="1401216725754314428">Mëso më shumë rreth sajteve të lidhura në një skedë të re</translation>
 <translation id="1401308693935339022">Përdor vendndodhjen. Lejo që aplikacionet dhe shërbimet me autorizim për vendndodhje të përdorin vendndodhjen e kësaj pajisjeje. Google mund të mbledhë në mënyrë periodike të dhëna të vendndodhjes dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara te vendndodhja.</translation>
 <translation id="1403222014593521787">Nuk mund të lidhet me përfaqësuesin</translation>
 <translation id="1405779994569073824">U ndërpre aksidentalisht.</translation>
@@ -588,6 +589,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1552752544932680961">Menaxho shtesën</translation>
 <translation id="1553538517812678578">e pakufizuar</translation>
 <translation id="1555130319947370107">E kaltër</translation>
+<translation id="1556127816860282890">Aktiviteti në sfond dhe disa efekte vizuale, si p.sh. lëvizja e butë, mund të jenë të kufizuara</translation>
 <translation id="1556537182262721003">Direktoria e shtesës nuk mund të zhvendoset te profili.</translation>
 <translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="155865706765934889">Blloku me prekje</translation>
@@ -2512,6 +2514,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3308852433423051161">Po ngarkon "Asistentin e Google"...</translation>
 <translation id="3309330461362844500">ID-ja e profilit të certifikatës</translation>
 <translation id="3311445899360743395">Të dhënat e lidhura me këtë aplikacion mund të hiqen nga kjo pajisje.</translation>
+<translation id="3312470654018965389">Kontejneri i Linux po konfigurohet</translation>
 <translation id="3312883087018430408">Për të kërkuar një sajt ose pjesë specifike të Chrome, shkruaj shkurtoren e saj në shiritin e adresave, të ndjekur nga shkurtorja jote e preferuar e tastierës. Për shembull, për të kërkuar vetëm "Faqeshënuesit", shkruaj "@faqeshënuesit" dhe më pas shtyp tastin Tab ose tastin e hapësirës.</translation>
 <translation id="3313622045786997898">Vlera e nënshkrimit të certifikatës</translation>
 <translation id="3313950410573257029">Kontrollo lidhjen</translation>
@@ -4139,6 +4142,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4852916668365817106">Ngjyra e kursorit të miut</translation>
 <translation id="4853020600495124913">Hape në dritare &amp;të re</translation>
 <translation id="4854317507773910281">Zgjidh llogarinë e prindit për miratimin</translation>
+<translation id="4854603338816296098">Adresa u hoq</translation>
 <translation id="485480310608090163">Cilësime dhe leje të tjera</translation>
 <translation id="4858792381671956233">I pyete prindërit e tu nëse nuk ka problem të vizitosh këtë sajt</translation>
 <translation id="4858913220355269194">Maradona</translation>
@@ -7676,6 +7680,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8207404892907560325">Zgjidh një çelës kalimi</translation>
+<translation id="8208188204689616705">Këto sajte janë në një grup të përcaktuar nga <ph name="FPS_OWNER" />. Sajtet në një grup mund ta shikojnë aktivitetin tënd te grupi.</translation>
 <translation id="8208216423136871611">Mos e ruaj</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Njoftim i ri}other{# ‏njoftime të reja}}</translation>
 <translation id="821119981794423735">Për të importuan fjalëkalimet te "Menaxheri i fjalëkalimeve i Google" për <ph name="USER_EMAIL" />, zgjidh një skedar CSV</translation>

@@ -92,6 +92,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Siirry päivästä toiseen nuolinäppäimillä.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, asennettu sovellus</translation>
+<translation id="1415846719612499304">Näytä verkkoluettelo. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Avaa laitteen lukitus, niin voit käyttää ilmoitustoimintoa</translation>
 <translation id="1420408895951708260">Yövalo päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Katsele puhelimesi viimeisimpiä kuvia ja mediaa tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
@@ -252,6 +253,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2322173485024759474">Yksi kirjain taaksepäin</translation>
 <translation id="2339073806695260576">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää laserosoitinta tai suurennuslasia.</translation>
 <translation id="2341729377289034582">Lukittu pystysuuntaiseksi</translation>
+<translation id="2345226652884463045">Valitse muokattava teksti painamalla Enter tai haku + välilyönti.</translation>
 <translation id="2350794187831162545">Puhe (<ph name="LANGUAGE" />) käsitellään paikallisesti ja toimii ilman verkkoyhteyttä. Voit muuttaa sanalukieltä kohdasta Asetukset &gt; Esteettömyys.</translation>
 <translation id="2352467521400612932">Näyttökynäasetukset</translation>
 <translation id="2354174487190027830">Aktivoidaan <ph name="NAME" /></translation>
@@ -308,6 +310,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2678852583403169292">Teksti puhuttuna ‑valikko</translation>
 <translation id="2689613560355655046">Työpöytä 8</translation>
 <translation id="2695305337569143674">verkko</translation>
+<translation id="2697697418792422688">Näytä näppäimistöasetukset. <ph name="KEYBOARD_NAME" /> valittiin.</translation>
 <translation id="2700493154570097719">Määritä näppäimistö</translation>
 <translation id="2704781753052663061">Liity muihin Wi-Fi-verkkoihin</translation>
 <translation id="2705001408393684014">Mikrofoni päälle/pois. <ph name="STATE_TEXT" /></translation>
@@ -777,6 +780,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5327248766486351172">Nimi</translation>
 <translation id="5329548388331921293">Yhdistetään…</translation>
 <translation id="5331975486040154427">C-tyypin USB-laite (vasemman sivun taaimmainen portti)</translation>
+<translation id="533282197239610265">Näytä striimauslaitteet</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (oikea)</translation>
 <translation id="5352250171825660495">Tumma teema on päällä</translation>
 <translation id="5356963482258194581">Vaihda tumman ja vaalean teeman välillä. Klikkaa työpöytää kakkospainikkeella ja valitse Taustakuva ja tyyli.</translation>
@@ -808,10 +812,12 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="553675580533261935">Käyttökerran lopettaminen</translation>
 <translation id="5537725057119320332">Suoratoista</translation>
 <translation id="554893713779400387">Laita sanelu päälle tai pois päältä</translation>
+<translation id="5558091555391176027">Laita lähijakamisen näkyvyys päälle/pois</translation>
 <translation id="5560420195677022218">Katso puhelimesi sovelluksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5571066253365925590">Bluetooth käytössä</translation>
 <translation id="557563299383177668">Seuraava kappale</translation>
+<translation id="5577082622442191756">Laita Bluetooth päälle tai pois päältä. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Tarkista että Bluetooth on käytössä puhelimessasi, jotta voit käyttää puhelinhubia</translation>
 <translation id="5580000943347215299">Kirjasto</translation>
 <translation id="558849140439112033">Valitse kuvakaappauksen alue vetämällä</translation>
@@ -880,6 +886,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="595202126637698455">Tehokkuuden seuranta on käytössä</translation>
 <translation id="5955304353782037793">sov.</translation>
 <translation id="5958529069007801266">Valvottu käyttäjä</translation>
+<translation id="5965524703725988602">Tumma teema päälle/pois. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Tallenna ikkunaa painamalla Enter</translation>
 <translation id="5977415296283489383">Kuulokkeet</translation>
 <translation id="5978382165065462689">Näyttösi hallinta jaetaan Etätuen kautta.</translation>
@@ -1123,6 +1130,7 @@ Uusi asennus</translation>
 <translation id="7378889811480108604">Virransäästötila on poissa päältä</translation>
 <translation id="7382680553121047388">Päällä</translation>
 <translation id="7384028040782072252">Järjestele sovellukset uudelleen klikkaamalla mitä tahansa kohtaa kakkospainikkeella</translation>
+<translation id="7386767620098596324">Laita verkkoyhteys päälle tai pois päältä. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Voit ottaa tämän käyttöön myöhemmin asetuksista.</translation>
 <translation id="7405710164030118432">Avaa laitteen lukitus vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="7406608787870898861">Viimeistele mobiiliverkon käyttöönotto</translation>
@@ -1262,6 +1270,7 @@ Uusi asennus</translation>
 <translation id="8142441511840089262">Kaksoisklikkaus</translation>
 <translation id="8142699993796781067">Yksityinen verkko</translation>
 <translation id="8144760705599030999">Tallenna <ph name="NAME" /> tilille <ph name="EMAIL" />, jotta laiteparin muodostaminen muiden laitteidesi kanssa sujuu nopeammin</translation>
+<translation id="8149413265954228307">Näytä Bluetooth-asetukset. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Sulje painamalla Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automaattinen täydennys</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
@@ -1322,6 +1331,7 @@ Uusi asennus</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> omistaa tämän: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Peru painamalla Alt+haku tai vaihto.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
+<translation id="8496402167048257517">Näytä lähijakamisen asetukset</translation>
 <translation id="85123341071060231">Chromebookisi Bluetooth on poissa päältä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>

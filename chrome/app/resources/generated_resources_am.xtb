@@ -421,6 +421,7 @@
 <translation id="1397594434718759194">እንደ የደህንነት ቁልፎች ሊጠቀሙባቸው እንዲችሉ በእነዚህ መሣሪያዎች ላይ ወደ Chrome ገብተዋል።</translation>
 <translation id="1398853756734560583">አስፋ</translation>
 <translation id="139911022479327130">ስልክዎን ይክፈቱትና እርስዎ መሆንዎን ያረጋግጡ</translation>
+<translation id="1401216725754314428">በአዲስ ትር ውስጥ ስለተያያዥ ጣቢያዎች የበለጠ ይወቁ</translation>
 <translation id="1401308693935339022">አካባቢን ተጠቀም። የአካባቢ ፈቃድ ያላቸው መተግበሪያዎች እና አገልግሎቶች የዚህ መሣሪያ አካባቢን እንዲጠቀሙ ይፍቀዱላቸው። Google በየጊዜው የአካባቢ ውሂብን ሊሰበስብ እና ይህን ውሂብ ስም-አልባ በሆነ መልኩ ተጠቅሞ የአካባቢን ትክክለኛነት እና በአካባቢ ላይ የተመሠረቱ አገልግሎቶችን ለማሻሻል ሊጠቀምበት ይችላል።</translation>
 <translation id="1403222014593521787">ከተኪው ጋር መገናኘት አልተቻለም</translation>
 <translation id="1405779994569073824">ተበላሽቷል።</translation>
@@ -592,6 +593,7 @@
 <translation id="1552752544932680961">ቅጥያ አቀናብር</translation>
 <translation id="1553538517812678578">ገደብ የለሽ</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
+<translation id="1556127816860282890">የዳራ እንቅስቃሴ እና እንደ ለስላሳ ሽብለላ ያሉ አንዳንድ ምስላዊ ተጽዕኖዎች የተገደቡ ሊሆኑ ይችላሉ</translation>
 <translation id="1556537182262721003">የቅጥያ ማውጫን ወደ መገለጫ መውሰድ አልተቻለም።</translation>
 <translation id="1558391695376153246">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
@@ -2523,6 +2525,7 @@
 <translation id="3308852433423051161">የGoogle ረዳትን በመጫን ላይ...</translation>
 <translation id="3309330461362844500">የእውቅና ማረጋገጫ መገለጫ መታወቂያ</translation>
 <translation id="3311445899360743395">ከዚህ መተግበሪያ ጋር የተጎዳኘ ውሂብ ከዚህ መሣሪያ ላይ ሊወገድ ይችላል።</translation>
+<translation id="3312470654018965389">የLinux መያዣውን በማዋቀር ላይ</translation>
 <translation id="3312883087018430408">አንድን የተወሰነ ጣቢያ ወይም የChrome ክፍል ለመፈለግ የእርስዎን ተመራጭ የቁልፍ ሰሌዳ አቋራጭን በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ። ለምሳሌ ዕልባቶችን ብቻ ለመፈለግ «@bookmarks» ብለው ይተይቡ፣ ከዚያ ትር ወይም ክፍተትን ይጫኑ።</translation>
 <translation id="3313622045786997898">የሰርቲፊኬት ፊርማ እሴት</translation>
 <translation id="3313950410573257029">ግንኙነትን ፈትሽ</translation>
@@ -4148,6 +4151,7 @@
 <translation id="4852916668365817106">የመዳፊት ቀለም</translation>
 <translation id="4853020600495124913">&amp;በአዲስ መስኮት ውስጥ ክፈት</translation>
 <translation id="4854317507773910281">የሚጸድቅ የወላጅ መለያ ይምረጡ</translation>
+<translation id="4854603338816296098">አድራሻ ተወግዷል</translation>
 <translation id="485480310608090163">ተጨማሪ ቅንብሮች እና ፈቃዶች</translation>
 <translation id="4858792381671956233">ይህን ገጽ መጎብኘት ችግር ካለው ወላጆችዎንጠይቀዋል</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -7695,6 +7699,7 @@ nil</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8207404892907560325">የይለፍ ቁልፍ ይምረጡ</translation>
+<translation id="8208188204689616705">እነዚህ ጣቢያዎች በ<ph name="FPS_OWNER" /> በሚገለጽ ቡድን ውስጥ ናቸው። በአንድ ቡድን ውስጥ ያሉ ጣቢያዎች በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ ማየት ይችላሉ።</translation>
 <translation id="8208216423136871611">አታስቀምጥ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{አዲስ ማሳወቂያ}one{# አዲስ ማሳወቂያዎች}other{# አዲስ ማሳወቂያዎች}}</translation>
 <translation id="821119981794423735">ለ<ph name="USER_EMAIL" /> የይለፍ ቃላትን ወደ Google የይለፍ ቃል አስተዳዳሪ ለማስመጣት የCSV ፋይልን ይምረጡ</translation>

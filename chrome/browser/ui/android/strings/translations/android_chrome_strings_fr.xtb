@@ -270,6 +270,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2497852260688568942">Votre administrateur a désactivé la synchronisation</translation>
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, ainsi que vos données de navigation et les données du site dans Chrome</translation>
+<translation id="2510106555128151389">Installation de <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la section <ph name="BEGIN_LINK" />Services Google/Synchronisation<ph name="END_LINK" />.</translation>
 <translation id="2517472476991765520">Scanner</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
@@ -1280,6 +1281,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7887334752153342268">Dupliquer</translation>
 <translation id="789763218334337857">Comment utiliser Google Chrome</translation>
 <translation id="7903184275147100332">Cela peut prendre une minute</translation>
+<translation id="7914399737746719723">Appli installée</translation>
 <translation id="7919123827536834358">Traduire automatiquement ces langues</translation>
 <translation id="7926975587469166629">Pseudo associé à la carte</translation>
 <translation id="7929962904089429003">Ouvrir le menu</translation>

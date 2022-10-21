@@ -436,6 +436,7 @@
 <translation id="3413817803639110246">Одоогоор мэдэгдэл алга</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-с салгах</translation>
 <translation id="3430396595145920809">Буцахын тулд баруун талаас шударна уу</translation>
+<translation id="3431517721463707585">14-р дэлгэц</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Сануулагчийг засах</translation>
 <translation id="3435967511775410570">Хурууны хээг таньсан</translation>
@@ -677,6 +678,7 @@
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Зүүн)</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
+<translation id="4735944890391795473">12-р дэлгэц</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4740516757091333363">Хадгалсан дэлгэцийг устгах уу?</translation>
 <translation id="4752784485658729358">Зөвхөн 6 хадгалсан дэлгэц боломжтой. Шинэ дэлгэц хадгалахын тулд аль нэгийг нь хасна уу.</translation>
@@ -697,6 +699,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> татаж авахын тулд сүлжээний холболтоо шалгана уу</translation>
 <translation id="486056901304535126">Таталтыг дараа оролдоно. Таталт дуусах хүртэл яриаг Google-д боловсруулахаар илгээнэ.</translation>
 <translation id="4864369630010738180">Нэвтэрч байна…</translation>
+<translation id="4864648187878336334">15-р дэлгэц</translation>
 <translation id="4868492592575313542">идэвхжүүлсэн байна</translation>
 <translation id="4872237917498892622">Alt+Search эсвэл Shift</translation>
 <translation id="4881695831933465202">Нээх</translation>
@@ -724,6 +727,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">16-р дэлгэц</translation>
 <translation id="5003993274120026347">Дараагийн өгүүлбэр</translation>
 <translation id="5016558321564993266">Тэмдэглэгчийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Хугацаа дууслаа</translation>
@@ -740,6 +744,7 @@
 <translation id="5098537242461068432">Дэлгэц болон цонхнуудыг дахин нээсэн</translation>
 <translation id="5104236669533825617">Дэлгэцийн видео бичлэг үүсгэх боломжгүй</translation>
 <translation id="5107522548814527560">Веб</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Дараагийн сарыг харуулах</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
 <translation id="5147567197700016471">Түгжээг тайлсан</translation>
@@ -830,6 +835,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> танаас анхаарал тавихыг хүсэж байна.</translation>
+<translation id="5662075790140998213">10-р дэлгэц</translation>
 <translation id="5662709761327382534">Микрофоныг бичих <ph name="CURRENT_STATE" /> байна. Микрофоны бичлэгийг <ph name="NEW_STATE" /> болгохын тулд enter дээр дарна уу</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5673434351075758678">Тохиргоогоо синк хийсний дараа "<ph name="FROM_LOCALE" />"-с "<ph name="TO_LOCALE" />" руу шилжүүлнэ.</translation>
@@ -1031,6 +1037,8 @@
 <translation id="6753390234084146956">табууд</translation>
 <translation id="6757237461819837179">Медиа тоглуулаагүй байна</translation>
 <translation id="6777216307882431711">Холбогдсон USB-C төхөөрөмжүүдийг цэнэглэж байна</translation>
+<translation id="6781002679438061620">9-р дэлгэц</translation>
+<translation id="6782182743534150858">13-р дэлгэц</translation>
 <translation id="6786750046913594791">Хавтасыг хаах</translation>
 <translation id="6787595647772650851">Сүүлийн харилцан үйлдлийг сэргээх</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
@@ -1092,6 +1100,7 @@
 <translation id="7098053464892629930">Боломжтой бүх онцлогийг харахын тулд <ph name="NAME" />-н аппыг Google Play-с татна уу</translation>
 <translation id="7098389117866926363">USB-C төхөөрөмж (ард талын зүүн порт)</translation>
 <translation id="7106330611027933926">Дэлгэцийн хэсгийг харуулах</translation>
+<translation id="7116969082764510092">11-р дэлгэц</translation>
 <translation id="7118268675952955085">дэлгэцийн агшин</translation>
 <translation id="7126996685418858413">Өнгөрсөн долоо хоногт нээсэн</translation>
 <translation id="7130207228079676353">ДАРАГДАХ МАГАДЛАЛТАЙ</translation>
@@ -1190,6 +1199,7 @@
 <translation id="7662283695561029522">Тохируулахын тулд товших</translation>
 <translation id="7670953955701272011">Энэ огноог Google Календарьт нээнэ үү</translation>
 <translation id="7671610481353807627">Аппуудыг өнгөөр эрэмбэлсэн</translation>
+<translation id="7672095158465655885"><ph name="NAME" />-д холбогдсон, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Камерын өгөгдлийг <ph name="CAMERA_NAME" /> болгож тохируулсан.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Үүрэн холбооны шинэ сүлжээ нэмэх</translation>
@@ -1475,5 +1485,6 @@
 <translation id="974545358917229949"><ph name="QUERY" />-н <ph name="RESULT_COUNT" /> илэрцийг үзүүлж байна</translation>
 <translation id="98515147261107953">Газрын гадаргуун зураг</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> цонх хаалттай байна.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Онцлог болон аюулгүй байдлын хамгийн сүүлийн үеийн сайжруулалтыг авна уу. Шинэчлэлтийг дэвсгэрт хийнэ.</translation>
 </translationbundle>

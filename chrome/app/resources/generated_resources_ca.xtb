@@ -274,6 +274,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1244303850296295656">Error d'extensió</translation>
 <translation id="1245628370644070008">Recuperació de dades locals</translation>
 <translation id="1246863218384630739">No s'ha pogut instal·lar <ph name="VM_NAME" />: l'URL de la imatge ha tornat el codi d'error <ph name="HTTP_ERROR" />. Contacta amb l'administrador.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{No es permeten les notificacions per a 1 lloc web}other{No es permeten les notificacions per a {NUM_SITES} llocs web}}</translation>
 <translation id="1251366534849411931">Hi ha d'haver una clau d'obertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Amb aquesta acció s'esborraran dades emmagatzemades pels llocs web i per les aplicacions instal·lades (<ph name="TOTAL_USAGE" />)</translation>
 <translation id="1251578593170406502">S'estan cercant xarxes de dades mòbils...</translation>
@@ -592,6 +593,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1552752544932680961">Gestiona l'extensió</translation>
 <translation id="1553538517812678578">il·limitat</translation>
 <translation id="1555130319947370107">Blau</translation>
+<translation id="1556127816860282890">Pot ser que l'activitat en segon pla i alguns efectes visuals, com ara el desplaçament suau, quedin limitats</translation>
 <translation id="1556537182262721003">No s'ha pogut desplaçar el directori d'extensions al perfil.</translation>
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
@@ -1642,6 +1644,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2476974672882258506">Apaga Windows per desinstal·lar <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Com que has configurat diversos interruptors, la cerca automàtica s'ha desactivat.</translation>
 <translation id="2478176599153288112">Permisos de fitxer multimèdia per a "<ph name="EXTENSION" />"</translation>
+<translation id="24786041351753425">Activa el servei de recuperació de dades</translation>
 <translation id="2480868415629598489">Modificar les dades que copies i enganxes</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2482895651873876648">La pestanya s'ha mogut al grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
@@ -2257,6 +2260,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3024374909719388945">Utilitza el rellotge de 24 hores</translation>
 <translation id="3027296729579831126">Activa Compartició Nearby</translation>
 <translation id="3029466929721441205">Mostra les eines del llapis òptic al prestatge</translation>
+<translation id="3029808567601324798">Temps fins al bloqueig</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que baixis una actualització avui. Es baixarà automàticament quan et connectis a Internet.}other{<ph name="MANAGER" /> requereix que baixis una actualització abans del termini establert. Es baixarà automàticament quan et connectis a Internet.}}</translation>
 <translation id="3030967311408872958">De la posta de sol a l'alba</translation>
 <translation id="3031417829280473749">Agent X</translation>
@@ -2515,6 +2519,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3308852433423051161">S'està carregant l'Assistent de Google...</translation>
 <translation id="3309330461362844500">Identificador del perfil del certificat</translation>
 <translation id="3311445899360743395">Pot ser que les dades associades a aquesta aplicació se suprimeixin del dispositiu.</translation>
+<translation id="3312470654018965389">S'està configurant el contenidor de Linux</translation>
 <translation id="3312883087018430408">Per cercar en un lloc web específic o en una part de Chrome, escriu la drecera corresponent a la barra d'adreces, seguida de la tecla de drecera que prefereixis. Per exemple, si vols cercar només a Adreces d'interès, escriu "@bookmarks" i, a continuació, prem Tab o Espai.</translation>
 <translation id="3313622045786997898">Valor de la signatura del certificat</translation>
 <translation id="3313950410573257029">Comprova la connexió</translation>
@@ -4141,6 +4146,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4852916668365817106">Color del ratolí</translation>
 <translation id="4853020600495124913">Obre en una &amp;finestra nova</translation>
 <translation id="4854317507773910281">Tria un compte parental per a l'aprovació</translation>
+<translation id="4854603338816296098">S'ha suprimit l'adreça</translation>
 <translation id="485480310608090163">Més opcions de configuració i permisos</translation>
 <translation id="4858792381671956233">Has demanat permís als teus pares per visitar aquest lloc web</translation>
 <translation id="4858913220355269194">Pilota</translation>
@@ -4203,6 +4209,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4901154724271753917">Desplega les que s'han tancat recentment</translation>
 <translation id="4901309472892185668">Selecciona l'estat de l'experiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política que s'ha baixat del servidor no és vàlida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Allarga la durada de la bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau.</translation>
 <translation id="4906490889887219338">Configura o gestiona els fitxers compartits de la xarxa. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Tria quan aquesta extensió pot llegir i canviar les teves dades de llocs web</translation>
 <translation id="4907161631261076876">Aquest fitxer no se sol baixar i podria ser perillós.</translation>
@@ -5308,6 +5315,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5971037678316050792">Controlar l'estat i l'emparellament de l'adaptador Bluetooth</translation>
 <translation id="597235323114979258">Mostra més destinacions</translation>
 <translation id="5972543790327947908">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> o <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">Més accions per a <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Servei no operatiu</translation>
 <translation id="5972708806901999743">Mou a la part superior</translation>
 <translation id="5972826969634861500">Inicia <ph name="PRODUCT_NAME" /></translation>
@@ -8495,6 +8503,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8989359959810288806">Actualitza l'estat de la compartició de xarxa</translation>
 <translation id="8991520179165052608">El lloc web pot utilitzar el micròfon</translation>
+<translation id="8993059306046735527">Encara que oblidis la contrasenya del <ph name="DEVICE_TYPE" />, pots restaurar les dades locals. Hauràs d'iniciar la sessió al Compte de Google o utilitzar la recuperació del compte.</translation>
 <translation id="899384117894244799">Suprimeix un usuari restringit</translation>
 <translation id="899403249577094719">URL base de certificat de Netscape</translation>
 <translation id="899657321862108550">El teu Chrome, siguis on siguis</translation>
@@ -8594,6 +8603,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9078316009970372699">Desactiva la compartició de xarxa instantània</translation>
 <translation id="9078842827190780028">Mostra més resultats de la cerca al tauler lateral</translation>
 <translation id="9079267182985899251">Aquesta opció aviat no s'admetrà. Per presentar una pestanya, utilitza <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">Estalvi de memòria allibera memòria de les pestanyes inactives perquè la puguin utilitzar les pestanyes actives i altres aplicacions.</translation>
 <translation id="9080971985541434310">Estima els teus interessos. Chrome pot estimar els teus interessos.</translation>
 <translation id="9081543426177426948">Els llocs web que visites no es desen en mode d'incògnit</translation>
 <translation id="9084064520949870008">Obre com a finestra</translation>
@@ -8783,6 +8793,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="964790508619473209">Disposició de la pantalla</translation>
 <translation id="965211523698323809">Envia i rep missatges de text amb el dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informa d'un problema amb Google Cast</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Revisa 1 lloc web que ha enviat moltes notificacions recentment}other{Revisa {NUM_SITES} llocs web que han enviat moltes notificacions recentment}}</translation>
 <translation id="967398046773905967">No permetis que cap lloc web accedeixi als dispositius d'interfície humana</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>
 <translation id="96774243435178359">Impressores gestionades</translation>

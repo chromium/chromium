@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Συνιστάται για την καλύτερη δυνατή εμπειρία</translation>
 <translation id="1818308510395330587">Για να επιτρέπεται στην εφαρμογή <ph name="APP_NAME" /> να χρησιμοποιεί AR, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Από <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Οι σχετικοί ιστότοποι μπορούν να δουν τη δραστηριότητά σας στην ομάδα.</translation>
 <translation id="1887786770086287077">Η πρόσβαση στην Τοποθεσία είναι απενεργοποιημένη γι' αυτήν τη συσκευή. Ενεργοποιήστε τη στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
 <translation id="1919345977826869612">Διαφημίσεις</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Συμπερίληψη όλων των ιστοτόπων σε αυτόν τον τομέα</translation>
 <translation id="4883854917563148705">Δεν είναι δυνατή η επαναφορά των υπό διαχείριση ρυθμίσεων</translation>
 <translation id="4887024562049524730">Να γίνεται ερώτηση προτού επιτραπεί στους ιστοτόπους να χρησιμοποιήσουν τη συσκευή και τα δεδομένα εικονικής πραγματικότητας (συνιστάται).</translation>
+<translation id="4955223779495905865">Ένας ιστότοπος που επισκέπτεστε μπορεί να ενσωματώνει περιεχόμενο από άλλους ιστοτόπους, για παράδειγμα εικόνες, διαφημίσεις και κείμενο. Οποιοσδήποτε από αυτούς τους ιστοτόπους μπορεί να αποθηκεύει cookie και άλλα δεδομένα για να εξατομικεύει την εμπειρία σας.</translation>
 <translation id="4962975101802056554">Ανάκληση όλων των αδειών για τη συσκευή</translation>
 <translation id="497421865427891073">Μετάβαση προς τα εμπρός</translation>
 <translation id="4976702386844183910">Τελευταία επίσκεψη <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Να επιτρέπεται στους ιστοτόπους η πρόσβαση στους αισθητήρες κίνησης (συνιστάται)</translation>
 <translation id="5050380848339752099">Αυτός ο ιστότοπος πρόκειται να κοινοποιήσει πληροφορίες σε μια εφαρμογή εκτός της κατάστασης ανώνυμης περιήγησης.</translation>
 <translation id="5063480226653192405">Χρήση</translation>
+<translation id="5082281938627763039">Αυτή η ενέργεια διαγράφει τα cookie και άλλα δεδομένα ιστοτόπου για το <ph name="FPS_MEMBER" /> και τους ιστοτόπους που περιλαμβάνονται στην ομάδα ιστοτόπων του <ph name="FPS_OWNER" />.</translation>
 <translation id="5091013926750941408">Ιστότοπος για κινητά</translation>
 <translation id="509133520954049755">Αίτημα για προβολή για υπολογιστές</translation>
 <translation id="5100237604440890931">Συμπτυγμένη - Κάντε κλικ για ανάπτυξη</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Αποκλεισμένο</translation>
 <translation id="5689516760719285838">Τοποθεσία</translation>
 <translation id="5690795753582697420">Η κάμερα απενεργοποιήθηκε στις ρυθμίσεις Android.</translation>
+<translation id="5706552988683188916">Αυτή η ενέργεια διαγράφει τα cookie και άλλα δεδομένα ιστοτόπου για τον ιστότοπο <ph name="WEBSITE" />.</translation>
 <translation id="5719847187258001597">Αυτή η ενέργεια θα διαγράψει όλα τα δεδομένα και τα cookie που έχουν αποθηκευτεί από <ph name="ORIGIN" /> ή από αυτήν την εφαρμογή στην αρχική οθόνη σας.</translation>
 <translation id="5771720122942595109">Η άδεια <ph name="PERMISSION_1" /> αποκλείστηκε.</translation>
 <translation id="5804241973901381774">Άδειες</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Να επιτρέπεται ο ήχος για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="789180354981963912">Αποκλεισμός cookie τρίτου μέρους στην Ανώνυμη περιήγηση:</translation>
 <translation id="7940722705963108451">Υπενθύμιση</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> ιστότοπος στην ομάδα ιστοτόπων του <ph name="FPS_OWNER" /> που μπορεί να δει τη δραστηριότητά σας στην ομάδα}other{<ph name="FPS_MEMBERS_COUNT" /> ιστότοποι στην ομάδα ιστοτόπων του <ph name="FPS_OWNER" /> που μπορούν να δουν τη δραστηριότητά σας στην ομάδα}}</translation>
 <translation id="7986741934819883144">Επιλογή επαφής</translation>
 <translation id="7999064672810608036">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα δεδομένα γι' αυτόν τον ιστότοπο, όπως τα cookie, και να επαναφέρετε όλα τα δικαιώματά του;</translation>
 <translation id="8007176423574883786">Έχει απενεργοποιηθεί για αυτήν τη συσκευή</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Κατάργηση σίγασης μικροφώνου</translation>
 <translation id="851751545965956758">Αποκλεισμός ιστοτόπων από τη σύνδεση σε συσκευές</translation>
 <translation id="8525306231823319788">Πλήρης οθόνη</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Επιτρέπονται τα cookie για <ph name="FPS_MEMBERS_COUNT" /> ιστότοπο <ph name="FPS_OWNER" />}other{Επιτρέπονται τα cookie για <ph name="FPS_MEMBERS_COUNT" /> ιστοτόπους <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Επιτρέπεται (συνιστάται)</translation>
 <translation id="8609465669617005112">Μετακίνηση προς τα επάνω</translation>
 <translation id="8676374126336081632">Διαγραφή καταχώρισης</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
 <translation id="9019902583201351841">Διαχειρίζεται από τους γονείς σου</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Αυτός ο ιστότοπος ανήκει σε μια ομάδα που μπορεί να δει τη δραστηριότητά σας. Η ομάδα ορίζεται από το <ph name="FPS_OWNER" />.</translation>
+<translation id="9106233582039520022">Διαγραφή cookie;</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}}</translation>
 <translation id="913657688200966289">Ενεργοποιήστε τις άδειες για την εφαρμογή <ph name="APP_NAME" /> στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Αυτή η σελίδα είναι επικίνδυνη</translation>

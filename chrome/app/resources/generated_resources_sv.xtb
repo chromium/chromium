@@ -422,6 +422,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1397594434718759194">Du är inloggad i Chrome på de här enheterna och kan därför använda dem som säkerhetsnycklar.</translation>
 <translation id="1398853756734560583">Maximera</translation>
 <translation id="139911022479327130">Lås upp telefonen och bekräfta att det är du</translation>
+<translation id="1401216725754314428">Läs mer om relaterade webbplatser på en ny flik</translation>
 <translation id="1401308693935339022">Använd plats. Tillåt att appar och tjänster med platsbehörighet använder enhetens plats. Google kan med jämna mellanrum samla in platsdata som används anonymt i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster.</translation>
 <translation id="1403222014593521787">Det gick inte att ansluta till proxyservern</translation>
 <translation id="1405779994569073824">Har kraschat.</translation>
@@ -2530,6 +2531,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3308852433423051161">Google Assistent läses in …</translation>
 <translation id="3309330461362844500">Id för certifikatprofil</translation>
 <translation id="3311445899360743395">Data kopplad till den här appen kanske tas bort från enheten.</translation>
+<translation id="3312470654018965389">Linux-behållaren konfigureras</translation>
 <translation id="3312883087018430408">Du kan söka på en viss webbplats eller i en viss avdelning i Chrome genom att först skriva genvägen i adressfältet och därefter trycka på önskat kortkommando. Till exempel kan du skriva @bookmarks och trycka på tabb eller blanksteg om du vill söka enbart bland bokmärkena.</translation>
 <translation id="3313622045786997898">Certifikatets signaturvärde</translation>
 <translation id="3313950410573257029">Kontrollera anslutningen</translation>
@@ -7699,6 +7701,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8206745257863499010">Bluesig</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Välj en nyckel</translation>
+<translation id="8208188204689616705">Dessa webbplatser ingår i en grupp som definieras av <ph name="FPS_OWNER" />. Webbplatser i en grupp kan se din aktivitet i gruppen.</translation>
 <translation id="8208216423136871611">Spara inte</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny avisering}other{# nya aviseringar}}</translation>
 <translation id="821119981794423735">Välj en CSV-fil för att importera lösenord till Google Lösenordshantering för <ph name="USER_EMAIL" /></translation>

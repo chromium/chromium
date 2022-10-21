@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Ajánlott a legjobb élmény érdekében</translation>
 <translation id="1818308510395330587">Ahhoz, hogy a(z) <ph name="APP_NAME" /> használhassa az AR-t, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="1864927262126810325">Forrás: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">A kapcsolódó webhelyek láthatják a csoportban végzett tevékenységeit</translation>
 <translation id="1887786770086287077">A helyhozzáférés ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="1915307458270490472">Hívás befejezése</translation>
 <translation id="1919345977826869612">Hirdetések</translation>
@@ -159,6 +160,7 @@
 <translation id="4402755511846832236">A webhelyek nem kaphatnak információt arról, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="4428065317363009941">Hirdetések személyre szabása</translation>
 <translation id="4434045419905280838">Előugró ablakok és átirányítások</translation>
+<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> kibontása</translation>
 <translation id="445467742685312942">Védett tartalmak lejátszásának engedélyezése a webhelyek számára</translation>
 <translation id="4468959413250150279">Egy adott webhely hangjának némítása.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
@@ -175,6 +177,7 @@
 <translation id="483914009762354899">A domainhez tartozó összes webhely felvétele</translation>
 <translation id="4883854917563148705">A kezelt beállításokat nem lehet visszaállítani</translation>
 <translation id="4887024562049524730">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára a virtuálisvalóság-eszközök és -adatok használatát (ajánlott)</translation>
+<translation id="4955223779495905865">Az Ön által felkeresett webhelyek beágyazhatnak más webhelyekről származó tartalmakat, például képeket, hirdetéseket és szöveget. Ezen webhelyek bármelyike menthet cookie-kat és egyéb adatokat a felhasználói élmény személyre szabása érdekében.</translation>
 <translation id="4962975101802056554">Az eszköz összes engedélyének visszavonása</translation>
 <translation id="497421865427891073">Előrelépés</translation>
 <translation id="4976702386844183910">Utolsó látogatás: <ph name="DATE" /></translation>
@@ -184,6 +187,7 @@
 <translation id="5048398596102334565">A mozgásérzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
 <translation id="5050380848339752099">A webhely adatokat kíván megosztani az inkognitó módon kívüli alkalmazással.</translation>
 <translation id="5063480226653192405">Használat</translation>
+<translation id="5082281938627763039">Ezzel törli a(z) <ph name="FPS_MEMBER" /> webhelyre, valamint a(z) <ph name="FPS_OWNER" /> webhelycsoportjában lévő webhelyekre vonatkozó cookie-kat és egyéb webhelyadatokat</translation>
 <translation id="5091013926750941408">Mobilwebhely</translation>
 <translation id="509133520954049755">Asztali nézet kérelmezése</translation>
 <translation id="5100237604440890931">Összecsukva – kattintson a kibontáshoz.</translation>
@@ -220,6 +224,7 @@
 <translation id="5677928146339483299">Letiltva</translation>
 <translation id="5689516760719285838">Tartózkodási hely</translation>
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
+<translation id="5706552988683188916">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat és egyéb webhelyadatokat</translation>
 <translation id="5719847187258001597">Ezzel törli a(z) <ph name="ORIGIN" /> vagy az alkalmazása által tárolt összes adatot és cookie-t a kezdőképernyőn.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
@@ -320,6 +325,7 @@
 <translation id="7882806643839505685">Egy adott webhely hangjának engedélyezése.</translation>
 <translation id="789180354981963912">Harmadik felektől származó cookie-k letiltása Inkognitó módban:</translation>
 <translation id="7940722705963108451">Emlékeztessen</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{A(z) <ph name="FPS_OWNER" /> webhelycsoportjában <ph name="FPS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="FPS_OWNER" /> webhelycsoportjában <ph name="FPS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
 <translation id="7999064672810608036">Biztosan törli a webhellyel kapcsolatos összes helyi adatot (a cookie-kkal együtt), és visszaállítja az összes engedélyt?</translation>
 <translation id="8007176423574883786">Kikapcsolva ezen az eszközön</translation>
@@ -358,6 +364,7 @@
 <translation id="8499083585497694743">Mikrofon némításának feloldása</translation>
 <translation id="851751545965956758">Az eszközökhöz való csatlakozás megtiltása a webhelyeknek</translation>
 <translation id="8525306231823319788">Teljes képernyő</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookie-k engedélyezve a(z) <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> webhelyén}other{Cookie-k engedélyezve a(z) <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> webhelyén}}</translation>
 <translation id="857943718398505171">Engedélyezve (ajánlott)</translation>
 <translation id="8609465669617005112">Mozgatás felfelé</translation>
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
@@ -383,6 +390,8 @@
 <translation id="8986362086234534611">Elfelejt</translation>
 <translation id="9019902583201351841">Szülők által kezelt</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Ez a webhely egy olyan csoportban található, amely láthatja az Ön tevékenységeit. A csoportot a következő határozza meg: <ph name="FPS_OWNER" />.</translation>
+<translation id="9106233582039520022">Törli a cookie-kat?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyeket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
 <translation id="9162462602695099906">Ez az oldal veszélyes</translation>

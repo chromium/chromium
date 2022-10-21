@@ -1301,6 +1301,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="224750967938323855">Não mostrar o consentimento de sincronização durante o login</translation>
 <translation id="225340736558643885">Ativar alertas para formulários não seguros</translation>
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
+<translation id="225830954785359083">Impedir que as páginas mostrem pop-ups durante o descarregamento</translation>
 <translation id="2261648512244797294">Desativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="2266422599396179941">Permitir que os usuários enviem feedback</translation>
 <translation id="2269319728625047531">Ativa a exibição do consentimento de sincronização durante o login</translation>
@@ -1360,6 +1361,9 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="2309341709647905294">Não relatar informações sobre periféricos que estão conectados ao dispositivo</translation>
 <translation id="2309390639296060546">Configuração padrão de geolocalização</translation>
 <translation id="2318583605563438459">Permitir que os pais adicionem contas supervisionadas</translation>
+<translation id="2326031114717677574">Frequência de amostragem e coleta de dados de áudio. O mínimo permitido é de 1 minuto.
+
+      Se deixada sem definição, a frequência padrão de 15 minutos é usada.</translation>
 <translation id="2331354174913096226">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços.
 
       Se DnsOverHttpsMode estiver definido como <ph name="SECURE_DNS_MODE_SECURE" />, esta política precisará ser definida e não poderá estar vazia.
@@ -1411,6 +1415,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="2387469539700985783">Esta política não tem nenhum efeito sobre o relatório feito pelo Android.</translation>
 <translation id="238885588439957890">Horário em que o dispositivo usará corrente alternada para carregar a bateria, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="2393862222659066027">Abrir uma lista de URLs e restaurar a última sessão</translation>
+<translation id="2394429297128584919">Não permitir que as páginas enviem solicitações XHR síncronas ao dispensar a página</translation>
 <translation id="2394674739523870144">Se a política for definida como uma lista de strings, as strings serão mescladas com espaços e transmitidas do <ph name="IE_PRODUCT_NAME" /> para o <ph name="PRODUCT_NAME" /> como parâmetros de linha de comando. Se um parâmetro tiver <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> será substituído pelo URL da página a ser aberta. Se nenhum parâmetro tiver <ph name="URL_PLACEHOLDER" />, o URL será anexado ao fim da linha de comando.
 
       As variáveis de ambiente serão expandidas. No <ph name="MS_WIN_NAME" />, <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> será substituída pelo valor da variável de ambiente <ph name="ENV_VARIABLE_VALUE" />.
@@ -1929,6 +1934,7 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2872098849906555324">Desativar a sincronização do Google Drive</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="2874209944580848064">Observação para dispositivos <ph name="PRODUCT_OS_NAME" /> compatíveis com apps Android:</translation>
+<translation id="287474029350993681">Desativar a transmissão de conteúdo para o dispositivo</translation>
 <translation id="2875192972412983412">Especifica o subconjunto de servidores de impressão que serão consultados para impressoras de servidor.
 
       Se esta política for usada, somente as impressoras de servidor com códigos correspondentes aos valores desta política estarão disponíveis para o usuário.
@@ -2418,6 +2424,7 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="3255762580838224124">A definição da política faz com que cada tela gire para a orientação especificada em todas as reinicializações e na primeira vez que ela for conectada depois que o valor da política mudar. O usuário pode mudar a rotação da tela na página de configurações depois de fazer login, mas as mudanças serão revertidas após a próxima reinicialização. Esta política se aplica às telas primária e secundária.
 
       Se ela não for definida, o valor padrão será 0 graus e o usuário poderá mudá-lo. Neste caso, o valor padrão não será reaplicado após a reinicialização.</translation>
+<translation id="3256920103934729145">Impedir que os usuários ignorem páginas de aviso SSL</translation>
 <translation id="3257786863492892609">Controla as políticas do Screencast.</translation>
 <translation id="3258380413685430793">Executar todo o conteúdo do <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Se a política for definida, será possível definir uma lista de URLs de login corporativos (apenas protocolos HTTP e HTTPS). O serviço de proteção de senhas capturará hashes com sal de senhas nesses URLs e os usará para detectar a reutilização. Para que o <ph name="PRODUCT_NAME" /> capture hashes com sal de senhas corretamente, verifique se a página de login segue estas diretrizes (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
@@ -3717,6 +3724,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4632566332417930481">Não permite o uso das Ferramentas para Desenvolvedores em extensões instaladas por uma política corporativa; permite o uso das Ferramentas para desenvolvedores em outros contextos</translation>
 <translation id="4635284822166984665">Horário em que o carregamento do dispositivo será iniciado, interpretado no fuso horário local do dispositivo.</translation>
+<translation id="4636354638176939375">Desativar a criação de usuários supervisionados</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
       Use o caractere curinga "*" para permitir a mescla de todas as políticas de dicionário com suporte.
@@ -4305,6 +4313,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Se esta política não for definida, o destaque de cursor ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="5279539586558702228">Horário em que o dispositivo funcionará usando energia de corrente alternada, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="5283457834853986457">Desativar o localizador de plug-ins (uso suspenso)</translation>
+<translation id="5286579716704722323">Permitir que os usuários ignorem páginas de aviso SSL</translation>
 <translation id="5288772341821359899">Se a política for configurada, o alcance da porta UDP usado por WebRTC será restrito ao intervalo de porta especificado (endpoints inclusos).
 
       Se a política não for configurada ou for definida para a string em branco ou um alcance de porta inválido, o WebRTC terá permissão para usar qualquer porta UDP local disponível.</translation>
@@ -6840,6 +6849,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7824000841504721945">Desativar grupos atômicos de política</translation>
 <translation id="782661371433719637">Não permitir que nenhum site solicite acesso de leitura de arquivos e diretórios pela API File System</translation>
 <translation id="7827127381981620448">App de plataforma</translation>
+<translation id="7829436838673974723">Permitir que as páginas enviem solicitações XHR síncronas ao dispensar a página</translation>
 <translation id="7832225468415136704">Impedir que a Varredura do Chrome verifique o sistema periodicamente e desativar as verificações manuais</translation>
 <translation id="7833148823006528332">Identificador do app Android, por exemplo, "com.google.android.gm" para o Gmail.</translation>
 <translation id="7835218570504220753">Desativar clique automático</translation>
@@ -8251,6 +8261,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 A configuração padrão é permitir que o navegador do host faça a renderização, mas você pode modificá-la, se quiser, e fazer com que o <ph name="PRODUCT_FRAME_NAME" /> renderize páginas HTML por padrão.</translation>
 <translation id="944817693306670849">Definir o tamanho do disco de cache</translation>
 <translation id="957778406002650056">O URL no qual o download da imagem do <ph name="PLUGIN_VM_NAME" /> pode ser feito.</translation>
+<translation id="957920984193041197">Permitir que as páginas mostrem pop-ups durante o descarregamento</translation>
 <translation id="958285142322823422">Proibir que apps da Web de quiosque abram outra janela do navegador</translation>
 <translation id="958577147847681221">Controla se o <ph name="PRODUCT_OS_NAME" /> permite que novas contas de usuário sejam criadas.
 

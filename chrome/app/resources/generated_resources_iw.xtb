@@ -417,6 +417,7 @@
 <translation id="1397594434718759194">‏נכנסת לחשבון ב-Chrome במכשירים האלה, לכן יש לך אפשרות להשתמש בהם כמפתחות אבטחה.</translation>
 <translation id="1398853756734560583">הגדלת החלון</translation>
 <translation id="139911022479327130">ביטול הנעילה של הטלפון ואימות הזהות שלך</translation>
+<translation id="1401216725754314428">מידע נוסף על אתרים קשורים בכרטיסייה חדשה</translation>
 <translation id="1401308693935339022">‏שימוש במיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר הזה. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של שירותים מבוססי-מיקום.</translation>
 <translation id="1403222014593521787">‏לא ניתן להתחבר לשרת ה-proxy</translation>
 <translation id="1405779994569073824">קריסה.</translation>
@@ -585,6 +586,7 @@
 <translation id="1552752544932680961">נהל תוספים</translation>
 <translation id="1553538517812678578">לא מוגבל</translation>
 <translation id="1555130319947370107">כחול</translation>
+<translation id="1556127816860282890">פעילות ברקע ואפקטים חזותיים מסוימים, כמו גלילה חלקה, עשויים להיות מוגבלים</translation>
 <translation id="1556537182262721003">לא היתה אפשרות להעביר ספריית תוספים לפרופיל.</translation>
 <translation id="1558391695376153246">סגירת כרטיסיות מצב אנונימי</translation>
 <translation id="155865706765934889">לוח מגע</translation>
@@ -4125,6 +4127,7 @@
 <translation id="4852916668365817106">צבע סמן העכבר</translation>
 <translation id="4853020600495124913">פתיחה ב&amp;חלון חדש</translation>
 <translation id="4854317507773910281">בחירת חשבון הורה לשליחת בקשת אישור</translation>
+<translation id="4854603338816296098">הכתובת הוסרה</translation>
 <translation id="485480310608090163">עוד הגדרות והרשאות</translation>
 <translation id="4858792381671956233">שאלת את ההורים שלך אם אפשר לגשת לאתר הזה</translation>
 <translation id="4858913220355269194">מסי</translation>
@@ -7636,6 +7639,7 @@
 <translation id="820568752112382238">האתרים שאליהם נכנסת בתדירות הגבוהה ביותר</translation>
 <translation id="8206745257863499010">בלוז</translation>
 <translation id="8206859287963243715">סלולארי</translation>
+<translation id="8208188204689616705">האתרים האלה שייכים לקבוצה שהוגדרה על ידי <ph name="FPS_OWNER" />. לאתרים ששייכים לקבוצה יש הרשאה לראות את הפעילות שלך בקבוצה.</translation>
 <translation id="8208216423136871611">אל תשמור</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{התראה חדשה}two{# התראות חדשות}many{# התראות חדשות}other{# התראות חדשות}}</translation>
 <translation id="821119981794423735">‏צריך לבחור קובץ CSV כדי לייבא סיסמאות למנהל הסיסמאות של Google בחשבון <ph name="USER_EMAIL" /></translation>

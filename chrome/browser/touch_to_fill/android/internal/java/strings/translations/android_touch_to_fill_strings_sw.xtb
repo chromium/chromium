@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1220509181886849806">Ungependa kutumia nenosiri lililohifadhiwa?</translation>
+<translation id="1580351948163139119">Nenosiri la <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Orodha ya vitambulisho vya kujaza kwa kugusa imefunguliwa kwenye nusu ya skrini.</translation>
 <translation id="207576718733492531">Orodha ya vitambulisho vya kujaza kwa kugusa imefungwa.</translation>
 <translation id="2359808026110333948">Endelea</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Orodha ya vitambulisho vya kujaza kwa kugusa imefunguliwa kwenye skrini nzima.</translation>
 <translation id="5591247451101092906">Ungependa kutumia nenosiri au ufunguo wa siri uliohifadhiwa?</translation>
 <translation id="5624120631404540903">Dhibiti manenosiri</translation>
+<translation id="7736236483645733578">Ufunguo wa siri wa <ph name="USERNAME" />, tumia kipengele chako cha kufunga skrini.</translation>
 <translation id="804577341878669140">Endelea kutumia akaunti</translation>
 </translationbundle>

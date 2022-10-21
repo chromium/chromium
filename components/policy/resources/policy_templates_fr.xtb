@@ -1303,6 +1303,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="224750967938323855">Ne pas afficher l'autorisation de synchronisation lors de la procédure de connexion</translation>
 <translation id="225340736558643885">Activer les avertissements pour les formulaires non sécurisés</translation>
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
+<translation id="225830954785359083">Empêcher les pages d'afficher des pop-ups pendant le déchargement</translation>
 <translation id="2261648512244797294">Désactiver l'impression Privet (obsolète)</translation>
 <translation id="2266422599396179941">Autoriser les utilisateurs à envoyer des commentaires</translation>
 <translation id="2269319728625047531">Activer l'affichage de l'autorisation de synchronisation lors de la connexion</translation>
@@ -1362,6 +1363,9 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="2309341709647905294">Ne pas signaler les informations sur les périphériques branchés à l'appareil</translation>
 <translation id="2309390639296060546">Paramètre de géolocalisation par défaut</translation>
 <translation id="2318583605563438459">Autoriser les parents à ajouter des comptes supervisés</translation>
+<translation id="2326031114717677574">Fréquence d'échantillonnage et de collecte des données audio. La valeur minimale autorisée est de 1 minute.
+
+      Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
 <translation id="2331354174913096226">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces.
 
       Vous devez configurer cette règle si vous avez défini "DnsOverHttpsMode" sur <ph name="SECURE_DNS_MODE_SECURE" />. Elle ne peut pas rester vide.
@@ -1413,6 +1417,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="2387469539700985783">Cette règle n'a aucun effet sur les rapports effectués par Android.</translation>
 <translation id="238885588439957890">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil rechargera la batterie sur secteur.</translation>
 <translation id="2393862222659066027">Ouvrir une liste d'URL et restaurer la dernière session</translation>
+<translation id="2394429297128584919">Ne pas autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>
 <translation id="2394674739523870144">Si cette règle est définie sur une liste de chaînes, celles-ci sont reliées par des espaces avant d'être transmises entre <ph name="IE_PRODUCT_NAME" /> et <ph name="PRODUCT_NAME" /> comme paramètres de ligne de commande. Si un paramètre contient <ph name="URL_PLACEHOLDER" />, l'URL <ph name="URL_PLACEHOLDER" /> est remplacée par l'URL de la page à ouvrir. Si aucun paramètre ne contient l'URL <ph name="URL_PLACEHOLDER" />, elle est ajoutée à la fin de la ligne de commande.
 
       Les variables d'environnement sont développées. Sous <ph name="MS_WIN_NAME" />, la variable <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> est remplacée par la valeur de la variable d'environnement <ph name="ENV_VARIABLE_VALUE" />.
@@ -1927,6 +1932,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2872098849906555324">Désactiver la synchronisation Google Drive</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2874209944580848064">Remarque concernant les appareils <ph name="PRODUCT_OS_NAME" /> compatibles avec les applications Android :</translation>
+<translation id="287474029350993681">Désactiver la diffusion de contenus sur l'appareil</translation>
 <translation id="2875192972412983412">Permet de spécifier le sous-ensemble des serveurs d'impression qui sont interrogés pour accéder aux imprimantes disponibles qui y sont associées.
 
       Si cette règle est configurée, seules les imprimantes de serveur dont l'ID correspond aux valeurs définies dans cette règle sont proposées aux utilisateurs.
@@ -2416,6 +2422,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3255762580838224124">Si cette règle est configurée, chaque écran pivote en fonction de l'orientation spécifiée, à chaque redémarrage ainsi que la première fois qu'il est affiché après une modification de la valeur de cette règle. Une fois connectés, les utilisateurs peuvent modifier le paramètre de rotation d'écran. Toutefois, le paramètre initial sera rétabli au redémarrage suivant. Cette règle s'applique à l'écran principal, ainsi qu'aux écrans secondaires.
 
       Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, et les utilisateurs sont libres de la modifier. Dans ce cas, la valeur par défaut n'est pas rétablie au redémarrage.</translation>
+<translation id="3256920103934729145">Empêcher les utilisateurs de passer les pages d'avertissement SSL</translation>
 <translation id="3257786863492892609">Contrôle les règles pour l'enregistreur d'écran.</translation>
 <translation id="3258380413685430793">Exécuter tout le contenu <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Permet de dresser la liste des URL de connexion d'entreprise (protocoles HTTP et HTTPS uniquement). Le service de protection par mot de passe enregistre des copies hachées et après salage des mots de passe au niveau de ces URL afin de détecter les mots de passe réutilisés. Pour que <ph name="PRODUCT_NAME" /> enregistre correctement ces copies, vérifiez que vos pages de connexion respectent bien les consignes détaillées sur https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
@@ -3695,6 +3702,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
 <translation id="4632566332417930481">Interdire l'utilisation des outils pour les développeurs avec les extensions installées par la stratégie d'entreprise, mais autoriser l'utilisation des outils pour les développeurs dans les autres cas</translation>
 <translation id="4635284822166984665">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à se recharger.</translation>
+<translation id="4636354638176939375">Désactiver la création d'utilisateurs supervisés</translation>
 <translation id="4646626362889216307">Cette règle permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes. Cette fusion concerne les clés de premier niveau du dictionnaire provenant de chaque source. La clé qui prévaut est celle dont la source présente la plus haute priorité.
 
       Utilisez le caractère générique "*" pour autoriser la fusion de toutes les règles de dictionnaire compatibles.
@@ -4281,6 +4289,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur est initialement désactivée, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="5279539586558702228">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à fonctionner sur secteur.</translation>
 <translation id="5283457834853986457">Désactiver l'outil de recherche de plug-ins (obsolète)</translation>
+<translation id="5286579716704722323">Autoriser les utilisateurs à passer les pages d'avertissement SSL</translation>
 <translation id="5288772341821359899">Si cette règle est définie, la portée du port UDP utilisé par WebRTC est restreinte à l'intervalle de port spécifié (points de terminaison inclus).
 
       Si cette règle n'est pas définie, ou si elle est définie sur la chaîne vide ou sur une portée de port non valide, WebRTC peut utiliser n'importe quel port UDP local disponible.</translation>
@@ -6811,6 +6820,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 <translation id="7824000841504721945">Désactiver les groupes atomiques de règles</translation>
 <translation id="782661371433719637">Interdire à tous les sites de demander l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
 <translation id="7827127381981620448">Application de plate-forme</translation>
+<translation id="7829436838673974723">Autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>
 <translation id="7832225468415136704">Empêcher Chrome Cleanup d'analyser périodiquement le système, et désactiver les analyses manuelles</translation>
 <translation id="7833148823006528332">Identifiant d'appli Android (par ex. : "com.google.android.gm" pour Gmail)</translation>
 <translation id="7835218570504220753">Désactiver les clics automatiques</translation>
@@ -6934,6 +6944,10 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 <translation id="7962093600142350905">Cette règle détermine si des imprimantes Privet disponibles s'affichent dans la boîte de dialogue d'aperçu avant impression à l'attention des utilisateurs.
       Si cette règle est activée, les imprimantes Privet disponibles s'affichent.
       Si vous désactivez cette règle ou ne la configurez pas, les imprimantes Privet ne s'affichent pas dans la boîte de dialogue d'aperçu avant impression, cette méthode d'impression étant obsolète.</translation>
+<translation id="7967976640306183631">Si cette règle est activée, les utilisateurs ne peuvent pas faire de captures d'écran avec des raccourcis clavier ni avec des API d'extension. Si elle est désactivée ou qu'elle n'est pas configurée, les captures d'écran sont autorisées.
+
+      Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />, cela n'empêche pas d'effectuer des captures d'écran avec des applis tierces ou du système d'exploitation.
+      </translation>
 <translation id="7970844378072291834">Forcer l'activation du mode HTTPS uniquement (pas encore pris en charge)</translation>
 <translation id="7972642710812569707">Forcer la réactivation de WebSQL dans des contextes tiers.</translation>
 <translation id="7973609468423251675">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
@@ -8223,6 +8237,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
       Le paramétrage par défaut de cette stratégie autorise le navigateur hôte à effectuer le rendu. Toutefois, vous pouvez remplacer ce paramétrage pour que <ph name="PRODUCT_FRAME_NAME" /> assure le rendu des pages HTML par défaut.</translation>
 <translation id="944817693306670849">Définir la taille du cache disque</translation>
 <translation id="957778406002650056">URL depuis laquelle l'image de <ph name="PLUGIN_VM_NAME" /> peut être téléchargée.</translation>
+<translation id="957920984193041197">Autoriser les pages à afficher des pop-ups pendant le déchargement</translation>
 <translation id="958285142322823422">Interdire à une appli Web kiosque d'ouvrir une autre fenêtre de navigateur</translation>
 <translation id="958577147847681221">Détermine si <ph name="PRODUCT_OS_NAME" /> autorise la création de comptes utilisateur.
 

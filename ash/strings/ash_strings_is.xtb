@@ -253,6 +253,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2322173485024759474">Til baka um staf</translation>
 <translation id="2339073806695260576">Ýttu á pennahnappinn á hillunni til að skrifa niður glósu, taka skjámynd, nota leysigeislabendilinn eða stækkunarglerið.</translation>
 <translation id="2341729377289034582">Læst á lóðrétt</translation>
+<translation id="2345226652884463045">Ýttu á „Enter“ eða leit + bilslá til að velja texta til að breyta.</translation>
 <translation id="2350794187831162545">Unnið er úr tali á <ph name="LANGUAGE" /> í tækinu og það virkar án nettengingar. Þú getur breytt tungumáli raddinnsláttar í „Stillingar &gt; Aðgengi“.</translation>
 <translation id="2352467521400612932">Stillingar penna</translation>
 <translation id="2354174487190027830">Virkjar <ph name="NAME" /></translation>
@@ -435,6 +436,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3413817803639110246">Ekkert að sjá enn</translation>
 <translation id="3428447136709161042">Viltu aftengjast <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Strjúktu frá hægri til að fara til baka</translation>
+<translation id="3431517721463707585">Skrifborð 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Breyta áminningu</translation>
 <translation id="3435967511775410570">Þekkt fingrafar</translation>
@@ -675,6 +677,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vinstri)</translation>
 <translation id="4734965478015604180">Lárétt</translation>
+<translation id="4735944890391795473">Skrifborð 12</translation>
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4740516757091333363">Viltu eyða vistuðu skrifborði?</translation>
 <translation id="4752784485658729358">Aðeins 6 vistuð skrifborð leyfð. Fjarlægðu skrifborð til að vista nýtt.</translation>
@@ -695,6 +698,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4860284199500934869">Athugaðu nettenginguna til að sækja <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu þar til niðurhali er lokið.</translation>
 <translation id="4864369630010738180">Skráir inn...</translation>
+<translation id="4864648187878336334">Skrifborð 15</translation>
 <translation id="4868492592575313542">virkjað</translation>
 <translation id="4872237917498892622">Alt+leitarlykill eða Shift</translation>
 <translation id="4881695831933465202">Opna</translation>
@@ -722,6 +726,7 @@ Tengdu tækið við rafmagn.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Skrifborð 16</translation>
 <translation id="5003993274120026347">Næsta setning</translation>
 <translation id="5016558321564993266">Sýna/fela merkipenna. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Nú er tíminn á þrotum</translation>
@@ -738,6 +743,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5098537242461068432">Skrifborð og gluggar opnaðir aftur</translation>
 <translation id="5104236669533825617">Ekki er hægt að búa til skjáupptöku</translation>
 <translation id="5107522548814527560">Vefur</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Sýna næsta mánuð</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
 <translation id="5147567197700016471">Ólæst</translation>
@@ -828,6 +834,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vill ná athygli þinni.</translation>
+<translation id="5662075790140998213">Skrifborð 10</translation>
 <translation id="5662709761327382534">Upptaka hljóðnema <ph name="CURRENT_STATE" />. Ýttu á færslulykilinn (enter) til að <ph name="NEW_STATE" /> á upptöku hljóðnema</translation>
 <translation id="5669267381087807207">Virkjar</translation>
 <translation id="5673434351075758678">Úr „<ph name="FROM_LOCALE" />“ í „<ph name="TO_LOCALE" />“ eftir að stillingarnar þínar voru samstilltar.</translation>
@@ -1029,6 +1036,8 @@ Ný uppsetning</translation>
 <translation id="6753390234084146956">flipar</translation>
 <translation id="6757237461819837179">Ekkert efni í spilun</translation>
 <translation id="6777216307882431711">Knýr tengd USB-C tæki</translation>
+<translation id="6781002679438061620">Skrifborð 9</translation>
+<translation id="6782182743534150858">Skrifborð 13</translation>
 <translation id="6786750046913594791">Loka möppu</translation>
 <translation id="6787595647772650851">Endurheimta síðustu lotu</translation>
 <translation id="6790428901817661496">Spila</translation>
@@ -1090,6 +1099,7 @@ Ný uppsetning</translation>
 <translation id="7098053464892629930">Sæktu forritið fyrir <ph name="NAME" /> á Google Play til að sjá alla tiltæka eiginleika</translation>
 <translation id="7098389117866926363">USB-C tæki (vinstra tengi að aftan)</translation>
 <translation id="7106330611027933926">Sýna verkstiku</translation>
+<translation id="7116969082764510092">Skrifborð 11</translation>
 <translation id="7118268675952955085">skjámynd</translation>
 <translation id="7126996685418858413">Opnað í liðinni viku</translation>
 <translation id="7130207228079676353">LÍKLEGAST</translation>
@@ -1188,6 +1198,7 @@ Ný uppsetning</translation>
 <translation id="7662283695561029522">Ýttu til að stilla</translation>
 <translation id="7670953955701272011">Opna þessa dagsetningu í Google dagatali</translation>
 <translation id="7671610481353807627">Forritum er raðað eftir lit</translation>
+<translation id="7672095158465655885">Tengdist við <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Myndalestur stilltur á <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Bæta nýju farsímakerfi við</translation>
@@ -1472,5 +1483,6 @@ Ný uppsetning</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 <translation id="98515147261107953">Langsnið</translation>
 <translation id="990277280839877440">Glugganum „<ph name="WINDOW_TITILE" />“ lokað.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Fáðu nýjustu eiginleikana og öryggisúrbætur. Uppfærslur fara fram í bakgrunninum.</translation>
 </translationbundle>

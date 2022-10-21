@@ -253,6 +253,7 @@
 <translation id="2322173485024759474">ถอยกลับทีละตัวอักษร</translation>
 <translation id="2339073806695260576">แตะปุ่มสไตลัสในชั้นวางเพื่อจดโน้ต บันทึกภาพหน้าจอ ใช้ตัวชี้เลเซอร์ หรือแว่นขยาย</translation>
 <translation id="2341729377289034582">ล็อกไว้ที่แนวตั้งแล้ว</translation>
+<translation id="2345226652884463045">กด Enter หรือค้นหา + Space เพื่อเลือกข้อความที่จะแก้ไข</translation>
 <translation id="2350794187831162545">คำพูดภาษา<ph name="LANGUAGE" />ได้รับการประมวลผลในเครื่องและทำงานแบบออฟไลน์ได้แล้ว คุณเปลี่ยนภาษาการพิมพ์ตามคำบอกได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="2352467521400612932">การตั้งค่าสไตลัส</translation>
 <translation id="2354174487190027830">กำลังเปิดใช้งาน <ph name="NAME" /></translation>
@@ -364,6 +365,7 @@
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="301282384882049174">แชร์โดยผู้ดูแลระบบ</translation>
+<translation id="3023826154041300060">หยุดพูด</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">เปิดไฟล์</translation>
@@ -861,6 +863,7 @@
 <translation id="5804651031882187592">ปิดการตั้งค่า "ล็อกซิม"</translation>
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
+<translation id="5826319843084741655">คลิกและลากเพื่อเลือกข้อความ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">กดค้างเพื่อขยายใหญ่สุด</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ไม่ได้เปิดใช้งาน</translation>

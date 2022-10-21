@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">Қараңғы режим</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Күндер арасында жылжу үшін бағыттауыш пернелерді пайдаланыңыз.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, орнатылған қолданба</translation>
+<translation id="1415846719612499304">Желі тізімін көрсету. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Хабарландыруда ұсынылған әрекетті орындау үшін құрылғының құлпын ашыңыз</translation>
 <translation id="1420408895951708260">"Түнгі жарық" функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Телефондағы соңғы фотосуреттерді және медианы <ph name="DEVICE_TYPE" /> құрылғысында көру</translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">Бір әріпке артқа жылжу</translation>
 <translation id="2339073806695260576">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Лазерлік меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
 <translation id="2341729377289034582">Тік қалыпта құлыпталды</translation>
+<translation id="2345226652884463045">Өзгерту керек мәтінді таңдау үшін Enter немесе іздеу + бос пернелерін басыңыз.</translation>
 <translation id="2350794187831162545">Мына тілдегі сөз құрылғыда өңделеді және офлайн қолжетімді: <ph name="LANGUAGE" />. Мәтінді дауыспен енгізу тілін "Параметрлер &gt; Арнайы мүмкіндіктер" бөлімінен өзгерте аласыз.</translation>
 <translation id="2352467521400612932">Стилус параметрлері</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> белсендіру</translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">Select to Speak мәзірі</translation>
 <translation id="2689613560355655046">8-ші жұмыс үстелі</translation>
 <translation id="2695305337569143674">веб</translation>
+<translation id="2697697418792422688">Пернетақта параметрлерін көрсету. <ph name="KEYBOARD_NAME" /> пернетақтасы таңдалды.</translation>
 <translation id="2700493154570097719">Пернетақтаны орнатыңыз</translation>
 <translation id="2704781753052663061">Басқа Wi-Fi желілеріне қосылу</translation>
 <translation id="2705001408393684014">Микрофонды қосу/өшіру түймесі. <ph name="STATE_TEXT" /></translation>
@@ -340,6 +343,7 @@
 <translation id="2865888419503095837">Желі ақпараты</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878884018241093801">Соңғы элементтер жоқ</translation>
+<translation id="2885950158625301909">Толық ақпарат</translation>
 <translation id="2891209721153296020">"Таңдаудан бас тарту"</translation>
 <translation id="2894949423239620203">Кабельдің өнімділікке әсері тиюі мүмкін</translation>
 <translation id="2914580577416829331">Экраннан түсірілгендер</translation>
@@ -776,6 +780,7 @@
 <translation id="5327248766486351172">Аты</translation>
 <translation id="5329548388331921293">Қосылуда…</translation>
 <translation id="5331975486040154427">USB-C құрылғысы (сол жақ артқы порты)</translation>
+<translation id="533282197239610265">Трансляциялау құрылғыларын көрсету</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (оң)</translation>
 <translation id="5352250171825660495">Қараңғы режим қосулы.</translation>
 <translation id="5356963482258194581">Қараңғы және жарық режим арасында ауысыңыз. Жұмыс үстелінде тінтуірдің оң жақ түймесін басып, Тұсқағаз және стиль функциясын таңдаңыз.</translation>
@@ -807,10 +812,12 @@
 <translation id="553675580533261935">Сеанстан шығу</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Дауыстап оқуды қосу/өшіру</translation>
+<translation id="5558091555391176027">Nearby Share функциясының маңайдағыларға көріну режимін ауыстыру</translation>
 <translation id="5560420195677022218">Телефондағы қолданбаларды <ph name="DEVICE_TYPE" /> құрылғысынан көріңіз.</translation>
 <translation id="556042886152191864">Түйме</translation>
 <translation id="5571066253365925590">Bluetooth қосылды</translation>
 <translation id="557563299383177668">Келесі абзац</translation>
+<translation id="5577082622442191756">Bluetooth функциясын ауыстыру. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Phone Hub функциясын пайдалану үшін телефоныңызда Bluetooth қосылып тұруы керек.</translation>
 <translation id="5580000943347215299">Жинақ</translation>
 <translation id="558849140439112033">Түсіруге керек аймақты таңдау үшін сүйреңіз.</translation>
@@ -879,6 +886,7 @@
 <translation id="595202126637698455">Өнімділікті бақылау қосылған</translation>
 <translation id="5955304353782037793">қолданба</translation>
 <translation id="5958529069007801266">Бақылаудағы пайдаланушы</translation>
+<translation id="5965524703725988602">Қараңғы режимді ауыстыру. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Терезені жазу үшін басыңыз</translation>
 <translation id="5977415296283489383">Құлақаспап</translation>
 <translation id="5978382165065462689">Remote Assistance арқылы экранды бөлісіп басқару.</translation>
@@ -1053,6 +1061,7 @@
 <translation id="6961121602502368900">Жұмыс профилінде дыбыссыз телефон функциясы қолжетімді емес.</translation>
 <translation id="6961840794482373852">Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Page Up пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарыға бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="696267987219125751">Камерамен кадрлау өшірулі.</translation>
+<translation id="6964690557625666701">Барлық бекітілген элемент Shelf Party режимінде.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1121,6 +1130,7 @@
 <translation id="7378889811480108604">Батареяны үнемдеу режимі өшірулі.</translation>
 <translation id="7382680553121047388">Қосу</translation>
 <translation id="7384028040782072252">Қолданбалар ретін өзгерту үшін тінтуірдің оң жақ түймесін кез келген жерден басыңыз.</translation>
+<translation id="7386767620098596324">Желі байланысын ауыстыру. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Мұны кейінірек "Параметрлер" бөлімінде реттей аласыз.</translation>
 <translation id="7405710164030118432">Құрылғының құлпын ашу үшін Family Link ата-анаға арналған кіру кодын енгізіңіз.</translation>
 <translation id="7406608787870898861">Мобильдік желіні реттеуді аяқтаңыз</translation>
@@ -1260,6 +1270,7 @@
 <translation id="8142441511840089262">Екі рет басу</translation>
 <translation id="8142699993796781067">Жеке желі</translation>
 <translation id="8144760705599030999">Басқа құрылғыларыңызбен жылдамырақ жұптау үшін <ph name="NAME" /> құрылғысын <ph name="EMAIL" /> аккаунтына сақтаңыз.</translation>
+<translation id="8149413265954228307">Bluetooth параметрлерін көрсету. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Жабу үшін Ctrl + W пернелер тіркесімін басыңыз.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Автоматты толтыру</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Бұл параметрді әкімшіңіз басқарады.</translation>
@@ -1320,6 +1331,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ұйымы <ph name="FEATURE_NAME" /> функциясын <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Бас тарту үшін Alt+Іздеу не Shift пернесін басыңыз.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> ажыратымдылығына қолдау көрсетпейді. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> етіп өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
+<translation id="8496402167048257517">Nearby Share параметрлерін көрсету</translation>
 <translation id="85123341071060231">Chromebook құрылғысында Bluetooth өшірулі. Оның құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
 <translation id="8513108775083588393">Автоматты бұру</translation>
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
@@ -1358,6 +1370,8 @@
 <translation id="8724318433625452070">Толық экранды түсіру</translation>
 <translation id="8734991477317290293">Ол басылған пернелерді "ұрлап алу" әрекетін жасауы мүмкін.</translation>
 <translation id="8735678380411481005">Пернетақта жарығының түсі</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Қолданбалар мен веб-беттердің осы құрылғыға қосылған камераларды пайдалануына мүмкіндік беру үшін камера рұқсатын қосыңыз.</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>

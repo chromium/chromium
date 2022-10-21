@@ -276,6 +276,7 @@
 <translation id="1244303850296295656">Өргөтгөлийн алдаа</translation>
 <translation id="1245628370644070008">Орон нутгийн өгөгдлийг сэргээх</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />-г суулгаж чадсангүй: Зургийн URL <ph name="HTTP_ERROR" /> алдааны кодыг буцаасан. Админтайгаа холбогдоно уу.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{Мэдэгдлийг 1 сайтад зөвшөөрөөгүй}other{Мэдэгдлийг {NUM_SITES} сайтад зөвшөөрөөгүй}}</translation>
 <translation id="1251366534849411931">Хээтэй хаалтыг нээхээр хүлээж байсан <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Энэ нь сайтууд болон суулгасан аппуудын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг арилгана</translation>
 <translation id="1251578593170406502">Мобайл дата сүлжээг скан хийж байна...</translation>
@@ -1654,6 +1655,7 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-г устгахын тулд Windows-г унтраана уу.</translation>
 <translation id="2477065602824695373">Та олон сэлгүүр тохируулсан тул автоматаар скан хийхийг унтраасан байна.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />"-ийн Медиа-Файл зөвшөөрөл</translation>
+<translation id="24786041351753425">Өгөгдөл сэргээх үйлчилгээг идэвхжүүлнэ үү.</translation>
 <translation id="2480868415629598489">Хуулж, буулгах өгөгдлөө өөрчлөх</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="2482895651873876648">Табыг <ph name="GROUP_NAME" /> бүлэг рүү зөөсөн - <ph name="GROUP_CONTENTS" /></translation>
@@ -2269,6 +2271,7 @@
 <translation id="3024374909719388945">24-цагийг ашиглах</translation>
 <translation id="3027296729579831126">Ойролцоо хуваалцах онцлогийг асаах</translation>
 <translation id="3029466929721441205">Тавиур дахь мэдрэгч үзгийн хэрэгслийг харуулах</translation>
+<translation id="3029808567601324798">Түгжих цаг боллоо</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> танаас өнөөдөр шинэчлэлт татаж авахыг шаардаж байна. Таныг интернэтэд холбогдоход шинэчлэлтийг автоматаар татаж авна.}other{<ph name="MANAGER" /> танаас эцсийн хугацаанаас өмнө шинэчлэлт татаж авахыг шаардаж байна. Таныг интернэтэд холбогдоход шинэчлэлтийг автоматаар татаж авна.}}</translation>
 <translation id="3030967311408872958">Нар мандахаас нар жаргах хүртэл</translation>
 <translation id="3031417829280473749">Х Агент</translation>
@@ -4218,6 +4221,7 @@
 <translation id="4901154724271753917">Саяхан хаагдсан табуудыг дэлгэх</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу.</translation>
 <translation id="49027928311173603">Серверээс татсан бодлого хүчин төгөлдөр бус байна: <ph name="VALIDATION_ERROR" /> .</translation>
+<translation id="4903967893652864401">Энэ нь дэвсгэрийн үйл ажиллагаа болон жигд гүйлгэх зэрэг визуал эффектийг хязгаарласнаар батарейн цэнэгийг уртасгана.</translation>
 <translation id="4906490889887219338">Сүлжээний файл хуваалцахыг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Энэ өргөтгөл таны сайтын өгөгдлийг хэзээ уншиж, өөрчилж болохыг сонгоно уу</translation>
 <translation id="4907161631261076876">Энэ файлыг ихэвчлэн татдаггүй бөгөөд аюултай байж болзошгүй.</translation>
@@ -5324,6 +5328,7 @@
 <translation id="5971037678316050792">Bluetooth адаптерийн статус болон хослолийг хянах</translation>
 <translation id="597235323114979258">Бусад очих газрыг харах</translation>
 <translation id="5972543790327947908">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> эсвэл <ph name="APP_NAME_3" />-д нээх боломжтой хэвээр байна.</translation>
+<translation id="5972559880616357748"><ph name="SITE_GROUP" />-н бусад үйлдэл</translation>
 <translation id="5972666587303800813">Ажилладаггүй үйлчилгээ</translation>
 <translation id="5972708806901999743">Дээд хэсэг рүү шилжих</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" />-ийн эхлүүлэх</translation>
@@ -8505,6 +8510,7 @@
 <translation id="8987927404178983737">Сар</translation>
 <translation id="8989359959810288806">Модем болгох төлөвийг сэргээх</translation>
 <translation id="8991520179165052608">Сайт таны микрофоныг ашиглах боломжтой</translation>
+<translation id="8993059306046735527">Хэрэв та <ph name="DEVICE_TYPE" />-н нууц үгээ мартвал дотоод өгөгдлөө сэргээх боломжтой хэвээр байна. Та Google Бүртгэлдээ нэвтрэх эсвэл бүртгэл сэргээх онцлогийг ашиглах шаардлагатай.</translation>
 <translation id="899384117894244799">Хязгаарласан хэрэглэгчийг хасах</translation>
 <translation id="899403249577094719">Нетскейп гэрчилгээнд суурилсан холбоос</translation>
 <translation id="899657321862108550">Chrome-г хүссэн газраа</translation>
@@ -8604,6 +8610,7 @@
 <translation id="9078316009970372699">Шуурхай модем болгохыг идэвхгүй болгох</translation>
 <translation id="9078842827190780028">Хажуугийн самбарт бусад хайлтын илэрцийг харна уу</translation>
 <translation id="9079267182985899251">Энэ сонголтыг удахгүй дэмжихээ болино. Табыг үзүүлэхийн тулд <ph name="GOOGLE_MEET" />-г ашиглана уу.</translation>
+<translation id="9080175821499742274">Санах ой хэмнэгч идэвхгүй табуудаас санах ойг чөлөөлөх бөгөөд ингэснээр үүнийг идэвхтэй табууд болон бусап апп ашиглах боломжтой.</translation>
 <translation id="9080971985541434310">таны сонирхлыг тооцоолно - Chrome таны сонирхлыг тооцоолох боломжтой</translation>
 <translation id="9081543426177426948">Таны зочилсон сайтуудыг Нууцлалын горимд хадгалдаггүй</translation>
 <translation id="9084064520949870008">Цонх хэлбэрээр нээх</translation>
@@ -8793,6 +8800,7 @@
 <translation id="964790508619473209">Дэлгэцийн зохион байгуулалт</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" />-с мессеж илгээх, хүлээн авах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast-тай холбоотой асуудал мэдээлэх</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Саяхан маш олон мэдэгдэл илгээсэн 1 сайтыг шалгах}other{Саяхан маш олон мэдэгдэл илгээсэн {NUM_SITES} сайтыг шалгах}}</translation>
 <translation id="967398046773905967">HID төхөөрөмжүүдэд хандахыг ямар ч сайтад бүү зөвшөөр</translation>
 <translation id="967624055006145463">Хадгалсан өгөгдөл</translation>
 <translation id="96774243435178359">Удирддаг хэвлэгч</translation>

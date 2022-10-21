@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1220509181886849806">Defnyddio'r cyfrinair sydd wedi'i gadw?</translation>
+<translation id="1580351948163139119">Cyfrinair ar gyfer <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Rhestr o fanylion adnabod i'w llenwi ar ôl agor ar hanner uchder.</translation>
 <translation id="207576718733492531">Mae'r rhestr o fanylion adnabod sydd i'w llenwi wrth gyffwrdd ar gau.</translation>
 <translation id="2359808026110333948">Parhau</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Rhestr o fanylion adnabod i'w llenwi ar ôl agor ar uchder llawn.</translation>
 <translation id="5591247451101092906">Defnyddio cyfrinair neu god pas sydd wedi'i gadw?</translation>
 <translation id="5624120631404540903">Rheoli cyfrineiriau</translation>
+<translation id="7736236483645733578">Cod pas ar gyfer <ph name="USERNAME" />, defnyddiwch eich clo sgrîn.</translation>
 <translation id="804577341878669140">Parhau gyda'r cyfrif</translation>
 </translationbundle>

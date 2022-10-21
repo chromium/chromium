@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. తేదీల మధ్య నావిగేట్ చేయడానికి బాణం కీలను ఉపయోగించండి.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ఇన్‌స్టాల్ చేసిన యాప్</translation>
+<translation id="1415846719612499304">నెట్‌వర్క్ లిస్ట్‌ను చూడండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">నోటిఫికేషన్ చర్యను మేనేజ్ చేయడానికి పరికరాన్ని అన్‌లాక్ చేయండి</translation>
 <translation id="1420408895951708260">రాత్రి కాంతిని టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">మీ ఫోన్‌లోని తాజా ఫోటోలు, మీడియాను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">ఒక అక్షరం వెనుకకు</translation>
 <translation id="2339073806695260576">గమనికను రాయడానికి, స్క్రీన్‌షాట్‌ను తీయడానికి, లేజర్ పాయింటర్ లేదా భూతద్దాన్ని ఉపయోగించడానికి అరలో స్టైలస్ బటన్‌ను నొక్కండి.</translation>
 <translation id="2341729377289034582">నిలువు ప్రదర్శనకు లాక్ చేయబడింది</translation>
+<translation id="2345226652884463045">ఎడిటింగ్ కోసం టెక్స్ట్‌ను ఎంచుకోవడానికి enterను లేదా search + spaceను నొక్కండి.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> స్పీచ్ ఇప్పుడు పరికరంలోనే ప్రాసెస్ చేయబడింది, ఆఫ్‌లైన్‌లో పని చేస్తుంది. సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీకి వెళ్లడం ద్వారా మీరు మీ డిక్టేషన్ భాషను మార్చవచ్చు.</translation>
 <translation id="2352467521400612932">స్టైలస్ సెట్టింగ్‌లు</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ని సక్రియం చేస్తోంది</translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">'వినడానికి ఎంచుకోండి' మెనూ</translation>
 <translation id="2689613560355655046">డెస్క్ 8</translation>
 <translation id="2695305337569143674">వెబ్</translation>
+<translation id="2697697418792422688">కీబోర్డ్ సెట్టింగ్‌లను చూడండి. <ph name="KEYBOARD_NAME" /> ఎంచుకోబడింది.</translation>
 <translation id="2700493154570097719">మీ కీబోర్డ్‌ని సెట్ చేయండి</translation>
 <translation id="2704781753052663061">ఇతర Wi-Fi నెట్‌వర్క్‌లలో చేరండి</translation>
 <translation id="2705001408393684014">మైక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
@@ -362,6 +365,7 @@
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="301282384882049174">మీ అడ్మినిస్ట్రేటర్ ద్వారా షేర్ చేయబడింది</translation>
+<translation id="3023826154041300060">మాట్లాడటాన్ని ఆపండి</translation>
 <translation id="3033545621352269033">ఆన్</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" />‌తో కలపండి</translation>
 <translation id="3036649622769666520">ఫైళ్ళను తెరువు</translation>
@@ -783,6 +787,7 @@
 <translation id="5327248766486351172">పేరు</translation>
 <translation id="5329548388331921293">కనెక్ట్ అవుతోంది...</translation>
 <translation id="5331975486040154427">USB-C పరికరం (ఎడమవైపు వెనుక పోర్ట్)</translation>
+<translation id="533282197239610265">ప్రసార పరికరాలను చూడండి</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (కుడి)</translation>
 <translation id="5352250171825660495">ముదురు రంగు రూపం ఆన్‌లో ఉంది</translation>
 <translation id="5356963482258194581">ముదురు రంగు, లేత రంగు రూపాల మధ్య స్విచ్ అవ్వండి. డెస్క్‌టాప్‌పై కుడి క్లిక్ చేసి, వాల్‌పేపర్ &amp; స్టయిల్‌ను ఎంచుకోండి.</translation>
@@ -814,10 +819,12 @@
 <translation id="553675580533261935">సెషన్ నుండి నిష్క్రమిస్తోంది</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">డిక్టేషన్‌ను టోగుల్ చేయి</translation>
+<translation id="5558091555391176027">సమీప షేరింగ్ అధిక విజిబిలిటీ మోడ్‌ను టోగుల్ చేయండి</translation>
 <translation id="5560420195677022218">మీ ఫోన్‌లోని యాప్‌లను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
 <translation id="556042886152191864">బటన్</translation>
 <translation id="5571066253365925590">బ్లూటూత్‌ ప్రారంభించబడింది</translation>
 <translation id="557563299383177668">తర్వాతి పేరా</translation>
+<translation id="5577082622442191756">బ్లూటూత్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ఫోన్ హబ్‌ను ఉపయోగించడానికి మీ ఫోన్‌లో బ్లూటూత్ ఎనేబుల్ చేసి ఉందో, లేదో చెక్ చేయండి</translation>
 <translation id="5580000943347215299">లైబ్రరీ</translation>
 <translation id="558849140439112033">క్యాప్చర్ చేసేందుకు ప్రదేశాన్ని ఎంచుకోవడానికి లాగండి</translation>
@@ -863,6 +870,7 @@
 <translation id="5804651031882187592">"లాక్ SIM" సెట్టింగ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />ను యాక్టివేట్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="5825969630400862129">కనెక్ట్ చేయబడిన పరికరాల సెట్టింగ్‌లు</translation>
+<translation id="5826319843084741655">టెక్స్ట్‌ను ఎంచుకోవడానికి క్లిక్ చేసి, లాగండి</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /> ఆపివేయి</translation>
 <translation id="584525477304726060">పెద్దదిగా చేయడానికి నొక్కి, ఉంచండి</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> యాక్టివేట్ చేసి లేదు.</translation>
@@ -887,6 +895,7 @@
 <translation id="595202126637698455">పనితీరుని గుర్తించడం ప్రారంభించబడింది</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">పర్యవేక్షించబడే వినియోగదారు</translation>
+<translation id="5965524703725988602">ముదురు రంగు రూపాన్ని టోగుల్ చేయండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">విండోను రికార్డ్ చేయడానికి enterను నొక్కండి</translation>
 <translation id="5977415296283489383">హెడ్‌ఫోన్</translation>
 <translation id="5978382165065462689">రిమోట్ సహాయం విధానంలో మీ స్క్రీన్ నియంత్రణను షేర్ చేస్తోంది.</translation>
@@ -1133,6 +1142,7 @@
 <translation id="7378889811480108604">బ్యాటరీ సేవర్ మోడ్ ఆఫ్‌లో ఉంది</translation>
 <translation id="7382680553121047388">ఆన్ చేయండి</translation>
 <translation id="7384028040782072252">మీ యాప్‌ల క్రమాన్ని మార్చడానికి, ఎక్కడైనా కుడి క్లిక్ ఇవ్వండి</translation>
+<translation id="7386767620098596324">నెట్‌వర్క్ కనెక్షన్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">మీరు సెట్టింగ్‌ల నుండి తర్వాత ఎప్పుడైనా సెటప్ చేయవచ్చు.</translation>
 <translation id="7405710164030118432">పరికరాన్ని అన్‌లాక్ చేయడానికి, మీ Family Link తల్లి/తండ్రి యాక్సెస్ కోడ్‌ను నమోదు చేయండి</translation>
 <translation id="7406608787870898861">మీ మొబైల్ నెట్‌వర్క్‌ను సెటప్ చేయడాన్ని పూర్తి చేయండి</translation>
@@ -1273,6 +1283,7 @@
 <translation id="8142441511840089262">రెండు సార్లు క్లిక్ చేయండి</translation>
 <translation id="8142699993796781067">ప్రైవే. నెట్‌వర్క్</translation>
 <translation id="8144760705599030999">మీ ఇతర పరికరాలతో ఫాస్ట్ పెయిరింగ్ కోసం మీ <ph name="NAME" />ను <ph name="EMAIL" />కు సేవ్ చేయండి</translation>
+<translation id="8149413265954228307">బ్లూటూత్ సెట్టింగ్‌లను చూడండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">మూసివేయడానికి Ctrl + W నొక్కండి.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ఆటోఫిల్</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
@@ -1333,6 +1344,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_NAME" />ను <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">రద్దు చేయడానికి Alt+Search లేదా Shiftను నొక్కండి.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ను సపోర్ట్ చేయదు. <ph name="FALLBACK_RESOLUTION" />కు రిజల్యూషన్ మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'ధృవీకరించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
+<translation id="8496402167048257517">సమీప షేరింగ్ సెట్టింగ్‌లను చూడండి</translation>
 <translation id="85123341071060231">మీ Chromebookలో బ్లూటూత్ ఆఫ్ చేసి ఉంది. మీ Chromebookను అన్‌లాక్ చేయడానికి, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="8513108775083588393">ఆటో-రొటేట్</translation>
 <translation id="851458219935658693">ప్రస్తుత డెస్క్ నుండి విండోలను చూపండి, అనే రేడియో బటన్ ఎంచుకోబడింది</translation>

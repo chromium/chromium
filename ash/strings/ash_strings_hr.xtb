@@ -253,6 +253,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2322173485024759474">Slovo unatrag</translation>
 <translation id="2339073806695260576">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona, upotrijebili laserski pokazivač ili povećalo.</translation>
 <translation id="2341729377289034582">Zaključan okomiti prikaz</translation>
+<translation id="2345226652884463045">Pritisnite Enter ili tipku za pretraživanje i razmaknicu da biste odabrali tekst za uređivanje.</translation>
 <translation id="2350794187831162545">Govor na jeziku <ph name="LANGUAGE" /> sada se obrađuje lokalno i funkcionira offline. Jezik diktiranja možete promijeniti u odjeljku Postavke &gt; Pristupačnost.</translation>
 <translation id="2352467521400612932">Postavke pisaljke</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
@@ -364,6 +365,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="301282384882049174">Dijeli vaš administrator</translation>
+<translation id="3023826154041300060">Zaustavljanje govora</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3033912566804961911">Kombiniranje s radnom površinom <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otvori datoteke</translation>
@@ -860,6 +862,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5804651031882187592">Isključivanje postavke Zaključaj SIM</translation>
 <translation id="5805809050170488595">Kliknite da biste aktivirali mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
+<translation id="5826319843084741655">Kliknite i povucite za odabir teksta</translation>
 <translation id="5837036133683224804">Zaustavite <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Zadržite da biste maksimizirali</translation>
 <translation id="5856638668464565213">Mreža <ph name="NETWORK_NAME" /> nije aktivirana.</translation>

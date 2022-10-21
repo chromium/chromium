@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1220509181886849806">להשתמש בסיסמה השמורה?</translation>
+<translation id="1580351948163139119">הסיסמה של <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">רשימת פרטי הכניסה למילוי במגע פתוחה בחצי מגובה המסך.</translation>
 <translation id="207576718733492531">רשימת פרטי הכניסה למילוי במגע סגורה.</translation>
 <translation id="2359808026110333948">המשך</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">רשימת פרטי הכניסה למילוי במגע פתוחה בגובה המלא של המסך.</translation>
 <translation id="5591247451101092906">להשתמש בסיסמה או במפתח הגישה שנשמרו?</translation>
 <translation id="5624120631404540903">ניהול סיסמאות</translation>
+<translation id="7736236483645733578">מפתח הגישה של <ph name="USERNAME" />, יש להשתמש בנעילת המסך.</translation>
 <translation id="804577341878669140">המשך הפעולה עם החשבון</translation>
 </translationbundle>

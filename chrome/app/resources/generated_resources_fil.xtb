@@ -461,6 +461,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
            • Made-delete ang cookies at iba pang pansamantalang data ng site
             <ph name="LINE_BREAKS" />
            Hindi maaapektuhan ang mga bookmark, history, at naka-save na password.</translation>
+<translation id="1425040197660226913">Hindi ma-upload. Gumamit ng larawang mas maliit sa 20MB.</translation>
 <translation id="1426410128494586442">Oo</translation>
 <translation id="142655739075382478">Naka-block ang <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">I-click ang Subukang Muli at tanggapin ang prompt sa iyong computer</translation>
@@ -588,6 +589,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1545177026077493356">Awtomatikong Kiosk Mode</translation>
 <translation id="1545749641540134597">I-scan ang QR Code</translation>
 <translation id="1545775234664667895">Naka-install na temang "<ph name="THEME_NAME" />"</translation>
+<translation id="1546031833947068368">{COUNT,plural, =1{Hindi bubukas ulit ang iyong Incognito window.}one{Hindi bubukas ulit ang iyong # Incognito window.}other{Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="1546280085599573572">Binago ng extension na ito ang ipinapakitang page kapag na-click mo ang button ng Home.</translation>
 <translation id="1546452108651444655">Gustong mag-install ni <ph name="CHILD_NAME" /> ng <ph name="EXTENSION_TYPE" /> na magagawang:</translation>
 <translation id="1547808936554660006">Nauunawaan kong hindi aalisin ng Powerwash ang mga naka-install na profile ng eSIM.</translation>
@@ -1018,6 +1020,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1908591798274282246">Buksan Ulit ang Nakasarang Grupo</translation>
 <translation id="1909880997794698664">Sigurado ka bang gusto mong permanenteng panatilihin sa kiosk mode ang device na ito?</translation>
 <translation id="1910721550319506122">Maligayang pagdating!</translation>
+<translation id="1910736334623230603">Hindi makapaghanap ng maraming larawan. Paisa-isang dagdagan ng larawan.</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1916502483199172559">Default na pulang avatar</translation>
@@ -1534,6 +1537,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2352810082280059586">Awtomatikong nase-save sa <ph name="LOCK_SCREEN_APP_NAME" /> ang mga tala sa lock screen. Mananatili ang iyong pinakabagong tala sa lock screen.</translation>
 <translation id="2353297238722298836">Pinapayagan ang camera at mikropono</translation>
 <translation id="2355314311311231464">Hindi naisagawa ang pag-provision dahil hindi makuha ang mga detalye ng iyong account. Pakisubukan ulit. Code ng error: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Mga opsyon sa pagtitipid ng enerhiya</translation>
 <translation id="2355604387869345912">I-on ang Instant na Pag-tether</translation>
 <translation id="2356070529366658676">Magtanong</translation>
 <translation id="2357330829548294574">Alisin si <ph name="USER_NAME" /></translation>
@@ -1782,6 +1786,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2591895621127187078">Tingnan ang iyong email para pumili ng bagong password</translation>
 <translation id="2593499352046705383">Bago magsimula, tiyaking mayroon kang backup ng iyong data. Mao-overwrite ang iyong hard drive kapag na-install ang <ph name="DEVICE_OS" />. Matuto pa sa g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Hanapin sa Google o i-type ang URL</translation>
+<translation id="25957578727513093">Para makapunta rito nang mas mabilis, magdagdag ng shortcut sa Google Password Manager</translation>
 <translation id="2599048253926156421">Nakopya ang username sa clipboard</translation>
 <translation id="2602501489742255173">Mag-swipe pataas para makapagsimula</translation>
 <translation id="2603115962224169880">Linisin ang computer</translation>
@@ -2885,6 +2890,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3642699533549879077">Kapag may ibang taong tumitingin sa iyong screen, makakatanggap ka ng alerto at itatago ang content ng notification.</translation>
 <translation id="3643962751030964445">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang device na ito. Humihiling ang <ph name="DEVICE_MANAGER" /> ng bagong profile para sa account na <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Gumalaw nang bahagya para mag-capture ng ibang bahagi ng fingerprint.</translation>
+<translation id="3647654707956482440">Hindi magamit ang link na ito. Tingnan kung may mga typo o gumamit ng ibang link para subukan ulit.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Natukoy ang <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3650753875413052677">Error sa Pagpapa-enroll</translation>
@@ -6784,6 +6790,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7371490947952970241">Puwede mong i-off ang Lokasyon sa pamamagitan ng pag-off sa pangunahing setting ng Lokasyon sa device na ito. Puwede mo ring i-off ang paggamit ng Wi-Fi, mga mobile network, at mga sensor para sa lokasyon sa mga setting ng lokasyon.</translation>
 <translation id="7371917887111892735">Paliitin ang mga tab sa lapad ng naka-pin na tab</translation>
 <translation id="7374376573160927383">Pamahalaan ang mga USB device</translation>
+<translation id="7376124766545122644">Hindi magamit ang link na ito. Tiyaking nagsisimula ang iyong link sa 'http://' o 'https://' para subukan ulit.</translation>
 <translation id="7376553024552204454">I-highlight ang cursor ng mouse kapag gumagalaw ito</translation>
 <translation id="737728204345822099">Posibleng papanatilihin sa iyong security key ang tala ng pagbisita mo sa site na ito.</translation>
 <translation id="7377451353532943397">Patuloy na i-block ang access sa sensor</translation>
@@ -6794,6 +6801,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7380622428988553498">Naglalaman ng mga invalid na character ang pangalan ng device</translation>
 <translation id="7380768571499464492">Na-update ang <ph name="PRINTER_NAME" /></translation>
 <translation id="7382085868019811559">Pinapayagan ng Suporta sa Legacy Browser (Legacy Browser Support o LBS) na mabuksan ang ilang partikular na pattern ng URL sa alternatibong browser na sumusuporta sa mga legacy na feature na kinakailangan para mapatakbo nang maayos ang mga site na iyon.</translation>
+<translation id="738322632977123193">Hindi ma-upload. Gumamit ng larawan na nasa isa sa mga format na ito: .jpg, .gif, .png, .bmp, .tif, o .webp</translation>
 <translation id="73843634555824551">Mga input at keyboard</translation>
 <translation id="7384687527486377545">Awtomatikong pag-uulit ng keyboard</translation>
 <translation id="7385490373498027129">Permanenteng made-delete ang lahat ng file at lokal na data para sa lahat ng user sa <ph name="DEVICE_TYPE" /> na ito.</translation>
@@ -6922,6 +6930,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7495778526395737099">Nakalimutan mo ba ang iyong dating password?</translation>
 <translation id="7497981768003291373">Wala kang kamakailang nakuhang log ng text ng WebRTC.</translation>
 <translation id="7501957181231305652">o</translation>
+<translation id="7502220299952823578">Idagdag sa listahang "palaging panatilihing aktibo ang mga site na ito"</translation>
 <translation id="7503191893372251637">Uri ng Netscape Certificate</translation>
 <translation id="7503985202154027481">Itatabi sa iyong security key ang tala ng pagbisita mo sa site na ito.</translation>
 <translation id="750509436279396091">Buksan ang folder ng mga download</translation>

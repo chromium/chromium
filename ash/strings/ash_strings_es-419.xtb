@@ -92,6 +92,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utiliza las teclas de flecha para navegar por las fechas.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, app instalada</translation>
+<translation id="1415846719612499304">Mostrar la lista de redes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloquea el dispositivo para llevar a cabo una acción con las notificaciones</translation>
 <translation id="1420408895951708260">Activar o desactivar la Luz nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Ve las fotos y el contenido multimedia recientes del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
@@ -252,6 +253,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2322173485024759474">Volver letra por letra</translation>
 <translation id="2339073806695260576">Presiona el botón de la pluma stylus en la biblioteca para tomar notas y capturas de pantalla, y usar el puntero láser o la lupa.</translation>
 <translation id="2341729377289034582">Se bloqueó en posición vertical</translation>
+<translation id="2345226652884463045">Presiona Intro o la tecla de búsqueda + la barra espaciadora para seleccionar el texto que deseas editar.</translation>
 <translation id="2350794187831162545">La voz en <ph name="LANGUAGE" /> se procesa de manera local y funciona sin conexión. Para cambiar tu idioma de Dictado, ve a Configuración &gt; Accesibilidad.</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
@@ -308,6 +310,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2678852583403169292">Menú de Seleccionar para pronunciar</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Mostrar la configuración del teclado. Se seleccionó <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Establecer el teclado</translation>
 <translation id="2704781753052663061">Unirse a otras redes Wi-Fi</translation>
 <translation id="2705001408393684014">Activa o desactiva el micrófono. <ph name="STATE_TEXT" /></translation>
@@ -778,6 +781,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5329548388331921293">Conectando…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (puerto lateral izquierdo trasero)</translation>
+<translation id="533282197239610265">Mostrar dispositivos de transmisión</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (derecho)</translation>
 <translation id="5352250171825660495">El Tema oscuro está activado</translation>
 <translation id="5356963482258194581">Cambia entre los temas oscuro y claro. Haz clic con el botón derecho en el escritorio y elige Estilo y fondo de pantalla.</translation>
@@ -809,10 +813,12 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="553675580533261935">Salir de la sesión</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
+<translation id="5558091555391176027">Activar o desactivar la alta visibilidad de Compartir con Nearby</translation>
 <translation id="5560420195677022218">Mira las apps del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="557563299383177668">Párrafo siguiente</translation>
+<translation id="5577082622442191756">Activar o desactivar Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Verifica que la conexión Bluetooth esté habilitada en tu teléfono para poder usar Phone Hub.</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
@@ -881,6 +887,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5958529069007801266">Usuario supervisado</translation>
+<translation id="5965524703725988602">Activar o desactivar el Tema oscuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Presiona intro para grabar la ventana</translation>
 <translation id="5977415296283489383">Auriculares</translation>
 <translation id="5978382165065462689">Se está compartiendo el control de la pantalla mediante la Asistencia remota.</translation>
@@ -1124,6 +1131,7 @@ Nueva instalación</translation>
 <translation id="7378889811480108604">El modo de Ahorro de batería está desactivado</translation>
 <translation id="7382680553121047388">Sí</translation>
 <translation id="7384028040782072252">Haz clic con el botón derecho en cualquier lugar para reorganizar las apps</translation>
+<translation id="7386767620098596324">Activar o desactivar la conexión de red. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Puedes configurarlo más tarde en la Configuración cuando lo desees.</translation>
 <translation id="7405710164030118432">Para desbloquear el dispositivo, ingresa el código de acceso parental de Family Link</translation>
 <translation id="7406608787870898861">Completa la configuración de la red móvil</translation>
@@ -1263,6 +1271,7 @@ Nueva instalación</translation>
 <translation id="8142441511840089262">Doble clic</translation>
 <translation id="8142699993796781067">Red privada</translation>
 <translation id="8144760705599030999">Guarda tu <ph name="NAME" /> en <ph name="EMAIL" /> para permitir la vinculación rápida con tus otros dispositivos</translation>
+<translation id="8149413265954228307">Mostrar la configuración de Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Presiona Ctrl + W para cerrar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />; autocompletar</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />: El administrador controla esta configuración.</translation>
@@ -1323,6 +1332,7 @@ Nueva instalación</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> tiene <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Presiona Alt y la tecla de búsqueda o mayúscula para cancelarlo.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admite la resolución <ph name="SPECIFIED_RESOLUTION" />. Se cambió la resolución a <ph name="FALLBACK_RESOLUTION" />. Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
+<translation id="8496402167048257517">Mostrar la configuración de Compartir con Nearby</translation>
 <translation id="85123341071060231">El Bluetooth de la Chromebook está desactivado. Para desbloquear la Chromebook, ingresa la contraseña.</translation>
 <translation id="8513108775083588393">Giro autom.</translation>
 <translation id="851458219935658693">Está seleccionado el botón que muestra las ventanas del escritorio actual</translation>

@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Preporučuje se za najbolji doživljaj</translation>
 <translation id="1818308510395330587">Da biste dozvolili da <ph name="APP_NAME" /> koristi PR, uključite i kameru u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Izvor: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Srodni sajtovi mogu da vide vaše aktivnosti u grupi</translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1919345977826869612">Oglasi</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Uvrsti sve sajtove u okviru ovog domena</translation>
 <translation id="4883854917563148705">Podešavanja kojima se upravlja ne mogu da se resetuju</translation>
 <translation id="4887024562049524730">Pre nego što dozvolite sajtovima da koriste uređaj i podatke virtuelne realnosti prikazuje se upit (preporučeno)</translation>
+<translation id="4955223779495905865">Sajt koji posećujete može da ugradi sadržaj sa drugih sajtova, na primer, slike, oglase i tekst. Bilo koji od ovih sajtova može da čuva kolačiće i druge podatke da bi personalizovao vaš doživljaj.</translation>
 <translation id="4962975101802056554">Opozovite sve dozvole za uređaj</translation>
 <translation id="497421865427891073">Kretanje unapred</translation>
 <translation id="4976702386844183910">Poslednja poseta: <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Dozvoli sajtovima da pristupaju senzorima za pokret (preporučeno)</translation>
 <translation id="5050380848339752099">Ovaj sajt će deliti informacije sa aplikacijom izvan režima bez arhiviranja.</translation>
 <translation id="5063480226653192405">Korišćenje</translation>
+<translation id="5082281938627763039">Ovim se brišu kolačići i drugi podaci o sajtovima za <ph name="FPS_MEMBER" /> i sajtove u grupi sajtova vlasnika <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Mobilni sajt</translation>
 <translation id="509133520954049755">Traži prikaz za računare</translation>
 <translation id="5100237604440890931">Skupljeno je – Kliknite da biste proširili.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="5690795753582697420">Kamera je isključena u Android podešavanjima</translation>
+<translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci o sajtu za <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Ovim brišete sve podatke i kolačiće koje čuva sajt <ph name="ORIGIN" /> ili njegova aplikacija na početnom ekranu.</translation>
 <translation id="5771720122942595109">Dozvola <ph name="PERMISSION_1" /> je blokirana</translation>
 <translation id="5804241973901381774">Dozvole</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Dozvoli zvuk za određeni sajt.</translation>
 <translation id="789180354981963912">Blokirajte kolačiće trećih strana u režimu bez arhiviranja:</translation>
 <translation id="7940722705963108451">Podseti me</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}one{<ph name="FPS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}few{<ph name="FPS_MEMBERS_COUNT" /> sajta u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}other{<ph name="FPS_MEMBERS_COUNT" /> sajtova u grupi sajtova vlasnika <ph name="FPS_OWNER" /> koja može da vidi vaše aktivnosti u grupi}}</translation>
 <translation id="7986741934819883144">Izaberite kontakt</translation>
 <translation id="7999064672810608036">Želite li stvarno da obrišete sve lokalne podatke, uključujući kolačiće, i resetujete sve dozvole za ovaj veb-sajt?</translation>
 <translation id="8007176423574883786">Isključeno je za ovaj uređaj</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Uključi zvuk mikrofona</translation>
 <translation id="851751545965956758">Onemogući sajtovima da se povezuju sa uređajima</translation>
 <translation id="8525306231823319788">Ceo ekran</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajt}one{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajt}few{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajta}other{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajtova}}</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>
 <translation id="8676374126336081632">Obriši unos</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="9019902583201351841">Ovim upravljaju tvoji roditelji</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Ovaj sajt je u grupi koja može da vidi vaše aktivnosti. Grupu definiše <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Želite da izbrišete kolačiće?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Uključite dozvole za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Ova stranica je opasna</translation>

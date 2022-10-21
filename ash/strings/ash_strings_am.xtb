@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">ጠቆር ያለ ገጽታ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />። በቀኖች መካከል ለማሰስ የቀስት ቁልፎችን ይጠቀሙ።</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />፣ የተጫነ መተግበሪያ</translation>
+<translation id="1415846719612499304">የአውታረ መረብ ዝርዝርን አሳይ። <ph name="STATE_TEXT" />።</translation>
 <translation id="1419738280318246476">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን ይክፈቱ</translation>
 <translation id="1420408895951708260">የምሽት ብርሃንን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">በደብዳቤ ይመለሱ</translation>
 <translation id="2339073806695260576">ማስታወሻ ለመያዝ፣ ቅጽበታዊ ገጽ እይታን ለማንሳት፣ ሌዘር ጠቋሚውን ወይም ማጉያ መነጽሩን ለመጠቀም በመደርደሪያው ላይ ያለውን የስታይለስ አዝራሩን መታ ያድርጉ።</translation>
 <translation id="2341729377289034582">ወደ አቀባዊ ተቆልፏል</translation>
+<translation id="2345226652884463045">ጽሁፉን ለአርትዖት ለመምረጥ አስገባን ወይም ፈልግ + ክፍት ቦታን ይጫኑ።</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> ንግግር በአካባቢው የሚሰናዳ እና ከመስመር ውጭ የሚሰራ ነው። በቅንብሮች&gt; ተደራሽነት ውስጥ የበቃል ማስጻፍ ቋንቋዎን መለወጥ ይችላሉ።</translation>
 <translation id="2352467521400612932">የስቲለስ ቅንብሮች</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ን በማግበር ላይ</translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">ለመናገር-ምረጥ ምናሌ</translation>
 <translation id="2689613560355655046">ዴስክ 8</translation>
 <translation id="2695305337569143674">ድር</translation>
+<translation id="2697697418792422688">የቁልፍ ሰሌዳ ቅንብሮችን አሳይ። <ph name="KEYBOARD_NAME" /> ተመርጧል።</translation>
 <translation id="2700493154570097719">የእርስዎን ቁልፍ ሰሌዳ ያቀናብሩ</translation>
 <translation id="2704781753052663061">ሌላ Wi-Fi አውታረ መረቦችን ይቀላቀሉ</translation>
 <translation id="2705001408393684014">ማይክሮፎንን ቀያይር። <ph name="STATE_TEXT" /></translation>
@@ -777,6 +780,7 @@
 <translation id="5327248766486351172">ስም</translation>
 <translation id="5329548388331921293">በማገናኘት ላይ...</translation>
 <translation id="5331975486040154427">USB-C መሣሪያ (የግራ ጎን ኋላ ወደብ)</translation>
+<translation id="533282197239610265">የCast መሣሪያዎችን አሳይ</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ቀኝ)</translation>
 <translation id="5352250171825660495">ጠቆር ያለ ገጽታ በርቷል</translation>
 <translation id="5356963482258194581">ጠቆር ያለ እና ነጣ ያለ ገጽታ ይቀያይሩ። በዴስክቶፕ ላይ የቀኝ ጠቅታ ያድርጉ ከዚያም ልጣፍ እና ቅጥን ይምረጡ።</translation>
@@ -808,10 +812,12 @@
 <translation id="553675580533261935">ከክፍለ-ጊዜ በመውጣት ላይ</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">የቃል ጽሑፍን ቀያይር</translation>
+<translation id="5558091555391176027">የአቅራቢያ አጋራ ከፍተኛ ታይነት ደረጃን ቀያይር</translation>
 <translation id="5560420195677022218">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን መተግበሪያዎች ይመልከቱ</translation>
 <translation id="556042886152191864">አዘራር</translation>
 <translation id="5571066253365925590">ብሉቱዝ ነቅቷል</translation>
 <translation id="557563299383177668">ቀጣይ አንቀጽ</translation>
+<translation id="5577082622442191756">ብሉቱዝን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="5577281275355252094">የስልክ ሃብን ለመጠቀም ብሉቱዝ በስልክዎ ላይ እንደነቃ ያረጋግጡ</translation>
 <translation id="5580000943347215299">ቤተ-መጽሐፍት</translation>
 <translation id="558849140439112033">ለመቅረጽ አካባቢ ለመምረጥ ይጎትቱ</translation>
@@ -880,6 +886,7 @@
 <translation id="595202126637698455">አፈጻጸም መከታተያ ነቅቷል</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">ክትትል የሚደረግበት ተጠቃሚ</translation>
+<translation id="5965524703725988602">ጠቆር ያለ ገጽታን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="5976112937189445008">መስኮት ለመቅዳት አስገባን ይጫኑ</translation>
 <translation id="5977415296283489383">ጆሮ ማዳጀጫ</translation>
 <translation id="5978382165065462689">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል በማጋራት ላይ።</translation>
@@ -1123,6 +1130,7 @@
 <translation id="7378889811480108604">የባትሪ ኃይል ቆጣቢ ሁነታ ጠፍቷል</translation>
 <translation id="7382680553121047388">በርቷል</translation>
 <translation id="7384028040782072252">መተግበሪያዎችዎን እንደገና ለመደርደር በማንኛውም ቦታ ላይ በቀኝ ጠቅ ያድርጉ</translation>
+<translation id="7386767620098596324">የአውታረ መረብ ግንኙነትን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="7392563512730092880">ሁልጊዜ በኋላ ላይ በቅንብሮች ውስጥ ማቀናበር ይችላሉ።</translation>
 <translation id="7405710164030118432">መሣሪያውን ለመክፈት የእርስዎን የ Family Link የወላጅ መዳረሻ ኮድ ያስገቡ</translation>
 <translation id="7406608787870898861">የእርስዎን ሞባይል አውታረ መረብ ማቀናበር ያጠናቅቁ</translation>
@@ -1262,6 +1270,7 @@
 <translation id="8142441511840089262">ድርብ ጠቅታ</translation>
 <translation id="8142699993796781067">የግል አውታረ መረብ</translation>
 <translation id="8144760705599030999">ከሌሎች መሣሪያዎችዎ ጋር በፍጥነት ለማጣመር የእርስዎ <ph name="NAME" />ን ወደ <ph name="EMAIL" /> ላይ ያስቀምጡ</translation>
+<translation id="8149413265954228307">የብሉቱዝ ቅንብሮችን አሳይ። <ph name="STATE_TEXT" />።</translation>
 <translation id="8152092012181020186">ለመዝጋት Ctrl + W ይጫኑ።</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />፣ ራስሰር ሙላ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
@@ -1322,6 +1331,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> አለው።</translation>
 <translation id="8477270416194247200">ለመሰረዝ Alt+Search ወይም Shift ይጫኑ።</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ን አይደግፍም። ጥራቱ ወደ <ph name="FALLBACK_RESOLUTION" /> ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>
+<translation id="8496402167048257517">የአቅራቢያ አጋራ ቅንብሮችን አሳይ</translation>
 <translation id="85123341071060231">የእርስዎ Chromebook ብሉቱዝ ጠፍቷል። የእርስዎን Chromebook ለመክፈት የይለፍ ቃል ያስገቡ።</translation>
 <translation id="8513108775083588393">በራስ ሰር አሽከርክር</translation>
 <translation id="851458219935658693">አሁን ካለ ዴስክ መስኮቶችን አሳይ፣ የራዲዮ አዝራር ተመርጧል</translation>

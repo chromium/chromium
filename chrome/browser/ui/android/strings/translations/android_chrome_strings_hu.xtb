@@ -270,6 +270,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2496180316473517155">Böngészés előzményei</translation>
 <translation id="2497852260688568942">A szinkronizálást letiltotta a rendszergazda</translation>
 <translation id="250020030759455918">Láthatja a(z) <ph name="SITE_NAME" /> bejelentkezési állapotát, a böngészőadatokat és a webhelyadatokat a Chrome-ban</translation>
+<translation id="2510106555128151389">A(z) <ph name="WEBAPK_NAME" /> telepítése…</translation>
 <translation id="2513403576141822879">A <ph name="BEGIN_LINK" />Szinkronizálás és Google<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan</translation>
 <translation id="2517472476991765520">Keresés</translation>
 <translation id="2523184218357549926">A felkeresett oldalak URL-címének elküldése a Google-nak</translation>
@@ -1280,6 +1281,7 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="7887334752153342268">Másodpéldány</translation>
 <translation id="789763218334337857">A Chrome használata</translation>
 <translation id="7903184275147100332">Ez eltarthat néhány percig</translation>
+<translation id="7914399737746719723">Alkalmazás telepítve</translation>
 <translation id="7919123827536834358">Automatikus fordítás ezekről a nyelvekről</translation>
 <translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="7929962904089429003">A menü megnyitása</translation>

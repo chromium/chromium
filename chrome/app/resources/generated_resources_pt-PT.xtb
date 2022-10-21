@@ -274,6 +274,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1244303850296295656">Erro de extensão</translation>
 <translation id="1245628370644070008">Recuperação de dados locais</translation>
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem devolveu um código de erro <ph name="HTTP_ERROR" />. Contacte o seu administrador.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{Notificações não permitidas para 1 site}other{Notificações não permitidas para {NUM_SITES} sites}}</translation>
 <translation id="1251366534849411931">Chaveta de abertura esperada: <ph name="ERROR_LINE" />.</translation>
 <translation id="1251480783646955802">Esta ação irá limpar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites e apps instaladas.</translation>
 <translation id="1251578593170406502">A procurar redes de dados móveis…</translation>
@@ -1643,6 +1644,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2476974672882258506">Encerre o Windows para desinstalar o <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Uma vez que configurou vários interruptores, a análise automática foi desativada.</translation>
 <translation id="2478176599153288112">Autorizações de ficheiros multimédia para "<ph name="EXTENSION" />"</translation>
+<translation id="24786041351753425">Ative o serviço de recuperação de dados.</translation>
 <translation id="2480868415629598489">Modificar os dados que copia e cola</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2482895651873876648">Separador movido para o grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -2259,6 +2261,7 @@ Pretende pará-lo?</translation>
 <translation id="3024374909719388945">Utilizar relógio de 24h</translation>
 <translation id="3027296729579831126">Ativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="3029466929721441205">Mostrar ferramentas da caneta stylus na prateleira</translation>
+<translation id="3029808567601324798">Tempo até ao bloqueio</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que transfira uma atualização hoje. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}other{<ph name="MANAGER" /> requer que transfira uma atualização antes do prazo. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}}</translation>
 <translation id="3030967311408872958">Do pôr do sol ao nascer do sol</translation>
 <translation id="3031417829280473749">Agente X</translation>
@@ -2517,6 +2520,7 @@ Pretende pará-lo?</translation>
 <translation id="3308852433423051161">A carregar o Assistente Google...</translation>
 <translation id="3309330461362844500">ID do perfil do certificado</translation>
 <translation id="3311445899360743395">Os dados associados a esta app serão removidos deste dispositivo.</translation>
+<translation id="3312470654018965389">A configurar o contentor do Linux</translation>
 <translation id="3312883087018430408">Para pesquisar um site específico ou parte do Chrome, introduza o respetivo atalho na barra de endereço, seguido do seu atalho de teclado preferido. Por exemplo, para pesquisar apenas marcadores, introduza "@bookmarks" e, em seguida, prima a tecla Tab ou Espaço.</translation>
 <translation id="3313622045786997898">Valor de assinatura do certificado</translation>
 <translation id="3313950410573257029">Verificar ligação</translation>
@@ -4207,6 +4211,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4901154724271753917">Expanda os fechados recentemente</translation>
 <translation id="4901309472892185668">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política transferida do servidor é inválida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Isto aumenta a duração da bateria ao limitar a atividade em segundo plano e os efeitos visuais, como o deslocamento suave.</translation>
 <translation id="4906490889887219338">Configure ou efetue a gestão de partilhas de ficheiros na rede. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Escolha quando esta extensão pode ler e alterar os seus dados de sites</translation>
 <translation id="4907161631261076876">Este ficheiro não é habitualmente transferido e pode ser perigoso.</translation>
@@ -5314,6 +5319,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5971037678316050792">Controlar estado e sincronização do adaptador Bluetooth</translation>
 <translation id="597235323114979258">Ver mais destinos</translation>
 <translation id="5972543790327947908">Alguns links suportados continuarão a ser abertos na app <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> ou <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">Mais ações para <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Serviço autónomo</translation>
 <translation id="5972708806901999743">Mover para o início</translation>
 <translation id="5972826969634861500">Iniciar o <ph name="PRODUCT_NAME" /></translation>
@@ -8500,6 +8506,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989359959810288806">Atualizar estado da ligação (à Internet) via telemóvel</translation>
 <translation id="8991520179165052608">O site pode utilizar o microfone.</translation>
+<translation id="8993059306046735527">Caso se esqueça da sua palavra-passe do <ph name="DEVICE_TYPE" />, ainda pode restaurar os seus dados locais. Vai ter de iniciar sessão na sua Conta Google ou usar a recuperação de conta.</translation>
 <translation id="899384117894244799">Remover utilizador restrito</translation>
 <translation id="899403249577094719">URL base do certificado Netscape</translation>
 <translation id="899657321862108550">O seu Chrome, em qualquer lugar</translation>
@@ -8599,6 +8606,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9078316009970372699">Desativar Ligação (à Internet) via telemóvel instantânea</translation>
 <translation id="9078842827190780028">Veja mais resultados da pesquisa no painel lateral</translation>
 <translation id="9079267182985899251">Em breve, esta opção deixará de ser suportada. Para apresentar um separador, utilize <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">A Poupança de memória liberta memória de separadores inativos para que possa ser usada por separadores ativos e outras apps.</translation>
 <translation id="9080971985541434310">estima os seus interesses – o Chrome pode estimar os seus interesses</translation>
 <translation id="9081543426177426948">Os sites que visita não são guardados na Navegação anónima</translation>
 <translation id="9084064520949870008">Abrir como Janela</translation>
@@ -8788,6 +8796,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="964790508619473209">Posicionamento do ecrã</translation>
 <translation id="965211523698323809">Envie e receba mensagens de texto com o <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Comunicar um problema com o Google Cast</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Reveja 1 site que enviou recentemente muitas notificações}other{Reveja {NUM_SITES} sites que enviaram recentemente muitas notificações}}</translation>
 <translation id="967398046773905967">Não permitir o acesso de sites a dispositivos HID</translation>
 <translation id="967624055006145463">Dados armazenados</translation>
 <translation id="96774243435178359">Impressoras geridas</translation>

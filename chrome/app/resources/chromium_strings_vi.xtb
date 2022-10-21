@@ -62,6 +62,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="2560420686485554789">Chromium cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="2572494885440352020">Trình trợ giúp của Chromium</translation>
 <translation id="2583187216237139145">Quản trị viên hồ sơ công việc có thể xóa mọi dữ liệu trên Chromium được tạo trong quá trình sử dụng hồ sơ này (chẳng hạn như hoạt động tạo dấu trang, các trang web đã truy cập, mật khẩu và các tùy chọn cài đặt khác). <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Tiếp tục sử dụng Chromium</translation>
 <translation id="2648074677641340862">Đã xảy ra lỗi hệ điều hành khi cài đặt. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="2661879430930417727">Nếu các bạn dùng chung một thiết bị, thì bạn bè và gia đình có thể duyệt web một cách riêng biệt cũng như thiết lập Chromium theo ý muốn</translation>
 <translation id="2669853942967761236">Chromium đã chặn tệp lưu trữ này vì tệp này có thể ẩn chứa phần mềm độc hại</translation>
@@ -103,6 +104,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Chuyển sang hồ sơ hiện có trên Chromium?</translation>
 <translation id="3412460710772753638">Trong Trình quản lý mật khẩu trên thiết bị này</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Quản trị viên của bạn đã định cấu hình để Chromium đóng nếu không hoạt động trong hơn 1 phút.}other{Quản trị viên của bạn đã định cấu hình để Chromium đóng nếu không hoạt động trong hơn # phút.}}</translation>
 <translation id="3430503420100763906">Với các hồ sơ trên Chromium, bạn có thể tách biệt mọi nội dung của mình khi dùng trình duyệt này. Tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
 <translation id="347328004046849135">Chromium sẽ thông báo cho bạn khi bạn đăng nhập bằng mật khẩu bị lộ</translation>
 <translation id="3474745554856756813">Thao tác này sẽ xóa <ph name="ITEMS_COUNT" /> mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chromium dưới dạng <ph name="USER_EMAIL" />.</translation>
@@ -184,6 +186,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="538767207339317086">Cho phép đăng nhập vào Chromium</translation>
 <translation id="5398878173008909840">Hiện đã có phiên bản Chromium mới.</translation>
 <translation id="5405650547142096840">Xóa khỏi Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium sẽ đóng ngay bây giờ.}=1{Chromium sẽ đóng sau 1 giây.}other{Chromium sẽ đóng sau # giây.}}</translation>
 <translation id="5427571867875391349">Đặt Chromium là trình duyệt mặc định của bạn</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium phiên bản beta</translation>
 <translation id="5473971139929175403">Chromium có thể không hoạt động đúng cách do không còn được hỗ trợ trên bản phân phối Linux này</translation>
@@ -272,6 +275,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="6940431691900807093">Sau đó, trang web mà bạn truy cập có thể đề nghị Chromium cung cấp mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy. Chromium có thể chia sẻ tối đa 3 mối quan tâm.</translation>
 <translation id="6964305034639999644">Mở đường liên kết trong cửa sổ ẩn danh của Chromium</translation>
 <translation id="6978145336957848883">Mật khẩu yếu thường dễ đoán. Chromium có thể <ph name="BEGIN_LINK" />tạo mật khẩu mạnh và ghi nhớ mật khẩu này cho bạn<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium không hoạt động</translation>
 <translation id="6985329841647292029">Điều khoản của ChromiumOS</translation>
 <translation id="6990124437352146030">Chromium cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
 <translation id="7025789849649390912">Đã dừng cài đặt.</translation>

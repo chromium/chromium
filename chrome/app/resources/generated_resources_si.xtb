@@ -424,6 +424,7 @@
 <translation id="1397594434718759194">ඔබ මෙම උපාංගවල Chrome වෙත පුරා ඇත, එබැවින් ඔබට ඒවා ආරක්ෂක යතුරු ලෙස භාවිත කළ හැකිය.</translation>
 <translation id="1398853756734560583">විශාල කරන්න</translation>
 <translation id="139911022479327130">ඔබේ දුරකථනය අගුලු ඇර ඒ ඔබ බව තහවුරු කරන්න</translation>
+<translation id="1401216725754314428">නව පටිත්තකින් අදාළ අඩවි ගැන තව දැන ගන්න</translation>
 <translation id="1401308693935339022">ස්ථානය භාවිත කරන්න. මෙම උපාංගයේ ස්ථානය භාවිත කිරීමට ස්ථාන අවසරය සහිත යෙදුම් සහ සේවාවලට ඉඩ දෙන්න. Google ස්ථාන දත්ත ආවර්තීයව එකතු කෙරෙන අතර, ස්ථාන නිරවද්‍යතාව සහ ස්ථානය මත පදනම් වූ සේවා වැඩි දියුණු කිරීමට මෙම දත්ත නිර්නාමික ආකාරයට භාවිත කරයි.</translation>
 <translation id="1403222014593521787">ප්‍රොක්සි වෙත සබැඳීමට නොහැකිය</translation>
 <translation id="1405779994569073824">බිඳ වැටුණා.</translation>
@@ -592,6 +593,7 @@
 <translation id="1552752544932680961">දිගු කළමනාකරණය කරන්න</translation>
 <translation id="1553538517812678578">අසීමිත</translation>
 <translation id="1555130319947370107">නිල්</translation>
+<translation id="1556127816860282890">පසුබිම් ක්‍රියාකාරකම් සහ සුමට අනුචලනය වැනි, සමහර දෘශ්‍ය ප්‍රයෝග, සීමා විය හැක</translation>
 <translation id="1556537182262721003">දිගු නාමාවලිය පැතිකඩ තුළට ගෙනයා නොහැකි විය.</translation>
 <translation id="1558391695376153246">අප්‍රකට ටැබ වසන්න</translation>
 <translation id="155865706765934889">ස්පර්ශ පුවරුව</translation>
@@ -2521,6 +2523,7 @@
 <translation id="3308852433423051161">Google සහායක පූරණය කරමින්...</translation>
 <translation id="3309330461362844500">සහතික පැතිකඩ ID</translation>
 <translation id="3311445899360743395">මෙම යෙදුම සමඟ සම්බන්ධ දත්ත මෙම උපාංගයෙන් ඉවත් කළ හැක.</translation>
+<translation id="3312470654018965389">ලිනක්ස් භාජනය වින්‍යාස කිරීම</translation>
 <translation id="3312883087018430408">නිශ්චිත වෙබ් අඩවියක් හෝ Chrome හි කොටසක් සෙවීමට, ලිපින තීරුවේ එහි කෙටි මග සහ ඉන්පසු ඔබ කැමති යතුරු පුවරු කෙටි මග ටයිප් කරන්න. උදාහරණ ලෙස, Bookmarks පමණක් සෙවීමට, "@bookmarks" ටයිප් කර, අනතුරුව Tab හෝ Space ඔබන්න.</translation>
 <translation id="3313622045786997898">අත්සන් අගය සහතික කරන්න</translation>
 <translation id="3313950410573257029">සම්බන්ධතාව පරීක්ෂා කරන්න</translation>
@@ -4149,6 +4152,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4852916668365817106">මූසික වර්ණය</translation>
 <translation id="4853020600495124913">&amp;නව කවුළුවක විවෘත කරන්න</translation>
 <translation id="4854317507773910281">අනුමැතිය සඳහා මාපිය ගිණුම තෝරන්න</translation>
+<translation id="4854603338816296098">ලිපිනය ඉවත් කරන ලදි</translation>
 <translation id="485480310608090163">තවත් සැකසීම් සහ අවසර</translation>
 <translation id="4858792381671956233">මෙම වෙබ් අඩවියට පිවිසුණාට කමක් නැතිද කියා ඔබේ දෙමව්පියන්ගෙන් අසන්න</translation>
 <translation id="4858913220355269194">ෆ්‍රිට්ස්</translation>
@@ -7690,6 +7694,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8206745257863499010">බ්ලූසි</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
 <translation id="8207404892907560325">මුරයතුරක් තෝරා ගන්න</translation>
+<translation id="8208188204689616705">මෙම වෙබ් අඩවි <ph name="FPS_OWNER" /> විසින් නිර්වචනය කරන ලද සමූහයක පවතී. සමූහයක් තුළ ඇති වෙබ් අඩවිවලට සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැක.</translation>
 <translation id="8208216423136871611">සුරකින්න එපා</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{නව දැනුම්දීම}one{නව දැනුම්දීම් #}other{නව දැනුම්දීම් #}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> සඳහා Google මුරපද කළමනාකරු වෙත මුරපද ආයාත කිරීමට, CSV ගොනුවක් තෝරන්න</translation>

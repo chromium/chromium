@@ -253,6 +253,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2322173485024759474">Enrere per lletra</translation>
 <translation id="2339073806695260576">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla o bé utilitzar-lo com a punter làser o lupa.</translation>
 <translation id="2341729377289034582">Bloquejada en vertical</translation>
+<translation id="2345226652884463045">Prem Retorn o Cerca+barra espaiadora per seleccionar el text que vols editar.</translation>
 <translation id="2350794187831162545">La parla en <ph name="LANGUAGE" /> ara es processa localment i funciona sense connexió. Pots canviar l'idioma de dictat a Configuració &gt; Accessibilitat.</translation>
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
@@ -435,6 +436,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3413817803639110246">Encara no hi ha res per veure</translation>
 <translation id="3428447136709161042">Desconnecta't de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Llisca des de la dreta per tornar enrere</translation>
+<translation id="3431517721463707585">Escriptori 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Edita el recordatori</translation>
 <translation id="3435967511775410570">S'ha reconegut l'empremta digital</translation>
@@ -675,6 +677,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (auricular esquerre)</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
+<translation id="4735944890391795473">Escriptori 12</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4740516757091333363">Vols suprimir l'escriptori desat?</translation>
 <translation id="4752784485658729358">Només s'admeten 6 escriptoris desats. Suprimeix-ne un per desar-ne un de nou.</translation>
@@ -695,6 +698,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4860284199500934869">Comprova la connexió a la xarxa per baixar <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">La baixada s'intentarà més tard. Fins que es completi, s'enviarà la parla a Google perquè la processi.</translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
+<translation id="4864648187878336334">Escriptori 15</translation>
 <translation id="4868492592575313542">activada</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
 <translation id="4881695831933465202">Obre</translation>
@@ -722,6 +726,7 @@ Connecta el dispositiu a l'alimentació.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Escriptori 16</translation>
 <translation id="5003993274120026347">Frase següent</translation>
 <translation id="5016558321564993266">Commuta el marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">S'ha acabat el temps</translation>
@@ -738,6 +743,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5098537242461068432">S'han tornat a obrir l'escriptori i les finestres</translation>
 <translation id="5104236669533825617">No es pot crear la captura de pantalla de vídeo</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Mostra el mes següent</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
 <translation id="5147567197700016471">Desbloquejat</translation>
@@ -828,6 +834,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> sol·licita la teva atenció.</translation>
+<translation id="5662075790140998213">Escriptori 10</translation>
 <translation id="5662709761327382534">Grava el micròfon <ph name="CURRENT_STATE" />. Prem Retorn per canviar la gravació del micròfon a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
@@ -1029,6 +1036,8 @@ Instal·lació nova</translation>
 <translation id="6753390234084146956">pestanyes</translation>
 <translation id="6757237461819837179">No s'està reproduint res</translation>
 <translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
+<translation id="6781002679438061620">Escriptori 9</translation>
+<translation id="6782182743534150858">Escriptori 13</translation>
 <translation id="6786750046913594791">Tanca la carpeta</translation>
 <translation id="6787595647772650851">Restaura la darrera sessió</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
@@ -1090,6 +1099,7 @@ Instal·lació nova</translation>
 <translation id="7098053464892629930">Baixa l'aplicació <ph name="NAME" /> a Google Play per veure totes les funcions disponibles</translation>
 <translation id="7098389117866926363">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="7106330611027933926">Mostra la barra d'escriptori</translation>
+<translation id="7116969082764510092">Escriptori 11</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7126996685418858413">Obert durant la darrera setmana</translation>
 <translation id="7130207228079676353">LES MÉS PROBABLES</translation>
@@ -1185,6 +1195,7 @@ Instal·lació nova</translation>
 <translation id="7662283695561029522">Toca per configurar</translation>
 <translation id="7670953955701272011">Obre aquesta data a Google Calendar</translation>
 <translation id="7671610481353807627">Les aplicacions estan ordenades per color</translation>
+<translation id="7672095158465655885">Connectat a <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">L'entrada per càmera s'ha establert en <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Afegeix una xarxa mòbil nova</translation>
@@ -1469,5 +1480,6 @@ Instal·lació nova</translation>
 <translation id="974545358917229949">S'estan mostrant <ph name="RESULT_COUNT" /> resultats per a "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Horitzontal</translation>
 <translation id="990277280839877440">La finestra <ph name="WINDOW_TITILE" /> s'ha tancat.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Obtén les funcions i les millores de seguretat més recents. Les actualitzacions es duen a terme en segon pla.</translation>
 </translationbundle>

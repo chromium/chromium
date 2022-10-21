@@ -64,6 +64,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2560420686485554789">Kailangan ng Chromium ang access sa storage upang maka-download ng mga file</translation>
 <translation id="2572494885440352020">Helper ng Chromium</translation>
 <translation id="2583187216237139145">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chromium na nabuo sa panahon ng paggamit ng profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Ipagpatuloy ang paggamit ng Chromium</translation>
 <translation id="2648074677641340862">May naganap na error sa operating system sa panahon ng pag-install. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="2661879430930417727">Kung magpapahiram ka ng device, puwedeng mag-browse nang hiwalay ang mga kaibigan at kapamilya, at puwede nilang i-set up ang Chromium sa paraang gusto nila</translation>
 <translation id="2669853942967761236">Na-block ng Chromium ang naka-archive na file na ito dahil posibleng nagtatago ito ng malware</translation>
@@ -105,6 +106,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Lumipat sa kasalukuyang profile sa Chromium?</translation>
 <translation id="3412460710772753638">Sa Password Manager sa device na ito</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Na-configure ng iyong administrator ang Chromium na magsara kung naka-idle ito nang mahigit 1 minuto.}one{Na-configure ng iyong administrator ang Chromium na magsara kung naka-idle ito nang mahigit # minuto.}other{Na-configure ng iyong administrator ang Chromium na magsara kung naka-idle ito nang mahigit # na minuto.}}</translation>
 <translation id="3430503420100763906">Gamit ang mga profile sa Chromium, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chromium. Gumawa ng mga profile para sa mga kaibigan at kapamilya, o gumawa ng magkahiwalay na profile para sa trabaho at kasiyahan.</translation>
 <translation id="347328004046849135">Aabisuhan ka ng Chromium kapag nag-sign in ka gamit ang isang nakompromisong password</translation>
 <translation id="3474745554856756813">Magde-delete ito ng <ph name="ITEMS_COUNT" /> (na) item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
@@ -186,6 +188,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="538767207339317086">Pagayan ang pag-sign in sa Chromium</translation>
 <translation id="5398878173008909840">May available na isang bagong bersyon ng Chromium.</translation>
 <translation id="5405650547142096840">Alisin mula sa Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Magsasara na ngayon ang Chromium.}=1{Magsasara ang Chromium sa loob ng 1 segundo.}one{Magsasara ang Chromium sa loob ng # segundo.}other{Magsasara ang Chromium sa loob ng # na segundo.}}</translation>
 <translation id="5427571867875391349">Itakda ang Chromium bilang iyong default na browser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">Posibleng hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Linux distribution na ito.</translation>
@@ -274,6 +277,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6940431691900807093">Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chromium na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo. Puwedeng magbahagi ng hanggang 3 interes ang Chromium.</translation>
 <translation id="6964305034639999644">Buksan ang link sa inco&amp;gnito window ng Chromium</translation>
 <translation id="6978145336957848883">Madaling hulaan ang mahihinang password. Hayaan ang Chromium na <ph name="BEGIN_LINK" />gumawa ng malalakas na password at tandaan ang mga ito para sa iyo<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Hindi aktibo ang Chromium</translation>
 <translation id="6985329841647292029">Mga tuntunin ng ChromiumOS</translation>
 <translation id="6990124437352146030">Kailangan ng Chromium ng pahintulot na i-access ang iyong mikropono para sa site na ito</translation>
 <translation id="7025789849649390912">Inihinto ang Pag-install.</translation>

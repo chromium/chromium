@@ -422,6 +422,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1397594434718759194">Anda telah log masuk Chrome pada peranti ini, jadi anda boleh menggunakannya sebagai kunci keselamatan.</translation>
 <translation id="1398853756734560583">Maksimumkan</translation>
 <translation id="139911022479327130">Buka kunci elefon anda dan sahkan identiti anda</translation>
+<translation id="1401216725754314428">Ketahui lebih lanjut tentang laman berkaitan dalam tab baharu</translation>
 <translation id="1401308693935339022">Gunakan lokasi. Benarkan apl dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti ini. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.</translation>
 <translation id="1403222014593521787">Tidak dapat menyambung kepada proksi</translation>
 <translation id="1405779994569073824">Ranap.</translation>
@@ -7700,6 +7701,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8206745257863499010">Sayu</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8207404892907560325">Pilih kunci laluan</translation>
+<translation id="8208188204689616705">Laman ini berada dalam kumpulan yang ditakrifkan oleh <ph name="FPS_OWNER" />. Laman dalam sesebuah kumpulan boleh melihat aktiviti anda dalam kumpulan itu.</translation>
 <translation id="8208216423136871611">Jangan simpan</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pemberitahuan baharu}other{# pemberitahuan baharu}}</translation>
 <translation id="821119981794423735">Untuk mengimport kata laluan pada Google Password Manager bagi <ph name="USER_EMAIL" />, pilih fail CSV</translation>

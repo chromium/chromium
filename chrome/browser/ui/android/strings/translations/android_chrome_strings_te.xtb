@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2497852260688568942">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="250020030759455918">మీరు Chromeలో మీ <ph name="SITE_NAME" /> సైన్ ఇన్ స్టేటస్, బ్రౌజింగ్ డేటా ఇంకా సైట్ డేటాను చూస్తారు</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" />‌ను ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="2513403576141822879">గోప్యత, భద్రత మరియు డేటా సేకరణకు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్‌ మరియు Google సేవలను<ph name="END_LINK" /> చూడండి</translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2523184218357549926">మీరు సందర్శించే పేజీల URLలను Googleకు పంపుతుంది</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">నకిలీ</translation>
 <translation id="789763218334337857">Chromeను ఉపయోగించడం ఎలా</translation>
 <translation id="7903184275147100332">దీనికి ఒక నిమిషం పట్టవచ్చు</translation>
+<translation id="7914399737746719723">యాప్ ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="7919123827536834358">ఈ భాషలను ఆటోమేటిక్‌గా అనువదించు</translation>
 <translation id="7926975587469166629">కార్డ్ మారుపేరు</translation>
 <translation id="7929962904089429003">మెనూను తెరవండి</translation>
@@ -1375,6 +1377,7 @@
 <translation id="8387617938027387193">ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="8393700583063109961">మెసేజ్‌ను పంపండి</translation>
 <translation id="8394720698884623075">Chromeలో స్టోర్ చేయబడిన సురక్షితం కాని సైట్‌ల లిస్ట్‌తో కూడిన URLలను చెక్ చేస్తుంది</translation>
+<translation id="8402673309244746971">తర్వాతి దానికి వెళ్లండి</translation>
 <translation id="8410695015584479363">ధరలను ట్రాక్ చేయండి</translation>
 <translation id="8413126021676339697">పూర్తి హిస్టరీని చూపించు</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> లో <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> తో సైన్ ఇన్ చేయండి</translation>

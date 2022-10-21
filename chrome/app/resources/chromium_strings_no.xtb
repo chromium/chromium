@@ -62,6 +62,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2560420686485554789">Chromium må ha lagringstilgang for å laste ned filer</translation>
 <translation id="2572494885440352020">Chromium-hjelper</translation>
 <translation id="2583187216237139145">Alle Chromium-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Fortsett å bruke Chromium</translation>
 <translation id="2648074677641340862">Det oppsto en systemfeil under installering. Last ned Chromium på nytt.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil</translation>
 <translation id="2669853942967761236">Chromium har blokkert denne arkivfilen fordi den kan inneholde skadelig programvare</translation>
@@ -103,6 +104,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
 <translation id="3412460710772753638">I Passordlagring på denne enheten</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Administratoren din har konfigurert Chromium til å lukke seg hvis den er inaktiv i mer enn 1 minutt.}other{Administratoren din har konfigurert Chromium til å lukke seg hvis den er inaktiv i mer enn # minutter.}}</translation>
 <translation id="3430503420100763906">Med Chromium-profiler kan du holde alle Chromium-tingene dine atskilt. Opprett profiler for venner og familie, eller skill mellom arbeid og fritid.</translation>
 <translation id="347328004046849135">Chromium varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="3474745554856756813">Dette sletter <ph name="ITEMS_COUNT" /> elementer fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
@@ -184,6 +186,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="538767207339317086">Tillat Chromium-pålogging</translation>
 <translation id="5398878173008909840">En nyere versjon av Chromium er tilgjengelig.</translation>
 <translation id="5405650547142096840">Fjern fra Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium lukkes nå.}=1{Chromium lukkes om 1 sekund.}other{Chromium lukkes om # sekunder.}}</translation>
 <translation id="5427571867875391349">Bruk Chromium som standard nettleser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – betaversjon av Chromium</translation>
 <translation id="5473971139929175403">Det kan hende Chromium ikke fungerer skikkelig fordi den ikke lenger støttes i denne Linux-distribusjonen</translation>
@@ -271,6 +274,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="6940431691900807093">Senere kan nettsteder du besøker, spørre Chromium om interessene dine for å kunne sette personlig preg på annonsene du ser. Chromium kan dele opptil tre interesser.</translation>
 <translation id="6964305034639999644">Åpne linken i et inko&amp;gnitovindu i Chromium</translation>
 <translation id="6978145336957848883">Svake passord er enkle å gjette. La Chromium <ph name="BEGIN_LINK" />opprette og huske sterke passord for deg<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium er inaktiv</translation>
 <translation id="6985329841647292029">Vilkår for ChromiumOS</translation>
 <translation id="6990124437352146030">Chromium trenger tilgang til mikrofonen din for dette nettstedet</translation>
 <translation id="7025789849649390912">Installasjonen er stoppet.</translation>

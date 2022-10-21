@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
 <translation id="250020030759455918">Вы увидите статус входа на сайт <ph name="SITE_NAME" />, а также данные о работе в браузере и данные сайтов в Chrome.</translation>
+<translation id="2510106555128151389">Установка приложения "<ph name="WEBAPK_NAME" />"…</translation>
 <translation id="2513403576141822879">Остальные настройки конфиденциальности, безопасности и сбора данных вы можете найти в разделе <ph name="BEGIN_LINK" />Синхронизация сервисов Google<ph name="END_LINK" />.</translation>
 <translation id="2517472476991765520">Сканировать</translation>
 <translation id="2523184218357549926">Отправлять URL посещенных страниц в Google</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">Дублировать</translation>
 <translation id="789763218334337857">Работа в браузере Chrome</translation>
 <translation id="7903184275147100332">Подождите немного…</translation>
+<translation id="7914399737746719723">Приложение установлено</translation>
 <translation id="7919123827536834358">Автоматически переводить страницы на этих языках</translation>
 <translation id="7926975587469166629">Название карты</translation>
 <translation id="7929962904089429003">Открыть меню</translation>

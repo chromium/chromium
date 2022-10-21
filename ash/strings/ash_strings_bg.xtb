@@ -92,6 +92,7 @@
 <translation id="1407069428457324124">Тъмна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Използвайте клавишите със стрелка, за да се придвижвате между датите.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, инсталирано приложение</translation>
+<translation id="1415846719612499304">Показване на списъка с мрежи. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Отключете устройството, за да се изпълни действието от известието</translation>
 <translation id="1420408895951708260">Превключване на функцията за нощно осветление. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Преглед на скорошните снимки и мултимедийни файлове от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
@@ -252,6 +253,7 @@
 <translation id="2322173485024759474">Придвижване назад с една буква</translation>
 <translation id="2339073806695260576">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате лазерната показалка или лупата.</translation>
 <translation id="2341729377289034582">Заключено във вертикална ориентация</translation>
+<translation id="2345226652884463045">Натиснете Enter или клавиша „търсене“ + интервал, за да изберете текста за редактиране.</translation>
 <translation id="2350794187831162545">Диктуването на <ph name="LANGUAGE" /> се обработва локално и работи офлайн. Можете да промените езика за диктуване от „Настройки &gt; Достъпност“.</translation>
 <translation id="2352467521400612932">Настройки за писалката</translation>
 <translation id="2354174487190027830">„<ph name="NAME" />“ се активира</translation>
@@ -308,6 +310,7 @@
 <translation id="2678852583403169292">Меню на „Прочитане на глас“</translation>
 <translation id="2689613560355655046">Работен кът 8</translation>
 <translation id="2695305337569143674">мрежа</translation>
+<translation id="2697697418792422688">Показване на настройките на клавиатурата. Избрахте <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Задайте клавиатура</translation>
 <translation id="2704781753052663061">Присъединяване към други Wi-Fi мрежи</translation>
 <translation id="2705001408393684014">Превключване на микрофона. <ph name="STATE_TEXT" /></translation>
@@ -433,6 +436,7 @@
 <translation id="3413817803639110246">Тук още няма нищо</translation>
 <translation id="3428447136709161042">Прекратяване на връзката със: <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Прекарайте пръст отдясно, за да се върнете назад</translation>
+<translation id="3431517721463707585">Работен кът 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Редактиране на напомнянето</translation>
 <translation id="3435967511775410570">Отпечатъкът е разпознат</translation>
@@ -673,6 +677,7 @@
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лява)</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4735944890391795473">Работен кът 12</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4740516757091333363">Да се изтрие ли запазеният работен кът?</translation>
 <translation id="4752784485658729358">Може да имате само 6 запазени работни къта. Премахнете един от текущите, за да запазите нов.</translation>
@@ -693,6 +698,7 @@
 <translation id="4860284199500934869">За да изтеглите <ph name="FILENAME" />, проверете връзката си с мрежата</translation>
 <translation id="486056901304535126">По-късно ще се направи опит за изтегляне. Говорът ще се изпраща до Google за обработка, докато изтеглянето завърши.</translation>
 <translation id="4864369630010738180">Извършва се влизане...</translation>
+<translation id="4864648187878336334">Работен кът 15</translation>
 <translation id="4868492592575313542">активирана</translation>
 <translation id="4872237917498892622">„Alt + търсене“ или „Shift“</translation>
 <translation id="4881695831933465202">Отваряне</translation>
@@ -720,6 +726,7 @@
 <ph name="NOTIFICATION_1" />,
 <ph name="NOTIFICATION_2" />,
 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Работен кът 16</translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5016558321564993266">Превключване на маркера. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Времето свърши</translation>
@@ -736,6 +743,7 @@
 <translation id="5098537242461068432">Работният кът и прозорците бяха отворени отново</translation>
 <translation id="5104236669533825617">Не може да се създаде скрийнкаст</translation>
 <translation id="5107522548814527560">Мрежата</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5147567197700016471">Отключено</translation>
@@ -777,6 +785,7 @@
 <translation id="5327248766486351172">Име</translation>
 <translation id="5329548388331921293">Установява се връзка...</translation>
 <translation id="5331975486040154427">Устройство с USB-C (задният ляв порт)</translation>
+<translation id="533282197239610265">Показване на устройствата Cast.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (дясна)</translation>
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
 <translation id="5356963482258194581">Превключвайте между тъмната и светлата тема. Кликнете с десния бутон върху работния плот и изберете „Тапет и стил“.</translation>
@@ -808,10 +817,12 @@
 <translation id="553675580533261935">Излизане от сесията</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="554893713779400387">Превключване на режима на диктуване</translation>
+<translation id="5558091555391176027">Превключване на увеличената видимост за „Споделяне наблизо“</translation>
 <translation id="5560420195677022218">Преглед на приложенията от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5571066253365925590">Bluetooth е активиран</translation>
 <translation id="557563299383177668">Следващ абзац</translation>
+<translation id="5577082622442191756">Превключване на Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Функцията за Bluetooth трябва да е активирана на телефона ви, за да използвате Phone Hub</translation>
 <translation id="5580000943347215299">Колекция</translation>
 <translation id="558849140439112033">С плъзгане изберете областта, която да се заснеме</translation>
@@ -823,6 +834,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Жак за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> се нуждае от вниманието ви.</translation>
+<translation id="5662075790140998213">Работен кът 10</translation>
 <translation id="5662709761327382534">Записването от микрофона e <ph name="CURRENT_STATE" />. Натиснете Enter, за да бъде <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5673434351075758678">От <ph name="FROM_LOCALE" /> към <ph name="TO_LOCALE" /> след синхронизиране на настройките ви.</translation>
@@ -880,6 +892,7 @@
 <translation id="595202126637698455">Проследяването на ефективността е активирано</translation>
 <translation id="5955304353782037793">приложение</translation>
 <translation id="5958529069007801266">Контролиран потребител</translation>
+<translation id="5965524703725988602">Превключване на тъмната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Натиснете Enter за записване на прозореца</translation>
 <translation id="5977415296283489383">Слушалки</translation>
 <translation id="5978382165065462689">Споделяте контрола върху екрана си чрез отдалечено съдействие.</translation>
@@ -1023,6 +1036,8 @@
 <translation id="6753390234084146956">раздели</translation>
 <translation id="6757237461819837179">Не се възпроизвежда мултимедия</translation>
 <translation id="6777216307882431711">Свързаните устройства с USB-C се захранват</translation>
+<translation id="6781002679438061620">Работен кът 9</translation>
+<translation id="6782182743534150858">Работен кът 13</translation>
 <translation id="6786750046913594791">Затваряне на папката</translation>
 <translation id="6787595647772650851">Възстановяване на последната сесия</translation>
 <translation id="6790428901817661496">Пускане</translation>
@@ -1084,6 +1099,7 @@
 <translation id="7098053464892629930">Изтеглете приложението <ph name="NAME" /> от Google Play, за да видите всички налични функции</translation>
 <translation id="7098389117866926363">Устройство с USB-C (левият порт на гърба)</translation>
 <translation id="7106330611027933926">Показване на лентата с работни кътове</translation>
+<translation id="7116969082764510092">Работен кът 11</translation>
 <translation id="7118268675952955085">екранна снимка</translation>
 <translation id="7126996685418858413">Отваряно през миналата седмица</translation>
 <translation id="7130207228079676353">НАЙ-ВЕРОЯТЕН ИЗБОР</translation>
@@ -1123,6 +1139,7 @@
 <translation id="7378889811480108604">Режимът за запазване на батерията е изключен</translation>
 <translation id="7382680553121047388">Вкл.</translation>
 <translation id="7384028040782072252">Кликнете с десния бутон върху произволно място, за да пренаредите приложенията си</translation>
+<translation id="7386767620098596324">Превключване на връзката с мрежа. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Винаги можете да настроите функцията по-късно от „Настройки“.</translation>
 <translation id="7405710164030118432">За да отключите устройството, въведете кода си за достъп на родител от Family Link</translation>
 <translation id="7406608787870898861">Завършете настройването на мобилната си мрежа</translation>
@@ -1181,6 +1198,7 @@
 <translation id="7662283695561029522">Докоснете, за да конфигурирате</translation>
 <translation id="7670953955701272011">Отваряне на тази дата в Google Календар</translation>
 <translation id="7671610481353807627">Приложенията са сортирани по цвят</translation>
+<translation id="7672095158465655885">Установена е връзка с мрежата <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Избрана е камерата <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавяне на нова мобилна мрежа</translation>
@@ -1262,6 +1280,7 @@
 <translation id="8142441511840089262">Двукратно кликване</translation>
 <translation id="8142699993796781067">Частна мрежа</translation>
 <translation id="8144760705599030999">Запазване на <ph name="NAME" /> в(ъв) <ph name="EMAIL" /> за по-бързо сдвояване с другите ви устройства</translation>
+<translation id="8149413265954228307">Показване на настройките за Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Натиснете Ctrl + W за затваряне.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автоматично довършване</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Тази настройка се управлява от администратора ви.</translation>
@@ -1322,6 +1341,7 @@
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="8477270416194247200">Натиснете Alt + клавиша „търсене“ или само Shift, за да анулирате.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />. Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Показване на настройките на „Споделяне наблизо“</translation>
 <translation id="85123341071060231">Функцията за Bluetooth на вашия Chromebook е изключена. За да го отключите, въведете паролата си.</translation>
 <translation id="8513108775083588393">Автоматично</translation>
 <translation id="851458219935658693">Показват се прозорците от текущия работен кът, активиран е бутон за избор</translation>
@@ -1463,5 +1483,6 @@
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="98515147261107953">Хоризонтално</translation>
 <translation id="990277280839877440">Прозорецът <ph name="WINDOW_TITILE" /> бе затворен.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Получавайте най-новите функции и подобрения в сигурността. Актуализациите се извършват на заден план.</translation>
 </translationbundle>

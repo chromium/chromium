@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="2497852260688568942">Синхронизирането е деактивирано от администратора ви</translation>
 <translation id="250020030759455918">В Chrome ще виждате дали сте влезли в профила си в <ph name="SITE_NAME" />, както и съответните данни за сърфирането и сайта</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> се инсталира...</translation>
 <translation id="2513403576141822879">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране и услуги на Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2523184218357549926">Изпраща до Google URL адресите на страниците, които посещавате</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">Дублиране</translation>
 <translation id="789763218334337857">Начин на използване на Chrome</translation>
 <translation id="7903184275147100332">Това може да отнеме известно време</translation>
+<translation id="7914399737746719723">Приложението бе инсталирано</translation>
 <translation id="7919123827536834358">Автоматично превеждане от следните езици</translation>
 <translation id="7926975587469166629">Псевдоним на картата</translation>
 <translation id="7929962904089429003">Отваряне на менюто</translation>

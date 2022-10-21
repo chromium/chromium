@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1220509181886849806">Käytetäänkö tallennettua salasanaa?</translation>
+<translation id="1580351948163139119">Salasana: <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Kosketuksella täytettävien kirjautumistietojen lista avattu puolen näytön korkeudella.</translation>
 <translation id="207576718733492531">Kosketuksella täytettävien kirjautumistietojen lista on suljettu.</translation>
 <translation id="2359808026110333948">Jatka</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Kosketuksella täytettävien kirjautumistietojen lista avattu koko näytön korkeudella.</translation>
 <translation id="5591247451101092906">Käytetäänkö tallennettua salasanaa vai avainkoodia?</translation>
 <translation id="5624120631404540903">Hallitse salasanoja</translation>
+<translation id="7736236483645733578">Avainkoodi: <ph name="USERNAME" />, käytä näytön lukitusta.</translation>
 <translation id="804577341878669140">Jatka tilin avulla</translation>
 </translationbundle>

@@ -62,6 +62,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="2560420686485554789">Chromium treba pristup pohrani radi preuzimanja datoteka</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">Sve podatke iz Chromiuma koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Nastavi s upotrebom Chromiuma</translation>
 <translation id="2648074677641340862">Došlo je do pogreške operativnog sustava tijekom instalacije. Ponovo preuzmite Chromium.</translation>
 <translation id="2661879430930417727">Ako dijelite uređaj, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama</translation>
 <translation id="2669853942967761236">Chromium je blokirao arhivsku datoteku jer može skrivati zlonamjerni softver</translation>
@@ -103,6 +104,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Želite li prijeći na postojeći profil u Chromiumu?</translation>
 <translation id="3412460710772753638">U Upravitelju zaporki na ovom uređaju</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Vaš je administrator konfigurirao Chromium da se zatvori ako je u mirovanju dulje od jedne minute.}one{Vaš je administrator konfigurirao Chromium da se zatvori ako je u mirovanju dulje od # minute.}few{Vaš je administrator konfigurirao Chromium da se zatvori ako je u mirovanju dulje od # minute.}other{Vaš je administrator konfigurirao Chromium da se zatvori ako je u mirovanju dulje od # minuta.}}</translation>
 <translation id="3430503420100763906">Pomoću Chromiumovih profila možete razdvojiti sve svoje sadržaje u Chromiumu. Izradite profile za prijatelje i obitelj ili odvojite posao i zabavu.</translation>
 <translation id="347328004046849135">Chrome će vas obavijestiti kada se prijavite ugroženom zaporkom</translation>
 <translation id="3474745554856756813">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. TDa biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
@@ -184,6 +186,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="538767207339317086">Dopusti prijavu u Chromium</translation>
 <translation id="5398878173008909840">Dostupna je nova verzija preglednika Chromium.</translation>
 <translation id="5405650547142096840">Uklanjanje iz Chromiuma</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium će se sada zatvoriti.}=1{Chromium će se zatvoriti za jednu sekundu.}one{Chromium će se zatvoriti za # sekundu.}few{Chromium će se zatvoriti za # sekunde.}other{Chromium će se zatvoriti za # sekundi.}}</translation>
 <translation id="5427571867875391349">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium možda neće ispravno raditi jer više nije podržan na toj distribuciji Linuxa</translation>
@@ -272,6 +275,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6940431691900807093">Web-lokacija koju posjetite nakon toga od Chromiuma može tražiti podatke o vašim interesima kako bi prilagodila oglase koji će vam se prikazivati. Chromium može dijeliti najviše tri interesa.</translation>
 <translation id="6964305034639999644">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
 <translation id="6978145336957848883">Slabe zaporke lako je pogoditi. Neka Chromium <ph name="BEGIN_LINK" />izradi i zapamti snažne zaporke za vas<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium nije aktivan</translation>
 <translation id="6985329841647292029">Uvjeti Chromium OS-a</translation>
 <translation id="6990124437352146030">Chromium treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
 <translation id="7025789849649390912">Instaliranje je zaustavljeno.</translation>

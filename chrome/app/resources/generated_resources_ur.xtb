@@ -274,6 +274,7 @@
 <translation id="1244303850296295656">ایکسٹینشن میں خرابی</translation>
 <translation id="1245628370644070008">مقامی ڈیٹا کی بازیابی</translation>
 <translation id="1246863218384630739">‏<ph name="VM_NAME" /> کو انسٹال نہیں کیا جا سکا: تصویری URL نے <ph name="HTTP_ERROR" /> خرابی کا کوڈ واپس کر دیا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{1 سائٹ کے لیے اطلاعات کی اجازت نہیں ہے}other{{NUM_SITES} سائٹس کے لیے اطلاعات کی اجازت نہیں ہے}}</translation>
 <translation id="1251366534849411931">ابتدائی خمیدہ قوسین کی توقع ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">اس سے سائٹس اور انسٹال کردہ ایپس کا <ph name="TOTAL_USAGE" /> اسٹور کردہ ڈیٹا صاف ہو جائے گا</translation>
 <translation id="1251578593170406502">موبائل ڈیٹا نیٹ ورکس کو اسکین کیا جا رہا ہے...</translation>
@@ -592,6 +593,7 @@
 <translation id="1552752544932680961">ایکسٹینشن کا نظم کریں</translation>
 <translation id="1553538517812678578">لا محدود</translation>
 <translation id="1555130319947370107">نیلا</translation>
+<translation id="1556127816860282890">پس منظر کی سرگرمی اور کچھ بصری اثرات، جیسے ہموار اسکرولنگ، محدود ہو سکتے ہیں</translation>
 <translation id="1556537182262721003">ایکسٹینشن ڈائرکٹری کو پروفائل میں منتقل نہیں کیا جا سکا۔</translation>
 <translation id="1558391695376153246">پوشیدگی ٹیبز بند کریں</translation>
 <translation id="155865706765934889">ٹچ پیڈ</translation>
@@ -1644,6 +1646,7 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> کو اَن انسٹال کرنے کیلئے ونڈوز شٹ ڈاؤن کریں۔</translation>
 <translation id="2477065602824695373">چونکہ آپ نے ایک سے زیادہ سوئچز مرتب کیے ہیں، لہذا خودکار اسکین کو آف کر دیا گیا ہے۔</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" کیلئے میڈیا فائل کی اجازتیں</translation>
+<translation id="24786041351753425">ڈیٹا بازیابی کی سروس کو فعال کریں۔</translation>
 <translation id="2480868415629598489">آپ جو ڈیٹا کاپی اور پیسٹ کرتے ہیں اس میں ترمیم کریں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2482895651873876648">ٹیب کو گروپ میں منتقل کر دیا گیا <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -2259,6 +2262,7 @@
 <translation id="3024374909719388945">24 گھنٹے کی گھڑی استعمال کریں</translation>
 <translation id="3027296729579831126">قریبی آلات کے ساتھ اشتراک آن کریں</translation>
 <translation id="3029466929721441205">شیلف میں اسٹائلس ٹولز دکھائیں</translation>
+<translation id="3029808567601324798">مقفل کرنے کا وقت</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آج ہی ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گا۔}other{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گا۔}}</translation>
 <translation id="3030967311408872958">غروب آفتاب سے طلوع آفتاب تک</translation>
 <translation id="3031417829280473749">‏ایجنٹ X</translation>
@@ -2517,6 +2521,7 @@
 <translation id="3308852433423051161">‏Google اسسٹنٹ لوڈ ہو رہا ہے...</translation>
 <translation id="3309330461362844500">‏سرٹیفیکیٹ پروفائل کی ID</translation>
 <translation id="3311445899360743395">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹایا جا سکتا ہے۔</translation>
+<translation id="3312470654018965389">‏Linux کنٹینر کو کنفیگر کیا جا رہا ہے</translation>
 <translation id="3312883087018430408">‏کسی مخصوص سائٹ یا Chrome کا حصہ تلاش کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں، اس کے بعد اپنا پسندیدہ کی بورڈ شارٹ کٹ درج کریں۔ مثال کے طور پر، صرف Bookmarks تلاش کرنے کے لیے، "bookmarks@" ٹائپ کریں پھر 'ٹیب' یا 'اسپیس' دبائیں۔</translation>
 <translation id="3313622045786997898">سرٹیفکیٹ دستخط قدر</translation>
 <translation id="3313950410573257029">کنکشن چیک کریں</translation>
@@ -4144,6 +4149,7 @@
 <translation id="4852916668365817106">ماؤس کا رنگ</translation>
 <translation id="4853020600495124913">&amp;نئی ونڈو میں کھولیں</translation>
 <translation id="4854317507773910281">منظوری کے لیے والد/والدہ کا اکاؤنٹ منتخب کریں</translation>
+<translation id="4854603338816296098">پتہ ہٹا دیا گیا</translation>
 <translation id="485480310608090163">مزید ترتیبات اور اجازتیں</translation>
 <translation id="4858792381671956233">آپ نے اپنے والدین سے پوچھا کہ کیا یہ سائٹ ملاحظہ کرنا ٹھیک ہے</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -4206,6 +4212,7 @@
 <translation id="4901154724271753917">حال ہی میں بند کو پھیلائیں</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> تجربے کے لیے تجربے کی حالت منتخب کریں۔</translation>
 <translation id="49027928311173603">سرور سے ڈاؤن لوڈ کردہ پالیسی غلط ہے: <ph name="VALIDATION_ERROR" />۔</translation>
+<translation id="4903967893652864401">یہ پس منظر کی سرگرمی اور بصری اثرات جیسے ہموار اسکرولنگ کو محدود کر کے بیٹری کی طاقت کو بڑھاتا ہے۔</translation>
 <translation id="4906490889887219338">نیٹ ورک فائل کے اشتراکات کو سیٹ اپ کریں یا ان کا نظم کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">منتخب کریں کہ یہ ایکسٹینشن آپ کی سائٹ کا ڈیٹا کب پڑھ اور اسے تبدیل کر سکتی ہے</translation>
 <translation id="4907161631261076876">یہ فائل عام طور پر ڈاؤن لوڈ نہیں کی جاتی ہے اور یہ خطرناک ہو سکتی ہے۔</translation>
@@ -4566,6 +4573,7 @@
 <translation id="527605982717517565">‏<ph name="HOST" /> پر ہمیشہ JavaScript کی اجازت دیں</translation>
 <translation id="5277127016695466621">سائیڈ پینل دکھائیں</translation>
 <translation id="5278823018825269962">‏اسٹیٹس Id</translation>
+<translation id="5279600392753459966">سبھی کو مسدود کریں</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> کیلئے اسناد اپ ڈیٹ کریں</translation>
 <translation id="5280243692621919988">سبھی ونڈوز بند کرنے پر کوکیز اور سائٹ کا ڈیٹا صاف کریں</translation>
 <translation id="5280335021886535443">اس بلبلے پر فوکس کرنے کے لیے |<ph name="ACCELERATOR" />| دبائیں۔</translation>
@@ -5310,6 +5318,7 @@
 <translation id="5971037678316050792">بلوٹوتھ اڈاپٹر کی صورتحال اور جوڑا بنانے کو کنٹرول کریں</translation>
 <translation id="597235323114979258">مزید منازل دیکھیں</translation>
 <translation id="5972543790327947908">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" />، <ph name="APP_NAME_2" /> یا <ph name="APP_NAME_3" /> میں کھلیں گے۔</translation>
+<translation id="5972559880616357748"><ph name="SITE_GROUP" /> کے لیے مزید کارروائیاں</translation>
 <translation id="5972666587303800813">نو آپریشن سروس</translation>
 <translation id="5972708806901999743">اوپر منتقل کریں</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> شروع کریں</translation>
@@ -8495,6 +8504,7 @@
 <translation id="8987927404178983737">ماہ</translation>
 <translation id="8989359959810288806">ٹیدرنگ کی صورتحال کو ریفریش کریں</translation>
 <translation id="8991520179165052608">سائٹ آپ کا مائیکروفون استعمال کر سکتی ہے</translation>
+<translation id="8993059306046735527">‏اگر آپ اپنے <ph name="DEVICE_TYPE" /> کا پاس ورڈ بھول جاتے ہیں تب بھی آپ اپنا مقامی ڈیٹا بحال کر سکتے ہیں۔ آپ کو اپنے Google اکاؤنٹ میں سائن ان کرنے یا اکاؤنٹ کی بازیابی کا استعمال کرنے کی ضرورت ہوگی۔</translation>
 <translation id="899384117894244799">محدود صارف کو ہٹائیں</translation>
 <translation id="899403249577094719">‏Netscape سرٹیفکیٹ بیس URL</translation>
 <translation id="899657321862108550">‏آپ کا Chrome، ہر جگہ ہے</translation>
@@ -8594,6 +8604,7 @@
 <translation id="9078316009970372699">فوری ٹیدرنگ غیر فعال کریں</translation>
 <translation id="9078842827190780028">سائیڈ پینل میں مزید تلاش کے نتائج دیکھیں</translation>
 <translation id="9079267182985899251">جلد ہی یہ اختیار اب تعاون یافتہ نہیں ہوگا۔ ٹیب کو پیش کرنے کیلئے <ph name="GOOGLE_MEET" /> کا استعمال کریں۔</translation>
+<translation id="9080175821499742274">میموری سیور غیر فعال ٹیبز سے میموری کو خالی کرتا ہے تاکہ اسے فعال ٹیبز اور دیگر ایپس کے ذریعے استعمال کیا جا سکے۔</translation>
 <translation id="9080971985541434310">‏آپ کی دلچسپیوں کا اندازہ لگاتا ہے - Chrome آپ کی دلچسپیوں کا اندازہ لگا سکتا ہے</translation>
 <translation id="9081543426177426948">جو سائٹس آپ ملاحظہ کرتے ہیں وہ پوشیدگی وضع میں محفوظ نہیں ہوتی ہیں</translation>
 <translation id="9084064520949870008">بطور ونڈو کھولیں</translation>
@@ -8783,6 +8794,7 @@
 <translation id="964790508619473209">اسکرین کا انتظام</translation>
 <translation id="965211523698323809">اپنے <ph name="DEVICE_TYPE" /> سے متنی پیغامات بھیجیں اور وصول کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏Google Cast سے ایک مسئلے کی اطلاع دیں</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{1 سائٹ کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{{NUM_SITES} سائٹس کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="967398046773905967">‏کسی بھی سائٹ کو HID آلات تک رسائی کی اجازت نہ دیں</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 <translation id="96774243435178359">نظم کردہ پرنٹز</translation>

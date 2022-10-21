@@ -39,6 +39,7 @@
 <translation id="1662146548738125461">O ChromeOS Flexu</translation>
 <translation id="1674870198290878346">Otvori vezu u ano&amp;nimnom prozoru Chromea</translation>
 <translation id="1682634494516646069">Google Chrome ne može čitati iz svojeg podatkovnog direktorija niti u njega pisati: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="1691802391966922744">{COUNT,plural, =1{Vaš je administrator konfigurirao Chrome da se zatvori ako je neaktivan dulje od jedne minute.}one{Vaš je administrator konfigurirao Chrome da se zatvori ako je neaktivan dulje od # minute.}few{Vaš je administrator konfigurirao Chrome da se zatvori ako je neaktivan dulje od # minute.}other{Vaš je administrator konfigurirao Chrome da se zatvori ako je neaktivan dulje od # minuta.}}</translation>
 <translation id="1698376642261615901">Google Chrome jest web-preglednik koji web-stranice i aplikacije pokreće brzinom svjetlosti. Brz je, stabilan i jednostavan za upotrebu. Sigurnije pregledavajte web uz zaštitu protiv zlonamjernog i špijunskog softvera koja je ugrađena u Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome će se ponovo pokrenuti za sat vremena}one{Chrome će se ponovo pokrenuti za # h}few{Chrome će se ponovo pokrenuti za # h}other{Chrome će se ponovo pokrenuti za # h}}</translation>
 <translation id="1734234790201236882">Chrome će spremiti tu zaporku na vaš Google račun. Ne morate je pamtiti.</translation>
@@ -250,6 +251,7 @@
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941830788786076944">Neka Google Chrome bude zadani preglednik.</translation>
 <translation id="6003112304606738118">Preuzimanje... Još <ph name="HOURS" /> h</translation>
+<translation id="6022388122721048220">{0,plural, =0{Chrome će se sada zatvoriti.}=1{Chrome će se zatvoriti za jednu sekundu.}one{Chrome će se zatvoriti za # sekundu.}few{Chrome će se zatvoriti za # sekunde.}other{Chrome će se zatvoriti za # sekundi.}}</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6070348360322141662">Radi dodatne sigurnosti Google Chrome kriptirat će vaše podatke</translation>
 <translation id="608006075545470555">Dodavanje poslovnog profila u ovaj preglednik</translation>
@@ -361,6 +363,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako upotrebljavamo te podatke<ph name="END_BOLD" />: web-lokacije mogu pohraniti informacije o vašim interesima u Chrome. Na primjer, ako posjetite neku web-lokaciju da biste kupili tenisice za maraton, ta web-lokacija može definirati vaš interes kao trčanje maratona. Ako poslije posjetite neku drugu web-lokaciju da biste se registrirali za utrku, ta vam web-lokacija može prikazati oglas za tenisice za trčanje na temelju vaših interesa.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kako upotrebljavamo te podatke<ph name="END_BOLD" />: Chrome može procijeniti vaše interese. Web-lokacija koju posjetite nakon toga može od Chromea tražiti podatke o vašim interesima kako bi prilagodila oglase koji će vam se prikazivati.</translation>
+<translation id="8387459386171870978">Nastavi upotrebljavati Chrome</translation>
 <translation id="8394720698884623075">Provjerava nalaze li se URL-ovi na popisu nesigurnih web-lokacija pohranjenom u Chromeu</translation>
 <translation id="840084489713044809">Google Chrome želi izvesti vaše zaporke.</translation>
 <translation id="8416347857511542594">Saznajte više o prilagodbi oglasa u Chromeu</translation>
@@ -391,6 +394,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8825634023950448068">Da bismo zaštitili vašu privatnost, automatski brišemo vaše interese starije od četiri tjedna. Tijekom vašeg daljnjeg pregledavanja neki se interes može ponovo pojaviti na popisu. A ako Chrome pogriješi ili ne želite vidjeti određene oglase, možete ukloniti interes.</translation>
 <translation id="8834965163890861871">Google Chrome pokušava urediti zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="884296878221830158">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromea ili kada se klikne gumb Početna.</translation>
+<translation id="8847000024471094355">Chrome je neaktivan</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instaliranje na razini sustava. Pokušajte ponovno pokrenuti program za instalaciju kao administrator.</translation>
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>

@@ -1303,6 +1303,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="224750967938323855">No mostrar el consentimiento de sincronización durante el acceso</translation>
 <translation id="225340736558643885">Habilita las advertencias si se detectan formularios no seguros</translation>
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos hacia y desde el host</translation>
+<translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante las descargas</translation>
 <translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
 <translation id="2266422599396179941">Permitir que los usuarios envíen comentarios</translation>
 <translation id="2269319728625047531">Habilitar que se muestre el consentimiento de sincronización durante el acceso</translation>
@@ -1362,6 +1363,9 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="2309341709647905294">No informar datos sobre los periféricos que están conectados al dispositivo</translation>
 <translation id="2309390639296060546">Configuración de geolocalización predeterminada</translation>
 <translation id="2318583605563438459">Permitir que los padres agreguen cuentas supervisadas</translation>
+<translation id="2326031114717677574">Es la tasa a la que se toman muestras de los datos del audio y se los recopila. El mínimo permitido es 1 minuto.
+
+      Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos.</translation>
 <translation id="2331354174913096226">La plantilla de URI del agente de resolución de DNS sobre HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS sobre HTTPS, separa las plantillas de URI correspondientes mediante espacios.
 
       Si se configuró DnsOverHttpsMode como <ph name="SECURE_DNS_MODE_SECURE" />, se debe establecer esta política y no puede estar vacía.
@@ -1413,6 +1417,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="2387469539700985783">Esta política no afecta el informe que crea Android.</translation>
 <translation id="238885588439957890">La hora a la que el dispositivo usará corriente alterna para cargar la batería (según la zona horaria local del dispositivo).</translation>
 <translation id="2393862222659066027">Abrir una lista de URLs y restablecer la última sesión</translation>
+<translation id="2394429297128584919">No permitir que las páginas envíen solicitudes XHR síncronas cuando el usuario las abandona</translation>
 <translation id="2394674739523870144">Si estableces la política como una lista de strings, estas se unen con espacios y se transfieren de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de la línea de comandos. Si un parámetro contiene <ph name="URL_PLACEHOLDER" />, se reemplazará <ph name="URL_PLACEHOLDER" /> por la URL de la página que se abrirá. Si ningún parámetro contiene <ph name="URL_PLACEHOLDER" />, se agregará la dirección URL al final de la línea de comandos.
 
       Se expanden las variables del entorno. En <ph name="MS_WIN_NAME" />, se reemplaza <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> por el valor de la variable del entorno <ph name="ENV_VARIABLE_VALUE" />.
@@ -1929,6 +1934,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2872098849906555324">Inhabilitar la sincronización de Google Drive</translation>
 <translation id="2872961005593481000">Cerrar</translation>
 <translation id="2874209944580848064">Nota para dispositivos <ph name="PRODUCT_OS_NAME" /> compatibles con apps de Android:</translation>
+<translation id="287474029350993681">Inhabilitar la transmisión de contenido al dispositivo</translation>
 <translation id="2875192972412983412">Especifica el subconjunto de servidores de impresión que se consultará para las impresoras de servidor.
 
       Si se usa esta política, el usuario solo podrá acceder a las impresoras de servidor con ID que coincidan con los valores en esta política.
@@ -2419,6 +2425,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 <translation id="3255762580838224124">Si estableces la política, las pantallas rotarán a la orientación especificada cada vez que se reinicie el dispositivo y la primera vez que se conecten después de cambiar el valor de la política. Después de acceder, los usuarios podrán cambiar la rotación de las pantallas en la página de configuración, pero volverá a cambiar la próxima vez que se reinicie el dispositivo. Esta política se aplica a la pantalla principal y a la secundaria.
 
       Si no la estableces, el valor predeterminado será 0 grados y los usuarios podrán cambiarlo. Si deciden hacerlo, no se volverá a aplicar el valor predeterminado cuando se reinicie el dispositivo.</translation>
+<translation id="3256920103934729145">Impedir que los usuarios hagan clic para omitir las páginas de advertencia de SSL</translation>
 <translation id="3257786863492892609">Controla las políticas para Screencast.</translation>
 <translation id="3258380413685430793">Ejecutar todo el contenido de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Si estableces la política, se especificará la lista de URL de acceso empresarial (solo protocolos HTTP y HTTPS). El servicio de protección de contraseñas capturará los hash con sal de las contraseñas de estas URL y los usará para detectar la reutilización de contraseñas. Para que <ph name="PRODUCT_NAME" /> capture correctamente los hash con sal de las contraseñas, asegúrate de que tus páginas de acceso cumplan con los lineamientos ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
@@ -3721,6 +3728,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
 <translation id="4632566332417930481">No permitir el uso de las Herramientas para desarrolladores en extensiones instaladas por una política empresarial; permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
 <translation id="4635284822166984665">La hora a la que el dispositivo comenzará a cargarse (según la zona horaria local del dispositivo).</translation>
+<translation id="4636354638176939375">Inhabilitar la creación de usuarios supervisados</translation>
 <translation id="4646626362889216307">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles. Esta acción combina las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave que provenga de la fuente de mayor prioridad.
 
       Usa el carácter comodín "*" para permitir la combinación de todas las políticas del diccionario compatibles.
@@ -4315,6 +4323,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
           Si no la estableces, la función de resaltar el cursor estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="5279539586558702228">La hora a la que el dispositivo funcionará con corriente alterna (según la zona horaria local del dispositivo).</translation>
 <translation id="5283457834853986457">Inhabilitar el buscador de complementos (obsoleto)</translation>
+<translation id="5286579716704722323">Permitir que los usuarios hagan clic para omitir páginas de advertencia de SSL</translation>
 <translation id="5288772341821359899">Si se establece la política, el intervalo de puertos UDP que usa WebRTC está restringido al intervalo de puertos especificado (extremos incluidos).
 
       Si la política no se establece, se establece con un intervalo de puertos no válido o se deja como una cadena vacía, WebRTC puede usar cualquier puerto UDP local disponible.</translation>
@@ -6855,6 +6864,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7824000841504721945">Inhabilitar grupos atómicos de políticas</translation>
 <translation id="782661371433719637">No permite que ningún sitio solicite acceso de lectura a archivos y directorios a través de la API de File System</translation>
 <translation id="7827127381981620448">App de plataforma</translation>
+<translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas cuando el usuario las abandona</translation>
 <translation id="7832225468415136704">Impedir que Limpiar Chrome escanee el sistema de forma periódica y, luego, inhabilitar los escaneos manuales</translation>
 <translation id="7833148823006528332">Identificador de la app para Android, p. ej., "com.google.android.gm" para Gmail.</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>
@@ -6978,6 +6988,10 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7962093600142350905">Esta política controla si el usuario visualiza las impresoras Privet disponibles en el diálogo de la vista previa de impresión.
       Si habilitas esta política, se mostrarán las impresoras Privet disponibles.
       Si la inhabilitas o no la estableces, no se mostrarán impresoras Privet en la vista previa, ya que ese método de impresión está obsoleto.</translation>
+<translation id="7967976640306183631">Si habilitas la política, no se permitirá realizar capturas de pantalla con combinaciones de teclas ni APIs de extensiones. Si inhabilitas la política o no la estableces, se permitirán las capturas de pantalla.
+
+      Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" /> esto no impide que se tomen capturas de pantalla con apps del sistema operativo o de terceros.
+      </translation>
 <translation id="7970844378072291834">Habilitar el modo solo HTTPS de forma automática (aún no se admite)</translation>
 <translation id="7972642710812569707">Forzar que se vuelva a habilitar WebSQL en contextos de terceros</translation>
 <translation id="7973609468423251675">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -8284,6 +8298,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       La configuración predeterminada permite al navegador del host realizar el procesamiento, pero puedes anularlo de manera opcional y tener las páginas HTML del procesador de <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada.</translation>
 <translation id="944817693306670849">Configurar el tamaño de caché de disco</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante las descargas</translation>
 <translation id="958285142322823422">Prohibir que una app web de kiosco abra otra ventana del navegador</translation>
 <translation id="958577147847681221">Controla la creación de nuevas cuentas de usuario en <ph name="PRODUCT_OS_NAME" />.
 

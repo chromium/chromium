@@ -253,6 +253,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2322173485024759474">Én bokstav tilbake</translation>
 <translation id="2339073806695260576">Trykk på pekepennknappen på hyllen for å ta et notat, ta en skjermdump, bruke laserpekeren eller bruke forstørrelsesglasset.</translation>
 <translation id="2341729377289034582">Låst til vertikal</translation>
+<translation id="2345226652884463045">Trykk på Enter eller Søk + mellomrom for å markere teksten som skal redigeres.</translation>
 <translation id="2350794187831162545">Tale på<ph name="LANGUAGE" /> behandles nå lokalt og fungerer uten nett. Du kan endre dikteringsspråk i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="2352467521400612932">Innstillinger for pekepenn</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
@@ -364,6 +365,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3009178788565917040">Utdata</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="301282384882049174">Delt av administratoren din</translation>
+<translation id="3023826154041300060">Slutt å snakke</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Åpne filer</translation>
@@ -435,6 +437,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3413817803639110246">Ingenting å se ennå</translation>
 <translation id="3428447136709161042">Koble fra <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Sveip fra høyre for å gå tilbake</translation>
+<translation id="3431517721463707585">Skrivebord 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Endre påminnelsen</translation>
 <translation id="3435967511775410570">Fingeravtrykket ble gjenkjent</translation>
@@ -675,6 +678,7 @@ Koble enheten til strøm.</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (venstre)</translation>
 <translation id="4734965478015604180">Horisontal</translation>
+<translation id="4735944890391795473">Skrivebord 12</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4740516757091333363">Vil du slette det lagrede skrivebordet?</translation>
 <translation id="4752784485658729358">Kun 6 lagrede skrivebord er tillatt. Fjern et skrivebord for å lagre et nytt.</translation>
@@ -695,6 +699,7 @@ Koble enheten til strøm.</translation>
 <translation id="4860284199500934869">Kontroller nettverkstilkoblingen din for å laste ned <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Vi forsøker å laste ned filene senere. Tale blir sendt til Google for behandling frem til nedlastingen er fullført.</translation>
 <translation id="4864369630010738180">Logger på ...</translation>
+<translation id="4864648187878336334">Skrivebord 15</translation>
 <translation id="4868492592575313542">aktivert</translation>
 <translation id="4872237917498892622">Alt + Søk eller Shift</translation>
 <translation id="4881695831933465202">Åpne</translation>
@@ -722,6 +727,7 @@ Koble enheten til strøm.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Skrivebord 16</translation>
 <translation id="5003993274120026347">Neste setning</translation>
 <translation id="5016558321564993266">Slå av/på markøren. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Tiden er ute</translation>
@@ -738,6 +744,7 @@ Koble enheten til strøm.</translation>
 <translation id="5098537242461068432">Skrivebordet og vinduene er åpnet på nytt</translation>
 <translation id="5104236669533825617">Kan ikke opprette skjermopptaket</translation>
 <translation id="5107522548814527560">Nettet</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Se neste måned</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
 <translation id="5147567197700016471">Ulåst</translation>
@@ -828,6 +835,7 @@ Koble enheten til strøm.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ber om din oppmerksomhet.</translation>
+<translation id="5662075790140998213">Skrivebord 10</translation>
 <translation id="5662709761327382534">Mikrofonopptak er <ph name="CURRENT_STATE" />. Trykk på Enter for å slå mikrofonopptak <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5673434351075758678">Fra «<ph name="FROM_LOCALE" />» til «<ph name="TO_LOCALE" />» etter at innstillingene dine ble synkronisert.</translation>
@@ -861,6 +869,7 @@ Koble enheten til strøm.</translation>
 <translation id="5804651031882187592">Slå av innstillingen «Lås SIM-kortet»</translation>
 <translation id="5805809050170488595">Klikk for å aktivere <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
+<translation id="5826319843084741655">Klikk og dra for å markere tekst</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Hold for å maksimere</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> er ikke aktivert.</translation>
@@ -1029,6 +1038,8 @@ Nylig installert</translation>
 <translation id="6753390234084146956">faner</translation>
 <translation id="6757237461819837179">Ingen medier spilles av</translation>
 <translation id="6777216307882431711">Gir strøm til tilkoblede USB-C-enheter</translation>
+<translation id="6781002679438061620">Skrivebord 9</translation>
+<translation id="6782182743534150858">Skrivebord 13</translation>
 <translation id="6786750046913594791">Lukk mappen</translation>
 <translation id="6787595647772650851">Gjenopprett forrige økt</translation>
 <translation id="6790428901817661496">Spill av</translation>
@@ -1090,6 +1101,7 @@ Nylig installert</translation>
 <translation id="7098053464892629930">Last ned appen for <ph name="NAME" /> på Google Play for å se alle tilgjengelige funksjoner</translation>
 <translation id="7098389117866926363">USB-C-enhet (venstre port på baksiden)</translation>
 <translation id="7106330611027933926">Vis skrivebordslinje</translation>
+<translation id="7116969082764510092">Skrivebord 11</translation>
 <translation id="7118268675952955085">skjermdump</translation>
 <translation id="7126996685418858413">Åpnet den siste uken</translation>
 <translation id="7130207228079676353">MEST SANNSYNLIG</translation>
@@ -1188,6 +1200,7 @@ Nylig installert</translation>
 <translation id="7662283695561029522">Trykk for å konfigurere</translation>
 <translation id="7670953955701272011">Åpne denne datoen i Google Kalender</translation>
 <translation id="7671610481353807627">Appene er sortert etter farge</translation>
+<translation id="7672095158465655885">Koblet til <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamerakilden er satt til <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Legg til nytt mobilnettverk</translation>
@@ -1472,5 +1485,6 @@ Nylig installert</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Liggende</translation>
 <translation id="990277280839877440">Vinduet <ph name="WINDOW_TITILE" /> er lukket.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Få de nyeste funksjonene og sikkerhetsforbedringene. Oppdateringene skjer i bakgrunnen.</translation>
 </translationbundle>

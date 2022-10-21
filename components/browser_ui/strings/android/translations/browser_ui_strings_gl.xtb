@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Recoméndase para gozar da mellor experiencia</translation>
 <translation id="1818308510395330587">Para permitir que <ph name="APP_NAME" /> utilice a realidade aumentada, tamén debes activar a cámara en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Sitios relacionados que poden ver a túa actividade no grupo</translation>
 <translation id="1887786770086287077">O acceso á localización está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Deter</translation>
 <translation id="1919345977826869612">Anuncios</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Incluír todos os sitios deste dominio</translation>
 <translation id="4883854917563148705">Non se pode restablecer a configuración xestionada</translation>
 <translation id="4887024562049524730">Pregunta antes de permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual (recomendado)</translation>
+<translation id="4955223779495905865">O sitio que estás a visitar pode inserir contido doutros sitios web (por exemplo, imaxes, anuncios ou texto). Todos estes sitios poden gardar cookies e outros datos para personalizar a túa experiencia.</translation>
 <translation id="4962975101802056554">Revogar todos os permisos do dispositivo</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4976702386844183910">Visitouse o <ph name="DATE" /> por última vez</translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Permite aos sitios acceder aos teus sensores de movemento (recomendado)</translation>
 <translation id="5050380848339752099">Neste sitio estase a piques de compartir información cunha aplicación fóra do modo de incógnito.</translation>
 <translation id="5063480226653192405">Uso</translation>
+<translation id="5082281938627763039">Esta acción eliminará as cookies e outros datos dos sitios de <ph name="FPS_MEMBER" /> e dos sitios no grupo de sitios de <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Sitio para móbiles</translation>
 <translation id="509133520954049755">Solicita a vista para ordenadores</translation>
 <translation id="5100237604440890931">Vista contraída (fai clic para ampliala).</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Bloqueada</translation>
 <translation id="5689516760719285838">Localización</translation>
 <translation id="5690795753582697420">A cámara está desactivada na sección Configuración de Android</translation>
+<translation id="5706552988683188916">Esta acción eliminará as cookies e outros datos dos sitios de <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Ao realizar esta acción, borraranse os datos e as cookies que almacenase <ph name="ORIGIN" /> ou a súa aplicación instalada na pantalla de inicio.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> (bloqueado)</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Permite o son dun sitio específico.</translation>
 <translation id="789180354981963912">Bloquea as cookies de terceiros no modo de incógnito:</translation>
 <translation id="7940722705963108451">Lembrarmo</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sitio no grupo de sitios de <ph name="FPS_OWNER" /> pode ver a túa actividade no grupo}other{<ph name="FPS_MEMBERS_COUNT" /> sitios no grupo de sitios de <ph name="FPS_OWNER" /> poden ver a túa actividade no grupo}}</translation>
 <translation id="7986741934819883144">Seleccionar contacto</translation>
 <translation id="7999064672810608036">Seguro que queres borrar todos os datos locais, incluídas as cookies, e restablecer todos os permisos para este sitio web?</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Activar son do micro</translation>
 <translation id="851751545965956758">Non permitir que os sitios se conecten aos dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidas para <ph name="FPS_MEMBERS_COUNT" /> sitio de <ph name="FPS_OWNER" />}other{Cookies permitidas para <ph name="FPS_MEMBERS_COUNT" /> sitios de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="9019902583201351841">Xestionado por teus pais</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Este sitio está nun grupo que pode ver a túa actividade. O grupo definiuno <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Queres eliminar as cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}}</translation>
 <translation id="913657688200966289">Activa os permisos para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Esta páxina é perigosa</translation>

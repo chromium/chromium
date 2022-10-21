@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">Гісторыя прагляду сайтаў</translation>
 <translation id="2497852260688568942">Сінхранізацыя выключана вашым адміністратарам</translation>
 <translation id="250020030759455918">Вы ўбачыце, ці выкананы ўваход на сайт <ph name="SITE_NAME" />, гісторыю праглядаў і даныя сайтаў у Chrome</translation>
+<translation id="2510106555128151389">Ідзе ўсталяванне праграмы "<ph name="WEBAPK_NAME" />"...</translation>
 <translation id="2513403576141822879">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзеле <ph name="BEGIN_LINK" />Сінхранізацыя і сэрвісы Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2523184218357549926">Адпраўка URL-адрасоў наведаных вамі старонак у Google</translation>
@@ -903,6 +904,7 @@
 <translation id="5956665950594638604">Адкрыць Даведачны цэнтр Chrome у новай укладцы</translation>
 <translation id="5957442310066583693">Каб прагледзець папулярныя сайты, націсніце кнопку "Галоўная старонка"</translation>
 <translation id="5958275228015807058">Знайсці файлы і старонкі можна ў раздзеле "Спампоўкі"</translation>
+<translation id="5958994127112619898">Спрасціць выгляд старонкі</translation>
 <translation id="5962718611393537961">Каб згарнуць, націсніце тут</translation>
 <translation id="5964869237734432770">Не атр. апісанні відарысаў</translation>
 <translation id="5966233851250124270">Chrome запомніць ваш выбар</translation>
@@ -1279,6 +1281,7 @@
 <translation id="7887334752153342268">Дубліраваць</translation>
 <translation id="789763218334337857">Як выкарыстоўваць Chrome</translation>
 <translation id="7903184275147100332">Пачакайце</translation>
+<translation id="7914399737746719723">Праграма ўсталявана</translation>
 <translation id="7919123827536834358">Аўтаматычна перакладаць з гэтых моў</translation>
 <translation id="7926975587469166629">Псеўданім карткі</translation>
 <translation id="7929962904089429003">Адкрыць меню</translation>

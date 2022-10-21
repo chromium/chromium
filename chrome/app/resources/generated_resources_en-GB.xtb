@@ -460,6 +460,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
            • Delete cookies and other temporary site data
             <ph name="LINE_BREAKS" />
            Bookmarks, history and saved passwords won't be affected.</translation>
+<translation id="1425040197660226913">Can't upload. Use an image smaller than 20 MB.</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> is blocked</translation>
 <translation id="1426870617281699524">Click Try Again, and accept the prompt on your computer</translation>
@@ -587,6 +588,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1545177026077493356">Automatic Kiosk Mode</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1545775234664667895">Installed theme "<ph name="THEME_NAME" />"</translation>
+<translation id="1546031833947068368">{COUNT,plural, =1{Your incognito window won't reopen.}other{Your # incognito windows won't reopen.}}</translation>
 <translation id="1546280085599573572">This extension has changed the page that is shown when you click the Home button.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> wants to install an <ph name="EXTENSION_TYPE" /> that can:</translation>
 <translation id="1547808936554660006">I understand that installed eSIM profiles will not be removed by Powerwash</translation>
@@ -1017,6 +1019,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1908591798274282246">Reopen Closed Group</translation>
 <translation id="1909880997794698664">Are you sure you want to permanently keep this device in kiosk mode?</translation>
 <translation id="1910721550319506122">Welcome!</translation>
+<translation id="1910736334623230603">Can't search multiple images. Add one image at a time.</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1916502483199172559">Default red avatar</translation>
@@ -1533,6 +1536,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2352810082280059586">Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME" />. Your most recent note will remain on the lock screen.</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
 <translation id="2355314311311231464">Provisioning failed because your account details could not be retrieved. Try again. Error code: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Energy saver options</translation>
 <translation id="2355604387869345912">Turn on Instant Tethering</translation>
 <translation id="2356070529366658676">Ask</translation>
 <translation id="2357330829548294574">Remove <ph name="USER_NAME" /></translation>
@@ -1781,6 +1785,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2591895621127187078">Check your email to choose a new password</translation>
 <translation id="2593499352046705383">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Search Google or type URL</translation>
+<translation id="25957578727513093">To get here quicker, add a shortcut to Google Password Manager</translation>
 <translation id="2599048253926156421">Username copied to clipboard</translation>
 <translation id="2602501489742255173">Swipe up to get started</translation>
 <translation id="2603115962224169880">Clean up computer</translation>
@@ -2884,6 +2889,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3642699533549879077">When someone else looks at your screen, you'll get an alert and notification content will be hidden.</translation>
 <translation id="3643962751030964445">This device is managed by <ph name="DEVICE_MANAGER" />. A new profile is required for account <ph name="USER_EMAIL_ADDRESS" /> by <ph name="DEVICE_MANAGER" /></translation>
 <translation id="3645372836428131288">Move slightly to capture a different part of the fingerprint.</translation>
+<translation id="3647654707956482440">Can't use this link. Check for typos or use another link to try again.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> detected</translation>
 <translation id="3650753875413052677">Enrolment error</translation>
@@ -6781,6 +6787,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7371490947952970241">You can turn off location by turning off the main location setting on this device. You can also turn off the use of Wi-Fi, mobile networks and sensors for location in location settings.</translation>
 <translation id="7371917887111892735">Tabs shrink to pinned tab width</translation>
 <translation id="7374376573160927383">Manage USB devices</translation>
+<translation id="7376124766545122644">Can't use this link. Check that your link starts with 'http://' or 'https://' to try again.</translation>
 <translation id="7376553024552204454">Highlight the mouse cursor when it's moving</translation>
 <translation id="737728204345822099">A record of your visit to this site may be kept on your security key.</translation>
 <translation id="7377451353532943397">Continue blocking sensor access</translation>
@@ -6791,6 +6798,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7380622428988553498">Device name contains invalid characters</translation>
 <translation id="7380768571499464492">Updated <ph name="PRINTER_NAME" /></translation>
 <translation id="7382085868019811559">Legacy Browser Support (LBS) allows specific URL patterns to be opened in an alternative browser that supports legacy features required to properly run those sites.</translation>
+<translation id="738322632977123193">Can't upload. Use an image in one of these formats: .jpg, .gif, .png, .bmp, .tif or .webp</translation>
 <translation id="73843634555824551">Inputs and keyboards</translation>
 <translation id="7384687527486377545">Keyboard auto-repeat</translation>
 <translation id="7385490373498027129">All files and local data for all users on this <ph name="DEVICE_TYPE" /> will be permanently deleted.</translation>
@@ -6919,6 +6927,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7495778526395737099">Forgot your old password?</translation>
 <translation id="7497981768003291373">You have no recently captured WebRTC text logs.</translation>
 <translation id="7501957181231305652">or</translation>
+<translation id="7502220299952823578">Add to the ‘always keep these sites active’ list</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">A record of your visit to this site will be kept on your security key.</translation>
 <translation id="750509436279396091">Open downloads folder</translation>

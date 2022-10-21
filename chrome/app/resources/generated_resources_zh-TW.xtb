@@ -589,6 +589,7 @@
 <translation id="1552752544932680961">管理擴充功能</translation>
 <translation id="1553538517812678578">無限制</translation>
 <translation id="1555130319947370107">藍色</translation>
+<translation id="1556127816860282890">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="1558391695376153246">關閉無痕分頁</translation>
 <translation id="155865706765934889">觸控板</translation>
@@ -2509,6 +2510,7 @@
 <translation id="3308852433423051161">正在載入 Google 助理…</translation>
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
 <translation id="3311445899360743395">系統可能會從這部裝置中移除與這個應用程式相關聯的資料。</translation>
+<translation id="3312470654018965389">正在設定 Linux 容器</translation>
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
 <translation id="3313622045786997898">憑證簽署值</translation>
 <translation id="3313950410573257029">檢查連線狀態</translation>
@@ -4131,6 +4133,7 @@
 <translation id="4852916668365817106">游標顏色</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇進行審核的家長帳戶</translation>
+<translation id="4854603338816296098">地址已移除</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4858792381671956233">你已詢問家長是否同意你造訪這個網站</translation>
 <translation id="4858913220355269194">飛球</translation>

@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Хамгийн сайн үйлчилгээг санал болгосон</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-д AR-г ашиглахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын Тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />-с</translation>
+<translation id="187227595286001730">Холбоотой сайтууд бүлэг дэх таны үйл ажиллагааг харах боломжтой</translation>
 <translation id="1887786770086287077">Байршлын хандалт энэ төхөөрөмжид унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="1915307458270490472">Таслах</translation>
 <translation id="1919345977826869612">Зар</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Энэ домэйн дор байгаа бүх сайтыг оруулах</translation>
 <translation id="4883854917563148705">Хяналттай тохиргоог шинэчлэх боломжгүй</translation>
 <translation id="4887024562049524730">Сайтуудад таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглахыг зөвшөөрөхийн өмнө асуух (санал болгосон)</translation>
+<translation id="4955223779495905865">Таны зочилсон сайт бусад сайтаас зураг, зар болон текст зэрэг контентыг оруулах боломжтой. Эдгээр сайтын аль нь ч таны хэрэглээг хувийн болгохын тулд күүки болон бусад өгөгдлийг хадгалах боломжтой.</translation>
 <translation id="4962975101802056554">Төхөөрөмжийн бүх зөвшөөрлийг цуцлах</translation>
 <translation id="497421865427891073">Цаашаа явах</translation>
 <translation id="4976702386844183910">Хамгийн сүүлд <ph name="DATE" />-д зочилсон</translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Сайтад хөдөлгөөн мэдрэгчид хандахыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="5050380848339752099">Энэ сайт Нууцлалтай горимоос гадуур апптай мэдээлэл хуваалцах гэж байна.</translation>
 <translation id="5063480226653192405">Ашиглалт</translation>
+<translation id="5082281938627763039">Энэ нь <ph name="FPS_MEMBER" />-н болон <ph name="FPS_OWNER" />-н бүлэг сайтууд дахь сайтын күүки, сайтын бусад өгөгдлийг устгана</translation>
 <translation id="5091013926750941408">Мобайл сайт</translation>
 <translation id="509133520954049755">Дэлгэц дээр харагдах байдлаар харах хүсэлт тавих</translation>
 <translation id="5100237604440890931">Задарсан, энд дарж өргөтгөнө үү.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Хаагдсан</translation>
 <translation id="5689516760719285838">Байршил</translation>
 <translation id="5690795753582697420">Камерыг Android тохиргоо хэсэгт унтраасан байна</translation>
+<translation id="5706552988683188916">Энэ нь <ph name="WEBSITE" />-н күүки болон сайтын бусад өгөгдлийг устгана</translation>
 <translation id="5719847187258001597">Энэ нь <ph name="ORIGIN" /> эсвэл таны Үндсэн нүүрэн дээрх үүний аппаас хадгалсан бүх өгөгдөл болон күүкиг арилгана.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />-г блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Тодорхой сайтад дуу тоглуулахыг зөвшөөрнө үү.</translation>
 <translation id="789180354981963912">Нууцлалтай горимд гуравдагч талын күүкиг блоклох:</translation>
 <translation id="7940722705963108451">Надад сануул</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{Бүлэг дэх таны үйл ажиллагааг харах боломжтой <ph name="FPS_OWNER" />-н бүлэг сайтууд дахь <ph name="FPS_MEMBERS_COUNT" /> сайт}other{Бүлэг дэх таны үйл ажиллагааг харах боломжтой <ph name="FPS_OWNER" />-н бүлэг сайтууд дахь <ph name="FPS_MEMBERS_COUNT" /> сайт}}</translation>
 <translation id="7986741934819883144">Харилцагч сонгох</translation>
 <translation id="7999064672810608036">Та cookies гэх мэт энэ вэбсайтны бүх мэдээллийг устгах мөн бүх зөвшөөрлийг дахин тохируулахдаа итгэлтэй байна уу?</translation>
 <translation id="8007176423574883786">Энэ төхөөрөмж дээр унтраастай байна</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Микрофоны дууг нээх</translation>
 <translation id="851751545965956758">Сайтуудыг төхөөрөмжүүдэд холбогдохыг нь блоклох</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}other{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}}</translation>
 <translation id="857943718398505171">Зөвшөөрөгдсөн (санал болгосон)</translation>
 <translation id="8609465669617005112">Дээш зөөх</translation>
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="9019902583201351841">Эцэг, эх нь хариуцан удирдаж байна</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Энэ сайт таны үйл ажиллагааг харах боломжтой бүлэгт байна. Бүлгийг <ph name="FPS_OWNER" />-с тодорхойлсон</translation>
+<translation id="9106233582039520022">Күүкиг устгах уу?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" />-н зөвшөөрлийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="9162462602695099906">Энэ хуудас аюултай байна</translation>

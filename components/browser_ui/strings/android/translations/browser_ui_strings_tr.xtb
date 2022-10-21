@@ -159,6 +159,7 @@
 <translation id="4402755511846832236">Bu cihazı etkin olarak kullandığınızda sitelerin bunu bilmesi engellenir</translation>
 <translation id="4428065317363009941">Reklam kişiselleştirme</translation>
 <translation id="4434045419905280838">Pop-up'lar ve yönlendirmeler</translation>
+<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> panelini genişlet</translation>
 <translation id="445467742685312942">Sitelerin korumalı içeriği oynatmasına izin ver</translation>
 <translation id="4468959413250150279">Belirli bir site için sesi kapatın.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# çerez}other{# çerez}}</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1220509181886849806">သိမ်းထားသောစကားဝှက် သုံးမလား။</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> အတွက် စကားဝှက်။</translation>
 <translation id="1717486229951421299">ထိလိုက်သည့်အခါ ဖြည့်ရန်အတွက် အထောက်အထားများ၏ စာရင်းကို မြင်ကွင်းတစ်ဝက်ဖြင့်ထားသည်။</translation>
 <translation id="207576718733492531">ထိတွေ့သည့်အခါ ဖြည့်ရန် အထောက်အထားစာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">ထိလိုက်သည့်အခါ ဖြည့်ရန်အတွက် အထောက်အထားများ၏ စာရင်းကို မြင်ကွင်းအပြည့်ဖြင့်ထားသည်။</translation>
 <translation id="5591247451101092906">သိမ်းထားသည့် စကားဝှက် (သို့) လျှို့ဝှက်ကီး သုံးမလား။</translation>
 <translation id="5624120631404540903">စကားဝှက်များကို စီမံကွပ်ကဲရန်</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> အတွက် လျှို့ဝှက်ကီး။ သင့်ဖန်သားပြင်လော့ခ် သုံးပါ။</translation>
 <translation id="804577341878669140">အကောင့်ဖြင့် ရှေ့ဆက်ခြင်း</translation>
 </translationbundle>

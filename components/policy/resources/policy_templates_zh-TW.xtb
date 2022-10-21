@@ -1281,6 +1281,7 @@
 <translation id="2246621891161157804">允許 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="225340736558643885">啟用不安全表單的警告功能</translation>
 <translation id="2258126710006312594">允許遠端存取使用者向主機傳輸檔案，或從主機接收檔案</translation>
+<translation id="225830954785359083">禁止網頁在卸載時顯示彈出式視窗</translation>
 <translation id="2261648512244797294">停用已淘汰的 Privet 列印功能</translation>
 <translation id="2266422599396179941">允許使用者提出意見回饋</translation>
 <translation id="2269319728625047531">在登入期間允許顯示同步處理同意聲明</translation>
@@ -1340,6 +1341,9 @@
 <translation id="2309341709647905294">不要回報裝置所連結周邊裝置的相關資訊</translation>
 <translation id="2309390639296060546">預設地理位置設定</translation>
 <translation id="2318583605563438459">允許家長新增受監督的帳戶</translation>
+<translation id="2326031114717677574">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
+
+      如果未設定，系統會套用 15 分鐘的預設頻率。</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 範本。如要指定多個 DNS-over-HTTPS 解析器，請以半形空格分隔相應的 URI 範本。
 
       如果你將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_SECURE" />，就必須設定這項政策，不可將其保持空白。
@@ -1391,6 +1395,7 @@
 <translation id="2387469539700985783">這項政策對 Android 應用程式製作的報表沒有影響。</translation>
 <translation id="238885588439957890">裝置使用交流電源為電池充電的時間 (根據裝置當地時區)。</translation>
 <translation id="2393862222659066027">開啟網址清單並還原前次的工作階段</translation>
+<translation id="2394429297128584919">禁止網頁在關閉時傳送同步 XHR 要求</translation>
 <translation id="2394674739523870144">如果將這項政策設為字串清單，系統會使用空格連接字串，並將字串以指令列參數的形式從 <ph name="IE_PRODUCT_NAME" /> 傳送至 <ph name="PRODUCT_NAME" />。如果有參數包含 <ph name="URL_PLACEHOLDER" />，系統會將 <ph name="URL_PLACEHOLDER" /> 替換成要開啟的網頁網址。如果沒有參數包含 <ph name="URL_PLACEHOLDER" />，則網址會附加在指令列結尾。
 
       系統會展開環境變數。在 <ph name="MS_WIN_NAME" /> 上，系統會將 <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> 替換為 <ph name="ENV_VARIABLE_VALUE" /> 環境變數的值。
@@ -1886,6 +1891,7 @@
 <translation id="2872098849906555324">停用 Google 雲端硬碟同步功能</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2874209944580848064">支援 Android 裝置的 <ph name="PRODUCT_OS_NAME" />裝置注意事項：</translation>
+<translation id="287474029350993681">停用將內容投放到裝置的功能</translation>
 <translation id="2875192972412983412">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。
 
       如果使用這項政策，使用者只能使用 ID 符合本政策值的伺服器印表機。
@@ -2368,6 +2374,7 @@
 <translation id="3255762580838224124">你可以透過這項政策，在裝置每次重新啟動以及政策值變更後裝置首次連線時，將每個螢幕依指定方向旋轉。使用者可以在登入後透過設定頁面變更螢幕旋轉設定，但裝置下次重新啟動時，系統會恢復成這項政策的設定值。這項政策適用於主要螢幕和次要螢幕。
 
       如果未設定，預設值為 0 度，且使用者可自行變更。在這種情況下，系統不會在裝置重新啟動時重新套用預設值。</translation>
+<translation id="3256920103934729145">禁止使用者點閱安全資料傳輸層警告網頁</translation>
 <translation id="3257786863492892609">控管螢幕側錄的各項政策。</translation>
 <translation id="3258380413685430793">執行所有 <ph name="FLASH_PLUGIN_NAME" /> 內容</translation>
 <translation id="325883417142483505">你可以透過設定這項政策設定企業登入網址清單 (僅限 HTTP 和 HTTPS 通訊協定)。密碼保護服務會從這些網址擷取密碼的加鹽雜湊值，並用於偵測密碼重複使用情形。為了讓 <ph name="PRODUCT_NAME" /> 能正確擷取密碼的加鹽雜湊值，請確保你的登入頁面遵循以下網址所述的指南：https://www.chromium.org/developers/design-documents/create-amazing-password-forms。
@@ -3611,6 +3618,7 @@
 <translation id="4632343302005518762">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型</translation>
 <translation id="4632566332417930481">禁止在由企業政策安裝的擴充功能中使用開發人員工具，允許在其他情況下使用開發人員工具</translation>
 <translation id="4635284822166984665">裝置開始充電的時間 (根據裝置當地時區)。</translation>
+<translation id="4636354638176939375">停用受監管使用者的建立功能</translation>
 <translation id="4646626362889216307">當所選政策的來源不同，但具有相同的範圍和層級時，就可以設定這項政策來合併所選的政策。
 
         合併方式是將各個來源字典的第一層金鑰合併。系統會首先採用優先順序最高的來源所提供的金鑰。
@@ -4198,6 +4206,7 @@
           如果不設定這項政策，系統會在初次顯示登入畫面時停用游標醒目提示功能，但使用者隨時可以啟用。</translation>
 <translation id="5279539586558702228">裝置使用交流電源供電的時間 (根據裝置當地時區)。</translation>
 <translation id="5283457834853986457">停用外掛程式尋找工具 (已淘汰)</translation>
+<translation id="5286579716704722323">允許使用者點閱安全資料傳輸層警告網頁</translation>
 <translation id="5288772341821359899">如果設定這項政策，系統會將 WebRTC 所使用的 UDP 連接埠範圍限於指定的連接埠區間 (包括端點)。
 
       如果未設定這項政策，或是將這項政策設為空白字串或無效的連接埠範圍，WebRTC 即可使用任何可用的本機 UDP 連接埠。</translation>
@@ -6666,6 +6675,7 @@
 <translation id="7824000841504721945">停用政策不可部分完成的群組</translation>
 <translation id="782661371433719637">不允許任何網站透過 File System API 要求讀取檔案及目錄</translation>
 <translation id="7827127381981620448">平台應用程式</translation>
+<translation id="7829436838673974723">允許網頁在關閉時傳送同步 XHR 要求</translation>
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期執行系統掃描，並停用手動掃描</translation>
 <translation id="7833148823006528332">Android 應用程式的 ID，例如 Gmail 的 ID 為「com.google.android.gm」</translation>
 <translation id="7835218570504220753">停用自動點擊功能</translation>
@@ -8040,6 +8050,7 @@
       系統在預設設定下，會允許主機瀏覽器進行算繪，但是你可以覆寫預設設定，改由 <ph name="PRODUCT_FRAME_NAME" />算繪 HTML 網頁。</translation>
 <translation id="944817693306670849">設定磁碟快取大小</translation>
 <translation id="957778406002650056">可下載 <ph name="PLUGIN_VM_NAME" /> 圖片的網址。</translation>
+<translation id="957920984193041197">允許網頁在卸載時顯示彈出式視窗</translation>
 <translation id="958285142322823422">禁止 Kiosk 網頁應用程式另外開啟瀏覽器視窗</translation>
 <translation id="958577147847681221">這項政策可控管 <ph name="PRODUCT_OS_NAME" /> 是否允許建立新的使用者帳戶。
 

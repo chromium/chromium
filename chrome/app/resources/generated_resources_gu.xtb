@@ -275,6 +275,7 @@
 <translation id="1244303850296295656">એક્સટેંશન ભૂલ</translation>
 <translation id="1245628370644070008">સ્થાનિક ડેટા રિકવરી</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ઇન્સ્ટૉલ કરી શક્યાં નહીં: છબીના URL દ્વારા ભૂલનો કોડ <ph name="HTTP_ERROR" /> પરત આપવામાં આવ્યો છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{1 સાઇટને નોટિફિકેશનની મંજૂરી નથી}one{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}other{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}}</translation>
 <translation id="1251366534849411931">અપેક્ષિત ખુલતો વાંકળિયો કૌંસ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">આમ કરવાથી સાઇટ અને ઇન્સ્ટૉલ કરેલી ઍપ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="TOTAL_USAGE" /> ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="1251578593170406502">મોબાઇલ ડેટા નેટવર્ક માટે સ્કૅન કરી રહ્યાં છીએ…</translation>
@@ -421,6 +422,7 @@
 <translation id="1397594434718759194">તમે આ ડિવાઇસ પર Chromeમાં સાઇન ઇન કરેલું છે, આથી તમે તેમનો સિક્યુરિટી કી તરીકે ઉપયોગ કરી શકો છો.</translation>
 <translation id="1398853756734560583">મોટું કરો</translation>
 <translation id="139911022479327130">તમારા ફોનને અનલૉક કરો અને કન્ફર્મ કરો કે તે તમે જ છો</translation>
+<translation id="1401216725754314428">નવા ટૅબમાં સંબંધિત સાઇટ વિશે વધુ જાણો</translation>
 <translation id="1401308693935339022">સ્થાનનો ઉપયોગ કરો. સ્થાનની પરવાનગી ધરાવતી ઍપ અને સેવાઓને આ ડિવાઇસના સ્થાનનો ઉપયોગ કરવાની મંજૂરી આપો. Google સ્થાનનો ડેટા સમયાંતરે એકત્રિત કરી શકે છે અને અનામી રીતે સ્થાન સચોટતા અને સ્થાન-આધારિત સેવાઓને બહેતર બનાવવા માટે તેનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="1403222014593521787">પ્રૉક્સી સાથે કનેક્ટ કરી શકાયું નથી</translation>
 <translation id="1405779994569073824">ક્રૅશ થયું</translation>
@@ -589,6 +591,7 @@
 <translation id="1552752544932680961">એક્સ્ટેન્શનનું સંચાલન કરો</translation>
 <translation id="1553538517812678578">અસીમિત</translation>
 <translation id="1555130319947370107">વાદળી</translation>
+<translation id="1556127816860282890">સ્મૂધ સ્ક્રોલિંગ જેવી બૅકગ્રાઉન્ડમાં થતી પ્રવૃત્તિ અને અમુક વિઝ્યુઅલ ઇફેક્ટ મર્યાદિત હોઈ શકે છે</translation>
 <translation id="1556537182262721003">એક્સટેંશન ડિરેક્ટરીને પ્રોફાઇલમાં ખસેડી શકાઈ નથી.</translation>
 <translation id="1558391695376153246">છૂપી ટૅબ બંધ કરો</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -1639,6 +1642,7 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />ને અનઇન્સ્ટૉલ કરવા માટે Windows શટ ડાઉન કરો.</translation>
 <translation id="2477065602824695373">તમે એકથી વધુ સ્વિચનું સેટઅપ કર્યું હોવાને કારણે ઑટો-સ્કૅનની સુવિધા બંધ કરવામાં આવી છે.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" માટે મીડિયા-ફાઇલ પરવાનગીઓ</translation>
+<translation id="24786041351753425">ડેટા રિકવરી સેવા ચાલુ કરો.</translation>
 <translation id="2480868415629598489">તમે કૉપિ અને પેસ્ટ કરો છો તે ડેટાને સંશોધિત કરો</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="2482895651873876648">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" />માં ટૅબને ખસેડવામાં આવી</translation>
@@ -2254,6 +2258,7 @@
 <translation id="3024374909719388945">24-કલાકની ઘડિયાળ વાપરો</translation>
 <translation id="3027296729579831126">'નજીકના શેર' સુવિધા ચાલુ કરો</translation>
 <translation id="3029466929721441205">શેલ્ફમાં સ્ટાઇલસના સાધનો બતાવો</translation>
+<translation id="3029808567601324798">લૉક કરવાનો સમય</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે આજે અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય એ પહેલાં અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય એ પહેલાં અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}}</translation>
 <translation id="3030967311408872958">સૂર્યોદયથી સૂર્યાસ્ત સુધી</translation>
 <translation id="3031417829280473749">એજંટ X</translation>
@@ -2512,6 +2517,7 @@
 <translation id="3308852433423051161">Google Assistant લોડ કરી રહ્યાં છીએ...</translation>
 <translation id="3309330461362844500">પ્રમાણપત્ર પ્રોફાઇલનું ID</translation>
 <translation id="3311445899360743395">આ ઍપ સાથે સંકળાયેલા ડેટાને આ ડિવાઇસમાંથી દૂર કરવામાં આવશે.</translation>
+<translation id="3312470654018965389">Linux કન્ટેનરની ગોઠવણી કરી રહ્યાં છીએ</translation>
 <translation id="3312883087018430408">કોઈ ચોક્કસ સાઇટમાં કે Chromeના ભાગમાં શોધવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી તમારી પસંદગીનો કીબોર્ડ શૉર્ટકટ ટાઇપ કરો. ઉદાહરણ તરીકે, માત્ર બુકમાર્ક શોધવા માટે, "@bookmarks" ટાઇપ કરો, ત્યાર પછી Tab અથવા Space કી દબાવો.</translation>
 <translation id="3313622045786997898">પ્રમાણપત્ર હસ્તાક્ષર મૂલ્ય</translation>
 <translation id="3313950410573257029">કનેક્શન ચેક કરો</translation>
@@ -4139,6 +4145,7 @@
 <translation id="4852916668365817106">માઉસનો રંગ</translation>
 <translation id="4853020600495124913">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="4854317507773910281">મંજૂરી માટે માતાપિતાનું એકાઉન્ટ પસંદ કરો</translation>
+<translation id="4854603338816296098">સરનામું કાઢી નાખવામાં આવ્યું છે</translation>
 <translation id="485480310608090163">વધુ સેટિંગ અને પરવાનગીઓ</translation>
 <translation id="4858792381671956233">તમે આ સાઇટની મુલાકાત લો છો તે ઠીક છે કે કેમ તેવું તમે તમારા માતાપિતાને પૂછ્યું</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -4201,6 +4208,7 @@
 <translation id="4901154724271753917">તાજેતરમાં બંધ કરવામાં આવેલી સૂચિ મોટી કરો</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે, પ્રયોગનું સ્ટેટસ પસંદ કરો.</translation>
 <translation id="49027928311173603">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">આ બૅકગ્રાઉન્ડની પ્રવૃત્તિ અને સ્મૂધ સ્ક્રોલિંગ જેવી વિઝ્યુઅલ ઇફેક્ટને મર્યાદિત કરીને બૅટરી પાવર વધારે છે.</translation>
 <translation id="4906490889887219338">નેટવર્ક ફાઇલ શેર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">આ એક્સ્ટેન્શન તમારી સાઇટનો ડેટા ક્યારે વાંચી અને તેમાં ફેરફાર કરી શકે તે પસંદ કરો</translation>
 <translation id="4907161631261076876">આ ફાઇલ સામાન્ય રીતે ડાઉનલોડ કરવામાં આવતી નથી અને તે જોખમી હોઈ શકે છે.</translation>
@@ -5309,6 +5317,7 @@ USB ડિવાઇસ</translation>
 <translation id="5971037678316050792">Bluetooth એડેપ્ટર સ્થિતિ અને જોડીનું નિયંત્રણ કરો</translation>
 <translation id="597235323114979258">વધુ સ્થાનો જુઓ</translation>
 <translation id="5972543790327947908">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> અથવા <ph name="APP_NAME_3" />માં ખૂલશે.</translation>
+<translation id="5972559880616357748"><ph name="SITE_GROUP" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="5972666587303800813">નો-ઑપ સેવાઓ</translation>
 <translation id="5972708806901999743">ટોચ પર જાઓ</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" />  શરૂ કરો</translation>
@@ -7677,6 +7686,7 @@ USB ડિવાઇસ</translation>
 <translation id="8206745257863499010">બ્લુસી</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8207404892907560325">કોઈ પાસકી પસંદ કરો</translation>
+<translation id="8208188204689616705">આ સાઇટ <ph name="FPS_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે. ગ્રૂપમાં શામેલ સાઇટ, ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે.</translation>
 <translation id="8208216423136871611">સાચવશો નહીં</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{નવું નોટિફિકેશન}one{# નવું નોટિફિકેશન}other{# નવા નોટિફિકેશન}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> માટે Google Password Managerમાં પાસવર્ડ આયાત કરવા માટે, કોઈ CSV ફાઇલ પસંદ કરો</translation>
@@ -8491,6 +8501,7 @@ USB ડિવાઇસ</translation>
 <translation id="8987927404178983737">મહિનો</translation>
 <translation id="8989359959810288806">ઇન્ટરનેટ શેર કરવાની સુવિધાનું સ્ટેટસ રિફ્રેશ કરો</translation>
 <translation id="8991520179165052608">સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી શકે છે</translation>
+<translation id="8993059306046735527">તમે તમારો <ph name="DEVICE_TYPE" /> પાસવર્ડ ભૂલી ગયા હો, તેમ છતાં તમે તમારો સ્થાનિક ડેટા રિસ્ટોર કરી શકો છો. તમારે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરવું અથવા એકાઉન્ટની રિકવરી કરવી જરૂરી રહેશે.</translation>
 <translation id="899384117894244799">પ્રતિબંધિત વપરાશકર્તાને કાઢી નાખો</translation>
 <translation id="899403249577094719">નેટસ્કેપ પ્રમાણપત્ર બેઝ URL</translation>
 <translation id="899657321862108550">સર્વત્ર તમારા Chromeમાં સાઇન ઇન કરો</translation>
@@ -8590,6 +8601,7 @@ USB ડિવાઇસ</translation>
 <translation id="9078316009970372699">ઝટપટ ઇન્ટરનેટ શેર કરવાની સુવિધા બંધ કરો</translation>
 <translation id="9078842827190780028">બાજુની પૅનલમાં વધુ શોધ પરિણામો જુઓ</translation>
 <translation id="9079267182985899251">જલ્દી જ આ વિકલ્પને હવેથી સપોર્ટ કરવાનું બંધ કરવામાં આવશે. કોઈ ટૅબ રજૂ કરવા માટે, <ph name="GOOGLE_MEET" />નો ઉપયોગ કરો.</translation>
+<translation id="9080175821499742274">મેમરી સેવર નિષ્ક્રિય ટૅબમાંથી મેમરી ખાલી કરે છે જેથી તેનો ઉપયોગ સક્રિય ટૅબ અને અન્ય ઍપ દ્વારા કરી શકાય.</translation>
 <translation id="9080971985541434310">તમારી રુચિઓનું અનુમાન લગાવે છે - Chrome તમારી રુચિઓનું અનુમાન લગાવી શકે છે</translation>
 <translation id="9081543426177426948">છૂપા મોડમાં તમે મુલાકાત લો છો એ સાઇટ સચવાતી નથી</translation>
 <translation id="9084064520949870008">વિંડો તરીકે ખોલો</translation>
@@ -8779,6 +8791,7 @@ USB ડિવાઇસ</translation>
 <translation id="964790508619473209">સ્ક્રીનની ગોઠવણી</translation>
 <translation id="965211523698323809">તમારી <ph name="DEVICE_TYPE" />માંથી ટેક્સ્ટ મેસેજ મોકલો અને મેળવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Castમાં આવતી સમસ્યાની જાણ કરો</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{જે 1 સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}one{જે {NUM_SITES} સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}other{જે {NUM_SITES} સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}}</translation>
 <translation id="967398046773905967">કોઈપણ સાઇટને HID ડિવાઇસને ઍક્સેસ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="967624055006145463">સ્ટોર કરેલ ડેટા</translation>
 <translation id="96774243435178359">મેનેજ કરેલા પ્રિન્ટર</translation>

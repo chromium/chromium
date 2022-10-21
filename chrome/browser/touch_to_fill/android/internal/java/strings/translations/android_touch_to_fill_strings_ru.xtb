@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1220509181886849806">Использовать сохраненный пароль?</translation>
+<translation id="1580351948163139119">Пароль для пользователя <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Список учетных данных, которые можно ввести прикосновением, развернут на половину экрана.</translation>
 <translation id="207576718733492531">Список учетных данных, которые можно ввести прикосновением, закрыт.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Список учетных данных, которые можно ввести прикосновением, развернут на весь экран.</translation>
 <translation id="5591247451101092906">Использовать сохраненный пароль или ключ доступа?</translation>
 <translation id="5624120631404540903">Настройки паролей</translation>
+<translation id="7736236483645733578">Ключ доступа для пользователя <ph name="USERNAME" />, использовать блокировку экрана.</translation>
 <translation id="804577341878669140">Вход с аккаунтом</translation>
 </translationbundle>
