@@ -351,7 +351,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#logTable')
         .shadowRoot.querySelector('tbody');
 
-    const logType = 'Failed Source Registration';
+    const description = '<a href="https://github.com/WICG/attribution-report' +
+                        'ing-api/blob/main/EVENT.md#registering-attribution-' +
+                        'sources" target="_blank">Failed Source Registration' +
+                        '</a>';
     const metadata = '<dl><dt>Failure Reason</dt><dd>invalid JSON</dd>' +
                      '<dt>Report To</dt><dd>https://a.test</dd>' +
                      '<dt>Attribution-Reporting-Register-Source Header</dt>'+
@@ -360,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children.length >= 3 &&
-          table.children[0].children[1].innerText === logType &&
+          table.children[0].children[1].innerHTML === description &&
           table.children[0].children[2].innerHTML === metadata
       )  {
         obs.disconnect();
@@ -387,19 +390,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#logTable')
         .shadowRoot.querySelector('tbody');
 
-    const logType = 'Cleared Debug Key';
-    const reason = '<dt>Reason</dt><dd>Debug cookie, `ar_debug=1; ' +
-                   'SameSite=None; Secure; HttpOnly`, is missing ' +
-                   'for the reporting origin</dd>';
+    const description = '<a href="https://github.com/WICG/attribution-report' +
+                    'ing-api/blob/main/EVENT.md#optional-extended-debugging-' +
+                    'reports" target="_blank">Cleared Debug Key</a>';
     const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
                      '<dt>From</dt><dd>Source</dd>'+
-                     '<dt>Report To</dt><dd>https://report.test</dd>' +
-                     reason + '</dl>';
+                     '<dt>Report To</dt><dd>https://report.test</dd></dl>';
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children.length >= 3 &&
-          table.children[0].children[1].innerText === logType &&
+          table.children[0].children[1].innerHTML === description &&
           table.children[0].children[2].innerHTML === metadata
       )  {
         obs.disconnect();
@@ -427,19 +428,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#logTable')
         .shadowRoot.querySelector('tbody');
 
-    const logType = 'Cleared Debug Key';
-    const reason = '<dt>Reason</dt><dd>Debug cookie, `ar_debug=1; ' +
-                   'SameSite=None; Secure; HttpOnly`, is missing ' +
-                   'for the reporting origin</dd>';
+    const description = '<a href="https://github.com/WICG/attribution-report' +
+                    'ing-api/blob/main/EVENT.md#optional-extended-debugging-' +
+                    'reports" target="_blank">Cleared Debug Key</a>';
     const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
                      '<dt>From</dt><dd>Trigger</dd>'+
-                     '<dt>Report To</dt><dd>https://report.test</dd>' +
-                     reason + '</dl>';
+                     '<dt>Report To</dt><dd>https://report.test</dd></dl>';
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children.length >= 3 &&
-          table.children[0].children[1].innerText === logType &&
+          table.children[0].children[1].innerHTML === description &&
           table.children[0].children[2].innerHTML === metadata
       )  {
         obs.disconnect();

@@ -99,6 +99,14 @@ function renderDL<T>(td: HTMLElement, row: T, cols: Array<Column<T>>) {
   td.appendChild(dl);
 }
 
+function renderA(td: HTMLElement, text: string, href: string) {
+  const a = td.ownerDocument.createElement('a');
+  a.href = href;
+  a.target = '_blank';
+  a.innerText = text;
+  td.appendChild(a);
+}
+
 class LogMetadataColumn implements Column<Log> {
   compare = null;
 
@@ -108,6 +116,18 @@ class LogMetadataColumn implements Column<Log> {
 
   render(td: HTMLElement, row: Log) {
     row.renderMetadata(td);
+  }
+}
+
+class LogDescriptionColumn implements Column<Log> {
+  compare = null;
+
+  renderHeader(th: HTMLElement) {
+    th.innerText = 'Description';
+  }
+
+  render(td: HTMLElement, row: Log) {
+    row.renderDescription(td);
   }
 }
 
@@ -689,7 +709,7 @@ abstract class Log {
     this.reportTo = originToText(mojo.reportingOrigin);
   }
 
-  abstract description(): string;
+  abstract renderDescription(td: HTMLElement): void;
 
   abstract renderMetadata(td: HTMLElement): void;
 }
@@ -699,11 +719,6 @@ const CLEARED_DEBUG_KEY_COLS: Array<Column<ClearedDebugKeyLog>> = [
       'Cleared Debug Key', e => e.clearedDebugKey),
   new ValueColumn<ClearedDebugKeyLog, string>('From', e => e.clearedFrom),
   new ValueColumn<ClearedDebugKeyLog, string>('Report To', e => e.reportTo),
-  // TODO(anthonygarant): Investigate reducing the amount of UI space for this.
-  new ValueColumn<ClearedDebugKeyLog, string>(
-      'Reason',
-      () => 'Debug cookie, `ar_debug=1; SameSite=None; Secure; HttpOnly`' +
-          ', is missing for the reporting origin'),
 ];
 
 class ClearedDebugKeyLog extends Log {
@@ -728,8 +743,12 @@ class ClearedDebugKeyLog extends Log {
     }
   }
 
-  description(): string {
-    return 'Cleared Debug Key';
+  renderDescription(td: HTMLElement): void {
+    renderA(
+        td,
+        'Cleared Debug Key',
+        'https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-extended-debugging-reports',
+    );
   }
 
   renderMetadata(td: HTMLElement) {
@@ -828,8 +847,12 @@ class FailedSourceRegistrationLog extends Log {
     this.headerValue = mojo.headerValue;
   }
 
-  description(): string {
-    return 'Failed Source Registration';
+  renderDescription(td: HTMLElement) {
+    renderA(
+        td,
+        'Failed Source Registration',
+        'https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registering-attribution-sources',
+    );
   }
 
   renderMetadata(td: HTMLElement) {
@@ -845,7 +868,7 @@ class LogTableModel extends TableModel<Log> {
 
     this.cols = [
       new DateColumn<Log>('Timestamp', (e) => e.timestamp),
-      new ValueColumn<Log, string>('Type', (e) => e.description()),
+      new LogDescriptionColumn(),
       new LogMetadataColumn(),
     ];
 
