@@ -300,10 +300,13 @@ void FakeDebugDaemonClient::CupsRetrievePrinterPpd(
     const std::string& name,
     CupsRetrievePrinterPpdCallback callback,
     base::OnceClosure error_callback) {
-  std::vector<uint8_t> fake_ppd{'F', 'a', 'k', 'e', ' ', 'P', 'P',
-                                'D', ' ', 'd', 'a', 't', 'a'};
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), fake_ppd));
+      FROM_HERE, base::BindOnce(std::move(callback), ppd_data_));
+}
+
+void FakeDebugDaemonClient::SetPpdDataForTesting(
+    const std::vector<uint8_t>& data) {
+  ppd_data_ = data;
 }
 
 void FakeDebugDaemonClient::StartPluginVmDispatcher(

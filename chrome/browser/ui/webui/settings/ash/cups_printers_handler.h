@@ -83,6 +83,11 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleUpdateCupsPrinter(const base::Value::List& args);
   void HandleRemoveCupsPrinter(const base::Value::List& args);
   void HandleRetrieveCupsPrinterPpd(const base::Value::List& args);
+  void OnSetUpPrinter(
+      const std::string& callback_id,
+      const std::string& printer_id,
+      const std::string& printer_name,
+      const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps);
 
   // For a CupsPrinterInfo in |args|, retrieves the relevant PrinterInfo object
   // using an IPP call to the printer.

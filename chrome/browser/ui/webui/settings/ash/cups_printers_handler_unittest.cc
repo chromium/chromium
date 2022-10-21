@@ -13,6 +13,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/printing_stubs.h"
+#include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
@@ -20,8 +21,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "printing/backend/test_print_backend.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -49,8 +52,19 @@ void RemovedPrinter(base::OnceClosure quit_closure,
 class TestCupsPrintersManager : public StubCupsPrintersManager {
  public:
   absl::optional<Printer> GetPrinter(const std::string& id) const override {
-    return Printer();
+    return printer_;
   }
+  bool IsPrinterInstalled(const chromeos::Printer& printer) const override {
+    return printer_installed_;
+  }
+
+  // Used to configured our test manager for specific tests.
+  void SetPrinter(absl::optional<Printer> printer) { printer_ = printer; }
+  void SetPrinterInstalled(bool installed) { printer_installed_ = installed; }
+
+ private:
+  absl::optional<Printer> printer_ = Printer();
+  bool printer_installed_ = true;
 };
 
 class FakePpdProvider : public chromeos::PpdProvider {
@@ -171,7 +185,9 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   ui::SelectFileDialog::FileTypeInfo* expected_file_type_info_;
 };
 
-class CupsPrintersHandlerTest : public testing::Test {
+class CupsPrintersHandlerTest
+    : public testing::Test,
+      public content::TestWebUI::JavascriptCallObserver {
  public:
   CupsPrintersHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
@@ -183,9 +199,34 @@ class CupsPrintersHandlerTest : public testing::Test {
   void SetUp() override {
     printers_handler_ = CupsPrintersHandler::CreateForTesting(
         profile_.get(), base::MakeRefCounted<FakePpdProvider>(),
-        std::make_unique<StubPrinterConfigurer>(), &printers_manager_);
+        std::make_unique<TestPrinterConfigurer>(), &printers_manager_);
     printers_handler_->SetWebUIForTest(&web_ui_);
     printers_handler_->RegisterMessages();
+    printers_handler_->AllowJavascriptForTesting();
+    web_ui_.AddJavascriptCallObserver(this);
+    printing::PrintBackend::SetPrintBackendForTesting(print_backend_.get());
+    DebugDaemonClient::InitializeFake();
+  }
+
+  void TearDown() override {
+    DebugDaemonClient::Shutdown();
+    printing::PrintBackend::SetPrintBackendForTesting(nullptr);
+    web_ui_.RemoveJavascriptCallObserver(this);
+  }
+
+  void OnJavascriptFunctionCalled(
+      const content::TestWebUI::CallData& call_data) override {
+    run_loop_.Quit();
+  }
+
+  void CallRetrieveCupsPpd() {
+    base::Value::List args;
+    args.Append(kRetrievePpdCallbackName);
+    args.Append("printer_id");
+    args.Append(kPpdPrinterName);
+
+    web_ui_.HandleReceivedMessage("retrieveCupsPrinterPpd", args);
+    run_loop_.Run();
   }
 
  protected:
@@ -195,12 +236,21 @@ class CupsPrintersHandlerTest : public testing::Test {
   content::TestWebUI web_ui_;
   std::unique_ptr<CupsPrintersHandler> printers_handler_;
   TestCupsPrintersManager printers_manager_;
+  base::RunLoop run_loop_;
+  scoped_refptr<printing::TestPrintBackend> print_backend_ =
+      base::MakeRefCounted<printing::TestPrintBackend>();
+
+  const std::string kRetrievePpdCallbackName = "retrievedPpdCallbackName";
+  const std::string kPpdPrinterName = "printer_name";
+  const std::string kDefaultPpdData = "PPD data used for testing";
+  const std::vector<uint8_t> kPpdData{kDefaultPpdData.begin(),
+                                      kDefaultPpdData.end()};
+  const std::string kJsCallbackName = "cr.webUIResponse";
 };
 
 TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   ConciergeClient::InitializeFake(
       /*fake_cicerone_client=*/nullptr);
-  DebugDaemonClient::InitializeFake();
 
   DebugDaemonClient* client = DebugDaemonClient::Get();
   client->CupsAddAutoConfiguredPrinter("testprinter1", "fakeuri",
@@ -227,7 +277,6 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   EXPECT_FALSE(expected);
 
   profile_.reset();
-  DebugDaemonClient::Shutdown();
   ConciergeClient::Shutdown();
 }
 
@@ -246,6 +295,101 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
   base::Value::List args;
   args.Append("handleFunctionName");
   web_ui_.HandleReceivedMessage("selectPPDFile", args);
+}
+
+TEST_F(CupsPrintersHandlerTest, ViewPPD) {
+  // Test the nominal case where everything works and the PPD gets returned.
+
+  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+      ->SetPpdDataForTesting(kPpdData);
+
+  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
+  ASSERT_TRUE(printer);
+  print_backend_->AddValidPrinter(
+      printer->id(),
+      std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
+
+  CallRetrieveCupsPpd();
+
+  base::Value::Dict expectedResults;
+  expectedResults.Set("ppd", kDefaultPpdData);
+  expectedResults.Set("printerName", kPpdPrinterName);
+
+  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
+  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
+            *web_ui_.call_data().back()->arg1());
+  EXPECT_EQ(base::Value(true), *web_ui_.call_data().back()->arg2());
+  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
+}
+
+TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotFound) {
+  // Test the case where the printer is not known to the printer manager.
+
+  // Set an empty printer to simluate not being able to find the printer.
+  printers_manager_.SetPrinter(absl::optional<Printer>());
+
+  CallRetrieveCupsPpd();
+
+  base::Value::Dict expectedResults;
+  expectedResults.Set("printerName", kPpdPrinterName);
+
+  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
+  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
+            *web_ui_.call_data().back()->arg1());
+  EXPECT_EQ(base::Value(false), *web_ui_.call_data().back()->arg2());
+  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
+}
+
+TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
+  // Test the case where the printer is known but not setup.
+
+  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+      ->SetPpdDataForTesting(kPpdData);
+
+  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
+  ASSERT_TRUE(printer);
+  print_backend_->AddValidPrinter(
+      printer->id(),
+      std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
+
+  // This will cause our printer to get set up.
+  printers_manager_.SetPrinterInstalled(false);
+
+  CallRetrieveCupsPpd();
+
+  base::Value::Dict expectedResults;
+  expectedResults.Set("ppd", kDefaultPpdData);
+  expectedResults.Set("printerName", kPpdPrinterName);
+
+  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
+  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
+            *web_ui_.call_data().back()->arg1());
+  EXPECT_EQ(base::Value(true), *web_ui_.call_data().back()->arg2());
+  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
+}
+
+TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
+  // Test the case where an empty PPD is returned from debugd.
+
+  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+      ->SetPpdDataForTesting({});
+
+  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
+  ASSERT_TRUE(printer);
+  print_backend_->AddValidPrinter(
+      printer->id(),
+      std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
+
+  CallRetrieveCupsPpd();
+
+  base::Value::Dict expectedResults;
+  expectedResults.Set("printerName", kPpdPrinterName);
+
+  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
+  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
+            *web_ui_.call_data().back()->arg1());
+  EXPECT_EQ(base::Value(false), *web_ui_.call_data().back()->arg2());
+  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
 }
 
 }  // namespace ash::settings

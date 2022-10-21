@@ -148,6 +148,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   // Sets routes that will be returned by GetRoutes() for testing.
   void SetRoutesForTesting(std::vector<std::string> routes);
 
+  // Sets PPD data that will be returned by CupsRetrievePrinterPpd for testing.
+  void SetPpdDataForTesting(const std::vector<uint8_t>& data);
+
   const std::string& scheduler_configuration_name() const {
     return scheduler_configuration_name_;
   }
@@ -165,6 +168,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   std::string scheduler_configuration_name_;
   std::set<std::string> u2f_flags_;
   base::ObserverList<Observer> observers_;
+  std::vector<uint8_t> ppd_data_;
 };
 
 }  // namespace ash

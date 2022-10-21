@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 #include "chrome/browser/ash/printing/printer_event_tracker_factory.h"
 #include "chrome/browser/ash/printing/printer_info.h"
+#include "chrome/browser/ash/printing/printer_setup_util.h"
 #include "chrome/browser/ash/printing/server_printers_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -441,10 +442,36 @@ void CupsPrintersHandler::HandleRetrieveCupsPrinterPpd(
   const std::string& callback_id = args[0].GetString();
   const std::string& printer_id = args[1].GetString();
   const std::string& printer_name = args[2].GetString();
-  const std::vector<uint8_t> empty_ppd;
 
   PRINTER_LOG(DEBUG) << "Retrieving printer PPD for " << printer_id << "("
                      << printer_name << ")";
+
+  // We first make sure the printer is setup in CUPS backend (when the user logs
+  // out, CUPS will clear a bunch of cached state).
+
+  absl::optional<chromeos::Printer> printer =
+      printers_manager_->GetPrinter(printer_id);
+  if (!printer) {
+    base::Value::Dict info;
+    info.Set("printerName", printer_name);
+    RejectJavascriptCallback(base::Value(callback_id), info);
+    return;
+  }
+
+  ash::printing::SetUpPrinter(
+      printers_manager_, printer_configurer_.get(), *printer,
+      base::BindOnce(&CupsPrintersHandler::OnSetUpPrinter,
+                     weak_factory_.GetWeakPtr(), callback_id, printer_id,
+                     printer_name));
+}
+
+void CupsPrintersHandler::OnSetUpPrinter(
+    const std::string& callback_id,
+    const std::string& printer_id,
+    const std::string& printer_name,
+    const absl::optional<::printing::PrinterSemanticCapsAndDefaults>& caps) {
+  // Once the printer has been setup we can request the PPD.
+  const std::vector<uint8_t> empty_ppd;
 
   DebugDaemonClient::Get()->CupsRetrievePrinterPpd(
       printer_id,
@@ -548,7 +575,7 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
       !IsValidPrinterUri(uri)) {
     // Run the failure callback.
     OnAutoconfQueried(callback_id, PrinterQueryResult::kUnknownFailure,
-                      printing::PrinterStatus(), "", {}, false, {});
+                      ::printing::PrinterStatus(), "", {}, false, {});
     return;
   }
 
@@ -561,7 +588,7 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     const std::string& callback_id,
     Printer printer,
     PrinterQueryResult result,
-    const printing::PrinterStatus& /*printer_status*/,
+    const ::printing::PrinterStatus& /*printer_status*/,
     const std::string& make_and_model,
     const std::vector<std::string>& /*document_formats*/,
     bool ipp_everywhere,
@@ -602,7 +629,7 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
 void CupsPrintersHandler::OnAutoconfQueried(
     const std::string& callback_id,
     PrinterQueryResult result,
-    const printing::PrinterStatus& /*printer_status*/,
+    const ::printing::PrinterStatus& /*printer_status*/,
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere,
