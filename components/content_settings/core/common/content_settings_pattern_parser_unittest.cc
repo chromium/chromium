@@ -151,15 +151,19 @@ TEST(ContentSettingsPatternParserTest, ParsePatterns) {
   content_settings::PatternParser::Parse("www.youtube.com*", &builder);
   ::testing::Mock::VerifyAndClear(&builder);
 
-  // Test for kDomainWildcardWithSuperfluousDot
-  EXPECT_CALL(builder, WithSchemeWildcard())
-      .Times(1)
-      .WillOnce(::testing::Return(&builder));
-  EXPECT_CALL(builder, Invalid())
-      .Times(1)
-      .WillOnce(::testing::Return(&builder));
-  content_settings::PatternParser::Parse("[*.].youtube.com", &builder);
-  ::testing::Mock::VerifyAndClear(&builder);
+  // Tests for superfluous dot after domain wildcard
+  {
+    auto real_builder = ContentSettingsPattern::CreateBuilder();
+    content_settings::PatternParser::Parse("[*.].youtube.com",
+                                           real_builder.get());
+    EXPECT_FALSE(real_builder->Build().IsValid());
+  }
+  {
+    auto real_builder = ContentSettingsPattern::CreateBuilder();
+    content_settings::PatternParser::Parse("[*.]%2Eyoutube.com",
+                                           real_builder.get());
+    EXPECT_FALSE(real_builder->Build().IsValid());
+  }
 }
 
 TEST(ContentSettingsPatternParserTest, ParseFilePatterns) {

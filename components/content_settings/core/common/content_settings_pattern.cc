@@ -264,6 +264,12 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
   if (host_info.IsIPAddress() && parts->has_domain_wildcard)
     return false;
 
+  // A domain wildcard pattern involves exactly one separating dot, inside the
+  // square brackets. This is a common misunderstanding of that pattern that we
+  // want to check for. See: https://crbug.com/823706.
+  if (parts->has_domain_wildcard && base::StartsWith(canonicalized_host, "."))
+    return false;
+
   // Omit a single ending dot as long as there is at least one non-dot character
   // before it, which is in line with the behavior of net::TrimEndingDot; but
   // consider two ending dots an invalid pattern, otherwise canonicalization of

@@ -22,10 +22,6 @@ const char kSchemeWildcard[] = "*";
 const char kUrlPathSeparator = '/';
 const char kUrlPortSeparator = ':';
 const char kUrlPortAndPathSeparator[] = ":/";
-// A domain wildcard pattern involves exactly one separating dot,
-// inside the square brackets. This is a common misunderstanding of that
-// pattern that we want to check for. See: https://crbug.com/823706.
-const char kDomainWildcardWithSuperfluousDot[] = "[*.].";
 
 }  // namespace
 
@@ -134,12 +130,6 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
                                 base::CompareCase::SENSITIVE)) {
       if (ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
               scheme_piece)) {
-        builder->Invalid();
-        return;
-      }
-
-      if (base::StartsWith(host_piece, kDomainWildcardWithSuperfluousDot,
-                           base::CompareCase::SENSITIVE)) {
         builder->Invalid();
         return;
       }
