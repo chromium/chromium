@@ -326,7 +326,7 @@ bool HttpUtil::IsMethodIdempotent(base::StringPiece method) {
 }
 
 // static
-bool HttpUtil::IsSafeHeader(base::StringPiece name) {
+bool HttpUtil::IsSafeHeader(base::StringPiece name, base::StringPiece value) {
   if (base::StartsWith(name, "proxy-", base::CompareCase::INSENSITIVE_ASCII) ||
       base::StartsWith(name, "sec-", base::CompareCase::INSENSITIVE_ASCII))
     return false;

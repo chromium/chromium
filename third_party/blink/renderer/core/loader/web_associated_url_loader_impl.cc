@@ -88,7 +88,7 @@ class HTTPRequestHeaderValidator : public WebHTTPHeaderVisitor {
 void HTTPRequestHeaderValidator::VisitHeader(const WebString& name,
                                              const WebString& value) {
   is_safe_ = is_safe_ && IsValidHTTPToken(name) &&
-             !cors::IsForbiddenHeaderName(name) &&
+             !cors::IsForbiddenRequestHeader(name, value) &&
              IsValidHTTPHeaderValue(value);
 }
 
@@ -384,7 +384,7 @@ void WebAssociatedURLLoaderImpl::LoadAsynchronously(
       // consult it separately, if set.
       if (request.ReferrerString() !=
           blink::WebString(Referrer::ClientReferrerString())) {
-        DCHECK(cors::IsForbiddenHeaderName("Referer"));
+        DCHECK(cors::IsForbiddenRequestHeader("Referer", ""));
         // `Referer` is a forbidden header name, so we must disallow this to
         // load.
         allow_load = false;

@@ -20,9 +20,9 @@ jboolean JNI_HttpUtil_IsAllowedHeader(
   std::string header_name(ConvertJavaStringToUTF8(env, j_header_name));
   std::string header_value(ConvertJavaStringToUTF8(env, j_header_value));
 
-  return HttpUtil::IsValidHeaderName(header_name)
-    && HttpUtil::IsSafeHeader(header_name)
-    && HttpUtil::IsValidHeaderValue(header_value);
+  return HttpUtil::IsValidHeaderName(header_name) &&
+         HttpUtil::IsSafeHeader(header_name, header_value) &&
+         HttpUtil::IsValidHeaderValue(header_value);
 }
 
 }  // namespace net

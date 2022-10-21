@@ -1390,9 +1390,10 @@ void XMLHttpRequest::setRequestHeader(const AtomicString& name,
     return;
   }
 
-  // "5. Terminate these steps if |name| is a forbidden header name."
+  // "5. Terminate these steps if (|name|, |value|) is a forbidden request
+  //      header."
   // No script (privileged or not) can set unsafe headers.
-  if (cors::IsForbiddenHeaderName(name)) {
+  if (cors::IsForbiddenRequestHeader(name, value)) {
     LogConsoleError(GetExecutionContext(),
                     "Refused to set unsafe header \"" + name + "\"");
     return;

@@ -621,7 +621,7 @@ void WebSocket::AddChannel(
   for (const auto& header : additional_headers) {
     if (net::HttpUtil::IsValidHeaderName(header->name) &&
         net::HttpUtil::IsValidHeaderValue(header->value) &&
-        (net::HttpUtil::IsSafeHeader(header->name) ||
+        (net::HttpUtil::IsSafeHeader(header->name, header->value) ||
          base::EqualsCaseInsensitiveASCII(
              header->name, net::HttpRequestHeaders::kUserAgent) ||
          base::EqualsCaseInsensitiveASCII(header->name,

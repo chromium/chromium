@@ -148,8 +148,8 @@ PLATFORM_EXPORT Vector<String> PrivilegedNoCorsHeaderNames() {
   return header_names;
 }
 
-bool IsForbiddenHeaderName(const String& name) {
-  return !net::HttpUtil::IsSafeHeader(name.Latin1());
+bool IsForbiddenRequestHeader(const String& name, const String& value) {
+  return !net::HttpUtil::IsSafeHeader(name.Latin1(), value.Latin1());
 }
 
 bool ContainsOnlyCorsSafelistedHeaders(const HTTPHeaderMap& header_map) {

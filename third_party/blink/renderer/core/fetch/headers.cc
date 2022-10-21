@@ -108,7 +108,7 @@ void Headers::append(ScriptState* script_state,
   }
   // "4. Otherwise, if guard is |request| and |name| is a forbidden header
   //     name, return."
-  if (guard_ == kRequestGuard && cors::IsForbiddenHeaderName(name))
+  if (guard_ == kRequestGuard && cors::IsForbiddenRequestHeader(name, value))
     return;
   // 5. Otherwise, if guard is |request-no-cors|:
   if (guard_ == kRequestNoCorsGuard) {
@@ -165,9 +165,9 @@ void Headers::remove(ScriptState* script_state,
     UseCounter::Count(execution_context,
                       WebFeature::kFetchSetCookieInRequestGuardedHeaders);
   }
-  // "3. Otherwise, if guard is |request| and |name| is a forbidden header
-  //     name, return."
-  if (guard_ == kRequestGuard && cors::IsForbiddenHeaderName(name))
+  // "3. Otherwise, if guard is |request| and (|name|, '') is a forbidden
+  //     request header, return."
+  if (guard_ == kRequestGuard && cors::IsForbiddenRequestHeader(name, ""))
     return;
   // "4. Otherwise, if the context object’s guard is |request-no-cors|, |name|
   //     is not a no-CORS-safelisted request-header name, and |name| is not a
@@ -249,9 +249,9 @@ void Headers::set(ScriptState* script_state,
     UseCounter::Count(execution_context,
                       WebFeature::kFetchSetCookieInRequestGuardedHeaders);
   }
-  // "4. Otherwise, if guard is |request| and |name| is a forbidden header
-  //     name, return."
-  if (guard_ == kRequestGuard && cors::IsForbiddenHeaderName(name))
+  // "4. Otherwise, if guard is |request| and (|name|, |value|) is a forbidden
+  //     request header, return."
+  if (guard_ == kRequestGuard && cors::IsForbiddenRequestHeader(name, value))
     return;
   // "5. Otherwise, if guard is |request-no-CORS| and |name|/|value| is not a
   //     no-CORS-safelisted header, return."

@@ -47,8 +47,8 @@ TEST(HttpUtilTest, IsSafeHeader) {
       "via",
   };
   for (const auto* unsafe_header : unsafe_headers) {
-    EXPECT_FALSE(HttpUtil::IsSafeHeader(unsafe_header)) << unsafe_header;
-    EXPECT_FALSE(HttpUtil::IsSafeHeader(base::ToUpperASCII(unsafe_header)))
+    EXPECT_FALSE(HttpUtil::IsSafeHeader(unsafe_header, "")) << unsafe_header;
+    EXPECT_FALSE(HttpUtil::IsSafeHeader(base::ToUpperASCII(unsafe_header), ""))
         << unsafe_header;
   }
   static const char* const safe_headers[] = {
@@ -93,8 +93,8 @@ TEST(HttpUtilTest, IsSafeHeader) {
       "viaa",
   };
   for (const auto* safe_header : safe_headers) {
-    EXPECT_TRUE(HttpUtil::IsSafeHeader(safe_header)) << safe_header;
-    EXPECT_TRUE(HttpUtil::IsSafeHeader(base::ToUpperASCII(safe_header)))
+    EXPECT_TRUE(HttpUtil::IsSafeHeader(safe_header, "")) << safe_header;
+    EXPECT_TRUE(HttpUtil::IsSafeHeader(base::ToUpperASCII(safe_header), ""))
         << safe_header;
   }
 }

@@ -96,11 +96,11 @@ class NET_EXPORT HttpUtil {
   // RFC 7231).
   static bool IsMethodIdempotent(base::StringPiece method);
 
-  // Returns true if it is safe to allow users and scripts to specify the header
-  // named |name|. Returns true for headers not in the list at
-  // https://fetch.spec.whatwg.org/#forbidden-header-name. Does not check header
-  // validity.
-  static bool IsSafeHeader(base::StringPiece name);
+  // Returns true if it is safe to allow users and scripts to specify a header
+  // with a given |name| and |value|.
+  // See https://fetch.spec.whatwg.org/#forbidden-request-header.
+  // Does not check header validity.
+  static bool IsSafeHeader(base::StringPiece name, base::StringPiece value);
 
   // Returns true if |name| is a valid HTTP header name.
   static bool IsValidHeaderName(base::StringPiece name);

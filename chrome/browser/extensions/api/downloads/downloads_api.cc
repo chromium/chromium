@@ -1056,19 +1056,19 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
     download_params->set_prompt(*options.save_as);
 
   if (options.headers) {
-    for (const downloads::HeaderNameValuePair& name_value : *options.headers) {
-      if (!net::HttpUtil::IsValidHeaderName(name_value.name)) {
+    for (const downloads::HeaderNameValuePair& header : *options.headers) {
+      if (!net::HttpUtil::IsValidHeaderName(header.name)) {
         return RespondNow(Error(download_extension_errors::kInvalidHeaderName));
       }
-      if (!net::HttpUtil::IsSafeHeader(name_value.name)) {
+      if (!net::HttpUtil::IsSafeHeader(header.name, header.value)) {
         return RespondNow(
             Error(download_extension_errors::kInvalidHeaderUnsafe));
       }
-      if (!net::HttpUtil::IsValidHeaderValue(name_value.value)) {
+      if (!net::HttpUtil::IsValidHeaderValue(header.value)) {
         return RespondNow(
             Error(download_extension_errors::kInvalidHeaderValue));
       }
-      download_params->add_request_header(name_value.name, name_value.value);
+      download_params->add_request_header(header.name, header.value);
     }
   }
 
