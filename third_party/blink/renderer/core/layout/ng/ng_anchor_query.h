@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
 #include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -26,8 +27,6 @@ class LayoutObject;
 class NGLogicalAnchorQuery;
 class NGPhysicalFragment;
 struct NGLogicalAnchorReference;
-struct NGLogicalLink;
-struct NGLogicalOOFNodeForFragmentation;
 
 struct CORE_EXPORT NGPhysicalAnchorReference
     : public GarbageCollected<NGPhysicalAnchorReference> {
@@ -162,7 +161,11 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
   STACK_ALLOCATED();
 
  public:
-  bool IsEmpty() const { return queries_.empty(); }
+  NGLogicalAnchorQueryMap(const LayoutBox& root_box,
+                          const NGLogicalLinkVector& children,
+                          WritingDirectionMode writing_direction);
+
+  bool IsEmpty() const { return !has_anchor_queries_; }
 
   // Get |NGLogicalAnchorQuery| in the stitched coordinate system for the given
   // containing block. If there is no anchor query for the containing block,
@@ -170,16 +173,19 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
   const NGLogicalAnchorQuery& AnchorQuery(
       const LayoutObject& containing_block) const;
 
-  // Update the internal map of anchor queries for containing blocks from the
-  // |children| of the fragmentation context.
-  void Update(
-      const base::span<const NGLogicalLink>& children,
-      const base::span<const NGLogicalOOFNodeForFragmentation>& oof_nodes,
-      const LayoutBox& root,
-      WritingDirectionMode writing_direction);
+  // Update |children| when their anchor queries are changed.
+  void SetChildren(const NGLogicalLinkVector& children);
 
  private:
-  HeapHashMap<const LayoutObject*, Member<NGLogicalAnchorQuery>> queries_;
+  void Update(const LayoutObject& layout_object) const;
+
+  mutable HeapHashMap<Member<const LayoutObject>, Member<NGLogicalAnchorQuery>>
+      queries_;
+  mutable const LayoutObject* computed_for_ = nullptr;
+  const LayoutBox& root_box_;
+  const NGLogicalLinkVector* children_ = nullptr;
+  WritingDirectionMode writing_direction_;
+  bool has_anchor_queries_ = false;
 };
 
 class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {

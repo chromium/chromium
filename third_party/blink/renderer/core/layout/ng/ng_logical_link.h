@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -29,6 +30,8 @@ struct CORE_EXPORT NGLogicalLink {
   Member<const NGPhysicalFragment> fragment;
   LogicalOffset offset;
 };
+
+using NGLogicalLinkVector = HeapVector<NGLogicalLink, 4>;
 
 }  // namespace blink
 

@@ -503,58 +503,69 @@ void NGLogicalAnchorQuery::SetFromPhysical(
   }
 }
 
+NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
+    const LayoutBox& root_box,
+    const NGLogicalLinkVector& children,
+    WritingDirectionMode writing_direction)
+    : root_box_(root_box), writing_direction_(writing_direction) {
+  DCHECK(&root_box);
+  SetChildren(children);
+}
+
+void NGLogicalAnchorQueryMap::SetChildren(const NGLogicalLinkVector& children) {
+  children_ = &children;
+
+  // Invalidate the cache when children may have changed.
+  computed_for_ = nullptr;
+
+  // To allow early returns, check if any child has anchor queries.
+  has_anchor_queries_ = false;
+  for (const NGLogicalLink& child : children) {
+    if (child->HasAnchorQuery()) {
+      has_anchor_queries_ = true;
+      break;
+    }
+  }
+}
+
 const NGLogicalAnchorQuery& NGLogicalAnchorQueryMap::AnchorQuery(
     const LayoutObject& containing_block) const {
   DCHECK(&containing_block);
   DCHECK(containing_block.CanContainAbsolutePositionObjects() ||
          containing_block.CanContainFixedPositionObjects());
+
+  if (!has_anchor_queries_)
+    return NGLogicalAnchorQuery::Empty();
+
+  // Update |queries_| if it hasn't computed for |containing_block|.
+  if (!computed_for_ || !computed_for_->IsDescendantOf(&containing_block))
+    Update(containing_block);
+
   const auto& it = queries_.find(&containing_block);
   if (it != queries_.end())
     return *it->value;
   return NGLogicalAnchorQuery::Empty();
 }
 
-void NGLogicalAnchorQueryMap::Update(
-    const base::span<const NGLogicalLink>& children,
-    const base::span<const NGLogicalOOFNodeForFragmentation>& oof_nodes,
-    const LayoutBox& root,
-    WritingDirectionMode writing_direction) {
-  DCHECK(&root);
-
-  // Early return before expensive work if there are no anchor queries.
-  bool has_anchor_queries = false;
-  for (const NGLogicalLink& child : children) {
-    if (child->AnchorQuery()) {
-      has_anchor_queries = true;
-      break;
-    }
-  }
-  if (!has_anchor_queries) {
-    queries_.clear();
-    return;
-  }
-
+// Update |queries_| for the given |layout_object| and its ancestors. This is
+// `const`, modifies `mutable` caches only, so that other `const` functions such
+// as |AnchorQuery| can call.
+void NGLogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
   // Compute descendants to collect anchor queries from. This helps reducing the
   // number of descendants to traverse.
   HeapHashSet<Member<const LayoutObject>> anchored_oof_containers_and_ancestors;
-  for (const NGLogicalOOFNodeForFragmentation& oof_node : oof_nodes) {
-    DCHECK(oof_node.box->IsOutOfFlowPositioned());
-    // Only OOF nodes that have `anchor*()` functions are needed, but computing
-    // it is not cheap. Adding unnecessary nodes is not expensive, because
-    // |NGStitchedAnchorQueries| checks if the node has `AnchorQuery()` and
-    // return early if not.
-    for (const LayoutObject* parent = oof_node.box->Container();
-         parent && parent != &root; parent = parent->Parent()) {
-      const auto result = anchored_oof_containers_and_ancestors.insert(parent);
-      if (!result.is_new_entry)
-        break;
-    }
+  for (const LayoutObject* runner = &layout_object;
+       runner && runner != &root_box_; runner = runner->Parent()) {
+    const auto result = anchored_oof_containers_and_ancestors.insert(runner);
+    if (!result.is_new_entry)
+      break;
   }
 
   // Traverse descendants and collect anchor queries for each containing block.
   NGStitchedAnchorQueries stitched_anchor_queries(
-      root, anchored_oof_containers_and_ancestors);
-  stitched_anchor_queries.AddFragmentainerChildren(children, writing_direction);
+      root_box_, anchored_oof_containers_and_ancestors);
+  stitched_anchor_queries.AddFragmentainerChildren(*children_,
+                                                   writing_direction_);
 
   // TODO(kojii): Currently this clears and rebuilds all anchor queries on
   // incremental updates. It may be possible to reduce the computation when
@@ -565,6 +576,8 @@ void NGLogicalAnchorQueryMap::Update(
         queries_.insert(it.key, it.value->StitchedAnchorQuery());
     DCHECK(result.is_new_entry);
   }
+
+  computed_for_ = &layout_object;
 }
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(

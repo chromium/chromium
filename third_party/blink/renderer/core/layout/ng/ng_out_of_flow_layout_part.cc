@@ -1142,7 +1142,6 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                         container_builder_->BorderScrollbarPadding())
           .block_size;
 
-  NGLogicalAnchorQueryMap stitched_anchor_queries;
   NGBoxFragmentBuilder* builder_for_anchor_query = container_builder_;
   if (outer_container_builder_) {
     // If this is an inner layout of the nested block fragmentation, and if this
@@ -1157,9 +1156,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       }
     }
   }
-  stitched_anchor_queries.Update(
-      builder_for_anchor_query->Children(), *descendants,
+  NGLogicalAnchorQueryMap stitched_anchor_queries(
       *builder_for_anchor_query->Node().GetLayoutBox(),
+      builder_for_anchor_query->Children(),
       builder_for_anchor_query->GetWritingDirection());
 
   // |descendants| are sorted by fragmentainers, and then by the layout order,
@@ -1316,15 +1315,15 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       }
       descendants_to_layout.Shrink(0);
 
-      // When laying out OOFs by containing blocks, and there are more
-      // containing blocks, update anchor queries and layout OOFs in the next
-      // containing block.
       if (!has_new_descendants_span)
         break;
-      stitched_anchor_queries.Update(
-          builder_for_anchor_query->Children(), descendants_span,
-          *builder_for_anchor_query->Node().GetLayoutBox(),
-          builder_for_anchor_query->GetWritingDirection());
+      // If laying out by containing blocks and there are more containing blocks
+      // to be laid out, move on to the next containing block. Before laying
+      // them out, if OOFs have anchors, update the anchor queries.
+      if (may_have_anchors_on_oof) {
+        stitched_anchor_queries.SetChildren(
+            builder_for_anchor_query->Children());
+      }
     }
 
     // Sweep any descendants that might have been bubbled up from the fragment
