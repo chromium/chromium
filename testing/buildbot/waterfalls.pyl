@@ -5508,7 +5508,7 @@
           'rust_build_tests',
           'rust_autocxx_tests',
         ],
-        'mixins': [ 'marshmallow' ],
+        'mixins': [ 'pie_fleet' ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
