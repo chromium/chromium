@@ -21,3 +21,12 @@
 .label {
   line-height: 20px;
 }
+
+.single-line-label {
+  min-height: var(--section-min-height);
+}
+
+.flex-centered {
+  align-items: center;
+  display: flex;
+}

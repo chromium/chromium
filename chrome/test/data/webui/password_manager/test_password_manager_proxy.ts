@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import {PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerProxy, SavedPasswordListChangedListener} from 'chrome://password-manager/password_manager.js';
+import {BlockedSite, BlockedSitesListChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerProxy, SavedPasswordListChangedListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {makePasswordCheckStatus} from './test_util.js';
@@ -16,16 +16,19 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     PasswordManagerProxy {
   data: {
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
+    blockedSites: BlockedSite[],
     checkStatus: chrome.passwordsPrivate.PasswordCheckStatus,
   };
 
   listeners: {
     savedPasswordListChangedListener: SavedPasswordListChangedListener|null,
+    blockedSitesListChangedListener: BlockedSitesListChangedListener|null,
     passwordCheckStatusListener: PasswordCheckStatusChangedListener|null,
   };
 
   constructor() {
     super([
+      'getBlockedSitesList',
       'getPasswordCheckStatus',
       'getSavedPasswordList',
       'recordPasswordCheckInteraction',
@@ -35,12 +38,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     // Set these to have non-empty data.
     this.data = {
       passwords: [],
+      blockedSites: [],
       checkStatus: makePasswordCheckStatus(),
     };
 
     // Holds listeners so they can be called when needed.
     this.listeners = {
       passwordCheckStatusListener: null,
+      blockedSitesListChangedListener: null,
       savedPasswordListChangedListener: null,
     };
   }
@@ -55,6 +60,16 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.listeners.savedPasswordListChangedListener = null;
   }
 
+  addBlockedSitesListChangedListener(listener:
+                                         BlockedSitesListChangedListener) {
+    this.listeners.blockedSitesListChangedListener = listener;
+  }
+
+  removeBlockedSitesListChangedListener(_listener:
+                                            BlockedSitesListChangedListener) {
+    this.listeners.blockedSitesListChangedListener = null;
+  }
+
   addPasswordCheckStatusListener(listener: PasswordCheckStatusChangedListener) {
     this.listeners.passwordCheckStatusListener = listener;
   }
@@ -67,6 +82,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   getSavedPasswordList(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]> {
     this.methodCalled('getSavedPasswordList');
     return Promise.resolve(this.data.passwords);
+  }
+
+  getBlockedSitesList(): Promise<BlockedSite[]> {
+    this.methodCalled('getBlockedSitesList');
+    return Promise.resolve(this.data.blockedSites);
   }
 
   getPasswordCheckStatus() {

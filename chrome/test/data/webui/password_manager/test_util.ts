@@ -69,6 +69,25 @@ export function createPasswordEntry(params?: PasswordEntryParams):
   };
 }
 
+/**
+ * Creates a single item for the list of password exceptions. If no |id| is
+ * passed, it is set to a default, value so this should probably not be done in
+ * tests with multiple entries (|id| is unique).
+ */
+export function createExceptionEntry(
+    url?: string, id?: number): chrome.passwordsPrivate.ExceptionEntry {
+  url = url || 'www.foo.com';
+  id = id || 42;
+  return {
+    urls: {
+      signonRealm: 'http://' + url + '/login',
+      shown: url,
+      link: 'http://' + url + '/login',
+    },
+    id: id,
+  };
+}
+
 export function makePasswordManagerPrefs():
     chrome.settingsPrivate.PrefObject[] {
   return [

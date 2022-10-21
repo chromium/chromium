@@ -4,14 +4,18 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PrefsBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {PasswordManagerImpl, PrefsBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {makePasswordManagerPrefs} from './test_util.js';
+import {createExceptionEntry, makePasswordManagerPrefs} from './test_util.js';
 
 suite('SettingsSectionTest', function() {
   let prefsProxy: TestPrefsBrowserProxy;
+  let passwordManager: TestPasswordManagerProxy;
 
   setup(function() {
     document.body.innerHTML =
@@ -19,6 +23,8 @@ suite('SettingsSectionTest', function() {
     prefsProxy = new TestPrefsBrowserProxy();
     PrefsBrowserProxyImpl.setInstance(prefsProxy);
     prefsProxy.prefs = makePasswordManagerPrefs();
+    passwordManager = new TestPasswordManagerProxy();
+    PasswordManagerImpl.setInstance(passwordManager);
   });
 
   test('pref value displayed in the UI', async function() {
@@ -56,5 +62,25 @@ suite('SettingsSectionTest', function() {
     await prefsProxy.setPref('credentials_enable_autosignin', false);
 
     assertFalse(settings.$.autosigninToggle.checked);
+  });
+
+  test('settings section shows exceptions', async function() {
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    // List is hidden as there are no exceptions.
+    assertFalse(isVisible(settings.$.blockedSitesList));
+
+    const exceptions = [
+      createExceptionEntry('test.com', 0),
+      createExceptionEntry('test2.com', 1),
+    ];
+    assertTrue(!!passwordManager.listeners.blockedSitesListChangedListener);
+    passwordManager.listeners.blockedSitesListChangedListener!(exceptions);
+    await flushTasks();
+
+    assertTrue(isVisible(settings.$.blockedSitesList));
+    assertDeepEquals(exceptions, settings.$.blockedSitesList.items);
   });
 });

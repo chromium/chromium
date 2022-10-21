@@ -7,10 +7,13 @@
  * chrome.passwordsPrivate which facilitates testing.
  */
 
+export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
+
 export type SavedPasswordListChangedListener =
     (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordCheckStatusChangedListener =
     (status: chrome.passwordsPrivate.PasswordCheckStatus) => void;
+export type BlockedSitesListChangedListener = (entries: BlockedSite[]) => void;
 
 /**
  * Represents different interactions the user can perform on the Password Check
@@ -54,6 +57,18 @@ export interface PasswordManagerProxy {
       listener: SavedPasswordListChangedListener): void;
 
   /**
+   * Add an observer to the list of blocked sites.
+   */
+  addBlockedSitesListChangedListener(listener: BlockedSitesListChangedListener):
+      void;
+
+  /**
+   * Remove an observer from the list of blocked sites.
+   */
+  removeBlockedSitesListChangedListener(
+      listener: BlockedSitesListChangedListener): void;
+
+  /**
    * Add an observer to the passwords check status change.
    */
   addPasswordCheckStatusListener(listener: PasswordCheckStatusChangedListener):
@@ -69,6 +84,11 @@ export interface PasswordManagerProxy {
    * Request the list of saved passwords.
    */
   getSavedPasswordList(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
+
+  /**
+   * Request the list of blocked sites.
+   */
+  getBlockedSitesList(): Promise<BlockedSite[]>;
 
   /**
    * Requests the current status of the check.
@@ -107,6 +127,18 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
         listener);
   }
 
+  addBlockedSitesListChangedListener(listener:
+                                         BlockedSitesListChangedListener) {
+    chrome.passwordsPrivate.onPasswordExceptionsListChanged.addListener(
+        listener);
+  }
+
+  removeBlockedSitesListChangedListener(listener:
+                                            BlockedSitesListChangedListener) {
+    chrome.passwordsPrivate.onPasswordExceptionsListChanged.removeListener(
+        listener);
+  }
+
   addPasswordCheckStatusListener(listener: PasswordCheckStatusChangedListener) {
     chrome.passwordsPrivate.onPasswordCheckStatusChanged.addListener(listener);
   }
@@ -121,6 +153,14 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     return new Promise<chrome.passwordsPrivate.PasswordUiEntry[]>(resolve => {
       chrome.passwordsPrivate.getSavedPasswordList(passwords => {
         resolve(chrome.runtime.lastError ? [] : passwords);
+      });
+    });
+  }
+
+  getBlockedSitesList() {
+    return new Promise<BlockedSite[]>(resolve => {
+      chrome.passwordsPrivate.getPasswordExceptionList(exceptions => {
+        resolve(chrome.runtime.lastError ? [] : exceptions);
       });
     });
   }

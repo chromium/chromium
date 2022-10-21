@@ -67,6 +67,12 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
        IDS_PASSWORD_MANAGER_UI_RUSTED_VAULT_OPT_IN_DESCRIPTION},
       {"weakPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_WEAK_PASSWORDS},
       {"weakPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS},
+      {"blockedSitesTitle", IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_TITLE},
+      {"blockedSitesDescription",
+       IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_DESCRIPTION},
+      {"blockedSitesEmptyDescription",
+       IDS_PASSWORD_MANAGER_UI_NO_BLOCKED_SITES_DESCRIPTION},
+
   };
   source->AddLocalizedStrings(kStrings);
 
