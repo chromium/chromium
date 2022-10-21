@@ -37,4 +37,13 @@ std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
        is_immediate_debug_report ? kDebugReportingPathInfix : "", api_suffix});
 }
 
+std::string GetApiIdentifier(PrivateAggregationBudgetKey::Api api) {
+  switch (api) {
+    case PrivateAggregationBudgetKey::Api::kFledge:
+      return "fledge";
+    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+      return "shared-storage";
+  }
+}
+
 }  // namespace content::private_aggregation

@@ -14,6 +14,8 @@ namespace content::private_aggregation {
 std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
                              bool is_immediate_debug_report);
 
+std::string GetApiIdentifier(PrivateAggregationBudgetKey::Api api);
+
 }  // namespace content::private_aggregation
 
 #endif  // CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_UTILS_H_
