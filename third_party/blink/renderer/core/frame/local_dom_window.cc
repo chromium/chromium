@@ -158,6 +158,24 @@ bool IsRunningMicrotasks(ScriptState* script_state) {
     return microtask_queue->IsRunningMicrotasks();
   return v8::MicrotasksScope::IsRunningMicrotasks(script_state->GetIsolate());
 }
+
+void SetCurrentTaskAsCallbackParent(CallbackFunctionBase* callback) {
+  ScriptState* script_state = callback->CallbackRelevantScriptState();
+  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  if (tracker && script_state->World().IsMainWorld()) {
+    callback->SetParentTaskId(tracker->RunningTaskAttributionId(script_state));
+  }
+}
+
+int RequestAnimationFrame(Document* document,
+                          V8FrameRequestCallback* callback,
+                          bool legacy) {
+  SetCurrentTaskAsCallbackParent(callback);
+  auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
+  frame_callback->SetUseLegacyTimeBase(legacy);
+  return document->RequestAnimationFrame(frame_callback);
+}
+
 }  // namespace
 
 class LocalDOMWindow::NetworkStateObserver final
@@ -1864,16 +1882,12 @@ void LocalDOMWindow::resizeTo(int width, int height) const {
 }
 
 int LocalDOMWindow::requestAnimationFrame(V8FrameRequestCallback* callback) {
-  auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
-  frame_callback->SetUseLegacyTimeBase(false);
-  return document()->RequestAnimationFrame(frame_callback);
+  return RequestAnimationFrame(document(), callback, /*legacy=*/false);
 }
 
 int LocalDOMWindow::webkitRequestAnimationFrame(
     V8FrameRequestCallback* callback) {
-  auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
-  frame_callback->SetUseLegacyTimeBase(true);
-  return document()->RequestAnimationFrame(frame_callback);
+  return RequestAnimationFrame(document(), callback, /*legacy=*/true);
 }
 
 void LocalDOMWindow::cancelAnimationFrame(int id) {
@@ -1881,11 +1895,7 @@ void LocalDOMWindow::cancelAnimationFrame(int id) {
 }
 
 void LocalDOMWindow::queueMicrotask(V8VoidFunction* callback) {
-  ScriptState* script_state = callback->CallbackRelevantScriptState();
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-  if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetParentTaskId(tracker->RunningTaskAttributionId(script_state));
-  }
+  SetCurrentTaskAsCallbackParent(callback);
   GetAgent()->event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&V8VoidFunction::InvokeAndReportException,
                     WrapPersistent(callback), nullptr));
@@ -1897,6 +1907,7 @@ bool LocalDOMWindow::originAgentCluster() const {
 
 int LocalDOMWindow::requestIdleCallback(V8IdleRequestCallback* callback,
                                         const IdleRequestOptions* options) {
+  SetCurrentTaskAsCallbackParent(callback);
   if (!GetFrame())
     return 0;
   return document_->RequestIdleCallback(V8IdleTask::Create(callback), options);
