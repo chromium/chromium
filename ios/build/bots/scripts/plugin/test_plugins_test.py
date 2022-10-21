@@ -133,6 +133,33 @@ class VideoRecorderPluginTest(unittest.TestCase):
     self.assertTrue(
         TEST_CASE_NAME not in video_recorder_plugin.testcase_recorded_count)
 
+  @mock.patch("subprocess.Popen")
+  @mock.patch("os.kill")
+  @mock.patch("os.remove")
+  def test_test_case_did_finish_remove_file_failed(self, mock_os_remove,
+                                                   mock_os_kill, mock_popen):
+    # first, start recording
+    video_recorder_plugin = VideoRecorderPlugin(TEST_DEVICE_ID, OUT_DIR)
+    request = test_plugin_service_pb2.TestCaseWillStartRequest(
+        test_case_info=TEST_CASE_INFO)
+    video_recorder_plugin.test_case_will_start(request)
+
+    # then test case finishes
+    mock_os_remove.side_effect = FileNotFoundError
+    request = test_plugin_service_pb2.TestCaseDidFinishRequest(
+        test_case_info=TEST_CASE_INFO)
+    # this should not throw exception because it's caught
+    video_recorder_plugin.test_case_did_finish(request)
+    mock_os_kill.assert_called_once_with(mock.ANY, signal.SIGTERM)
+    file_name = video_recorder_plugin.get_video_file_name(TEST_CASE_NAME, 0)
+    file_dir = os.path.join(OUT_DIR, file_name)
+    mock_os_remove.assert_called_once_with(file_dir)
+    self.assertTrue(video_recorder_plugin.recording_process.process == None)
+    self.assertTrue(
+        video_recorder_plugin.recording_process.test_case_name == None)
+    self.assertTrue(
+        TEST_CASE_NAME not in video_recorder_plugin.testcase_recorded_count)
+
   @mock.patch("os.kill")
   @mock.patch("os.remove")
   def test_test_case_did_finish_noRecordingRunning(self, mock_os_remove,

@@ -183,8 +183,15 @@ class VideoRecorderPlugin(BasePlugin):
       file_name = self.get_video_file_name(
           self.recording_process.test_case_name, attempt_count)
       file_dir = os.path.join(self.out_dir, file_name)
-      LOGGER.info('shoudSave is false, deleting video file %s', file_dir)
-      os.remove(file_dir)
+      LOGGER.info('shouldSave is false, deleting video file %s', file_dir)
+      try:
+        # Sometimes the video file is deleted together with the SIGTERM
+        # signal, so we encounter FileNotFound error when trying to remove
+        # the file again. We should catch any exception when removing files
+        # because it shouldn't block future tests from being run.
+        os.remove(file_dir)
+      except Exception as e:
+        LOGGER.warning('Failed to delete video file with error %s', e)
     else:
       # SIGINT will send a signal to terminate the process, and the video
       # will be written to the file asynchronously, while the process is
