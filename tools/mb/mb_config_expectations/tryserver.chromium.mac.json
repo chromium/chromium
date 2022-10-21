@@ -133,17 +133,6 @@
       "use_goma": true
     }
   },
-  "gpu-fyi-try-mac-nvidia-retina-dbg": {
-    "gn_args": {
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "gpu-fyi-try-mac-nvidia-retina-exp": {
     "gn_args": {
       "dcheck_always_on": true,

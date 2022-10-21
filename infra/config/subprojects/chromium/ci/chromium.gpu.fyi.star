@@ -854,15 +854,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Mac FYI Retina Debug (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Nvidia",
-        short_name = "dbg",
-    ),
-    triggered_by = ["GPU FYI Mac Builder (dbg)"],
-)
-
-ci.thin_tester(
     name = "Mac FYI Retina Release (AMD)",
     console_view_entry = consoles.console_view_entry(
         category = "Mac|AMD|Retina",
