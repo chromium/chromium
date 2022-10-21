@@ -11,8 +11,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -45,21 +43,21 @@ const char* HighestPmfReporter::webpage_counts_metric_names[] = {
 constexpr base::TimeDelta HighestPmfReporter::time_to_report[] = {
     base::Minutes(2), base::Minutes(4), base::Minutes(8), base::Minutes(16)};
 
-HighestPmfReporter& HighestPmfReporter::Instance() {
-  DEFINE_STATIC_LOCAL(HighestPmfReporter, reporter, ());
-  return reporter;
-}
-
-HighestPmfReporter::HighestPmfReporter()
-    : task_runner_(Thread::MainThread()->GetDeprecatedTaskRunner()),
-      clock_(base::DefaultTickClock::GetInstance()) {
-  MemoryUsageMonitor::Instance().AddObserver(this);
+void HighestPmfReporter::Initialize(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  DEFINE_STATIC_LOCAL(HighestPmfReporter, reporter, (std::move(task_runner)));
+  (void)reporter;
 }
 
 HighestPmfReporter::HighestPmfReporter(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing,
-    const base::TickClock* clock_for_testing)
-    : task_runner_(task_runner_for_testing), clock_(clock_for_testing) {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : HighestPmfReporter(std::move(task_runner),
+                         base::DefaultTickClock::GetInstance()) {}
+
+HighestPmfReporter::HighestPmfReporter(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* clock)
+    : task_runner_(std::move(task_runner)), clock_(clock) {
   MemoryUsageMonitor::Instance().AddObserver(this);
 }
 

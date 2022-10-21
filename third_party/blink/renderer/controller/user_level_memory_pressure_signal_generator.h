@@ -31,19 +31,19 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
 
  public:
   // Returns the shared instance.
-  static UserLevelMemoryPressureSignalGenerator& Instance();
-  static bool Enabled();
-
-  UserLevelMemoryPressureSignalGenerator();
-  ~UserLevelMemoryPressureSignalGenerator() override;
-
-  // The caller is the owner of the |clock|. The |clock| must outlive the
-  // UserLevelMemoryPressureSignalGenerator.
-  void SetTickClockForTesting(const base::TickClock* clock);
+  static void Initialize(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
   friend class user_level_memory_pressure_signal_generator_test::
       MockUserLevelMemoryPressureSignalGenerator;
+
+  explicit UserLevelMemoryPressureSignalGenerator(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  UserLevelMemoryPressureSignalGenerator(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const base::TickClock* clock);
+  ~UserLevelMemoryPressureSignalGenerator() override;
 
   // This is only virtual to override in tests.
   virtual void Generate(MemoryUsage);

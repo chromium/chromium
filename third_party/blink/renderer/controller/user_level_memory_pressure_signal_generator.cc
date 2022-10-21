@@ -12,7 +12,6 @@
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
@@ -80,17 +79,8 @@ double MemoryThresholdParam() {
                                     : MemoryThresholdParamOf512MbDevices();
 }
 
-}  // namespace
-
 // static
-UserLevelMemoryPressureSignalGenerator&
-UserLevelMemoryPressureSignalGenerator::Instance() {
-  DEFINE_STATIC_LOCAL(UserLevelMemoryPressureSignalGenerator, generator, ());
-  return generator;
-}
-
-// static
-bool UserLevelMemoryPressureSignalGenerator::Enabled() {
+bool IsUserLevelMemoryPressureSignalGeneratorEnabled() {
   if (!base::FeatureList::IsEnabled(
           blink::features::kUserLevelMemoryPressureSignal))
     return false;
@@ -100,14 +90,34 @@ bool UserLevelMemoryPressureSignalGenerator::Enabled() {
   return !std::isinf(MemoryThresholdParam());
 }
 
-UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator()
+}  // namespace
+
+// static
+void UserLevelMemoryPressureSignalGenerator::Initialize(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (!IsUserLevelMemoryPressureSignalGeneratorEnabled())
+    return;
+  DEFINE_STATIC_LOCAL(UserLevelMemoryPressureSignalGenerator, generator,
+                      (std::move(task_runner)));
+  (void)generator;
+}
+
+UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : UserLevelMemoryPressureSignalGenerator(
+          std::move(task_runner),
+          base::DefaultTickClock::GetInstance()) {}
+
+UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* clock)
     : memory_threshold_mb_(MemoryThresholdParam()),
       minimum_interval_(MinimumIntervalSeconds()),
       delayed_report_timer_(
-          Thread::MainThread()->GetDeprecatedTaskRunner(),
+          std::move(task_runner),
           this,
           &UserLevelMemoryPressureSignalGenerator::OnTimerFired),
-      clock_(base::DefaultTickClock::GetInstance()) {
+      clock_(clock) {
   DCHECK(base::FeatureList::IsEnabled(
       blink::features::kUserLevelMemoryPressureSignal));
   DCHECK(!std::isinf(memory_threshold_mb_));
@@ -122,11 +132,6 @@ UserLevelMemoryPressureSignalGenerator::
   MemoryUsageMonitor::Instance().RemoveObserver(this);
   ThreadScheduler::Current()->ToMainThreadScheduler()->RemoveRAILModeObserver(
       this);
-}
-
-void UserLevelMemoryPressureSignalGenerator::SetTickClockForTesting(
-    const base::TickClock* clock) {
-  clock_ = clock;
 }
 
 void UserLevelMemoryPressureSignalGenerator::OnRAILModeChanged(

@@ -26,10 +26,12 @@ class CONTROLLER_EXPORT HighestPmfReporter
 
  public:
   // Returns the shared instance.
-  static HighestPmfReporter& Instance();
+  static void Initialize(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
-  HighestPmfReporter();
+  explicit HighestPmfReporter(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // The constructor for testing.
   HighestPmfReporter(

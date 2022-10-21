@@ -35,7 +35,11 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
 class MockUserLevelMemoryPressureSignalGenerator
     : public UserLevelMemoryPressureSignalGenerator {
  public:
-  MockUserLevelMemoryPressureSignalGenerator() {
+  explicit MockUserLevelMemoryPressureSignalGenerator(
+      scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner)
+      : UserLevelMemoryPressureSignalGenerator(
+            mock_time_task_runner,
+            mock_time_task_runner->GetMockTickClock()) {
     ON_CALL(*this, Generate(_))
         .WillByDefault(testing::Invoke(
             this, &MockUserLevelMemoryPressureSignalGenerator::RealGenerate));
@@ -104,8 +108,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
         std::make_unique<MockMemoryUsageMonitor>();
     ScopedMockMemoryUsageMonitor mock_memory_usage_scope(
         mock_memory_usage_monitor.get());
-    MockUserLevelMemoryPressureSignalGenerator generator;
-    generator.SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+    MockUserLevelMemoryPressureSignalGenerator generator(test_task_runner_);
     // Ensure we are not loading as no signals are sent during a loading phase.
     generator.OnRAILModeChanged(RAILMode::kAnimation);
     {
@@ -149,8 +152,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, MAYBE_GenerationPauses) {
         std::make_unique<MockMemoryUsageMonitor>();
     ScopedMockMemoryUsageMonitor mock_memory_usage_scope(
         mock_memory_usage_monitor.get());
-    MockUserLevelMemoryPressureSignalGenerator generator;
-    generator.SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+    MockUserLevelMemoryPressureSignalGenerator generator(test_task_runner_);
     // Ensure we are not loading as no signals are sent during a loading phase.
     generator.OnRAILModeChanged(RAILMode::kAnimation);
     {

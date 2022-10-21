@@ -17,6 +17,7 @@ class BlinkInitializer : public ModulesInitializer {
   void InitLocalFrame(LocalFrame&) const override;
 
   void InitServiceWorkerGlobalScope(ServiceWorkerGlobalScope&) const override;
+  void RegisterMemoryWatchers();
 };
 
 }  // namespace blink
