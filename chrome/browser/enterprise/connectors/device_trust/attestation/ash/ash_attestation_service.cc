@@ -67,6 +67,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
                      weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
                      std::move(callback)),
       serialized_signed_challenge, /*register_key=*/false,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name_for_spkac=*/std::string(),
       /*signals=*/signals_json);
 }

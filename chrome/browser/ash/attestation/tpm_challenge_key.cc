@@ -74,6 +74,7 @@ void TpmChallengeKeyImpl::BuildResponse(
     TpmChallengeKeyCallback callback,
     const std::string& challenge,
     bool register_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     const absl::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -90,7 +91,8 @@ void TpmChallengeKeyImpl::BuildResponse(
 
   // Empty |key_name| means that some default name will be used.
   tpm_challenge_key_subtle_->StartPrepareKeyStep(
-      key_type, /*will_register_key=*/register_key_, key_name, profile,
+      key_type, /*will_register_key=*/register_key_, key_crypto_type, key_name,
+      profile,
       base::BindOnce(&TpmChallengeKeyImpl::OnPrepareKeyDone,
                      weak_factory_.GetWeakPtr()),
       signals);

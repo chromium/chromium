@@ -442,8 +442,8 @@ void CertProvisioningWorkerImpl::GenerateKeyForVa() {
       attestation::TpmChallengeKeySubtleFactory::Create();
   tpm_challenge_key_subtle_impl_->StartPrepareKeyStep(
       GetVaKeyType(cert_scope_),
-      /*will_register_key=*/true, GetKeyName(cert_profile_.profile_id),
-      profile_,
+      /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+      GetKeyName(cert_profile_.profile_id), profile_,
       base::BindOnce(&CertProvisioningWorkerImpl::OnGenerateKeyForVaDone,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       /*signals=*/absl::nullopt);
@@ -995,8 +995,8 @@ void CertProvisioningWorkerImpl::InitAfterDeserialization() {
   tpm_challenge_key_subtle_impl_ =
       attestation::TpmChallengeKeySubtleFactory::CreateForPreparedKey(
           GetVaKeyType(cert_scope_),
-          /*will_register_key=*/true, GetKeyName(cert_profile_.profile_id),
-          public_key_, profile_);
+          /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+          GetKeyName(cert_profile_.profile_id), public_key_, profile_);
 }
 
 void CertProvisioningWorkerImpl::RegisterForInvalidationTopic() {

@@ -42,6 +42,7 @@ namespace {
 
 using ::ash::platform_keys::MockKeyPermissionsService;
 using ::ash::platform_keys::MockPlatformKeysService;
+using ::attestation::KEY_TYPE_RSA;
 using ::base::test::RunOnceCallback;
 using ::chromeos::platform_keys::HashAlgorithm;
 using ::chromeos::platform_keys::Status;
@@ -705,7 +706,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
@@ -733,7 +735,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
@@ -761,7 +764,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
@@ -786,12 +790,12 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(
-          ash::attestation::AttestationKeyType::KEY_DEVICE,
-          /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
-          /*register_key=*/true,
-          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-keystore-"),
-          /*signals=*/_))
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/true,
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/StrStartsWith("attest-ent-machine-keystore-"),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -818,7 +822,8 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(challenge_result));
 
@@ -1071,7 +1076,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyNoMigrateSuccess) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
@@ -1099,7 +1105,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyMigrateSuccess) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
@@ -1127,7 +1134,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyNoMigrateSuccess) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
@@ -1152,12 +1160,12 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(
-          ash::attestation::AttestationKeyType::KEY_DEVICE,
-          /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
-          /*register_key=*/true,
-          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-lacros-"),
-          /*signals=*/_))
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/true,
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/StrStartsWith("attest-ent-machine-lacros-"),
+                    /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -1184,7 +1192,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeKeyFail) {
       BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string(),
+                    /*key_crypto_type=*/KEY_TYPE_RSA,
+                    /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(challenge_result));
 

@@ -97,16 +97,19 @@ TEST_F(TpmChallengeKeyTest, PrepareKeyFailed) {
   const bool kRegisterKey = false;
   const char* const kKeyName = kEmptyKeyName;
 
-  EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
-              StartPrepareKeyStep(kKeyType, kRegisterKey, kKeyName, &profile_,
-                                  /*callback=*/_, /*signals=*/_))
-      .WillOnce(RunOnceCallback<4>(TpmChallengeKeyResult::MakeError(
+  EXPECT_CALL(
+      *mock_tpm_challenge_key_subtle_,
+      StartPrepareKeyStep(kKeyType, kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                          kKeyName, &profile_,
+                          /*callback=*/_, /*signals=*/_))
+      .WillOnce(RunOnceCallback<5>(TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kGetCertificateFailedError)));
 
   CallbackObserver callback_observer;
-  challenge_key_->BuildResponse(
-      kKeyType, &profile_, callback_observer.GetCallback(), GetChallenge(),
-      kRegisterKey, kKeyName, /*signals=*/absl::nullopt);
+  challenge_key_->BuildResponse(kKeyType, &profile_,
+                                callback_observer.GetCallback(), GetChallenge(),
+                                kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                                kKeyName, /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(),
@@ -119,10 +122,12 @@ TEST_F(TpmChallengeKeyTest, SignChallengeFailed) {
   const bool kRegisterKey = true;
   const char* const kKeyName = kNonDefaultKeyName;
 
-  EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
-              StartPrepareKeyStep(kKeyType, kRegisterKey, kKeyName, &profile_,
-                                  /*callback=*/_, /*signals=*/_))
-      .WillOnce(RunOnceCallback<4>(
+  EXPECT_CALL(
+      *mock_tpm_challenge_key_subtle_,
+      StartPrepareKeyStep(kKeyType, kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                          kKeyName, &profile_,
+                          /*callback=*/_, /*signals=*/_))
+      .WillOnce(RunOnceCallback<5>(
           TpmChallengeKeyResult::MakePublicKey(GetPublicKey())));
 
   EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
@@ -131,9 +136,10 @@ TEST_F(TpmChallengeKeyTest, SignChallengeFailed) {
           TpmChallengeKeyResultCode::kSignChallengeFailedError)));
 
   CallbackObserver callback_observer;
-  challenge_key_->BuildResponse(
-      kKeyType, &profile_, callback_observer.GetCallback(), GetChallenge(),
-      kRegisterKey, kKeyName, /*signals=*/absl::nullopt);
+  challenge_key_->BuildResponse(kKeyType, &profile_,
+                                callback_observer.GetCallback(), GetChallenge(),
+                                kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                                kKeyName, /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(),
@@ -146,10 +152,12 @@ TEST_F(TpmChallengeKeyTest, RegisterKeyFailed) {
   const bool kRegisterKey = true;
   const char* const kKeyName = kNonDefaultKeyName;
 
-  EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
-              StartPrepareKeyStep(kKeyType, kRegisterKey, kKeyName, &profile_,
-                                  /*callback=*/_, /*signals=*/_))
-      .WillOnce(RunOnceCallback<4>(
+  EXPECT_CALL(
+      *mock_tpm_challenge_key_subtle_,
+      StartPrepareKeyStep(kKeyType, kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                          kKeyName, &profile_,
+                          /*callback=*/_, /*signals=*/_))
+      .WillOnce(RunOnceCallback<5>(
           TpmChallengeKeyResult::MakePublicKey(GetPublicKey())));
 
   EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
@@ -163,9 +171,10 @@ TEST_F(TpmChallengeKeyTest, RegisterKeyFailed) {
           TpmChallengeKeyResultCode::kKeyRegistrationFailedError)));
 
   CallbackObserver callback_observer;
-  challenge_key_->BuildResponse(
-      kKeyType, &profile_, callback_observer.GetCallback(), GetChallenge(),
-      kRegisterKey, kKeyName, /*signals=*/absl::nullopt);
+  challenge_key_->BuildResponse(kKeyType, &profile_,
+                                callback_observer.GetCallback(), GetChallenge(),
+                                kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                                kKeyName, /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(),
@@ -178,10 +187,12 @@ TEST_F(TpmChallengeKeyTest, DontRegisterSuccess) {
   const bool kRegisterKey = false;
   const char* const kKeyName = kEmptyKeyName;
 
-  EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
-              StartPrepareKeyStep(kKeyType, kRegisterKey, kKeyName, &profile_,
-                                  /*callback=*/_, /*signals=*/_))
-      .WillOnce(RunOnceCallback<4>(
+  EXPECT_CALL(
+      *mock_tpm_challenge_key_subtle_,
+      StartPrepareKeyStep(kKeyType, kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                          kKeyName, &profile_,
+                          /*callback=*/_, /*signals=*/_))
+      .WillOnce(RunOnceCallback<5>(
           TpmChallengeKeyResult::MakePublicKey(GetPublicKey())));
 
   EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
@@ -194,9 +205,10 @@ TEST_F(TpmChallengeKeyTest, DontRegisterSuccess) {
       .Times(0);
 
   CallbackObserver callback_observer;
-  challenge_key_->BuildResponse(
-      kKeyType, &profile_, callback_observer.GetCallback(), GetChallenge(),
-      kRegisterKey, kKeyName, /*signals=*/absl::nullopt);
+  challenge_key_->BuildResponse(kKeyType, &profile_,
+                                callback_observer.GetCallback(), GetChallenge(),
+                                kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                                kKeyName, /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(
@@ -209,10 +221,12 @@ TEST_F(TpmChallengeKeyTest, RegisterSuccess) {
   const bool kRegisterKey = true;
   const char* const kKeyName = kEmptyKeyName;
 
-  EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
-              StartPrepareKeyStep(kKeyType, kRegisterKey, kKeyName, &profile_,
-                                  /*callback=*/_, /*signals=*/_))
-      .WillOnce(RunOnceCallback<4>(
+  EXPECT_CALL(
+      *mock_tpm_challenge_key_subtle_,
+      StartPrepareKeyStep(kKeyType, kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                          kKeyName, &profile_,
+                          /*callback=*/_, /*signals=*/_))
+      .WillOnce(RunOnceCallback<5>(
           TpmChallengeKeyResult::MakePublicKey(GetPublicKey())));
 
   EXPECT_CALL(*mock_tpm_challenge_key_subtle_,
@@ -225,9 +239,10 @@ TEST_F(TpmChallengeKeyTest, RegisterSuccess) {
       .WillOnce(RunOnceCallback<0>(TpmChallengeKeyResult::MakeSuccess()));
 
   CallbackObserver callback_observer;
-  challenge_key_->BuildResponse(
-      kKeyType, &profile_, callback_observer.GetCallback(), GetChallenge(),
-      kRegisterKey, kKeyName, /*signals=*/absl::nullopt);
+  challenge_key_->BuildResponse(kKeyType, &profile_,
+                                callback_observer.GetCallback(), GetChallenge(),
+                                kRegisterKey, ::attestation::KEY_TYPE_RSA,
+                                kKeyName, /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(

@@ -44,6 +44,7 @@ void FakeRunCheckNotRegister(ash::attestation::AttestationKeyType key_type,
                              ash::attestation::TpmChallengeKeyCallback callback,
                              const std::string& challenge,
                              bool register_key,
+                             ::attestation::KeyType key_crypto_type,
                              const std::string& key_name_for_spkac,
                              const absl::optional<std::string>& signals) {
   EXPECT_FALSE(register_key);

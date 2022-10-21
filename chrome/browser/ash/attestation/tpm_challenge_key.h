@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
+#include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -82,6 +83,7 @@ class TpmChallengeKey {
                              TpmChallengeKeyCallback callback,
                              const std::string& challenge,
                              bool register_key,
+                             ::attestation::KeyType key_crypto_type,
                              const std::string& key_name,
                              const absl::optional<std::string>& signals) = 0;
 
@@ -110,6 +112,7 @@ class TpmChallengeKeyImpl final : public TpmChallengeKey {
                      TpmChallengeKeyCallback callback,
                      const std::string& challenge,
                      bool register_key,
+                     ::attestation::KeyType key_crypto_type,
                      const std::string& key_name,
                      const absl::optional<std::string>& signals) override;
 

@@ -142,7 +142,8 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
                             /*profile=*/&test_profile_, /*callback=*/_,
                             /*challenge=*/protoChallenge,
                             /*register_key=*/false,
-                            /*key_name_for_spkac=*/std::string(),
+                            /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+                            /*key_name=*/std::string(),
                             /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(

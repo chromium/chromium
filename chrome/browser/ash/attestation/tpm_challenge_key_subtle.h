@@ -48,6 +48,7 @@ class TpmChallengeKeySubtleFactory final {
   static std::unique_ptr<TpmChallengeKeySubtle> CreateForPreparedKey(
       AttestationKeyType key_type,
       bool will_register_key,
+      ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
       const std::string& public_key,
       Profile* profile);
@@ -92,6 +93,7 @@ class TpmChallengeKeySubtle {
   virtual void StartPrepareKeyStep(
       AttestationKeyType key_type,
       bool will_register_key,
+      ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
       Profile* profile,
       TpmChallengeKeyCallback callback,
@@ -119,6 +121,7 @@ class TpmChallengeKeySubtle {
   // is true.
   virtual void RestorePreparedKeyState(AttestationKeyType key_type,
                                        bool will_register_key,
+                                       ::attestation::KeyType key_crypto_type,
                                        const std::string& key_name,
                                        const std::string& public_key,
                                        Profile* profile) = 0;
@@ -143,6 +146,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // TpmChallengeKeySubtle
   void StartPrepareKeyStep(AttestationKeyType key_type,
                            bool will_register_key,
+                           ::attestation::KeyType key_crypto_type,
                            const std::string& key_name,
                            Profile* profile,
                            TpmChallengeKeyCallback callback,
@@ -155,6 +159,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // TpmChallengeKeySubtle
   void RestorePreparedKeyState(AttestationKeyType key_type,
                                bool will_register_key,
+                               ::attestation::KeyType key_crypto_type,
                                const std::string& key_name,
                                const std::string& public_key,
                                Profile* profile) override;
@@ -233,6 +238,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
 
   AttestationKeyType key_type_ = AttestationKeyType::KEY_DEVICE;
   bool will_register_key_ = false;
+  ::attestation::KeyType key_crypto_type_ = ::attestation::KEY_TYPE_RSA;
   // See the comment for TpmChallengeKey::BuildResponse for more context about
   // different cases of using this variable.
   std::string key_name_;

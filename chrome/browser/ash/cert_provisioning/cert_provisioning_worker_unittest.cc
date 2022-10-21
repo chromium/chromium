@@ -138,7 +138,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         attestation::TpmChallengeKeyResult::MakePublicKey(GetPublicKey()); \
     EXPECT_CALL((MOCK_TPM_CHALLENGE_KEY), PREPARE_KEY_FUNC)                \
         .Times(1)                                                          \
-        .WillOnce(RunOnceCallback<4>(public_key_result));                  \
+        .WillOnce(RunOnceCallback<5>(public_key_result));                  \
   }
 
 #define EXPECT_SIGN_CHALLENGE_OK(MOCK_TPM_CHALLENGE_KEY, SIGN_CHALLENGE_FUNC) \
@@ -529,6 +529,7 @@ TEST_F(CertProvisioningWorkerTest, Success) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -694,6 +695,7 @@ TEST_F(CertProvisioningWorkerTest, NoHashInStartCsr) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -776,6 +778,7 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_DEVICE,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             /*key_name=*/GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -892,6 +895,7 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1014,6 +1018,7 @@ TEST_F(CertProvisioningWorkerTest, ServiceActivationPendingResponse) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1141,6 +1146,7 @@ TEST_F(CertProvisioningWorkerTest, InvalidationRespected) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1260,6 +1266,7 @@ TEST_F(CertProvisioningWorkerTest, StatusErrorHandling) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1304,6 +1311,7 @@ TEST_F(CertProvisioningWorkerTest, ResponseErrorHandling) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1349,6 +1357,7 @@ TEST_F(CertProvisioningWorkerTest, InconsistentDataErrorHandling) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1392,6 +1401,7 @@ TEST_F(CertProvisioningWorkerTest, BackoffStrategy) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1453,6 +1463,7 @@ TEST_F(CertProvisioningWorkerTest, ProcessBackendServerErrorResponse) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1509,6 +1520,7 @@ TEST_F(CertProvisioningWorkerTest, ClearBackendServerError) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1548,6 +1560,7 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1656,6 +1669,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1695,8 +1709,8 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
     EXPECT_CALL(*mock_tpm_challenge_key,
                 RestorePreparedKeyState(
                     attestation::AttestationKeyType::KEY_USER,
-                    /*will_register_key=*/true, GetKeyName(kCertProfileId),
-                    GetPublicKey(), /*profile=*/_))
+                    /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+                    GetKeyName(kCertProfileId), GetPublicKey(), /*profile=*/_))
         .Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
@@ -1781,8 +1795,8 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
     EXPECT_CALL(*mock_tpm_challenge_key,
                 RestorePreparedKeyState(
                     attestation::AttestationKeyType::KEY_USER,
-                    /*will_register_key=*/true, GetKeyName(kCertProfileId),
-                    GetPublicKey(), /*profile=*/_))
+                    /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+                    GetKeyName(kCertProfileId), GetPublicKey(), /*profile=*/_))
         .Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
@@ -1840,6 +1854,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationOnFailure) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
@@ -1960,6 +1975,7 @@ TEST_F(CertProvisioningWorkerTest, CancelDeviceWorker) {
         *mock_tpm_challenge_key,
         StartPrepareKeyStep(attestation::AttestationKeyType::KEY_DEVICE,
                             /*will_register_key=*/true,
+                            ::attestation::KEY_TYPE_RSA,
                             /*key_name=*/GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));

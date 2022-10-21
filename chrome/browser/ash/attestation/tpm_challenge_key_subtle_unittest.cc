@@ -198,6 +198,8 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
                               const std::string& key_name,
                               const TpmChallengeKeyResult& register_result);
 
+  virtual ::attestation::KeyType KeyCryptoType();
+
  protected:
   const TestProfileChoice test_profile_choice_;
 
@@ -314,6 +316,10 @@ StubInstallAttributes* TpmChallengeKeySubtleTestBase::GetInstallAttributes() {
   return GetCrosSettingsHelper()->InstallAttributes();
 }
 
+::attestation::KeyType TpmChallengeKeySubtleTestBase::KeyCryptoType() {
+  return ::attestation::KEY_TYPE_RSA;
+}
+
 void TpmChallengeKeySubtleTestBase::RunOneStepAndExpect(
     AttestationKeyType key_type,
     bool will_register_key,
@@ -321,7 +327,7 @@ void TpmChallengeKeySubtleTestBase::RunOneStepAndExpect(
     const TpmChallengeKeyResult& public_key) {
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartPrepareKeyStep(
-      key_type, will_register_key, key_name, GetProfile(),
+      key_type, will_register_key, KeyCryptoType(), key_name, GetProfile(),
       callback_observer.GetCallback(), /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
@@ -599,8 +605,9 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
   const AttestationKeyType key_type = KEY_DEVICE;
   const char* const key_name = kNonDefaultKeyName;
 
-  EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, key_name, _));
+  EXPECT_CALL(
+      mock_attestation_flow_,
+      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_RSA, key_name, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_key_label(GetDefaultKeyName(key_type));
@@ -623,6 +630,30 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
 
   RunThreeStepsAndExpect(key_type, /*will_register_key=*/true, key_name,
                          TpmChallengeKeyResult::MakeSuccess());
+}
+
+class TpmChallengeKeySubtleTestECC : public TpmChallengeKeySubtleTestBase {
+ public:
+  TpmChallengeKeySubtleTestECC()
+      : TpmChallengeKeySubtleTestBase(TestProfileChoice::kAffiliatedProfile) {}
+  ~TpmChallengeKeySubtleTestECC() override = default;
+
+  // TpmChallengeKeySubtleTestBase
+  ::attestation::KeyType KeyCryptoType() override {
+    return ::attestation::KEY_TYPE_ECC;
+  }
+};
+
+TEST_F(TpmChallengeKeySubtleTestECC, DeviceKeyRegisteredSuccessECC) {
+  const AttestationKeyType key_type = KEY_DEVICE;
+  const char* const key_name = kNonDefaultKeyName;
+
+  EXPECT_CALL(
+      mock_attestation_flow_,
+      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_ECC, key_name, _));
+
+  RunOneStepAndExpect(key_type, /*will_register_key=*/true, key_name,
+                      TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
@@ -700,8 +731,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
                                                   &mock_cert_uploader_));
 
   challenge_key_subtle_ = TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-      key_type, /*will_register_key=*/true, key_name, GetPublicKey(),
-      GetProfile());
+      key_type, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+      key_name, GetPublicKey(), GetProfile());
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_username(kTestUserEmail);
@@ -754,8 +785,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, KeyRegistrationFailed) {
                                                   &mock_cert_uploader_));
 
   challenge_key_subtle_ = TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-      key_type, /*will_register_key=*/true, key_name, GetPublicKey(),
-      GetProfile());
+      key_type, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+      key_name, GetPublicKey(), GetProfile());
 
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartRegisterKeyStep(callback_observer.GetCallback());
@@ -800,8 +831,9 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
 
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartPrepareKeyStep(
-      KEY_DEVICE, /*will_register_key=*/true, key_name, GetProfile(),
-      callback_observer.GetCallback(), /*signals=*/absl::nullopt);
+      KEY_DEVICE, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+      key_name, GetProfile(), callback_observer.GetCallback(),
+      /*signals=*/absl::nullopt);
 
   // |challenge_key_subtle_| should wait until the certificate is uploaded.
   task_environment_.FastForwardBy(base::Minutes(10));

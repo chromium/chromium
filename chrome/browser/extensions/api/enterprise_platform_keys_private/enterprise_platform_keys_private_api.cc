@@ -61,8 +61,8 @@ void EPKPChallengeKey::Run(ash::attestation::AttestationKeyType type,
 
   impl_ = ash::attestation::TpmChallengeKeyFactory::Create();
   impl_->BuildResponse(type, profile, std::move(callback), challenge,
-                       register_key, key_name_for_spkac,
-                       /*signals=*/absl::nullopt);
+                       register_key, attestation::KEY_TYPE_RSA,
+                       key_name_for_spkac, /*signals=*/absl::nullopt);
 }
 
 EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::

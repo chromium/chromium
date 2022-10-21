@@ -235,7 +235,8 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      challenge_key_ptr),
       std::string(challenge.begin(), challenge.end()),
-      /*register_key=*/migrate, key_name_for_spkac, /*signals=*/absl::nullopt);
+      /*register_key=*/migrate, ::attestation::KEY_TYPE_RSA, key_name_for_spkac,
+      /*signals=*/absl::nullopt);
 }
 
 void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
@@ -311,7 +312,8 @@ void KeystoreServiceAsh::DEPRECATED_ChallengeAttestationOnlyKeystore(
           &KeystoreServiceAsh::DEPRECATED_DidChallengeAttestationOnlyKeystore,
           weak_factory_.GetWeakPtr(), std::move(callback), challenge_key_ptr),
       challenge,
-      /*register_key=*/migrate, key_name_for_spkac, /*signals=*/absl::nullopt);
+      /*register_key=*/migrate, ::attestation::KEY_TYPE_RSA, key_name_for_spkac,
+      /*signals=*/absl::nullopt);
 }
 
 void KeystoreServiceAsh::DEPRECATED_DidChallengeAttestationOnlyKeystore(

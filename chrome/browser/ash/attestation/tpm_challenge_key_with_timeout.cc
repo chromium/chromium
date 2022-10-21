@@ -22,6 +22,7 @@ void TpmChallengeKeyWithTimeout::BuildResponse(
     TpmChallengeKeyCallback callback,
     const std::string& challenge,
     bool register_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name_for_spkac,
     const absl::optional<std::string>& signals) {
   DCHECK(!callback_);
@@ -40,7 +41,7 @@ void TpmChallengeKeyWithTimeout::BuildResponse(
       key_type, profile,
       base::BindOnce(&TpmChallengeKeyWithTimeout::ResolveCallback,
                      weak_factory_.GetWeakPtr()),
-      challenge, register_key, key_name_for_spkac, signals);
+      challenge, register_key, key_crypto_type, key_name_for_spkac, signals);
 }
 
 void TpmChallengeKeyWithTimeout::ResolveCallback(

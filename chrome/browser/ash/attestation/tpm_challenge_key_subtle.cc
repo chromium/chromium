@@ -63,12 +63,13 @@ std::unique_ptr<TpmChallengeKeySubtle>
 TpmChallengeKeySubtleFactory::CreateForPreparedKey(
     AttestationKeyType key_type,
     bool will_register_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     const std::string& public_key,
     Profile* profile) {
   auto result = TpmChallengeKeySubtleFactory::Create();
-  result->RestorePreparedKeyState(key_type, will_register_key, key_name,
-                                  public_key, profile);
+  result->RestorePreparedKeyState(key_type, will_register_key, key_crypto_type,
+                                  key_name, public_key, profile);
   return result;
 }
 
@@ -152,6 +153,7 @@ TpmChallengeKeySubtleImpl::~TpmChallengeKeySubtleImpl() {
 void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
     AttestationKeyType key_type,
     bool will_register_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     const std::string& public_key,
     Profile* profile) {
@@ -163,6 +165,7 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
 
   key_type_ = key_type;
   will_register_key_ = will_register_key;
+  key_crypto_type_ = key_crypto_type;
   key_name_ = GetKeyNameWithDefault(key_type, key_name);
   public_key_ = public_key;
   profile_ = profile;
@@ -171,6 +174,7 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
 void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
     AttestationKeyType key_type,
     bool will_register_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     Profile* profile,
     TpmChallengeKeyCallback callback,
@@ -187,6 +191,7 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
 
   key_type_ = key_type;
   will_register_key_ = will_register_key;
+  key_crypto_type_ = key_crypto_type;
   key_name_ = GetKeyNameWithDefault(key_type, key_name);
   profile_ = profile;
   callback_ = std::move(callback);
@@ -512,7 +517,7 @@ void TpmChallengeKeySubtleImpl::AskForUserConsentCallback(bool result) {
   attestation_flow_->GetCertificate(
       GetCertificateProfile(), GetAccountIdForAttestationFlow(),
       /*request_origin=*/std::string(),  // Not used.
-      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, key_name_,
+      /*force_new_key=*/true, key_crypto_type_, key_name_,
       base::BindOnce(&TpmChallengeKeySubtleImpl::GetCertificateCallback,
                      weak_factory_.GetWeakPtr()));
 }
