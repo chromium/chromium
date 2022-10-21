@@ -314,6 +314,14 @@ class AssistantScreenTester extends ScreenElementApi {
     }
     return loadTimeData.getString('assistantOptinNoThanksButton');
   }
+
+  /**
+   * Returns whether we currently show existing user flow.
+   * @returns {boolean}
+   */
+  isPreviousUserFlowShown() {
+    return this.relatedInfo.isVisible();
+  }
 }
 
 class MarketingOptInScreenTester extends ScreenElementApi {
@@ -774,6 +782,23 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
   }
 }
 
+class SmartPrivacyProtectionScreenTester extends ScreenElementApi {
+  constructor() {
+    super('smart-privacy-protection');
+    this.noThanks = new PolymerElementApi(this, '#noThanksButton');
+  }
+
+  /** @return {boolean} */
+  isReadyForTesting() {
+    return this.isVisible() && this.noThanks.isVisible();
+  }
+
+  /** @return {string} */
+  getNoThanksButtonName() {
+    return loadTimeData.getString('smartPrivacyProtectionTurnOffButton');
+  }
+}
+
 class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -800,6 +825,7 @@ class OobeApiProvider {
       ThemeSelectionScreen: new ThemeSelectionScreenTester(),
       GestureNavigation: new GestureNavigationScreenTester(),
       ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),
+      SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
