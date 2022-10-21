@@ -28,7 +28,7 @@ import {PhoneticData} from '../phonetic_data.js';
 import {OutputAncestryInfo} from './output_ancestry_info.js';
 import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
-import {OutputRulesStr} from './output_logger.js';
+import {OutputFormatLogger} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
 import {OUTPUT_RULES} from './output_rules.js';
 import * as outputTypes from './output_types.js';
@@ -83,10 +83,10 @@ export class Output {
     this.speechEndCallback_;
 
     // Store output rules.
-    /** @private {!OutputRulesStr} */
-    this.speechRulesStr_ = new OutputRulesStr('enableSpeechLogging');
-    /** @private {!OutputRulesStr} */
-    this.brailleRulesStr_ = new OutputRulesStr('enableBrailleLogging');
+    /** @private {!OutputFormatLogger} */
+    this.speechFormatLog_ = new OutputFormatLogger('enableSpeechLogging');
+    /** @private {!OutputFormatLogger} */
+    this.brailleFormatLog_ = new OutputFormatLogger('enableBrailleLogging');
 
     /**
      * Current global options.
@@ -227,7 +227,7 @@ export class Output {
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
     this.formattedAncestors_ = new WeakSet();
     this.render_(
-        range, prevRange, type, this.speechBuffer_, this.speechRulesStr_);
+        range, prevRange, type, this.speechBuffer_, this.speechFormatLog_);
     return this;
   }
 
@@ -242,7 +242,7 @@ export class Output {
     this.formatOptions_ = {speech: true, braille: false, auralStyle: true};
     this.formattedAncestors_ = new WeakSet();
     this.render_(
-        range, prevRange, type, this.speechBuffer_, this.speechRulesStr_);
+        range, prevRange, type, this.speechBuffer_, this.speechFormatLog_);
     return this;
   }
 
@@ -273,7 +273,7 @@ export class Output {
       range = new CursorRange(Cursor.fromNode(start), Cursor.fromNode(end));
     }
     this.render_(
-        range, prevRange, type, this.brailleBuffer_, this.brailleRulesStr_);
+        range, prevRange, type, this.brailleBuffer_, this.brailleFormatLog_);
     return this;
   }
 
@@ -289,7 +289,7 @@ export class Output {
     this.formattedAncestors_ = new WeakSet();
     this.render_(
         range, prevRange, type, [] /*unused output*/,
-        new OutputRulesStr('') /*unused log*/);
+        new OutputFormatLogger('') /*unused log*/);
     return this;
   }
 
@@ -347,8 +347,8 @@ export class Output {
   withString(value) {
     this.append_(this.speechBuffer_, value);
     this.append_(this.brailleBuffer_, value);
-    this.speechRulesStr_.write('withString: ' + value + '\n');
-    this.brailleRulesStr_.write('withString: ' + value + '\n');
+    this.speechFormatLog_.write('withString: ' + value + '\n');
+    this.brailleFormatLog_.write('withString: ' + value + '\n');
     return this;
   }
 
@@ -438,7 +438,7 @@ export class Output {
       node,
       outputFormat: formatStr,
       outputBuffer: this.speechBuffer_,
-      outputRuleString: this.speechRulesStr_,
+      outputFormatLogger: this.speechFormatLog_,
     });
 
     return this;
@@ -461,7 +461,7 @@ export class Output {
       node,
       outputFormat: formatStr,
       outputBuffer: this.brailleBuffer_,
-      outputRuleString: this.brailleRulesStr_,
+      outputFormatLogger: this.brailleFormatLog_,
     });
     return this;
   }
@@ -551,9 +551,9 @@ export class Output {
         queueMode = QueueMode.QUEUE;
       }
     }
-    if (this.speechRulesStr_.str) {
+    if (this.speechFormatLog_.str) {
       LogStore.getInstance().writeTextLog(
-          this.speechRulesStr_.str, LogType.SPEECH_RULE);
+          this.speechFormatLog_.str, LogType.SPEECH_RULE);
     }
 
     // Braille.
@@ -577,9 +577,9 @@ export class Output {
       const output = new NavBraille({text: buff, startIndex, endIndex});
 
       ChromeVox.braille.write(output);
-      if (this.brailleRulesStr_.str) {
+      if (this.brailleFormatLog_.str) {
         LogStore.getInstance().writeTextLog(
-            this.brailleRulesStr_.str, LogType.BRAILLE_RULE);
+            this.brailleFormatLog_.str, LogType.BRAILLE_RULE);
       }
     }
 
@@ -633,11 +633,11 @@ export class Output {
    * @param {CursorRange} prevRange
    * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
-   * @param {!OutputRulesStr} ruleStr
+   * @param {!OutputFormatLogger} formatLog
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
    * @private
    */
-  render_(range, prevRange, type, buff, ruleStr, optionalArgs = {}) {
+  render_(range, prevRange, type, buff, formatLog, optionalArgs = {}) {
     if (prevRange && !prevRange.isValid()) {
       prevRange = null;
     }
@@ -664,14 +664,14 @@ export class Output {
     }
 
     if (range.isSubNode()) {
-      this.subNode_(range, prevRange, type, buff, ruleStr);
+      this.subNode_(range, prevRange, type, buff, formatLog);
     } else {
-      this.range_(range, prevRange, type, buff, ruleStr, optionalArgs);
+      this.range_(range, prevRange, type, buff, formatLog, optionalArgs);
     }
 
     this.hint_(
         range, AutomationUtil.getUniqueAncestors(prevParent, range.start.node),
-        type, buff, ruleStr);
+        type, buff, formatLog);
   }
 
   /**
@@ -766,7 +766,7 @@ export class Output {
 
           /** @override */
           onMessageToken(token, tree, options) {
-            params.outputRuleString.write(' @');
+            params.outputFormatLogger.write(' @');
             if (owner.formatOptions_.auralStyle) {
               if (!speechProps) {
                 speechProps = new outputTypes.OutputSpeechProperties();
@@ -778,7 +778,7 @@ export class Output {
 
           /** @override */
           onSpeechPropertyToken(token, tree, options) {
-            params.outputRuleString.write(' ! ' + token + '\n');
+            params.outputFormatLogger.write(' ! ' + token + '\n');
             speechProps = new outputTypes.OutputSpeechProperties();
             speechProps.properties[token] = true;
             if (tree.firstChild) {
@@ -826,7 +826,7 @@ export class Output {
   formatValue_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     const text = node.value || '';
     if (!node.state[StateType.EDITABLE] && node.name === text) {
@@ -848,11 +848,11 @@ export class Output {
         node.state[StateType.FOCUSED]) {
       this.append_(buff, selectedText, options);
       this.append_(buff, Msgs.getMsg('selected'));
-      ruleStr.writeTokenWithValue(token, selectedText);
-      ruleStr.write('selected\n');
+      formatLog.writeTokenWithValue(token, selectedText);
+      formatLog.write('selected\n');
     } else {
       this.append_(buff, text, options);
-      ruleStr.writeTokenWithValue(token, text);
+      formatLog.writeTokenWithValue(token, text);
     }
   }
 
@@ -865,7 +865,7 @@ export class Output {
     const buff = data.outputBuffer;
     const node = data.node;
     const prevNode = data.opt_prevNode;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     options.annotation.push(token);
     const earcon = node ? this.findEarcon_(node, prevNode) : null;
@@ -886,7 +886,7 @@ export class Output {
       this.append_(buff, node.name || '', options);
     }
 
-    ruleStr.writeTokenWithValue(token, node.name);
+    formatLog.writeTokenWithValue(token, node.name);
   }
 
   /**
@@ -897,7 +897,7 @@ export class Output {
   formatDescription_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (node.name === node.description) {
       return;
@@ -905,7 +905,7 @@ export class Output {
 
     options.annotation.push(token);
     this.append_(buff, node.description || '', options);
-    ruleStr.writeTokenWithValue(token, node.description);
+    formatLog.writeTokenWithValue(token, node.description);
   }
 
   /**
@@ -916,7 +916,7 @@ export class Output {
   formatUrlFilename_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     options.annotation.push('name');
     const url = node.url || '';
@@ -930,7 +930,7 @@ export class Output {
       }
     }
     this.append_(buff, filename, options);
-    ruleStr.writeTokenWithValue(token, filename);
+    formatLog.writeTokenWithValue(token, filename);
   }
 
   /**
@@ -941,7 +941,7 @@ export class Output {
   formatNameFromNode_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (node.nameFrom === NameFromType.CONTENTS) {
       return;
@@ -949,7 +949,7 @@ export class Output {
 
     options.annotation.push('name');
     this.append_(buff, node.name || '', options);
-    ruleStr.writeTokenWithValue(token, node.name);
+    formatLog.writeTokenWithValue(token, node.name);
   }
 
   /**
@@ -960,21 +960,21 @@ export class Output {
   formatNameOrDescendants_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     options.annotation.push(token);
     if (node.name &&
         (node.nameFrom !== NameFromType.CONTENTS ||
          node.children.every(child => child.role === RoleType.STATIC_TEXT))) {
       this.append_(buff, node.name || '', options);
-      ruleStr.writeTokenWithValue(token, node.name);
+      formatLog.writeTokenWithValue(token, node.name);
     } else {
-      ruleStr.writeToken(token);
+      formatLog.writeToken(token);
       this.format_({
         node,
         outputFormat: '$descendants',
         outputBuffer: buff,
-        outputRuleString: ruleStr,
+        outputFormatLogger: formatLog,
       });
     }
   }
@@ -988,7 +988,7 @@ export class Output {
   formatIndexInParent_(data, token, tree, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (node.parent) {
       options.annotation.push(token);
@@ -1010,7 +1010,7 @@ export class Output {
         }
       }
       this.append_(buff, String(count));
-      ruleStr.writeTokenWithValue(token, String(count));
+      formatLog.writeTokenWithValue(token, String(count));
     }
   }
 
@@ -1021,16 +1021,16 @@ export class Output {
   formatRestriction_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
     if (msg) {
-      ruleStr.writeToken(token);
+      formatLog.writeToken(token);
       this.format_({
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
-        outputRuleString: ruleStr,
+        outputFormatLogger: formatLog,
       });
     }
   }
@@ -1042,16 +1042,16 @@ export class Output {
   formatChecked_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     const msg = outputTypes.OutputPropertyMap.CHECKED[node.checked];
     if (msg) {
-      ruleStr.writeToken(token);
+      formatLog.writeToken(token);
       this.format_({
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
-        outputRuleString: ruleStr,
+        outputFormatLogger: formatLog,
       });
     }
   }
@@ -1063,16 +1063,16 @@ export class Output {
   formatPressed_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     const msg = outputTypes.OutputPropertyMap.PRESSED[node.checked];
     if (msg) {
-      ruleStr.writeToken(token);
+      formatLog.writeToken(token);
       this.format_({
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
-        outputRuleString: ruleStr,
+        outputFormatLogger: formatLog,
       });
     }
   }
@@ -1084,18 +1084,18 @@ export class Output {
   formatState_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (node.state) {
       Object.getOwnPropertyNames(node.state).forEach(state => {
         const stateInfo = outputTypes.OUTPUT_STATE_INFO[state];
         if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
-          ruleStr.writeToken(token);
+          formatLog.writeToken(token);
           this.format_({
             node,
             outputFormat: '$' + state,
             outputBuffer: buff,
-            outputRuleString: ruleStr,
+            outputFormatLogger: formatLog,
           });
         }
       });
@@ -1109,7 +1109,7 @@ export class Output {
    */
   formatFind_(data, token, tree) {
     const buff = data.outputBuffer;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
     let node = data.node;
 
     // Find takes two arguments: JSON query string and format string.
@@ -1119,12 +1119,12 @@ export class Output {
           /** @type {chrome.automation.FindParams}*/ (JSON.parse(jsonQuery)));
       const formatString = tree.firstChild.nextSibling || '';
       if (node) {
-        ruleStr.writeToken(token);
+        formatLog.writeToken(token);
         this.format_({
           node,
           outputFormat: formatString,
           outputBuffer: buff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
         });
       }
     }
@@ -1137,7 +1137,7 @@ export class Output {
   formatDescendants_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (!node) {
       return;
@@ -1173,9 +1173,9 @@ export class Output {
     if (node) {
       prev = CursorRange.fromNode(node);
     }
-    ruleStr.writeToken(token);
+    formatLog.writeToken(token);
     this.render_(
-        subrange, prev, outputTypes.OutputEventType.NAVIGATE, buff, ruleStr,
+        subrange, prev, outputTypes.OutputEventType.NAVIGATE, buff, formatLog,
         {suppressStartEndAncestry: true});
   }
 
@@ -1187,18 +1187,18 @@ export class Output {
   formatJoinedDescendants_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     const unjoined = [];
-    ruleStr.write('joinedDescendants {');
+    formatLog.write('joinedDescendants {');
     this.format_({
       node,
       outputFormat: '$descendants',
       outputBuffer: unjoined,
-      outputRuleString: ruleStr,
+      outputFormatLogger: formatLog,
     });
     this.append_(buff, unjoined.join(' '), options);
-    ruleStr.write(
+    formatLog.write(
         '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
   }
 
@@ -1210,7 +1210,7 @@ export class Output {
   formatRole_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     options.annotation.push(token);
     let msg = node.role;
@@ -1229,7 +1229,7 @@ export class Output {
       return;
     }
     this.append_(buff, msg || '', options);
-    ruleStr.writeTokenWithValue(token, msg);
+    formatLog.writeTokenWithValue(token, msg);
   }
 
   /**
@@ -1240,7 +1240,7 @@ export class Output {
   formatInputType_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (!node.inputType) {
       return;
@@ -1252,7 +1252,7 @@ export class Output {
       msgId = msgId + '_brl';
     }
     this.append_(buff, Msgs.getMsg(msgId), options);
-    ruleStr.writeTokenWithValue(token, Msgs.getMsg(msgId));
+    formatLog.writeTokenWithValue(token, Msgs.getMsg(msgId));
   }
 
   /**
@@ -1263,7 +1263,7 @@ export class Output {
   formatTableCellIndex_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     let value = node[token];
     if (value === undefined) {
@@ -1272,7 +1272,7 @@ export class Output {
     value = String(value + 1);
     options.annotation.push(token);
     this.append_(buff, value, options);
-    ruleStr.writeTokenWithValue(token, value);
+    formatLog.writeTokenWithValue(token, value);
   }
 
   /**
@@ -1283,7 +1283,7 @@ export class Output {
   formatCellIndexText_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (node.htmlAttributes['aria-coltext']) {
       let value = node.htmlAttributes['aria-coltext'];
@@ -1296,9 +1296,9 @@ export class Output {
       }
       value += row.htmlAttributes['aria-rowtext'];
       this.append_(buff, value, options);
-      ruleStr.writeTokenWithValue(token, value);
+      formatLog.writeTokenWithValue(token, value);
     } else {
-      ruleStr.write(token);
+      formatLog.write(token);
       this.format_({
         node,
         outputFormat: ` @cell_summary($if($tableCellAriaRowIndex,
@@ -1306,7 +1306,7 @@ export class Output {
                 $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
                   $tableCellColumnIndex))`,
         outputBuffer: buff,
-        outputRuleString: ruleStr,
+        outputFormatLogger: formatLog,
       });
     }
   }
@@ -1320,7 +1320,7 @@ export class Output {
   formatNode_(data, token, tree, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
     let prevNode = data.opt_prevNode;
 
     if (!tree.firstChild) {
@@ -1344,7 +1344,7 @@ export class Output {
           const header = headers[i].name;
           if (header) {
             this.append_(buff, header, options);
-            ruleStr.writeTokenWithValue(token, header);
+            formatLog.writeTokenWithValue(token, header);
           }
         }
       }
@@ -1355,7 +1355,7 @@ export class Output {
           const header = headers[i].name;
           if (header) {
             this.append_(buff, header, options);
-            ruleStr.writeTokenWithValue(token, header);
+            formatLog.writeTokenWithValue(token, header);
           }
         }
       }
@@ -1363,7 +1363,7 @@ export class Output {
       const related = node[relationName];
       this.node_(
           related, related, outputTypes.OutputEventType.NAVIGATE, buff,
-          ruleStr);
+          formatLog);
     }
   }
 
@@ -1375,15 +1375,15 @@ export class Output {
   formatTextContent_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     if (node.name && token === 'nameOrTextContent') {
-      ruleStr.writeToken(token);
+      formatLog.writeToken(token);
       this.format_({
         node,
         outputFormat: '$name',
         outputBuffer: buff,
-        outputRuleString: ruleStr,
+        outputFormatLogger: formatLog,
       });
       return;
     }
@@ -1410,7 +1410,7 @@ export class Output {
     }
     const finalOutput = outputStrings.join(' ');
     this.append_(buff, finalOutput, options);
-    ruleStr.writeTokenWithValue(token, finalOutput);
+    formatLog.writeTokenWithValue(token, finalOutput);
   }
 
   /**
@@ -1421,7 +1421,7 @@ export class Output {
   formatAsFieldAccessor_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     options.annotation.push(token);
     let value = node[token];
@@ -1429,7 +1429,7 @@ export class Output {
       value = String(value);
     }
     this.append_(buff, value, options);
-    ruleStr.writeTokenWithValue(token, value);
+    formatLog.writeTokenWithValue(token, value);
   }
 
   /**
@@ -1440,7 +1440,7 @@ export class Output {
   formatAsStateValue_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     options.annotation.push('state');
     const stateInfo = outputTypes.OUTPUT_STATE_INFO[token];
@@ -1459,7 +1459,7 @@ export class Output {
                                                 resolvedInfo.msgId;
     const msg = Msgs.getMsg(msgId);
     this.append_(buff, msg, options);
-    ruleStr.writeTokenWithValue(token, msg);
+    formatLog.writeTokenWithValue(token, msg);
   }
 
   /**
@@ -1521,49 +1521,49 @@ export class Output {
   formatCustomFunction_(data, token, tree, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     // Custom functions.
     if (token === 'if') {
-      ruleStr.writeToken(token);
+      formatLog.writeToken(token);
       const cond = tree.firstChild;
       const attrib = cond.value.slice(1);
       if (Output.isTruthy(node, attrib)) {
-        ruleStr.write(attrib + '==true => ');
+        formatLog.write(attrib + '==true => ');
         this.format_({
           node,
           outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
         });
       } else if (Output.isFalsey(node, attrib)) {
-        ruleStr.write(attrib + '==false => ');
+        formatLog.write(attrib + '==false => ');
         this.format_({
           node,
           outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
         });
       }
     } else if (token === 'nif') {
-      ruleStr.writeToken(token);
+      formatLog.writeToken(token);
       const cond = tree.firstChild;
       const attrib = cond.value.slice(1);
       if (Output.isFalsey(node, attrib)) {
-        ruleStr.write(attrib + '==false => ');
+        formatLog.write(attrib + '==false => ');
         this.format_({
           node,
           outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
         });
       } else if (Output.isTruthy(node, attrib)) {
-        ruleStr.write(attrib + '==true => ');
+        formatLog.write(attrib + '==true => ');
         this.format_({
           node,
           outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
         });
       }
     } else if (token === 'earcon') {
@@ -1575,7 +1575,7 @@ export class Output {
       options.annotation.push(new outputTypes.OutputEarconAction(
           tree.firstChild.value, node.location || undefined));
       this.append_(buff, '', options);
-      ruleStr.writeTokenWithValue(token, tree.firstChild.value);
+      formatLog.writeTokenWithValue(token, tree.firstChild.value);
     }
   }
 
@@ -1588,7 +1588,7 @@ export class Output {
   formatMessage_(data, token, tree, options) {
     const buff = data.outputBuffer;
     const node = data.node;
-    const ruleStr = data.outputRuleString;
+    const formatLog = data.outputFormatLogger;
 
     const isPluralized = (token[0] === '@');
     if (isPluralized) {
@@ -1605,13 +1605,13 @@ export class Output {
     }, '');
     const msgId = token;
     let msgArgs = [];
-    ruleStr.write(token + '{');
+    formatLog.write(token + '{');
     if (!isPluralized) {
       let curArg = tree.firstChild;
       while (curArg) {
         if (curArg.value[0] !== '$') {
           const errorMsg = 'Unexpected value: ' + curArg.value;
-          ruleStr.writeError(errorMsg);
+          formatLog.writeError(errorMsg);
           console.error(errorMsg);
           return;
         }
@@ -1620,7 +1620,7 @@ export class Output {
           node,
           outputFormat: curArg,
           outputBuffer: msgBuff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
         });
         // Fill in empty string if nothing was formatted.
         if (!msgBuff.length) {
@@ -1640,7 +1640,7 @@ export class Output {
 
     if (!msg) {
       const errorMsg = 'Could not get message ' + msgId;
-      ruleStr.writeError(errorMsg);
+      formatLog.writeError(errorMsg);
       console.error(errorMsg);
       return;
     }
@@ -1649,13 +1649,13 @@ export class Output {
       const arg = tree.firstChild;
       if (!arg || arg.nextSibling) {
         const errorMsg = 'Pluralized messages take exactly one argument';
-        ruleStr.writeError(errorMsg);
+        formatLog.writeError(errorMsg);
         console.error(errorMsg);
         return;
       }
       if (arg.value[0] !== '$') {
         const errorMsg = 'Unexpected value: ' + arg.value;
-        ruleStr.writeError(errorMsg);
+        formatLog.writeError(errorMsg);
         console.error(errorMsg);
         return;
       }
@@ -1664,15 +1664,15 @@ export class Output {
         node,
         outputFormat: arg,
         outputBuffer: argBuff,
-        outputRuleString: ruleStr,
+        outputFormatLogger: formatLog,
       });
       const namedArgs = {COUNT: Number(argBuff[0])};
       msg = new goog.i18n.MessageFormat(msg).format(namedArgs);
     }
-    ruleStr.write('}');
+    formatLog.write('}');
 
     this.append_(buff, msg, options);
-    ruleStr.write(': ' + msg + '\n');
+    formatLog.write(': ' + msg + '\n');
   }
 
   /**
@@ -1694,11 +1694,11 @@ export class Output {
    * @param {CursorRange} prevRange
    * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} rangeBuff
-   * @param {!OutputRulesStr} ruleStr
+   * @param {!OutputFormatLogger} formatLog
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
    * @private
    */
-  range_(range, prevRange, type, rangeBuff, ruleStr, optionalArgs = {}) {
+  range_(range, prevRange, type, rangeBuff, formatLog, optionalArgs = {}) {
     if (!range.start.node || !range.end.node) {
       return;
     }
@@ -1729,13 +1729,13 @@ export class Output {
 
       if (addContextBefore) {
         this.ancestry_(
-            node, prevNode, type, buff, ruleStr,
+            node, prevNode, type, buff, formatLog,
             {preferStart: preferStartOrEndAncestry});
       }
-      this.node_(node, prevNode, type, buff, ruleStr);
+      this.node_(node, prevNode, type, buff, formatLog);
       if (addContextAfter) {
         this.ancestry_(
-            node, prevNode, type, buff, ruleStr,
+            node, prevNode, type, buff, formatLog,
             {preferEnd: preferStartOrEndAncestry});
       }
       if (node.location) {
@@ -1786,13 +1786,13 @@ export class Output {
               new Cursor(node, range.start.index),
               new Cursor(
                   node, node.name.length, {preferNodeStartEquivalent: true}));
-          this.subNode_(partialRange, prevRange, type, rangeBuff, ruleStr);
+          this.subNode_(partialRange, prevRange, type, rangeBuff, formatLog);
         }
       } else if (hasPartialNodeEnd && node === range.end.node) {
         if (range.end.index !== 0) {
           const partialRange = new CursorRange(
               new Cursor(node, 0), new Cursor(node, range.end.index));
-          this.subNode_(partialRange, prevRange, type, rangeBuff, ruleStr);
+          this.subNode_(partialRange, prevRange, type, rangeBuff, formatLog);
         }
       } else {
         rangeBuff.push.apply(rangeBuff, formatNodeAndAncestors(node, prevNode));
@@ -1824,7 +1824,7 @@ export class Output {
       // Since the lca itself needs to be part of the ancestry output, use its
       // first child as a target.
       const target = lca.firstChild || lca;
-      this.ancestry_(target, prevRange.start.node, type, rangeBuff, ruleStr);
+      this.ancestry_(target, prevRange.start.node, type, rangeBuff, formatLog);
     }
   }
 
@@ -1833,14 +1833,14 @@ export class Output {
    * @param {!AutomationNode} prevNode
    * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
+   * @param {!OutputFormatLogger} formatLog
    * @param {{suppressStartEndAncestry: (boolean|undefined),
    *         preferStart: (boolean|undefined),
    *         preferEnd: (boolean|undefined)
    *        }} optionalArgs
    * @private
    */
-  ancestry_(node, prevNode, type, buff, ruleStr, optionalArgs = {}) {
+  ancestry_(node, prevNode, type, buff, formatLog, optionalArgs = {}) {
     if (localStorage['useVerboseMode'] === 'false') {
       return;
     }
@@ -1857,7 +1857,7 @@ export class Output {
       node,
       prevNode,
       buff,
-      ruleStr,
+      formatLog,
       type,
       ancestors: info.leaveAncestors,
       formatName: 'leave',
@@ -1867,7 +1867,7 @@ export class Output {
       node,
       prevNode,
       buff,
-      ruleStr,
+      formatLog,
       type,
       ancestors: info.enterAncestors,
       formatName: 'enter',
@@ -1884,7 +1884,7 @@ export class Output {
         node,
         prevNode,
         buff,
-        ruleStr,
+        formatLog,
         type,
         ancestors: info.startAncestors,
         formatName: 'startOf',
@@ -1897,7 +1897,7 @@ export class Output {
         node,
         prevNode,
         buff,
-        ruleStr,
+        formatLog,
         type,
         ancestors: info.endAncestors,
         formatName: 'endOf',
@@ -1912,7 +1912,7 @@ export class Output {
    * prevNode: !AutomationNode,
    * type: (EventType|outputTypes.OutputEventType),
    * buff: !Array<Spannable>,
-   * ruleStr: !OutputRulesStr,
+   * formatLog: !OutputFormatLogger,
    * ancestors: !Array<!AutomationNode>,
    * formatName: string,
    * exclude: (!Array<!AutomationNode>|undefined),
@@ -1921,7 +1921,7 @@ export class Output {
    * @private
    */
   ancestryHelper_(args) {
-    let {node, prevNode, buff, ruleStr, type, ancestors, formatName} = args;
+    let {node, prevNode, buff, formatLog, type, ancestors, formatName} = args;
 
     /** Following types are contained: {event, role, navigation, output} */
     const rule = {};
@@ -1961,14 +1961,14 @@ export class Output {
             eventBlock[rule.role][formatName].speak ? 'speak' : undefined;
         if (this.formatOptions_.braille) {
           buff = [];
-          ruleStr.bufferClear();
+          formatLog.bufferClear();
           if (eventBlock[rule.role][formatName].braille) {
             rule.output = 'braille';
           }
         }
 
         excludeRoles.add(formatNode.role);
-        ruleStr.writeRule /** @type {OutputRulesStr.Rule} */ ((rule));
+        formatLog.writeRule /** @type {OutputFormatLogger.Rule} */ ((rule));
         const enterFormat = rule.output ?
             eventBlock[rule.role][formatName][rule.output] :
             eventBlock[rule.role][formatName];
@@ -1977,7 +1977,7 @@ export class Output {
           node: formatNode,
           outputFormat: enterFormat,
           outputBuffer: buff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
           opt_prevNode: prevNode,
         });
 
@@ -1996,15 +1996,15 @@ export class Output {
    * @param {!AutomationNode} prevNode
    * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
+   * @param {!OutputFormatLogger} formatLog
    * @private
    */
-  node_(node, prevNode, type, buff, ruleStr) {
+  node_(node, prevNode, type, buff, formatLog) {
     const originalBuff = buff;
 
     if (this.formatOptions_.braille) {
       buff = [];
-      ruleStr.bufferClear();
+      formatLog.bufferClear();
     }
 
     const rule = {};
@@ -2036,12 +2036,12 @@ export class Output {
         rule.output = 'braille';
       }
     }
-    ruleStr.writeRule(rule);
+    formatLog.writeRule(rule);
     this.format_({
       node,
       outputFormat: eventBlock[rule.role][rule.output],
       outputBuffer: buff,
-      outputRuleString: ruleStr,
+      outputFormatLogger: formatLog,
       opt_prevNode: prevNode,
     });
 
@@ -2061,7 +2061,7 @@ export class Output {
    * @param {!Array<Spannable>} buff
    * @private
    */
-  subNode_(range, prevRange, type, buff, ruleStr) {
+  subNode_(range, prevRange, type, buff, formatLog) {
     if (!prevRange) {
       prevRange = range;
     }
@@ -2111,7 +2111,8 @@ export class Output {
     if (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST ||
         (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST &&
          range.start.index === 0)) {
-      this.ancestry_(node, prevNode, type, buff, ruleStr, {preferStart: true});
+      this.ancestry_(
+          node, prevNode, type, buff, formatLog, {preferStart: true});
     }
     const earcon = this.findEarcon_(node, prevNode);
     if (earcon) {
@@ -2133,12 +2134,12 @@ export class Output {
     } else {
       this.append_(buff, text, options);
     }
-    ruleStr.write('subNode_: ' + text + '\n');
+    formatLog.write('subNode_: ' + text + '\n');
 
     if (this.contextOrder_ === outputTypes.OutputContextOrder.LAST ||
         (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST &&
          range.end.index === range.end.getText().length)) {
-      this.ancestry_(node, prevNode, type, buff, ruleStr, {preferEnd: true});
+      this.ancestry_(node, prevNode, type, buff, formatLog, {preferEnd: true});
     }
 
     range.start.node.boundsForRange(rangeStart, rangeEnd, loc => {
@@ -2160,10 +2161,10 @@ export class Output {
    * @param {!Array<AutomationNode>} uniqueAncestors
    * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
-   * @param {!OutputRulesStr} ruleStr
+   * @param {!OutputFormatLogger} formatLog
    * @private
    */
-  hint_(range, uniqueAncestors, type, buff, ruleStr) {
+  hint_(range, uniqueAncestors, type, buff, formatLog) {
     if (!this.enableHints_ || localStorage['useVerboseMode'] !== 'true') {
       return;
     }
@@ -2196,17 +2197,17 @@ export class Output {
       if (msg.msgId) {
         const text = Msgs.getMsg(msg.msgId, msg.subs);
         this.append_(buff, text, {annotation: [msg.props]});
-        ruleStr.write('hint_: ' + text + '\n');
+        formatLog.write('hint_: ' + text + '\n');
       } else if (msg.text) {
         this.append_(buff, msg.text, {annotation: [msg.props]});
-        ruleStr.write('hint_: ' + msg.text + '\n');
+        formatLog.write('hint_: ' + msg.text + '\n');
       } else if (msg.outputFormat) {
-        ruleStr.write('hint_: ...');
+        formatLog.write('hint_: ...');
         this.format_({
           node,
           outputFormat: msg.outputFormat,
           outputBuffer: buff,
-          outputRuleString: ruleStr,
+          outputFormatLogger: formatLog,
           opt_speechProps: msg.props,
         });
       } else {

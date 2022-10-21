@@ -6,7 +6,7 @@
  * @fileoverview Provides output logger.
  */
 
-export class OutputRulesStr {
+export class OutputFormatLogger {
   /**
    * @param {string} enableKey The key to enable logging in localStorage
    */
@@ -53,7 +53,7 @@ export class OutputRulesStr {
   }
 
   /**
-   * @param {OutputRulesStr.Rule} rule
+   * @param {OutputFormatLogger.Rule} rule
    */
   writeRule(rule) {
     if (this.disableLogging()) {
@@ -95,4 +95,4 @@ export class OutputRulesStr {
     navigation: (string|undefined),
  *  output: (string|undefined)}}
  */
-OutputRulesStr.Rule;
+OutputFormatLogger.Rule;
