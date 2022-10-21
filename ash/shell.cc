@@ -566,6 +566,22 @@ void Shell::NotifyShelfAlignmentChanged(aura::Window* root_window,
     observer.OnShelfAlignmentChanged(root_window, old_alignment);
 }
 
+void Shell::AddAccessibilityEventHandler(
+    ui::EventHandler* handler,
+    AccessibilityEventHandlerManager::HandlerType type) {
+  if (!accessibility_event_handler_manager_) {
+    accessibility_event_handler_manager_ =
+        std::make_unique<AccessibilityEventHandlerManager>();
+  }
+
+  accessibility_event_handler_manager_->AddAccessibilityEventHandler(handler,
+                                                                     type);
+}
+void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
+  accessibility_event_handler_manager_->RemoveAccessibilityEventHandler(
+      handler);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Shell, private:
 
@@ -666,7 +682,7 @@ Shell::~Shell() {
   RemovePreTargetHandler(toplevel_window_event_handler_.get());
   RemovePostTargetHandler(toplevel_window_event_handler_.get());
   RemovePreTargetHandler(system_gesture_filter_.get());
-  RemovePreTargetHandler(mouse_cursor_filter_.get());
+  RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
   RemovePreTargetHandler(modality_filter_.get());
   RemovePreTargetHandler(tooltip_controller_.get());
 
@@ -1270,8 +1286,9 @@ void Shell::Init(
   drag_drop_controller_ = std::make_unique<DragDropController>();
 
   mouse_cursor_filter_ = std::make_unique<MouseCursorEventFilter>();
-  AddPreTargetHandler(mouse_cursor_filter_.get(),
-                      ui::EventTarget::Priority::kAccessibility);
+  AddAccessibilityEventHandler(
+      mouse_cursor_filter_.get(),
+      AccessibilityEventHandlerManager::HandlerType::kCursor);
 
   if (features::IsAdaptiveChargingEnabled()) {
     adaptive_charging_controller_ =

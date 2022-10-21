@@ -595,11 +595,12 @@ void DockedMagnifierController::OnEnabledPrefChanged() {
     Refresh();
     // Make sure we are in front of the fullscreen magnifier which also handles
     // scroll events.
-    shell->AddPreTargetHandler(this, ui::EventTarget::Priority::kAccessibility);
+    shell->AddAccessibilityEventHandler(
+        this, AccessibilityEventHandlerManager::HandlerType::kDockedMagnifier);
     shell->window_tree_host_manager()->AddObserver(this);
   } else {
     shell->window_tree_host_manager()->RemoveObserver(this);
-    shell->RemovePreTargetHandler(this);
+    shell->RemoveAccessibilityEventHandler(this);
 
     // Setting the current root window to |nullptr| will remove the viewport and
     // all its associated layers.

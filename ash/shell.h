@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
@@ -84,6 +85,7 @@ namespace ash {
 class AcceleratorControllerImpl;
 class AccessibilityControllerImpl;
 class AccessibilityDelegate;
+class AccessibilityEventHandlerManager;
 class AccessibilityFocusRingControllerImpl;
 class AdaptiveChargingController;
 class AmbientController;
@@ -738,6 +740,15 @@ class ASH_EXPORT Shell : public SessionObserver,
   void NotifyShelfAlignmentChanged(aura::Window* root_window,
                                    ShelfAlignment old_alignment);
 
+  // Adds the |handler| based on its |type| to receive events, ensuring that
+  // event handlers continue to be called in their HandlerType order.
+  void AddAccessibilityEventHandler(
+      ui::EventHandler* handler,
+      AccessibilityEventHandlerManager::HandlerType type);
+
+  // Removes |handler| which was added through AddAccessibilityEventHandler.
+  void RemoveAccessibilityEventHandler(ui::EventHandler* handler);
+
   LoginUnlockThroughputRecorder* login_unlock_throughput_recorder() {
     return login_unlock_throughput_recorder_.get();
   }
@@ -1017,6 +1028,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FrameThrottlingController> frame_throttling_controller_;
 
   std::unique_ptr<ProjectorControllerImpl> projector_controller_;
+
+  std::unique_ptr<AccessibilityEventHandlerManager>
+      accessibility_event_handler_manager_;
 
   // For testing only: simulate that a modal window is open
   bool simulate_modal_window_open_for_test_ = false;

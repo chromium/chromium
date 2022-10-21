@@ -304,7 +304,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F('SelectToSpeakMouseSelectionTest', 'SystemUI', async function() {
-  this.runWithLoadedDesktop(desktop => {
+  this.runWithLoadedDesktop(async desktop => {
     // Select STS tray and system tray to ensure STS tray is spoken.
     // We can test against the STS tray text because we own it, the
     // rest of the system tray may change.

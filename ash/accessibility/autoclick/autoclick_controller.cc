@@ -121,8 +121,8 @@ void AutoclickController::SetEnabled(bool enabled,
     return;
 
   if (enabled) {
-    Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
-
+    Shell::Get()->AddAccessibilityEventHandler(
+        this, AccessibilityEventHandlerManager::HandlerType::kAutoclick);
     // Only create the bubble controller when needed. Most users will not enable
     // automatic clicks, so there's no need to use these unless the feature
     // is on.
@@ -157,7 +157,7 @@ void AutoclickController::SetEnabled(bool enabled,
       disable_dialog_ = dialog->GetWeakPtr();
     } else {
       HideScrollPosition();
-      Shell::Get()->RemovePreTargetHandler(this);
+      Shell::Get()->RemoveAccessibilityEventHandler(this);
       menu_bubble_controller_ = nullptr;
       // Set the click type to left-click. This is the most useful click type
       // and users will want this type when they re-enable. If users were to

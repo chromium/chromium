@@ -101,8 +101,9 @@ FullscreenMagnifierController::FullscreenMagnifierController()
     : root_window_(Shell::GetPrimaryRootWindow()),
       scale_(kNonMagnifiedScale),
       original_scale_(kNonMagnifiedScale) {
-  Shell::Get()->AddPreTargetHandler(this,
-                                    ui::EventTarget::Priority::kAccessibility);
+  Shell::Get()->AddAccessibilityEventHandler(
+      this,
+      AccessibilityEventHandlerManager::HandlerType::kFullscreenMagnifier);
   root_window_->AddObserver(this);
   root_window_->GetHost()->GetEventSource()->AddEventRewriter(this);
 
@@ -119,7 +120,7 @@ FullscreenMagnifierController::~FullscreenMagnifierController() {
   root_window_->GetHost()->GetEventSource()->RemoveEventRewriter(this);
   root_window_->RemoveObserver(this);
 
-  Shell::Get()->RemovePreTargetHandler(this);
+  Shell::Get()->RemoveAccessibilityEventHandler(this);
 }
 
 void FullscreenMagnifierController::SetEnabled(bool enabled) {

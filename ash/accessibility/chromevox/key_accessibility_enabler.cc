@@ -14,12 +14,12 @@
 namespace ash {
 
 KeyAccessibilityEnabler::KeyAccessibilityEnabler() {
-  Shell::Get()->AddPreTargetHandler(this,
-                                    ui::EventTarget::Priority::kAccessibility);
+  Shell::Get()->AddAccessibilityEventHandler(
+      this, AccessibilityEventHandlerManager::HandlerType::kChromeVox);
 }
 
 KeyAccessibilityEnabler::~KeyAccessibilityEnabler() {
-  Shell::Get()->RemovePreTargetHandler(this);
+  Shell::Get()->RemoveAccessibilityEventHandler(this);
 }
 
 void KeyAccessibilityEnabler::OnKeyEvent(ui::KeyEvent* event) {

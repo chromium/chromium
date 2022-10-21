@@ -5,6 +5,7 @@
 #include "ash/events/select_to_speak_event_handler.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/public/cpp/select_to_speak_event_handler_delegate.h"
 #include "ash/shell.h"
 
@@ -16,12 +17,12 @@ SelectToSpeakEventHandler::SelectToSpeakEventHandler(
     SelectToSpeakEventHandlerDelegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
-  Shell::Get()->AddPreTargetHandler(this,
-                                    ui::EventTarget::Priority::kAccessibility);
+  Shell::Get()->AddAccessibilityEventHandler(
+      this, AccessibilityEventHandlerManager::HandlerType::kSelectToSpeak);
 }
 
 SelectToSpeakEventHandler::~SelectToSpeakEventHandler() {
-  Shell::Get()->RemovePreTargetHandler(this);
+  Shell::Get()->RemoveAccessibilityEventHandler(this);
 }
 
 bool SelectToSpeakEventHandler::IsSelectToSpeakEnabled() {
