@@ -4423,7 +4423,14 @@
           '--gtest_filter=ChromeTracingDelegateBrowserTest.*',
         ],
       },
-      'content_browsertests': {},
+      'content_browsertests': {
+        'android_swarming': {
+          'shards': 15,
+        },
+        'swarming': {
+          'shards': 8,
+        },
+      },
       'perfetto_unittests': {},
       'services_unittests': {},
     },
