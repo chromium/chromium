@@ -158,11 +158,9 @@ scoped_refptr<BasicShape> GetAnimatedShapeFromKeyframe(
   return basic_shape;
 }
 
-void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
-                                 Vector<double>& offsets) {
-  const CompositorKeyframeDouble& value =
-      To<CompositorKeyframeDouble>(*(frame->GetCompositorKeyframeValue()));
-  offsets.push_back(value.ToDouble());
+double GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame) {
+  return To<CompositorKeyframeDouble>(*(frame->GetCompositorKeyframeValue()))
+      .ToDouble();
 }
 
 bool ValidateClipPathValue(const Element* element,
@@ -188,6 +186,31 @@ bool ValidateClipPathValue(const Element* element,
     return true;
   }
   return false;
+}
+
+scoped_refptr<ShapeClipPathOperation> InterpolateShapes(
+    const InterpolationValue& from,
+    const BasicShape::ShapeType from_shape_type,
+    const InterpolationValue& to,
+    const BasicShape::ShapeType to_shape_type,
+    const float progress) {
+  scoped_refptr<BasicShape> result_shape;
+  if (ShapesAreCompatible(*from.non_interpolable_value.get(), from_shape_type,
+                          *to.non_interpolable_value.get(), to_shape_type)) {
+    std::unique_ptr<InterpolableValue> result_interpolable_value =
+        from.interpolable_value->Clone();
+    from.interpolable_value->Interpolate(*to.interpolable_value, progress,
+                                         *result_interpolable_value);
+    result_shape = CreateBasicShape(from_shape_type, *result_interpolable_value,
+                                    *from.non_interpolable_value);
+  } else if (progress < 0.5) {
+    result_shape = CreateBasicShape(from_shape_type, *from.interpolable_value,
+                                    *from.non_interpolable_value);
+  } else {
+    result_shape = CreateBasicShape(to_shape_type, *to.interpolable_value,
+                                    *to.non_interpolable_value);
+  }
+  return ShapeClipPathOperation::Create(result_shape);
 }
 
 }  // namespace
@@ -273,31 +296,10 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
 
   const InterpolationValue& from = interpolation_values[result_index];
   const InterpolationValue& to = interpolation_values[result_index + 1];
-  scoped_refptr<BasicShape> result_shape;
-
-  if (ShapesAreCompatible(*from.non_interpolable_value.get(),
-                          basic_shape_types[result_index],
-                          *to.non_interpolable_value.get(),
-                          basic_shape_types[result_index + 1])) {
-    std::unique_ptr<InterpolableValue> result_interpolable_value =
-        from.interpolable_value->Clone();
-    from.interpolable_value->Interpolate(
-        *to.interpolable_value, adjusted_progress, *result_interpolable_value);
-    result_shape = CreateBasicShape(basic_shape_types[result_index],
-                                    *result_interpolable_value,
-                                    *from.non_interpolable_value);
-  } else if (adjusted_progress < 0.5) {
-    result_shape = CreateBasicShape(basic_shape_types[result_index],
-                                    *from.interpolable_value,
-                                    *from.non_interpolable_value);
-  } else {
-    result_shape =
-        CreateBasicShape(basic_shape_types[result_index + 1],
-                         *to.interpolable_value, *to.non_interpolable_value);
-  }
 
   scoped_refptr<ShapeClipPathOperation> current_shape =
-      ShapeClipPathOperation::Create(result_shape);
+      InterpolateShapes(from, basic_shape_types[result_index], to,
+                        basic_shape_types[result_index + 1], adjusted_progress);
 
   Path path = current_shape->GetPath(reference_box, input->Zoom());
   PaintRenderingContext2DSettings* context_settings =
@@ -345,7 +347,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
   for (const auto& frame : *frames) {
     animated_shapes.push_back(
         GetAnimatedShapeFromKeyframe(frame, model, element));
-    GetCompositorKeyframeOffset(frame, offsets);
+    offsets.push_back(GetCompositorKeyframeOffset(frame));
   }
   progress = effect->Progress();
 
