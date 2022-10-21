@@ -1,0 +1,52 @@
+<!--
+@WAIT-FOR:done
+-->
+<!DOCTYPE html>
+<style>
+*{border-block-start:solid;}
+*:optional{display:none;}
+</style>
+<script>
+let timesCalled = 0;
+function onDOMNodeInserted(event) {
+  // Called on every newly inserted "baz" node.
+  window.getSelection().modify('move', 'forward', 'paragraph');
+  event.srcElement.remove();
+
+  timesCalled++;
+  if (timesCalled == 5) {
+    // We need to wait a bit after the node is removed, for the potential crash
+    // to happen.
+    setTimeout(() => {
+      // We cannot use document.title = 'done', because it would insert a
+      // <title> node and onDOMNodeInserted would run, deleting the newly added
+      // title and reverting it to empty.
+      document.getElementById('textarea').value = 'done';
+    }, 100);
+  }
+}
+document.addEventListener("DOMNodeInserted", onDOMNodeInserted);
+window.onload = () => {
+  document.execCommand("SelectAll");
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  selection.collapseToEnd();
+  window.requestIdleCallback(() => {
+    const toBeReplaced = document.querySelectorAll("style, p, strong, input, animate");
+    toBeReplaced.forEach(function (element) {
+      // Replace each of these nodes with a text node "baz".
+      const parent = element.parentNode;
+      parent.replaceChild(document.createTextNode("baz"), element);
+    });
+  });
+};
+</script>
+<p></p>
+<strong></strong>
+<textarea id="textarea" disabled="disabled">
+foo
+</textarea>
+<input value="bar">
+<svg>
+<animate/>
+</svg>

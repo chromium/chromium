@@ -3464,6 +3464,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MissingParent) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       NullObjectOnHypertextOffsetComputation) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("null-object-on-hypertext-offset-computation.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        OptionAccessibleNameIsSelect) {
   RunRegressionTest(FILE_PATH_LITERAL("option-accessible-name-is-select.html"));
 }
