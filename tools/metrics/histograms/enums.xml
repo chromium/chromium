@@ -42236,6 +42236,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="61"
       label="After following an active web feed, the user tapped on 'got it'
              to close the post-follow help dialog."/>
+  <int value="62"
+      label="User tapped the follow accelerator which is presented after a
+             user taps on a recommendation that is in the feed."/>
 </enum>
 
 <enum name="FeedUserCommandType">
@@ -103355,6 +103358,9 @@ others/histograms.xml -->
   </int>
   <int value="5" label="Back of card unfollow">
     The user tapped 'Unfollow' on the back of card menu.
+  </int>
+  <int value="6" label="Recommendation web page accelerator">
+    The user tapped a web page on a recommendation card.
   </int>
 </enum>
 

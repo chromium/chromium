@@ -85,6 +85,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroController.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroView.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItem.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedRecommendationFollowAcceleratorController.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarController.java",
   ]
   deps = [

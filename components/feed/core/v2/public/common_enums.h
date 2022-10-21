@@ -168,7 +168,11 @@ enum class FeedUserActionType {
   // After following an active web feed, the user tapped on 'got it' to
   // close the post-follow help dialog.
   kTappedGotItFeedPostFollowActiveHelp = 61,
-  kMaxValue = kTappedGotItFeedPostFollowActiveHelp,
+  // User tapped the follow accelerator which is presented after a user taps
+  // on a recommendation that is in the feed.
+  kTappedFollowOnRecommendationFollowAccelerator = 62,
+
+  kMaxValue = kTappedFollowOnRecommendationFollowAccelerator,
 };
 
 // For testing and debugging only.

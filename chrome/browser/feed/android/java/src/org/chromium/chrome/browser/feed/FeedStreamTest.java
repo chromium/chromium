@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAcceleratorController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -79,10 +80,12 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +149,8 @@ public class FeedStreamTest {
 
     @Captor
     private ArgumentCaptor<Map<String, String>> mMapCaptor;
+    @Captor
+    private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
     @Captor
     private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
     @Captor
@@ -486,6 +491,60 @@ public class FeedStreamTest {
         verify(mActionDelegate)
                 .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         any(), eq(false), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenUrlWithWebFeedRecommendation() {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+        handler.openUrl(OpenMode.SAME_TAB, TEST_URL, new OpenUrlOptions() {
+            @Override
+            public boolean shouldShowWebFeedAccelerator() {
+                return true;
+            }
+            @Override
+            public String webFeedName() {
+                return "someWebFeedName";
+            }
+        });
+        verify(mActionDelegate)
+                .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
+                        mLoadUrlParamsCaptor.capture(), eq(false), any(), any());
+
+        assertEquals("someWebFeedName",
+                new String(
+                        WebFeedRecommendationFollowAcceleratorController
+                                .getWebFeedNameIfInLoadUrlParams(mLoadUrlParamsCaptor.getValue()),
+                        StandardCharsets.UTF_8));
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenUrlNotShouldShowWebFeedAccelerator() {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+        handler.openUrl(OpenMode.SAME_TAB, TEST_URL, new OpenUrlOptions() {
+            @Override
+            public boolean shouldShowWebFeedAccelerator() {
+                return false;
+            }
+            @Override
+            public String webFeedName() {
+                return "someWebFeedName";
+            }
+        });
+        verify(mActionDelegate)
+                .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
+                        mLoadUrlParamsCaptor.capture(), eq(false), any(), any());
+
+        assertEquals(null,
+                WebFeedRecommendationFollowAcceleratorController.getWebFeedNameIfInLoadUrlParams(
+                        mLoadUrlParamsCaptor.getValue()));
     }
 
     @Test

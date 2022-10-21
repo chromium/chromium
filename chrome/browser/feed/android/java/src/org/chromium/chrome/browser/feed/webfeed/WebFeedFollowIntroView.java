@@ -9,6 +9,9 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,6 +45,7 @@ class WebFeedFollowIntroView {
     private final Handler mHandler = new Handler();
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final View mMenuButtonAnchorView;
+    @Nullable
     private final Tracker mFeatureEngagementTracker;
     private final Runnable mIntroDismissedCallback;
 
@@ -56,7 +60,7 @@ class WebFeedFollowIntroView {
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
      */
     WebFeedFollowIntroView(Activity activity, AppMenuHandler appMenuHandler,
-            View menuButtonAnchorView, Tracker featureEngagementTracker,
+            View menuButtonAnchorView, @Nullable Tracker featureEngagementTracker,
             Runnable introDismissedCallback) {
         mActivity = activity;
         mAppMenuHandler = appMenuHandler;
@@ -70,8 +74,9 @@ class WebFeedFollowIntroView {
 
     void showAccelerator(View.OnTouchListener onTouchListener, Runnable introShownCallback,
             Runnable introNotShownCallback) {
-        if (!mFeatureEngagementTracker.shouldTriggerHelpUI(
-                    FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
+        if (mFeatureEngagementTracker != null
+                && !mFeatureEngagementTracker.shouldTriggerHelpUI(
+                        FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
             introNotShownCallback.run();
             return;
         }
@@ -163,5 +168,9 @@ class WebFeedFollowIntroView {
 
     private void turnOffHighlightForFollowMenuItem() {
         mAppMenuHandler.clearMenuHighlight();
+    }
+    @VisibleForTesting
+    boolean wasFollowBubbleShownForTesting() {
+        return mFollowBubble != null;
     }
 }

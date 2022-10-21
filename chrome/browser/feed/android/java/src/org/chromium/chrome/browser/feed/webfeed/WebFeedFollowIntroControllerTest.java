@@ -35,6 +35,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -55,6 +56,9 @@ import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -104,12 +108,19 @@ public final class WebFeedFollowIntroControllerTest {
     private PrefService mPrefService;
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private WebContents mWebContents;
+    @Mock
+    private NavigationController mNavigationController;
+    @Mock
+    private NavigationHandle mNavigationHandle;
 
     private Activity mActivity;
     private EmptyTabObserver mEmptyTabObserver;
     private FakeClock mClock;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private FeatureList.TestValues mBaseTestValues;
+    private UserDataHost mTestUserDataHost;
 
     @Before
     public void setUp() {
@@ -140,7 +151,14 @@ public final class WebFeedFollowIntroControllerTest {
 
         when(mTab.getUrl()).thenReturn(sTestUrl);
         when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTabSupplier.get()).thenReturn(mTab);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+
+        mTestUserDataHost = new UserDataHost();
+        WebFeedRecommendationFollowAcceleratorController.associateWebFeedWithUserData(
+                mTestUserDataHost, new byte[] {1, 2, 3});
+
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Calling setTestFeatures is needed (even if empty) to enable field trial param calls.
@@ -183,6 +201,25 @@ public final class WebFeedFollowIntroControllerTest {
                 sSharedPreferencesManager.readLong(
                         ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX
                                 .createKey(Base64.encodeToString(sWebFeedId, Base64.DEFAULT))));
+    }
+
+    @Test
+    @SmallTest
+    public void
+    meetsShowingRequirements_butPageNavigationIsFromRecommendation_acceleratorShownOnlyOnce() {
+        // Mock the navigation entry to indicate the current entry contains a recommended web feed.
+        when(mTab.getUserDataHost()).thenReturn(mTestUserDataHost);
+        when(mNavigationHandle.getUserDataHost()).thenReturn(mTestUserDataHost);
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
+
+        assertFalse(mWebFeedFollowIntroController.getIntroShownForTesting());
+        assertTrue(mWebFeedFollowIntroController.getRecommendationFollowAcceleratorController()
+                           .getIntroViewForTesting()
+                           .wasFollowBubbleShownForTesting());
     }
 
     @Test
@@ -511,10 +548,16 @@ public final class WebFeedFollowIntroControllerTest {
 
     private void invokePageLoad(
             @WebFeedSubscriptionStatus int subscriptionStatus, boolean isRecommended) {
+        // We don't check for web feed name unless the navigation is on the main frame.
+        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
+        // Set the navigation handle so we can get (mocked) user data out of it.
+        mEmptyTabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl, subscriptionStatus,
                         WebFeedAvailabilityStatus.ACTIVE, isRecommended, sFaviconUrl);
 
+        // Respond to the findWebFeedInfoForPage JNI api by calling the callback.
         doAnswer(invocation -> {
             assertEquals("Incorrect WebFeedPageInformationRequestReason was used.",
                     WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION,
@@ -526,6 +569,15 @@ public final class WebFeedFollowIntroControllerTest {
                 .when(mWebFeedBridgeJniMock)
                 .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
                         any(Callback.class));
+
+        // Respond to the findWebFeedInfoForWebFeedId JNI api by calling the callback.
+        doAnswer(invocation -> {
+            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
+                    webFeedMetadata);
+            return null;
+        })
+                .when(mWebFeedBridgeJniMock)
+                .findWebFeedInfoForWebFeedId(any(), any(Callback.class));
 
         mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
         mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
