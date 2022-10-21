@@ -6139,12 +6139,12 @@
   {
     "name": "sharing-desktop-screenshots",
     "owners": ["skare", "jeffreycohen", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "sharing-desktop-screenshots-edit",
     "owners": ["skare", "jeffreycohen", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "sharing-desktop-share-preview",
