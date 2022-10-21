@@ -98,6 +98,7 @@ class LockManager::LockRequestImpl final
     visitor->Trace(manager_);
     visitor->Trace(callback_);
     visitor->Trace(receiver_);
+    visitor->Trace(abort_handle_);
   }
 
   const char* NameInHeapSnapshot() const override {
@@ -108,6 +109,11 @@ class LockManager::LockRequestImpl final
   // unblocking further requests, without waiting for GC finalize the object.
   void Cancel() { receiver_.reset(); }
 
+  void InitializeAbortAlgorithm(AbortSignal::AlgorithmHandle& handle) {
+    DCHECK(!abort_handle_);
+    abort_handle_ = &handle;
+  }
+
   void Abort(const String& reason) override {
     // Abort signal after acquisition should be ignored.
     if (!manager_->IsPendingRequest(this))
@@ -115,6 +121,7 @@ class LockManager::LockRequestImpl final
 
     manager_->RemovePendingRequest(this);
     receiver_.reset();
+    abort_handle_.Clear();
 
     DCHECK(resolver_);
 
@@ -136,6 +143,7 @@ class LockManager::LockRequestImpl final
 
     manager_->RemovePendingRequest(this);
     receiver_.reset();
+    abort_handle_.Clear();
 
     ScriptState* script_state = resolver_->GetScriptState();
     if (!script_state->ContextIsValid())
@@ -161,6 +169,7 @@ class LockManager::LockRequestImpl final
 
     manager_->RemovePendingRequest(this);
     receiver_.reset();
+    abort_handle_.Clear();
 
     ScriptState* script_state = resolver_->GetScriptState();
     if (!script_state->ContextIsValid()) {
@@ -216,6 +225,10 @@ class LockManager::LockRequestImpl final
   // registered. If the context is destroyed then |manager_| will dispose of
   // |this| which terminates the request on the service side.
   Member<LockManager> manager_;
+
+  // Handle that keeps the associated abort algorithm alive for the duration of
+  // the request.
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
 const char LockManager::kSupplementName[] = "LockManager";
@@ -406,9 +419,10 @@ void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
     // 11.2.1. Enqueue the steps to abort the request request to the lock task
     // queue.
     // 11.2.2. Reject promise with an "AbortError" DOMException.
-    options->signal()->AddAlgorithm(
+    AbortSignal::AlgorithmHandle* handle = options->signal()->AddAlgorithm(
         WTF::BindOnce(&LockRequestImpl::Abort, WrapWeakPersistent(request),
                       String(kRequestAbortedMessage)));
+    request->InitializeAbortAlgorithm(*handle);
   }
   service_->RequestLock(name, mode, wait, std::move(request_remote));
 }
