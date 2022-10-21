@@ -80,8 +80,8 @@ import org.junit.runner.RunWith;
  * Tests for the {@link TabSwitcher} on tablet
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_launch_polish/false/delay_creation/false"})
 @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS + "<Study"})
 @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 @Restriction(

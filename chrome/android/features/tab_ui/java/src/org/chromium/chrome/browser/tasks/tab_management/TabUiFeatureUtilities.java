@@ -129,6 +129,7 @@ public class TabUiFeatureUtilities {
 
     private static Boolean sTabManagementModuleSupportedForTesting;
     private static Boolean sGridTabSwitcherPolishEnabledForTesting;
+    private static Boolean sGridTabSwitcherDelayCreationEnabledForTesting;
 
     /**
      * Set whether the tab management module is supported for testing.
@@ -200,6 +201,13 @@ public class TabUiFeatureUtilities {
     }
 
     /**
+     * Set whether the tablet grid tab switcher polish is enabled for testing.
+     */
+    public static void setGtsDelayCreationEnabledForTesting(@Nullable Boolean enabled) {
+        sGridTabSwitcherDelayCreationEnabledForTesting = enabled;
+    }
+
+    /**
      * @return Whether the tablet Grid Tab Switcher Polish is enabled.
      * @param context The activity context.
      */
@@ -217,6 +225,10 @@ public class TabUiFeatureUtilities {
      *         instead of on startup.
      */
     public static boolean isTabletGridTabSwitcherDelayCreationEnabled() {
+        if (sGridTabSwitcherDelayCreationEnabledForTesting != null) {
+            return sGridTabSwitcherDelayCreationEnabledForTesting;
+        }
+
         return DELAY_GTS_CREATION.getValue();
     }
 

@@ -79,6 +79,7 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -154,6 +155,7 @@ public class TabGridDialogTest {
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
         TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(true);
+        TabUiFeatureUtilities.setGtsDelayCreationEnabledForTesting(false);
     }
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
@@ -178,6 +180,12 @@ public class TabGridDialogTest {
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         Intents.release();
+    }
+
+    @AfterClass
+    public static void tearDownAfterActivityDestroyed() {
+        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(null);
+        TabUiFeatureUtilities.setGtsDelayCreationEnabledForTesting(null);
     }
 
     @Test
@@ -1503,12 +1511,15 @@ public class TabGridDialogTest {
 
     private void verifyGlobalUndoBarAndClick() {
         // Verify that the dialog undo bar is showing and the default undo bar is hidden.
-        onViewWaiting(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container)),
-                isDisplayed()));
+        int expectedParent = isTablet(mActivityTestRule.getActivity())
+                ? R.id.grid_tab_switcher_view_holder
+                : R.id.bottom_container;
+        onViewWaiting(allOf(
+                withId(R.id.snackbar), isDescendantOfA(withId(expectedParent)), isDisplayed()));
         onView(allOf(withId(R.id.snackbar_button),
                        isDescendantOfA(withId(R.id.dialog_snack_bar_container_view))))
                 .check(doesNotExist());
-        onView(allOf(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.bottom_container)),
+        onView(allOf(withId(R.id.snackbar_button), isDescendantOfA(withId(expectedParent)),
                        isDisplayed()))
                 .perform(click());
     }

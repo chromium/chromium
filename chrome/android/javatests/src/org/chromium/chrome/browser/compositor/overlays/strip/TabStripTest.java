@@ -866,12 +866,16 @@ public class TabStripTest {
     /**
      * Tests strip scrim when overview mode shows-up.
      */
+    // clang-format off
     @Test
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
-    @Features.EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+    @Features.EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_launch_polish/false/delay_creation/false"})
     public void testStripScrimOnShowingOverviewMode() throws Throwable {
+        // clang-format on
         // Create second tab. Second tab is active.
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -898,12 +902,16 @@ public class TabStripTest {
     /**
      * Tests strip scrim disappears when overview mode is hidden.
      */
+    // clang-format off
     @Test
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
-    @Features.EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+    @Features.EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_launch_polish/false/delay_creation/false"})
     public void testStripScrimOnHidingOverviewMode() throws Throwable {
+        // clang-format on
         // Enter overview.
         enterOverviewMode();
 
