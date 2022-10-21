@@ -579,46 +579,46 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
 }
 
 void GLES2DecoderTestBase::ResetDecoder() {
-  if (!decoder_.get())
-    return;
-  // All Tests should have read all their GLErrors before getting here.
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  if (!decoder_->WasContextLost()) {
-    EXPECT_CALL(*gl_, DeleteBuffersARB(1, _)).Times(2).RetiresOnSaturation();
-    EXPECT_CALL(*gl_, DeleteFramebuffersEXT(1, _)).Times(AnyNumber());
-    if (group_->feature_info()->feature_flags().native_vertex_array_object) {
-      EXPECT_CALL(*gl_,
-                  DeleteVertexArraysOES(1, Pointee(kServiceVertexArrayId)))
+  if (decoder_.get()) {
+    // All Tests should have read all their GLErrors before getting here.
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+    if (!decoder_->WasContextLost()) {
+      EXPECT_CALL(*gl_, DeleteBuffersARB(1, _)).Times(2).RetiresOnSaturation();
+      EXPECT_CALL(*gl_, DeleteFramebuffersEXT(1, _)).Times(AnyNumber());
+      if (group_->feature_info()->feature_flags().native_vertex_array_object) {
+        EXPECT_CALL(*gl_,
+                    DeleteVertexArraysOES(1, Pointee(kServiceVertexArrayId)))
+            .Times(1)
+            .RetiresOnSaturation();
+      }
+      if (group_->feature_info()->IsWebGL2OrES3Context()) {
+        // fake default transform feedback.
+        EXPECT_CALL(*gl_, DeleteTransformFeedbacks(1, _))
+            .Times(1)
+            .RetiresOnSaturation();
+      }
+      if (group_->feature_info()->IsWebGL2OrES3Context()) {
+        // |client_transformfeedback_id_|
+        EXPECT_CALL(*gl_, DeleteTransformFeedbacks(1, _))
+            .Times(1)
+            .RetiresOnSaturation();
+      }
+    }
+
+    decoder_->EndDecoding();
+
+    if (!decoder_->WasContextLost()) {
+      EXPECT_CALL(*copy_texture_manager_, Destroy())
           .Times(1)
           .RetiresOnSaturation();
+      copy_texture_manager_ = nullptr;
     }
-    if (group_->feature_info()->IsWebGL2OrES3Context()) {
-      // fake default transform feedback.
-      EXPECT_CALL(*gl_, DeleteTransformFeedbacks(1, _))
-          .Times(1)
-          .RetiresOnSaturation();
-    }
-    if (group_->feature_info()->IsWebGL2OrES3Context()) {
-      // |client_transformfeedback_id_|
-      EXPECT_CALL(*gl_, DeleteTransformFeedbacks(1, _))
-          .Times(1)
-          .RetiresOnSaturation();
-    }
+
+    decoder_->Destroy(!decoder_->WasContextLost());
+    decoder_.reset();
+    group_->Destroy(mock_decoder_.get(), false);
+    command_buffer_service_.reset();
   }
-
-  decoder_->EndDecoding();
-
-  if (!decoder_->WasContextLost()) {
-    EXPECT_CALL(*copy_texture_manager_, Destroy())
-        .Times(1)
-        .RetiresOnSaturation();
-    copy_texture_manager_ = nullptr;
-  }
-
-  decoder_->Destroy(!decoder_->WasContextLost());
-  decoder_.reset();
-  group_->Destroy(mock_decoder_.get(), false);
-  command_buffer_service_.reset();
   gl::MockGLInterface::SetGLInterface(nullptr);
   gl_.reset();
   gl::GLSurfaceTestSupport::ShutdownGL(display_);
