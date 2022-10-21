@@ -2,6 +2,7 @@ marq@chromium.org
 rohitrao@chromium.org
 
 per-file browser_coordinator.*=edchin@chromium.org
+per-file key_commands_provider*=lpromero@google.com
 
 # BVC OWNERS for small changes. Please refer larger changes to one
 # of the above OWNERs.
