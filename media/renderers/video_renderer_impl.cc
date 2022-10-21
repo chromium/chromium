@@ -581,7 +581,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
       return;
     default:
       // Anything other than `kOk` or `kAborted` is treated as an error.
-      DCHECK(result.has_error());
+      DCHECK(!result.has_value());
 
       PipelineStatus::Codes code =
           result.code() == DecoderStatus::Codes::kDisconnected

@@ -811,7 +811,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       /*use_protected=*/!!cdm_context_ref_,
       /*need_aux_frame_pool=*/true, std::move(allocator));
 
-  if (status_or_layout.has_error()) {
+  if (!status_or_layout.has_value()) {
     if (status_or_layout == CroStatus::Codes::kResetRequired) {
       DVLOGF(2) << "The frame pool initialization is aborted";
       SetState(State::kExpectingReset);

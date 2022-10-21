@@ -170,10 +170,9 @@ a `TypedStatus<T>`, a `T`, or a `D`.
 This type has methods:
 ```c++
 bool has_value() const;
-bool has_error() const;
 
 // Return the error, if we have one.
-// Callers should ensure that this `has_error()`.
+// Callers should ensure that this `!has_value()`.
 TypedStatus<T> error() &&;
 
 // Return the value, if we have one.

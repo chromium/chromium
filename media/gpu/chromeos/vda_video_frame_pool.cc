@@ -84,7 +84,7 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
                                          parent_task_runner_, weak_this_)));
   done.Wait();
 
-  if (status_or_layout.has_error())
+  if (!status_or_layout.has_value())
     return status_or_layout;
 
   GpuBufferLayout layout = std::move(status_or_layout).value();

@@ -72,7 +72,7 @@ class PlatformVideoFramePoolTest
                                               natural_size_, kNumFrames,
                                               /*use_protected=*/false,
                                               /*use_linear_buffers=*/false);
-    if (status_or_layout.has_error()) {
+    if (!status_or_layout.has_value()) {
       return false;
     }
     layout_ = std::move(status_or_layout).value();

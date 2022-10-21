@@ -21,7 +21,7 @@ bool CommonParserState::CheckVersion(
 
 ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter) {
   auto item_result = GetNextLineItem(src_iter);
-  if (item_result.has_error()) {
+  if (!item_result.has_value()) {
     return ParseStatus(ParseStatusCode::kPlaylistMissingM3uTag)
         .AddCause(std::move(item_result).error());
   }
@@ -36,7 +36,7 @@ ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter) {
 
     // Make sure the M3U tag parses correctly
     auto result = M3uTag::Parse(*tag_item);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kPlaylistMissingM3uTag)
           .AddCause(std::move(result).error());
     }
@@ -67,7 +67,7 @@ absl::optional<ParseStatus> ParseCommonTag(TagItem tag,
     }
     case CommonTagName::kXDefine: {
       auto tag_result = XDefineTag::Parse(tag);
-      if (tag_result.has_error()) {
+      if (!tag_result.has_value()) {
         return std::move(tag_result).error();
       }
       auto tag_value = std::move(tag_result).value();
@@ -120,7 +120,7 @@ ParseStatus::Or<GURL> ParseUri(
     VariableDictionary::SubstitutionBuffer& sub_buffer) {
   // Variables may appear in URIs, check for any occurrences and resolve them.
   auto uri_str_result = state.variable_dict.Resolve(item.content, sub_buffer);
-  if (uri_str_result.has_error()) {
+  if (!uri_str_result.has_value()) {
     return std::move(uri_str_result).error();
   }
 

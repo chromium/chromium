@@ -73,7 +73,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
   // Parse the first line of the playlist. This must be an M3U tag.
   {
     auto m3u_tag_result = CheckM3uTag(&src_iter);
-    if (m3u_tag_result.has_error()) {
+    if (!m3u_tag_result.has_value()) {
       return std::move(m3u_tag_result).error();
     }
   }
@@ -108,7 +108,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
   // Get segments out of the playlist
   while (true) {
     auto item_result = GetNextLineItem(&src_iter);
-    if (item_result.has_error()) {
+    if (!item_result.has_value()) {
       auto error = std::move(item_result).error();
 
       // Only tolerated error is EOF, in which case we're done.
@@ -152,7 +152,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
         }
         case MediaPlaylistTagName::kXBitrate: {
           auto result = XBitrateTag::Parse(*tag);
-          if (result.has_error()) {
+          if (!result.has_value()) {
             return std::move(result).error();
           }
           bitrate_tag = std::move(result).value();
@@ -177,7 +177,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           // number by 1. The spec doesn't explicitly forbid this, and this
           // seems to be how other HLS clients handle this scenario.
           auto result = XDiscontinuityTag::Parse(*tag);
-          if (result.has_error()) {
+          if (!result.has_value()) {
             return std::move(result).error();
           }
 
@@ -234,7 +234,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
         case MediaPlaylistTagName::kXMap: {
           auto result =
               XMapTag::Parse(*tag, common_state.variable_dict, sub_buffer);
-          if (result.has_error()) {
+          if (!result.has_value()) {
             return std::move(result).error();
           }
           auto value = std::move(result).value();
@@ -334,7 +334,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     static_assert(absl::variant_size<GetNextLineItemResult>() == 2);
     auto segment_uri_result = ParseUri(absl::get<UriItem>(std::move(item)), uri,
                                        common_state, sub_buffer);
-    if (segment_uri_result.has_error()) {
+    if (!segment_uri_result.has_value()) {
       return std::move(segment_uri_result).error();
     }
     auto segment_uri = std::move(segment_uri_result).value();

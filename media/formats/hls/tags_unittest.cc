@@ -38,7 +38,7 @@ void ErrorTest(absl::optional<base::StringPiece> content,
                                        SourceString::CreateForTesting(*content))
                      : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag);
-  ASSERT_TRUE(result.has_error()) << from.ToString();
+  ASSERT_FALSE(result.has_value()) << from.ToString();
   auto error = std::move(result).error();
   EXPECT_EQ(error.code(), expected_status) << from.ToString();
 }
@@ -53,7 +53,7 @@ void ErrorTest(absl::optional<base::StringPiece> content,
                                        SourceString::CreateForTesting(*content))
                      : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag, variable_dict, sub_buffer);
-  ASSERT_TRUE(result.has_error()) << from.ToString();
+  ASSERT_FALSE(result.has_value()) << from.ToString();
   auto error = std::move(result).error();
   EXPECT_EQ(error.code(), expected_status) << from.ToString();
 }

@@ -61,9 +61,8 @@ absl::optional<ParseStatus> ParseUniqueTag(TagItem tag,
   }
 
   auto tag_result = T::Parse(tag, std::forward<Args>(args)...);
-  if (tag_result.has_error()) {
+  if (!tag_result.has_value())
     return std::move(tag_result).error();
-  }
   out = std::move(tag_result).value();
 
   return absl::nullopt;

@@ -737,7 +737,7 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
 
   auto output_or_error = MakeOutput(std::move(output), context);
 
-  if (output_or_error.has_error()) {
+  if (!output_or_error.has_value()) {
     Shutdown(logger_->MakeException("Error creating output from decoded data",
                                     std::move(output_or_error).error()));
     return;

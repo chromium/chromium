@@ -501,7 +501,6 @@ class MEDIA_EXPORT TypedStatus {
     Or& operator=(Or&&) = default;
 
     bool has_value() const { return value_.has_value(); }
-    bool has_error() const { return error_.has_value(); }
 
     // If we have an error, verify that `code` matches.  If we have a value,
     // then this should match if an only if `code` is `kOk`.  If there is no
@@ -519,7 +518,7 @@ class MEDIA_EXPORT TypedStatus {
     }
 
     // Return the error, if we have one.
-    // Callers should ensure that this |has_error()|.
+    // Callers should ensure that this |!has_value()|.
     TypedStatus<T> error() && {
       CHECK(error_);
       auto error = std::move(*error_);
@@ -552,7 +551,7 @@ class MEDIA_EXPORT TypedStatus {
       DCHECK(error_ || value_);
       // It is invalid to call |code()| on an |Or| with a value that
       // is specialized in a TypedStatus with no `kOk`.  Instead, you should
-      // explicitly call has_error() / error().code().
+      // explicitly call has_value() / error().code().
       static_assert(internal::DoesHaveOkCode<typename T::Codes>,
                     "Cannot call Or::code() if there is no kOk code.");
       // TODO: should this DCHECK(error_) if we don't have kOk?  It's not as
@@ -567,7 +566,7 @@ class MEDIA_EXPORT TypedStatus {
               typename OrReturn = typename OrTypeUnwrapper<ReturnType>::type>
     OrReturn MapValue(FnType&& lambda) && {
       CHECK(error_ || value_);
-      if (has_error()) {
+      if (!has_value()) {
         auto error = std::move(*error_);
         error_.reset();
         return error;
@@ -588,7 +587,7 @@ class MEDIA_EXPORT TypedStatus {
         base::StringPiece message = "",
         base::Location location = base::Location::Current()) && {
       CHECK(error_ || value_);
-      if (has_error()) {
+      if (!has_value()) {
         auto error = std::move(*error_);
         error_.reset();
         return ConvertTo(on_error, message, location)

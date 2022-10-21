@@ -46,7 +46,7 @@ GetNextVariableResult GetNextVariable(const SourceString input) {
     auto var_name_result =
         types::VariableName::Parse(remaining_input.Consume(ref_end));
     remaining_input.Consume(1);
-    if (var_name_result.has_error()) {
+    if (!var_name_result.has_value()) {
       continue;
     }
     auto var_name = std::move(var_name_result).value();

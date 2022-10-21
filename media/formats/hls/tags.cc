@@ -39,7 +39,7 @@ ParseStatus::Or<T> ParseDecimalIntegerTag(TagItem tag,
 
   auto value =
       types::ParseDecimalInteger(tag.GetContent()->SkipVariableSubstitution());
-  if (value.has_error()) {
+  if (!value.has_value()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(value).error());
   }
@@ -366,7 +366,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
     auto var_name = types::ParseQuotedStringWithoutSubstitution(
                         map.GetValue(XDefineTagAttribute::kName))
                         .MapValue(types::VariableName::Parse);
-    if (var_name.has_error()) {
+    if (!var_name.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(var_name).error());
     }
@@ -378,7 +378,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
 
     auto value = types::ParseQuotedStringWithoutSubstitution(
         map.GetValue(XDefineTagAttribute::kValue), /*allow_empty*/ true);
-    if (value.has_error()) {
+    if (!value.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag);
     }
 
@@ -390,7 +390,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
     auto var_name = types::ParseQuotedStringWithoutSubstitution(
                         map.GetValue(XDefineTagAttribute::kImport))
                         .MapValue(types::VariableName::Parse);
-    if (var_name.has_error()) {
+    if (!var_name.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(var_name).error());
     }
@@ -414,7 +414,7 @@ ParseStatus::Or<XIndependentSegmentsTag> XIndependentSegmentsTag::Parse(
 // static
 ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
   auto result = ParseDecimalIntegerTag(tag, &XVersionTag::version);
-  if (result.has_error()) {
+  if (!result.has_value()) {
     return std::move(result).error();
   }
 
@@ -518,7 +518,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
 
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kUri), variable_dict, sub_buffer);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -536,7 +536,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   if (map.HasValue(XMediaTagAttribute::kGroupId)) {
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kGroupId), variable_dict, sub_buffer);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -551,7 +551,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   if (map.HasValue(XMediaTagAttribute::kLanguage)) {
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kLanguage), variable_dict, sub_buffer);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -565,7 +565,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kAssocLanguage), variable_dict,
         sub_buffer);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -578,7 +578,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   if (map.HasValue(XMediaTagAttribute::kName)) {
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kName), variable_dict, sub_buffer);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -595,7 +595,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
                       map.GetValue(XMediaTagAttribute::kStableRenditionId),
                       variable_dict, sub_buffer)
                       .MapValue(types::StableId::Parse);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -647,7 +647,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
         types::ParseQuotedString(map.GetValue(XMediaTagAttribute::kInstreamId),
                                  variable_dict, sub_buffer)
             .MapValue(types::InstreamId::Parse);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -665,7 +665,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kCharacteristics), variable_dict,
         sub_buffer);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -690,7 +690,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
           types::ParseQuotedString(map.GetValue(XMediaTagAttribute::kChannels),
                                    variable_dict, sub_buffer)
               .MapValue(types::AudioChannels::Parse);
-      if (result.has_error()) {
+      if (!result.has_value()) {
         return ParseStatus(ParseStatusCode::kMalformedTag)
             .AddCause(std::move(result).error());
       }
@@ -755,7 +755,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     auto bandwidth = types::ParseDecimalInteger(
         map.GetValue(XStreamInfTagAttribute::kBandwidth)
             .SkipVariableSubstitution());
-    if (bandwidth.has_error()) {
+    if (!bandwidth.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(bandwidth).error());
     }
@@ -770,7 +770,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     auto average_bandwidth = types::ParseDecimalInteger(
         map.GetValue(XStreamInfTagAttribute::kAverageBandwidth)
             .SkipVariableSubstitution());
-    if (average_bandwidth.has_error()) {
+    if (!average_bandwidth.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(average_bandwidth).error());
     }
@@ -783,7 +783,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     auto score = types::ParseDecimalFloatingPoint(
         map.GetValue(XStreamInfTagAttribute::kScore)
             .SkipVariableSubstitution());
-    if (score.has_error()) {
+    if (!score.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(score).error());
     }
@@ -796,7 +796,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     auto codecs_string =
         types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kCodecs),
                                  variable_dict, sub_buffer);
-    if (codecs_string.has_error()) {
+    if (!codecs_string.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(codecs_string).error());
     }
@@ -812,7 +812,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     auto resolution = types::DecimalResolution::Parse(
         map.GetValue(XStreamInfTagAttribute::kResolution)
             .SkipVariableSubstitution());
-    if (resolution.has_error()) {
+    if (!resolution.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(resolution).error());
     }
@@ -824,7 +824,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     auto frame_rate = types::ParseDecimalFloatingPoint(
         map.GetValue(XStreamInfTagAttribute::kFrameRate)
             .SkipVariableSubstitution());
-    if (frame_rate.has_error()) {
+    if (!frame_rate.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(frame_rate).error());
     }
@@ -836,7 +836,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     auto audio =
         types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kAudio),
                                  variable_dict, sub_buffer);
-    if (audio.has_error()) {
+    if (!audio.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(audio).error());
     }
@@ -870,7 +870,7 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   // integer
   auto duration_result =
       types::ParseDecimalFloatingPoint(duration_str.SkipVariableSubstitution());
-  if (duration_result.has_error()) {
+  if (!duration_result.has_value()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(duration_result).error());
   }
@@ -897,7 +897,7 @@ ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
 
   auto range = types::ByteRangeExpression::Parse(
       tag.GetContent()->SkipVariableSubstitution());
-  if (range.has_error()) {
+  if (!range.has_value()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(range).error());
   }
@@ -955,7 +955,7 @@ ParseStatus::Or<XMapTag> XMapTag::Parse(
   if (map.HasValue(XMapTagAttribute::kUri)) {
     auto result = types::ParseQuotedString(map.GetValue(XMapTagAttribute::kUri),
                                            variable_dict, sub_buffer);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -971,7 +971,7 @@ ParseStatus::Or<XMapTag> XMapTag::Parse(
         types::ParseQuotedString(map.GetValue(XMapTagAttribute::kByteRange),
                                  variable_dict, sub_buffer)
             .MapValue(types::ByteRangeExpression::Parse);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -1011,7 +1011,7 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
   if (map.HasValue(XPartTagAttribute::kUri)) {
     auto uri_result = types::ParseQuotedString(
         map.GetValue(XPartTagAttribute::kUri), variable_dict, sub_buffer);
-    if (uri_result.has_error()) {
+    if (!uri_result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(uri_result).error());
     }
@@ -1026,7 +1026,7 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
   if (map.HasValue(XPartTagAttribute::kDuration)) {
     auto duration_result = types::ParseDecimalFloatingPoint(
         map.GetValue(XPartTagAttribute::kDuration).SkipVariableSubstitution());
-    if (duration_result.has_error()) {
+    if (!duration_result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(duration_result).error());
     }
@@ -1046,7 +1046,7 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
         types::ParseQuotedString(map.GetValue(XPartTagAttribute::kByteRange),
                                  variable_dict, sub_buffer)
             .MapValue(types::ByteRangeExpression::Parse);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -1101,7 +1101,7 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
         map.GetValue(XPartInfTagAttribute::kPartTarget)
             .SkipVariableSubstitution());
 
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -1161,7 +1161,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
         map.GetValue(XServerControlTagAttribute::kCanSkipUntil)
             .SkipVariableSubstitution());
 
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -1195,7 +1195,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
         map.GetValue(XServerControlTagAttribute::kHoldBack)
             .SkipVariableSubstitution());
 
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -1214,7 +1214,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
         map.GetValue(XServerControlTagAttribute::kPartHoldBack)
             .SkipVariableSubstitution());
 
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
     }
@@ -1253,7 +1253,7 @@ ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
 
   auto duration_result = types::ParseDecimalInteger(
       tag.GetContent().value().SkipVariableSubstitution());
-  if (duration_result.has_error()) {
+  if (!duration_result.has_value()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(duration_result).error());
   }

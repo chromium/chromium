@@ -539,7 +539,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   else
     result = PrepareCpuFrame(input_coded_size_, frame);
 
-  if (result.has_error()) {
+  if (!result.has_value()) {
     std::move(done_cb).Run(
         std::move(result)
             .error()

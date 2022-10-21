@@ -71,7 +71,7 @@ class PlaylistTestBuilder {
                    Args&&... args) const {
     auto result =
         PlaylistT::Parse(source_, uri_, version_, std::forward<Args>(args)...);
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
 
     auto actual_code = std::move(result).error().code();
     EXPECT_EQ(actual_code, code)

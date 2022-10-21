@@ -51,7 +51,7 @@ MultivariantPlaylist::Parse(base::StringPiece source,
   // Parse the first line of the playlist. This must be an M3U tag.
   {
     auto m3u_tag_result = CheckM3uTag(&src_iter);
-    if (m3u_tag_result.has_error()) {
+    if (!m3u_tag_result.has_value()) {
       return std::move(m3u_tag_result).error();
     }
   }
@@ -64,7 +64,7 @@ MultivariantPlaylist::Parse(base::StringPiece source,
   // Get variants out of the playlist
   while (true) {
     auto item_result = GetNextLineItem(&src_iter);
-    if (item_result.has_error()) {
+    if (!item_result.has_value()) {
       auto error = std::move(item_result).error();
 
       // Only tolerated error is EOF
@@ -145,7 +145,7 @@ MultivariantPlaylist::Parse(base::StringPiece source,
     static_assert(absl::variant_size<GetNextLineItemResult>() == 2);
     auto variant_uri_result = ParseUri(absl::get<UriItem>(std::move(item)), uri,
                                        common_state, sub_buffer);
-    if (variant_uri_result.has_error()) {
+    if (!variant_uri_result.has_value()) {
       return std::move(variant_uri_result).error();
     }
     auto variant_uri = std::move(variant_uri_result).value();

@@ -123,7 +123,7 @@ void AudioOpusEncoder::Initialize(const Options& options,
   buffer_.resize(converted_params_.channels() *
                  converted_params_.frames_per_buffer());
   auto status_or_encoder = CreateOpusEncoder();
-  if (status_or_encoder.has_error()) {
+  if (!status_or_encoder.has_value()) {
     std::move(done_cb).Run(std::move(status_or_encoder).error());
     return;
   }

@@ -431,7 +431,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
     return NotifyError({D3D11Status::Codes::kFailedToGetVideoDevice, hr});
 
   auto video_decoder_or_error = CreateD3D11Decoder();
-  if (video_decoder_or_error.has_error()) {
+  if (!video_decoder_or_error.has_value()) {
     return NotifyError(std::move(video_decoder_or_error).error());
   }
 
@@ -668,7 +668,7 @@ void D3D11VideoDecoder::DoDecode() {
       // if we don't have any picture buffer yet; this might be before the
       // accelerated decoder asked for any.
       auto video_decoder_or_error = CreateD3D11Decoder();
-      if (video_decoder_or_error.has_error()) {
+      if (!video_decoder_or_error.has_value()) {
         return NotifyError(std::move(video_decoder_or_error).error());
       }
       DCHECK(set_accelerator_decoder_cb_);

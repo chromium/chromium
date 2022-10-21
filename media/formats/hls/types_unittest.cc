@@ -24,7 +24,7 @@ TEST(HlsTypesTest, ParseDecimalInteger) {
                                  base::Location::Current()) {
     auto result = types::ParseDecimalInteger(
         ResolvedSourceString::CreateForTesting(input));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalInteger)
         << from.ToString();
@@ -78,7 +78,7 @@ TEST(HlsTypesTest, ParseDecimalFloatingPoint) {
                                  base::Location::Current()) {
     auto result = types::ParseDecimalFloatingPoint(
         ResolvedSourceString::CreateForTesting(input));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalFloatingPoint)
         << from.ToString();
@@ -129,7 +129,7 @@ TEST(HlsTypesTest, ParseSignedDecimalFloatingPoint) {
                                  base::Location::Current()) {
     auto result = types::ParseSignedDecimalFloatingPoint(
         ResolvedSourceString::CreateForTesting(input));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(),
               ParseStatusCode::kFailedToParseSignedDecimalFloatingPoint)
@@ -194,10 +194,10 @@ TEST(HlsTypesTest, AttributeListIterator) {
 
     // Afterwards, iterator should fail
     auto result = iter.Next();
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     EXPECT_EQ(std::move(result).error().code(), error) << from.ToString();
     result = iter.Next();
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     EXPECT_EQ(std::move(result).error().code(), error) << from.ToString();
   };
 
@@ -304,7 +304,7 @@ TEST(HlsTypesTest, AttributeMap) {
     auto iter = make_iter("FOO=foo,BAR=bar,BAZ=baz");
 
     auto result = run_fill(storage, &iter);
-    EXPECT_TRUE(result.has_error());
+    EXPECT_FALSE(result.has_value());
     EXPECT_EQ(std::move(result).error().code(), ParseStatusCode::kReachedEOF);
 
     EXPECT_TRUE(storage[0].second.has_value());
@@ -321,7 +321,7 @@ TEST(HlsTypesTest, AttributeMap) {
     auto iter = make_iter("COO=coo,CAR=car,CAZ=caz");
 
     auto result = run_fill(storage, &iter);
-    EXPECT_TRUE(result.has_error());
+    EXPECT_FALSE(result.has_value());
     EXPECT_EQ(std::move(result).error().code(), ParseStatusCode::kReachedEOF);
 
     EXPECT_TRUE(storage[0].second.has_value());
@@ -350,7 +350,7 @@ TEST(HlsTypesTest, AttributeMap) {
     EXPECT_EQ(storage[2].second.value().Str(), "doo");
 
     result = run_fill(storage, &iter);
-    EXPECT_TRUE(result.has_error());
+    EXPECT_FALSE(result.has_value());
     EXPECT_EQ(std::move(result).error().code(), ParseStatusCode::kReachedEOF);
 
     EXPECT_TRUE(storage[0].second.has_value());
@@ -367,7 +367,7 @@ TEST(HlsTypesTest, AttributeMap) {
     auto iter = make_iter("EOO=eoo,EAR=ear,EOO=eoo2,EAZ=eaz,");
 
     auto result = run_fill(storage, &iter);
-    EXPECT_TRUE(result.has_error());
+    EXPECT_FALSE(result.has_value());
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kAttributeListHasDuplicateNames);
 
@@ -379,7 +379,7 @@ TEST(HlsTypesTest, AttributeMap) {
 
     // Calling again should result in the same error
     result = run_fill(storage, &iter);
-    EXPECT_TRUE(result.has_error());
+    EXPECT_FALSE(result.has_value());
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kAttributeListHasDuplicateNames);
 
@@ -396,7 +396,7 @@ TEST(HlsTypesTest, AttributeMap) {
     auto iter = make_iter("FOO=foo,FAR=\"far,FAZ=faz,");
 
     auto result = run_fill(storage, &iter);
-    EXPECT_TRUE(result.has_error());
+    EXPECT_FALSE(result.has_value());
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kMalformedAttributeList);
 
@@ -407,7 +407,7 @@ TEST(HlsTypesTest, AttributeMap) {
 
     // Calling again should return same error
     result = run_fill(storage, &iter);
-    EXPECT_TRUE(result.has_error());
+    EXPECT_FALSE(result.has_value());
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kMalformedAttributeList);
 
@@ -433,7 +433,7 @@ TEST(HlsTypesTest, ParseVariableName) {
                                  base::Location::Current()) {
     auto result =
         types::VariableName::Parse(SourceString::CreateForTesting(input));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kMalformedVariableName)
         << from.ToString();
@@ -478,7 +478,7 @@ TEST(HlsTypesTest, ParseQuotedStringWithoutSubstitution) {
                                  base::Location::Current()) {
     auto in_str = SourceString::CreateForTesting(in);
     auto out = types::ParseQuotedStringWithoutSubstitution(in_str, allow_empty);
-    ASSERT_TRUE(out.has_error()) << from.ToString();
+    ASSERT_FALSE(out.has_value()) << from.ToString();
     EXPECT_EQ(std::move(out).error().code(),
               ParseStatusCode::kFailedToParseQuotedString)
         << from.ToString();
@@ -539,7 +539,7 @@ TEST(HlsTypesTest, ParseQuotedString) {
     auto in_str = SourceString::CreateForTesting(in);
     VariableDictionary::SubstitutionBuffer sub_buffer;
     auto out = types::ParseQuotedString(in_str, dict, sub_buffer, allow_empty);
-    ASSERT_TRUE(out.has_error()) << from.ToString();
+    ASSERT_FALSE(out.has_value()) << from.ToString();
     EXPECT_EQ(std::move(out).error().code(), expected_error) << from.ToString();
   };
 
@@ -589,7 +589,7 @@ TEST(HlsTypesTest, ParseDecimalResolution) {
                                  base::Location::Current()) {
     auto result = types::DecimalResolution::Parse(
         ResolvedSourceString::CreateForTesting(input));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalResolution)
         << from.ToString();
@@ -664,7 +664,7 @@ TEST(HlsTypesTest, ParseByteRangeExpression) {
                                  base::Location::Current()) {
     auto result = types::ByteRangeExpression::Parse(
         ResolvedSourceString::CreateForTesting(input));
-    ASSERT_TRUE(result.has_error());
+    ASSERT_FALSE(result.has_value());
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseByteRange)
         << from.ToString();
@@ -785,7 +785,7 @@ TEST(HlsTypesTest, ParseStableId) {
                                      base::Location::Current()) {
     auto result =
         types::StableId::Parse(ResolvedSourceString::CreateForTesting(x));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kFailedToParseStableId)
         << from.ToString();
@@ -830,7 +830,7 @@ TEST(HlsTypesTest, ParseInstreamId) {
                                      base::Location::Current()) {
     auto result =
         types::InstreamId::Parse(ResolvedSourceString::CreateForTesting(x));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kFailedToParseInstreamId)
         << from.ToString();
@@ -890,7 +890,7 @@ TEST(HlsTypesTest, ParseAudioChannels) {
                                      base::Location::Current()) {
     auto result = types::AudioChannels::Parse(
         ResolvedSourceString::CreateForTesting(str));
-    ASSERT_TRUE(result.has_error()) << from.ToString();
+    ASSERT_FALSE(result.has_value()) << from.ToString();
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kFailedToParseAudioChannels)
         << from.ToString();

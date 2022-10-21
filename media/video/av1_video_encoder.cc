@@ -380,7 +380,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   auto temporal_id_status = AssignNextTemporalId(key_frame);
-  if (temporal_id_status.has_error()) {
+  if (!temporal_id_status.has_value()) {
     std::move(done_cb).Run(std::move(temporal_id_status).error());
     return;
   }

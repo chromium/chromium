@@ -50,7 +50,7 @@ ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
     SourceLineIterator* src) {
   while (true) {
     auto result = src->Next();
-    if (result.has_error()) {
+    if (!result.has_value()) {
       // Forward error to caller
       return std::move(result).error();
     }

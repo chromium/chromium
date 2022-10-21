@@ -378,15 +378,12 @@ TEST_F(StatusTest, CanCopyEasily) {
 TEST_F(StatusTest, StatusOrTypicalUsage) {
   // Mostly so we have some code coverage on the default usage.
   EXPECT_TRUE(TypicalStatusOrUsage(true).has_value());
-  EXPECT_FALSE(TypicalStatusOrUsage(true).has_error());
   EXPECT_FALSE(TypicalStatusOrUsage(false).has_value());
-  EXPECT_TRUE(TypicalStatusOrUsage(false).has_error());
 }
 
 TEST_F(StatusTest, StatusOrWithMoveOnlyType) {
   NormalStatus::Or<std::unique_ptr<int>> status_or(std::make_unique<int>(123));
   EXPECT_TRUE(status_or.has_value());
-  EXPECT_FALSE(status_or.has_error());
   std::unique_ptr<int> result = std::move(status_or).value();
   EXPECT_NE(result.get(), nullptr);
   EXPECT_EQ(*result, 123);
@@ -395,7 +392,6 @@ TEST_F(StatusTest, StatusOrWithMoveOnlyType) {
 TEST_F(StatusTest, StatusOrWithCopyableType) {
   NormalStatus::Or<int> status_or(123);
   EXPECT_TRUE(status_or.has_value());
-  EXPECT_FALSE(status_or.has_error());
   int result = std::move(status_or).value();
   EXPECT_EQ(result, 123);
 }
@@ -441,12 +437,10 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultAndNoOk) {
   NDStatus::Or<std::string> err = NDStatus::Codes::kBaz;
   NDStatus::Or<std::string> ok = std::string("kBaz");
 
-  EXPECT_TRUE(err.has_error());
   EXPECT_FALSE(err.has_value());
   // One cannot call err.code() without an okay type.
   EXPECT_EQ(std::move(err).error().code(), NDStatus::Codes::kBaz);
 
-  EXPECT_FALSE(ok.has_error());
   EXPECT_TRUE(ok.has_value());
   // One cannot call ok.code() without an okay type.
 
@@ -472,11 +466,9 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
   NDStatus::Or<std::string> err = NDStatus::Codes::kBaz;
   NDStatus::Or<std::string> ok = std::string("kBaz");
 
-  EXPECT_TRUE(err.has_error());
   EXPECT_FALSE(err.has_value());
   EXPECT_EQ(err.code(), NDStatus::Codes::kBaz);
 
-  EXPECT_FALSE(ok.has_error());
   EXPECT_TRUE(ok.has_value());
   EXPECT_EQ(ok.code(), NDStatus::Codes::kOk);
 
@@ -610,13 +602,11 @@ TEST_F(StatusTest, OrTypeMappingToOtherOrType) {
   // Returns a nullptr, not and error. so the unwrapper gives a kFoo.
   B::Or<std::unique_ptr<int>> b2 = GetStartingValue(3);
   A::Or<int> a2 = std::move(b2).MapValue(unwrap, A::Codes::kBar);
-  ASSERT_TRUE(a2.has_error());
   ASSERT_TRUE(a2 == A::Codes::kFoo);
 
   // b3 is an error here, so Mapping it will wrap it in kBar.
   B::Or<std::unique_ptr<int>> b3 = GetStartingValue(5);
   A::Or<int> a3 = std::move(b3).MapValue(unwrap, A::Codes::kBar);
-  ASSERT_TRUE(a3.has_error());
   ASSERT_TRUE(a3 == A::Codes::kBar);
 }
 

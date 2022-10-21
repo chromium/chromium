@@ -31,7 +31,7 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
       [](ParseStatusCode expected_error, base::StringPiece src,
          const base::Location& from = base::Location::Current()) {
         auto result = Playlist::IdentifyPlaylist(src);
-        ASSERT_TRUE(result.has_error()) << from.ToString();
+        ASSERT_FALSE(result.has_value()) << from.ToString();
 
         auto error = std::move(result).error();
         EXPECT_EQ(error.code(), expected_error) << from.ToString();

@@ -54,7 +54,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     const auto prev_iterator = iterator;
     auto result = media::hls::GetNextLineItem(&iterator);
 
-    if (result.has_error()) {
+    if (!result.has_value()) {
       // Ensure that this was an error this function is expected to return
       CHECK(result == media::hls::ParseStatusCode::kReachedEOF ||
             result == media::hls::ParseStatusCode::kInvalidEOL);

@@ -32,7 +32,7 @@ ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
   SourceLineIterator iter(source);
   while (!playlist_kind.has_value() || !version_tag.has_value()) {
     auto item_result = GetNextLineItem(&iter);
-    if (item_result.has_error()) {
+    if (!item_result.has_value()) {
       auto error = std::move(item_result).error();
 
       // Only tolerated error is EOF

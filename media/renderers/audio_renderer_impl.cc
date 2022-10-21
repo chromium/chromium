@@ -874,7 +874,7 @@ void AudioRendererImpl::DecodedAudioReady(
   CHECK(pending_read_);
   pending_read_ = false;
 
-  if (result.has_error()) {
+  if (!result.has_value()) {
     auto status = PIPELINE_ERROR_DECODE;
     if (result.code() == DecoderStatus::Codes::kAborted)
       status = PIPELINE_OK;

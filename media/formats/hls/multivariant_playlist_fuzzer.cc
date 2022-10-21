@@ -27,7 +27,7 @@ IcuEnvironment* env = new IcuEnvironment();
 // on a failure here, return `kDefaultVersion` on error.
 media::hls::types::DecimalInteger GetPlaylistVersion(base::StringPiece source) {
   auto ident_result = media::hls::Playlist::IdentifyPlaylist(source);
-  if (ident_result.has_error()) {
+  if (!ident_result.has_value()) {
     return media::hls::Playlist::kDefaultVersion;
   }
 

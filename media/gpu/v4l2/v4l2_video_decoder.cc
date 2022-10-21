@@ -436,7 +436,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
           /*output_size=*/absl::nullopt, num_output_frames_,
           /*use+protected=*/false, /*need_aux_frame_pool=*/false,
           absl::nullopt);
-  if (status_or_output_format.has_error()) {
+  if (!status_or_output_format.has_value()) {
     VLOGF(1) << "Failed to pick an output format.";
     return std::move(status_or_output_format).error().code();
   }
@@ -474,7 +474,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
         fourcc, adjusted_size, visible_rect,
         aspect_ratio_.GetNaturalSize(visible_rect), num_output_frames_,
         /*use_protected=*/false);
-    if (status_or_layout.has_error()) {
+    if (!status_or_layout.has_value()) {
       VLOGF(1) << "Failed to setup format to VFPool";
       return std::move(status_or_layout).error().code();
     }

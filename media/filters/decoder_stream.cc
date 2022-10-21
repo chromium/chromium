@@ -403,7 +403,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   // never successfully outputed a frame).
   fallback_buffers_ = pending_buffers_;
 
-  if (decoder_or_error.has_error()) {
+  if (!decoder_or_error.has_value()) {
     if (state_ == STATE_INITIALIZING) {
       state_ = STATE_UNINITIALIZED;
       MEDIA_LOG(ERROR, media_log_)

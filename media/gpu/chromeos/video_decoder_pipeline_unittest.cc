@@ -816,7 +816,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatUnsupportedModifier) {
       /*output_size=*/absl::nullopt, /*num_of_pictures=*/kMaxNumOfFrames,
       /*use_protected=*/false, /*need_aux_frame_pool=*/false, absl::nullopt);
 
-  EXPECT_TRUE(status_or_chosen_candidate.has_error());
+  EXPECT_FALSE(status_or_chosen_candidate.has_value());
   EXPECT_FALSE(DecoderHasImageProcessor());
   DetachDecoderSequenceChecker();
 }

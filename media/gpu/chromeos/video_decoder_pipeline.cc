@@ -801,7 +801,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
                                      viable_candidate->size,
                                      decoder_visible_rect, decoder_natural_size,
                                      num_of_pictures, use_protected);
-    if (status_or_layout.has_error())
+    if (!status_or_layout.has_value())
       return std::move(status_or_layout).error();
 
 #if BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
@@ -861,7 +861,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
             image_processor->input_config().fourcc,
             image_processor->input_config().size, decoder_visible_rect,
             decoder_natural_size, num_of_pictures, use_protected);
-    if (status_or_layout.has_error()) {
+    if (!status_or_layout.has_value()) {
       // A PlatformVideoFramePool should never abort initialization.
       DCHECK_NE(status_or_layout.code(), CroStatus::Codes::kResetRequired);
       DVLOGF(2) << "Could not initialize the auxiliary frame pool";
@@ -880,7 +880,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   auto status_or_image_processor = ImageProcessorWithPool::Create(
       std::move(image_processor), main_frame_pool_.get(), num_of_pictures,
       use_protected, decoder_task_runner_);
-  if (status_or_image_processor.has_error()) {
+  if (!status_or_image_processor.has_value()) {
     DVLOGF(2) << "Unable to create ImageProcessorWithPool.";
     return std::move(status_or_image_processor).error();
   }

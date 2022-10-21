@@ -129,7 +129,7 @@ ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
     ResolvedSourceString source_str) {
   // Utilize signed parsing function
   auto result = ParseSignedDecimalFloatingPoint(source_str);
-  if (result.has_error()) {
+  if (!result.has_value()) {
     return ParseStatusCode::kFailedToParseDecimalFloatingPoint;
   }
 
@@ -184,7 +184,7 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
   auto width = ParseDecimalInteger(width_str);
   auto height = ParseDecimalInteger(height_str);
   for (auto* x : {&width, &height}) {
-    if (x->has_error()) {
+    if (!x->has_value()) {
       return ParseStatus(ParseStatusCode::kFailedToParseDecimalResolution)
           .AddCause(std::move(*x).error());
     }
@@ -202,7 +202,7 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
   const auto at_index = source_str.Str().find_first_of('@');
   const auto length_str = source_str.Consume(at_index);
   auto length = ParseDecimalInteger(length_str);
-  if (length.has_error()) {
+  if (!length.has_value()) {
     return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
         .AddCause(std::move(length).error());
   }
@@ -212,7 +212,7 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
   if (at_index != base::StringPiece::npos) {
     source_str.Consume(1);
     auto offset_result = ParseDecimalInteger(source_str);
-    if (offset_result.has_error()) {
+    if (!offset_result.has_value()) {
       return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
           .AddCause(std::move(offset_result).error());
     }
@@ -354,7 +354,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
     const auto iter_backup = *iter;
 
     auto result = iter->Next();
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return result;
     }
 
@@ -385,7 +385,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
 ParseStatus AttributeMap::FillUntilError(AttributeListIterator* iter) {
   while (true) {
     auto result = Fill(iter);
-    if (result.has_error()) {
+    if (!result.has_value()) {
       return std::move(result).error();
     }
 
@@ -443,7 +443,7 @@ ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
 
   // Parse the number, max allowed value depends on the type
   auto number_result = ParseDecimalInteger(str);
-  if (number_result.has_error()) {
+  if (!number_result.has_value()) {
     return ParseStatusCode::kFailedToParseInstreamId;
   }
   auto number = std::move(number_result).value();
@@ -474,7 +474,7 @@ ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
   // First parameter is a decimal-integer indicating the number of channels
   const auto max_channels_str = str.ConsumeDelimiter('/');
   auto max_channels_result = ParseDecimalInteger(max_channels_str);
-  if (max_channels_result.has_error()) {
+  if (!max_channels_result.has_value()) {
     return ParseStatus(ParseStatusCode::kFailedToParseAudioChannels)
         .AddCause(std::move(max_channels_result).error());
   }
