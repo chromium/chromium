@@ -611,9 +611,7 @@ struct JsLiteralHelper {
     return base::Value(std::forward<U>(arg));
   }
 
-  static base::Value Convert(const base::Value& value) {
-    return value.Clone();
-  }
+  static base::Value Convert(const base::Value& value) { return value.Clone(); }
 
   static base::Value Convert(const base::ListValue& value) {
     return value.Clone();
@@ -636,24 +634,6 @@ struct JsLiteralHelper<url::Origin> {
   }
 };
 
-// Helper for variadic ListValueOf() -- zero-argument base case.
-inline void ConvertToBaseValueList(base::Value::List& list) {}
-
-// Helper for variadic ValueListOf() -- case with at least one argument.
-//
-// |first| can be any type explicitly convertible to base::Value
-// (including int/string/StringPiece/char*/double/bool), or any type that
-// JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
-// string literals.
-template <typename T, typename... Args>
-void ConvertToBaseValueList(base::Value::List& list,
-                            T&& first,
-                            Args&&... rest) {
-  using ValueType = base::remove_cvref_t<T>;
-  list.Append(JsLiteralHelper<ValueType>::Convert(std::forward<T>(first)));
-  ConvertToBaseValueList(list, std::forward<Args>(rest)...);
-}
-
 // Construct a list-type base::Value from a mix of arguments.
 //
 // Each |arg| can be any type explicitly convertible to base::Value
@@ -663,7 +643,9 @@ void ConvertToBaseValueList(base::Value::List& list,
 template <typename... Args>
 base::Value ListValueOf(Args&&... args) {
   base::Value::List values;
-  ConvertToBaseValueList(values, std::forward<Args>(args)...);
+  (values.Append(JsLiteralHelper<base::remove_cvref_t<Args>>::Convert(
+       std::forward<Args>(args))),
+   ...);
   return base::Value(std::move(values));
 }
 
@@ -697,8 +679,8 @@ base::Value ListValueOf(Args&&... args) {
 // supported by base::Value. Numbers, lists, and dicts also work.
 template <typename... Args>
 std::string JsReplace(base::StringPiece script_template, Args&&... args) {
-  base::Value::List values;
-  ConvertToBaseValueList(values, std::forward<Args>(args)...);
+  base::Value::List values =
+      ListValueOf(std::forward<Args>(args)...).TakeList();
   std::vector<std::string> replacements(values.size());
   for (size_t i = 0; i < values.size(); ++i) {
     CHECK(base::JSONWriter::Write(values[i], &replacements[i]));

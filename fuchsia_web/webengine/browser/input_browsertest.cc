@@ -196,8 +196,8 @@ class KeyboardInputTest : public WebEngineBrowserTest {
 
   template <typename... Args>
   void ExpectKeyEventsEqual(Args... events) {
-    base::Value::List expected;
-    content::ConvertToBaseValueList(expected, std::forward<Args>(events)...);
+    base::Value::List expected =
+        content::ListValueOf(std::forward<Args>(events)...).TakeList();
     frame_for_test_.navigation_listener().RunUntilTitleEquals(
         base::NumberToString(expected.size()));
 
