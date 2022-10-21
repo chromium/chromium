@@ -4827,6 +4827,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "ntp-comprehensive-theme-realbox",
+    "owners": [ "romanarora", "tiborg", "tluk" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "ntp-comprehensive-theming",
     "owners": [ "romanarora", "tiborg", "tluk" ],
     "expiry_milestone": 113
