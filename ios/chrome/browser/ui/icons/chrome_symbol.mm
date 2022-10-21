@@ -110,6 +110,9 @@ NSString* const kMenuSymbol = @"ellipsis";
 NSString* const kSortSymbol = @"arrow.up.arrow.down";
 NSString* const kBackSymbol = @"arrow.backward";
 NSString* const kForwardSymbol = @"arrow.forward";
+NSString* const kPersonFillSymbol = @"person.fill";
+NSString* const kMailFillSymbol = @"envelop.fill";
+NSString* const kPhoneFillSymbol = @"phone.fill";
 
 const CGFloat kColorfulBackgroundSymbolCornerRadius = 7;
 

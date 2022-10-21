@@ -22,6 +22,7 @@ source_set("modals") {
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/modals:modals",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/chrome/browser/ui/infobars/resources:infobar_autofill_address_icon",

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
@@ -30,6 +31,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSaveModalFields = kSectionIdentifierEnumZero,
@@ -52,6 +55,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeUpdatePhoneOld,
   ItemTypeAddressProfileSaveUpdateButton,
 };
+
+const CGFloat kSymbolSize = 16;
+
+}  // namespace
 
 @interface InfobarSaveAddressProfileTableViewController ()
 
@@ -301,14 +308,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   for (NSNumber* type in self.profileDataDiff) {
     if ([self.profileDataDiff[type][0] length] > 0) {
-      SettingsImageDetailTextItem* newItem =
-          [self detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                             (AutofillUIType)[type intValue]
-                                                                 update:YES
-                                                                    old:NO]
-                              text:self.profileDataDiff[type][0]
-                     iconImageName:[self iconForAutofillInputTypeNumber:type]
-              imageTintColorIsGrey:NO];
+      SettingsImageDetailTextItem* newItem;
+      if (UseSymbols()) {
+        newItem = [self
+              detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                           (AutofillUIType)[type intValue]
+                                                               update:YES
+                                                                  old:NO]
+                            text:self.profileDataDiff[type][0]
+                          symbol:[self symbolForAutofillInputTypeNumber:type]
+            imageTintColorIsGrey:NO];
+      } else {
+        newItem =
+            [self detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                               (AutofillUIType)[type intValue]
+                                                                   update:YES
+                                                                      old:NO]
+                                text:self.profileDataDiff[type][0]
+                       iconImageName:[self iconForAutofillInputTypeNumber:type]
+                imageTintColorIsGrey:NO];
+      }
       lastAddedItem = newItem;
       [model addItem:newItem
           toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
@@ -324,14 +343,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
     for (NSNumber* type in self.profileDataDiff) {
       if ([self.profileDataDiff[type][1] length] > 0) {
-        SettingsImageDetailTextItem* oldItem =
-            [self detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                               (AutofillUIType)[type intValue]
-                                                                   update:YES
-                                                                      old:YES]
-                                text:self.profileDataDiff[type][1]
-                       iconImageName:[self iconForAutofillInputTypeNumber:type]
-                imageTintColorIsGrey:YES];
+        SettingsImageDetailTextItem* oldItem;
+        if (UseSymbols()) {
+          oldItem = [self
+                detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                             (AutofillUIType)[type intValue]
+                                                                 update:YES
+                                                                    old:YES]
+                              text:self.profileDataDiff[type][1]
+                            symbol:[self symbolForAutofillInputTypeNumber:type]
+              imageTintColorIsGrey:YES];
+        } else {
+          oldItem = [self
+                detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                             (AutofillUIType)[type intValue]
+                                                                 update:YES
+                                                                    old:YES]
+                              text:self.profileDataDiff[type][1]
+                     iconImageName:[self iconForAutofillInputTypeNumber:type]
+              imageTintColorIsGrey:YES];
+        }
         lastAddedItem = oldItem;
         [model addItem:oldItem
             toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
@@ -422,7 +453,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return descriptionItem;
 }
 
+- (UIImage*)symbolForAutofillUIType:(AutofillUIType)type {
+  DCHECK(UseSymbols());
+  switch (type) {
+    case AutofillUITypeNameFullWithHonorificPrefix:
+      return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
+    case AutofillUITypeAddressHomeAddress:
+    case AutofillUITypeProfileHomeAddressStreet:
+      return DefaultSymbolTemplateWithPointSize(kPinFillSymbol, kSymbolSize);
+    case AutofillUITypeProfileEmailAddress:
+      return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kSymbolSize);
+    case AutofillUITypeProfileHomePhoneWholeNumber:
+      return DefaultSymbolTemplateWithPointSize(kPhoneFillSymbol, kSymbolSize);
+    default:
+      NOTREACHED();
+      return nil;
+  }
+}
+
+- (UIImage*)symbolForAutofillInputTypeNumber:(NSNumber*)val {
+  return [self symbolForAutofillUIType:(AutofillUIType)[val intValue]];
+}
+
 - (NSString*)iconForAutofillUIType:(AutofillUIType)type {
+  DCHECK(!UseSymbols());
   switch (type) {
     case AutofillUITypeNameFullWithHonorificPrefix:
       return @"infobar_profile_icon";
@@ -440,6 +494,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (NSString*)iconForAutofillInputTypeNumber:(NSNumber*)val {
+  DCHECK(!UseSymbols());
   return [self iconForAutofillUIType:(AutofillUIType)[val intValue]];
 }
 
@@ -499,6 +554,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (SettingsImageDetailTextItem*)
     detailItemForSaveModalWithText:(NSString*)text
                     autofillUIType:(AutofillUIType)autofillUIType {
+  if (UseSymbols()) {
+    return [self
+          detailItemWithType:[self modalItemTypeForAutofillUIType:autofillUIType
+                                                           update:NO
+                                                              old:NO]
+                        text:text
+                      symbol:[self symbolForAutofillUIType:autofillUIType]
+        imageTintColorIsGrey:YES];
+  }
   return [self
         detailItemWithType:[self modalItemTypeForAutofillUIType:autofillUIType
                                                          update:NO
@@ -510,8 +574,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (SettingsImageDetailTextItem*)detailItemWithType:(NSInteger)type
                                               text:(NSString*)text
+                                            symbol:(UIImage*)symbol
+                              imageTintColorIsGrey:(BOOL)imageTintColorIsGrey {
+  DCHECK(UseSymbols());
+  SettingsImageDetailTextItem* detailItem =
+      [[SettingsImageDetailTextItem alloc] initWithType:type];
+
+  detailItem.text = text;
+  detailItem.alignImageWithFirstLineOfText = YES;
+  if (symbol) {
+    detailItem.image = symbol;
+    detailItem.useCustomSeparator = YES;
+    if (imageTintColorIsGrey) {
+      detailItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];
+    } else {
+      detailItem.imageViewTintColor = [UIColor colorNamed:kBlueColor];
+    }
+  }
+
+  return detailItem;
+}
+
+- (SettingsImageDetailTextItem*)detailItemWithType:(NSInteger)type
+                                              text:(NSString*)text
                                      iconImageName:(NSString*)iconImageName
                               imageTintColorIsGrey:(BOOL)imageTintColorIsGrey {
+  DCHECK(!UseSymbols());
   SettingsImageDetailTextItem* detailItem =
       [[SettingsImageDetailTextItem alloc] initWithType:type];
 

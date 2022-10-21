@@ -72,6 +72,9 @@ extern NSString* const kMenuSymbol;
 extern NSString* const kSortSymbol;
 extern NSString* const kBackSymbol;
 extern NSString* const kForwardSymbol;
+extern NSString* const kPersonFillSymbol;
+extern NSString* const kMailFillSymbol;
+extern NSString* const kPhoneFillSymbol;
 
 // The corner radius of the symbol with a colorful background.
 extern const CGFloat kColorfulBackgroundSymbolCornerRadius;
