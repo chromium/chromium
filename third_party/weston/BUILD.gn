@@ -431,6 +431,7 @@ shared_library("weston_systemd_notify") {
 
   deps = [
     ":compositor",
+    "//third_party/wayland:wayland_server",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -439,13 +440,12 @@ shared_library("weston_systemd_notify") {
     ":weston_config",
   ]
 
-  include_dirs = [
-    "src/compositor",
-  ]
+  include_dirs = [ "src/compositor" ]
 
   public_configs = [
     ":libsystemd",
     ":pixman",
+    ":xkbcommon",
   ]
 }
 
@@ -558,8 +558,8 @@ executable("weston") {
     ":weston_desktop_shell",
     ":weston_keyboard",
     ":weston_screenshooter",
-    ":weston_test",
     ":weston_systemd_notify",
+    ":weston_test",
   ]
 
   configs += [ ":weston_config" ]
