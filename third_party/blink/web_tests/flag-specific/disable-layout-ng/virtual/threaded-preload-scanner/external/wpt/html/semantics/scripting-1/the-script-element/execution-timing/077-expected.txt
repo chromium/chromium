@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS  adding several types of scripts through the DOM and removing some of them confuses scheduler 
-Harness: the test ran to completion.
-
