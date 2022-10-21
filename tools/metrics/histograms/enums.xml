@@ -19350,6 +19350,7 @@ Called by update_net_error_codes.py.-->
   <int value="10" label="No matching source filter data"/>
   <int value="11" label="Prohibited by browser policy"/>
   <int value="12" label="No matching configurations"/>
+  <int value="13" label="Excessive reports"/>
 </enum>
 
 <enum name="ConversionStorageSqlInitStatus">

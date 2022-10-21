@@ -157,11 +157,10 @@ bool IsStorageKeySessionOnly(
 }
 
 void RecordCreateReportStatus(CreateReportResult result) {
-  static_assert(
-      AttributionTrigger::EventLevelResult::kMaxValue ==
-          AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
-      "Bump version of Conversions.CreateReportStatus3 histogram.");
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus3",
+  static_assert(AttributionTrigger::EventLevelResult::kMaxValue ==
+                    AttributionTrigger::EventLevelResult::kExcessiveReports,
+                "Bump version of Conversions.CreateReportStatus4 histogram.");
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus4",
                                 result.event_level_status());
   static_assert(
       AttributionTrigger::AggregatableResult::kMaxValue ==

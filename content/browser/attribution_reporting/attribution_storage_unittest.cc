@@ -1353,7 +1353,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
       storage()->MaybeCreateAndStoreReport(
           DefaultAggregatableTriggerBuilder().Build()),
       AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kNoMatchingImpressions),
+                AttributionTrigger::EventLevelResult::kExcessiveReports),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess)));
 
@@ -1541,7 +1541,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
 
   // This conversion should not be stored because all reports for the attributed
   // impression were in an earlier window.
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kPriorityTooLow,
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveReports,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetPriority(2).Build()));
 
@@ -1969,10 +1969,11 @@ TEST_F(AttributionStorageTest,
   // The next trigger should cause the source to reach event-level attribution
   // limit; the report itself shouldn't be stored as we've already reached the
   // maximum number of event-level reports per source.
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    ReplacedEventLevelReportIs(absl::nullopt)));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kExcessiveReports),
+            ReplacedEventLevelReportIs(absl::nullopt)));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(
@@ -2802,7 +2803,7 @@ TEST_F(
               .SetTriggerData(5)
               .Build()),
       AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kPriorityTooLow),
+                AttributionTrigger::EventLevelResult::kExcessiveReports),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess),
             ReplacedEventLevelReportIs(absl::nullopt),

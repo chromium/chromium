@@ -415,6 +415,8 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
       return WebUITriggerStatus::kProhibitedByBrowserPolicy;
     case EventLevelStatus::kNoMatchingConfigurations:
       return WebUITriggerStatus::kNoMatchingConfigurations;
+    case EventLevelStatus::kExcessiveReports:
+      return WebUITriggerStatus::kExcessiveEventLevelReports;
   }
 }
 

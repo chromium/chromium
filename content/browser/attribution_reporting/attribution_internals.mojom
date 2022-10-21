@@ -162,6 +162,7 @@ struct WebUITrigger {
     kLowPriority,
     kNoised,
     kNoMatchingConfigurations,
+    kExcessiveEventLevelReports,
 
     // Aggregatable statuses:
     kNoHistograms,

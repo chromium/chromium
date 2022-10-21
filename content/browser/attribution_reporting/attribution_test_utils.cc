@@ -953,6 +953,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::EventLevelResult::kNoMatchingConfigurations:
       out << "noMatchingConfigurations";
       break;
+    case AttributionTrigger::EventLevelResult::kExcessiveReports:
+      out << "excessiveReports";
+      break;
   }
   return out;
 }

@@ -1019,7 +1019,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     absl::optional<uint64_t>& dedup_key) {
   if (attribution_info.source.active_state() ==
       StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
-    return EventLevelResult::kNoMatchingImpressions;
+    return EventLevelResult::kExcessiveReports;
   }
 
   if (!top_level_filters_match)
@@ -1120,7 +1120,11 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     if (!transaction.Commit())
       return EventLevelResult::kInternalError;
 
-    return EventLevelResult::kPriorityTooLow;
+    return maybe_replace_lower_priority_report_result ==
+                   MaybeReplaceLowerPriorityEventLevelReportResult::
+                       kDropNewReport
+               ? EventLevelResult::kPriorityTooLow
+               : EventLevelResult::kExcessiveReports;
   }
 
   const AttributionInfo& attribution_info = report.attribution_info();

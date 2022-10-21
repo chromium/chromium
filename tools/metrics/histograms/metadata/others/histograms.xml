@@ -3656,6 +3656,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.CreateReportStatus3"
     enum="ConversionStorageCreateReportStatus" expires_after="M117">
+  <obsolete>
+    Replaced with Conversions.CreateReportStatus4 due to enum value change,
+    10/2022.
+  </obsolete>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often event-level triggers are stored successfully or rejected
+    and why. Recorded once for each conversion event processed by the
+    attribution storage layer.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.CreateReportStatus4"
+    enum="ConversionStorageCreateReportStatus" expires_after="M117">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

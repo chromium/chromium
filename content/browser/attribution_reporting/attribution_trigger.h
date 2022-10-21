@@ -43,7 +43,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kNoMatchingSourceFilterData = 10,
     kProhibitedByBrowserPolicy = 11,
     kNoMatchingConfigurations = 12,
-    kMaxValue = kNoMatchingConfigurations,
+    kExcessiveReports = 13,
+    kMaxValue = kExcessiveReports,
   };
 
   // Represents the potential aggregatable outcomes from attempting to register
