@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -129,6 +130,9 @@ bool ShouldShowSettingsUI() {
   return !base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordUISplit);
 }
+
+// The size of trailing symbol icons for safe/unsafe state.
+NSInteger kTrailingSymbolSize = 18;
 
 }  // namespace
 
@@ -1659,18 +1663,26 @@ bool ShouldShowSettingsUI() {
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
               self.compromisedPasswordsCount));
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kIOSEnablePasswordManagerBrandingUpdate)) {
+      if (UseSymbols()) {
         _passwordProblemsItem.trailingImage =
-            [UIImage imageNamed:@"round_settings_unsafe_state"];
-      } else {
-        UIImage* unSafeIconImage =
-            [[UIImage imageNamed:@"settings_unsafe_state"]
-                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _passwordProblemsItem.trailingImage = unSafeIconImage;
+            DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
+                                               kTrailingSymbolSize);
         _passwordProblemsItem.trailingImageTintColor =
             [UIColor colorNamed:kRedColor];
+      } else {
+        if (base::FeatureList::IsEnabled(
+                password_manager::features::
+                    kIOSEnablePasswordManagerBrandingUpdate)) {
+          _passwordProblemsItem.trailingImage =
+              [UIImage imageNamed:@"round_settings_unsafe_state"];
+        } else {
+          UIImage* unSafeIconImage =
+              [[UIImage imageNamed:@"settings_unsafe_state"]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+          _passwordProblemsItem.trailingImage = unSafeIconImage;
+          _passwordProblemsItem.trailingImageTintColor =
+              [UIColor colorNamed:kRedColor];
+        }
       }
 
       _passwordProblemsItem.accessoryType =
@@ -1679,8 +1691,12 @@ bool ShouldShowSettingsUI() {
     }
     case PasswordCheckStateSafe: {
       DCHECK(!self.compromisedPasswordsCount);
-      UIImage* safeIconImage = [[UIImage imageNamed:@"settings_safe_state"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      UIImage* safeIconImage =
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(kCheckMarkCircleFillSymbol,
+                                                   kTrailingSymbolSize)
+              : [[UIImage imageNamed:@"settings_safe_state"]
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       _passwordProblemsItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0));

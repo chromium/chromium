@@ -107,6 +107,7 @@ source_set("password_ui") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
