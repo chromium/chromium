@@ -101,6 +101,7 @@ bool NetworkPreSpawnTarget(sandbox::TargetConfig* config) {
   return true;
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
 // Sets the sandbox policy for the print backend service process.
 bool PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -114,6 +115,7 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   return true;
 }
+#endif
 
 std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
   return base::WideToUTF8(cmd_line.GetProgram().value());
@@ -333,7 +335,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
       if (result != sandbox::SBOX_ALL_OK)
         return false;
     }
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
       if (!PrintBackendPreSpawnTarget(config))
         return false;
