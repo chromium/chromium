@@ -1241,7 +1241,8 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextWordSimple) {
   SendFinalResultAndWaitForTextAreaValue("nice", expected);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextWordNewLine) {
+// TODO(crbug.com/1377314): Test is flaky.
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DISABLED_SelectNextWordNewLine) {
   std::string text = "The weather today is\n";
   SendFinalResultAndWaitForTextAreaValue(text, text);
   SendFinalResultAndWait("move to the previous character");
