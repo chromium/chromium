@@ -260,6 +260,16 @@ public class PartialCustomTabHeightStrategyTest {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
     }
 
+    private PartialCustomTabHeightStrategy createPcctBackgroundDisabled() {
+        PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(mActivity,
+                500, null, null, false, mOnResizedCallback,
+                mActivityLifecycleDispatcher, mFullscreenManager, false, false);
+        pcct.setWindowAboveNavbarForTesting(mWindowAboveNavbar);
+        pcct.setMockViewForTesting(
+                mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
+        return pcct;
+    }
+
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx) {
         return createPcctAtHeight(heightPx, false);
     }
@@ -267,7 +277,7 @@ public class PartialCustomTabHeightStrategyTest {
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx, boolean isFixedHeight) {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(mActivity,
                 heightPx, null, null, isFixedHeight, mOnResizedCallback,
-                mActivityLifecycleDispatcher, mFullscreenManager, false);
+                mActivityLifecycleDispatcher, mFullscreenManager, false, true);
         pcct.setWindowAboveNavbarForTesting(mWindowAboveNavbar);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
@@ -362,6 +372,15 @@ public class PartialCustomTabHeightStrategyTest {
         // Full height when in landscape mode.
         assertEquals(1, mAttributeResults.size());
         assertEquals(0, mAttributeResults.get(0).y);
+    }
+
+    @Test
+    public void create_backgroundAppDisabledPortrait() {
+        createPcctBackgroundDisabled();
+
+        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
     }
 
     private static MotionEvent event(long ts, int action, int ypos) {

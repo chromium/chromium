@@ -281,7 +281,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 intentDataProvider.isPartialCustomTabFixedHeight(),
                 CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
                 mActivityLifecycleDispatcher, mFullscreenManager,
-                DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
+                DeviceFormFactor.isWindowOnTablet(mWindowAndroid),
+                intentDataProvider.canInteractWithBackground());
     }
 
     @Override

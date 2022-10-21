@@ -524,4 +524,10 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean isPartialCustomTabFixedHeight() {
         return false;
     }
+
+    /**
+     * @return true, as by default having a PCCT launched still allows interaction with the
+     * background application
+     */
+    public boolean canInteractWithBackground() { return false; }
 }

@@ -49,5 +49,6 @@
     <string name="theme_button_light">Light</string>
     <string name="theme_button_dark">Dark</string>
     <string name="cct_type">CCT Type:</string>
+    <string name="background_interact_text">Interact with Background App</string>
 
 </resources>

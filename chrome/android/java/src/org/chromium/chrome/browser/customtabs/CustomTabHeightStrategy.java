@@ -25,7 +25,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             boolean isPartialCustomTabFixedHeight, CustomTabsConnection connection,
             @Nullable CustomTabsSessionToken session,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
-            boolean isTablet) {
+            boolean isTablet, boolean interactWithBackground) {
         if (initialHeight <= 0) {
             return new CustomTabHeightStrategy();
         }
@@ -34,7 +34,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                 navigationBarDividerColor, isPartialCustomTabFixedHeight,
                 size
                 -> connection.onResized(session, size),
-                lifecycleDispatcher, fullscreenManager, isTablet);
+                lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground);
     }
 
     /**

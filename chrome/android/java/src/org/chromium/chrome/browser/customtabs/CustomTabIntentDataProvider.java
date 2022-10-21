@@ -88,6 +88,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int NUM_ENTRIES = 5;
     }
 
+    @IntDef({BACKGROUND_INTERACT_DEFAULT, BACKGROUND_INTERACT_ON, BACKGROUND_INTERACT_OFF})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BackgroundInteractBehavior {}
+
+    public static final int BACKGROUND_INTERACT_DEFAULT = 0;
+
+    public static final int BACKGROUND_INTERACT_ON = 1;
+
+    public static final int BACKGROUND_INTERACT_OFF = 2;
+
     /**
      * Extra used to keep the caller alive. Its value is an Intent.
      */
@@ -178,6 +188,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_PX";
 
     /**
+     * Extra that, if set, allows you to interact with the background app when a PCCT is launched
+     */
+    public static final String EXTRA_ENABLE_BACKGROUND_INTERACTION =
+            "androix.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION";
+
+    /**
      * Extra that, if set in combination with
      * {@link CustomTabsIntent#EXTRA_INITIAL_ACTIVITY_HEIGHT_PX}, defines the resize behavior of
      * the Custom Tab Activity’s height when it behaves as a bottom sheet.
@@ -242,6 +258,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private String mUrlToLoad;
 
     private boolean mEnableUrlBarHiding;
+    private boolean mInteractWithBackground;
     private List<CustomButtonParams> mCustomButtonParams;
     private Drawable mCloseButtonIcon;
     private List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
@@ -446,6 +463,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 intent, EXTRA_ACTIVITY_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
         mIsPartialCustomTabFixedHeight =
                 activityResizeBehavior == ACTIVITY_HEIGHT_FIXED ? true : false;
+
+        @BackgroundInteractBehavior
+        int backgroundInteractBehavior = IntentUtils.safeGetIntExtra(
+                intent, EXTRA_ENABLE_BACKGROUND_INTERACTION, BACKGROUND_INTERACT_DEFAULT);
+        mInteractWithBackground = backgroundInteractBehavior != BACKGROUND_INTERACT_OFF;
     }
 
     /** Returns the toolbar corner radius in px. */
@@ -988,4 +1010,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public boolean isPartialCustomTabFixedHeight() {
         return mIsPartialCustomTabFixedHeight;
     }
+
+    @Override
+    public boolean canInteractWithBackground() { return mInteractWithBackground; }
 }

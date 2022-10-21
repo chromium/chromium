@@ -118,6 +118,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final OnResizedCallback mOnResizedCallback;
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final int mCachedHandleHeight;
+    private final boolean mInteractWithBackground;
     private final boolean mIsFixedHeight;
     private final @Px int mUnclampedInitialHeight;
     private final FullscreenManager mFullscreenManager;
@@ -210,7 +211,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             Integer navigationBarColor, Integer navigationBarDividerColor, boolean isFixedHeight,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher,
-            FullscreenManager fullscreenManager, boolean isTablet) {
+            FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground) {
         mWindowAboveNavbar = ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled();
         mAlwaysShowNavbarButtons = mWindowAboveNavbar
                 && ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled();
@@ -218,6 +219,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mDisplayHeight = getDisplayHeight();
         mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
+        mInteractWithBackground = interactWithBackground;
         mOnResizedCallback = onResizedCallback;
         mFullscreenManager = fullscreenManager;
 
@@ -498,8 +500,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private void initializeHeight() {
         Window window = mActivity.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        if (canInteractWithBackground()) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            window.setDimAmount(0.6f);
+        }
 
         mNavbarHeight = getNavbarHeight();
 
@@ -626,6 +634,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private boolean isFixedHeight() {
         return mIsFixedHeight;
+    }
+
+    private boolean canInteractWithBackground() {
+        return mInteractWithBackground;
     }
 
     private void updateWindowPos(@Px int y) {
