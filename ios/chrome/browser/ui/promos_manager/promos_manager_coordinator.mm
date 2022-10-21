@@ -9,6 +9,7 @@
 
 #import "base/check.h"
 #import "base/containers/small_map.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -162,6 +163,11 @@
 
     [self.mediator recordImpression:handler.identifier];
 
+    base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
+    base::UmaHistogramEnumeration("IOS.PromosManager.Promo.Type",
+                                  promos_manager::IOSPromosManagerPromoType::
+                                      kStandardPromoDisplayHandler);
+
     if ([handler respondsToSelector:@selector(promoWasDisplayed)]) {
       [handler promoWasDisplayed];
     }
@@ -182,6 +188,11 @@
                                         completion:nil];
 
     [self.mediator recordImpression:provider.identifier];
+
+    base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
+    base::UmaHistogramEnumeration(
+        "IOS.PromosManager.Promo.Type",
+        promos_manager::IOSPromosManagerPromoType::kStandardPromoViewProvider);
 
     if ([provider respondsToSelector:@selector(promoWasDisplayed)]) {
       [provider promoWasDisplayed];
@@ -204,6 +215,11 @@
                                         completion:nil];
 
     [self.mediator recordImpression:banneredProvider.identifier];
+
+    base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
+    base::UmaHistogramEnumeration(
+        "IOS.PromosManager.Promo.Type",
+        promos_manager::IOSPromosManagerPromoType::kBanneredPromoViewProvider);
 
     if ([banneredProvider respondsToSelector:@selector(promoWasDisplayed)]) {
       [banneredProvider promoWasDisplayed];
@@ -265,6 +281,11 @@
                                         completion:nil];
 
     [self.mediator recordImpression:alertProvider.identifier];
+
+    base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
+    base::UmaHistogramEnumeration(
+        "IOS.PromosManager.Promo.Type",
+        promos_manager::IOSPromosManagerPromoType::kStandardPromoAlertProvider);
 
     if ([alertProvider respondsToSelector:@selector(promoWasDisplayed)]) {
       [alertProvider promoWasDisplayed];

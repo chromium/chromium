@@ -1423,6 +1423,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PromosManager.Promo" enum="IOSPromosManagerPromo"
+    expires_after="2023-10-20">
+  <owner>bwwilliams@google.com</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@google.com</owner>
+  <summary>
+    Logs which promo is displayed when the Promos Manager decides to display a
+    promo.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PromosManager.Promo.ImpressionLimitEvaluation"
+    enum="IOSPromosManagerPromoImpressionLimitEvaluationType"
+    expires_after="2023-10-20">
+  <owner>bwwilliams@google.com</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@google.com</owner>
+  <summary>
+    Promo impression limit evaluations made by the Promos Manager. This
+    histograms logs the Promos Manager's assessment of each promos impression
+    limits when presented with the opportunity to display a given promo.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PromosManager.Promo.Type" enum="IOSPromosManagerPromoType"
+    expires_after="2023-10-20">
+  <owner>bwwilliams@google.com</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@google.com</owner>
+  <summary>
+    Logs which type of promo is displayed when the Promos Manager decides to
+    display a promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"
     enum="BooleanSuccess" expires_after="2023-07-01">
   <owner>ajuma@google.com</owner>

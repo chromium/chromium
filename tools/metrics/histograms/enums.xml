@@ -52947,6 +52947,34 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Dismiss"/>
 </enum>
 
+<enum name="IOSPromosManagerPromo">
+  <int value="0" label="Test Promo"/>
+<!--  Default Browser (Fullscreen) not in use, yet.-->
+
+  <int value="1" label="Default Browser (Fullscreen)"/>
+  <int value="2" label="App Store Rating"/>
+<!--  Credential Provider Extension not in use, yet.-->
+
+  <int value="3" label="Credential Provider Extension"/>
+  <int value="4" label="Post Restore Sign-In (Fullscreen)"/>
+  <int value="5" label="Post Restore Sign-In (Alert)"/>
+  <int value="6" label="What's New"/>
+</enum>
+
+<enum name="IOSPromosManagerPromoImpressionLimitEvaluationType">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Invalid (Promo-specific limit triggered)"/>
+  <int value="2" label="Invalid (Promo-agnostic limit triggered)"/>
+  <int value="3" label="Invalid (Global limit triggered)"/>
+</enum>
+
+<enum name="IOSPromosManagerPromoType">
+  <int value="0" label="StandardPromoViewProvider"/>
+  <int value="1" label="BanneredPromoViewProvider"/>
+  <int value="2" label="StandardPromoAlertProvider"/>
+  <int value="3" label="StandardPromoDisplayHandler"/>
+</enum>
+
 <enum name="IOSRepeatedExternalAppPromptResponse">
   <int value="0" label="Blocked">
     User selected to block the application for the current session.

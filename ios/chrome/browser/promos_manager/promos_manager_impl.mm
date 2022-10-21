@@ -13,6 +13,7 @@
 #import <vector>
 
 #import "base/containers/contains.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -346,14 +347,41 @@ bool PromosManagerImpl::CanShowPromo(
     int total_impression_count = TotalImpressionCount(promo_impression_counts);
 
     if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
-                                    promo_impression_limits) ||
-        AnyImpressionLimitTriggered(most_seen_promo_impression_count,
-                                    window_days,
-                                    global_per_promo_impression_limits) ||
-        AnyImpressionLimitTriggered(total_impression_count, window_days,
-                                    global_impression_limits))
+                                    promo_impression_limits)) {
+      base::UmaHistogramEnumeration(
+          "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
+          promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
+              kInvalidPromoSpecificImpressionLimitTriggered);
+
       return false;
+    }
+
+    if (AnyImpressionLimitTriggered(most_seen_promo_impression_count,
+                                    window_days,
+                                    global_per_promo_impression_limits)) {
+      base::UmaHistogramEnumeration(
+          "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
+          promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
+              kInvalidPromoAgnosticImpressionLimitTriggered);
+
+      return false;
+    }
+
+    if (AnyImpressionLimitTriggered(total_impression_count, window_days,
+                                    global_impression_limits)) {
+      base::UmaHistogramEnumeration(
+          "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
+          promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
+              kInvalidGlobalImpressionLimitTriggered);
+
+      return false;
+    }
   }
+
+  base::UmaHistogramEnumeration(
+      "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
+      promos_manager::IOSPromosManagerPromoImpressionLimitEvaluationType::
+          kValid);
 
   return true;
 }

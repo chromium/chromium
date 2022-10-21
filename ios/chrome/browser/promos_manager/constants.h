@@ -32,6 +32,27 @@ enum class Promo {
       4,  // Post Restore Sign-In (fullscreen, FRE-like promo)
   PostRestoreSignInAlert = 5,  // Post Restore Sign-In (native iOS alert)
   WhatsNew = 6,                // What's New Promo
+  kMaxValue = WhatsNew,
+};
+
+// Enum for IOS.PromosManager.Promo.ImpressionLimitEvaluation histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSPromosManagerPromoImpressionLimitEvaluationType {
+  kValid = 0,
+  kInvalidPromoSpecificImpressionLimitTriggered = 1,
+  kInvalidPromoAgnosticImpressionLimitTriggered = 2,
+  kInvalidGlobalImpressionLimitTriggered = 3,
+  kMaxValue = kInvalidGlobalImpressionLimitTriggered,
+};
+
+// Enum for IOS.PromosManager.Promo.Type histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSPromosManagerPromoType {
+  kStandardPromoViewProvider = 0,
+  kBanneredPromoViewProvider = 1,
+  kStandardPromoAlertProvider = 2,
+  kStandardPromoDisplayHandler = 3,
+  kMaxValue = kStandardPromoDisplayHandler,
 };
 
 typedef struct Impression {
