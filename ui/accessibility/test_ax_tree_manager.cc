@@ -142,11 +142,27 @@ AXNodePosition::AXPositionInstance TestAXTreeManager::CreateTextPosition(
 }
 
 AXNodePosition::AXPositionInstance TestAXTreeManager::CreateTextPosition(
+    const AXTree* tree,
+    const AXNodeData& anchor_data,
+    int text_offset,
+    ax::mojom::TextAffinity affinity) const {
+  const AXNode* anchor = tree->GetFromId(anchor_data.id);
+  return CreateTextPosition(*anchor, text_offset, affinity);
+}
+
+AXNodePosition::AXPositionInstance TestAXTreeManager::CreateTextPosition(
+    const AXNodeData& anchor_data,
+    int text_offset,
+    ax::mojom::TextAffinity affinity) const {
+  return CreateTextPosition(ax_tree(), anchor_data, text_offset, affinity);
+}
+
+AXNodePosition::AXPositionInstance TestAXTreeManager::CreateTextPosition(
     const AXNodeID& anchor_id,
     int text_offset,
     ax::mojom::TextAffinity affinity) const {
-  const AXNode& anchor = *ax_tree_->GetFromId(anchor_id);
-  return AXNodePosition::CreateTextPosition(anchor, text_offset, affinity);
+  const AXNode* anchor = ax_tree()->GetFromId(anchor_id);
+  return CreateTextPosition(*anchor, text_offset, affinity);
 }
 
 AXNode* TestAXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,

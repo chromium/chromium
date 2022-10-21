@@ -471,13 +471,11 @@ TEST_F(AXRangeTest, RangeOfContents) {
 TEST_F(AXRangeTest, EqualityOperators) {
   TestPositionInstance null_position = AXNodePosition::CreateNullPosition();
   TestPositionInstance test_position1 = CreateTextPosition(
-      button_.id, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance test_position2 =
-      CreateTextPosition(text_field_.id, 7 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance test_position3 =
-      CreateTextPosition(inline_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+      button_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance test_position2 = CreateTextPosition(
+      text_field_, 7 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance test_position3 = CreateTextPosition(
+      inline_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   // Invalid ranges (with at least one null endpoint).
   TestPositionRange null_position_and_nullptr(null_position->Clone(), nullptr);
@@ -515,12 +513,10 @@ TEST_F(AXRangeTest, AsForwardRange) {
 
   TestPositionInstance tree_position =
       CreateTreePosition(button_, 0 /* child_index */);
-  TestPositionInstance text_position1 =
-      CreateTextPosition(line_break1_.id, 1 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance text_position2 =
-      CreateTextPosition(inline_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance text_position1 = CreateTextPosition(
+      line_break1_, 1 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance text_position2 = CreateTextPosition(
+      inline_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange tree_to_text_range(text_position1->Clone(),
                                        tree_position->Clone());
@@ -550,15 +546,12 @@ TEST_F(AXRangeTest, IsCollapsed) {
   TestPositionInstance tree_position2 =
       CreateTreePosition(inline_box1_, 0 /* child_index */);
 
-  TestPositionInstance text_position1 =
-      CreateTextPosition(static_text1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance text_position2 =
-      CreateTextPosition(inline_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance text_position3 =
-      CreateTextPosition(inline_box2_.id, 1 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance text_position1 = CreateTextPosition(
+      static_text1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance text_position2 = CreateTextPosition(
+      inline_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance text_position3 = CreateTextPosition(
+      inline_box2_, 1 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange tree_to_null_range(tree_position1->Clone(),
                                        AXNodePosition::CreateNullPosition());
@@ -604,16 +597,13 @@ TEST_F(AXRangeTest, IsCollapsed) {
 TEST_F(AXRangeTest, BeginAndEndIterators) {
   TestPositionInstance null_position = AXNodePosition::CreateNullPosition();
   TestPositionInstance test_position1 = CreateTextPosition(
-      button_.id, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance test_position2 =
-      CreateTextPosition(check_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance test_position3 =
-      CreateTextPosition(check_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance test_position4 =
-      CreateTextPosition(inline_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+      button_, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance test_position2 = CreateTextPosition(
+      check_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance test_position3 = CreateTextPosition(
+      check_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance test_position4 = CreateTextPosition(
+      inline_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange nullptr_and_null_position(nullptr, null_position->Clone());
   EXPECT_EQ(TestPositionRange::Iterator(), nullptr_and_null_position.begin());
@@ -666,67 +656,57 @@ TEST_F(AXRangeTest, BeginAndEndIterators) {
 
 TEST_F(AXRangeTest, LeafTextRangeIteration) {
   TestPositionInstance button_start = CreateTextPosition(
-      button_.id, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+      button_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance button_middle = CreateTextPosition(
-      button_.id, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+      button_, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance button_end = CreateTextPosition(
-      button_.id, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+      button_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   // Since a check box is not visible to the text representation, it spans an
   // empty anchor whose start and end positions are the same.
-  TestPositionInstance check_box1 =
-      CreateTextPosition(check_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance check_box2 =
-      CreateTextPosition(check_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance check_box1 = CreateTextPosition(
+      check_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance check_box2 = CreateTextPosition(
+      check_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance line1_start =
-      CreateTextPosition(inline_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line1_middle =
-      CreateTextPosition(inline_box1_.id, 3 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line1_end =
-      CreateTextPosition(inline_box1_.id, 6 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_start = CreateTextPosition(
+      inline_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_middle = CreateTextPosition(
+      inline_box1_, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_end = CreateTextPosition(
+      inline_box1_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionInstance line_break1_start =
-      CreateTextPosition(inline_box_line_break1_.id, 0 /* text_offset */,
+      CreateTextPosition(inline_box_line_break1_, 0 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance line_break1_end =
-      CreateTextPosition(inline_box_line_break1_.id, 1 /* text_offset */,
+      CreateTextPosition(inline_box_line_break1_, 1 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance line2_start =
-      CreateTextPosition(inline_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_middle =
-      CreateTextPosition(inline_box2_.id, 3 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_end =
-      CreateTextPosition(inline_box2_.id, 6 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_start = CreateTextPosition(
+      inline_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_middle = CreateTextPosition(
+      inline_box2_, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_end = CreateTextPosition(
+      inline_box2_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionInstance line_break2_start =
-      CreateTextPosition(inline_box_line_break2_.id, 0 /* text_offset */,
+      CreateTextPosition(inline_box_line_break2_, 0 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance line_break2_end =
-      CreateTextPosition(inline_box_line_break2_.id, 1 /* text_offset */,
+      CreateTextPosition(inline_box_line_break2_, 1 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance after_line_start =
-      CreateTextPosition(inline_box3_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance after_line_end =
-      CreateTextPosition(inline_box3_.id, 5 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance after_line_start = CreateTextPosition(
+      inline_box3_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance after_line_end = CreateTextPosition(
+      inline_box3_, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionInstance empty_paragraph_start =
-      CreateTextPosition(empty_paragraph_.id, 0 /* text_offset */,
+      CreateTextPosition(empty_paragraph_, 0 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance empty_paragraph_end =
-      CreateTextPosition(empty_paragraph_.id, 0 /* text_offset */,
+      CreateTextPosition(empty_paragraph_, 0 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
 
   std::vector<TestPositionRange> expected_ranges;
@@ -817,7 +797,7 @@ TEST_F(AXRangeTest, LeafTextRangeIteration) {
   TestPositionInstance range_start =
       CreateTreePosition(root_, 0 /* child_index */);
   TestPositionInstance range_end =
-      CreateTextPosition(root_.id, ALL_TEXT.length() /* text_offset */,
+      CreateTextPosition(root_, ALL_TEXT.length() /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange entire_test_forward_range(range_start->Clone(),
@@ -848,7 +828,7 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
   // text field.
   TestPositionInstance start = CreateTreePosition(root_, 0 /* child_index */);
   TestPositionInstance end =
-      CreateTextPosition(root_.id, ALL_TEXT.length() /* text_offset */,
+      CreateTextPosition(root_, ALL_TEXT.length() /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange forward_range(start->Clone(), end->Clone());
@@ -861,10 +841,10 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
                           AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // Button
-  start = CreateTextPosition(button_.id, 0 /* text_offset */,
+  start = CreateTextPosition(button_, 0 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(start->IsTextPosition());
-  end = CreateTextPosition(button_.id, BUTTON.length() /* text_offset */,
+  end = CreateTextPosition(button_, BUTTON.length() /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange button_range(start->Clone(), end->Clone());
@@ -877,11 +857,10 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
                         AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // text_field_
-  start = CreateTextPosition(text_field_.id, 0 /* text_offset */,
+  start = CreateTextPosition(text_field_, 0 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
-  end =
-      CreateTextPosition(text_field_.id, TEXT_FIELD.length() /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  end = CreateTextPosition(text_field_, TEXT_FIELD.length() /* text_offset */,
+                           ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(start->IsTextPosition());
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange text_field_range(start->Clone(), end->Clone());
@@ -896,10 +875,10 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
                 AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // static_text1_
-  start = CreateTextPosition(static_text1_.id, 0 /* text_offset */,
+  start = CreateTextPosition(static_text1_, 0 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(start->IsTextPosition());
-  end = CreateTextPosition(static_text1_.id, LINE_1.length() /* text_offset */,
+  end = CreateTextPosition(static_text1_, LINE_1.length() /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange static_text1_range(start->Clone(), end->Clone());
@@ -913,10 +892,10 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
                         AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // static_text2_
-  start = CreateTextPosition(static_text2_.id, 0 /* text_offset */,
+  start = CreateTextPosition(static_text2_, 0 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(start->IsTextPosition());
-  end = CreateTextPosition(static_text2_.id, LINE_2.length() /* text_offset */,
+  end = CreateTextPosition(static_text2_, LINE_2.length() /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange static_text2_range(start->Clone(), end->Clone());
@@ -932,10 +911,10 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
   // static_text1_ to static_text2_
   std::u16string text_between_text1_start_and_text2_end =
       LINE_1.substr().append(NEWLINE).append(LINE_2);
-  start = CreateTextPosition(static_text1_.id, 0 /* text_offset */,
+  start = CreateTextPosition(static_text1_, 0 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(start->IsTextPosition());
-  end = CreateTextPosition(static_text2_.id, LINE_2.length() /* text_offset */,
+  end = CreateTextPosition(static_text2_, LINE_2.length() /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange static_text_range(start->Clone(), end->Clone());
@@ -954,7 +933,7 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
   std::u16string text_up_to_text2_end =
       BUTTON.substr(0).append(LINE_1).append(NEWLINE).append(LINE_2);
   start = CreateTreePosition(root_, 0 /* child_index */);
-  end = CreateTextPosition(static_text2_.id, LINE_2.length() /* text_offset */,
+  end = CreateTextPosition(static_text2_, LINE_2.length() /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange root_to_static2_text_range(start->Clone(), end->Clone());
@@ -994,9 +973,8 @@ TEST_F(AXRangeTest, GetTextWithTextOffsets) {
   TestPositionInstance start = CreateTextPosition(
       button_.id, 2 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(start->IsTextPosition());
-  TestPositionInstance end =
-      CreateTextPosition(static_text2_.id, 4 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance end = CreateTextPosition(
+      static_text2_, 4 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange forward_range(start->Clone(), end->Clone());
   EXPECT_EQ(most_text, forward_range.GetText(
@@ -1011,7 +989,7 @@ TEST_F(AXRangeTest, GetTextWithTextOffsets) {
   std::u16string text_up_to_text2_tree_start =
       BUTTON.substr(0).append(TEXT_FIELD.substr(0, 10));
   start = CreateTreePosition(root_, 0 /* child_index */);
-  end = CreateTextPosition(static_text2_.id, 3 /* text_offset */,
+  end = CreateTextPosition(static_text2_, 3 /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange root_to_static2_tree_range(start->Clone(), end->Clone());
@@ -1039,36 +1017,34 @@ TEST_F(AXRangeTest, GetTextWithEmptyRanges) {
   EXPECT_EQ(EMPTY, leaf_empty_range.GetText());
 
   // empty string with leaf text position and no offset
-  start = CreateTextPosition(inline_box1_.id, 0 /* text_offset */,
+  start = CreateTextPosition(inline_box1_, 0 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   TestPositionRange leaf_text_no_offset(start->Clone(), start->Clone());
   EXPECT_EQ(EMPTY, leaf_text_no_offset.GetText());
 
   // empty string with leaf text position with offset
-  start = CreateTextPosition(inline_box1_.id, 3 /* text_offset */,
+  start = CreateTextPosition(inline_box1_, 3 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   TestPositionRange leaf_text_offset(start->Clone(), start->Clone());
   EXPECT_EQ(EMPTY, leaf_text_offset.GetText());
 
   // empty string with non-leaf text with no offset
-  start = CreateTextPosition(root_.id, 0 /* text_offset */,
+  start = CreateTextPosition(root_, 0 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   TestPositionRange non_leaf_text_no_offset(start->Clone(), start->Clone());
   EXPECT_EQ(EMPTY, non_leaf_text_no_offset.GetText());
 
   // empty string with non-leaf text position with offset
-  start = CreateTextPosition(root_.id, 3 /* text_offset */,
+  start = CreateTextPosition(root_, 3 /* text_offset */,
                              ax::mojom::TextAffinity::kDownstream);
   TestPositionRange non_leaf_text_offset(start->Clone(), start->Clone());
   EXPECT_EQ(EMPTY, non_leaf_text_offset.GetText());
 
   // empty string with same position between two anchors, but different offsets
-  TestPositionInstance after_end =
-      CreateTextPosition(line_break1_.id, 1 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance before_start =
-      CreateTextPosition(static_text2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance after_end = CreateTextPosition(
+      line_break1_, 1 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance before_start = CreateTextPosition(
+      static_text2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange same_position_different_anchors_forward(
       after_end->Clone(), before_start->Clone());
@@ -1093,26 +1069,20 @@ TEST_F(AXRangeTest, GetTextAddingNewlineBetweenParagraphs) {
   TestPositionInstance button_end = CreateTextPosition(
       button_.id, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance line1_start =
-      CreateTextPosition(inline_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line1_end =
-      CreateTextPosition(inline_box1_.id, 6 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_start = CreateTextPosition(
+      inline_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_end = CreateTextPosition(
+      inline_box1_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance line2_start =
-      CreateTextPosition(inline_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_end =
-      CreateTextPosition(inline_box2_.id, 6 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_start = CreateTextPosition(
+      inline_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_end = CreateTextPosition(
+      inline_box2_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance after_line_start =
-      CreateTextPosition(inline_box3_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance after_line_end =
-      CreateTextPosition(inline_box3_.id, 5 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance after_line_start = CreateTextPosition(
+      inline_box3_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance after_line_end = CreateTextPosition(
+      inline_box3_, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   auto TestGetTextForRange = [](TestPositionInstance range_start,
                                 TestPositionInstance range_end,
@@ -1179,19 +1149,17 @@ TEST_F(AXRangeTest, GetTextAddingNewlineBetweenParagraphs) {
   TestPositionInstance start = CreateTextPosition(
       root_.id, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance end =
-      CreateTextPosition(root_.id, ALL_TEXT.length() /* text_offset */,
+      CreateTextPosition(root_, ALL_TEXT.length() /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
   TestGetTextForRange(std::move(start), std::move(end), all_text,
                       /* expected_appended_newlines_count */ 3);
 }
 
 TEST_F(AXRangeTest, GetTextWithMaxCount) {
-  TestPositionInstance line1_start =
-      CreateTextPosition(inline_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_end =
-      CreateTextPosition(inline_box2_.id, 6 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_start = CreateTextPosition(
+      inline_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_end = CreateTextPosition(
+      inline_box2_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange test_range(line1_start->Clone(), line2_end->Clone());
   EXPECT_EQ(
@@ -1334,13 +1302,11 @@ TEST_F(AXRangeTest, GetTextWithList) {
 
   SetTree(std::make_unique<AXTree>(initial_state));
 
-  TestPositionInstance start =
-      CreateTextPosition(inline_box1.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance start = CreateTextPosition(
+      inline_box1, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(start->IsTextPosition());
-  TestPositionInstance end =
-      CreateTextPosition(inline_box4.id, 10 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance end = CreateTextPosition(
+      inline_box4, 10 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange forward_range(start->Clone(), end->Clone());
   EXPECT_EQ(kAllText, forward_range.GetText(
@@ -1357,47 +1323,35 @@ TEST_F(AXRangeTest, GetRects) {
   TestPositionInstance button = CreateTextPosition(
       button_.id, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance check_box1 =
-      CreateTextPosition(check_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance check_box2 =
-      CreateTextPosition(check_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance check_box1 = CreateTextPosition(
+      check_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance check_box2 = CreateTextPosition(
+      check_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance line1_start =
-      CreateTextPosition(inline_box1_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line1_second_char =
-      CreateTextPosition(inline_box1_.id, 1 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line1_middle =
-      CreateTextPosition(inline_box1_.id, 3 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line1_second_to_last_char =
-      CreateTextPosition(inline_box1_.id, 5 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line1_end =
-      CreateTextPosition(inline_box1_.id, 6 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_start = CreateTextPosition(
+      inline_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_second_char = CreateTextPosition(
+      inline_box1_, 1 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_middle = CreateTextPosition(
+      inline_box1_, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_second_to_last_char = CreateTextPosition(
+      inline_box1_, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line1_end = CreateTextPosition(
+      inline_box1_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionInstance line2_start =
-      CreateTextPosition(inline_box2_.id, 0 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_second_char =
-      CreateTextPosition(inline_box2_.id, 1 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_middle =
-      CreateTextPosition(inline_box2_.id, 3 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_second_to_last_char =
-      CreateTextPosition(inline_box2_.id, 5 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
-  TestPositionInstance line2_end =
-      CreateTextPosition(inline_box2_.id, 6 /* text_offset */,
-                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_start = CreateTextPosition(
+      inline_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_second_char = CreateTextPosition(
+      inline_box2_, 1 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_middle = CreateTextPosition(
+      inline_box2_, 3 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_second_to_last_char = CreateTextPosition(
+      inline_box2_, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance line2_end = CreateTextPosition(
+      inline_box2_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionInstance empty_paragraph_end =
-      CreateTextPosition(empty_paragraph_.id, 0 /* text_offset */,
+      CreateTextPosition(empty_paragraph_, 0 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
 
   // Since a button is not visible to the text representation, it spans an
@@ -1582,7 +1536,7 @@ TEST_F(AXRangeTest, GetRectsOffscreen) {
       button_.id, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
 
   TestPositionInstance empty_paragraph_end =
-      CreateTextPosition(empty_paragraph_.id, 0 /* text_offset */,
+      CreateTextPosition(empty_paragraph_, 0 /* text_offset */,
                          ax::mojom::TextAffinity::kDownstream);
 
   // [Button]           [Checkbox 1]         [Checkbox 2]

@@ -91,8 +91,23 @@ class TestAXTreeManager : public AXTreeManager {
       int text_offset,
       ax::mojom::TextAffinity affinity) const;
 
-  // Creates a text position for the given |anchor_id| belonging to the
+  // Creates a text position for the given |anchor_data| of a node from the
+  // given tree.
+  AXNodePosition::AXPositionInstance CreateTextPosition(
+      const AXTree* tree,
+      const AXNodeData& anchor_data,
+      int text_offset,
+      ax::mojom::TextAffinity affinity) const;
+
+  // Creates a text position for the given |anchor_data| belonging to the
   // current tree.
+  AXNodePosition::AXPositionInstance CreateTextPosition(
+      const AXNodeData& anchor_data,
+      int text_offset,
+      ax::mojom::TextAffinity affinity) const;
+
+  // Creates a text position for the given |anchor_id| of a node from the
+  // given tree.
   AXNodePosition::AXPositionInstance CreateTextPosition(
       const AXNodeID& anchor_id,
       int text_offset,
