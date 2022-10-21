@@ -150,6 +150,12 @@ class PLATFORM_EXPORT AffineTransform {
     return result;
   }
 
+  [[nodiscard]] static constexpr AffineTransform MakeSkewX(double angle) {
+    return AffineTransform(1, 0, std::tan(Deg2rad(angle)), 1, 0, 0);
+  }
+  [[nodiscard]] static constexpr AffineTransform MakeSkewY(double angle) {
+    return AffineTransform(1, std::tan(Deg2rad(angle)), 0, 1, 0, 0);
+  }
   [[nodiscard]] static constexpr AffineTransform Translation(double x,
                                                              double y) {
     return AffineTransform(1, 0, 0, 1, x, y);
@@ -161,6 +167,14 @@ class PLATFORM_EXPORT AffineTransform {
       double sx,
       double sy) {
     return AffineTransform(sx, 0, 0, sy, 0, 0);
+  }
+  [[nodiscard]] static AffineTransform MakeRotationAroundPoint(double angle,
+                                                               double cx,
+                                                               double cy) {
+    AffineTransform result = Translation(cx, cy);
+    result.Rotate(angle);
+    result.Translate(-cx, -cy);
+    return result;
   }
 
   // The 2d version of TransformationMatrix::Zoom().
