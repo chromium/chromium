@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/mock_crx_installer.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -93,22 +94,6 @@ INSTANTIATE_TEST_SUITE_P(
     InstallLimiterShouldDeferInstallTest,
     ::testing::Values(ash::DemoSession::DemoModeConfig::kNone,
                       ash::DemoSession::DemoModeConfig::kOnline));
-
-namespace extensions {
-
-// A mock around CrxInstaller to track extension installations.
-class MockCrxInstaller : public CrxInstaller {
- public:
-  explicit MockCrxInstaller(ExtensionService* frontend)
-      : CrxInstaller(frontend->AsWeakPtr(), nullptr, nullptr) {}
-
-  MOCK_METHOD(void, InstallCrxFile, (const CRXFileInfo& source_file));
-
- private:
-  ~MockCrxInstaller() override = default;
-};
-
-}  // namespace extensions
 
 class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
  public:

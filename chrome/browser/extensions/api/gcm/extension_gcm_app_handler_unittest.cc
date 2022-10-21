@@ -28,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
+#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -333,11 +334,9 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     extension_service_->AddExtension(extension);
   }
 
-  static bool IsCrxInstallerDone(extensions::CrxInstaller** installer,
-                                 const content::NotificationSource& source,
-                                 const content::NotificationDetails& details) {
-    return content::Source<extensions::CrxInstaller>(source).ptr() ==
-           *installer;
+  void InstallerDone(const absl::optional<CrxInstallError>& error) {
+    ASSERT_FALSE(error);
+    waiter_.SignalCompleted();
   }
 
   void UpdateExtension(const Extension* extension,
@@ -354,16 +353,15 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     path = path.Append(data_dir.BaseName());
     ASSERT_TRUE(base::CopyFile(data_dir, path));
 
-    extensions::CrxInstaller* installer = nullptr;
-    content::WindowedNotificationObserver observer(
-        extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-        base::BindRepeating(&IsCrxInstallerDone, &installer));
     extensions::CRXFileInfo crx_info(path, extensions::GetTestVerifierFormat());
     crx_info.extension_id = extension->id();
-    extension_service_->UpdateExtension(crx_info, true, &installer);
 
-    if (installer)
-      observer.Wait();
+    auto installer = extension_service_->CreateUpdateInstaller(crx_info, true);
+    installer->set_installer_callback(base::BindOnce(
+        &ExtensionGCMAppHandlerTest::InstallerDone, base::Unretained(this)));
+    installer->InstallCrxFile(crx_info);
+
+    waiter_.WaitUntilCompleted();
   }
 
   void DisableExtension(const Extension* extension) {

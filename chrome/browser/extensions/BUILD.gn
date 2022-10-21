@@ -1391,6 +1391,8 @@ static_library("test_support") {
     "load_error_waiter.h",
     "menu_manager_test_observer.cc",
     "menu_manager_test_observer.h",
+    "mock_crx_installer.cc",
+    "mock_crx_installer.h",
     "mock_extension_special_storage_policy.cc",
     "mock_extension_special_storage_policy.h",
     "scoped_database_manager_for_test.cc",

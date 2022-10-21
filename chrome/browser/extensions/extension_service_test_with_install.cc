@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -32,15 +33,6 @@ struct ExtensionsOrder {
     return a->name() < b->name();
   }
 };
-
-// Helper method to set up a WindowedNotificationObserver to wait for a
-// specific CrxInstaller to finish if we don't know the value of the
-// |installer| yet.
-bool IsCrxInstallerDone(extensions::CrxInstaller** installer,
-                        const content::NotificationSource& source,
-                        const content::NotificationDetails& details) {
-  return content::Source<extensions::CrxInstaller>(source).ptr() == *installer;
-}
 
 }  // namespace
 
@@ -288,18 +280,22 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
       previous_enabled_extension_count +
       registry()->disabled_extensions().size();
 
-  extensions::CrxInstaller* installer = nullptr;
-  content::WindowedNotificationObserver observer(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      base::BindRepeating(&IsCrxInstallerDone, &installer));
   CRXFileInfo crx_info(path, GetTestVerifierFormat());
   crx_info.extension_id = id;
-  service()->UpdateExtension(crx_info, true, &installer);
 
-  if (installer)
-    observer.Wait();
-  else
+  auto installer = service()->CreateUpdateInstaller(crx_info, true);
+
+  if (installer) {
+    base::RunLoop run_loop;
+    installer->set_installer_callback(base::BindLambdaForTesting(
+        [&run_loop](const absl::optional<CrxInstallError>& error) {
+          run_loop.Quit();
+        }));
+    installer->InstallCrxFile(crx_info);
+    run_loop.Run();
+  } else {
     content::RunAllTasksUntilIdle();
+  }
 
   std::vector<std::u16string> errors = GetErrors();
   int error_count = errors.size();

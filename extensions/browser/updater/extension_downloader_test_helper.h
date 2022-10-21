@@ -95,6 +95,11 @@ class MockExtensionCache : public ExtensionCache {
                     const base::FilePath& path,
                     const std::string& version,
                     PutExtensionCallback callback));
+
+  MOCK_METHOD3(OnInstallFailed,
+               bool(const std::string& id,
+                    const std::string& hash,
+                    const CrxInstallError& error));
 };
 
 // Creates ExtensionDownloader for tests, with mocked delegate and

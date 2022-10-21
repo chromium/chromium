@@ -2940,8 +2940,9 @@ TEST_F(ExtensionServiceTest, UpdateExtensionDuringShutdown) {
   path = data_dir().AppendASCII("good2.crx");
   CRXFileInfo crx_info(path, GetTestVerifierFormat());
   crx_info.extension_id = good_crx;
-  bool updated = service()->UpdateExtension(crx_info, true, nullptr);
-  ASSERT_FALSE(updated);
+  scoped_refptr<extensions::CrxInstaller> installer =
+      service()->CreateUpdateInstaller(crx_info, true);
+  ASSERT_FALSE(installer);
   ASSERT_EQ("1.0.0.0", registry()
                            ->enabled_extensions()
                            .GetByID(good_crx)

@@ -23,12 +23,11 @@ TestExtensionService::corrupted_extension_reinstaller() {
   return nullptr;
 }
 
-bool TestExtensionService::UpdateExtension(
-    const extensions::CRXFileInfo& file,
-    bool file_ownership_passed,
-    extensions::CrxInstaller** out_crx_installer) {
+scoped_refptr<extensions::CrxInstaller>
+TestExtensionService::CreateUpdateInstaller(const extensions::CRXFileInfo& file,
+                                            bool file_ownership_passed) {
   ADD_FAILURE();
-  return false;
+  return nullptr;
 }
 
 const Extension* TestExtensionService::GetPendingExtensionUpdate(

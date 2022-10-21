@@ -163,11 +163,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   const std::string& expected_hash() const { return expected_hash_; }
   void set_expected_hash(const std::string& val) { expected_hash_ = val; }
 
-  bool verification_check_failed() const { return verification_check_failed_; }
-  void set_verification_check_failed(bool val) {
-    verification_check_failed_ = val;
-  }
-
   // Set the exact version the installed extension should have. If
   // |fail_install_if_unexpected| is true, installation will fail if the actual
   // version doesn't match. If it is false, the installation will still
@@ -411,10 +406,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
 
   // An expected hash sum for the .crx file.
   std::string expected_hash_;
-
-  // True if installation failed due to a hash sum mismatch or expectations
-  // mismatch.
-  bool verification_check_failed_;
 
   // A copy of the expected manifest, before any transformations like
   // localization have taken place. If |approved_| is true, then the extension's

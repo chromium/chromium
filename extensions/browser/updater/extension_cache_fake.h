@@ -36,6 +36,9 @@ class ExtensionCacheFake : public ExtensionCache {
                     const base::FilePath& file_path,
                     const std::string& version,
                     PutExtensionCallback callback) override;
+  bool OnInstallFailed(const std::string& id,
+                       const std::string& hash,
+                       const CrxInstallError& error) override;
 
  private:
   typedef std::map<std::string, std::pair<std::string, base::FilePath>> Map;

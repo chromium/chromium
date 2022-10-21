@@ -18,8 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "base/unguessable_token.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
@@ -35,6 +34,7 @@ class ScopedProfileKeepAlive;
 namespace extensions {
 
 class CrxInstaller;
+class CrxInstallError;
 class ExtensionCache;
 class ExtensionPrefs;
 class ExtensionRegistry;
@@ -55,8 +55,7 @@ class ExtensionUpdaterTest;
 // updater->Start();
 // ....
 // updater->Stop();
-class ExtensionUpdater : public ExtensionDownloaderDelegate,
-                         public content::NotificationObserver {
+class ExtensionUpdater : public ExtensionDownloaderDelegate {
  public:
   typedef base::OnceClosure FinishedCallback;
 
@@ -183,6 +182,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
     bool file_ownership_passed;
     std::set<int> request_ids;
     InstallCallback callback;
+    scoped_refptr<CrxInstaller> installer;
   };
 
   struct InProgressCheck {
@@ -262,11 +262,6 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // Starts installing a crx file that has been fetched but not installed yet.
   void InstallCRXFile(FetchedCRXFile crx_file);
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Send a notification that update checks are starting.
   void NotifyStarted();
 
@@ -287,6 +282,9 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // Deletes the crx file at |crx_path| if ownership is passed.
   void CleanUpCrxFileIfNeeded(const base::FilePath& crx_path,
                               bool file_ownership_passed);
+
+  void OnInstallerDone(const base::UnguessableToken& token,
+                       const absl::optional<CrxInstallError>& error);
 
   // This function verifies if |extension_id| can be updated using
   // UpdateService.
@@ -324,12 +322,9 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   std::map<int, InProgressCheck> requests_in_progress_;
   int next_request_id_ = 0;
 
-  // Observes CRX installs we initiate.
-  content::NotificationRegistrar registrar_;
-
   // CRX installs that are currently in progress. Used to get the FetchedCRXFile
-  // when we receive NOTIFICATION_CRX_INSTALLER_DONE.
-  std::map<CrxInstaller*, FetchedCRXFile> running_crx_installs_;
+  // when OnInstallerDone is called.
+  std::map<base::UnguessableToken, FetchedCRXFile> running_crx_installs_;
 
   raw_ptr<ExtensionCache> extension_cache_ = nullptr;
 

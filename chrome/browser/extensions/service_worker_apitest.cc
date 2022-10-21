@@ -1580,7 +1580,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
         ExtensionSystem::Get(profile())->extension_service();
     CRXFileInfo crx_info(path, GetTestVerifierFormat());
     crx_info.extension_id = id;
-    EXPECT_TRUE(extension_service->UpdateExtension(crx_info, true, nullptr));
+
+    auto installer = extension_service->CreateUpdateInstaller(crx_info, true);
+    EXPECT_TRUE(installer);
+    installer->InstallCrxFile(crx_info);
+
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
     EXPECT_EQ("0.2", ExtensionRegistry::Get(profile())
                          ->enabled_extensions()

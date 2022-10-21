@@ -561,16 +561,16 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
                            delayed_info2->size() - delayed_info->size());
 }
 
-bool ExtensionService::UpdateExtension(const CRXFileInfo& file,
-                                       bool file_ownership_passed,
-                                       CrxInstaller** out_crx_installer) {
+scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
+    const CRXFileInfo& file,
+    bool file_ownership_passed) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   if (browser_terminating_) {
     LOG(WARNING) << "Skipping UpdateExtension due to browser shutdown";
     // Leak the temp file at extension_path. We don't want to add to the disk
     // I/O burden at shutdown, we can't rely on the I/O completing anyway, and
     // the file is in the OS temp directory which should be cleaned up for us.
-    return false;
+    return nullptr;
   }
 
   const std::string& id = file.extension_id;
@@ -590,7 +590,7 @@ bool ExtensionService::UpdateExtension(const CRXFileInfo& file,
       NOTREACHED();
     }
 
-    return false;
+    return nullptr;
   }
   // Either |pending_extension_info| or |extension| or both must not be null.
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(this));
@@ -645,12 +645,8 @@ bool ExtensionService::UpdateExtension(const CRXFileInfo& file,
 
   installer->set_delete_source(file_ownership_passed);
   installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
-  installer->InstallCrxFile(file);
 
-  if (out_crx_installer)
-    *out_crx_installer = installer.get();
-
-  return true;
+  return installer;
 }
 
 base::AutoReset<bool> ExtensionService::DisableExternalUpdatesForTesting() {

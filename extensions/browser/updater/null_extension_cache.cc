@@ -37,4 +37,10 @@ void NullExtensionCache::PutExtension(const std::string& id,
   std::move(callback).Run(file_path, true);
 }
 
+bool NullExtensionCache::OnInstallFailed(const std::string& id,
+                                         const std::string& hash,
+                                         const CrxInstallError& error) {
+  return false;
+}
+
 }  // namespace extensions

@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -444,15 +445,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
       temp_dir.GetPath(), "v3.crx", "manifest_v3.xml.template"));
 
   extensions::ExtensionUpdater::CheckParams params2;
-  params2.callback = base::BindOnce(&NotificationListener::OnFinished,
-                                    base::Unretained(&notification_listener));
-
   {
-    content::WindowedNotificationObserver install_error_observer(
-        extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-        content::NotificationService::AllSources());
+    base::RunLoop run_loop;
+    params2.callback = base::BindLambdaForTesting([&]() {
+      notification_listener.OnFinished();
+      run_loop.Quit();
+    });
     service->updater()->CheckNow(std::move(params2));
-    install_error_observer.Wait();
+    run_loop.Run();
   }
   ASSERT_TRUE(notification_listener.finished());
   ASSERT_TRUE(base::Contains(notification_listener.updates(),

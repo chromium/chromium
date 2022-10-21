@@ -58,4 +58,10 @@ void ExtensionCacheFake::PutExtension(const std::string& id,
   }
 }
 
+bool ExtensionCacheFake::OnInstallFailed(const std::string& id,
+                                         const std::string& hash,
+                                         const CrxInstallError& error) {
+  return false;
+}
+
 }  // namespace extensions
