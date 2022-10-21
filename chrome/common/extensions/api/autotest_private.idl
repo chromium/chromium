@@ -611,6 +611,7 @@ namespace autotestPrivate {
   dictionary DesksInfo {
     long activeDeskIndex;
     long numDesks;
+    boolean isAnimating;
   };
 
   callback GetShelfItemsCallback = void (ShelfItem[] items);

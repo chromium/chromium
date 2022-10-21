@@ -6,6 +6,7 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -105,6 +106,48 @@ TEST_F(AutotestDesksApiTest, RemoveActiveDesk) {
 
   // Can no longer remove desks.
   EXPECT_FALSE(test_api.RemoveActiveDesk(base::DoNothing()));
+}
+
+TEST_F(AutotestDesksApiTest, GetDesksInfo) {
+  AutotestDesksApi test_api;
+
+  // Originally we have 1 desk, which is the active desk and it is not
+  // animating. Desk indexes start at 0.
+  AutotestDesksApi::DesksInfo desks_info = test_api.GetDesksInfo();
+  EXPECT_EQ(0, desks_info.active_desk_index);
+  EXPECT_EQ(1, desks_info.num_desks);
+  EXPECT_FALSE(desks_info.is_animating);
+
+  // Add two desks and activate the second one. It is not animating because with
+  // non-zero duration the animation is instant.
+  auto* controller = DesksController::Get();
+  NewDesk();
+  NewDesk();
+  ASSERT_EQ(3u, controller->desks().size());
+  ActivateDesk(controller->desks()[1].get());
+  desks_info = test_api.GetDesksInfo();
+  EXPECT_EQ(1, desks_info.active_desk_index);
+  EXPECT_EQ(3, desks_info.num_desks);
+  EXPECT_FALSE(desks_info.is_animating);
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start the desk animation. The active desk index is updated when the
+  // animation is done.
+  DeskSwitchAnimationWaiter waiter;
+  controller->ActivateAdjacentDesk(
+      /*going_left=*/true, DesksSwitchSource::kDeskSwitchShortcut);
+  desks_info = test_api.GetDesksInfo();
+  EXPECT_EQ(1, desks_info.active_desk_index);
+  EXPECT_TRUE(desks_info.is_animating);
+
+  // Wait until the desk animation is finished. The active desk index should be
+  // 0, the first desk.
+  waiter.Wait();
+  desks_info = test_api.GetDesksInfo();
+  EXPECT_EQ(0, desks_info.active_desk_index);
+  EXPECT_FALSE(desks_info.is_animating);
 }
 
 using EnhancedDeskAnimationsAutotestDesksApiTest = AutotestDesksApiTest;

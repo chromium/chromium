@@ -224,6 +224,7 @@ AutotestDesksApi::DesksInfo AutotestDesksApi::GetDesksInfo() const {
   DesksInfo info;
   info.active_desk_index = controller->GetActiveDeskIndex();
   info.num_desks = controller->desks().size();
+  info.is_animating = !!controller->animation();
   return info;
 }
 

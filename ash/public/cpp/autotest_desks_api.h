@@ -23,6 +23,7 @@ class ASH_EXPORT AutotestDesksApi {
   struct DesksInfo {
     int active_desk_index;
     int num_desks;
+    bool is_animating;
   };
 
   // Creates a new desk if the maximum number of desks has not been reached, and
@@ -52,8 +53,8 @@ class ASH_EXPORT AutotestDesksApi {
   // Check whether a window belongs to a desk at |desk_index| or not.
   bool IsWindowInDesk(aura::Window* window, int desk_index);
 
-  // Gets overall desks info, which includes the total number of desks
-  // and the active desk index.
+  // Gets overall desks info, which includes the total number of desks, the
+  // active desk index and whether a desk animation is happening.
   DesksInfo GetDesksInfo() const;
 };
 
