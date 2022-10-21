@@ -733,14 +733,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   if ([self presentedViewController]) {
     return nil;
   }
-  __weak SettingsNavigationController* weakSelf = self;
+
   return @[
-    [UIKeyCommand cr_keyCommandWithInput:UIKeyInputEscape
-                           modifierFlags:KeyModifierNone
-                                   title:nil
-                                  action:^{
-                                    [weakSelf closeSettings];
-                                  }],
+    [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
+                        modifierFlags:KeyModifierNone
+                               action:@selector(closeSettings)],
   ];
 }
 
