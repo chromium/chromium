@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -43,8 +44,11 @@ class ProfileManagerObserverBridge : public ProfileManagerObserver {
 
   // ProfileManagerObserver implementation:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
  private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
   raw_ptr<UserPolicySigninService> user_policy_signin_service_;
 };
 
@@ -82,6 +86,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
 
   // Handler for when the profile is ready.
   void OnProfileReady(Profile* profile);
+
+  // Called when the ProfileAttributesStorage is being destroyed.
+  void OnProfileAttributesStorageDestroying();
 
   void set_profile_can_be_managed_for_testing(bool can_be_managed) {
     profile_can_be_managed_for_testing_ = can_be_managed;

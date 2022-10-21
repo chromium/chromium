@@ -57,8 +57,8 @@ UserPolicySigninService::UserPolicySigninService(
                                   system_url_loader_factory),
       profile_prefs_(profile->GetPrefs()),
       profile_(profile) {
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->AddObserver(this);
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager())
+    profile_manager_observation_.Observe(profile_manager);
 }
 
 UserPolicySigninService::~UserPolicySigninService() {}
@@ -69,9 +69,7 @@ void UserPolicySigninService::ShutdownUserCloudPolicyManager() {
 }
 
 void UserPolicySigninService::Shutdown() {
-  // Don't handle ProfileManager when testing because it is null.
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->RemoveObserver(this);
+  profile_manager_observation_.Reset();
   if (identity_manager())
     identity_manager()->RemoveObserver(this);
   CancelPendingRegistration();
@@ -92,6 +90,10 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
 void UserPolicySigninService::OnProfileAdded(Profile* profile) {
   if (profile && profile == profile_)
     InitializeOnProfileReady(profile);
+}
+
+void UserPolicySigninService::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {

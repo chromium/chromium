@@ -7,7 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -51,6 +53,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
 
   // ProfileManagerObserver implementation.
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   void set_profile_can_be_managed_for_testing(bool can_be_managed) {
     profile_can_be_managed_for_testing_ = can_be_managed;
@@ -76,6 +79,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // from the test fixture. This is used to bypass the check on the profile
   // attributes entry.
   bool profile_can_be_managed_for_testing_ = false;
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   // The PrefService associated with the profile.
   raw_ptr<PrefService> profile_prefs_;

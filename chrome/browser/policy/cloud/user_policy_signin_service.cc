@@ -46,18 +46,19 @@ ProfileManagerObserverBridge::ProfileManagerObserverBridge(
     : user_policy_signin_service_(user_policy_signin_service) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager)
-    profile_manager->AddObserver(this);
+    profile_manager_observation_.Observe(profile_manager);
 }
 
 void ProfileManagerObserverBridge::OnProfileAdded(Profile* profile) {
   user_policy_signin_service_->OnProfileReady(profile);
 }
 
-ProfileManagerObserverBridge::~ProfileManagerObserverBridge() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager)
-    profile_manager->RemoveObserver(this);
+void ProfileManagerObserverBridge::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
+  user_policy_signin_service_->OnProfileAttributesStorageDestroying();
 }
+
+ProfileManagerObserverBridge::~ProfileManagerObserverBridge() = default;
 
 UserPolicySigninService::UserPolicySigninService(
     Profile* profile,
@@ -205,6 +206,10 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {
 void UserPolicySigninService::OnProfileReady(Profile* profile) {
   if (profile && profile == profile_)
     InitializeOnProfileReady(profile);
+}
+
+void UserPolicySigninService::OnProfileAttributesStorageDestroying() {
+  observed_profile_.Reset();
 }
 
 void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
