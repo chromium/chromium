@@ -8,13 +8,13 @@ PASS Fetching [PUT] URL.createObjectURL(blob) is KO
 PASS Fetching [DELETE] URL.createObjectURL(blob) is KO
 PASS Fetching [INVALID] URL.createObjectURL(blob) is KO
 PASS Fetching [GET] blob:not-backed-by-a-blob/ is KO
-FAIL Fetching URL.createObjectURL(empty_blob) is OK assert_equals: Content-Type is null expected (string) "" but got (object) null
-FAIL Fetching URL.createObjectURL(empty_type_blob) is OK assert_equals: Content-Type is null expected (string) "" but got (object) null
+PASS Fetching URL.createObjectURL(empty_blob) is OK
+PASS Fetching URL.createObjectURL(empty_type_blob) is OK
 PASS Fetching URL.createObjectURL(empty_data_blob) is OK
-FAIL Blob content is not sniffed for a content type [image/png] assert_equals: Content-Type is null expected (string) "" but got (object) null
-FAIL Blob content is not sniffed for a content type [text/xml] assert_equals: Content-Type is null expected (string) "" but got (object) null
-FAIL Set content type to the empty string for slice with invalid content type assert_equals: expected (string) "" but got (object) null
-FAIL Set content type to the empty string for slice with no content type  assert_equals: expected (string) "" but got (object) null
-FAIL Blob.slice should not sniff the content for a content type assert_equals: expected (string) "" but got (object) null
+PASS Blob content is not sniffed for a content type [image/png]
+PASS Blob content is not sniffed for a content type [text/xml]
+FAIL Set content type to the empty string for slice with invalid content type assert_equals: expected "17" but got "0"
+FAIL Set content type to the empty string for slice with no content type  assert_equals: expected "12" but got "0"
+PASS Blob.slice should not sniff the content for a content type
 Harness: the test ran to completion.
 
