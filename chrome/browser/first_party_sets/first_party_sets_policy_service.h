@@ -149,6 +149,12 @@ class FirstPartySetsPolicyService : public KeyedService {
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
+  // Returns true iff the preference and feature are both enabled.
+  bool is_enabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return feature_enabled_ && pref_enabled_;
+  }
+
   // The remote delegates associated with the profile that created this
   // service.
   mojo::RemoteSet<network::mojom::FirstPartySetsAccessDelegate>
@@ -158,6 +164,21 @@ class FirstPartySetsPolicyService : public KeyedService {
   // `Shutdown()`.
   raw_ptr<content::BrowserContext> browser_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Whether FPS is enabled globally.
+  //
+  // Initialized to true for the sake of tests, so that queries received before
+  // service initialization can be accumulated and answered after test setup,
+  // rather than answered immediately in the negative.
+  bool feature_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+
+  // Whether FPS is enabled in this context. Note that this may be true even if
+  // FPS is globally disabled.
+  //
+  // Initialized to true for the sake of tests, so that queries received before
+  // service initialization can be accumulated and answered after test setup,
+  // rather than answered immediately in the negative.
+  bool pref_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // The customizations to the browser's list of First-Party Sets to respect
   // the changes specified by this FirstPartySetsOverrides policy for the

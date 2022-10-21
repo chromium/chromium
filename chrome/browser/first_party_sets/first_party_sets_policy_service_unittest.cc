@@ -201,6 +201,11 @@ class FirstPartySetsPolicyServiceTest
     first_party_sets_handler_.SetGlobalSets(std::move(global_sets));
   }
 
+  void SetEnabledPref(bool enabled) {
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxFirstPartySetsEnabled, enabled);
+  }
+
   void SetInvokeCallbacksAsynchronously(bool asynchronous) {
     first_party_sets_handler_.set_invoke_callbacks_asynchronously(asynchronous);
   }
@@ -237,8 +242,7 @@ TEST_F(FirstPartySetsPolicyServiceTest, IsSiteInManagedSet_SiteNotInConfig) {
 
 TEST_F(FirstPartySetsPolicyServiceTest,
        IsSiteInManagedSet_SiteInConfig_AsDeletion) {
-  net::SchemefulSite example_site =
-      net::SchemefulSite(GURL("https://example.test"));
+  net::SchemefulSite example_site(GURL("https://example.test"));
   SetContextConfig(
       net::FirstPartySetsContextConfig({{example_site, {absl::nullopt}}}));
   service()->InitForTesting();
@@ -248,8 +252,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
 TEST_F(FirstPartySetsPolicyServiceTest,
        IsSiteInManagedSet_SiteInConfig_AsModification) {
-  net::SchemefulSite example_site =
-      net::SchemefulSite(GURL("https://example.test"));
+  net::SchemefulSite example_site(GURL("https://example.test"));
   SetContextConfig(net::FirstPartySetsContextConfig(
       {{example_site,
         {net::FirstPartySetEntry(
@@ -257,6 +260,35 @@ TEST_F(FirstPartySetsPolicyServiceTest,
             net::SiteType::kAssociated, absl::nullopt)}}}));
   service()->InitForTesting();
   EXPECT_TRUE(service()->IsSiteInManagedSet(example_site));
+  env().RunUntilIdle();
+}
+
+TEST_F(FirstPartySetsPolicyServiceTest,
+       IsSiteInManagedSet_SiteInConfig_PrefDisabled) {
+  net::SchemefulSite example_site(GURL("https://example.test"));
+  SetContextConfig(net::FirstPartySetsContextConfig(
+      {{example_site,
+        {net::FirstPartySetEntry(
+            net::SchemefulSite(GURL("https://primary.test")),
+            net::SiteType::kAssociated, absl::nullopt)}}}));
+  SetEnabledPref(false);
+  service()->InitForTesting();
+  EXPECT_FALSE(service()->IsSiteInManagedSet(example_site));
+  env().RunUntilIdle();
+}
+
+TEST_F(FirstPartySetsPolicyServiceTest,
+       IsSiteInManagedSet_SiteInConfig_FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kFirstPartySets);
+  net::SchemefulSite example_site(GURL("https://example.test"));
+  SetContextConfig(net::FirstPartySetsContextConfig(
+      {{example_site,
+        {net::FirstPartySetEntry(
+            net::SchemefulSite(GURL("https://primary.test")),
+            net::SiteType::kAssociated, absl::nullopt)}}}));
+  service()->InitForTesting();
+  EXPECT_FALSE(service()->IsSiteInManagedSet(example_site));
   env().RunUntilIdle();
 }
 
@@ -279,8 +311,7 @@ TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByFeature) {
 
   // Simulate First-Party Sets disabled by the feature.
   features.InitAndDisableFeature(features::kFirstPartySets);
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                    true);
+  SetEnabledPref(true);
   // Verify that FindEntry doesn't return associate1's entry when FPS is off.
   EXPECT_FALSE(service()->FindEntry(associate1_site));
   histogram_tester.ExpectUniqueSample(
@@ -302,13 +333,12 @@ TEST_F(FirstPartySetsPolicyServiceTest, FindEntry_FpsDisabledByPref) {
         {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
                                  0)}}},
       {}));
-  // Simulate the profile set overrides are empty.
-  service()->InitForTesting();
 
   // Simulate First-Party Sets disabled by the preference.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                    false);
+  SetEnabledPref(false);
+
+  service()->InitForTesting();
 
   // Verify that FindEntry doesn't return associate1's entry when FPS is off.
   EXPECT_FALSE(service()->FindEntry(associate1_site));
@@ -327,8 +357,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   // Fully enable First-Party Sets.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                    true);
+  SetEnabledPref(true);
   // Verify that FindEntry returns empty if the global sets and profile sets
   // aren't ready yet.
   EXPECT_FALSE(service()->FindEntry(associate1_site));
@@ -363,8 +392,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   // Fully enable First-Party Sets.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                    true);
+  SetEnabledPref(true);
 
   // Simulate 3 FindEntry queries which all should return empty.
   EXPECT_FALSE(service()->FindEntry(associate_site));
@@ -408,8 +436,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   // Fully enable First-Party Sets.
   features.InitAndEnableFeature(features::kFirstPartySets);
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                    true);
+  SetEnabledPref(true);
 
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
@@ -607,6 +634,27 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
 }
 
+TEST_F(FirstPartySetsPolicyServiceTest,
+       ComputeFirstPartySetMetadata_PrefDisabled) {
+  net::SchemefulSite test_primary(GURL("https://a.test"));
+  net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
+                                     absl::nullopt);
+  net::FirstPartySetsContextConfig test_config({{test_primary, {test_entry}}});
+
+  SetContextConfig(test_config.Clone());
+  SetInvokeCallbacksAsynchronously(/*asynchronous=*/false);
+  SetEnabledPref(false);
+
+  service()->InitForTesting();
+
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
+                                          /*party_context=*/{},
+                                          future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Take(), net::FirstPartySetMetadata());
+}
+
 namespace {
 
 enum PrefState { kDefault, kDisabled, kEnabled };
@@ -641,8 +689,7 @@ class FirstPartySetsPolicyServiceResumeThrottleTest
 // Verify the throttle resume callback is always invoked.
 TEST_P(FirstPartySetsPolicyServiceResumeThrottleTest,
        MaybeAddNavigationThrottleResumeCallback) {
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                    IsPrefEnabled());
+  SetEnabledPref(IsPrefEnabled());
   base::RunLoop run_loop;
   service()->RegisterThrottleResumeCallback(run_loop.QuitClosure());
   service()->InitForTesting();

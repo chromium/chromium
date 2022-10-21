@@ -64,7 +64,10 @@ void FirstPartySetsPolicyService::InitForTesting() {
 
 void FirstPartySetsPolicyService::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+  feature_enabled_ = base::FeatureList::IsEnabled(features::kFirstPartySets);
+
+  if (!feature_enabled_) {
+    pref_enabled_ = false;
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
                              net::FirstPartySetsCacheFilter());
     return;
@@ -74,8 +77,12 @@ void FirstPartySetsPolicyService::Init() {
   // profile is guaranteed to be non-null since we create this service with a
   // non-null `context`.
   DCHECK(profile);
-  // Checks that `profile` isn't a system profile or a guest profile before
-  // returning a pointer to the value of the First-Party Sets Overrides policy.
+
+  PrefService* prefs = profile->GetPrefs();
+  pref_enabled_ = GetEnabledPolicyForProfile(prefs);
+
+  // If `profile` is a system profile or a guest profile, use an empty config
+  // and cache filter.
   if (profile->IsSystemProfile() || profile->IsGuestSession()) {
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
                              net::FirstPartySetsCacheFilter());
@@ -86,7 +93,6 @@ void FirstPartySetsPolicyService::Init() {
   // this since the value of the FirstPartySets Overrides policy doesn't
   // dynamically refresh, and all the delegates for `context` will have the same
   // policy and thus the same config.
-  PrefService* prefs = profile->GetPrefs();
   content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
       GetOverridesPolicyForProfile(prefs),
       base::BindOnce(&FirstPartySetsPolicyService::OnProfileConfigReady,
@@ -95,7 +101,7 @@ void FirstPartySetsPolicyService::Init() {
                      // enabled when the service is created, to allow users
                      // to play with the FPS enabled setting without
                      // affecting user experience during the browser session.
-                     GetEnabledPolicyForProfile(prefs)));
+                     pref_enabled_));
 }
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
@@ -104,6 +110,11 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_enabled()) {
+    std::move(callback).Run({});
+    return;
+  }
+
   if (!config_.has_value()) {
     on_ready_callbacks_.push_back(base::BindOnce(
         &FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal,
@@ -123,6 +134,11 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config_.has_value());
+
+  if (!is_enabled()) {
+    std::move(callback).Run({});
+    return;
+  }
 
   content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
       site, base::OptionalToPtr(top_frame_site), party_context, *config_,
@@ -147,15 +163,16 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/1366846) Add metrics here to track whether the pref is ever
   // enabled before the config is ready to be to be sent to the delegates.
+  pref_enabled_ = enabled;
   for (auto& delegate : access_delegates_) {
-    delegate->SetEnabled(enabled);
+    delegate->SetEnabled(pref_enabled_);
   }
 }
 
 void FirstPartySetsPolicyService::RegisterThrottleResumeCallback(
     base::OnceClosure resume_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_ready()) {
+  if (is_ready() || !is_enabled()) {
     std::move(resume_callback).Run();
     return;
   }
@@ -229,12 +246,8 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
     return absl::nullopt;
   }
 
-  if (PrefService* prefs =
-          Profile::FromBrowserContext(browser_context_)->GetPrefs();
-      prefs &&
-      !prefs->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled)) {
+  if (!is_enabled())
     return absl::nullopt;
-  }
 
   return content::FirstPartySetsHandler::GetInstance()->FindEntry(
       site, config_.value());
@@ -243,7 +256,7 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
 bool FirstPartySetsPolicyService::IsSiteInManagedSet(
     const net::SchemefulSite& site) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!config_.has_value())
+  if (!config_.has_value() || !is_enabled())
     return false;
 
   absl::optional<absl::optional<net::FirstPartySetEntry>> maybe_override =
@@ -281,6 +294,8 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
 
 void FirstPartySetsPolicyService::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  feature_enabled_ = true;
+  pref_enabled_ = true;
   access_delegates_.Clear();
   on_ready_callbacks_.clear();
   config_.reset();
