@@ -589,21 +589,22 @@ config("compiler") {
       if (is_clang) {
         cflags_cc += [ "-fno-trigraphs" ]
       }
-    } else if (is_linux) {
-      # TODO(crbug.com/1284275): Switch to C++20 on all platforms.
-      if (is_clang) {
-        cflags_cc += [ "-std=${standard_prefix}++20" ]
+    } else if (is_clang) {
+      if (is_chromeos_lacros) {
+        # TODO(crbug.com/1376742): LaCrOS currently triggers a strange DCHECK
+        # failure in C++20 mode. Switch to C++20 when this is resolved.
+        cflags_cc += [ "-std=${standard_prefix}++17" ]
       } else {
-        # The gcc bots are currently using GCC 9, which is not new enough to
-        # support "c++20"/"gnu++20".
-        cflags_cc += [ "-std=${standard_prefix}++2a" ]
+        cflags_cc += [ "-std=${standard_prefix}++20" ]
       }
     } else {
-      cflags_cc += [ "-std=${standard_prefix}++17" ]
+      # The gcc bots are currently using GCC 9, which is not new enough to
+      # support "c++20"/"gnu++20".
+      cflags_cc += [ "-std=${standard_prefix}++2a" ]
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    cflags_cc += [ "/std:c++17" ]
+    cflags_cc += [ "/std:c++20" ]
   } else if (!is_nacl) {
     # TODO(mcgrathr) - the NaCl GCC toolchain doesn't support either
     # gnu11/gnu++11 or c11/c++11; we technically don't need this toolchain any
@@ -611,11 +612,13 @@ config("compiler") {
     # turned off we need the !is_nacl clause and the (is_nacl && is_clang)
     # clause, above.
     cflags_c += [ "-std=c11" ]
-    if (is_apple) {
-      # TODO(crbug.com/1284275): Switch to C++20 on all platforms.
-      cflags_cc += [ "-std=c++20" ]
-    } else {
+
+    if (is_fuchsia) {
+      # TODO(crbug.com/fuchsia/108751): The FIDL compiler generates code that
+      # will not compile in C++20 mode. Switch to C++20 when this is resolved.
       cflags_cc += [ "-std=c++17" ]
+    } else {
+      cflags_cc += [ "-std=c++20" ]
     }
   }
 
