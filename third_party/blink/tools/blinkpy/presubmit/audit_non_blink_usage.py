@@ -1531,7 +1531,7 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/url_pattern/',
+            'third_party/blink/renderer/core/url_pattern/',
         ],
         'allowed': [
             # Required to provide a canonicalization functor to liburlpattern.

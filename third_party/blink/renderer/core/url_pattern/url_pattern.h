@@ -1,13 +1,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_URL_PATTERN_URL_PATTERN_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_URL_PATTERN_URL_PATTERN_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
 
 #include "base/types/pass_key.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_component.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/liburlpattern/parse.h"
@@ -23,7 +23,7 @@ namespace url_pattern {
 class Component;
 }  // namespace url_pattern
 
-class MODULES_EXPORT URLPattern : public ScriptWrappable {
+class CORE_EXPORT URLPattern : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
   using Component = url_pattern::Component;
 
@@ -113,4 +113,4 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_URL_PATTERN_URL_PATTERN_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_

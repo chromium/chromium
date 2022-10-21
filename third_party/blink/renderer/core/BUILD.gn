@@ -295,6 +295,7 @@ component("core") {
     "//third_party/blink/renderer/core/animation",
     "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe",
+    "//third_party/blink/renderer/core/url_pattern",
     "//third_party/blink/renderer/core/xml:xpath_generated",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform/wtf",
@@ -357,6 +358,7 @@ component("core") {
     "//third_party/blink/renderer/core/animation",
     "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe",
+    "//third_party/blink/renderer/core/url_pattern",
     "//third_party/blink/renderer/core/xml:xpath_generated",
   ]
 

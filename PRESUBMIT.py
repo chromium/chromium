@@ -801,7 +801,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'absl::StatusOr is banned. Use base::expected instead.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+      [
+        # Needed to use liburlpattern API.
+        r'third_party/blink/renderer/core/url_pattern/.*',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK
+      ],
     ),
     BanRule(
       r'/\babsl::StrFormat\b',
@@ -817,7 +822,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'absl::string_view is banned. Use base::StringPiece instead.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+      [
+        # Needed to use liburlpattern API.
+        r'third_party/blink/renderer/core/url_pattern/.*',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK
+      ],
     ),
     BanRule(
       r'/\babsl::(StrSplit|StrJoin|StrCat|StrAppend|Substitute|StrContains)\b',

@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/blink/renderer/core/core.gni")
 
-blink_modules_sources("url_pattern") {
+blink_core_sources("url_pattern") {
   sources = [
     "url_pattern.cc",
     "url_pattern.h",

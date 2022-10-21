@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/url_pattern/url_pattern.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_urlpatterninit_usvstring.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component_result.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_result.h"
-#include "third_party/blink/renderer/modules/url_pattern/url_pattern_canon.h"
-#include "third_party/blink/renderer/modules/url_pattern/url_pattern_component.h"
-#include "third_party/blink/renderer/modules/url_pattern/url_pattern_parser.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_component_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_result.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"

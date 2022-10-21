@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_URL_PATTERN_URL_PATTERN_CANON_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_URL_PATTERN_URL_PATTERN_CANON_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_CANON_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_CANON_H_
 
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -81,4 +81,4 @@ String CanonicalizeHash(const String& input,
 }  // namespace url_pattern
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_URL_PATTERN_URL_PATTERN_CANON_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_CANON_H_
