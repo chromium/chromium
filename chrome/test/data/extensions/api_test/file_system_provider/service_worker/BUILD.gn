@@ -32,6 +32,8 @@ js_library("service_worker") {
     "delete_entry/test.js",
     "evil/sw.js",
     "evil/test.js",
+    "execute_action/sw.js",
+    "execute_action/test.js",
     "get_all/sw.js",
     "get_all/test.js",
     "get_metadata/sw.js",

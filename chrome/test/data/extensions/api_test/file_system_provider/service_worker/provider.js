@@ -256,6 +256,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onCreateDirectoryRequested', true);
     this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onDeleteEntryRequested', true);
+    this.setHandlerEnabled('onExecuteActionRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
     this.setHandlerEnabled('onMountRequested', true);
     this.setHandlerEnabled('onMoveEntryRequested', true);
@@ -675,6 +676,24 @@ export class TestFileSystemProvider {
     dir.children[fileName] = Entry.file(fileName, new Date(), '');
     onSuccess();
   };
+
+  /**
+   * FSP: implementation for the execute action request event.
+   *
+   * @param {!chrome.fileSystemProvider.ExecuteActionRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback with an error code.
+   */
+  onExecuteActionRequested(options, onSuccess, onError) {
+    this.recordEvent('onExecuteActionRequested', options);
+    if (options.actionId === TestFileSystemProvider.ACTION_ID) {
+      onSuccess();
+    } else {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+    }
+  }
 
   /**
    * FSP: implementation for the metadata request event.
@@ -1236,6 +1255,14 @@ TestFileSystemProvider.VALID_THUMBNAIL =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' +
     'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO' +
     '9TXL0Y4OHwAAAABJRU5ErkJggg==';
+
+/**
+ * A valid action ID that will execute successfully.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.ACTION_ID = 'test-action-id';
 
 // Service worker entry point.
 export function serviceWorkerMain(serviceWorker) {
