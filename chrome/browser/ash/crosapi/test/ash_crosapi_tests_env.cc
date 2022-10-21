@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/base_paths.h"
+#include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path_watcher.h"
@@ -72,6 +73,10 @@ AshCrosapiTestEnv::AshCrosapiTestEnv() {
   command_line.AppendSwitchPath(switches::kUserDataDir,
                                 user_data_dir_.GetPath());
   command_line.AppendSwitch(ash::switches::kUseMyFilesInUserDataDirForTesting);
+
+  // This switch is for filemanger test to install an app.
+  // TODO(crbug.com/1376891): Remove settings for a specific test.
+  command_line.AppendSwitchASCII(switches::kEnableFeatures, "WebAppsCrosapi");
 
   // Waits for socket connection to establish.
   // TODO(crbug.com/1368029): Separate logs generated during setup from those
