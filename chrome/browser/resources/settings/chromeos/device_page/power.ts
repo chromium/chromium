@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,93 +14,102 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, PowerManagementSettings, PowerSource} from './device_page_browser_proxy.js';
+import {getTemplate} from './power.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsPowerElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+interface IdleOption {
+  value: IdleBehavior;
+  name: string;
+  selected: boolean;
+}
 
-/** @polymer */
+interface SettingsPowerElement {
+  $: {
+    adaptiveChargingToggle: SettingsToggleButtonElement,
+    lidClosedToggle: SettingsToggleButtonElement,
+    powerSource: HTMLSelectElement,
+  };
+}
+
+const SettingsPowerElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+        ],
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & RouteObserverMixinInterface &
+          DeepLinkingBehaviorInterface,
+    };
+
 class SettingsPowerElement extends SettingsPowerElementBase {
   static get is() {
     return 'settings-power';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private {string} ID of the selected power source, or ''. */
+      /**
+       * ID of the selected power source, or ''.
+       */
       selectedPowerSourceId_: String,
 
-      /** @private {!BatteryStatus|undefined} */
       batteryStatus_: Object,
 
-      /** @private {boolean} Whether a low-power (USB) charger is being used. */
+      /**
+       * Whether a low-power (USB) charger is being used.
+       */
       lowPowerCharger_: Boolean,
 
       /**
-         @private {boolean} Whether the AC idle behavior is managed by policy.
-           */
+       *  Whether the AC idle behavior is managed by policy.
+       */
       acIdleManaged_: Boolean,
 
       /**
-       * @private {boolean} Whether the battery idle behavior is managed by
-       *     policy.
+       * Whether the battery idle behavior is managed by policy.
        */
       batteryIdleManaged_: Boolean,
 
       /**
-         @private {string} Text for label describing the lid-closed behavior.
-           */
+       * Text for label describing the lid-closed behavior.
+       */
       lidClosedLabel_: String,
 
-      /** @private {boolean} Whether the system possesses a lid. */
+      /**
+       * Whether the system possesses a lid.
+       */
       hasLid_: Boolean,
 
       /**
        * List of available dual-role power sources.
-       * @private {!Array<!PowerSource>|undefined}
        */
       powerSources_: Array,
 
-      /** @private */
       powerSourceLabel_: {
         type: String,
         computed:
             'computePowerSourceLabel_(powerSources_, batteryStatus_.calculating)',
       },
 
-      /** @private */
       showPowerSourceDropdown_: {
         type: Boolean,
         computed: 'computeShowPowerSourceDropdown_(powerSources_)',
@@ -109,17 +118,12 @@ class SettingsPowerElement extends SettingsPowerElementBase {
 
       /**
        * The name of the dedicated charging device being used, if present.
-       * @private {string}
        */
       powerSourceName_: {
         type: String,
         computed: 'computePowerSourceName_(powerSources_, lowPowerCharger_)',
       },
 
-      /**
-         @private {Array<!{value: IdleBehavior, name: string, selected:
-             boolean}>}
-       */
       acIdleOptions_: {
         type: Array,
         value() {
@@ -127,10 +131,6 @@ class SettingsPowerElement extends SettingsPowerElementBase {
         },
       },
 
-      /**
-         @private {Array<!{value: IdleBehavior, name: string, selected:
-             boolean}>}
-       */
       batteryIdleOptions_: {
         type: Array,
         value() {
@@ -138,19 +138,16 @@ class SettingsPowerElement extends SettingsPowerElementBase {
         },
       },
 
-      /** @private {boolean} */
       shouldAcIdleSelectBeDisabled_: {
         type: Boolean,
         computed: 'hasSingleOption_(acIdleOptions_)',
       },
 
-      /** @private {boolean} */
       shouldBatteryIdleSelectBeDisabled_: {
         type: Boolean,
         computed: 'hasSingleOption_(batteryIdleOptions_)',
       },
 
-      /** @private {boolean} */
       adaptiveChargingEnabled_: {
         type: Boolean,
         value() {
@@ -158,28 +155,25 @@ class SettingsPowerElement extends SettingsPowerElementBase {
         },
       },
 
-      /** @private {boolean} Whether adaptive charging is managed by policy. */
+      /** Whether adaptive charging is managed by policy. */
       adaptiveChargingManaged_: Boolean,
 
-      /** @private {!chrome.settingsPrivate.PrefObject} */
       lidClosedPref_: {
         type: Object,
         value() {
-          return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
+          return {};
         },
       },
 
-      /** @private {!chrome.settingsPrivate.PrefObject} */
       adaptiveChargingPref_: {
         type: Object,
         value() {
-          return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
+          return {};
         },
       },
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -195,16 +189,29 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     };
   }
 
-  /** @override */
+  private acIdleManaged_: boolean;
+  private acIdleOptions_: IdleOption[];
+  private adaptiveChargingEnabled_: boolean;
+  private adaptiveChargingManaged_: boolean;
+  private adaptiveChargingPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  private batteryIdleManaged_: boolean;
+  private batteryIdleOptions_: IdleOption[];
+  private batteryStatus_: BatteryStatus|undefined;
+  private browserProxy_: DevicePageBrowserProxy;
+  private hasLid_: boolean;
+  private lidClosedLabel_: string;
+  private lidClosedPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  private lowPowerCharger_: boolean;
+  private powerSources_: PowerSource[]|undefined;
+  private selectedPowerSourceId_: string;
+
   constructor() {
     super();
 
-    /** @private {!DevicePageBrowserProxy} */
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
@@ -221,10 +228,8 @@ class SettingsPowerElement extends SettingsPowerElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!Setting} settingId
-   * @return {boolean}
    */
-  beforeDeepLinkAttempt(settingId) {
+  override beforeDeepLinkAttempt(settingId: Setting): boolean {
     if (settingId === Setting.kPowerSource && this.$.powerSource.hidden) {
       // If there is only 1 power source, there is no dropdown to focus.
       // Stop the deep link attempt in this case.
@@ -235,11 +240,7 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     return true;
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.POWER) {
       return;
@@ -249,38 +250,31 @@ class SettingsPowerElement extends SettingsPowerElementBase {
   }
 
   /**
-   * @param {!Array<!PowerSource>|undefined} powerSources
-   * @param {boolean} calculating
-   * @return {string} The primary label for the power source row.
-   * @private
+   * @return The primary label for the power source row.
    */
-  computePowerSourceLabel_(powerSources, calculating) {
+  private computePowerSourceLabel_(
+      powerSources: PowerSource[]|undefined, calculating: boolean): string {
     return this.i18n(
-        calculating ?
-            'calculatingPower' :
+        calculating                             ? 'calculatingPower' :
             powerSources && powerSources.length ? 'powerSourceLabel' :
                                                   'powerSourceBattery');
   }
 
   /**
-   * @param {!Array<!PowerSource>} powerSources
-   * @return {boolean} True if at least one power source is attached and all of
+   * @return True if at least one power source is attached and all of
    *     them are dual-role (no dedicated chargers).
-   * @private
    */
-  computeShowPowerSourceDropdown_(powerSources) {
-    return powerSources.length > 0 && powerSources.every(function(source) {
-      return !source.is_dedicated_charger;
-    });
+  private computeShowPowerSourceDropdown_(powerSources: PowerSource[]):
+      boolean {
+    return powerSources.length > 0 &&
+        powerSources.every((source) => !source.is_dedicated_charger);
   }
 
   /**
-   * @param {!Array<!PowerSource>} powerSources
-   * @param {boolean} lowPowerCharger
-   * @return {string} Description of the power source.
-   * @private
+   * @return Description of the power source.
    */
-  computePowerSourceName_(powerSources, lowPowerCharger) {
+  private computePowerSourceName_(
+      powerSources: PowerSource[], lowPowerCharger: boolean): string {
     if (lowPowerCharger) {
       return this.i18n('powerSourceLowPowerCharger');
     }
@@ -290,43 +284,32 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     return '';
   }
 
-  /** @private */
-  onPowerSourceChange_() {
+  private onPowerSourceChange_(): void {
     this.browserProxy_.setPowerSource(this.$.powerSource.value);
   }
 
   /**
    * Used to disable Battery/AC idle select dropdowns.
-   * @param {!Array<string>} idleOptions
-   * @return {boolean}
-   * @private
    */
-  hasSingleOption_(idleOptions) {
+  private hasSingleOption_(idleOptions: string[]): boolean {
     return idleOptions.length === 1;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAcIdleSelectChange_(event) {
-    const behavior = /** @type {IdleBehavior} */
-        (parseInt(event.target.value, 10));
-    this.browserProxy_.setIdleBehavior(behavior, true /* whenOnAc */);
+  private onAcIdleSelectChange_(event: Event): void {
+    const behavior: IdleBehavior =
+        parseInt((event.target as HTMLSelectElement).value, 10);
+    this.browserProxy_.setIdleBehavior(behavior, /* whenOnAc */ true);
     recordSettingChange();
   }
 
-  /** @private */
-  onBatteryIdleSelectChange_() {
-    const behavior = /** @type {IdleBehavior} */
-        (parseInt(
-            this.shadowRoot.querySelector('#batteryIdleSelect').value, 10));
-    this.browserProxy_.setIdleBehavior(behavior, false /* whenOnAc */);
+  private onBatteryIdleSelectChange_(event: Event): void {
+    const behavior: IdleBehavior =
+        parseInt((event.target as HTMLSelectElement).value, 10);
+    this.browserProxy_.setIdleBehavior(behavior, /* whenOnAc */ false);
     recordSettingChange();
   }
 
-  /** @private */
-  onLidClosedToggleChange_() {
+  private onLidClosedToggleChange_(): void {
     // Other behaviors are only displayed when the setting is controlled, in
     // which case the toggle can't be changed by the user.
     this.browserProxy_.setLidClosedBehavior(
@@ -335,36 +318,34 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     recordSettingChange();
   }
 
-  /** @private */
-  onAdaptiveChargingToggleChange_() {
-    const /** @type {boolean} */ enabled =
-        this.$.adaptiveChargingToggle.checked;
+  private onAdaptiveChargingToggleChange_(): void {
+    const enabled = this.$.adaptiveChargingToggle.checked;
     this.browserProxy_.setAdaptiveCharging(enabled);
     recordSettingChange(
-        Setting.kAdaptiveCharging,
-        /** @type {!SettingChangeValue} */ ({boolValue: enabled}));
+        Setting.kAdaptiveCharging, {boolValue: enabled} as SettingChangeValue);
   }
 
   /**
-   * @param {!Array<PowerSource>} sources External power sources.
-   * @param {string} selectedId The ID of the currently used power source.
-   * @param {boolean} lowPowerCharger Whether the currently used power source
+   * @param sources External power sources.
+   * @param selectedId The ID of the currently used power source.
+   * @param lowPowerCharger Whether the currently used power source
    *     is a low-powered USB charger.
-   * @private
    */
-  powerSourcesChanged_(sources, selectedId, lowPowerCharger) {
+  private powerSourcesChanged_(
+      sources: PowerSource[], selectedId: string,
+      lowPowerCharger: boolean): void {
     this.powerSources_ = sources;
     this.selectedPowerSourceId_ = selectedId;
     this.lowPowerCharger_ = lowPowerCharger;
   }
 
   /**
-   * @param {LidClosedBehavior} behavior Current behavior.
-   * @param {boolean} isControlled Whether the underlying pref is controlled.
-   * @private
+   * @param behavior Current behavior.
+   * @param isControlled Whether the underlying pref is controlled.
    */
-  updateLidClosedLabelAndPref_(behavior, isControlled) {
-    const pref = {
+  private updateLidClosedLabelAndPref_(
+      behavior: LidClosedBehavior, isControlled: boolean): void {
+    const pref: chrome.settingsPrivate.PrefObject<boolean> = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       // Most behaviors get a dedicated label and appear as checked.
@@ -396,13 +377,11 @@ class SettingsPowerElement extends SettingsPowerElementBase {
   }
 
   /**
-   * @param {!IdleBehavior} idleBehavior
-   * @param {!IdleBehavior} currIdleBehavior
-   * @return {{value: IdleBehavior, name: string, selected:boolean }}
-   *     Idle option object that maps to idleBehavior.
-   * @private
+   * @return Idle option object that maps to idleBehavior.
    */
-  getIdleOption_(idleBehavior, currIdleBehavior) {
+  private getIdleOption_(
+      idleBehavior: IdleBehavior, currIdleBehavior: IdleBehavior):
+      {value: IdleBehavior, name: string, selected: boolean} {
     const selected = idleBehavior === currIdleBehavior;
     switch (idleBehavior) {
       case IdleBehavior.DISPLAY_OFF_SLEEP:
@@ -440,14 +419,9 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     }
   }
 
-  /**
-   * @param {!Array<!IdleBehavior>} acIdleBehaviors
-   * @param {!Array<!IdleBehavior>} batteryIdleBehaviors
-   * @private
-   */
-  updateIdleOptions_(
-      acIdleBehaviors, batteryIdleBehaviors, currAcIdleBehavior,
-      currBatteryIdleBehavior) {
+  private updateIdleOptions_(
+      acIdleBehaviors: IdleBehavior[], batteryIdleBehaviors: IdleBehavior[],
+      currAcIdleBehavior: IdleBehavior, currBatteryIdleBehavior: IdleBehavior) {
     this.acIdleOptions_ = acIdleBehaviors.map((idleBehavior) => {
       return this.getIdleOption_(idleBehavior, currAcIdleBehavior);
     });
@@ -458,11 +432,10 @@ class SettingsPowerElement extends SettingsPowerElementBase {
   }
 
   /**
-   * @param {!PowerManagementSettings} powerManagementSettings Current
-   *     power management settings.
-   * @private
+   * @param powerManagementSettings Current power management settings.
    */
-  powerManagementSettingsChanged_(powerManagementSettings) {
+  private powerManagementSettingsChanged_(powerManagementSettings:
+                                              PowerManagementSettings) {
     this.updateIdleOptions_(
         powerManagementSettings.possibleAcIdleBehaviors || [],
         powerManagementSettings.possibleBatteryIdleBehaviors || [],
@@ -477,7 +450,7 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     this.adaptiveChargingManaged_ =
         powerManagementSettings.adaptiveChargingManaged;
     // Use an atomic assign to trigger UI change.
-    const adaptiveChargingPref = {
+    const adaptiveChargingPref: chrome.settingsPrivate.PrefObject<boolean> = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: powerManagementSettings.adaptiveCharging,
@@ -493,12 +466,11 @@ class SettingsPowerElement extends SettingsPowerElementBase {
 
   /**
    * Returns the row class for the given settings row
-   * @param {boolean} batteryPresent if battery is present
-   * @param {string} element the name of the row being queried
-   * @return {string} the class for the given row
-   * @private
+   * @param batteryPresent if battery is present
+   * @param element the name of the row being queried
+   * @return the class for the given row
    */
-  getClassForRow_(batteryPresent, element) {
+  private getClassForRow_(batteryPresent: boolean, element: string): string {
     let c = 'cr-row';
 
     switch (element) {
@@ -517,14 +489,14 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     return c;
   }
 
-  /**
-   * @param {*} lhs
-   * @param {*} rhs
-   * @return {boolean}
-   * @private
-   */
-  isEqual_(lhs, rhs) {
+  private isEqual_(lhs: string, rhs: string): boolean {
     return lhs === rhs;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-power': SettingsPowerElement;
   }
 }
 
