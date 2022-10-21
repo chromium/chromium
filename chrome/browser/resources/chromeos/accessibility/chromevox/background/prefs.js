@@ -21,16 +21,6 @@ import {LogUrlWatcher} from './logging/log_url_watcher.js';
  */
 export class ChromeVoxPrefs {
   constructor() {
-    let lastRunVersion = localStorage['lastRunVersion'];
-    if (!lastRunVersion) {
-      lastRunVersion = '1.16.0';
-    }
-    let loadExistingSettings = true;
-    // TODO(dtseng): Logic below needs clarification. Perhaps needs a
-    // 'lastIncompatibleVersion' member.
-    if (lastRunVersion === '1.16.0') {
-      loadExistingSettings = false;
-    }
     localStorage['lastRunVersion'] = chrome.runtime.getManifest().version;
 
     // Clear per session preferences.
