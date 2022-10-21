@@ -501,7 +501,7 @@ BASE_FEATURE(kGlobalMediaControlsAutoDismiss,
 // Show Cast sessions in Global Media Controls.
 BASE_FEATURE(kGlobalMediaControlsForCast,
              "GlobalMediaControlsForCast",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Allow Global Media Controls in system tray of CrOS.
