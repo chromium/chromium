@@ -8606,7 +8606,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="935854577147268200">O smartphone do Smart Lock mudou. Digite sua senha para atualizar o Smart Lock. Na próxima vez, o smartphone desbloqueará seu <ph name="DEVICE_TYPE" />. É possível desativar o Smart Lock nas configurações</translation>
 <translation id="936646668635477464">Câmera e microfone</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
-<translation id="937053962468712792">O dispositivo <ph name="DEVICE" /> foi removido de <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="937053962468712792">Remover o dispositivo <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Reparar extensão</translation>
 <translation id="938568644810664664">Tente perguntar "Ok Google, que música é essa?" ou "Ok Google, o que está na minha tela?"</translation>
 <translation id="938623846785894166">Arquivo incomum</translation>

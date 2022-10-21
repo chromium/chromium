@@ -169,7 +169,7 @@
 <translation id="2100350898815792233">Tous les signes de ponctuation</translation>
 <translation id="2110480898214777136">Déplace du début à la fin ou de la fin au début au sein d'une page, d'une boîte de dialogue ou d'un autre conteneur</translation>
 <translation id="2119965627982867824">bouton fléché</translation>
-<translation id="2121067395472282800">touche d'accès : <ph name="KEY" /></translation>
+<translation id="2121067395472282800">touche mnémonique : <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Aucun texte proposé pour cet élément</translation>
 <translation id="2127747486437921899">Italique</translation>
 <translation id="2152179395627233441">Fermer la zone d'exercice</translation>
@@ -1078,7 +1078,7 @@
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8448196839635577295">ChromeVox ne met en évidence aucun texte à l'écran en ce moment. Touchez Explorer pour trouver des éléments.</translation>
 <translation id="8455868257606149352">Maximum <ph name="X" /></translation>
-<translation id="84575901236241018">dispose d'une touche d'accès, <ph name="KEY" /></translation>
+<translation id="84575901236241018">dispose d'une touche mnémonique, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Abandon de l'erreur grammaticale</translation>
 <translation id="8465573210279050749">supprime le mot précédent</translation>
 <translation id="847040613207937740">Aucune case à cocher suivante</translation>
