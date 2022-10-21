@@ -79,6 +79,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override;
   void Shutdown() override;
   bool CanSendRTSampleRequest() const override;
+  std::string GetMetricSuffix() const override;
 
 #if defined(UNIT_TEST)
   void set_bypass_probability_for_tests(
@@ -103,7 +104,6 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
   absl::optional<std::string> GetDMTokenString() const override;
-  std::string GetMetricSuffix() const override;
   bool ShouldIncludeCredentials() const override;
   void OnResponseUnauthorized(const std::string& invalid_access_token) override;
   double GetMinAllowedTimestampForReferrerChains() const override;

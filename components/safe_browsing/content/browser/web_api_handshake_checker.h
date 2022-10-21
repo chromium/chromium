@@ -51,7 +51,10 @@ class WebApiHandshakeChecker {
   // must live on the IO thread.
   class CheckerOnIO;
 
-  void OnCompleteCheck(bool slow_check, bool proceed, bool showed_interstitial);
+  void OnCompleteCheck(bool slow_check,
+                       bool proceed,
+                       bool showed_interstitial,
+                       bool did_check_allowlist);
 
   std::unique_ptr<CheckerOnIO> io_checker_;
   CheckCallback check_callback_;

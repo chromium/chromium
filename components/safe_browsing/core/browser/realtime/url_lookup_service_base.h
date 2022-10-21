@@ -128,6 +128,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Called before the actual deletion of the object.
   void Shutdown() override;
 
+  // Suffix for logging metrics.
+  virtual std::string GetMetricSuffix() const = 0;
+
  protected:
   // Fragments, usernames and passwords are removed, because fragments are only
   // used for local navigations and usernames/passwords are too privacy
@@ -188,9 +191,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Gets a dm token string to be set in a request proto.
   virtual absl::optional<std::string> GetDMTokenString() const = 0;
-
-  // Suffix for logging metrics.
-  virtual std::string GetMetricSuffix() const = 0;
 
   // Returns whether real time URL requests should include credentials.
   virtual bool ShouldIncludeCredentials() const = 0;

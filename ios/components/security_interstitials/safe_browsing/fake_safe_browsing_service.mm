@@ -44,11 +44,13 @@ class FakeSafeBrowsingUrlCheckerImpl
     if (url.host() == FakeSafeBrowsingService::kUnsafeHost) {
       std::move(callback).Run(/*slow_check_notifier=*/nullptr,
                               /*proceed=*/false,
-                              /*showed_interstitial=*/true);
+                              /*showed_interstitial=*/true,
+                              /*did_check_allowlist=*/true);
       return;
     }
     std::move(callback).Run(/*slow_check_notifier=*/nullptr, /*proceed=*/true,
-                            /*showed_interstitial=*/false);
+                            /*showed_interstitial=*/false,
+                            /*did_check_allowlist=*/true);
   }
 };
 }  // namespace

@@ -38,20 +38,21 @@ content::WebContents* GetWebContentsFromID(int render_process_id,
 class CheckUrlCallbackWrapper {
  public:
   using Callback = base::OnceCallback<
-      void(mojo::PendingReceiver<mojom::UrlCheckNotifier>, bool, bool)>;
+      void(mojo::PendingReceiver<mojom::UrlCheckNotifier>, bool, bool, bool)>;
 
   explicit CheckUrlCallbackWrapper(Callback callback)
       : callback_(std::move(callback)) {}
   ~CheckUrlCallbackWrapper() {
     if (callback_)
-      Run(mojo::NullReceiver(), true, false);
+      Run(mojo::NullReceiver(), true, false, false);
   }
 
   void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
            bool proceed,
-           bool showed_interstitial) {
+           bool showed_interstitial,
+           bool did_check_allowlist) {
     std::move(callback_).Run(std::move(slow_check_notifier), proceed,
-                             showed_interstitial);
+                             showed_interstitial, did_check_allowlist);
   }
 
  private:
@@ -141,7 +142,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
     if (callback) {
       std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
-                              false /* showed_interstitial */);
+                              false /* showed_interstitial */,
+                              false /* did_check_allowlist */);
     }
 
     // This will drop |receiver|. The result is that the renderer side will
@@ -163,6 +165,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*real_time_lookup_enabled=*/false,
       /*can_rt_check_subresource_url=*/false,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
+      /*url_lookup_service_metric_suffix=*/".None",
       /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
 

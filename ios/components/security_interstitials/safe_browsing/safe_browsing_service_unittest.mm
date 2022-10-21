@@ -118,7 +118,8 @@ class TestUrlCheckerClient {
       safe_browsing::SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier*
           slow_check_notifier,
       bool proceed,
-      bool showed_interstitial) {
+      bool showed_interstitial,
+      bool did_check_allowlist) {
     if (slow_check_notifier) {
       *slow_check_notifier =
           base::BindOnce(&TestUrlCheckerClient::OnCheckUrlResult,
