@@ -22,6 +22,7 @@
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/full_membership_cluster_processor.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/label_cluster_finalizer.h"
@@ -345,6 +346,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
         std::make_unique<ContentAnnotationsClusterProcessor>(
             &entity_id_to_entity_metadata_map));
   }
+  cluster_processors.push_back(
+      std::make_unique<FullMembershipClusterProcessor>());
 
   cluster_finalizers.push_back(
       std::make_unique<ContentVisibilityClusterFinalizer>());

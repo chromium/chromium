@@ -4,6 +4,8 @@
 
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
+#include <iterator>
+
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "components/history_clusters/core/config.h"
@@ -107,6 +109,25 @@ bool IsNoisyVisit(const history::ClusterVisit& visit) {
   return visit.engagement_score >
              GetConfig().noisy_cluster_visits_engagement_threshold &&
          visit.annotated_visit.content_annotations.search_terms.empty();
+}
+
+void AppendClusterVisits(history::Cluster& cluster1,
+                         history::Cluster& cluster2) {
+  cluster1.visits.insert(cluster1.visits.end(),
+                         std::make_move_iterator(cluster2.visits.begin()),
+                         std::make_move_iterator(cluster2.visits.end()));
+  cluster2.visits.clear();
+}
+
+void RemoveEmptyClusters(std::vector<history::Cluster>* clusters) {
+  auto it = clusters->begin();
+  while (it != clusters->end()) {
+    if (it->visits.empty()) {
+      it = clusters->erase(it);
+    } else {
+      it++;
+    }
+  }
 }
 
 }  // namespace history_clusters

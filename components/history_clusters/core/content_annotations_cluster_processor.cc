@@ -5,11 +5,11 @@
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 
 #include <math.h>
-#include <iterator>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 
 namespace history_clusters {
@@ -144,24 +144,13 @@ void ContentAnnotationsClusterProcessor::ProcessClusters(
           GetConfig().content_clustering_similarity_threshold) {
         // Add the visits to the aggregated cluster.
         merged_cluster_indices.insert(j);
-        clusters->at(i).visits.insert(
-            clusters->at(i).visits.end(),
-            std::make_move_iterator(clusters->at(j).visits.begin()),
-            std::make_move_iterator(clusters->at(j).visits.end()));
-        clusters->at(j).visits.clear();
+        AppendClusterVisits(clusters->at(i), clusters->at(j));
       }
     }
   }
 
   // Remove empty clusters.
-  auto it = clusters->begin();
-  while (it != clusters->end()) {
-    if (it->visits.empty()) {
-      clusters->erase(it);
-    } else {
-      it++;
-    }
-  }
+  RemoveEmptyClusters(clusters);
 }
 
 base::flat_map<std::string, float>

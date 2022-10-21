@@ -23,6 +23,15 @@ void SortClusters(std::vector<history::Cluster>* clusters);
 // non-SRP).
 bool IsNoisyVisit(const history::ClusterVisit& visit);
 
+// Appends the visits from |cluster1| to the visits in |cluster2|.
+//
+// |cluster2|'s visits will be cleared in this operation.'
+void AppendClusterVisits(history::Cluster& cluster1,
+                         history::Cluster& cluster2);
+
+// Removes clusters without visits from |clusters|.
+void RemoveEmptyClusters(std::vector<history::Cluster>* clusters);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_ON_DEVICE_CLUSTERING_UTIL_H_
