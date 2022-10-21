@@ -78,3 +78,12 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 
   map->SetClockForTesting(base::DefaultClock::GetInstance());
 }
+
+// Test that navigations work fine in incognito mode.
+IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
+                       TestIncognitoProfile) {
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  auto* otr_browser = OpenURLOffTheRecord(browser()->profile(), url);
+  ASSERT_FALSE(UnusedSitePermissionsServiceFactory::GetForProfile(
+      otr_browser->profile()));
+}
