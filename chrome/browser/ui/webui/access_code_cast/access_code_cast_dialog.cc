@@ -39,10 +39,14 @@ void SetCurrentDialog(base::WeakPtr<AccessCodeCastDialog> dialog) {
 // The corner radius for system dialogs.
 constexpr int kSystemDialogCornerRadiusDp = 12;
 
-// The default width, height without footnote, height with footnote for the dialog container.
+// The default width, height without footnote, height with footnote for the
+// dialog container.
 const int kDialogWidthDefault = 448;
 const int kDialogHeightDefault = 295;
 const int kDialogHeightFootnote = 330;
+
+// static
+bool AccessCodeCastDialog::block_widget_activation_changed_for_test_ = false;
 
 AccessCodeCastDialog::AccessCodeCastDialog(
     const CastModeSet& cast_mode_set,
@@ -151,6 +155,8 @@ base::WeakPtr<AccessCodeCastDialog> AccessCodeCastDialog::GetWeakPtr() {
 // views::WidgetObserver:
 void AccessCodeCastDialog::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
+  if (block_widget_activation_changed_for_test_)
+    return;
   DCHECK(dialog_widget_)
       << "dialog_widget_ must be set exactly once during dialog setup";
   // Close the dialog only if it is no longer active and it isn't already
@@ -183,7 +189,7 @@ void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
   base::TimeDelta duration_pref = GetAccessCodeDeviceDurationPref(context_);
   bool rememberDevices = duration_pref != base::Seconds(0);
   size->SetSize(kDialogWidthDefault,
-      rememberDevices ? kDialogHeightFootnote : kDialogHeightDefault);
+                rememberDevices ? kDialogHeightFootnote : kDialogHeightDefault);
 }
 
 std::string AccessCodeCastDialog::GetDialogArgs() const {
