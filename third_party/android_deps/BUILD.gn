@@ -63,6 +63,12 @@ if (!limit_android_deps) {
   }
 }
 
+# TODO(crbug.com/1366370) Remove this once all depencencies are updated to
+# //third_party/flatbuffers:flatbuffers_java.
+java_group("com_google_flatbuffers_flatbuffers_java_java") {
+  deps = [ "//third_party/flatbuffers:flatbuffers_java" ]
+}
+
 java_annotation_processor("auto_service_processor") {
   main_class = "com.google.auto.service.processor.AutoServiceProcessor"
   deps = [ ":com_google_auto_service_auto_service_java" ]
@@ -1265,13 +1271,6 @@ if (!limit_android_deps) {
     # We removed the datatransport dependency to reduce binary size.
     # The library works without it as it's only used for logging.
     enable_bytecode_checks = false
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_google_flatbuffers_flatbuffers_java_java") {
-    jar_path = "libs/com_google_flatbuffers_flatbuffers_java/flatbuffers-java-2.0.3.jar"
-    output_name = "com_google_flatbuffers_flatbuffers_java"
-    supports_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

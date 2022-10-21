@@ -4598,7 +4598,7 @@ if (enable_java_templates && is_android) {
       chromium_code = false
       sources = []
       srcjar_deps = [ ":${_template_name}__flatc_java" ]
-      deps = [ "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java" ]
+      deps = [ "//third_party/flatbuffers:flatbuffers_java" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }

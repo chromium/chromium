@@ -98,7 +98,6 @@
     "libs/com_google_firebase_firebase_installations_interop",
     "libs/com_google_firebase_firebase_measurement_connector",
     "libs/com_google_firebase_firebase_messaging",
-    "libs/com_google_flatbuffers_flatbuffers_java",
     "libs/com_google_googlejavaformat_google_java_format",
     "libs/com_google_guava_failureaccess",
     "libs/com_google_guava_guava",

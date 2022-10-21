@@ -101,7 +101,6 @@ dependencies {
     compile 'com.android.support:multidex:1.0.0'
 
     compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'com.google.flatbuffers:flatbuffers-java:2.0.3'
     compile 'com.google.firebase:firebase-iid:21.0.1'
     compile 'com.google.firebase:firebase-messaging:21.0.1'
     compile 'com.google.guava:failureaccess:1.0.1'

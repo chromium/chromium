@@ -188,3 +188,37 @@ test("flatbuffers_unittests") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("flatbuffers_java") {
+    chromium_code = false
+    sources = [
+      "src/java/com/google/flatbuffers/ArrayReadWriteBuf.java",
+      "src/java/com/google/flatbuffers/BaseVector.java",
+      "src/java/com/google/flatbuffers/BooleanVector.java",
+      "src/java/com/google/flatbuffers/ByteBufferReadWriteBuf.java",
+      "src/java/com/google/flatbuffers/ByteBufferUtil.java",
+      "src/java/com/google/flatbuffers/ByteVector.java",
+      "src/java/com/google/flatbuffers/Constants.java",
+      "src/java/com/google/flatbuffers/DoubleVector.java",
+      "src/java/com/google/flatbuffers/FlatBufferBuilder.java",
+      "src/java/com/google/flatbuffers/FlexBuffers.java",
+      "src/java/com/google/flatbuffers/FlexBuffersBuilder.java",
+      "src/java/com/google/flatbuffers/FloatVector.java",
+      "src/java/com/google/flatbuffers/IntVector.java",
+      "src/java/com/google/flatbuffers/LongVector.java",
+      "src/java/com/google/flatbuffers/ReadBuf.java",
+      "src/java/com/google/flatbuffers/ReadWriteBuf.java",
+      "src/java/com/google/flatbuffers/ShortVector.java",
+      "src/java/com/google/flatbuffers/StringVector.java",
+      "src/java/com/google/flatbuffers/Struct.java",
+      "src/java/com/google/flatbuffers/Table.java",
+      "src/java/com/google/flatbuffers/UnionVector.java",
+      "src/java/com/google/flatbuffers/Utf8.java",
+      "src/java/com/google/flatbuffers/Utf8Old.java",
+      "src/java/com/google/flatbuffers/Utf8Safe.java",
+    ]
+  }
+}
