@@ -48,14 +48,6 @@ void STLClearObject(T* obj) {
   obj->reserve(0);
 }
 
-// Counts the number of instances of val in a container.
-template <typename Container, typename T>
-typename std::iterator_traits<
-    typename Container::const_iterator>::difference_type
-STLCount(const Container& container, const T& val) {
-  return std::count(container.begin(), container.end(), val);
-}
-
 // O(1) implementation of const casting an iterator for any sequence,
 // associative or unordered associative container in the STL.
 //
