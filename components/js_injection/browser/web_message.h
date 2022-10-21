@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "components/js_injection/common/web_message.h"
+#include "components/js_injection/common/interfaces.mojom.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 
 namespace js_injection {
@@ -17,7 +17,7 @@ struct WebMessage {
   WebMessage();
   ~WebMessage();
 
-  JsWebMessage message;
+  mojom::JsWebMessagePtr message;
   std::vector<blink::MessagePortDescriptor> ports;
 };
 

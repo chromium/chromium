@@ -9,7 +9,8 @@
 #include "android_webview/browser_jni_headers/JsReplyProxy_jni.h"
 #include "base/android/jni_string.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
-#include "components/js_injection/common/web_message.h"
+#include "components/js_injection/common/interfaces.mojom.h"
+#include "content/public/browser/android/message_payload.h"
 
 namespace android_webview {
 
@@ -34,10 +35,13 @@ base::android::ScopedJavaLocalRef<jobject> JsReplyProxy::GetJavaPeer() {
 
 void JsReplyProxy::PostMessage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& message) {
-  js_injection::JsWebMessage js_message;
-  js_message.payload = base::android::ConvertJavaStringToUTF16(env, message);
-  reply_proxy_->PostWebMessage(std::move(js_message));
+    const base::android::JavaParamRef<jobject>& payload) {
+  LOG(ERROR) << __PRETTY_FUNCTION__;
+  auto js_message_ptr = content::android::ConvertToJsWebMessagePtrFromJava(
+      base::android::ScopedJavaLocalRef<jobject>(payload));
+  LOG(ERROR) << __FUNCTION__ << " converted to Java done.";
+  reply_proxy_->PostWebMessage(std::move(js_message_ptr));
+  LOG(ERROR) << __FUNCTION__ << " exit...";
 }
 
 }  // namespace android_webview

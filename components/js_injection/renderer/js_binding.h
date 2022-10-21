@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
+#include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "gin/arguments.h"
 #include "gin/wrappable.h"
@@ -46,7 +47,7 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
       base::WeakPtr<JsCommunication> js_communication);
 
   // mojom::BrowserToJsMessaging implementation.
-  void OnPostMessage(JsWebMessage message) override;
+  void OnPostMessage(mojom::JsWebMessagePtr message) override;
 
   void ReleaseV8GlobalObjects();
 

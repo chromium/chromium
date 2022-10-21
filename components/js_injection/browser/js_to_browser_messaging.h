@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "components/js_injection/common/origin_matcher.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -48,7 +49,7 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   void OnBackForwardCacheStateChanged();
 
   // mojom::JsToBrowserMessaging implementation.
-  void PostMessage(JsWebMessage message,
+  void PostMessage(mojom::JsWebMessagePtr message,
                    std::vector<blink::MessagePortDescriptor> ports) override;
   void SetBrowserToJsMessaging(
       mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>
