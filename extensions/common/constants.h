@@ -384,6 +384,9 @@ EXTENSIONS_EXPORT extern const char kIncognitoErrorMessage[];
 // scope is denied.
 EXTENSIONS_EXPORT extern const char kIncognitoSessionOnlyErrorMessage[];
 
+// Error message when an invalid color is provided to an API method.
+EXTENSIONS_EXPORT extern const char kInvalidColorError[];
+
 // The default block size for hashing used in content verification.
 EXTENSIONS_EXPORT extern const int kContentVerificationDefaultBlockSize;
 

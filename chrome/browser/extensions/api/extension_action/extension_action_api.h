@@ -25,6 +25,7 @@ class WebContents;
 }
 
 namespace extensions {
+
 class ExtensionHost;
 class ExtensionPrefs;
 
@@ -315,6 +316,26 @@ class ActionSetBadgeBackgroundColorFunction
 
  protected:
   ~ActionSetBadgeBackgroundColorFunction() override {}
+};
+
+class ActionGetBadgeTextColorFunction : public ExtensionActionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("action.getBadgeTextColor",
+                             ACTION_GETBADGETEXTCOLOR)
+
+ protected:
+  ~ActionGetBadgeTextColorFunction() override = default;
+  ResponseAction RunExtensionAction() override;
+};
+
+class ActionSetBadgeTextColorFunction : public ExtensionActionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("action.setBadgeTextColor",
+                             ACTION_SETBADGETEXTCOLOR)
+
+ protected:
+  ~ActionSetBadgeTextColorFunction() override = default;
+  ResponseAction RunExtensionAction() override;
 };
 
 class ActionEnableFunction : public ExtensionActionShowFunction {

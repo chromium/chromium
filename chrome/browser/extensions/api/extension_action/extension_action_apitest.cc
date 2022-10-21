@@ -211,7 +211,6 @@ class ExtensionActionAPITest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 };
@@ -1408,7 +1407,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
              custom_badge_text2, base::BindRepeating(get_badge_text));
   }
   {
-    // setBadgeColor/getBadgeColor.
+    // setBadgeBackgroundColor/getBadgeBackgroundColor.
     ValuePair default_badge_color{"0,0,0", "[0, 0, 0, 0]"};
     ValuePair custom_badge_color1{"255,0,0", "[255, 0, 0, 255]"};
     ValuePair custom_badge_color2{"0,255,0", "[0, 255, 0, 255]"};
@@ -1423,6 +1422,30 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
                                         web_contents);
     run_test(badge_color_helper, default_badge_color, custom_badge_color1,
              custom_badge_color2, base::BindRepeating(get_badge_color));
+  }
+
+  // TODO(crbug.com/1372176): Test using HTML colors instead of just color
+  // arrays, including set/getBadgeBackgroundColor.
+  // setBadgeTextColor/getBadgeTextColor.
+  // This API is only supported on MV3.
+  if (GetParam() != ActionInfo::TYPE_BROWSER) {
+    {
+      ValuePair default_badge_text_color{"0,0,0", "[0, 0, 0, 0]"};
+      ValuePair custom_badge_text_color1{"255,0,0", "[255, 0, 0, 255]"};
+      ValuePair custom_badge_text_color2{"0,255,0", "[0, 255, 0, 255]"};
+
+      auto get_badge_text_color = [](ExtensionAction* action, int tab_id) {
+        return color_utils::SkColorToRgbString(
+            action->GetBadgeTextColor(tab_id));
+      };
+
+      ActionTestHelper badge_text_color_helper(kApiName, "setBadgeTextColor",
+                                               "getBadgeTextColor", "color",
+                                               web_contents);
+      run_test(badge_text_color_helper, default_badge_text_color,
+               custom_badge_text_color1, custom_badge_text_color2,
+               base::BindRepeating(get_badge_text_color));
+    }
   }
 }
 
@@ -1587,7 +1610,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabledIgnoreDeclarative) {
             });
           });
           // Set tab disabled globally so that we can assert that the extension
-          // cannot know enable status for declarativeContent tabs it is
+          // cannot know the enable status for declarativeContent tabs it is
           // registered for.
           chrome.action.disable();
         )";
@@ -1600,10 +1623,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabledIgnoreDeclarative) {
   ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
   auto* action_manager = ExtensionActionManager::Get(profile());
   ExtensionAction* action = action_manager->GetExtensionAction(*extension);
   ASSERT_TRUE(action);
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1613,7 +1636,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabledIgnoreDeclarative) {
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
-  // Confirm the tab is only visible for declarativeContent.
+  // Confirm that the tab is only visible for declarativeContent.
   ASSERT_TRUE(action->GetIsVisible(tab_id));
   ASSERT_FALSE(action->GetIsVisibleIgnoringDeclarative(tab_id));
 
@@ -1681,6 +1704,54 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
   EXPECT_TRUE(toolbar_model->IsActionPinned(extension->id()));
 
   EXPECT_EQ(R"({"isOnToolbar":true})", get_response());
+}
+
+// Tests that invalid badge text colors return an API error to the caller.
+IN_PROC_BROWSER_TEST_F(ActionAPITest, TestBadgeTextColorErrors) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "alpha transparent error test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "action": {},
+           "background": {"service_worker": "background.js" }
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(
+        const tabId = %d;
+        const expectedError = '%s';
+        chrome.test.runTests([
+          async function badgeColorEmptyValueInvalid() {
+            await chrome.test.assertPromiseRejects(
+              chrome.action.setBadgeTextColor(
+                {color: '', tabId}),
+              'Error: ' + expectedError);
+            chrome.test.succeed();
+          },
+          async function badgeColorAlphaTransparentInvalid() {
+            await chrome.test.assertPromiseRejects(
+              chrome.action.setBadgeTextColor(
+                {color: [255, 255, 255, 0], tabId}),
+              'Error: ' + expectedError);
+            chrome.test.succeed();
+          }
+        ]);
+      )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifestTemplate);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(kBackgroundJs, tab_id,
+                                        extension_misc::kInvalidColorError));
+
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

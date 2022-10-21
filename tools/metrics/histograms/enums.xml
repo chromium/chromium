@@ -35981,6 +35981,8 @@ Called by update_extension_histograms.py.-->
   <int value="1724" label="AUTOTESTPRIVATE_GETTHROUGHPUTTRACKERDATA"/>
   <int value="1725" label="ENTERPRISE_REMOTEAPPS_SORTLAUNCHER"/>
   <int value="1726" label="PASSWORDSPRIVATE_SHOWADDSHORTCUTDIALOG"/>
+  <int value="1727" label="ACTION_GETBADGETEXTCOLOR"/>
+  <int value="1728" label="ACTION_SETBADGETEXTCOLOR"/>
 </enum>
 
 <enum name="ExtensionIconState">

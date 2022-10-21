@@ -253,6 +253,9 @@ const char kIncognitoSessionOnlyErrorMessage[] =
     "You cannot set a preference with scope 'incognito_session_only' when no "
     "incognito window is open.";
 
+const char kInvalidColorError[] =
+    "The color specification could not be parsed.";
+
 const int kContentVerificationDefaultBlockSize = 4096;
 
 const char kCryptotokenExtensionId[] = "kmendfapggjehodndflmmgagdbamhnfd";

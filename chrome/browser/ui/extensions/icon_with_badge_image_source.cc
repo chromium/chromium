@@ -88,7 +88,8 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
     return;
 
   // Generate the badge's render text. Make sure it contrasts with the badge
-  // background.
+  // background if it is transparent (also occurs when text color has not yet
+  // been set).
   SkColor text_color =
       SkColorGetA(badge_->text_color) == SK_AlphaTRANSPARENT
           ? color_utils::GetColorWithMaxContrast(GetBadgeBackgroundColor(

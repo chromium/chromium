@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -40,6 +41,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/api/extension_action/action_info.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/image_util.h"
@@ -63,8 +65,6 @@ const char kOpenPopupError[] =
     "Failed to show popup either because there is an existing popup or another "
     "error occurred.";
 const char kFailedToOpenPopupGenericError[] = "Failed to open popup.";
-const char kInvalidColorError[] =
-    "The color specification could not be parsed.";
 constexpr char kNoActiveWindowFound[] =
     "Could not find an active browser window.";
 constexpr char kNoActivePopup[] =
@@ -96,6 +96,27 @@ Browser* FindLastActiveBrowserWindow(Profile* profile,
   }
 
   return nullptr;
+}
+
+// Returns true if the color values provided could be parsed into a color
+// object out param.
+bool ParseColor(const base::Value& color_value, SkColor& color) {
+  if (color_value.is_string())
+    return content::ParseCssColorString(color_value.GetString(), &color);
+
+  if (!color_value.is_list())
+    return false;
+
+  const base::Value::List& color_list = color_value.GetList();
+  if (color_list.size() != 4 ||
+      base::ranges::any_of(color_list,
+                           [](const auto& color) { return !color.is_int(); })) {
+    return false;
+  }
+
+  color = SkColorSetARGB(color_list[3].GetInt(), color_list[0].GetInt(),
+                         color_list[1].GetInt(), color_list[2].GetInt());
+  return true;
 }
 
 // Returns true if the given `extension` has an active popup on the active tab
@@ -542,26 +563,25 @@ ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
   base::Value* color_value = details_->Find("color");
   EXTENSION_FUNCTION_VALIDATE(color_value);
   SkColor color = 0;
-  if (color_value->is_list()) {
-    const base::Value::List& list = color_value->GetList();
-
-    EXTENSION_FUNCTION_VALIDATE(list.size() == 4);
-
-    int color_array[4] = {0};
-    for (size_t i = 0; i < std::size(color_array); ++i) {
-      EXTENSION_FUNCTION_VALIDATE(list[i].is_int());
-      color_array[i] = list[i].GetInt();
-    }
-
-    color = SkColorSetARGB(color_array[3], color_array[0],
-                           color_array[1], color_array[2]);
-  } else if (color_value->is_string()) {
-    std::string color_string = color_value->GetString();
-    if (!content::ParseCssColorString(color_string, &color))
-      return RespondNow(Error(kInvalidColorError));
-  }
-
+  if (!ParseColor(*color_value, color))
+    return RespondNow(Error(extension_misc::kInvalidColorError));
   extension_action_->SetBadgeBackgroundColor(tab_id_, color);
+  NotifyChange();
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+ActionSetBadgeTextColorFunction::RunExtensionAction() {
+  EXTENSION_FUNCTION_VALIDATE(details_);
+  base::Value* color_value = details_->Find("color");
+  EXTENSION_FUNCTION_VALIDATE(color_value);
+  SkColor color = 0;
+  if (!ParseColor(*color_value, color))
+    return RespondNow(Error(extension_misc::kInvalidColorError));
+
+  if (SkColorGetA(color) == SK_AlphaTRANSPARENT)
+    return RespondNow(Error(extension_misc::kInvalidColorError));
+  extension_action_->SetBadgeTextColor(tab_id_, color);
   NotifyChange();
   return RespondNow(NoArguments());
 }
@@ -603,6 +623,17 @@ ExtensionFunction::ResponseAction
 ExtensionActionGetBadgeBackgroundColorFunction::RunExtensionAction() {
   base::Value::List list;
   SkColor color = extension_action_->GetBadgeBackgroundColor(tab_id_);
+  list.Append(static_cast<int>(SkColorGetR(color)));
+  list.Append(static_cast<int>(SkColorGetG(color)));
+  list.Append(static_cast<int>(SkColorGetB(color)));
+  list.Append(static_cast<int>(SkColorGetA(color)));
+  return RespondNow(WithArguments(std::move(list)));
+}
+
+ExtensionFunction::ResponseAction
+ActionGetBadgeTextColorFunction::RunExtensionAction() {
+  base::Value::List list;
+  SkColor color = extension_action_->GetBadgeTextColor(tab_id_);
   list.Append(static_cast<int>(SkColorGetR(color)));
   list.Append(static_cast<int>(SkColorGetG(color)));
   list.Append(static_cast<int>(SkColorGetB(color)));
