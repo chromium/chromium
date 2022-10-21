@@ -380,7 +380,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       // Block launch request if failed to launch ghost window.
       return false;
     } else if (full_restore::features::IsArcWindowPredictorEnabled() &&
-               IsArcVmEnabled()) {
+               arc::GetArcAndroidSdkVersionAsInt() >= arc::kArcVersionR) {
       if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
               profile, app_id, *app_info, event_flags,
               GhostWindowType::kAppLaunch, window_info)) {
