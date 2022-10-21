@@ -37,6 +37,9 @@ class LanguagePacksImpl : public ash::language::mojom::LanguagePacks {
                    InstallPackCallback callback) override;
   void InstallBasePack(ash::language::mojom::FeatureId feature_id,
                        InstallBasePackCallback callback) override;
+  void UninstallPack(ash::language::mojom::FeatureId feature_id,
+                     const std::string& language,
+                     UninstallPackCallback callbck) override;
 
  private:
   mojo::ReceiverSet<ash::language::mojom::LanguagePacks> receivers_;

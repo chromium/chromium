@@ -49,19 +49,23 @@ struct BasePackInfo {
 };
 
 // Interface for managing Language Packs.
-// Lives in the browser process and it allows clients to get information
-// about a Language Pack or to install one.
+// It allows clients to get information about a Language Pack or to alter the
+// installation of one.
 // Language Packs are mounted to the user partition once they are installed and
 // this interface allows to get the path to the files.
-// Next ordinal: 3
+// Next ordinal: 4
 interface LanguagePacks {
   // Gets information about the current state of a Language Pack.
   // Takes the id of the feature (for example handwriting) and the language.
+  // It returns |info| which contains details about the pack and error
+  // information if any.
   GetPackInfo@0(FeatureId feature_id, string language) =>
       (LanguagePackInfo info);
 
   // Requests to install a Language Pack.
   // Takes the id of the feature (for example handwriting) and the language.
+  // It returns |info| which contains details about the pack and error
+  // information if any.
   InstallPack@1(FeatureId feature_id, string language) =>
       (LanguagePackInfo info);
 
@@ -73,4 +77,8 @@ interface LanguagePacks {
   // ERROR PackState.
   InstallBasePack@2(FeatureId feature_id) =>
       (BasePackInfo info);
+
+  // Requests to uninstall a Language Pack.
+  // Takes the id of the feature (for example handwriting) and the language.
+  UninstallPack@3(FeatureId feature_id, string language) => ();
 };

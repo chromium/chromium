@@ -156,4 +156,17 @@ void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
   }
 }
 
+void LanguagePacksImpl::UninstallPack(FeatureId feature_id,
+                                      const std::string& language,
+                                      UninstallPackCallback mojo_callback) {
+  LanguagePackManager* lp = LanguagePackManager::GetInstance();
+  const absl::optional<std::string> pack_id =
+      ConvertMojoFeatureToPackId(feature_id);
+
+  // We ignore the request if the input parameters are incorrect.
+  if (pack_id.has_value()) {
+    lp->RemovePack(pack_id.value(), language, base::DoNothing());
+  }
+}
+
 }  // namespace ash::language_packs
