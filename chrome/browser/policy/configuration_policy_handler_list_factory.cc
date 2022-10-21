@@ -214,6 +214,9 @@ using ::ash::MagnifierType;
 // clang-format off
 const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 // Policies for all platforms - Start
+  { key::kAssistantWebEnabled,
+    autofill_assistant::prefs::kAutofillAssistantEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kComponentUpdatesEnabled,
     prefs::kComponentUpdatesEnabled,
     base::Value::Type::BOOLEAN },
@@ -321,9 +324,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAmbientAuthenticationInPrivateModesEnabled,
     prefs::kAmbientAuthenticationInPrivateModesEnabled,
     base::Value::Type::INTEGER },
-  { key::kAssistantWebEnabled,
-    autofill_assistant::prefs::kAutofillAssistantEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kAudioCaptureAllowed,
     prefs::kAudioCaptureAllowed,
     base::Value::Type::BOOLEAN },

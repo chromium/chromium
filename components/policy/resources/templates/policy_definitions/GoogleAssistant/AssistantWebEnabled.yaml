@@ -30,6 +30,7 @@ owners:
 schema:
   type: boolean
 supported_on:
+- android:109-
 - chrome.*:107-
 - chrome_os:107-
 tags: []
