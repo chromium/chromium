@@ -512,8 +512,6 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       cancel_button_size, cancel_button_size);
   gfx::Rect painting_rect = ConvertToPaintingRect(
       input_layout_box, cancel_button_object, cancel_button_rect, r);
-  mojom::blink::ColorScheme color_scheme =
-      cancel_button_object.StyleRef().UsedColorScheme();
   DEFINE_STATIC_REF(Image, cancel_image,
                     (Image::LoadPlatformResource(IDR_SEARCH_CANCEL)));
   DEFINE_STATIC_REF(Image, cancel_pressed_image,
@@ -549,6 +547,8 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
             text_is_dark ? cancel_pressed_image_hc_light_mode
                          : cancel_pressed_image_dark_mode;
   } else {
+    mojom::blink::ColorScheme color_scheme =
+        cancel_button_object.StyleRef().UsedColorScheme();
     color_scheme_adjusted_cancel_image =
         color_scheme == mojom::blink::ColorScheme::kLight
             ? cancel_image
@@ -561,8 +561,6 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
   Image* target_image = To<Element>(cancel_button_object.GetNode())->IsActive()
                             ? color_scheme_adjusted_cancel_pressed_image
                             : color_scheme_adjusted_cancel_image;
-  // TODO(penglin): It's no need to do further classification here but
-  // force Dark mode may not pick up the correct resource image now.
   paint_info.context.DrawImage(
       target_image, Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
       ImagePaintTimingInfo(), gfx::RectF(painting_rect));

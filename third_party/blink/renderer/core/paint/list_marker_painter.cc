@@ -157,7 +157,6 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
             layout_list_marker_.StyleRef(), marker_rect.size());
     if (!target_image)
       return;
-    // TODO(penglin): This should always be classified as 'icon'.
     const gfx::RectF src_rect(target_image->Rect());
     auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
         *layout_list_marker_.GetFrame(), layout_list_marker_.StyleRef(),
