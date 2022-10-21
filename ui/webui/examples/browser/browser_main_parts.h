@@ -14,6 +14,9 @@ class GURL;
 
 namespace content {
 class BrowserContext;
+class DevToolsManagerDelegate;
+class WebContents;
+class WebContentsViewDelegate;
 }  // namespace content
 
 namespace webui_examples {
@@ -30,6 +33,11 @@ class BrowserMainParts : public content::BrowserMainParts {
   BrowserMainParts& operator=(const BrowserMainParts&) = delete;
   ~BrowserMainParts() override;
 
+  std::unique_ptr<content::WebContentsViewDelegate>
+  CreateWebContentsViewDelegate(content::WebContents* web_contents);
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate();
+
  private:
   // content::BrowserMainParts:
   int PreMainMessageLoopRun() override;
@@ -37,9 +45,9 @@ class BrowserMainParts : public content::BrowserMainParts {
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
-  // ContentWindow is alive until the window is closed.
-  ContentWindow* CreateAndShowContentWindow(GURL url,
-                                            const std::u16string& title);
+  // content::WebContents is associated and bound to the lifetime of the window.
+  content::WebContents* CreateAndShowContentWindow(GURL url,
+                                                   const std::u16string& title);
   void OnWindowClosed(std::unique_ptr<ContentWindow> content_window);
   void QuitMessageLoop();
 

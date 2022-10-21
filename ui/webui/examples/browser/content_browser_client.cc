@@ -4,6 +4,8 @@
 
 #include "ui/webui/examples/browser/content_browser_client.h"
 
+#include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/browser/web_contents_view_delegate.h"
 #include "ui/webui/examples/browser/browser_main_parts.h"
 
 namespace webui_examples {
@@ -17,6 +19,17 @@ ContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
   auto browser_main_parts = std::make_unique<BrowserMainParts>();
   browser_main_parts_ = browser_main_parts.get();
   return browser_main_parts;
+}
+
+std::unique_ptr<content::WebContentsViewDelegate>
+ContentBrowserClient::GetWebContentsViewDelegate(
+    content::WebContents* web_contents) {
+  return browser_main_parts_->CreateWebContentsViewDelegate(web_contents);
+}
+
+std::unique_ptr<content::DevToolsManagerDelegate>
+ContentBrowserClient::CreateDevToolsManagerDelegate() {
+  return browser_main_parts_->CreateDevToolsManagerDelegate();
 }
 
 }  // namespace webui_examples

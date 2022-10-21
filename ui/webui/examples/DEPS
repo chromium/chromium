@@ -8,6 +8,12 @@ include_rules = [
   # The WebUI examples is a simple embedder, so it only uses content's public API.
   "+content/public",
 
+  # Devtools relies on IPC definitions.
+  "+ipc/ipc_channel.h",
+
+  # Devtools relies on various net APIs.
+  "+net",
+
   # Sandbox is part of the main initialization.
   "+sandbox",
 
