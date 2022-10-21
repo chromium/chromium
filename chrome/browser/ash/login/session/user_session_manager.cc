@@ -159,6 +159,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/user_manager/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -2039,12 +2040,14 @@ void UserSessionManager::OnRestoreActiveSessions(
   const cryptohome::Identification active_cryptohome_id(
       user_manager->GetActiveUser()->GetAccountId());
 
-  for (auto& item : sessions.value()) {
-    cryptohome::Identification id =
-        cryptohome::Identification::FromString(item.first);
-    if (active_cryptohome_id == id)
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  for (auto& [cryptohome_id, user_id_hash] : sessions.value()) {
+    if (active_cryptohome_id.id() == cryptohome_id)
       continue;
-    pending_user_sessions_[id.GetAccountId()] = std::move(item.second);
+
+    const AccountId account_id(known_user.GetAccountIdByCryptohomeId(
+        user_manager::CryptohomeId(cryptohome_id)));
+    pending_user_sessions_[account_id] = std::move(user_id_hash);
   }
   RestorePendingUserSessions();
 }

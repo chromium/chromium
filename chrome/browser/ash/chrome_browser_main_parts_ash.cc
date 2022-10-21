@@ -233,6 +233,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -993,11 +994,12 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 
   if (immediate_login) {
-    const std::string cryptohome_id =
+    const user_manager::CryptohomeId cryptohome_id(
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kLoginUser);
+            switches::kLoginUser));
+    user_manager::KnownUser known_user(g_browser_process->local_state());
     const AccountId account_id(
-        cryptohome::Identification::FromString(cryptohome_id).GetAccountId());
+        known_user.GetAccountIdByCryptohomeId(cryptohome_id));
 
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 

@@ -48,6 +48,8 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/user_manager/common_types.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/content_switches.h"
 
@@ -331,10 +333,11 @@ void ChromeSessionManager::Initialize(
   bool force_login_screen_in_test =
       parsed_command_line.HasSwitch(switches::kForceLoginManagerInTests);
 
-  const std::string cryptohome_id =
-      parsed_command_line.GetSwitchValueASCII(switches::kLoginUser);
+  const user_manager::CryptohomeId cryptohome_id(
+      parsed_command_line.GetSwitchValueASCII(switches::kLoginUser));
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   const AccountId login_account_id(
-      cryptohome::Identification::FromString(cryptohome_id).GetAccountId());
+      known_user.GetAccountIdByCryptohomeId(cryptohome_id));
 
   KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
 

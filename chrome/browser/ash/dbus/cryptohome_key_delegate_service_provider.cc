@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +22,8 @@
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/common_types.h"
+#include "components/user_manager/known_user.h"
 #include "dbus/message.h"
 #include "net/base/net_errors.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -198,8 +201,10 @@ void CryptohomeKeyDelegateServiceProvider::HandleChallengeKey(
             "Unable to parse AccountIdentifier from request"));
     return;
   }
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::CryptohomeId cryptohome_id(account_identifier.account_id());
   const AccountId account_id =
-      cryptohome::GetAccountIdFromAccountIdentifier(account_identifier);
+      known_user.GetAccountIdByCryptohomeId(cryptohome_id);
   if (!account_id.is_valid() ||
       account_id.GetAccountType() == AccountType::UNKNOWN) {
     std::move(response_sender)

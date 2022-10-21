@@ -19,6 +19,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/user_manager/common_types.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -139,13 +140,6 @@ const char* kObsoleteKeys[] = {
     kGaiaIdMigrationObsolete,
     kOfflineSigninLimitObsolete,
 };
-
-PrefService* GetLocalStateLegacy() {
-  if (!UserManager::IsInitialized())
-    return nullptr;
-
-  return UserManager::Get()->GetLocalState();
-}
 
 // Checks if values in |dict| correspond with |account_id| identity.
 bool UserMatches(const AccountId& account_id, const base::Value& dict) {
@@ -433,6 +427,40 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
   }
   NOTREACHED();
   return EmptyAccountId();
+}
+
+AccountId KnownUser::GetAccountIdByCryptohomeId(
+    const CryptohomeId& cryptohome_id) {
+  if (cryptohome_id->empty())
+    return EmptyAccountId();
+
+  const std::vector<AccountId> known_account_ids = GetKnownAccountIds();
+
+  // A LOT of tests start with --login_user <user>, and not registering this
+  // user before. So we might have "known_user" entry without gaia_id.
+  for (const AccountId& known_id : known_account_ids) {
+    if (known_id.HasAccountIdKey() &&
+        known_id.GetAccountIdKey() == cryptohome_id.value()) {
+      return known_id;
+    }
+  }
+
+  for (const AccountId& known_id : known_account_ids) {
+    if (known_id.GetUserEmail() == cryptohome_id.value()) {
+      return known_id;
+    }
+  }
+
+  // GetPlatformKnownAccountId
+  AccountId result(EmptyAccountId());
+  // UserManager is usually NULL in unit tests.
+  if (UserManager::IsInitialized() &&
+      UserManager::Get()->GetPlatformKnownUserId(cryptohome_id.value(),
+                                                 &result)) {
+    return result;
+  }
+  return AccountId::FromNonCanonicalEmail(cryptohome_id.value(), std::string(),
+                                          AccountType::UNKNOWN);
 }
 
 std::vector<AccountId> KnownUser::GetKnownAccountIds() {
@@ -786,30 +814,4 @@ void KnownUser::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kKnownUsers);
 }
 
-// --- Legacy interface ---
-namespace known_user {
-
-std::vector<AccountId> GetKnownAccountIds() {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return {};
-  return KnownUser(local_state).GetKnownAccountIds();
-}
-
-AccountId GetPlatformKnownAccountId(const std::string& user_email) {
-  if (user_email.empty())
-    return EmptyAccountId();
-
-  AccountId result(EmptyAccountId());
-  // UserManager is usually NULL in unit tests.
-  if (UserManager::IsInitialized() &&
-      UserManager::Get()->GetPlatformKnownUserId(user_email, &result)) {
-    return result;
-  }
-  return AccountId::FromNonCanonicalEmail(user_email, std::string(),
-                                          AccountType::UNKNOWN);
-}
-
-}  // namespace known_user
 }  // namespace user_manager

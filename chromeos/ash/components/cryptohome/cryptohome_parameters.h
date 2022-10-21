@@ -39,9 +39,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) Identification {
   // This method should be used for migration purpose only.
   static Identification FromString(const std::string& id);
 
-  // Look up known user and return its AccountId.
-  AccountId GetAccountId() const;
-
   const std::string& id() const { return id_; }
 
   bool operator<(const Identification& right) const;
@@ -60,11 +57,6 @@ AccountIdentifier CreateAccountIdentifierFromAccountId(const AccountId& id);
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 AccountIdentifier CreateAccountIdentifierFromIdentification(
     const Identification& id);
-
-// Look up known user for the given AccountIdentifier and return its AccountId.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-AccountId GetAccountIdFromAccountIdentifier(
-    const AccountIdentifier& account_identifier);
 
 // Definition of the key (e.g. password) for the cryptohome.
 // It contains authorization data along with extra parameters like permissions

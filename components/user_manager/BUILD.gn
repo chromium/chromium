@@ -31,6 +31,7 @@ component("user_manager") {
 
   if (is_chromeos_ash) {
     sources += [
+      "common_types.h",
       "known_user.cc",
       "known_user.h",
       "remove_user_delegate.h",

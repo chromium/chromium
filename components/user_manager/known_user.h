@@ -13,6 +13,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/user_manager/common_types.h"
 #include "components/user_manager/user_manager_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -124,6 +125,8 @@ class USER_MANAGER_EXPORT KnownUser final {
   AccountId GetAccountId(const std::string& user_email,
                          const std::string& id,
                          const AccountType& account_type);
+
+  AccountId GetAccountIdByCryptohomeId(const CryptohomeId& cryptohome_id);
 
   // Saves |account_id| into known users. Tries to commit the change on disk.
   // Use only if account_id is not yet in the known user list. Important if
@@ -288,20 +291,6 @@ class USER_MANAGER_EXPORT KnownUser final {
   const base::raw_ptr<PrefService> local_state_;
 };
 
-// Legacy interface of KnownUsersDatabase.
-// TODO(https://crbug.com/1150434): Migrate callers and remove this.
-namespace known_user {
-// Methods for storage/retrieval of per-user properties in Local State.
-
-// Returns the list of known AccountIds.
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetKnownAccountIds instead.
-std::vector<AccountId> USER_MANAGER_EXPORT GetKnownAccountIds();
-
-AccountId USER_MANAGER_EXPORT
-GetPlatformKnownAccountId(const std::string& user_email);
-
-}  // namespace known_user
 }  // namespace user_manager
 
 #endif  // COMPONENTS_USER_MANAGER_KNOWN_USER_H_
