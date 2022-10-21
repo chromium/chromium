@@ -1,0 +1,5 @@
+rootWebArea backgroundColor=ffffff
+++genericContainer ignored backgroundColor=ffffff
+++++genericContainer backgroundColor=ffffff
+++++++progressIndicator backgroundColor=ffffff valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++progressIndicator backgroundColor=000000 valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00

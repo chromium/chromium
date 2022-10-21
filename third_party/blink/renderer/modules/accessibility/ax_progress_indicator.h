@@ -27,11 +27,10 @@ namespace blink {
 
 class AXObjectCacheImpl;
 class HTMLProgressElement;
-class LayoutProgress;
 
 class AXProgressIndicator final : public AXLayoutObject {
  public:
-  AXProgressIndicator(LayoutProgress*, AXObjectCacheImpl&);
+  AXProgressIndicator(LayoutObject*, AXObjectCacheImpl&);
 
   AXProgressIndicator(const AXProgressIndicator&) = delete;
   AXProgressIndicator& operator=(const AXProgressIndicator&) = delete;
