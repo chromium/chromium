@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CanvasDrawingProvider, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, MARK_COLOR, MARK_RADIUS, MAX_TOUCH_PRESSURE, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider.js';
+import {CanvasDrawingProvider, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, MARK_COLOR, MARK_OPACITY, MARK_RADIUS, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {MockController} from '../../mock_controller.js';
 
 /**
  * FakeCanvasCtx class mocks various html Canvas API methods to make it easy to
@@ -45,6 +46,32 @@ class FakeCanvasCtx {
 }
 
 export function drawingProviderTestSuite() {
+  /** @type {{createFunctionMock: Function, reset: Function}} */
+  let mockController;
+
+  setup(() => {
+    // Setup mock for window.getComputedStyle function to prevent test flaky.
+    mockController = new MockController();
+    const mockComputedStyle =
+        mockController.createFunctionMock(window, 'getComputedStyle');
+    mockComputedStyle.returnValue = {
+      getPropertyValue: (valName) => {
+        switch (valName) {
+          case TRAIL_COLOR:
+            return 'rgb(220, 210, 155)';
+          case MARK_COLOR:
+            return 'rgb(198, 179, 165)';
+          case MARK_OPACITY:
+            return '0.7';
+        }
+      },
+    };
+  });
+
+  teardown(() => {
+    mockController.reset();
+  });
+
   function initializeDrawingProvider() {
     return new CanvasDrawingProvider(new FakeCanvasCtx());
   }
@@ -68,11 +95,12 @@ export function drawingProviderTestSuite() {
       `lineTo:${x1}~${y1}`,
       'stroke',
     ];
-    const expectedStrokeStyle = `rgba(${TRAIL_COLOR}, ${
-        TRAIL_MAX_OPACITY * (pressure / MAX_TOUCH_PRESSURE)})`;
 
     const drawingProvider = initializeDrawingProvider();
     drawingProvider.drawTrail(x0, y0, x1, y1, pressure);
+
+    const expectedStrokeStyle = drawingProvider.constructRgba(
+        drawingProvider.getCssStyle(TRAIL_COLOR), TRAIL_MAX_OPACITY * pressure);
 
     assertDeepEquals(expectedMock, drawingProvider.getCtx().getMock());
     assertEquals(expectedStrokeStyle, drawingProvider.getStrokeStyle());
@@ -90,9 +118,27 @@ export function drawingProviderTestSuite() {
     const drawingProvider = initializeDrawingProvider();
     drawingProvider.drawTrailMark(x, y);
 
+    const expectedFillStyle = drawingProvider.constructRgba(
+        drawingProvider.getCssStyle(MARK_COLOR),
+        drawingProvider.getCssStyle(MARK_OPACITY));
+
     assertDeepEquals(expectedMock, drawingProvider.getCtx().getMock());
-    assertEquals(MARK_COLOR, drawingProvider.getFillStyle());
+    assertEquals(expectedFillStyle, drawingProvider.getFillStyle());
     assertEquals(
         DESTINATION_OVER, drawingProvider.getGlobalCompositeOperation());
+  });
+
+  test('ConstructRgba', () => {
+    const rgbList = ['rgb(55, 10, 223)', 'rgb(  1,2, 44 )'];
+    const opacityList = ['0.1', '1'];
+    const expectedRgba = ['rgba(55, 10, 223, 0.1)', 'rgba(1,2, 44, 1)'];
+
+    const drawingProvider = initializeDrawingProvider();
+
+    for (let i = 0; i < rgbList.length; i++) {
+      assertEquals(
+          expectedRgba[i],
+          drawingProvider.constructRgba(rgbList[i], opacityList[i]));
+    }
   });
 }
