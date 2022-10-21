@@ -553,18 +553,11 @@
           'gtest_tests': 'webview_bot_all_gtests',
         },
         'mixins': [
-          'has_native_resultdb_integration'
+          'has_native_resultdb_integration',
+          'nougat',
+          'bullhead',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'NRD90M',
-              'device_os_flavor': 'google',
-              'device_os_type': 'userdebug',
-              'device_type': 'bullhead',
-              'os': 'Android',
-            },
-          ],
           'expiration': 10800,
         },
         'os_type': 'android',
