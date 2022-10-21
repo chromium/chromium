@@ -327,6 +327,10 @@ class TemplateURLService : public WebDataServiceConsumer,
       const GURL& search_url,
       const std::string& version) const;
 
+  // Takes a search URL that belongs to this side search in the side panel and
+  // removes the side search param from the URL.
+  GURL RemoveSideSearchParamFromURL(const GURL& side_search_url) const;
+
   // Generates a side image search URL for the default search provider's image
   // search url.
   GURL GenerateSideImageSearchURLForDefaultSearchProvider(

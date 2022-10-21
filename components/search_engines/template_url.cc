@@ -1730,7 +1730,16 @@ GURL TemplateURL::GenerateSideSearchURL(
     const SearchTermsData& search_terms_data) const {
   DCHECK(IsSideSearchSupported());
   DCHECK(IsSearchURL(search_url, search_terms_data));
-  return net::AppendQueryParameter(search_url, side_search_param(), version);
+  return net::AppendOrReplaceQueryParameter(search_url, side_search_param(),
+                                            version);
+}
+
+GURL TemplateURL::RemoveSideSearchParamFromURL(
+    const GURL& side_search_url) const {
+  if (!IsSideSearchSupported())
+    return side_search_url;
+  return net::AppendOrReplaceQueryParameter(side_search_url,
+                                            side_search_param(), absl::nullopt);
 }
 
 GURL TemplateURL::GenerateSideImageSearchURL(const GURL& image_search_url,

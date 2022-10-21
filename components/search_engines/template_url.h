@@ -877,6 +877,10 @@ class TemplateURL {
                              const std::string& version,
                              const SearchTermsData& search_terms_data) const;
 
+  // Takes a search URL that belongs to this side search in the side panel and
+  // removes the side search param from the URL.
+  GURL RemoveSideSearchParamFromURL(const GURL& side_search_url) const;
+
   // Takes a search URL belonging to this image search engine and generates the
   // URL appropriate for the image search in the side panel.
   GURL GenerateSideImageSearchURL(const GURL& image_search_url,

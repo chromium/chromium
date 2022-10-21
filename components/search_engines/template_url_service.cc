@@ -845,6 +845,13 @@ GURL TemplateURLService::GenerateSideSearchURLForDefaultSearchProvider(
                                                            search_terms_data());
 }
 
+GURL TemplateURLService::RemoveSideSearchParamFromURL(
+    const GURL& search_url) const {
+  if (!IsSideSearchSupportedForDefaultSearchProvider())
+    return search_url;
+  return GetDefaultSearchProvider()->RemoveSideSearchParamFromURL(search_url);
+}
+
 GURL TemplateURLService::GenerateSideImageSearchURLForDefaultSearchProvider(
     const GURL& search_url,
     const std::string& version) const {
