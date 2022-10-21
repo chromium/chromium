@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
@@ -124,6 +125,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
     if (block_external.has_value())
       SetExternalExtensionsBlockedByPolicy(block_external.value());
+
+    // This switch is set when creating a TestingProfile, but needs to be
+    // removed for some ExternalProviders to be created.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kDisableDefaultApps);
 
     ProviderCollection providers;
     extensions::ExternalProviderImpl::CreateExternalProviders(
@@ -251,8 +257,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 }  // namespace
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// TODO(crbug.com/1377191): Re-enable this test
-TEST_F(ExternalProviderImplTest, DISABLED_InAppPayments) {
+TEST_F(ExternalProviderImplTest, InAppPayments) {
   InitServiceWithExternalProviders();
 
   AwaitCheckForExternalUpdates();
@@ -270,8 +275,7 @@ TEST_F(ExternalProviderImplTest, BlockedExternalUserProviders) {
   EXPECT_FALSE(registry()->GetInstalledExtension(kExternalAppId));
 }
 
-// TODO(crbug.com/1377191): Re-enable this test
-TEST_F(ExternalProviderImplTest, DISABLED_NotBlockedExternalUserProviders) {
+TEST_F(ExternalProviderImplTest, NotBlockedExternalUserProviders) {
   OverrideExternalExtensionsPath();
   InitServiceWithExternalProviders(false);
 
