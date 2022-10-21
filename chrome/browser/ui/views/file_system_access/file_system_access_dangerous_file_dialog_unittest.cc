@@ -84,4 +84,12 @@ TEST_F(FileSystemAccessDangerousFileDialogTest, DestroyWithoutAction) {
   EXPECT_FALSE(test_dialog.CallbackWasCalled());
 }
 
+TEST_F(FileSystemAccessDangerousFileDialogTest, CancelButtonInitiallyFocused) {
+  TestFileSystemAccessDangerousFileDialog test_dialog;
+  auto host = test_dialog.CreateDialogModelHost();
+
+  EXPECT_EQ(host->GetInitiallyFocusedField(),
+            host->GetId(ui::TestDialogModelHost::ButtonId::kCancel));
+}
+
 }  // namespace

@@ -894,7 +894,7 @@ BubbleDialogModelHost::FindDialogModelHostField(ui::DialogModelField* field) {
     if (info.dialog_model_field == field)
       return info;
   }
-  NOTREACHED();
+  // TODO(pbos): `field` could correspond to a button.
   return {};
 }
 

@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "ui/base/models/dialog_model.h"
+
 #include <memory>
+#include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -171,18 +174,33 @@ void DialogModel::AddCustomField(
 
 bool DialogModel::HasField(ElementIdentifier id) const {
   return base::ranges::any_of(fields_,
-                              [id](auto& field) { return field->id_ == id; });
+                              [id](auto& field) { return field->id_ == id; }) ||
+         (ok_button_ && ok_button_->id_ == id) ||
+         (cancel_button_ && cancel_button_->id_ == id) ||
+         (extra_button_ && extra_button_->id_ == id);
 }
 
 DialogModelField* DialogModel::GetFieldByUniqueId(ElementIdentifier id) {
-  // Assert that there is one and only one.
-  DCHECK_EQ(1, static_cast<int>(base::ranges::count_if(
-                   fields_, [id](auto& field) { return field->id_ == id; })));
+  // Assert that there are not duplicate fields corresponding to `id`. There
+  // could be no matches in `fields_` if `id` corresponds to a button.
+  DCHECK_LE(static_cast<int>(base::ranges::count_if(
+                fields_, [id](auto& field) { return field->id_ == id; })),
+            1);
 
   for (auto& field : fields_) {
     if (field->id_ == id)
       return field.get();
   }
+
+  // Buttons are fields, too.
+  if (ok_button_ && ok_button_->id_ == id)
+    return &ok_button_.value();
+  if (cancel_button_ && cancel_button_->id_ == id)
+    return &cancel_button_.value();
+  if (extra_button_ && cancel_button_->id_ == id)
+    return &extra_button_.value();
+
+  NOTREACHED();
   return nullptr;
 }
 

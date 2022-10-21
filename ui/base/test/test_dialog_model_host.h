@@ -49,6 +49,7 @@ class TestDialogModelHost final : public DialogModelHost {
   const base::flat_set<Accelerator>& GetAccelerators(ButtonId button_id);
   const std::u16string& GetLabel(ButtonId button_id);
   ElementIdentifier GetId(ButtonId button_id);
+  ElementIdentifier GetInitiallyFocusedField();
 
  private:
   // DialogModelHost:

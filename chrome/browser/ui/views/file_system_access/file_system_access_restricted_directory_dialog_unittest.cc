@@ -84,4 +84,13 @@ TEST_F(FileSystemAccessRestrictedDirectoryDialogTest, DestroyWithoutAction) {
   EXPECT_FALSE(test_dialog.CallbackWasCalled());
 }
 
+TEST_F(FileSystemAccessRestrictedDirectoryDialogTest,
+       CancelButtonInitiallyFocused) {
+  TestFileSystemAccessRestrictedDirectoryDialog test_dialog;
+  auto host = test_dialog.CreateDialogModelHost();
+
+  EXPECT_EQ(host->GetInitiallyFocusedField(),
+            host->GetId(ui::TestDialogModelHost::ButtonId::kCancel));
+}
+
 }  // namespace
