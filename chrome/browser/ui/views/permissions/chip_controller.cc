@@ -73,7 +73,11 @@ ChipController::ChipController(Browser* browser, OmniboxChipButton* chip_view)
   chip_->SetVisible(false);
 }
 
-ChipController::~ChipController() = default;
+ChipController::~ChipController() {
+  if (active_chip_permission_request_manager_.has_value()) {
+    active_chip_permission_request_manager_.value()->RemoveObserver(this);
+  }
+}
 
 void ChipController::OnPermissionRequestManagerDestructed() {
   ResetPermissionPromptChip();
