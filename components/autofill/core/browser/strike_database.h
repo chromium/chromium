@@ -141,9 +141,9 @@ class StrikeDatabase : public StrikeDatabaseBase {
                           const SetValueCallback& inner_callback);
 
   // Passes number of strikes to |outer_callback|.
-  void OnGetProtoStrikes(StrikesCallback outer_callback,
-                         bool success,
-                         std::unique_ptr<StrikeData> strike_data);
+  static void OnGetProtoStrikes(StrikesCallback outer_callback,
+                                bool success,
+                                std::unique_ptr<StrikeData> strike_data);
 
   // Exposed for testing purposes.
   void LoadKeys(const LoadKeysCallback& callback);
