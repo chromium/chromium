@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,21 +38,16 @@ std::string AssistantOptInFlowScreen::GetResultString(Result result) {
 }
 
 AssistantOptInFlowScreen::AssistantOptInFlowScreen(
-    AssistantOptInFlowScreenView* view,
+    base::WeakPtr<AssistantOptInFlowScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(AssistantOptInFlowScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
 }
 
-AssistantOptInFlowScreen::~AssistantOptInFlowScreen() {
-  if (view_)
-    view_->Unbind();
-}
+AssistantOptInFlowScreen::~AssistantOptInFlowScreen() = default;
 
 bool AssistantOptInFlowScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests || !g_libassistant_enabled ||
@@ -75,17 +71,6 @@ void AssistantOptInFlowScreen::ShowImpl() {
     view_->Show();
 }
 
-void AssistantOptInFlowScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
-
-void AssistantOptInFlowScreen::OnViewDestroyed(
-    AssistantOptInFlowScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
 // static
 std::unique_ptr<base::AutoReset<bool>>
 AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(bool enabled) {
@@ -93,12 +78,12 @@ AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(bool enabled) {
                                                  enabled);
 }
 
-void AssistantOptInFlowScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void AssistantOptInFlowScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kFlowFinished)
     exit_callback_.Run(Result::NEXT);
   else
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
 }
 
 }  // namespace ash

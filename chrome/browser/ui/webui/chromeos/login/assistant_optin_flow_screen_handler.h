@@ -12,6 +12,7 @@
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
@@ -20,17 +21,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
-class AssistantOptInFlowScreen;
-}
-
 namespace chromeos {
 
 // Interface for dependency injection between AssistantOptInFlowScreen
 // and its WebUI representation.
-class AssistantOptInFlowScreenView {
+class AssistantOptInFlowScreenView
+    : public base::SupportsWeakPtr<AssistantOptInFlowScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"assistant-optin-flow"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "assistant-optin-flow", "AssistantOptInFlowScreen"};
 
   AssistantOptInFlowScreenView(const AssistantOptInFlowScreenView&) = delete;
   AssistantOptInFlowScreenView& operator=(const AssistantOptInFlowScreenView&) =
@@ -38,10 +37,7 @@ class AssistantOptInFlowScreenView {
 
   virtual ~AssistantOptInFlowScreenView() = default;
 
-  virtual void Bind(ash::AssistantOptInFlowScreen* screen) = 0;
-  virtual void Unbind() = 0;
   virtual void Show() = 0;
-  virtual void Hide() = 0;
 
  protected:
   AssistantOptInFlowScreenView() = default;
@@ -67,7 +63,7 @@ class AssistantOptInFlowScreenHandler
 
   using TView = AssistantOptInFlowScreenView;
 
-  AssistantOptInFlowScreenHandler();
+  explicit AssistantOptInFlowScreenHandler(bool is_oobe = false);
 
   AssistantOptInFlowScreenHandler(const AssistantOptInFlowScreenHandler&) =
       delete;
@@ -83,10 +79,7 @@ class AssistantOptInFlowScreenHandler
   void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // AssistantOptInFlowScreenView:
-  void Bind(ash::AssistantOptInFlowScreen* screen) override;
-  void Unbind() override;
   void Show() override;
-  void Hide() override;
 
   // assistant::SpeakerIdEnrollmentClient:
   void OnListeningHotword() override;
@@ -108,9 +101,6 @@ class AssistantOptInFlowScreenHandler
   void OnDialogClosed();
 
  private:
-  // BaseScreenHandler:
-  void InitializeDeprecated() override;
-
   // ash::AssistantStateObserver:
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantStatusChanged(
@@ -147,11 +137,6 @@ class AssistantOptInFlowScreenHandler
   // Power related
   bool DeviceHasBattery();
 
-  ash::AssistantOptInFlowScreen* screen_ = nullptr;
-
-  // Whether the screen should be shown right after initialization.
-  bool show_on_init_ = false;
-
   // Whether activity control is needed for user.
   bool activity_control_needed_ = true;
 
@@ -179,6 +164,9 @@ class AssistantOptInFlowScreenHandler
   // Whether the user has opted in/out any activity control consent.
   bool has_opted_out_any_consent_ = false;
   bool has_opted_in_any_consent_ = false;
+
+  // Whether assistant shown during OOBE or in session.
+  bool is_oobe_ = false;
 
   // Used to record related information of activity control consents which are
   // pending for user action.

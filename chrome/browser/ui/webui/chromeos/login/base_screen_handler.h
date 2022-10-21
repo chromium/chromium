@@ -57,6 +57,8 @@ class BaseScreenHandler : public BaseWebUIHandler {
     user_acted_method_path_ = user_acted_method_path;
   }
 
+  bool HandleUserActionImpl(const base::Value::List& args);
+
  private:
   // Handles user action.
   void HandleUserAction(const base::Value::List& args);

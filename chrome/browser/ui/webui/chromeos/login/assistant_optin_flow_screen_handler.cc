@@ -75,21 +75,14 @@ std::u16string GetGivenNameIfIsChild() {
 
 }  // namespace
 
-constexpr StaticOobeScreenId AssistantOptInFlowScreenView::kScreenId;
-
-AssistantOptInFlowScreenHandler::AssistantOptInFlowScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.AssistantOptInFlowScreen.userActed");
-}
+AssistantOptInFlowScreenHandler::AssistantOptInFlowScreenHandler(bool is_oobe)
+    : BaseScreenHandler(kScreenId), is_oobe_(is_oobe) {}
 
 AssistantOptInFlowScreenHandler::~AssistantOptInFlowScreenHandler() {
   if (assistant::AssistantSettings::Get() && voice_match_enrollment_started_)
     StopSpeakerIdEnrollment();
   if (ash::AssistantState::Get())
     ash::AssistantState::Get()->RemoveObserver(this);
-  if (screen_)
-    screen_->OnViewDestroyed(this);
 }
 
 void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
@@ -218,57 +211,30 @@ void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
-void AssistantOptInFlowScreenHandler::Bind(AssistantOptInFlowScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-  screen_ = screen;
-  if (IsJavascriptAllowed())
-    InitializeDeprecated();
-}
-
-void AssistantOptInFlowScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void AssistantOptInFlowScreenHandler::Show() {
-  if (!IsJavascriptAllowed() || !screen_) {
-    show_on_init_ = true;
-    return;
-  }
-
   SetupAssistantConnection();
 
   ShowInWebUI();
 }
 
-void AssistantOptInFlowScreenHandler::Hide() {}
-
-void AssistantOptInFlowScreenHandler::InitializeDeprecated() {
-  if (!screen_ || !show_on_init_)
-    return;
-
-  Show();
-  show_on_init_ = false;
-}
-
 void AssistantOptInFlowScreenHandler::OnListeningHotword() {
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "listen");
+  CallExternalAPI("onVoiceMatchUpdate", "listen");
 }
 
 void AssistantOptInFlowScreenHandler::OnProcessingHotword() {
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "process");
+  CallExternalAPI("onVoiceMatchUpdate", "process");
 }
 
 void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentDone() {
   StopSpeakerIdEnrollment();
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "done");
+  CallExternalAPI("onVoiceMatchUpdate", "done");
 }
 
 void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentFailure() {
   StopSpeakerIdEnrollment();
   RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_ERROR);
   voice_match_enrollment_error_ = true;
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "failure");
+  CallExternalAPI("onVoiceMatchUpdate", "failure");
   LOG(ERROR) << "Speaker ID enrollment failure.";
 }
 
@@ -293,7 +259,7 @@ void AssistantOptInFlowScreenHandler::SetupAssistantConnection() {
 }
 
 void AssistantOptInFlowScreenHandler::ShowNextScreen() {
-  CallJS("login.AssistantOptInFlowScreen.showNextScreen");
+  CallExternalAPI("showNextScreen");
 }
 
 void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
@@ -391,17 +357,16 @@ void AssistantOptInFlowScreenHandler::StopSpeakerIdEnrollment() {
 }
 
 void AssistantOptInFlowScreenHandler::ReloadContent(base::Value::Dict dict) {
-  CallJS("login.AssistantOptInFlowScreen.reloadContent", std::move(dict));
+  CallExternalAPI("reloadContent", std::move(dict));
 }
 
 void AssistantOptInFlowScreenHandler::AddSettingZippy(const std::string& type,
                                                       base::Value::List data) {
-  CallJS("login.AssistantOptInFlowScreen.addSettingZippy", type,
-         std::move(data));
+  CallExternalAPI("addSettingZippy", type, std::move(data));
 }
 
 void AssistantOptInFlowScreenHandler::UpdateValuePropScreen() {
-  CallJS("login.AssistantOptInFlowScreen.onValuePropUpdate");
+  CallExternalAPI("onValuePropUpdate");
 }
 
 void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
@@ -662,10 +627,11 @@ void AssistantOptInFlowScreenHandler::HandleFlowFinished() {
 
   UMA_HISTOGRAM_EXACT_LINEAR("Assistant.OptInFlow.LoadingTimeoutCount",
                              loading_timeout_counter_, 10);
-  if (screen_)
-    screen_->HandleUserActionDeprecated(kFlowFinished);
-  else
-    CallJS("login.AssistantOptInFlowScreen.closeDialog");
+  base::Value::List args;
+  args.Append(kFlowFinished);
+  if (!HandleUserActionImpl(args)) {
+    CallExternalAPI("closeDialog");
+  }
 }
 
 void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
@@ -673,7 +639,7 @@ void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
   // Allow JavaScript. This is necessary for the in-session WebUI and is is not
   // triggered in the OOBE flow, where `screen` objects are associated with
   // handlers. TODO(crbug.com/1309022) - Separate in-session and OOBE handlers.
-  if (!screen_)
+  if (!is_oobe_)
     AllowJavascript();
 
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();

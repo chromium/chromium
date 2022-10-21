@@ -465,7 +465,8 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<UpdateRequiredScreenHandler>());
 
-  AddScreenHandler(std::make_unique<AssistantOptInFlowScreenHandler>());
+  AddScreenHandler(
+      std::make_unique<AssistantOptInFlowScreenHandler>(/*is_oobe=*/true));
 
   AddScreenHandler(std::make_unique<MultiDeviceSetupScreenHandler>());
 

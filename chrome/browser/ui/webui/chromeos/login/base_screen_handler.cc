@@ -61,8 +61,12 @@ void BaseScreenHandler::RegisterMessages() {
 }
 
 void BaseScreenHandler::HandleUserAction(const base::Value::List& args) {
+  HandleUserActionImpl(args);
+}
+
+bool BaseScreenHandler::HandleUserActionImpl(const base::Value::List& args) {
   if (!ash::LoginDisplayHost::default_host())
-    return;
+    return false;
 
 #if DCHECK_IS_ON()
   if (base_screen_) {
@@ -73,10 +77,22 @@ void BaseScreenHandler::HandleUserAction(const base::Value::List& args) {
   }
 #endif
 
-  ash::LoginDisplayHost::default_host()
-      ->GetWizardController()
-      ->GetScreen(oobe_screen_)
-      ->HandleUserAction(args);
+  LoginDisplayHost* host = ash::LoginDisplayHost::default_host();
+  if (!host) {
+    return false;
+  }
+
+  WizardController* wizard_controller = host->GetWizardController();
+  if (!wizard_controller) {
+    return false;
+  }
+
+  BaseScreen* screen = wizard_controller->GetScreen(oobe_screen_);
+  if (!screen)
+    return false;
+
+  screen->HandleUserAction(args);
+  return true;
 }
 
 std::string BaseScreenHandler::GetFullExternalAPIFunctionName(

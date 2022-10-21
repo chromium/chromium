@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
@@ -26,16 +27,13 @@ class AssistantOptInFlowScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  AssistantOptInFlowScreen(AssistantOptInFlowScreenView* view,
+  AssistantOptInFlowScreen(base::WeakPtr<AssistantOptInFlowScreenView> view,
                            const ScreenExitCallback& exit_callback);
 
   AssistantOptInFlowScreen(const AssistantOptInFlowScreen&) = delete;
   AssistantOptInFlowScreen& operator=(const AssistantOptInFlowScreen&) = delete;
 
   ~AssistantOptInFlowScreen() override;
-
-  // Called when view is destroyed so there's no dead reference to it.
-  void OnViewDestroyed(AssistantOptInFlowScreenView* view_);
 
   static std::unique_ptr<base::AutoReset<bool>>
   ForceLibAssistantEnabledForTesting(bool enabled);
@@ -52,11 +50,11 @@ class AssistantOptInFlowScreen : public BaseScreen {
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
-  void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void HideImpl() override {}
+  void OnUserAction(const base::Value::List& args) override;
 
  private:
-  AssistantOptInFlowScreenView* view_;
+  base::WeakPtr<AssistantOptInFlowScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 
