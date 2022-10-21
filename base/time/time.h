@@ -71,6 +71,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -443,6 +444,9 @@ class TimeBase {
   constexpr TimeDelta since_origin() const;
 
   // Compute the difference between two times.
+#if !defined(__aarch64__) && BUILDFLAG(IS_ANDROID)
+  NOINLINE  // https://crbug.com/1369775
+#endif
   constexpr TimeDelta operator-(const TimeBase<TimeClass>& other) const;
 
   // Return a new time modified by some delta.
