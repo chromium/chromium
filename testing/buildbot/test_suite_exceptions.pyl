@@ -1244,6 +1244,9 @@
   'chrome_public_persistent_shell_test_apk': {
     'modifications': {
       'android-nougat-x86-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
+        ],
         'swarming': {
           'shards': 25,
         },
