@@ -53,6 +53,27 @@ base::StringPiece GetHistogramSuffix(DIPSCookieMode mode);
 const char* DIPSCookieModeToString(DIPSCookieMode mode);
 std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
 
+// DIPSEventRemovalType:
+// NOTE: We use this type as a bitfield don't change the values.
+enum class DIPSEventRemovalType {
+  kNone = 0,
+  kInteraction = 1,
+  kStorage = 2,
+  kAll = 3
+};
+
+constexpr DIPSEventRemovalType operator|(DIPSEventRemovalType lhs,
+                                         DIPSEventRemovalType rhs) {
+  return static_cast<DIPSEventRemovalType>(static_cast<int>(lhs) |
+                                           static_cast<int>(rhs));
+}
+
+constexpr DIPSEventRemovalType operator&(DIPSEventRemovalType lhs,
+                                         DIPSEventRemovalType rhs) {
+  return static_cast<DIPSEventRemovalType>(static_cast<int>(lhs) &
+                                           static_cast<int>(rhs));
+}
+
 // DIPSRedirectType:
 enum class DIPSRedirectType { kClient, kServer };
 

@@ -30,6 +30,11 @@ class DIPSService : public KeyedService {
 
   bool ShouldBlockThirdPartyCookies() const;
 
+  void RemoveEvents(const base::Time& delete_begin,
+                    const base::Time& delete_end,
+                    const UrlPredicate& predicate,
+                    const DIPSEventRemovalType type);
+
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;

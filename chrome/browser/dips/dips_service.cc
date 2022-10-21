@@ -73,6 +73,14 @@ bool DIPSService::ShouldBlockThirdPartyCookies() const {
   return cookie_settings_->ShouldBlockThirdPartyCookies();
 }
 
+void DIPSService::RemoveEvents(const base::Time& delete_begin,
+                               const base::Time& delete_end,
+                               const UrlPredicate& predicate,
+                               DIPSEventRemovalType type) {
+  storage_.AsyncCall(&DIPSStorage::RemoveEvents)
+      .WithArgs(delete_begin, delete_end, predicate, type);
+}
+
 void DIPSService::InitializeStorageWithEngagedSites() {
   base::Time now = base::Time::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(

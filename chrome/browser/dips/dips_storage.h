@@ -17,6 +17,8 @@
 
 class GURL;
 
+using UrlPredicate = base::RepeatingCallback<bool(const GURL&)>;
+
 // Manages the storage of DIPSState values.
 class DIPSStorage {
  public:
@@ -27,12 +29,19 @@ class DIPSStorage {
 
   DIPSState Read(const GURL& url);
 
+  void RemoveEvents(base::Time delete_begin,
+                    base::Time delete_end,
+                    const UrlPredicate& predicate,
+                    const DIPSEventRemovalType type);
+
   // DIPS Helper Method Impls --------------------------------------------------
 
   // Record that |url| wrote to storage.
   void RecordStorage(const GURL& url, base::Time time, DIPSCookieMode mode);
   // Record that the user interacted on |url|.
   void RecordInteraction(const GURL& url, base::Time time, DIPSCookieMode mode);
+
+  // Utility Methods -----------------------------------------------------------
 
   // Empty method intended for testing use only.
   void DoNothing() {}
@@ -61,10 +70,12 @@ class DIPSStorage {
     std::vector<std::string> sites;
   };
 
+ protected:
+  void Write(const DIPSState& state);
+
  private:
   friend class DIPSState;
   DIPSState ReadSite(std::string site);
-  void Write(const DIPSState& state);
   // Prepopulate the DB with one chunk of |args.sites|, and schedule another
   // task to continue if more sites remain.
   void PrepopulateChunk(PrepopulateArgs args);

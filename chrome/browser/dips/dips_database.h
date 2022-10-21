@@ -50,6 +50,10 @@ class DIPSDatabase {
   // executes successfully.
   bool RemoveRow(const std::string& site);
 
+  bool RemoveEventsByTime(const base::Time& delete_begin,
+                          const base::Time& delete_end,
+                          const DIPSEventRemovalType type);
+
   bool in_memory() const { return db_path_.empty(); }
 
  protected:
@@ -57,6 +61,17 @@ class DIPSDatabase {
   sql::InitStatus OpenDatabase();
   sql::InitStatus InitImpl();
   bool InitTables();
+
+  // Internal utility functions ------------------------------------------------
+  bool ClearTimestamps(const base::Time& delete_begin,
+                       const base::Time& delete_end,
+                       const DIPSEventRemovalType type);
+  bool AdjustFirstTimestamps(const base::Time& delete_begin,
+                             const base::Time& delete_end,
+                             const DIPSEventRemovalType type);
+  bool AdjustLastTimestamps(const base::Time& delete_begin,
+                            const base::Time& delete_end,
+                            const DIPSEventRemovalType type);
 
  private:
   // Callback for database errors.
