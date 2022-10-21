@@ -56,7 +56,7 @@
   {
     "name": "adaptive-button-in-top-toolbar-customization",
     "owners": [ "shaktisahu", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 112
   },
   {
     "name": "adaptive-charging",
