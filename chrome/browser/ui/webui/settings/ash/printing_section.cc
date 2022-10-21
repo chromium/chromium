@@ -205,8 +205,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRINTING_CUPS_PRINTER_CONFIGURING_MESSAGE},
       {"printerManufacturer", IDS_SETTINGS_PRINTING_CUPS_PRINTER_MANUFACTURER},
       {"selectDriver", IDS_SETTINGS_PRINTING_CUPS_PRINTER_SELECT_DRIVER},
-      {"selectDriverEditDialog",
-       IDS_SETTINGS_PRINTING_CUPS_PRINTER_EDIT_SELECT_DRIVER},
       {"selectDriverButtonText",
        IDS_SETTINGS_PRINTING_CUPS_PRINTER_BUTTON_SELECT_DRIVER},
       {"selectDriverButtonAriaLabel",

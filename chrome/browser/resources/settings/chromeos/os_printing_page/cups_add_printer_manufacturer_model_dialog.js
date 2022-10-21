@@ -258,6 +258,11 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   }
 
   /** @private */
+  onLearnMoreTap_() {
+    window.open(loadTimeData.getString('printingCUPSPrintPpdLearnMoreUrl'));
+  }
+
+  /** @private */
   onCancelTap_() {
     this.close();
     this.browserProxy_.cancelPrinterSetUp(this.activePrinter);
