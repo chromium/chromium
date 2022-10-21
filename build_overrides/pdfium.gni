@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build_overrides/partition_alloc.gni")
+import("//base/allocator/allocator.gni")
 
 # Enable use of Javascript in PDFs.
 pdf_enable_v8_override = true
@@ -14,8 +14,9 @@ pdf_enable_xfa_override = is_chromeos || is_linux || is_mac || is_win
 # FreeType, configured by the embedder in //build/config/freetype.
 pdf_bundle_freetype_override = false
 
-# Build PDFium with PartitionAlloc as the memory allocator.
-pdf_use_partition_alloc_override = use_partition_alloc_as_malloc_default
+# Build PDFium with PartitionAlloc support and direct the fxcrt layer to
+# use it as the memory allocator instead of `malloc()`.
+pdf_use_partition_alloc_override = use_partition_alloc
 
 # Disable use of Skia backend.
 pdf_use_skia_override = false
