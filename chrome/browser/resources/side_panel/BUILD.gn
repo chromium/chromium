@@ -72,6 +72,15 @@ copy("copy_mojo_shopping_list") {
   outputs = [ "$target_gen_dir/$preprocess_folder/bookmarks/commerce/{{source_file_part}}" ]
 }
 
+copy("copy_mojo_user_notes") {
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings_webui_js",
+  ]
+  sources = [ "$mojo_root_folder/user_notes/user_notes.mojom-webui.js" ]
+  outputs =
+      [ "$target_gen_dir/$preprocess_folder/user_notes/{{source_file_part}}" ]
+}
+
 ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   root_dir = "$target_gen_dir/$preprocess_folder"
@@ -95,6 +104,7 @@ ts_library("build_ts") {
     ":copy_mojo_bookmarks",
     ":copy_mojo_reading_list",
     ":copy_mojo_shopping_list",
+    ":copy_mojo_user_notes",
     ":preprocess_gen",
     ":preprocess_src",
   ]
@@ -111,6 +121,7 @@ generate_grd("build_grd") {
     "bookmarks/power_bookmarks.html",
     "read_anything/read_anything.html",
     "side_panel.html",
+    "user_notes/user_notes.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]

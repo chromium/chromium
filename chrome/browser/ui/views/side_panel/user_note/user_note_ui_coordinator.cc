@@ -8,12 +8,17 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_view.h"
+#include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
 #include "chrome/browser/user_notes/user_note_service_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_notes/browser/user_note_instance.h"
 #include "components/user_notes/browser/user_note_manager.h"
@@ -398,4 +403,19 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
 
   Invalidate();
   return root_view;
+}
+
+std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesWebUIView() {
+  auto view = std::make_unique<SidePanelWebUIViewT<UserNotesSidePanelUI>>(
+      base::RepeatingClosure(), base::RepeatingClosure(),
+      std::make_unique<BubbleContentsWrapperT<UserNotesSidePanelUI>>(
+          GURL(chrome::kChromeUIUserNotesSidePanelURL), browser_->profile(),
+          IDS_USER_NOTE_TITLE,
+          /*webui_resizes_host=*/false,
+          /*esc_closes_ui=*/false));
+  // TODO(corising): Remove this and appropriately update availability based on
+  // notes ui readiness.
+  view->SetVisible(true);
+  SidePanelUtil::GetSidePanelContentProxy(view.get())->SetAvailable(true);
+  return view;
 }
