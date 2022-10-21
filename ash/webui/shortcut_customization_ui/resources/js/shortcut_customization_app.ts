@@ -117,9 +117,8 @@ export class ShortcutCustomizationAppElement extends
 
   private fetchAccelerators_() {
     // Kickoff fetching accelerators by first fetching the accelerator configs.
-    this.shortcutProvider_.getAllAcceleratorConfig().then(
-        (result: AcceleratorConfig) =>
-            this.onAcceleratorConfigFetched_(result));
+    this.shortcutProvider_.getAccelerators().then(
+        ({config}) => this.onAcceleratorConfigFetched_(config));
   }
 
   private onAcceleratorConfigFetched_(config: AcceleratorConfig) {

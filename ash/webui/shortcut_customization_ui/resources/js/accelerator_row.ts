@@ -86,8 +86,8 @@ export class AcceleratorRowElement extends PolymerElement {
 
   protected onSourceChanged_() {
     this.shortcutInterfaceProvider_.isMutable(this.source)
-        .then((result: boolean) => {
-          this.isLocked_ = !result;
+        .then(({isMutable}) => {
+          this.isLocked_ = !isMutable;
           if (!this.isLocked_) {
             this.addEventListener('click', () => this.showDialog_());
           }

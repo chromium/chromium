@@ -18,7 +18,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods_ = new FakeMethodResolver();
 
     // Setup method resolvers.
-    this.methods_.register('getAllAcceleratorConfig');
+    this.methods_.register('getAccelerators');
     this.methods_.register('getLayoutInfo');
     this.methods_.register('isMutable');
     this.methods_.register('addUserAccelerator');
@@ -28,16 +28,17 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods_.register('restoreActionDefaults');
   }
 
-  getAllAcceleratorConfig(): Promise<AcceleratorConfig> {
-    return this.methods_.resolveMethod('getAllAcceleratorConfig');
+  getAccelerators(): Promise<{config: AcceleratorConfig}> {
+    return this.methods_.resolveMethod('getAccelerators');
   }
 
   getLayoutInfo(): Promise<LayoutInfoList> {
     return this.methods_.resolveMethod('getLayoutInfo');
   }
 
-  isMutable(source: AcceleratorSource): Promise<boolean> {
-    this.methods_.setResult('isMutable', source !== AcceleratorSource.BROWSER);
+  isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}> {
+    this.methods_.setResult(
+        'isMutable', {isMutable: source !== AcceleratorSource.BROWSER});
     return this.methods_.resolveMethod('isMutable');
   }
 
@@ -78,10 +79,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   /**
    * Sets the value that will be returned when calling
-   * getAllAcceleratorConfig().
+   * getAccelerators().
    */
   setFakeAcceleratorConfig(config: AcceleratorConfig) {
-    this.methods_.setResult('getAllAcceleratorConfig', config);
+    this.methods_.setResult('getAccelerators', {config});
   }
 
   /**

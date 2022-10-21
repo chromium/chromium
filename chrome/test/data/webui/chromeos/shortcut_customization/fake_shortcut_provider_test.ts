@@ -24,19 +24,19 @@ suite('fakeShortcutProviderTest', function() {
     assertTrue(!!provider);
     return provider as FakeShortcutProvider;
   }
-  test('GetAllAcceleratorConfigEmpty', () => {
+  test('GetAcceleratorsEmpty', () => {
     const expected = new Map();
     getProvider().setFakeAcceleratorConfig(expected);
-    return getProvider().getAllAcceleratorConfig().then((result) => {
-      assertDeepEquals(expected, result);
+    return getProvider().getAccelerators().then((result) => {
+      assertDeepEquals(expected, result.config);
     });
   });
 
-  test('GetAllAcceleratorConfigDefaultFake', () => {
+  test('GetAcceleratorsDefaultFake', () => {
     // TODO(zentaro): Remove this test once real data is ready.
     getProvider().setFakeAcceleratorConfig(fakeAcceleratorConfig);
-    return getProvider().getAllAcceleratorConfig().then((result) => {
-      assertDeepEquals(fakeAcceleratorConfig, result);
+    return getProvider().getAccelerators().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result.config);
     });
   });
 
@@ -60,12 +60,12 @@ suite('fakeShortcutProviderTest', function() {
     // TODO(jimmyxgong): Remove this test once real data is ready.
     // AcceleratorSource.ASH is a mutable source.
     return getProvider().isMutable(AcceleratorSource.ASH).then((result) => {
-      assertTrue(result);
+      assertTrue(result.isMutable);
       // AcceleratorSource.BROWSER is not a mutable source
       return getProvider()
           .isMutable(AcceleratorSource.BROWSER)
           .then((result) => {
-            assertFalse(result);
+            assertFalse(result.isMutable);
           });
     });
   });
