@@ -22,6 +22,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASHER_H_
 
+#include <cstring>
+#include <type_traits>
+
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -92,38 +95,22 @@ class StringHasher {
 
   template <typename T, UChar Converter(T)>
   void AddCharactersAssumingAligned(const T* data, unsigned length) {
-    DCHECK(!has_pending_character_);
-
-    bool remainder = length & 1;
-    length >>= 1;
-
-    while (length--) {
-      AddCharactersAssumingAligned(Converter(data[0]), Converter(data[1]));
-      data += 2;
-    }
-
-    if (remainder)
-      AddCharacter(Converter(*data));
+    AddCharactersAssumingAligned_internal<T, Converter>(reinterpret_cast<const unsigned char*>(data),length);
   }
 
   template <typename T>
   void AddCharactersAssumingAligned(const T* data, unsigned length) {
-    AddCharactersAssumingAligned<T, DefaultConverter>(data, length);
+    AddCharactersAssumingAligned_internal<T>(reinterpret_cast<const unsigned char*>(data),length);
   }
 
   template <typename T, UChar Converter(T)>
   void AddCharacters(const T* data, unsigned length) {
-    if (has_pending_character_ && length) {
-      has_pending_character_ = false;
-      AddCharactersAssumingAligned(pending_character_, Converter(*data++));
-      --length;
-    }
-    AddCharactersAssumingAligned<T, Converter>(data, length);
+    AddCharacters_internal<T, Converter>(reinterpret_cast<const unsigned char*>(data),length);
   }
 
   template <typename T>
   void AddCharacters(const T* data, unsigned length) {
-    AddCharacters<T, DefaultConverter>(data, length);
+    AddCharacters_internal<T>(reinterpret_cast<const unsigned char*>(data),length);
   }
 
   unsigned HashWithTop8BitsMasked() const {
@@ -158,14 +145,12 @@ class StringHasher {
 
   template <typename T, UChar Converter(T)>
   static unsigned ComputeHashAndMaskTop8Bits(const T* data, unsigned length) {
-    StringHasher hasher;
-    hasher.AddCharactersAssumingAligned<T, Converter>(data, length);
-    return hasher.HashWithTop8BitsMasked();
+    return ComputeHashAndMaskTop8Bits_internal<T, Converter>(reinterpret_cast<const unsigned char*>(data), length);
   }
 
   template <typename T>
   static unsigned ComputeHashAndMaskTop8Bits(const T* data, unsigned length) {
-    return ComputeHashAndMaskTop8Bits<T, DefaultConverter>(data, length);
+    return ComputeHashAndMaskTop8Bits_internal<T>(reinterpret_cast<const unsigned char*>(data), length);
   }
 
   template <typename T, UChar Converter(T)>
@@ -186,7 +171,7 @@ class StringHasher {
     // bits in StringImpl and hash strings consistently, but I don't see why
     // we'd want that for general memory hashing.
     DCHECK(!(length % 2));
-    return ComputeHashAndMaskTop8Bits<UChar>(static_cast<const UChar*>(data),
+    return ComputeHashAndMaskTop8Bits_internal<UChar>(static_cast<const unsigned char*>(data),
                                              length / sizeof(UChar));
   }
 
@@ -201,6 +186,65 @@ class StringHasher {
   // data into being a UChar.
   static UChar DefaultConverter(UChar character) { return character; }
   static UChar DefaultConverter(LChar character) { return character; }
+
+  template <typename T, UChar Converter(T)>
+  void AddCharactersAssumingAligned_internal(const unsigned char* data, unsigned length) {
+    DCHECK(!has_pending_character_);
+
+    static_assert(std::is_pod<T>::value, "we only support hashing POD types");
+    bool remainder = length & 1;
+    length >>= 1;
+
+    while (length--) {
+      T data_converted[2];
+      std::memcpy(data_converted, data, sizeof(T)*2);
+      AddCharactersAssumingAligned(Converter(data_converted[0]), Converter(data_converted[1]));
+      data += sizeof(T)*2;
+    }
+
+    if (remainder) {
+      T data_converted;
+      std::memcpy(&data_converted, data, sizeof(T));
+      AddCharacter(Converter(data_converted));
+    }
+  }
+
+  template <typename T>
+  void AddCharactersAssumingAligned_internal(const unsigned char* data, unsigned length) {
+    AddCharactersAssumingAligned_internal<T, DefaultConverter>(data, length);
+  }
+
+  template <typename T, UChar Converter(T)>
+  void AddCharacters_internal(const unsigned char* data, unsigned length) {
+    static_assert(std::is_pod<T>::value, "we only support hashing POD types");
+
+    if (has_pending_character_ && length) {
+      has_pending_character_ = false;
+      T data_converted;
+      std::memcpy(&data_converted, data, sizeof(T));
+      AddCharactersAssumingAligned(pending_character_, Converter(data_converted));
+      data += sizeof(T);
+      --length;
+    }
+    AddCharactersAssumingAligned_internal<T, Converter>(data, length);
+  }
+
+  template <typename T>
+  void AddCharacters_internal(const unsigned char* data, unsigned length) {
+    AddCharacters_internal<T, DefaultConverter>(data, length);
+  }
+
+  template <typename T, UChar Converter(T)>
+  static unsigned ComputeHashAndMaskTop8Bits_internal(const unsigned char* data, unsigned length) {
+    StringHasher hasher;
+    hasher.AddCharactersAssumingAligned_internal<T, Converter>(data, length);
+    return hasher.HashWithTop8BitsMasked();
+  }
+
+  template <typename T>
+  static unsigned ComputeHashAndMaskTop8Bits_internal(const unsigned char* data, unsigned length) {
+    return ComputeHashAndMaskTop8Bits_internal<T, DefaultConverter>(data, length);
+  }
 
   unsigned AvalancheBits() const {
     unsigned result = hash_;
