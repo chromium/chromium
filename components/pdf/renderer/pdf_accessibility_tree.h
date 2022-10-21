@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/renderer/plugin_ax_tree_source.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "pdf/pdf_accessibility_data_handler.h"
@@ -112,6 +113,16 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   void AccessibilityModeChanged(const ui::AXMode& /*mode*/) override;
   void OnDestruct() override;
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Removes the image node in the accessibility tree with the specified ID, and
+  // adds a page node hosting a child tree containing the page contents which
+  // will later be provided by the OCR Service.
+  void OnOcrDataReceived(const ui::AXNodeID& image_node_id,
+                         const gfx::RectF& image_bounds,
+                         const ui::AXNodeID& parent_node_id,
+                         const ui::AXTreeID& child_tree_id);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
   bool ShowContextMenu();
 
  private:
@@ -164,6 +175,11 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // Handles an accessibility change only if there is a valid
   // `RenderAccessibility` for the frame.
   void MaybeHandleAccessibilityChange();
+
+  // Returns a weak pointer for an instance of this class.
+  base::WeakPtr<PdfAccessibilityTree> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   ui::AXTreeData tree_data_;
   ui::AXTree tree_;

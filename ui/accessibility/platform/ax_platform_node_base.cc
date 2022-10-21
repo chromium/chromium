@@ -2342,7 +2342,8 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
 
   // We include list markers for now, but there might be other objects that are
   // auto generated.
-  // TODO(nektar): Compute what objects are auto-generated in Blink.
+  // TODO(nektar): Compute what objects are auto-generated in Blink and
+  // TODO(1278249): add OCRed text from Screen AI Service too.
   if (GetRole() == ax::mojom::Role::kListMarker)
     attributes.push_back(std::make_pair("auto-generated", "true"));
 
