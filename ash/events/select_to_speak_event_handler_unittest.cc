@@ -211,12 +211,26 @@ TEST_F(SelectToSpeakEventHandlerTest, SearchPlusDrag) {
   generator_->DragMouseTo(drag_location);
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
   EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
-  EXPECT_TRUE(event_capturer_.last_mouse_event());
+  EXPECT_FALSE(event_capturer_.last_mouse_event());
   event_capturer_.Reset();
 
   generator_->ReleaseLeftButton();
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
   EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_RELEASED));
+
+  generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+}
+
+TEST_F(SelectToSpeakEventHandlerTest, SearchPlusMove) {
+  generator_->PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  gfx::Point initial_mouse_location = gfx::Point(100, 12);
+  generator_->set_current_screen_location(initial_mouse_location);
+
+  // Hovers are not passed through.
+  gfx::Point move_location = gfx::Point(120, 32);
+  generator_->MoveMouseTo(move_location);
+  EXPECT_FALSE(event_capturer_.last_mouse_event());
+  event_capturer_.Reset();
 
   generator_->ReleaseKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
 }
@@ -510,7 +524,7 @@ TEST_F(SelectToSpeakEventHandlerTest, SelectionRequestedWorksWithMouse) {
   generator_->DragMouseTo(drag_location);
   EXPECT_EQ(drag_location, delegate_->last_mouse_event_location());
   EXPECT_TRUE(delegate_->CapturedMouseEvent(ui::ET_MOUSE_DRAGGED));
-  EXPECT_TRUE(event_capturer_.last_mouse_event());
+  EXPECT_FALSE(event_capturer_.last_mouse_event());
   event_capturer_.Reset();
 
   // Mouse up is the last event captured in the sequence
@@ -599,6 +613,22 @@ TEST_F(SelectToSpeakEventHandlerTest, SelectionRequestedIgnoresOtherInput) {
   // Complete the touch selection.
   generator_->ReleaseTouch();
   EXPECT_FALSE(event_capturer_.last_touch_event());
+  event_capturer_.Reset();
+}
+
+TEST_F(SelectToSpeakEventHandlerTest, SelectionRequestedPreventsHovers) {
+  // Start selection mode.
+  controller_->SetSelectToSpeakState(
+      SelectToSpeakState::kSelectToSpeakStateSelecting);
+
+  // Set the mouse.
+  gfx::Point initial_mouse_location = gfx::Point(100, 12);
+  generator_->set_current_screen_location(initial_mouse_location);
+
+  // Hovers are not passed through.
+  gfx::Point move_location = gfx::Point(120, 32);
+  generator_->MoveMouseTo(move_location);
+  EXPECT_FALSE(event_capturer_.last_mouse_event());
   event_capturer_.Reset();
 }
 

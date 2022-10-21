@@ -25,9 +25,9 @@ class AccessibilityEventHandlerManager {
     kFullscreenMagnifier,
     kDockedMagnifier,
     kChromeVox,
-    kSelectToSpeak,
     kAutoclick,
-    kMaxValue = kAutoclick,
+    kSelectToSpeak,
+    kMaxValue = kSelectToSpeak,
   };
 
   AccessibilityEventHandlerManager();

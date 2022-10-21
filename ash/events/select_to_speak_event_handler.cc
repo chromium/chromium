@@ -123,6 +123,13 @@ void SelectToSpeakEventHandler::OnMouseEvent(ui::MouseEvent* event) {
       state_ = CAPTURING_MOUSE_ONLY;
   }
 
+  // We don't want mouse events to affect underlying UI when user is about to
+  // select text to speak. (e.g. we don't want a hoverbox to appear/disappear)
+  if (state_ == SELECTION_REQUESTED || state_ == SEARCH_DOWN) {
+    CancelEvent(event);
+    return;
+  }
+
   if (state_ == WAIT_FOR_MOUSE_RELEASE &&
       event->type() == ui::ET_MOUSE_RELEASED) {
     state_ = INACTIVE;
@@ -144,7 +151,8 @@ void SelectToSpeakEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   delegate_->DispatchMouseEvent(*event);
 
   if (event->type() == ui::ET_MOUSE_PRESSED ||
-      event->type() == ui::ET_MOUSE_RELEASED)
+      event->type() == ui::ET_MOUSE_RELEASED ||
+      event->type() == ui::ET_MOUSE_DRAGGED)
     CancelEvent(event);
 }
 
