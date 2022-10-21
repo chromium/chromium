@@ -5,7 +5,6 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 #include "base/containers/fixed_flat_set.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
 namespace ui {
@@ -22,20 +21,14 @@ void AXPlatformNodeDelegate::SetNode(AXNode& node) {
   node_ = &node;
 }
 
-AXTreeManager* AXPlatformNodeDelegate::GetTreeManager() const {
-  return AXTreeManager::FromID(GetTreeData().tree_id);
-}
-
 ui::AXNodeID AXPlatformNodeDelegate::GetId() const {
   if (node_)
     return node_->id();
   return kInvalidAXNodeID;
 }
 
-AXPlatformNode* AXPlatformNodeDelegate::GetAXPlatformNode() const {
-  // Not all `AXPlatformNodeDelegate` subclasses can return an `AXPlatformNode`
-  // yet. So, here we just return nullptr.
-  return nullptr;
+AXTreeManager* AXPlatformNodeDelegate::GetTreeManager() const {
+  return AXTreeManager::FromID(GetTreeData().tree_id);
 }
 
 gfx::Rect AXPlatformNodeDelegate::GetClippedScreenBoundsRect(

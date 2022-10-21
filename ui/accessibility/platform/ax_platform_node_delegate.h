@@ -89,11 +89,6 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // any), otherwise returns kInvalidAXNodeID
   AXNodeID GetId() const;
 
-  // Returns the `AXPlatformNode` that is owned by this delegate, if applicable
-  // on this platform. This wrapper object adapts the internal accessibility API
-  // surface to the one used by the current platform's accessibility APIs.
-  virtual AXPlatformNode* GetAXPlatformNode() const;
-
   // Get the accessibility data that should be exposed for this node. This data
   // is readonly and comes directly from the accessibility tree's source, e.g.
   // Blink.

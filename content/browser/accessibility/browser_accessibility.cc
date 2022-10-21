@@ -30,28 +30,6 @@
 
 namespace content {
 
-const BrowserAccessibility& DynamicToBrowserAccessibility(
-    const ui::AXPlatformNodeDelegate& delegate) {
-  DCHECK(delegate.IsWebContent());
-  return static_cast<const BrowserAccessibility&>(delegate);
-}
-
-BrowserAccessibility& DynamicToBrowserAccessibility(
-    ui::AXPlatformNodeDelegate& delegate) {
-  DCHECK(delegate.IsWebContent());
-  return static_cast<BrowserAccessibility&>(delegate);
-}
-
-const BrowserAccessibility* DynamicToBrowserAccessibility(
-    const ui::AXPlatformNodeDelegate* delegate) {
-  return delegate ? &DynamicToBrowserAccessibility(*delegate) : nullptr;
-}
-
-BrowserAccessibility* DynamicToBrowserAccessibility(
-    ui::AXPlatformNodeDelegate* delegate) {
-  return delegate ? &DynamicToBrowserAccessibility(*delegate) : nullptr;
-}
-
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 // static
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
@@ -133,6 +111,12 @@ void BrowserAccessibility::OnDataChanged() {
 
 bool BrowserAccessibility::CanFireEvents() const {
   return node()->CanFireEvents();
+}
+
+ui::AXPlatformNode* BrowserAccessibility::GetAXPlatformNode() const {
+  // Not all BrowserAccessibility subclasses can return an AXPlatformNode yet.
+  // So, here we just return nullptr.
+  return nullptr;
 }
 
 size_t BrowserAccessibility::PlatformChildCount() const {
@@ -1456,7 +1440,11 @@ gfx::NativeViewAccessible BrowserAccessibility::GetFocus() const {
 }
 
 ui::AXPlatformNode* BrowserAccessibility::GetFromNodeID(int32_t id) {
-  return manager_->GetPlatformNode(id);
+  BrowserAccessibility* node = manager_->GetFromID(id);
+  if (!node)
+    return nullptr;
+
+  return node->GetAXPlatformNode();
 }
 
 ui::AXPlatformNode* BrowserAccessibility::GetFromTreeIDAndNodeID(
@@ -1466,7 +1454,12 @@ ui::AXPlatformNode* BrowserAccessibility::GetFromTreeIDAndNodeID(
       BrowserAccessibilityManager::FromID(ax_tree_id);
   if (!manager)
     return nullptr;
-  return manager->GetPlatformNode(id);
+
+  BrowserAccessibility* node = manager->GetFromID(id);
+  if (!node)
+    return nullptr;
+
+  return node->GetAXPlatformNode();
 }
 
 absl::optional<size_t> BrowserAccessibility::GetIndexInParent() {

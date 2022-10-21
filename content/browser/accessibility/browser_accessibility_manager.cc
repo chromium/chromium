@@ -27,7 +27,6 @@
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_serializer.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/buildflags.h"
 
 #if defined(AX_FAIL_FAST_BUILD)
@@ -327,7 +326,18 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFromID(int32_t id) const {
-  return DynamicToBrowserAccessibility(GetPlatformNodeDelegate(id));
+  if (id == ui::kInvalidAXNodeID)
+    return nullptr;
+  const auto iter = id_wrapper_map_.find(id);
+  if (iter != id_wrapper_map_.end()) {
+    DCHECK(iter->second);
+    return iter->second.get();
+  }
+  DCHECK(!ax_tree()->GetFromId(id))
+      << "BAM's map was missing id " << id
+      << ", but AXTree's map had it: " << *ax_tree()->GetFromId(id);
+
+  return nullptr;
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetParentNodeFromParentTree()
@@ -499,6 +509,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     // but it should still be investigated and could be the sign of a
     // performance issue.
     DCHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size());
+    // Every node in the AXTree must also be in BAM's map. However, the BAM map
+    // can have extra nodes, specifically extra mac nodes from AXTableInfo.
+    DCHECK_GE(static_cast<int>(id_wrapper_map_.size()), ax_tree()->size());
   }
 
   DCHECK(ax_tree()->root());
@@ -1558,10 +1571,11 @@ void BrowserAccessibilityManager::OnTreeDataChanged(
 void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
                                                 ui::AXNode* node) {
   DCHECK(node);
+  DCHECK(node->IsDataValid());
   DCHECK(tree->GetFromId(node->id()) || node->IsGenerated())
-      << "Either the node must be in AXTree's map or it should be an "
-         "ExtraMacNode.";
-  SetPlatformNodeDelegate(*node, BrowserAccessibility::Create(this, node));
+      << "Node must be in AXTree's map, unless it's an ExtraMacNode.";
+
+  id_wrapper_map_[node->id()] = BrowserAccessibility::Create(this, node);
 
   if (tree->root() != node &&
       node->GetRole() == ax::mojom::Role::kRootWebArea) {
@@ -1572,28 +1586,27 @@ void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
 void BrowserAccessibilityManager::OnNodeDeleted(ui::AXTree* tree,
                                                 int32_t node_id) {
   DCHECK_NE(node_id, ui::kInvalidAXNodeID);
-  UnsetPlatformNodeDelegate(node_id);
+  id_wrapper_map_.erase(node_id);
   popup_root_ids_.erase(node_id);
 }
 
 void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
                                                    ui::AXNode* node) {
   DCHECK(node);
-  ui::AXPlatformNodeDelegate* delegate = GetPlatformNodeDelegate(*node);
+  auto iter = id_wrapper_map_.find(node->id());
   // TODO(crbug.com/1315661): This condition should never occur.
   // Identify why we are entering this code path and fix the root cause, then
   // remove the early return. Will need to update
   // BrowserAccessibilityManagerTest.TestOnNodeReparented, which purposely
   // triggers this condition.
-  SANITIZER_CHECK(delegate)
+  SANITIZER_CHECK(iter != id_wrapper_map_.end())
       << "Missing BrowserAccessibility* for node: " << *node
       << "\nTree: " << tree->ToString();
-
-  // When an `AXNode` gets reparented in the `AXTree`, it keeps the same data
-  // that it had before the reparenting, including its ID. However, the actual
-  // `AXNode` instance is destroyed and re-created, hence we need to update the
-  // node that this delegate is pointing to.
-  delegate->SetNode(*node);
+  if (iter == id_wrapper_map_.end())
+    return;
+  BrowserAccessibility* wrapper = iter->second.get();
+  DCHECK(wrapper);
+  wrapper->SetNode(*node);
 }
 
 void BrowserAccessibilityManager::OnRoleChanged(ui::AXTree* tree,
@@ -1641,6 +1654,23 @@ ui::AXNode* BrowserAccessibilityManager::GetNode(
   // that does not contain extra mac nodes from AXTableInfo.
   BrowserAccessibility* browser_accessibility = GetFromID(node_id);
   return browser_accessibility ? browser_accessibility->node() : nullptr;
+}
+
+ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
+    const ui::AXNodeID node_id) const {
+  BrowserAccessibility* wrapper = GetFromID(node_id);
+  if (wrapper)
+    return wrapper->GetAXPlatformNode();
+  return nullptr;
+}
+
+ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
+    const ui::AXNode& node) const {
+  return GetPlatformNodeFromTree(node.id());
+}
+
+ui::AXPlatformNodeDelegate* BrowserAccessibilityManager::RootDelegate() const {
+  return GetBrowserAccessibilityRoot();
 }
 
 BrowserAccessibilityManager*

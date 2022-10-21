@@ -123,7 +123,7 @@ base::Value AXPositionToBaseValue(
     return AXNilToBaseValue();
 
   AXPlatformNode* platform_node_anchor =
-      manager->GetPlatformNode(position->anchor_id());
+      manager->GetPlatformNodeFromTree(position->anchor_id());
   if (!platform_node_anchor)
     return AXNilToBaseValue();
 
