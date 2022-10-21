@@ -1148,6 +1148,31 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));
 }
+
+// Checks if authentication is triggered.
+TEST_F(PasswordsPrivateDelegateImplTest,
+       SwitchBiometricAuthBeforeFillingCancelsLastTry) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  // This enables uses of TestWebContents.
+  content::RenderViewHostTestEnabler test_render_host_factories;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  client->SetBiometricAuthenticator(biometric_authenticator_);
+
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  EXPECT_CALL(*biometric_authenticator_.get(), AuthenticateWithMessage);
+  delegate.SwitchBiometricAuthBeforeFillingState(web_contents.get());
+
+  // Invoking authentication again will cancel previous request.
+  EXPECT_CALL(*biometric_authenticator_.get(), Cancel);
+  EXPECT_CALL(*biometric_authenticator_.get(), AuthenticateWithMessage);
+  delegate.SwitchBiometricAuthBeforeFillingState(web_contents.get());
+}
+
 #endif
 
 }  // namespace extensions

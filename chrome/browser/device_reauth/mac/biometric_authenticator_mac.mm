@@ -33,24 +33,26 @@ void BiometricAuthenticatorMac::Authenticate(
 }
 
 void BiometricAuthenticatorMac::Cancel(device_reauth::BiometricAuthRequester) {
+  touch_id_auth_context_ = nullptr;
   if (callback_) {
+    // No code should be run after the callback as the callback could already be
+    // destroying "this".
     std::move(callback_).Run(/*success=*/false);
   }
-  touch_id_auth_context_ = nullptr;
 }
 
 void BiometricAuthenticatorMac::AuthenticateWithMessage(
     device_reauth::BiometricAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
+  // Callers must ensure that previous authentication is canceled.
+  DCHECK(!callback_);
   if (!NeedsToAuthenticate()) {
-    DCHECK(callback_.is_null());
+    // No code should be run after the callback as the callback could already be
+    // destroying "this".
     std::move(callback).Run(/*success=*/true);
     return;
   }
-
-  // Cancel old authentication if a new one comes in.
-  Cancel(requester);
 
   touch_id_auth_context_ = device::fido::mac::TouchIdContext::Create();
   callback_ = std::move(callback);
@@ -62,11 +64,12 @@ void BiometricAuthenticatorMac::AuthenticateWithMessage(
 }
 
 void BiometricAuthenticatorMac::OnAuthenticationCompleted(bool result) {
+  touch_id_auth_context_ = nullptr;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (callback_.is_null()) {
+  if (!callback_) {
     return;
   }
-
+  // No code should be run after the callback as the callback could already be
+  // destroying "this".
   std::move(callback_).Run(RecordAuthenticationResult(result));
-  touch_id_auth_context_ = nullptr;
 }

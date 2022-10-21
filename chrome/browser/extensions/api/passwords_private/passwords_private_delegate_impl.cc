@@ -483,11 +483,10 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
       password_manager_util_win::GetMessageForLoginPrompt(purpose),
       std::move(callback));
 #elif BUILDFLAG(IS_MAC)
-  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator =
-      GetBiometricAuthenticator(web_contents_);
   // TODO(crbug.com/1358442): Remove this check.
-  if (biometric_authenticator->CanAuthenticate(
-          device_reauth::BiometricAuthRequester::kPasswordsInSettings) &&
+  if (GetBiometricAuthenticator(web_contents_)
+          ->CanAuthenticate(
+              device_reauth::BiometricAuthRequester::kPasswordsInSettings) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kBiometricAuthenticationInSettings)) {
     AuthenticateWithBiometrics(
@@ -915,24 +914,22 @@ void PasswordsPrivateDelegateImpl::AuthenticateWithBiometrics(
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   NOTIMPLEMENTED();
 #else
-  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator =
-      GetBiometricAuthenticator(web_contents_);
+  // Cancel any ongoing authentication attempt.
+  if (biometric_authenticator_) {
+    // TODO(crbug.com/1371026): Remove Cancel and instead simply destroy
+    // |biometric_authenticator_|.
+    biometric_authenticator_->Cancel(
+        device_reauth::BiometricAuthRequester::kPasswordsInSettings);
+  }
+  biometric_authenticator_ = GetBiometricAuthenticator(web_contents_);
 
   base::OnceClosure on_reauth_completed =
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
                      weak_ptr_factory_.GetWeakPtr());
 
-  biometric_authenticator->AuthenticateWithMessage(
+  biometric_authenticator_->AuthenticateWithMessage(
       device_reauth::BiometricAuthRequester::kPasswordsInSettings, message,
       std::move(callback).Then(std::move(on_reauth_completed)));
-
-  // If AuthenticateWithMessage is called again(UI on Mac isn't blocked so
-  // user might click multiple times on the button), it invalidates the old
-  // request which triggers PasswordsPrivateDelegateImpl::OnReauthCompleted
-  // which resets biometric_authenticator_. Having a local variable solves
-  // that problem as there's a second scoped_refptr for the authenticator
-  // object.
-  biometric_authenticator_ = std::move(biometric_authenticator);
 #endif
 }
 
