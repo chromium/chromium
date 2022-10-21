@@ -211,13 +211,13 @@ RTCVideoDecoderAdapter::FallbackOrRegisterConcurrentInstanceOnce(
     media::VideoCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
+  base::AutoLock auto_lock(lock_);
   // If this is the first decode, then increment the count of working decoders.
   if (!have_started_decoding_) {
     have_started_decoding_ = true;
     GetDecoderCounter()->IncrementCount();
   }
 
-  base::AutoLock auto_lock(lock_);
   // Don't allow hardware decode for small videos if there are too many
   // decoder instances.  This includes the case where our resolution drops while
   // too many decoders exist.
@@ -500,6 +500,8 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
 RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+
+  base::AutoLock auto_lock(lock_);
   if (have_started_decoding_)
     GetDecoderCounter()->DecrementCount();
 }

@@ -166,12 +166,10 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   absl::optional<base::TimeTicks> start_time_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
 
-  // Decoding thread members.
-  // Has anything been sent to Decode() yet?
-  bool have_started_decoding_ = false;
-
   // Shared members.
   base::Lock lock_;
+  // Has anything been sent to Decode() yet?
+  bool have_started_decoding_ GUARDED_BY(lock_){false};
   int32_t consecutive_error_count_ = 0;
   Status status_ GUARDED_BY(lock_){Status::kNeedKeyFrame};
   webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
