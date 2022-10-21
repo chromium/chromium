@@ -1400,6 +1400,16 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitWithUnresolvedStartTimes) {
   EXPECT_FALSE(animation->PreCommit(0, nullptr, true));
 }
 
+TEST_P(AnimationAnimationTestCompositing, SynchronousCancel) {
+  // Start with a composited animation.
+  ResetWithCompositedAnimation();
+  ASSERT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  animation->cancel();
+  ASSERT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPending());
+}
+
 namespace {
 int GenerateHistogramValue(CompositorAnimations::FailureReason reason) {
   // The enum values in CompositorAnimations::FailureReasons are stored as 2^i
