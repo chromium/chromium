@@ -75,7 +75,6 @@ NetworkServiceClient::~NetworkServiceClient() {
     net::NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
     net::NetworkChangeNotifier::RemoveMaxBandwidthObserver(this);
     net::NetworkChangeNotifier::RemoveIPAddressObserver(this);
-    net::NetworkChangeNotifier::RemoveDNSObserver(this);
 #endif
   }
 }
@@ -132,17 +131,6 @@ void NetworkServiceClient::OnIPAddressChanged() {
       network::mojom::ConnectionSubtype(
           net::NetworkChangeNotifier::GetConnectionSubtype()));
 }
-
-void NetworkServiceClient::OnDNSChanged() {
-  network_change_manager_->OnNetworkChanged(
-      true /* dns_changed */, false /* ip_address_changed */,
-      false /* connection_type_changed */,
-      network::mojom::ConnectionType(
-          net::NetworkChangeNotifier::GetConnectionType()),
-      false /* connection_subtype_changed */,
-      network::mojom::ConnectionSubtype(
-          net::NetworkChangeNotifier::GetConnectionSubtype()));
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_SOCKET_BROKER)
@@ -170,7 +158,6 @@ void NetworkServiceClient::OnNetworkServiceInitialized(
     net::NetworkChangeNotifier::AddConnectionTypeObserver(this);
     net::NetworkChangeNotifier::AddMaxBandwidthObserver(this);
     net::NetworkChangeNotifier::AddIPAddressObserver(this);
-    net::NetworkChangeNotifier::AddDNSObserver(this);
   }
 #endif
 }

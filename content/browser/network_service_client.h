@@ -38,7 +38,6 @@ class NetworkServiceClient
       public net::NetworkChangeNotifier::ConnectionTypeObserver,
       public net::NetworkChangeNotifier::MaxBandwidthObserver,
       public net::NetworkChangeNotifier::IPAddressObserver,
-      public net::NetworkChangeNotifier::DNSObserver,
 #endif
       public net::CertDatabase::Observer {
  public:
@@ -79,9 +78,6 @@ class NetworkServiceClient
 
   // net::NetworkChangeNotifier::IPAddressObserver implementation:
   void OnIPAddressChanged() override;
-
-  // net::NetworkChangeNotifier::DNSObserver implementation:
-  void OnDNSChanged() override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_SOCKET_BROKER)
