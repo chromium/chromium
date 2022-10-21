@@ -251,7 +251,8 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 }  // namespace
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-TEST_F(ExternalProviderImplTest, InAppPayments) {
+// TODO(crbug.com/1377191): Re-enable this test
+TEST_F(ExternalProviderImplTest, DISABLED_InAppPayments) {
   InitServiceWithExternalProviders();
 
   AwaitCheckForExternalUpdates();
@@ -269,7 +270,8 @@ TEST_F(ExternalProviderImplTest, BlockedExternalUserProviders) {
   EXPECT_FALSE(registry()->GetInstalledExtension(kExternalAppId));
 }
 
-TEST_F(ExternalProviderImplTest, NotBlockedExternalUserProviders) {
+// TODO(crbug.com/1377191): Re-enable this test
+TEST_F(ExternalProviderImplTest, DISABLED_NotBlockedExternalUserProviders) {
   OverrideExternalExtensionsPath();
   InitServiceWithExternalProviders(false);
 
