@@ -6,20 +6,24 @@
 
 #include <atomic>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/enum_set.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/metrics/call_stack_profile_builder.h"
@@ -37,6 +41,8 @@ namespace heap_profiling {
 namespace {
 
 using ProcessType = metrics::CallStackProfileParams::Process;
+using ProcessTypeSet =
+    base::EnumSet<ProcessType, ProcessType::kUnknown, ProcessType::kMax>;
 
 constexpr size_t kSamplingRate = 1024;
 constexpr size_t kAllocationSize = 42 * kSamplingRate;
@@ -77,6 +83,64 @@ class TestCallStackProfileCollector final
   ProfileCollectorCallback collector_callback_;
 };
 
+// Converts the given HeapProfilerControllerTest constructor parameters to
+// FieldTrialParams.
+base::FieldTrialParams FieldTrialParamsForTestParams(
+    const ProcessTypeSet& supported_processes = {},
+    double stable_probability = 1.0,
+    double nonstable_probability = 1.0) {
+  base::FieldTrialParams field_trial_params;
+
+  // Add the default params.
+  base::Value::Dict dict;
+  if (!supported_processes.Empty()) {
+    // Explicitly disable profiling by default, so that only the processes
+    // given in `supported_processes` will be enabled.
+    dict.Set("is-supported", false);
+  }
+  dict.Set("stable-probability", stable_probability);
+  dict.Set("nonstable-probability", nonstable_probability);
+  dict.Set("sampling-rate-bytes", static_cast<int>(kSamplingRate));
+  std::string param_string;
+  base::JSONWriter::WriteWithOptions(
+      dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &param_string);
+  field_trial_params["default-params"] = param_string;
+
+  // Add a field trial param that enables each process type in
+  // `supported_processes`.
+  base::Value::Dict is_supported_dict;
+  is_supported_dict.Set("is-supported", true);
+  std::string is_supported_string;
+  base::JSONWriter::WriteWithOptions(is_supported_dict,
+                                     base::JSONWriter::OPTIONS_PRETTY_PRINT,
+                                     &is_supported_string);
+
+  for (ProcessType process_type : supported_processes) {
+    switch (process_type) {
+      case ProcessType::kBrowser:
+        field_trial_params["browser-process-params"] = is_supported_string;
+        break;
+      case ProcessType::kRenderer:
+        field_trial_params["renderer-process-params"] = is_supported_string;
+        break;
+      case ProcessType::kGpu:
+        field_trial_params["gpu-process-params"] = is_supported_string;
+        break;
+      case ProcessType::kUtility:
+        field_trial_params["utility-process-params"] = is_supported_string;
+        break;
+      case ProcessType::kNetworkService:
+        field_trial_params["network-process-params"] = is_supported_string;
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+  return field_trial_params;
+}
+
 }  // namespace
 
 // HeapProfilerControllerTest can't be in an anonymous namespace because it is a
@@ -106,22 +170,18 @@ class HeapProfilerControllerTest : public ::testing::Test {
   // on all channels. Child classes can override the constructor to create test
   // suites that test different configurations. Empty `supported_processes` uses
   // the default feature config, which should be browser-only.
-  explicit HeapProfilerControllerTest(bool feature_enabled = true,
-                                      const char* supported_processes = "",
-                                      double stable_probability = 1.0,
-                                      double nonstable_probability = 1.0) {
+  explicit HeapProfilerControllerTest(
+      bool feature_enabled = true,
+      const ProcessTypeSet& supported_processes = {},
+      double stable_probability = 1.0,
+      double nonstable_probability = 1.0) {
     // ScopedFeatureList must be initialized in the constructor, before any
     // threads are started.
     if (feature_enabled) {
       feature_list_.InitAndEnableFeatureWithParameters(
           kHeapProfilerReporting,
-          {
-              {"stable-probability", base::NumberToString(stable_probability)},
-              {"nonstable-probability",
-               base::NumberToString(nonstable_probability)},
-              {"sampling-rate", base::NumberToString(kSamplingRate)},
-              {"supported-processes", supported_processes},
-          });
+          FieldTrialParamsForTestParams(supported_processes, stable_probability,
+                                        nonstable_probability));
     } else {
       feature_list_.InitAndDisableFeature(kHeapProfilerReporting);
       // Set the sampling rate manually since there's no param to read.
@@ -293,6 +353,19 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
 }
 #endif
 
+TEST_F(HeapProfilerControllerTest, UnhandledProcess) {
+  // Starting the heap profiler in an unhandled process type should safely do
+  // nothing.
+  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUnknown,
+                     base::DoNothing());
+  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
+            HeapProfilerController::ProfilingEnabled::kDisabled);
+  // The Enabled summary histogram should not be logged for unsupported
+  // processes, because they're not included in the per-process histograms that
+  // are aggregated into it.
+  histogram_tester_.ExpectTotalCount("HeapProfiling.InProcess.Enabled", 0);
+}
+
 // Configurations of the HeapProfilerReporting feature to test.
 // The default parameters collect samples from stable and nonstable channels in
 // the browser process only.
@@ -303,7 +376,7 @@ struct FeatureTestParams {
     bool expect_child_sample = false;
   };
   bool feature_enabled = true;
-  const char* supported_processes = "";
+  const ProcessTypeSet supported_processes;
   ChannelParams stable;
   ChannelParams nonstable;
 };
@@ -311,9 +384,18 @@ struct FeatureTestParams {
 std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
   os << "{";
   os << "enabled:" << params.feature_enabled << ",";
-  os << "processes:[" << params.supported_processes << "],";
-  os << "stable:" << params.stable.probability << ",";
-  os << "nonstable:" << params.nonstable.probability;
+  os << "field_trial_params:{";
+  for (const auto& field_trial_param : FieldTrialParamsForTestParams(
+           params.supported_processes, params.stable.probability,
+           params.nonstable.probability)) {
+    os << field_trial_param.first << " : " << field_trial_param.second;
+  }
+  os << "},";
+  os << "expect_samples:{";
+  os << "stable/browser:" << params.stable.expect_browser_sample << ",";
+  os << "stable/child:" << params.stable.expect_child_sample << ",";
+  os << "nonstable/browser:" << params.stable.expect_browser_sample << ",";
+  os << "nonstable/child:" << params.stable.expect_child_sample;
   os << "}";
   return os;
 }
@@ -417,21 +499,21 @@ TEST_P(HeapProfilerControllerChannelTest, MAYBE_CanaryChannel) {
 constexpr FeatureTestParams kProcessConfigs[] = {
     // Enabled in parent process only.
     {
-        .supported_processes = "browser",
+        .supported_processes = {ProcessType::kBrowser},
         .stable = {.expect_browser_sample = true, .expect_child_sample = false},
         .nonstable = {.expect_browser_sample = true,
                       .expect_child_sample = false},
     },
     // Enabled in child process only.
     {
-        .supported_processes = "utility",
+        .supported_processes = {ProcessType::kUtility},
         .stable = {.expect_browser_sample = false, .expect_child_sample = true},
         .nonstable = {.expect_browser_sample = false,
                       .expect_child_sample = true},
     },
     // Enabled in parent and child processes.
     {
-        .supported_processes = "browser;utility",
+        .supported_processes = {ProcessType::kBrowser, ProcessType::kUtility},
         .stable = {.expect_browser_sample = true, .expect_child_sample = true},
         .nonstable = {.expect_browser_sample = true,
                       .expect_child_sample = true},
@@ -480,40 +562,6 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
                                        1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().stable.expect_child_sample);
-}
-
-class HeapProfilerControllerUnknownProcessTest
-    : public HeapProfilerControllerTest {
- protected:
-  HeapProfilerControllerUnknownProcessTest()
-      : HeapProfilerControllerTest(
-            /*feature_enabled=*/true,
-            /*supported_processes=*/"browser;unrecognized-process-string") {}
-};
-
-TEST_F(HeapProfilerControllerUnknownProcessTest, UnknownParamString) {
-  // Unrecognized string in `supported_processes` should safely be ignored.
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
-                     base::DoNothing());
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            HeapProfilerController::ProfilingEnabled::kEnabled);
-  histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled.Browser", true, 1);
-  histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled", true,
-                                       1);
-}
-
-TEST_F(HeapProfilerControllerUnknownProcessTest, UnhandledProcess) {
-  // Starting the heap profiler in an unhandled process type should safely do
-  // nothing.
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUnknown,
-                     base::DoNothing());
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            HeapProfilerController::ProfilingEnabled::kDisabled);
-  // The Enabled summary histogram should not be logged for unsupported
-  // processes, because they're not included in the per-process histograms that
-  // are aggregated into it.
-  histogram_tester_.ExpectTotalCount("HeapProfiling.InProcess.Enabled", 0);
 }
 
 }  // namespace

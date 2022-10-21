@@ -5,16 +5,12 @@
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 
 #include <string>
-#include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -33,51 +29,45 @@ constexpr int kDefaultSamplingRateBytes = 1'000'000;
 
 // Default on iOS is equal to mean value of process uptime. Android is
 // more similar to iOS than to Desktop.
-constexpr int kDefaultCollectionIntervalInMinutes = 30;
+constexpr base::TimeDelta kDefaultCollectionInterval = base::Minutes(30);
 #else
 // Average 10M bytes per sample.
 constexpr int kDefaultSamplingRateBytes = 10'000'000;
 
 // Default on desktop is once per day.
-constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
+constexpr base::TimeDelta kDefaultCollectionInterval = base::Days(1);
 #endif
 
-// Semicolon-separated list of process names to support. (More convenient than
-// commas, which must be url-escaped in the --enable-features command line.)
-constexpr base::FeatureParam<std::string> kSupportedProcesses{
-    &kHeapProfilerReporting, "supported-processes", "browser"};
-
-// Sets the chance that this client will report heap samples through a metrics
+// The chance that this client will report heap samples through a metrics
 // provider if it's on the stable channel.
-constexpr base::FeatureParam<double> kStableProbability {
-  &kHeapProfilerReporting, "stable-probability",
 #if BUILDFLAG(IS_ANDROID)
-      // With stable-probability 0.01 we get about 4x as many records as before
-      // https://crrev.com/c/3309878 landed in 98.0.4742.0, even with ARM64
-      // disabled. This is too high a volume to process.
-      0.0025
+// With stable-probability 0.01 we get about 4x as many records as before
+// https://crrev.com/c/3309878 landed in 98.0.4742.0, even with ARM64
+// disabled. This is too high a volume to process.
+constexpr double kDefaultStableProbability = 0.0025;
 #else
-      0.01
+constexpr double kDefaultStableProbability = 0.01;
 #endif
+
+// The chance that this client will report heap samples through a metrics
+// provider if it's on a non-stable channel.
+constexpr double kDefaultNonStableProbability = 0.5;
+
+constexpr HeapProfilerParameters kDefaultHeapProfilerParameters{
+    .is_supported = false,
+    // If a process overrides `is_supported`, use the following defaults.
+    .stable_probability = kDefaultStableProbability,
+    .nonstable_probability = kDefaultNonStableProbability,
+    .sampling_rate_bytes = kDefaultSamplingRateBytes,
+    .collection_interval = kDefaultCollectionInterval,
 };
 
-// Sets the chance that this client will report heap samples through a metrics
-// provider if it's on a non-stable channel.
-constexpr base::FeatureParam<double> kNonStableProbability{
-    &kHeapProfilerReporting, "nonstable-probability", 0.5};
+// Feature parameters.
 
-// Sets the mean heap sampling interval in bytes.
-constexpr base::FeatureParam<int> kSamplingRateBytes{
-    &kHeapProfilerReporting, "sampling-rate", kDefaultSamplingRateBytes};
-
-// Sets the mean interval between snapshots.
-constexpr base::FeatureParam<int> kCollectionIntervalMinutes{
-    &kHeapProfilerReporting, "heap-profiler-collection-interval-minutes",
-    kDefaultCollectionIntervalInMinutes};
-
-// TODO(crbug.com/1327069): Replace the above FeatureParam's with a single
-// "default-params" in the same JSON format as the following per-process
-// parameters to reduce duplication.
+// JSON-encoded parameter map that will set the default parameters for the
+// heap profiler unless overridden by the process-specific parameters below.
+constexpr base::FeatureParam<std::string> kDefaultParameters{
+    &kHeapProfilerReporting, "default-params", ""};
 
 // JSON-encoded parameter map that will override the default parameters for the
 // browser process.
@@ -103,29 +93,6 @@ constexpr base::FeatureParam<std::string> kUtilityProcessParameters{
 // network process.
 constexpr base::FeatureParam<std::string> kNetworkProcessParameters{
     &kHeapProfilerReporting, "network-process-params", ""};
-
-// Returns the string to use in the kSupportedProcesses feature param for
-// `process_type`, or nullptr if the process is not supported.
-const char* ProcessParamString(
-    metrics::CallStackProfileParams::Process process_type) {
-  using Process = metrics::CallStackProfileParams::Process;
-  switch (process_type) {
-    case Process::kBrowser:
-      return "browser";
-    case Process::kRenderer:
-      return "renderer";
-    case Process::kGpu:
-      return "gpu";
-    case Process::kUtility:
-      return "utility";
-    case Process::kNetworkService:
-      return "networkService";
-    case Process::kUnknown:
-    default:
-      // Profiler hasn't been tested in these process types.
-      return nullptr;
-  }
-}
 
 // Interprets `value` as a positive number of minutes, and writes the converted
 // value to `result`. If `value` contains anything other than a positive
@@ -186,36 +153,26 @@ bool HeapProfilerParameters::UpdateFromJSON(base::StringPiece json_string) {
 }
 
 HeapProfilerParameters GetDefaultHeapProfilerParameters() {
-  return {
-      .is_supported = false,
-      // If a process overrides `is_supported`, use the following defaults.
-      .stable_probability = kStableProbability.Get(),
-      .nonstable_probability = kNonStableProbability.Get(),
-      .sampling_rate_bytes = kSamplingRateBytes.Get(),
-      .collection_interval = base::Minutes(kCollectionIntervalMinutes.Get()),
-  };
+  HeapProfilerParameters params = kDefaultHeapProfilerParameters;
+  params.UpdateFromJSON(kDefaultParameters.Get());
+  return params;
 }
 
 HeapProfilerParameters GetHeapProfilerParametersForProcess(
     metrics::CallStackProfileParams::Process process_type) {
-  HeapProfilerParameters params = GetDefaultHeapProfilerParameters();
-
-  const char* process_string = ProcessParamString(process_type);
-  if (!base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
-    // Heap profiling is never supported.
-    params.is_supported = false;
-  } else if (!process_string) {
-    // This process type is never supported.
-    params.is_supported = false;
-  } else {
-    const std::vector<std::string> supported_processes =
-        base::SplitString(kSupportedProcesses.Get(), ";", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    params.is_supported = base::Contains(supported_processes, process_string);
-  }
-
-  // Override with per-process parameters if any are set.
   using Process = metrics::CallStackProfileParams::Process;
+
+  HeapProfilerParameters params = kDefaultHeapProfilerParameters;
+
+  // By default only the browser process is supported.
+  params.is_supported = base::FeatureList::IsEnabled(kHeapProfilerReporting) &&
+                        process_type == Process::kBrowser;
+
+  // Override with field trial parameters if any are set.
+  if (!params.UpdateFromJSON(kDefaultParameters.Get())) {
+    // After an error is detected don't alter `params` further.
+    return params;
+  }
   switch (process_type) {
     case Process::kBrowser:
       params.UpdateFromJSON(kBrowserProcessParameters.Get());
