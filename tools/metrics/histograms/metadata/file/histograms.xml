@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Load{FileBrowserLoad}" units="ms"
-    expires_after="M108">
+    expires_after="M120">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Location.OnEntryExpandedOrCollapsed.NonTopLevel"
-    enum="FileManagerRootType" expires_after="M108">
+    enum="FileManagerRootType" expires_after="M120">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -452,7 +452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Location.OnEntryExpandedOrCollapsed.TopLevel"
-    enum="FileManagerRootType" expires_after="2023-04-15">
+    enum="FileManagerRootType" expires_after="M120">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
