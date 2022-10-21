@@ -742,6 +742,7 @@ instrumented_library("libxi6") {
     "--disable-docs",
     "--disable-static",
   ]
+  patches = [ "patches/libxi6.diff" ]
 }
 
 instrumented_library("libxinerama1") {

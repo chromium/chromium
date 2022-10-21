@@ -1,0 +1,11 @@
+diff --color -rupN libxi-1.7.10/src/XIQueryDevice.c libxi-1.7.10.new/src/XIQueryDevice.c
+--- libxi-1.7.10/src/XIQueryDevice.c	2019-06-19 16:43:25.000000000 +0000
++++ libxi-1.7.10.new/src/XIQueryDevice.c	2022-10-20 23:42:29.799640660 +0000
+@@ -120,6 +120,7 @@ XIQueryDevice(Display *dpy, int deviceid
+             Xfree(lib->name);
+             goto error_loop;
+         }
++        memset(lib->classes, 0, sz);
+         ptr += copy_classes(lib, (xXIAnyInfo*)ptr, &nclasses);
+         /* We skip over unused classes */
+         lib->num_classes = nclasses;
