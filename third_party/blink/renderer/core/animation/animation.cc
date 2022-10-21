@@ -2564,6 +2564,11 @@ void Animation::InvalidateEffectTargetStyle() {
   }
 }
 
+void Animation::InvalidateNormalizedTiming() {
+  if (effect())
+    effect()->InvalidateNormalizedTiming();
+}
+
 void Animation::ResolvePromiseMaybeAsync(AnimationPromise* promise) {
   if (ScriptForbiddenScope::IsScriptForbidden()) {
     GetExecutionContext()

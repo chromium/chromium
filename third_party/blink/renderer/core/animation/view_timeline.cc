@@ -226,10 +226,17 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   end_side_inset_ = ComputeInset(inset.end_side, viewport_size);
   start_side_inset_ = ComputeInset(inset.start_side, viewport_size);
 
-  // TODO(crbug.com/1329159): If any of the sizes change we need to invalidate
-  // timing normalization.
   double start_offset = target_offset_ - viewport_size_ + end_side_inset_;
   double end_offset = target_offset_ + target_size_ - start_side_inset_;
+
+  if (start_offset != start_offset_ || end_offset != end_offset_) {
+    start_offset_ = start_offset;
+    end_offset_ = end_offset;
+
+    for (auto animation : GetAnimations())
+      animation->InvalidateNormalizedTiming();
+  }
+
   return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
 }
 

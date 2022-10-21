@@ -77,6 +77,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   mutable double viewport_size_;
   mutable double start_side_inset_;
   mutable double end_side_inset_;
+  mutable double start_offset_ = 0;
+  mutable double end_offset_ = 0;
   Inset inset_;
 };
 
