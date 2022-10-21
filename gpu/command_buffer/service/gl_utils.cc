@@ -16,6 +16,10 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_version_info.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gl/gl_surface_egl.h"
+#endif
+
 namespace gpu {
 namespace gles2 {
 
@@ -275,6 +279,83 @@ void PopulateNumericCapabilities(Capabilities* caps,
     glGetIntegerv(GL_MAX_SAMPLES, &caps->max_samples);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void PopulateDRMCapabilities(Capabilities* caps,
+                             const FeatureInfo* feature_info) {
+  DCHECK(caps != nullptr);
+
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL() ||
+      !gl::GLSurfaceEGL::GetGLDisplayEGL()->IsInitialized() ||
+      !gl::GLSurfaceEGL::GetGLDisplayEGL()
+           ->ext->b_EGL_EXT_image_dma_buf_import_modifiers ||
+      feature_info->workarounds()
+          .disable_egl_ext_image_dma_buf_import_modifiers ||
+      !gl::g_driver_egl.client_ext.b_EGL_EXT_device_query) {
+    return;
+  }
+
+  EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
+  DCHECK(egl_display != nullptr);
+
+  EGLDeviceEXT egl_device;
+  if (!eglQueryDisplayAttribEXT(egl_display, EGL_DEVICE_EXT,
+                                (EGLAttrib*)&egl_device)) {
+    return;
+  }
+
+  gfx::ExtensionSet device_extension_set;
+  const char* device_extensions =
+      eglQueryDeviceStringEXT(egl_device, EGL_EXTENSIONS);
+  if (device_extensions) {
+    device_extension_set = gfx::MakeExtensionSet(device_extensions);
+  } else {
+    device_extension_set = gfx::ExtensionSet();
+  }
+
+  if (gfx::HasExtension(device_extension_set,
+                        "EGL_EXT_device_drm_render_node")) {
+    const char* path =
+        eglQueryDeviceStringEXT(egl_device, EGL_DRM_RENDER_NODE_FILE_EXT);
+    caps->drm_render_node = std::string(path);
+  }
+  if (caps->drm_render_node.empty() &&
+      gfx::HasExtension(device_extension_set, "EGL_EXT_device_drm")) {
+    const char* path =
+        eglQueryDeviceStringEXT(egl_device, EGL_DRM_DEVICE_FILE_EXT);
+    caps->drm_render_node = std::string(path);
+  }
+
+  EGLint num_formats = 0;
+  if (eglQueryDmaBufFormatsEXT(egl_display, 0, nullptr, &num_formats) &&
+      num_formats > 0) {
+    std::vector<EGLint> formats_array(num_formats);
+    bool res = eglQueryDmaBufFormatsEXT(egl_display, num_formats,
+                                        formats_array.data(), &num_formats);
+    DCHECK(res);
+
+    for (EGLint format : formats_array) {
+      std::vector<uint64_t> modifiers;
+      EGLint num_modifiers = 0;
+      if (eglQueryDmaBufModifiersEXT(egl_display, format, 0, nullptr, nullptr,
+                                     &num_modifiers) &&
+          num_modifiers > 0) {
+        std::vector<EGLuint64KHR> modifiers_array(num_modifiers);
+        res = eglQueryDmaBufModifiersEXT(egl_display, format, num_modifiers,
+                                         modifiers_array.data(), nullptr,
+                                         &num_modifiers);
+        DCHECK(res);
+
+        for (uint64_t modifier : modifiers_array) {
+          modifiers.push_back(modifier);
+        }
+      }
+
+      caps->drm_formats_and_modifiers.emplace(format, modifiers);
+    }
+  }
+}
+#endif
 
 bool CheckUniqueAndNonNullIds(GLsizei n, const GLuint* client_ids) {
   if (n <= 0)

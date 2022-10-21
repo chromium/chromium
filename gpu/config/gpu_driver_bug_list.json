@@ -4110,6 +4110,29 @@
       "features": [
         "disable_accelerated_av1_encode"
       ]
+    },
+    {
+      "id": 404,
+      "description": "Disable EGL_EXT_image_dma_buf_import_modifiers for Exo KMS modifier discovery on kms_swrast/llvmpipe",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_renderer": "llvmpipe.*",
+      "features": [
+        "disable_egl_ext_image_dma_buf_import_modifiers"
+      ]
+    },
+    {
+      "id": 405,
+      "description": "Disable EGL_EXT_image_dma_buf_import_modifiers for Exo KMS modifier discovery on old proprietary Mali drivers",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_renderer": "Mali.*",
+      "gl_version_string": ".*r26p0-01rel0.*",
+      "features": [
+        "disable_egl_ext_image_dma_buf_import_modifiers"
+      ]
     }
   ]
 }
