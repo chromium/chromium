@@ -28,8 +28,8 @@ class VariationsSeed;
 
 // A seed that has passed validation.
 struct ValidatedSeed {
-  // The serialized VariationsSeed bytes.
-  std::string bytes;
+  // Gzipped and base-64 encoded serialized VariationsSeed.
+  std::string base64_seed_data;
   // A cryptographic signature on the seed_data.
   std::string base64_seed_signature;
   // The seed data parsed as a proto.
@@ -80,7 +80,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Additionally, stores the |country_code| that was received with the seed in
   // a separate pref. |done_callback| will be called with the result of the
   // operation, with a non-empty de-serialized, decoded protobuf VariationsSeed
-  // on success.
+  // on success. If |require_synchronous| is true, all the changes will be
+  // performed synchronously, whereas otherwise some processing can be async.
   // Note: Strings are passed by value to support std::move() semantics.
   void StoreSeedData(
       std::string data,
@@ -89,7 +90,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       base::Time date_fetched,
       bool is_delta_compressed,
       bool is_gzip_compressed,
-      base::OnceCallback<void(bool, VariationsSeed)> done_callback);
+      base::OnceCallback<void(bool, VariationsSeed)> done_callback,
+      bool require_synchronous = false);
 
   // Loads the safe variations seed data from local state into |seed| and
   // updates any relevant fields in |client_state|. Returns true iff the safe
@@ -128,7 +130,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Updates |kVariationsSeedDate| and logs when previous date was from a
   // different day.
-  void UpdateSeedDateAndLogDayChange(const base::Time& server_date_fetched);
+  void UpdateSeedDateAndLogDayChange(base::Time server_date_fetched);
 
   // Returns the serial number of the most recently received seed, or an empty
   // string if there is no seed (or if it could not be read).
@@ -151,6 +153,41 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, VerifySeedSignature);
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, ApplyDeltaPatch);
+
+  // Move-only struct containing params related to the received variations seed.
+  struct SeedData {
+    std::string data;
+    std::string base64_seed_signature;
+    std::string country_code;
+    base::Time date_fetched;
+    bool is_gzip_compressed = false;
+    bool is_delta_compressed = false;
+    // Only set if `is_delta_compressed` is true.
+    std::string existing_seed_bytes;
+
+    SeedData();
+    ~SeedData();
+
+    // This type is move-only.
+    SeedData(SeedData&& other);
+    SeedData& operator=(SeedData&& other);
+  };
+
+  // The result of processing a SeedData struct.
+  struct SeedProcessingResult {
+    SeedData seed_data;
+    StoreSeedResult result;
+    // The below are only set if `result` is StoreSeedResult::kSuccess.
+    ValidatedSeed validated;
+    StoreSeedResult validate_result;
+
+    SeedProcessingResult(SeedData seed_data, StoreSeedResult result);
+    ~SeedProcessingResult();
+
+    // This type is move-only.
+    SeedProcessingResult(SeedProcessingResult&& other);
+    SeedProcessingResult& operator=(SeedProcessingResult&& other);
+  };
 
   // The seed store contains two distinct seeds:
   //   (1) The most recently fetched, or "latest", seed; and
@@ -208,35 +245,41 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       const InstanceManipulations& im,
       std::string* seed_bytes);
 
+  // Called on the UI thread after the seed has been processed.
+  void OnSeedDataProcessed(
+      base::OnceCallback<void(bool, VariationsSeed)> done_callback,
+      SeedProcessingResult result);
+
+  // Updates the latest seed with validated data.
+  void StoreValidatedSeed(const ValidatedSeed& seed,
+                          const std::string& country_code,
+                          base::Time date_fetched);
+
+  // Updates the safe seed with validated data.
+  void StoreValidatedSafeSeed(const ValidatedSeed& seed,
+                              int seed_milestone,
+                              const ClientFilterableState& client_state,
+                              base::Time seed_fetch_time);
+
+  // Processes seed data (decompression, parsing and signature verification).
+  // This is meant to be called on a background thread in the case of periodic
+  // seed fetches, but will also be done synchronously in the case of importing
+  // a seed on startup.
+  [[nodiscard]] static SeedProcessingResult ProcessSeedData(
+      bool signature_verification_enabled,
+      SeedData seed_data);
+
   // Validates that |seed_bytes| parses and matches |base64_seed_signature|.
-  // Signature checking may be disabled via |signature_verification_enabled_|.
+  // Signature checking may be disabled via |signature_verification_enabled|.
   // |seed_type| indicates the source of the seed for logging purposes.
   // |result| must be non-null, and will be populated on success.
   // Returns success or some error value.
-  [[nodiscard]] StoreSeedResult ValidateSeedBytes(
+  [[nodiscard]] static StoreSeedResult ValidateSeedBytes(
       const std::string& seed_bytes,
       const std::string& base64_seed_signature,
       SeedType seed_type,
+      bool signature_verification_enabled,
       ValidatedSeed* result);
-
-  // Gzip compresses and base64 encodes a validated seed.
-  // Returns success or error and populates base64_seed_data on success.
-  [[nodiscard]] StoreSeedResult CompressSeedBytes(
-      const ValidatedSeed& validated,
-      std::string* base64_seed_data);
-
-  // Updates the latest seed with validated data.
-  [[nodiscard]] StoreSeedResult StoreValidatedSeed(
-      const ValidatedSeed& seed,
-      const std::string& country_code,
-      const base::Time& date_fetched);
-
-  // Updates the safe seed with validated data.
-  [[nodiscard]] StoreSeedResult StoreValidatedSafeSeed(
-      const ValidatedSeed& seed,
-      int seed_milestone,
-      const ClientFilterableState& client_state,
-      base::Time seed_fetch_time);
 
   // Applies a delta-compressed |patch| to |existing_data|, producing the result
   // in |output|. Returns whether the operation was successful.
@@ -255,6 +298,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Whether this may read or write to Java "first run" SharedPreferences.
   const bool use_first_run_prefs_;
+
+  base::WeakPtrFactory<VariationsSeedStore> weak_ptr_factory_{this};
 };
 
 }  // namespace variations

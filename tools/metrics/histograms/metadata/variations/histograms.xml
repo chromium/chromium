@@ -647,6 +647,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.StoreSeed.Time" units="ms"
+    expires_after="2023-03-26">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The UI thread run time of the VariationsSeedStore::StoreSeedData function.
+  </summary>
+</histogram>
+
 <histogram name="Variations.StoreSeedSignature" enum="VariationSeedSignature"
     expires_after="2022-11-20">
   <owner>asvitkine@chromium.org</owner>

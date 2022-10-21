@@ -9,7 +9,9 @@
 
 #include "base/base64.h"
 #include "base/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -51,29 +53,7 @@ class TestVariationsSeedStore : public VariationsSeedStore {
                             std::move(initial_seed),
                             /*signature_verification_enabled=*/false,
                             use_first_run_prefs) {}
-
-  TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
-  TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;
-
   ~TestVariationsSeedStore() override = default;
-
-  bool StoreSeedForTesting(const std::string& seed_data,
-                           const std::string& country = "") {
-    StoreSeedData(seed_data, std::string(), country, base::Time::Now(), false,
-                  false,
-                  base::BindOnce(&TestVariationsSeedStore::OnSeedStoreResult,
-                                 base::Unretained(this)));
-    // TODO(crbug.com/1324295): Block on background tasks once async.
-    return store_success_;
-  }
-
-  void OnSeedStoreResult(bool store_success, VariationsSeed seed) {
-    store_success_ = store_success;
-    stored_seed_.Swap(&seed);
-  }
-
-  bool store_success_ = false;
-  VariationsSeed stored_seed_;
 };
 
 class SignatureVerifyingVariationsSeedStore : public VariationsSeedStore {
@@ -139,20 +119,73 @@ std::string SerializeSeed(const VariationsSeed& seed) {
 }
 
 // Compresses |data| using Gzip compression and returns the result.
-std::string Compress(const std::string& data) {
+std::string Gzip(const std::string& data) {
   std::string compressed;
   const bool result = compression::GzipCompress(data, &compressed);
   EXPECT_TRUE(result);
   return compressed;
 }
 
-// Serializes |seed| to compressed base64-encoded protobuf binary format.
-std::string SerializeSeedBase64(const VariationsSeed& seed) {
-  std::string serialized_seed = SerializeSeed(seed);
-  std::string base64_serialized_seed;
-  base::Base64Encode(Compress(serialized_seed), &base64_serialized_seed);
-  return base64_serialized_seed;
+// Gzips |data| and then base64-encodes it.
+std::string GzipAndBase64Encode(const std::string& data) {
+  std::string result;
+  base::Base64Encode(Gzip(data), &result);
+  return result;
 }
+
+// Serializes |seed| to gzipped base64-encoded protobuf binary format.
+std::string SerializeSeedBase64(const VariationsSeed& seed) {
+  return GzipAndBase64Encode(SerializeSeed(seed));
+}
+
+// Wrapper over base::Base64Decode() that returns the result.
+std::string Base64DecodeData(const std::string& data) {
+  std::string decoded;
+  EXPECT_TRUE(base::Base64Decode(data, &decoded));
+  return decoded;
+}
+
+// Sample seeds and the server produced delta between them to verify that the
+// client code is able to decode the deltas produced by the server.
+struct {
+  const std::string base64_initial_seed_data =
+      "CigxN2E4ZGJiOTI4ODI0ZGU3ZDU2MGUyODRlODY1ZDllYzg2NzU1MTE0ElgKDFVNQVN0YWJp"
+      "bGl0eRjEyomgBTgBQgtTZXBhcmF0ZUxvZ0oLCgdEZWZhdWx0EABKDwoLU2VwYXJhdGVMb2cQ"
+      "ZFIVEgszNC4wLjE4MDEuMCAAIAEgAiADEkQKIFVNQS1Vbmlmb3JtaXR5LVRyaWFsLTEwMC1Q"
+      "ZXJjZW50GIDjhcAFOAFCCGdyb3VwXzAxSgwKCGdyb3VwXzAxEAFgARJPCh9VTUEtVW5pZm9y"
+      "bWl0eS1UcmlhbC01MC1QZXJjZW50GIDjhcAFOAFCB2RlZmF1bHRKDAoIZ3JvdXBfMDEQAUoL"
+      "CgdkZWZhdWx0EAFgAQ==";
+  const std::string base64_new_seed_data =
+      "CigyNGQzYTM3ZTAxYmViOWYwNWYzMjM4YjUzNWY3MDg1ZmZlZWI4NzQwElgKDFVNQVN0YWJp"
+      "bGl0eRjEyomgBTgBQgtTZXBhcmF0ZUxvZ0oLCgdEZWZhdWx0EABKDwoLU2VwYXJhdGVMb2cQ"
+      "ZFIVEgszNC4wLjE4MDEuMCAAIAEgAiADEpIBCh9VTUEtVW5pZm9ybWl0eS1UcmlhbC0yMC1Q"
+      "ZXJjZW50GIDjhcAFOAFCB2RlZmF1bHRKEQoIZ3JvdXBfMDEQARijtskBShEKCGdyb3VwXzAy"
+      "EAEYpLbJAUoRCghncm91cF8wMxABGKW2yQFKEQoIZ3JvdXBfMDQQARimtskBShAKB2RlZmF1"
+      "bHQQARiitskBYAESWAofVU1BLVVuaWZvcm1pdHktVHJpYWwtNTAtUGVyY2VudBiA44XABTgB"
+      "QgdkZWZhdWx0Sg8KC25vbl9kZWZhdWx0EAFKCwoHZGVmYXVsdBABUgQoACgBYAE=";
+  const std::string base64_delta_data =
+      "KgooMjRkM2EzN2UwMWJlYjlmMDVmMzIzOGI1MzVmNzA4NWZmZWViODc0MAAqW+4BkgEKH1VN"
+      "QS1Vbmlmb3JtaXR5LVRyaWFsLTIwLVBlcmNlbnQYgOOFwAU4AUIHZGVmYXVsdEoRCghncm91"
+      "cF8wMRABGKO2yQFKEQoIZ3JvdXBfMDIQARiktskBShEKCGdyb3VwXzAzEAEYpbbJAUoRCghn"
+      "cm91cF8wNBABGKa2yQFKEAoHZGVmYXVsdBABGKK2yQFgARJYCh9VTUEtVW5pZm9ybWl0eS1U"
+      "cmlhbC01MC1QZXJjZW50GIDjhcAFOAFCB2RlZmF1bHRKDwoLbm9uX2RlZmF1bHQQAUoLCgdk"
+      "ZWZhdWx0EAFSBCgAKAFgAQ==";
+
+  std::string GetInitialSeedData() {
+    return Base64DecodeData(base64_initial_seed_data);
+  }
+
+  std::string GetInitialSeedDataAsPrefValue() {
+    return GzipAndBase64Encode(GetInitialSeedData());
+  }
+
+  std::string GetNewSeedData() {
+    return Base64DecodeData(base64_new_seed_data);
+  }
+
+  std::string GetDeltaData() { return Base64DecodeData(base64_delta_data); }
+
+} kSeedDeltaTestData;
 
 // Sets all seed-related prefs to non-default values. Used to verify whether
 // pref values were cleared.
@@ -225,17 +258,6 @@ void CheckSafeSeedPrefsAreCleared(const TestingPrefServiceSimple& prefs) {
 }
 
 }  // namespace
-
-struct InvalidSafeSeedTestParams {
-  const std::string test_name;
-  const std::string seed;
-  const std::string signature;
-  StoreSeedResult store_seed_result;
-  absl::optional<VerifySignatureResult> verify_signature_result = absl::nullopt;
-};
-
-using StoreInvalidSafeSeedTest =
-    ::testing::TestWithParam<InvalidSafeSeedTestParams>;
 
 TEST(VariationsSeedStoreTest, LoadSeed_ValidSeed) {
   // Store good seed data to test if loading from prefs works.
@@ -372,34 +394,88 @@ TEST(VariationsSeedStoreTest, LoadSeed_IdenticalToSafeSeed) {
   EXPECT_EQ(base64_seed_signature, loaded_base64_seed_signature);
 }
 
-TEST(VariationsSeedStoreTest, StoreSeedData) {
+TEST(VariationsSeedStoreTest, ApplyDeltaPatch) {
+  std::string output;
+  EXPECT_TRUE(VariationsSeedStore::ApplyDeltaPatch(
+      kSeedDeltaTestData.GetInitialSeedData(),
+      kSeedDeltaTestData.GetDeltaData(), &output));
+  EXPECT_EQ(kSeedDeltaTestData.GetNewSeedData(), output);
+}
+
+class VariationsStoreSeedDataTest : public ::testing::Test,
+                                    public ::testing::WithParamInterface<bool> {
+ public:
+  VariationsStoreSeedDataTest() = default;
+  ~VariationsStoreSeedDataTest() override = default;
+
+  bool RequireSynchronousStores() { return GetParam(); }
+
+  struct Params {
+    std::string country_code;
+    bool is_delta_compressed;
+    bool is_gzip_compressed;
+  };
+
+  // Wrapper for VariationsSeedStore::StoreSeedData() exposing a more convenient
+  // API. Invokes either the underlying function either in sync or async mode,
+  // but if async, it blocks on its completion.
+  bool StoreSeedData(VariationsSeedStore& seed_store,
+                     const std::string& seed_data,
+                     const Params& params = {}) {
+    base::RunLoop run_loop;
+    seed_store.StoreSeedData(
+        seed_data, /*base64_seed_signature=*/std::string(), params.country_code,
+        base::Time::Now(), params.is_delta_compressed,
+        params.is_gzip_compressed,
+        base::BindOnce(&VariationsStoreSeedDataTest::OnSeedStoreResult,
+                       base::Unretained(this), run_loop.QuitClosure()),
+        RequireSynchronousStores());
+    // If we're testing synchronous stores, we shouldn't issue a Run() call so
+    // that the test verifies that the operation completed synchronously.
+    if (!RequireSynchronousStores())
+      run_loop.Run();
+    return store_success_;
+  }
+
+  void OnSeedStoreResult(base::RepeatingClosure quit_closure,
+                         bool store_success,
+                         VariationsSeed seed) {
+    store_success_ = store_success;
+    stored_seed_.Swap(&seed);
+    quit_closure.Run();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  bool store_success_ = false;
+  VariationsSeed stored_seed_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, VariationsStoreSeedDataTest, ::testing::Bool());
+
+TEST_P(VariationsStoreSeedDataTest, StoreSeedData) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string serialized_seed = SerializeSeed(seed);
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
-
   TestVariationsSeedStore seed_store(&prefs);
 
-  ASSERT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
+  ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
   // Make sure the pref was actually set.
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
 
   std::string loaded_compressed_seed =
       prefs.GetString(prefs::kVariationsCompressedSeed);
-  std::string decoded_compressed_seed;
-  ASSERT_TRUE(base::Base64Decode(loaded_compressed_seed,
-                                 &decoded_compressed_seed));
   // Make sure the stored seed from pref is the same as the seed we created.
-  EXPECT_EQ(Compress(serialized_seed), decoded_compressed_seed);
+  EXPECT_EQ(loaded_compressed_seed, GzipAndBase64Encode(serialized_seed));
 
   // Check if trying to store a bad seed leaves the pref unchanged.
   prefs.ClearPref(prefs::kVariationsCompressedSeed);
-  ASSERT_FALSE(seed_store.StoreSeedForTesting("should fail"));
+  ASSERT_FALSE(StoreSeedData(seed_store, "should fail"));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
 }
 
-TEST(VariationsSeedStoreTest, StoreSeedData_ParsedSeed) {
+TEST_P(VariationsStoreSeedDataTest, ParsedSeed) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string serialized_seed = SerializeSeed(seed);
 
@@ -407,46 +483,119 @@ TEST(VariationsSeedStoreTest, StoreSeedData_ParsedSeed) {
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   TestVariationsSeedStore seed_store(&prefs);
 
-  ASSERT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
-  EXPECT_EQ(serialized_seed, SerializeSeed(seed_store.stored_seed_));
+  ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
+  EXPECT_EQ(serialized_seed, SerializeSeed(stored_seed_));
 }
 
-TEST(VariationsSeedStoreTest, StoreSeedData_CountryCode) {
+TEST_P(VariationsStoreSeedDataTest, CountryCode) {
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   TestVariationsSeedStore seed_store(&prefs);
 
   // Test with a valid header value.
   std::string seed = SerializeSeed(CreateTestSeed());
-  ASSERT_TRUE(seed_store.StoreSeedForTesting(seed, "test_country"));
+  ASSERT_TRUE(
+      StoreSeedData(seed_store, seed, {.country_code = "test_country"}));
   EXPECT_EQ("test_country", prefs.GetString(prefs::kVariationsCountry));
 
   // Test with no country code specified - which should preserve the old value.
-  ASSERT_TRUE(seed_store.StoreSeedForTesting(seed));
+  ASSERT_TRUE(StoreSeedData(seed_store, seed));
   EXPECT_EQ("test_country", prefs.GetString(prefs::kVariationsCountry));
 }
 
-TEST(VariationsSeedStoreTest, StoreSeedData_GzippedSeed) {
+TEST_P(VariationsStoreSeedDataTest, GzippedSeed) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string serialized_seed = SerializeSeed(seed);
-  std::string compressed_seed;
-  ASSERT_TRUE(compression::GzipCompress(serialized_seed, &compressed_seed));
+  std::string compressed_seed = Gzip(serialized_seed);
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   TestVariationsSeedStore seed_store(&prefs);
 
-  seed_store.StoreSeedData(
-      compressed_seed, std::string(), std::string(), base::Time::Now(), false,
-      true,
-      base::BindOnce(&TestVariationsSeedStore::OnSeedStoreResult,
-                     base::Unretained(&seed_store)));
-  // TODO(crbug.com/1324295): Block on background tasks once async.
-  ASSERT_TRUE(seed_store.store_success_);
-  EXPECT_EQ(serialized_seed, SerializeSeed(seed_store.stored_seed_));
+  ASSERT_TRUE(
+      StoreSeedData(seed_store, compressed_seed, {.is_gzip_compressed = true}));
+  EXPECT_EQ(serialized_seed, SerializeSeed(stored_seed_));
 }
 
-TEST(VariationsSeedStoreTest, StoreSeedData_IdenticalToSafeSeed) {
+TEST_P(VariationsStoreSeedDataTest, GzippedEmptySeed) {
+  std::string empty_seed;
+  std::string compressed_seed = Gzip(empty_seed);
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  TestVariationsSeedStore seed_store(&prefs);
+
+  store_success_ = true;
+  StoreSeedData(seed_store, compressed_seed, {.is_gzip_compressed = true});
+  EXPECT_FALSE(store_success_);
+}
+
+TEST_P(VariationsStoreSeedDataTest, DeltaCompressed) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+
+  prefs.SetString(prefs::kVariationsCompressedSeed,
+                  kSeedDeltaTestData.GetInitialSeedDataAsPrefValue());
+  prefs.SetString(prefs::kVariationsSeedSignature, "ignored signature");
+
+  TestVariationsSeedStore seed_store(&prefs);
+
+  ASSERT_TRUE(StoreSeedData(seed_store, kSeedDeltaTestData.GetDeltaData(),
+                            {.is_delta_compressed = true}));
+  EXPECT_EQ(kSeedDeltaTestData.GetNewSeedData(), SerializeSeed(stored_seed_));
+}
+
+TEST_P(VariationsStoreSeedDataTest, DeltaCompressedGzipped) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+
+  prefs.SetString(prefs::kVariationsCompressedSeed,
+                  kSeedDeltaTestData.GetInitialSeedDataAsPrefValue());
+  prefs.SetString(prefs::kVariationsSeedSignature, "ignored signature");
+
+  TestVariationsSeedStore seed_store(&prefs);
+
+  ASSERT_TRUE(StoreSeedData(seed_store, Gzip(kSeedDeltaTestData.GetDeltaData()),
+                            {
+                                .is_delta_compressed = true,
+                                .is_gzip_compressed = true,
+                            }));
+  EXPECT_EQ(kSeedDeltaTestData.GetNewSeedData(), SerializeSeed(stored_seed_));
+}
+
+TEST_P(VariationsStoreSeedDataTest, DeltaButNoInitialSeed) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+
+  TestVariationsSeedStore seed_store(&prefs);
+
+  store_success_ = true;
+  StoreSeedData(seed_store, Gzip(kSeedDeltaTestData.GetDeltaData()),
+                {
+                    .is_delta_compressed = true,
+                    .is_gzip_compressed = true,
+                });
+  EXPECT_FALSE(store_success_);
+}
+
+TEST_P(VariationsStoreSeedDataTest, BadDelta) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+
+  prefs.SetString(prefs::kVariationsCompressedSeed,
+                  kSeedDeltaTestData.GetInitialSeedDataAsPrefValue());
+  prefs.SetString(prefs::kVariationsSeedSignature, "ignored signature");
+
+  TestVariationsSeedStore seed_store(&prefs);
+
+  store_success_ = true;
+  // Provide a gzipped delta, when gzip is not expected.
+  StoreSeedData(seed_store, Gzip(kSeedDeltaTestData.GetDeltaData()),
+                {.is_delta_compressed = true});
+  EXPECT_FALSE(store_success_);
+}
+
+TEST_P(VariationsStoreSeedDataTest, IdenticalToSafeSeed) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string serialized_seed = SerializeSeed(seed);
   const std::string base64_seed = SerializeSeedBase64(seed);
@@ -456,7 +605,7 @@ TEST(VariationsSeedStoreTest, StoreSeedData_IdenticalToSafeSeed) {
   prefs.SetString(prefs::kVariationsSafeCompressedSeed, base64_seed);
 
   TestVariationsSeedStore seed_store(&prefs);
-  ASSERT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
+  ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
 
   // Verify that the pref has a sentinel value, rather than the full string.
   EXPECT_EQ(kIdenticalToSafeSeedSentinel,
@@ -471,6 +620,30 @@ TEST(VariationsSeedStoreTest, StoreSeedData_IdenticalToSafeSeed) {
 
   EXPECT_EQ(SerializeSeed(seed), SerializeSeed(loaded_seed));
   EXPECT_EQ(SerializeSeed(seed), loaded_seed_data);
+}
+
+// Verifies that the cached serial number is correctly updated when a new seed
+// is saved.
+TEST_P(VariationsStoreSeedDataTest,
+       GetLatestSerialNumber_UpdatedWithNewStoredSeed) {
+  // Store good seed data initially.
+  const VariationsSeed seed = CreateTestSeed();
+  const std::string base64_seed = SerializeSeedBase64(seed);
+  const std::string base64_seed_signature = "a completely ignored signature";
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed);
+  prefs.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
+
+  // Call GetLatestSerialNumber() once to prime the cached value.
+  TestVariationsSeedStore seed_store(&prefs);
+  EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
+
+  VariationsSeed new_seed = CreateTestSeed();
+  new_seed.set_serial_number("456");
+  ASSERT_TRUE(StoreSeedData(seed_store, SerializeSeed(new_seed)));
+  EXPECT_EQ("456", seed_store.GetLatestSerialNumber());
 }
 
 TEST(VariationsSeedStoreTest, LoadSafeSeed_ValidSeed) {
@@ -619,6 +792,17 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_EmptySeed) {
                                       LoadSeedResult::kEmpty, 1);
 }
 
+struct InvalidSafeSeedTestParams {
+  const std::string test_name;
+  const std::string seed;
+  const std::string signature;
+  StoreSeedResult store_seed_result;
+  absl::optional<VerifySignatureResult> verify_signature_result = absl::nullopt;
+};
+
+using StoreInvalidSafeSeedTest =
+    ::testing::TestWithParam<InvalidSafeSeedTestParams>;
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     StoreInvalidSafeSeedTest,
@@ -763,7 +947,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSignature) {
       prefs.GetString(prefs::kVariationsSafeCompressedSeed);
   std::string decoded_compressed_seed;
   ASSERT_TRUE(base::Base64Decode(safe_seed, &decoded_compressed_seed));
-  EXPECT_EQ(Compress(expected_seed), decoded_compressed_seed);
+  EXPECT_EQ(Gzip(expected_seed), decoded_compressed_seed);
   EXPECT_EQ(prefs.GetString(prefs::kVariationsSafeSeedSignature),
             expected_signature);
   EXPECT_EQ(prefs.GetString(prefs::kVariationsSafeSeedLocale), expected_locale);
@@ -896,25 +1080,6 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
       "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
 }
 
-TEST(VariationsSeedStoreTest, StoreSeedData_GzippedEmptySeed) {
-  std::string empty_seed;
-  std::string compressed_seed;
-  ASSERT_TRUE(compression::GzipCompress(empty_seed, &compressed_seed));
-
-  TestingPrefServiceSimple prefs;
-  VariationsSeedStore::RegisterPrefs(prefs.registry());
-  TestVariationsSeedStore seed_store(&prefs);
-
-  seed_store.store_success_ = true;
-  seed_store.StoreSeedData(
-      compressed_seed, std::string(), std::string(), base::Time::Now(), false,
-      true,
-      base::BindOnce(&TestVariationsSeedStore::OnSeedStoreResult,
-                     base::Unretained(&seed_store)));
-  // TODO(crbug.com/1324295): Block on background tasks once async.
-  EXPECT_FALSE(seed_store.store_success_);
-}
-
 TEST(VariationsSeedStoreTest, VerifySeedSignature) {
   // A valid seed and signature pair generated using the server's private key.
   const std::string uncompressed_base64_seed_data =
@@ -1033,45 +1198,6 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
   }
 }
 
-TEST(VariationsSeedStoreTest, ApplyDeltaPatch) {
-  // Sample seeds and the server produced delta between them to verify that the
-  // client code is able to decode the deltas produced by the server.
-  const std::string base64_before_seed_data =
-      "CigxN2E4ZGJiOTI4ODI0ZGU3ZDU2MGUyODRlODY1ZDllYzg2NzU1MTE0ElgKDFVNQVN0YWJp"
-      "bGl0eRjEyomgBTgBQgtTZXBhcmF0ZUxvZ0oLCgdEZWZhdWx0EABKDwoLU2VwYXJhdGVMb2cQ"
-      "ZFIVEgszNC4wLjE4MDEuMCAAIAEgAiADEkQKIFVNQS1Vbmlmb3JtaXR5LVRyaWFsLTEwMC1Q"
-      "ZXJjZW50GIDjhcAFOAFCCGdyb3VwXzAxSgwKCGdyb3VwXzAxEAFgARJPCh9VTUEtVW5pZm9y"
-      "bWl0eS1UcmlhbC01MC1QZXJjZW50GIDjhcAFOAFCB2RlZmF1bHRKDAoIZ3JvdXBfMDEQAUoL"
-      "CgdkZWZhdWx0EAFgAQ==";
-  const std::string base64_after_seed_data =
-      "CigyNGQzYTM3ZTAxYmViOWYwNWYzMjM4YjUzNWY3MDg1ZmZlZWI4NzQwElgKDFVNQVN0YWJp"
-      "bGl0eRjEyomgBTgBQgtTZXBhcmF0ZUxvZ0oLCgdEZWZhdWx0EABKDwoLU2VwYXJhdGVMb2cQ"
-      "ZFIVEgszNC4wLjE4MDEuMCAAIAEgAiADEpIBCh9VTUEtVW5pZm9ybWl0eS1UcmlhbC0yMC1Q"
-      "ZXJjZW50GIDjhcAFOAFCB2RlZmF1bHRKEQoIZ3JvdXBfMDEQARijtskBShEKCGdyb3VwXzAy"
-      "EAEYpLbJAUoRCghncm91cF8wMxABGKW2yQFKEQoIZ3JvdXBfMDQQARimtskBShAKB2RlZmF1"
-      "bHQQARiitskBYAESWAofVU1BLVVuaWZvcm1pdHktVHJpYWwtNTAtUGVyY2VudBiA44XABTgB"
-      "QgdkZWZhdWx0Sg8KC25vbl9kZWZhdWx0EAFKCwoHZGVmYXVsdBABUgQoACgBYAE=";
-  const std::string base64_delta_data =
-      "KgooMjRkM2EzN2UwMWJlYjlmMDVmMzIzOGI1MzVmNzA4NWZmZWViODc0MAAqW+4BkgEKH1VN"
-      "QS1Vbmlmb3JtaXR5LVRyaWFsLTIwLVBlcmNlbnQYgOOFwAU4AUIHZGVmYXVsdEoRCghncm91"
-      "cF8wMRABGKO2yQFKEQoIZ3JvdXBfMDIQARiktskBShEKCGdyb3VwXzAzEAEYpbbJAUoRCghn"
-      "cm91cF8wNBABGKa2yQFKEAoHZGVmYXVsdBABGKK2yQFgARJYCh9VTUEtVW5pZm9ybWl0eS1U"
-      "cmlhbC01MC1QZXJjZW50GIDjhcAFOAFCB2RlZmF1bHRKDwoLbm9uX2RlZmF1bHQQAUoLCgdk"
-      "ZWZhdWx0EAFSBCgAKAFgAQ==";
-
-  std::string before_seed_data;
-  std::string after_seed_data;
-  std::string delta_data;
-  EXPECT_TRUE(base::Base64Decode(base64_before_seed_data, &before_seed_data));
-  EXPECT_TRUE(base::Base64Decode(base64_after_seed_data, &after_seed_data));
-  EXPECT_TRUE(base::Base64Decode(base64_delta_data, &delta_data));
-
-  std::string output;
-  EXPECT_TRUE(VariationsSeedStore::ApplyDeltaPatch(before_seed_data, delta_data,
-                                                   &output));
-  EXPECT_EQ(after_seed_data, output);
-}
-
 TEST(VariationsSeedStoreTest, LastFetchTime_DistinctSeeds) {
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
@@ -1140,29 +1266,6 @@ TEST(VariationsSeedStoreTest, GetLatestSerialNumber_EmptyWhenNoSeedIsSaved) {
 
   TestVariationsSeedStore seed_store(&prefs);
   EXPECT_EQ(std::string(), seed_store.GetLatestSerialNumber());
-}
-
-// Verifies that the cached serial number is correctly updated when a new seed
-// is saved.
-TEST(VariationsSeedStoreTest, GetLatestSerialNumber_UpdatedWithNewStoredSeed) {
-  // Store good seed data initially.
-  const VariationsSeed seed = CreateTestSeed();
-  const std::string base64_seed = SerializeSeedBase64(seed);
-  const std::string base64_seed_signature = "a completely ignored signature";
-
-  TestingPrefServiceSimple prefs;
-  VariationsSeedStore::RegisterPrefs(prefs.registry());
-  prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed);
-  prefs.SetString(prefs::kVariationsSeedSignature, base64_seed_signature);
-
-  // Call GetLatestSerialNumber() once to prime the cached value.
-  TestVariationsSeedStore seed_store(&prefs);
-  EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
-
-  VariationsSeed new_seed = CreateTestSeed();
-  new_seed.set_serial_number("456");
-  ASSERT_TRUE(seed_store.StoreSeedForTesting(SerializeSeed(new_seed)));
-  EXPECT_EQ("456", seed_store.GetLatestSerialNumber());
 }
 
 TEST(VariationsSeedStoreTest, GetLatestSerialNumber_ClearsPrefsOnFailure) {
