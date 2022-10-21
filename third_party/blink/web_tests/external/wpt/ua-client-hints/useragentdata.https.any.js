@@ -12,3 +12,9 @@ test(t => {
   assert_own_property(uaData, "mobile", "toJSON() output has mobile member");
   assert_own_property(uaData, "platform", "toJSON() output has platform member");
 }, "test NavigatorUAData.toJSON() output");
+
+promise_test(() => {
+  return navigator.userAgentData.getHighEntropyValues(["architecture"]).then(
+    hints => assert_true(["x86", "arm"].some(item => item == hints.architecture))
+  );
+}, "Arch should be one of two permitted values.");
