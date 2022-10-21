@@ -602,6 +602,8 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   // Starts loading accessibility information.
   void LoadAccessibility();
 
+  bool initialized_ = false;
+
   blink::WebString selected_text_;
 
   std::unique_ptr<Client> const client_;

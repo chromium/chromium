@@ -331,6 +331,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
   base::debug::SetCrashKeyString(subresource_url, params->original_url);
 
   PerProcessInitializer::GetInstance().Acquire();
+  initialized_ = true;
 
   // Check if the PDF is being loaded in the PDF chrome extension. We only allow
   // the plugin to be loaded in the extension and print preview to avoid
@@ -393,14 +394,15 @@ void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
 }
 
 void PdfViewWebPlugin::Destroy() {
-  if (client_->PluginContainer()) {
+  if (initialized_) {
     // Explicitly destroy the PDFEngine during destruction as it may call back
     // into this object.
     preview_engine_.reset();
     engine_.reset();
     PerProcessInitializer::GetInstance().Release();
-    client_->SetPluginContainer(nullptr);
   }
+
+  client_->SetPluginContainer(nullptr);
 
   delete this;
 }
