@@ -1111,6 +1111,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.Storage.FindForClientUrlInDB.Time" units="ms"
+    expires_after="2023-10-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Execution time of ServiceWorkerStorage::FindForClientUrlInDB which is used
+    by FindRegistrationForClientUrl.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.Storage.PurgeResourceResult"
     enum="NetErrorCodes" expires_after="2020-06-30">
   <owner>nhiroki@chromium.org</owner>

@@ -1701,6 +1701,10 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     const GURL& client_url,
     const blink::StorageKey& key,
     FindInDBCallback callback) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  TRACE_EVENT1("ServiceWorker", "ServiceWorkerStorage::FindForClientUrlInDB",
+               "url", client_url);
+
   RegistrationList registration_data_list;
   ServiceWorkerDatabase::Status status =
       database->GetRegistrationsForStorageKey(key, &registration_data_list,
@@ -1729,6 +1733,10 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   original_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
                                 std::move(resources), status));
+
+  base::UmaHistogramMediumTimes(
+      "ServiceWorker.Storage.FindForClientUrlInDB.Time",
+      base::TimeTicks::Now() - now);
 }
 
 // static
