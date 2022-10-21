@@ -5850,7 +5850,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageInSubframe) {
                               "location.href = '" + error_url.spec() + "';"));
     load_observer.Wait();
     EXPECT_FALSE(load_observer.last_navigation_succeeded());
-    EXPECT_TRUE(ChildFrameAt(GetGuestRenderFrameHost(), 0)->IsErrorDocument());
+    auto* error_rfh = ChildFrameAt(GetGuestRenderFrameHost(), 0);
+    EXPECT_TRUE(error_rfh->IsErrorDocument());
+
+    // Double-check that the error page has an opaque origin, and that the
+    // precursor doesn't point to a.test.
+    url::Origin error_origin = error_rfh->GetLastCommittedOrigin();
+    EXPECT_TRUE(error_origin.opaque());
+    EXPECT_FALSE(error_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
   }
 }
 

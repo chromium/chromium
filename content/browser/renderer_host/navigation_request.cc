@@ -807,10 +807,21 @@ std::pair<url::Origin, std::string>
 GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
-
-  // Check if this is loadDataWithBaseUrl (which needs special treatment).
   const blink::mojom::CommonNavigationParams& common_params =
       navigation_request->common_params();
+
+  if (navigation_request->DidEncounterError()) {
+    // Error pages commit in an opaque origin in the renderer process. If this
+    // NavigationRequest resulted in committing an error page, return an
+    // opaque origin that has precursor information consistent with the URL
+    // being requested.  Note: this is intentionally done first; cases like
+    // errors in srcdoc frames need not inherit the parent's origin for errors.
+    return std::make_pair(
+        url::Origin::Create(common_params.url).DeriveNewOpaqueOrigin(),
+        "error");
+  }
+
+  // Check if this is loadDataWithBaseUrl (which needs special treatment).
   if (navigation_request->IsLoadDataWithBaseURL()) {
     // A (potentially attacker-controlled) renderer process should not be able
     // to use loadDataWithBaseUrl code path to initiate fetches on behalf of a
@@ -844,16 +855,14 @@ GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
     RenderFrameHostImpl* parent =
         navigation_request->frame_tree_node()->parent();
 
-    // The `parent` may be missing if a renderer executes `location =
-    // "about:srcdoc` instead of embedding an <iframe srcdoc="..."></iframe>
-    // element.  Such case should use an error page with an opaque, unique
-    // origin.
-    //
-    // See also NavigationBrowserTest.BlockedSrcDoc* tests.
-    DCHECK(parent || navigation_request->GetNetErrorCode() != net::OK);
-    return std::make_pair(
-        parent ? parent->GetLastCommittedOrigin() : url::Origin(),
-        "about_srcdoc");
+    // The only path for `parent` to be missing for a srcdoc navigation is if a
+    // renderer executes `location = "about:srcdoc` instead of embedding an
+    // <iframe srcdoc="..."></iframe> element; this is covered by
+    // NavigationBrowserTest.BlockedSrcDoc* tests.  However, we should never get
+    // here in such a case, because it would result in an error page which would
+    // be handled by the DidEncounterError() case above.
+    DCHECK(parent);
+    return std::make_pair(parent->GetLastCommittedOrigin(), "about_srcdoc");
   }
 
   // Uuid-in-package: subframes from WebBundles have opaque origins derived from
@@ -4890,12 +4899,11 @@ void NavigationRequest::CommitErrorPage(
   common_params_->should_replace_current_entry =
       ShouldReplaceCurrentEntryForFailedNavigation();
 
-  // Error pages commit in an opaque origin in the renderer process. If this
-  // NavigationRequest resulted in committing an error page, set
-  // |origin_to_commit| to an opaque origin that has precursor information
-  // consistent with the URL being requested.
-  commit_params_->origin_to_commit =
-      url::Origin::Create(common_params_->url).DeriveNewOpaqueOrigin();
+  // Set |origin_to_commit| for the renderer; error pages should always commit
+  // in an opaque origin (with the precursor reflecting the destination URL).
+  commit_params_->origin_to_commit.reset();
+  commit_params_->origin_to_commit = GetOriginToCommit();
+  DCHECK(commit_params_->origin_to_commit->opaque());
   if (request_navigation_client_.is_bound()) {
     if (render_frame_host_ == frame_tree_node()->current_frame_host()) {
       // Reuse the request NavigationClient for commit.
@@ -6670,20 +6678,9 @@ std::pair<url::Origin, std::string> NavigationRequest::
       (sandbox_flags & network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin;
   if (use_opaque_origin) {
-    origin_and_debug_info.second += ", sandbox_flags";
-  }
-  // TODO(https://crbug.com/1158370): Move special-casing error pages into
-  // ComputeSandboxFlagsToCommit (and renderer-side origin calculations) so that
-  // the most strict sandbox flags are applied.
-  if (GetNetErrorCode() != net::OK) {
-    use_opaque_origin = true;
-    origin_and_debug_info.second += ", error";
-  }
-
-  if (use_opaque_origin) {
     origin_and_debug_info =
         std::make_pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
-                       origin_and_debug_info.second);
+                       origin_and_debug_info.second + ", sandbox_flags");
   }
 
   return origin_and_debug_info;

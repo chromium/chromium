@@ -3340,6 +3340,49 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   SetBrowserClientForTesting(old_client);
 }
 
+// Check that a subframe can load an error page with an about:srcdoc URL, and
+// that the origin does not inherit the parent's origin (i.e., behaves like all
+// error pages) in this case.  In practice, this path may be taken by the heavy
+// ads intervention (for an example, see the
+// HeavyAdInterventionEnabled_ErrorPageLoaded test).
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       OriginForSrcdocErrorPageInSubframe) {
+  // Start on a page with a blank subframe.
+  GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  // Do a srcdoc navigation in the subframe.
+  EXPECT_TRUE(
+      ExecJs(shell(), "document.querySelector('iframe').srcdoc='foo';"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* subframe_rfh = root->child_at(0)->current_frame_host();
+  EXPECT_EQ(GURL("about:srcdoc"), subframe_rfh->GetLastCommittedURL());
+
+  // Navigate the subframe to a post-commit error page, reusing its current
+  // srcdoc URL.  A post-commit error page provides a way to reach an error
+  // page for a srcdoc subframe; note that it isn't possible to use
+  // NavigationThrottles to block srcdoc navigations, since throttles don't
+  // currently run in that case.
+  TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+  shell()->web_contents()->GetController().LoadPostCommitErrorPage(
+      subframe_rfh, subframe_rfh->GetLastCommittedURL(), "error_page_contents",
+      net::ERR_BLOCKED_BY_CLIENT);
+  navigation_observer.Wait();
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+
+  // Verify that the origin of the srcdoc frame's parent wasn't inherited and
+  // also wasn't used for the precursor.  The error page's origin should be
+  // opaque without a valid precursor.
+  url::Origin origin =
+      root->child_at(0)->current_frame_host()->GetLastCommittedOrigin();
+  EXPECT_TRUE(origin.opaque());
+  EXPECT_FALSE(origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
+}
+
 // Verify that when navigation 1, which starts in an initial siteless
 // SiteInstance and results in an error page, races with navigation 2, which
 // requires a dedicated process and wants to reuse an existing process,
