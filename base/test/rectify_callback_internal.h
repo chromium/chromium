@@ -14,8 +14,8 @@
 namespace base::internal {
 
 // RectifyCallbackWrapper binds a wrapper around the actual callback that
-// discards the unused parameters and then calls the callback with the remaining
-// arguments.
+// discards the ignored arguments and forwards the remaining arguments to the
+// wrapped callback.
 
 template <template <typename> typename CallbackType,
           typename PartialSignature,
@@ -29,101 +29,81 @@ template <template <typename> typename CallbackType,
 struct RectifyCallbackWrapper<CallbackType,
                               R(PartialArgs...),
                               void(IgnoredArgs...)> {
+  template <typename Actual>
   static CallbackType<R(IgnoredArgs..., PartialArgs...)> Rectify(
-      CallbackType<R(PartialArgs...)> callback) {
+      Actual&& callback) {
     if constexpr (IsOnceCallback<CallbackType<void()>>::value) {
       return BindOnce(
           [](OnceCallback<R(PartialArgs...)> callback, IgnoredArgs...,
              PartialArgs... args) {
             return std::move(callback).Run(std::forward<PartialArgs>(args)...);
           },
-          std::move(callback));
+          std::forward<Actual>(callback));
     } else {
       return BindRepeating(
           [](const RepeatingCallback<R(PartialArgs...)> callback,
              IgnoredArgs..., PartialArgs... args) {
             return callback.Run(std::forward<PartialArgs>(args)...);
           },
-          std::move(callback));
+          std::forward<Actual>(callback));
     }
   }
 };
 
-// RectifyCallbackSplitter figures out which arguments from the full signature
-// need to be ignored, then delegates to RectifyCallbackWrapper to provide the
-// conversion from actual to desired type.
+// RectifyCallbackSplitter is a helper that returns the first N args of
+// `Signature` as the type `void(Args...)`. These are the arguments that need
+// to be ignored when rectifying a callback.
 
-template <template <typename> typename CallbackType,
-          typename FullSignature,
-          typename PartialSignature,
-          typename IgnoreSignature = void()>
+template <size_t count, typename Signature, typename Result = void()>
 struct RectifyCallbackSplitter;
 
-// Specialization that handles the case where all arguments are stripped away.
-template <template <typename> typename CallbackType,
-          typename R,
-          typename... IgnoredArgs>
-struct RectifyCallbackSplitter<CallbackType, R(), R(), void(IgnoredArgs...)>
-    : RectifyCallbackWrapper<CallbackType, R(), void(IgnoredArgs...)> {};
+template <typename Arg, typename... Args, typename... Results>
+struct RectifyCallbackSplitter<0, void(Arg, Args...), void(Results...)> {
+  using type = void(Results...);
+};
 
-// Specialization that handles the case where some number of arguments remain,
-// and some additional arguments may need to be stripped away. Recursive until
-// all arguments are stripped, then delegates to RectifyCallbackWrapper.
-template <template <typename> typename CallbackType,
-          typename R,
-          typename First,
-          typename... Rest,
-          typename... PartialArgs,
-          typename... IgnoredArgs>
-struct RectifyCallbackSplitter<CallbackType,
-                               R(First, Rest...),
-                               R(PartialArgs...),
-                               void(IgnoredArgs...)>
-    : std::conditional_t<sizeof...(Rest) >= sizeof...(PartialArgs),
-                         RectifyCallbackSplitter<CallbackType,
-                                                 R(Rest...),
-                                                 R(PartialArgs...),
-                                                 void(IgnoredArgs..., First)>,
-                         RectifyCallbackWrapper<CallbackType,
-                                                R(PartialArgs...),
-                                                void(IgnoredArgs...)>> {};
+template <typename... Args, typename... Results>
+struct RectifyCallbackSplitter<0, void(Args...), void(Results...)> {
+  using type = void(Results...);
+};
 
-// RectifyCallbackImpl is the entry point which deduces the appropriate return
-// type and then either provides Rectify() directly (for trivial callbacks) or
-// delegates to RectifyCallbackSplitter to figure out which args should be
-// eliminated and which passed on to the actual callback.
+template <size_t count, typename Arg, typename... Args, typename... Results>
+struct RectifyCallbackSplitter<count, void(Arg, Args...), void(Results...)>
+    : RectifyCallbackSplitter<count - 1, void(Args...), void(Results..., Arg)> {
+};
+
+// Given a desired type and an actual type, RectifyCallbackImpl provides a
+// Rectify() method that adapts the input callback to be callable using the
+// arguments from desired type.
 
 template <typename DesiredType, typename ActualType, typename SFINAE = void>
 struct RectifyCallbackImpl;
 
-// Specialization that handles an explicit callback type as the desired type.
-// The is the main specialization and does the heavy lifting; most of the other
-// specializations adapt their arguments into callback types before delegating
-// to this specialization. The input will be converted to the expected callback
-// type if necessary (typically from RepeatingCallback to OnceCallback) and then
-// reduced as appropriate.
+// Main specialization that handles the case where the desired and actual types
+// have already been normalized into callback types. The other specializations
+// allow additional flexibility for callers, but eventually all delegate here.
 template <template <typename> typename DesiredCallbackType,
-          typename DesiredSignature,
           template <typename>
           typename ActualCallbackType,
-          typename ActualSignature>
-struct RectifyCallbackImpl<DesiredCallbackType<DesiredSignature>,
-                           ActualCallbackType<ActualSignature>>
-    : RectifyCallbackSplitter<DesiredCallbackType,
-                              DesiredSignature,
-                              ActualSignature> {};
+          typename R,
+          typename... DesiredArgs,
+          typename... ActualArgs>
+struct RectifyCallbackImpl<DesiredCallbackType<R(DesiredArgs...)>,
+                           ActualCallbackType<R(ActualArgs...)>> {
+  template <typename Actual>
+  static DesiredCallbackType<R(DesiredArgs...)> Rectify(Actual&& callback) {
+    if constexpr (std::is_same_v<R(DesiredArgs...), R(ActualArgs...)>) {
+      // No adapting needed when the parameter lists already match.
+      return callback;
+    }
 
-// Specialization that handles the case when the desired callback type and the
-// actual callback type already have a matching signature.
-template <template <typename> typename DesiredCallbackType,
-          template <typename>
-          typename ActualCallbackType,
-          typename Signature>
-struct RectifyCallbackImpl<DesiredCallbackType<Signature>,
-                           ActualCallbackType<Signature>> {
-  static DesiredCallbackType<Signature> Rectify(
-      ActualCallbackType<Signature> callback) {
-    return callback;
+    using IgnoreSignature =
+        typename RectifyCallbackSplitter<sizeof...(DesiredArgs) -
+                                             sizeof...(ActualArgs),
+                                         void(DesiredArgs...)>::type;
+    return RectifyCallbackWrapper<
+        DesiredCallbackType, R(ActualArgs...),
+        IgnoreSignature>::Rectify(std::forward<Actual>(callback));
   }
 };
 
