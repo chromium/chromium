@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/common/media.js"></script>
+    <script>
+      // There's no way to load slow resources in browser tests, so we start
+      // the preload later.
+      const preload_font = () => {
+        const link = document.createElement("link");
+        link.href = "/fonts/AD.woff";
+        link.rel = "preload";
+        link.as = "font";
+        link.crossOrigin = true;
+        document.head.appendChild(link);
+      }
+      setTimeout(preload_font, 1000);
+    </script>
+  </head>
+</html>
+

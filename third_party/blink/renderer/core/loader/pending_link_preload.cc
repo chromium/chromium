@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/loader/link_loader.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
+#include "third_party/blink/renderer/core/timing/render_blocking_metrics_reporter.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 
@@ -27,6 +28,10 @@ class PendingLinkPreload::FinishObserver final : public ResourceFinishObserver {
   void NotifyFinished() override {
     if (!resource_)
       return;
+    if (resource_->GetType() == ResourceType::kFont) {
+      RenderBlockingMetricsReporter::From(*pending_preload_->document_)
+          .PreloadedFontFinishedLoading();
+    }
     pending_preload_->NotifyFinished();
     Dispose();
   }
@@ -60,8 +65,13 @@ PendingLinkPreload::~PendingLinkPreload() = default;
 
 void PendingLinkPreload::AddResource(Resource* resource) {
   DCHECK(!finish_observer_);
-  if (resource)
+  if (resource) {
+    if (resource->GetType() == ResourceType::kFont) {
+      RenderBlockingMetricsReporter::From(*document_)
+          .PreloadedFontStartedLoading();
+    }
     finish_observer_ = MakeGarbageCollected<FinishObserver>(this, resource);
+  }
 }
 
 // https://html.spec.whatwg.org/C/#link-type-modulepreload

@@ -54,6 +54,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.CriticalFonts.BlockingResourcesLoadTime" units="ms"
+    expires_after="2023-05-01">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Time (in milliseconds) from timeOrigin until all the render blocking
+    resources were loaded in pages that have preloaded fonts. The metric will be
+    reported once per page load, once all the render blocking resources and
+    pending preloaded fonts have finished loading.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
+    expires_after="2023-05-01">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Time difference (in milliseconds) between `PreloadedFontLoadTime` and
+    `BlockingResourcesLoadTime`, when the preloaded fonts took longer to load
+    than the render blocking resources, and otherwise 0. This represents the
+    time preloaded fonts would block rendering, if we were to consider them as
+    critical.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.CriticalFonts.PreloadedFontLoadTime" units="ms"
+    expires_after="2023-05-01">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Time (in milliseconds) from timeOrigin until all the preloaded fonts were
+    loaded. The metric will be reported once per page load, once all the render
+    blocking resources and pending preloaded fonts have finished loading.
+  </summary>
+</histogram>
+
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
     units="ms" expires_after="2023-02-01">
