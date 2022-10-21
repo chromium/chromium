@@ -587,26 +587,25 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
     : device_(std::move(device)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
       blocking_task_runner_(UsbService::CreateBlockingTaskRunner()) {
-  // Windows only supports configuration 1, which therefore must be active.
-  DCHECK(device_->GetActiveConfiguration());
+  if (const auto* config = device_->GetActiveConfiguration()) {
+    for (const auto& interface : config->interfaces) {
+      for (const auto& alternate : interface->alternates) {
+        if (alternate->alternate_setting != 0)
+          continue;
 
-  for (const auto& interface : device_->GetActiveConfiguration()->interfaces) {
-    for (const auto& alternate : interface->alternates) {
-      if (alternate->alternate_setting != 0)
-        continue;
+        Interface& interface_info = interfaces_[interface->interface_number];
+        interface_info.info = interface.get();
+        interface_info.interface_number = interface->interface_number;
+        interface_info.first_interface = interface->first_interface;
+        RegisterEndpoints(interface.get(), *alternate);
 
-      Interface& interface_info = interfaces_[interface->interface_number];
-      interface_info.info = interface.get();
-      interface_info.interface_number = interface->interface_number;
-      interface_info.first_interface = interface->first_interface;
-      RegisterEndpoints(interface.get(), *alternate);
-
-      if (device_->driver_type() == UsbDeviceWin::DriverType::kComposite) {
-        if (interface->interface_number == interface->first_interface) {
-          auto it = device_->functions().find(interface->interface_number);
-          if (it != device_->functions().end()) {
-            interface_info.function_driver = it->second.driver;
-            interface_info.function_path = it->second.path;
+        if (device_->driver_type() == UsbDeviceWin::DriverType::kComposite) {
+          if (interface->interface_number == interface->first_interface) {
+            auto it = device_->functions().find(interface->interface_number);
+            if (it != device_->functions().end()) {
+              interface_info.function_driver = it->second.driver;
+              interface_info.function_path = it->second.path;
+            }
           }
         }
       }
@@ -1014,10 +1013,6 @@ void UsbDeviceHandleWin::GotNodeConnectionInformation(
     void* node_connection_info_ptr,
     scoped_refptr<base::RefCountedBytes> buffer,
     std::pair<DWORD, DWORD> result_and_bytes_transferred) {
-  USB_NODE_CONNECTION_INFORMATION_EX* node_connection_info =
-      static_cast<USB_NODE_CONNECTION_INFORMATION_EX*>(
-          node_connection_info_ptr);
-
   if (result_and_bytes_transferred.first != ERROR_SUCCESS) {
     SetLastError(result_and_bytes_transferred.first);
     USB_PLOG(ERROR) << "Failed to get node connection information";
@@ -1027,6 +1022,13 @@ void UsbDeviceHandleWin::GotNodeConnectionInformation(
 
   DCHECK_EQ(result_and_bytes_transferred.second,
             sizeof(USB_NODE_CONNECTION_INFORMATION_EX));
+  USB_NODE_CONNECTION_INFORMATION_EX* node_connection_info =
+      static_cast<USB_NODE_CONNECTION_INFORMATION_EX*>(
+          node_connection_info_ptr);
+
+  device_->ActiveConfigurationChanged(
+      node_connection_info->CurrentConfigurationValue);
+
   size_t bytes_transferred =
       std::min(sizeof(USB_DEVICE_DESCRIPTOR), buffer->size());
   memcpy(buffer->front(), &node_connection_info->DeviceDescriptor,

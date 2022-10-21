@@ -106,8 +106,10 @@ void UsbDeviceWin::OnReadDescriptors(
   descriptor->device_info->port_number = device_info_->port_number,
   device_info_ = std::move(descriptor->device_info);
 
-  // WinUSB only supports the configuration 1.
-  ActiveConfigurationChanged(1);
+  // The active configuration was set after reading the node connection info
+  // from the hub driver. If it wasn't valid, assume the first configuration.
+  if (!GetActiveConfiguration() && !configurations().empty())
+    ActiveConfigurationChanged(configurations()[0]->configuration_value);
 
   auto string_map = std::make_unique<std::map<uint8_t, std::u16string>>();
   if (descriptor->i_manufacturer)
