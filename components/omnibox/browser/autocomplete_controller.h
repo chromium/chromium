@@ -408,7 +408,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // to every provider.  This is intended to avoid the disruptive effect of
   // belated omnibox updates, updates that come after the user has had to time
   // to read the whole dropdown and doesn't expect it to change.
-  base::TimeDelta stop_timer_duration_;
+  base::TimeDelta stop_timer_duration_ = base::Milliseconds(1500);
 
   // Debouncer to avoid invoking `NotifyChange()` after updating results in
   // quick succession. The last call, i.e. when all providers complete and

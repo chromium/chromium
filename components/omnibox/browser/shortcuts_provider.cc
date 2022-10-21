@@ -240,10 +240,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
   std::u16string term_string(base::i18n::ToLower(input.text()));
   DCHECK(!term_string.empty());
 
-  int max_relevance;
-  if (!OmniboxFieldTrial::ShortcutsScoringMaxRelevance(
-          input.current_page_classification(), &max_relevance))
-    max_relevance = kShortcutsProviderDefaultMaxRelevance;
+  int max_relevance = kShortcutsProviderDefaultMaxRelevance;
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   const std::u16string fixed_up_input(FixupUserInput(input).second);
 

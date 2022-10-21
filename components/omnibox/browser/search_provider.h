@@ -375,12 +375,10 @@ class SearchProvider : public BaseSearchProvider,
   // indicates whether the results correspond to the keyword provider or default
   // provider. |use_aggressive_method| says whether this function can use a
   // method that gives high scores (1200+) rather than one that gives lower
-  // scores.  When using the aggressive method, scores may exceed 1300
-  // unless |prevent_search_history_inlining| is set.
+  // scores.  When using the aggressive method, scores may exceed 1300.
   int CalculateRelevanceForHistory(const base::Time& time,
                                    bool is_keyword,
-                                   bool use_aggressive_method,
-                                   bool prevent_search_history_inlining) const;
+                                   bool use_aggressive_method) const;
 
   // Returns an AutocompleteMatch for a navigational suggestion.
   AutocompleteMatch NavigationToMatch(

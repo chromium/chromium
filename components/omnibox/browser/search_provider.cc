@@ -78,8 +78,7 @@ enum SuggestRequestsHistogramValue {
 };
 
 // Increments the appropriate value in the histogram by one.
-void LogOmniboxSuggestRequest(
-    SuggestRequestsHistogramValue request_value) {
+void LogOmniboxSuggestRequest(SuggestRequestsHistogramValue request_value) {
   UMA_HISTOGRAM_ENUMERATION("Omnibox.SuggestRequests", request_value,
                             MAX_SUGGEST_REQUEST_HISTOGRAM_VALUE);
 }
@@ -138,7 +137,6 @@ const TemplateURL* SearchProvider::Providers::GetKeywordProviderURL() const {
   return template_url_service_->GetTemplateURLForKeyword(keyword_provider_);
 }
 
-
 // SearchProvider::CompareScoredResults ---------------------------------------
 
 class SearchProvider::CompareScoredResults {
@@ -149,7 +147,6 @@ class SearchProvider::CompareScoredResults {
     return a.relevance() > b.relevance();
   }
 };
-
 
 // SearchProvider -------------------------------------------------------------
 
@@ -538,11 +535,9 @@ void SearchProvider::SortResults(bool is_keyword,
   // Keep the result lists sorted.
   const CompareScoredResults comparator = CompareScoredResults();
   std::stable_sort(results->suggest_results.begin(),
-                   results->suggest_results.end(),
-                   comparator);
+                   results->suggest_results.end(), comparator);
   std::stable_sort(results->navigation_results.begin(),
-                   results->navigation_results.end(),
-                   comparator);
+                   results->navigation_results.end(), comparator);
 }
 
 void SearchProvider::LogLoadComplete(bool success, bool is_keyword) {
@@ -584,9 +579,8 @@ void SearchProvider::UpdateMatches() {
 }
 
 void SearchProvider::EnforceConstraints() {
-  if (!matches_.empty() &&
-      (default_results_.HasServerProvidedScores() ||
-       keyword_results_.HasServerProvidedScores())) {
+  if (!matches_.empty() && (default_results_.HasServerProvidedScores() ||
+                            keyword_results_.HasServerProvidedScores())) {
     // These blocks attempt to repair undesirable behavior by suggested
     // relevances with minimal impact, preserving other suggested relevances.
     const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
@@ -684,10 +678,6 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
 
   raw_keyword_history_results_.clear();
   raw_default_history_results_.clear();
-
-  if (OmniboxFieldTrial::SearchHistoryDisable(
-      input_.current_page_classification()))
-    return;
 
   history::URLDatabase* url_db = client()->GetInMemoryDatabase();
   if (!url_db)
@@ -1056,16 +1046,16 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
   // the most relevant match for each result.
   MatchMap map;
   int did_not_accept_keyword_suggestion =
-      keyword_results_.suggest_results.empty() ?
-      TemplateURLRef::NO_SUGGESTIONS_AVAILABLE :
-      TemplateURLRef::NO_SUGGESTION_CHOSEN;
+      keyword_results_.suggest_results.empty()
+          ? TemplateURLRef::NO_SUGGESTIONS_AVAILABLE
+          : TemplateURLRef::NO_SUGGESTION_CHOSEN;
 
   bool relevance_from_server;
   int verbatim_relevance = GetVerbatimRelevance(&relevance_from_server);
   int did_not_accept_default_suggestion =
-      default_results_.suggest_results.empty() ?
-      TemplateURLRef::NO_SUGGESTIONS_AVAILABLE :
-      TemplateURLRef::NO_SUGGESTION_CHOSEN;
+      default_results_.suggest_results.empty()
+          ? TemplateURLRef::NO_SUGGESTIONS_AVAILABLE
+          : TemplateURLRef::NO_SUGGESTION_CHOSEN;
   const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
   const bool should_curb_default_suggestions = ShouldCurbDefaultSuggestions();
   // Don't add what-you-typed suggestion from the default provider when the
@@ -1253,8 +1243,8 @@ void SearchProvider::AddRawHistoryResultsToMap(bool is_keyword,
       is_keyword ? &transformed_keyword_history_results_
                  : &transformed_default_history_results_;
   DCHECK(transformed_results);
-  AddTransformedHistoryResultsToMap(
-      *transformed_results, did_not_accept_suggestion, map);
+  AddTransformedHistoryResultsToMap(*transformed_results,
+                                    did_not_accept_suggestion, map);
 }
 
 void SearchProvider::AddTransformedHistoryResultsToMap(
@@ -1280,9 +1270,6 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
   SearchSuggestionParser::SuggestResults scored_results;
   // True if the user has asked this exact query previously.
   bool found_what_you_typed_match = false;
-  const bool prevent_search_history_inlining =
-      OmniboxFieldTrial::SearchHistoryPreventInlining(
-          input_.current_page_classification());
   const std::u16string& trimmed_input =
       base::CollapseWhitespace(input_text, false);
   for (const auto& result : results) {
@@ -1297,8 +1284,7 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
          HasMultipleWords(trimmed_suggestion));
 
     int relevance = CalculateRelevanceForHistory(
-        result->last_visit_time, is_keyword, !prevent_inline_autocomplete,
-        prevent_search_history_inlining);
+        result->last_visit_time, is_keyword, !prevent_inline_autocomplete);
     // Add the match to |scored_results| by putting the what-you-typed match
     // on the front and appending all other matches.  We want the what-you-
     // typed match to always be first.
@@ -1322,10 +1308,9 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
   // things back in order without otherwise disturbing results with equal
   // scores, then force the scores to be unique, so that the order in which
   // they're shown is deterministic.
-  std::stable_sort(scored_results.begin() +
-                       (found_what_you_typed_match ? 1 : 0),
-                   scored_results.end(),
-                   CompareScoredResults());
+  std::stable_sort(
+      scored_results.begin() + (found_what_you_typed_match ? 1 : 0),
+      scored_results.end(), CompareScoredResults());
 
   // Don't autocomplete to search terms that would normally be treated as URLs
   // when typed. For example, if the user searched for "google.com" and types
@@ -1364,9 +1349,8 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
     // such calls can be expensive (as expensive as running the whole
     // autocomplete system).
     if (!AutocompleteMatch::IsSearchType(match.type)) {
-      last_relevance = CalculateRelevanceForHistory(
-          base::Time::Now(), is_keyword, false,
-          prevent_search_history_inlining);
+      last_relevance =
+          CalculateRelevanceForHistory(base::Time::Now(), is_keyword, false);
     }
   }
 
@@ -1413,11 +1397,9 @@ void SearchProvider::ScoreHistoryResults(
       scored_results->clear();  // Didn't detect the case above, score normally.
   }
   if (scored_results->empty()) {
-    *scored_results = ScoreHistoryResultsHelper(results,
-                                                prevent_inline_autocomplete,
-                                                input_multiple_words,
-                                                input_text,
-                                                is_keyword);
+    *scored_results =
+        ScoreHistoryResultsHelper(results, prevent_inline_autocomplete,
+                                  input_multiple_words, input_text, is_keyword);
   }
 }
 
@@ -1442,16 +1424,15 @@ int SearchProvider::GetVerbatimRelevance(bool* relevance_from_server) const {
   // left unable to search using their default provider from the omnibox.
   // Check for results on each verbatim calculation, as results from older
   // queries (on previous input) may be trimmed for failing to inline new input.
-  bool use_server_relevance =
-      (default_results_.verbatim_relevance >= 0) &&
-      !input_.prevent_inline_autocomplete() &&
-      ((default_results_.verbatim_relevance > 0) ||
-       !default_results_.suggest_results.empty() ||
-       !default_results_.navigation_results.empty());
+  bool use_server_relevance = (default_results_.verbatim_relevance >= 0) &&
+                              !input_.prevent_inline_autocomplete() &&
+                              ((default_results_.verbatim_relevance > 0) ||
+                               !default_results_.suggest_results.empty() ||
+                               !default_results_.navigation_results.empty());
   if (relevance_from_server)
     *relevance_from_server = use_server_relevance;
-  return use_server_relevance ?
-      default_results_.verbatim_relevance : CalculateRelevanceForVerbatim();
+  return use_server_relevance ? default_results_.verbatim_relevance
+                              : CalculateRelevanceForVerbatim();
 }
 
 bool SearchProvider::ShouldCurbDefaultSuggestions() const {
@@ -1477,8 +1458,8 @@ int SearchProvider::CalculateRelevanceForVerbatim() const {
   return CalculateRelevanceForVerbatimIgnoringKeywordModeState();
 }
 
-int SearchProvider::
-    CalculateRelevanceForVerbatimIgnoringKeywordModeState() const {
+int SearchProvider::CalculateRelevanceForVerbatimIgnoringKeywordModeState()
+    const {
   switch (input_.type()) {
     case metrics::OmniboxInputType::UNKNOWN:
     case metrics::OmniboxInputType::QUERY:
@@ -1503,33 +1484,29 @@ int SearchProvider::GetKeywordVerbatimRelevance(
   // left unable to search using their keyword provider from the omnibox.
   // Check for results on each verbatim calculation, as results from older
   // queries (on previous input) may be trimmed for failing to inline new input.
-  bool use_server_relevance =
-      (keyword_results_.verbatim_relevance >= 0) &&
-      !input_.prevent_inline_autocomplete() &&
-      ((keyword_results_.verbatim_relevance > 0) ||
-       !keyword_results_.suggest_results.empty() ||
-       !keyword_results_.navigation_results.empty());
+  bool use_server_relevance = (keyword_results_.verbatim_relevance >= 0) &&
+                              !input_.prevent_inline_autocomplete() &&
+                              ((keyword_results_.verbatim_relevance > 0) ||
+                               !keyword_results_.suggest_results.empty() ||
+                               !keyword_results_.navigation_results.empty());
   if (relevance_from_server)
     *relevance_from_server = use_server_relevance;
-  return use_server_relevance ?
-      keyword_results_.verbatim_relevance :
-      CalculateRelevanceForKeywordVerbatim(keyword_input_.type(),
-                                           true,
-                                           keyword_input_.prefer_keyword());
+  return use_server_relevance ? keyword_results_.verbatim_relevance
+                              : CalculateRelevanceForKeywordVerbatim(
+                                    keyword_input_.type(), true,
+                                    keyword_input_.prefer_keyword());
 }
 
 int SearchProvider::CalculateRelevanceForHistory(
     const base::Time& time,
     bool is_keyword,
-    bool use_aggressive_method,
-    bool prevent_search_history_inlining) const {
+    bool use_aggressive_method) const {
   // The relevance of past searches falls off over time. There are two distinct
   // equations used. If the first equation is used (searches to the primary
   // provider that we want to score aggressively), the score is in the range
-  // 1300-1599 (unless |prevent_search_history_inlining|, in which case
-  // it's in the range 1200-1299). If the second equation is used the
-  // relevance of a search 15 minutes ago is discounted 50 points, while the
-  // relevance of a search two weeks ago is discounted 450 points.
+  // 1300-1599. If the second equation is used the relevance of a search 15
+  // minutes ago is discounted 50 points, while the relevance of a search two
+  // weeks ago is discounted 450 points.
   double elapsed_time = std::max((base::Time::Now() - time).InSecondsF(), 0.0);
   bool is_primary_provider = is_keyword || !providers_.has_keyword_provider();
   if (is_primary_provider && use_aggressive_method) {
@@ -1537,10 +1514,9 @@ int SearchProvider::CalculateRelevanceForHistory(
     const double autocomplete_time = 2 * 24 * 60 * 60;
     if (elapsed_time < autocomplete_time) {
       int max_score = is_keyword ? 1599 : 1399;
-      if (prevent_search_history_inlining)
-        max_score = 1299;
-      return max_score - static_cast<int>(99 *
-          std::pow(elapsed_time / autocomplete_time, 2.5));
+      return max_score -
+             static_cast<int>(99 *
+                              std::pow(elapsed_time / autocomplete_time, 2.5));
     }
     elapsed_time -= autocomplete_time;
   }

@@ -327,7 +327,6 @@ AutocompleteController::AutocompleteController(
       search_provider_(nullptr),
       zero_suggest_provider_(nullptr),
       on_device_head_provider_(nullptr),
-      stop_timer_duration_(OmniboxFieldTrial::StopTimerFieldTrialDuration()),
       notify_changed_debouncer_(
           OmniboxFieldTrial::
               kAutocompleteStabilityUpdateResultDebounceFromLastRun.Get(),

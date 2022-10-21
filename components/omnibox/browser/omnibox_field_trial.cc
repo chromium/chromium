@@ -37,9 +37,6 @@ namespace {
 typedef std::map<std::string, std::string> VariationParams;
 typedef HUPScoringParams::ScoreBuckets ScoreBuckets;
 
-// Field trial names.
-const char kStopTimerFieldTrialName[] = "OmniboxStopTimer";
-
 void InitializeBucketsFromString(const std::string& bucket_string,
                                  ScoreBuckets* score_buckets) {
   // Clear the buckets.
@@ -207,43 +204,6 @@ void OmniboxFieldTrial::GetActiveSuggestFieldTrialHashes(
     field_trial_hashes->push_back(
         variations::HashName(kBundledExperimentFieldTrialName));
   }
-}
-
-base::TimeDelta OmniboxFieldTrial::StopTimerFieldTrialDuration() {
-  int stop_timer_ms;
-  if (base::StringToInt(
-          base::FieldTrialList::FindFullName(kStopTimerFieldTrialName),
-          &stop_timer_ms))
-    return base::Milliseconds(stop_timer_ms);
-  return base::Milliseconds(1500);
-}
-
-bool OmniboxFieldTrial::ShortcutsScoringMaxRelevance(
-    OmniboxEventProto::PageClassification current_page_classification,
-    int* max_relevance) {
-  // The value of the rule is a string that encodes an integer containing
-  // the max relevance.
-  const std::string& max_relevance_str =
-      OmniboxFieldTrial::internal::GetValueForRuleInContext(
-          kShortcutsScoringMaxRelevanceRule, current_page_classification);
-  if (max_relevance_str.empty())
-    return false;
-  if (!base::StringToInt(max_relevance_str, max_relevance))
-    return false;
-  return true;
-}
-
-bool OmniboxFieldTrial::SearchHistoryPreventInlining(
-    OmniboxEventProto::PageClassification current_page_classification) {
-  return OmniboxFieldTrial::internal::GetValueForRuleInContext(
-             kSearchHistoryRule, current_page_classification) ==
-         "PreventInlining";
-}
-
-bool OmniboxFieldTrial::SearchHistoryDisable(
-    OmniboxEventProto::PageClassification current_page_classification) {
-  return OmniboxFieldTrial::internal::GetValueForRuleInContext(
-             kSearchHistoryRule, current_page_classification) == "Disable";
 }
 
 void OmniboxFieldTrial::GetDemotionsByType(
@@ -652,9 +612,6 @@ const base::FeatureParam<int> OmniboxFieldTrial::kSuggestionRowHeight(
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";
-const char OmniboxFieldTrial::kShortcutsScoringMaxRelevanceRule[] =
-    "ShortcutsScoringMaxRelevance";
-const char OmniboxFieldTrial::kSearchHistoryRule[] = "SearchHistory";
 const char OmniboxFieldTrial::kDemoteByTypeRule[] = "DemoteByType";
 const char OmniboxFieldTrial::kHQPBookmarkValueRule[] = "HQPBookmarkValue";
 const char OmniboxFieldTrial::kHQPTypedValueRule[] = "HQPTypedValue";
