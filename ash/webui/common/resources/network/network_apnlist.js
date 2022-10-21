@@ -378,6 +378,9 @@ Polymer({
         return false;
       }
     }
+    // Add required field with a default value since it's unused when
+    // kApnRevamp=false (b/254549019).
+    apn.apnTypes = [ApnType.kDefault];
     this.fire('apn-change', apn);
     return true;
   },
