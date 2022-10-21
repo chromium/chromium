@@ -506,6 +506,16 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <summary>Whether the back-forward navigation was served from cache.</summary>
 </histogram>
 
+<histogram name="Navigation.BlobUrl" enum="Boolean" expires_after="M111">
+  <owner>jkokatsu@google.com</owner>
+  <owner>chrome-security-owp-team@google.com</owner>
+  <summary>
+    Record if navigation has occured to Blob URL, to better understand the usage
+    of Blob URL in active document (i.e. both main frame and iframes). This
+    record is taken in Navigator::DidNavigate.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame"
     enum="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame"
     expires_after="2023-03-01">

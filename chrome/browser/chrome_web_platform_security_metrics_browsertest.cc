@@ -1884,6 +1884,53 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 2);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest, BlobUrl) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    new Promise(resolve => {
+      const iframe = document.createElement("iframe");
+      const blob = new Blob(["test"], {type: "text/html"});
+      const url = URL.createObjectURL(blob);
+      iframe.src = url;
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+  CheckHistogramCount("Navigation.BlobUrl", true, 1);
+  CheckHistogramCount("Navigation.BlobUrl", false, 3);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       BlobUrlFromDataUrl) {
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), GURL("data:text/html,test")));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    const blob = new Blob(["test"], {type: "text/html"});
+    const url = URL.createObjectURL(blob);
+    location.href = url;
+  )"));
+  CheckHistogramCount("Navigation.BlobUrl", true, 1);
+  CheckHistogramCount("Navigation.BlobUrl", false, 3);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       BlobUrlPopup) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckHistogramCount("Navigation.BlobUrl", true, 0);
+  CheckHistogramCount("Navigation.BlobUrl", false, 3);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    const blob = new Blob(["test"], {type: "text/html"});
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank', 'noopener');
+  )"));
+  CheckHistogramCount("Navigation.BlobUrl", true, 1);
+  CheckHistogramCount("Navigation.BlobUrl", false, 3);
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // [ ] CrossOriginOpenerPolicySameOrigin
 // [ ] CrossOriginOpenerPolicySameOriginAllowPopups

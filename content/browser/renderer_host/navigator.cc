@@ -164,6 +164,11 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   log(FeatureCoep(rfh->cross_origin_embedder_policy().value));
   log(FeatureCoepRO(rfh->cross_origin_embedder_policy().report_only_value));
 
+  // [Blob]
+  base::UmaHistogramBoolean(
+      "Navigation.BlobUrl",
+      rfh->GetLastCommittedURL().SchemeIs(url::kBlobScheme));
+
   // Record iframes embedded in cross-origin contexts without a CSP
   // frame-ancestor directive.
   bool is_embedded_in_cross_origin_context = false;
