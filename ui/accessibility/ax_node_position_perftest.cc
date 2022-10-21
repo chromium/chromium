@@ -108,8 +108,8 @@ void AXPositionPerfTest::SetUp() {
 }  // namespace
 
 TEST_F(AXPositionPerfTest, AsTreePositionFromTextPosition) {
-  TestPositionType text_position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), /*anchor_id=*/1, /*text_offset=*/103,
+  TestPositionType text_position = CreateTextPosition(
+      /*anchor_id=*/1, /*text_offset=*/103,
       ax::mojom::TextAffinity::kDownstream);
 
   // The time limit is unused. Use kLaps for the check interval so the time is
@@ -125,8 +125,8 @@ TEST_F(AXPositionPerfTest, AsTreePositionFromTextPosition) {
 }
 
 TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTextPosition) {
-  TestPositionType text_position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), /*anchor_id=*/1, /*text_offset=*/103,
+  TestPositionType text_position = CreateTextPosition(
+      /*anchor_id=*/1, /*text_offset=*/103,
       ax::mojom::TextAffinity::kDownstream);
 
   // The time limit is unused. Use kLaps for the check interval so the time is
@@ -156,12 +156,11 @@ TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTreePosition) {
 }
 
 TEST_F(AXPositionPerfTest, CompareTextPositions) {
-  TestPositionType text_position_1 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), /*anchor_id=*/7, /*text_offset=*/1,
-      ax::mojom::TextAffinity::kDownstream);
+  TestPositionType text_position_1 = CreateTextPosition(
+      /*anchor_id=*/7, /*text_offset=*/1, ax::mojom::TextAffinity::kDownstream);
 
-  TestPositionType text_position_2 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), /*anchor_id=*/27, /*text_offset=*/1,
+  TestPositionType text_position_2 = CreateTextPosition(
+      /*anchor_id=*/27, /*text_offset=*/1,
       ax::mojom::TextAffinity::kDownstream);
 
   base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);

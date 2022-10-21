@@ -279,19 +279,16 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
   void CreateTextRangeProviderWin(
       ComPtr<AXPlatformNodeTextRangeProviderWin>& text_range_provider_win,
       AXPlatformNodeWin* owner,
-      AXTreeID tree_id,
-      AXNodeID start_anchor_id,
+      const AXNode* start_anchor,
       int start_offset,
       ax::mojom::TextAffinity start_affinity,
-      AXNodeID end_anchor_id,
+      const AXNode* end_anchor,
       int end_offset,
       ax::mojom::TextAffinity end_affinity) {
     AXNodePosition::AXPositionInstance range_start =
-        AXNodePosition::CreateTextPosition(tree_id, start_anchor_id,
-                                           start_offset, start_affinity);
+        CreateTextPosition(*start_anchor, start_offset, start_affinity);
     AXNodePosition::AXPositionInstance range_end =
-        AXNodePosition::CreateTextPosition(tree_id, end_anchor_id, end_offset,
-                                           end_affinity);
+        CreateTextPosition(*end_anchor, end_offset, end_affinity);
 
     ComPtr<ITextRangeProvider> text_range_provider =
         AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
@@ -4402,10 +4399,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
         static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
     CreateTextRangeProviderWin(
-        range_with_annotations, owner, tree_data.tree_id,
-        /*start_anchor_id=*/text_node->id(), /*start_offset=*/5,
+        range_with_annotations, owner,
+        /*start_anchor=*/text_node, /*start_offset=*/5,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor_id=*/text_node->id(), /*end_offset=*/9,
+        /*end_anchor=*/text_node, /*end_offset=*/9,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
     base::win::ScopedVariant annotation_types_variant;
@@ -4429,10 +4426,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
         static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
     CreateTextRangeProviderWin(
-        range_with_annotations, owner, tree_data.tree_id,
-        /*start_anchor_id=*/text_node->id(), /*start_offset=*/0,
+        range_with_annotations, owner,
+        /*start_anchor=*/text_node, /*start_offset=*/0,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor_id=*/text_node->id(), /*end_offset=*/4,
+        /*end_anchor=*/text_node, /*end_offset=*/4,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
     base::win::ScopedVariant annotation_types_variant;
@@ -4456,10 +4453,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
         static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
     CreateTextRangeProviderWin(
-        range_with_annotations, owner, tree_data.tree_id,
-        /*start_anchor_id=*/text_node->id(), /*start_offset=*/14,
+        range_with_annotations, owner,
+        /*start_anchor=*/text_node, /*start_offset=*/14,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor_id=*/text_node->id(), /*end_offset=*/18,
+        /*end_anchor=*/text_node, /*end_offset=*/18,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
     base::win::ScopedVariant annotation_types_variant;
@@ -4482,10 +4479,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
         static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
     CreateTextRangeProviderWin(
-        range_with_annotations, owner, tree_data.tree_id,
-        /*start_anchor_id=*/text_node->id(), /*start_offset=*/19,
+        range_with_annotations, owner,
+        /*start_anchor=*/text_node, /*start_offset=*/19,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor_id=*/text_node->id(), /*end_offset=*/24,
+        /*end_anchor=*/text_node, /*end_offset=*/24,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
     base::win::ScopedVariant annotation_types_variant;
@@ -4512,10 +4509,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
         AXPlatformNodeFromNode(heading_text_node));
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
     CreateTextRangeProviderWin(
-        range_with_annotations, owner, tree_data.tree_id,
-        /*start_anchor_id=*/heading_text_node->id(), /*start_offset=*/5,
+        range_with_annotations, owner,
+        /*start_anchor=*/heading_text_node, /*start_offset=*/5,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor_id=*/heading_text_node->id(), /*end_offset=*/9,
+        /*end_anchor=*/heading_text_node, /*end_offset=*/9,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
     base::win::ScopedVariant annotation_types_variant;
@@ -4626,10 +4623,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
       AXPlatformNodeFromNode(annotation_target_node));
   CreateTextRangeProviderWin(
-      some_text_range_provider, owner, update.tree_data.tree_id,
-      /*start_anchor_id=*/annotation_target.id, /*start_offset=*/0,
+      some_text_range_provider, owner,
+      /*start_anchor=*/annotation_target_node, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/annotation_target.id, /*end_offset=*/9,
+      /*end_anchor=*/annotation_target_node, /*end_offset=*/9,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, some_text_range_provider.Get());
   EXPECT_UIA_TEXTRANGE_EQ(some_text_range_provider, L"some text");
@@ -4743,6 +4740,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   AXNode* root_node = GetRoot();
   AXNode* highlighted_node = root_node->children()[0];
+  AXNode* some_text_node = highlighted_node->children()[0];
   AXNode* readonly_text_node = root_node->children()[1];
   AXNode* comment1_node = root_node->children()[2];
 
@@ -4754,10 +4752,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   AXPlatformNodeWin* owner =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(highlighted_node));
   CreateTextRangeProviderWin(
-      some_text_range_provider, owner, update.tree_data.tree_id,
-      /*start_anchor_id=*/highlighted.id, /*start_offset=*/0,
+      some_text_range_provider, owner,
+      /*start_anchor=*/highlighted_node, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/highlighted.id, /*end_offset=*/9,
+      /*end_anchor=*/highlighted_node, /*end_offset=*/9,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, some_text_range_provider.Get());
   EXPECT_UIA_TEXTRANGE_EQ(some_text_range_provider, L"some text");
@@ -4806,10 +4804,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=3, text_offset=9, annotated_text=read only<>
   ComPtr<AXPlatformNodeTextRangeProviderWin> mixed_text_range_provider;
   CreateTextRangeProviderWin(
-      mixed_text_range_provider, owner, update.tree_data.tree_id,
-      /*start_anchor_id=*/some_text.id, /*start_offset=*/0,
+      mixed_text_range_provider, owner,
+      /*start_anchor=*/some_text_node, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/readonly_text.id, /*end_offset=*/9,
+      /*end_anchor=*/readonly_text_node, /*end_offset=*/9,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(mixed_text_range_provider, L"some textread only");
@@ -4924,7 +4922,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   initial_state.nodes[4].AddIntAttribute(
       ax::mojom::IntAttribute::kBackgroundColor, 0xFFADBEEFU);
 
-  Init(initial_state);
+  const AXTree* tree = Init(initial_state);
+  const AXNode* some_text_node = tree->GetFromId(4);
+  const AXNode* more_text_node = tree->GetFromId(5);
 
   // Making |owner| AXID:2 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire subtree, and not only AXID:3 for example.
@@ -4936,10 +4936,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   //        annotated_text=more tex<t>
   ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider_win;
   CreateTextRangeProviderWin(
-      text_range_provider_win, owner, tree_id,
-      /*start_anchor_id=*/4, /*start_offset=*/0,
+      text_range_provider_win, owner,
+      /*start_anchor=*/some_text_node, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/5, /*end_offset=*/8,
+      /*end_anchor=*/more_text_node, /*end_offset=*/8,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   ASSERT_TRUE(GetStart(text_range_provider_win.Get())->IsTextPosition());
@@ -6187,7 +6187,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   initial_state.nodes[3].role = ax::mojom::Role::kStaticText;
   initial_state.nodes[3].SetName("after");
 
-  Init(initial_state);
+  const AXTree* tree = Init(initial_state);
+  const AXNode* ignored_node = tree->GetFromId(3);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -6198,10 +6199,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=3, text_offset=6, annotated_text=ignore<d>
   ComPtr<AXPlatformNodeTextRangeProviderWin> ignored_range_win;
   CreateTextRangeProviderWin(
-      ignored_range_win, owner, tree_id,
-      /*start_anchor_id=*/3, /*start_offset=*/0,
+      ignored_range_win, owner,
+      /*start_anchor=*/ignored_node, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/3, /*end_offset=*/0,
+      /*end_anchor=*/ignored_node, /*end_offset=*/0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_TRUE(GetStart(ignored_range_win.Get())->IsIgnored());
@@ -6287,7 +6288,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.has_tree_data = true;
   update.nodes = {root_data, before_text, ignored_text1, ignored_text2,
                   after_text};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* before_text_node = tree->GetFromId(before_text.id);
+  const AXNode* after_text_node = tree->GetFromId(after_text.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -6301,10 +6306,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=5, text_offset=0, annotated_text=<a>fter
   ComPtr<AXPlatformNodeTextRangeProviderWin> range_span_ignored_nodes;
   CreateTextRangeProviderWin(
-      range_span_ignored_nodes, owner, tree_id,
-      /*start_anchor_id=*/2, /*start_offset=*/6,
+      range_span_ignored_nodes, owner,
+      /*start_anchor=*/before_text_node, /*start_offset=*/6,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/5, /*end_offset=*/0,
+      /*end_anchor=*/after_text_node, /*end_offset=*/0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   auto original_start = GetStart(range_span_ignored_nodes.Get())->Clone();
@@ -6401,7 +6406,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes.push_back(static_text_6);
   update.nodes.push_back(inline_box_7);
 
-  Init(update);
+  const AXTree* tree = Init(update);
+
+  const AXNode* image_3_node = tree->GetFromId(image_3.id);
+  const AXNode* inline_box_7_node = tree->GetFromId(inline_box_7.id);
 
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
       AXPlatformNodeFromNode(GetNodeFromTree(tree_data.tree_id, 1)));
@@ -6410,10 +6418,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=7, text_offset=0, annotated_text=<p>i
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
-      range, owner, tree_data.tree_id,
-      /*start_anchor_id=*/3, /*start_offset=*/1,
+      range, owner,
+      /*start_anchor=*/image_3_node, /*start_offset=*/1,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/7, /*end_offset=*/0,
+      /*end_anchor=*/inline_box_7_node, /*end_offset=*/0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   auto original_start = GetStart(range.Get())->Clone();
@@ -6462,7 +6470,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestValidateStartAndEnd) {
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
   update.nodes = {root_data, text_data, more_text_data};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* root_node = tree->GetFromId(root_data.id);
+  const AXNode* more_text_node = tree->GetFromId(more_text_data.id);
 
   // Create a position at MaxTextOffset
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
@@ -6474,10 +6486,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestValidateStartAndEnd) {
   // end  : TextPosition, anchor_id=3, text_offset=9, annotated_text=more text<>
   ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider;
   CreateTextRangeProviderWin(
-      text_range_provider, owner, tree_id,
-      /*start_anchor_id=*/1, /*start_offset=*/0,
+      text_range_provider, owner,
+      /*start_anchor=*/root_node, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/3, /*end_offset=*/9,
+      /*end_anchor=*/more_text_node, /*end_offset=*/9,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   // Since the end of the range is at MaxTextOffset, moving it by 1 character
@@ -6612,7 +6624,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
   update.nodes = {root_1, text_3, text_5};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* text_3_node = tree->GetFromId(text_3.id);
+  const AXNode* text_5_node = tree->GetFromId(text_5.id);
 
   // Create a position at MaxTextOffset.
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
@@ -6624,10 +6640,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=5, text_offset=9, annotated_text=more text<>
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
-      range, owner, tree_id,
-      /*start_anchor_id*/ text_3.id, /*start_offset*/ 0,
+      range, owner,
+      /*start_anchor*/ text_3_node, /*start_offset*/ 0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_5.id, /*end_offset*/ 9,
+      /*end_anchor*/ text_5_node, /*end_offset*/ 9,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"some textmore text");
@@ -6681,12 +6697,13 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   {
     // start: TextPosition, anchor_id=4, text_offset=0, annotated_text=<s>ome
     // end  : TextPosition, anchor_id=4, text_offset=4, annotated_text=some<>
+    const AXNode* text_4_node = tree->GetFromId(text_4.id);
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_2;
     CreateTextRangeProviderWin(
-        range_2, owner, tree_id,
-        /*start_anchor_id*/ text_4.id, /*start_offset*/ 0,
+        range_2, owner,
+        /*start_anchor*/ text_4_node, /*start_offset*/ 0,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor_id*/ text_4.id, /*end_offset*/ 4,
+        /*end_anchor*/ text_4_node, /*end_offset*/ 4,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
     EXPECT_UIA_TEXTRANGE_EQ(range_2, /*expected_text*/ L"some");
@@ -6768,7 +6785,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
   update.nodes = {root_1, text_2, gc_3, gc_4, text_5, gc_6, text_7};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* text_5_node = tree->GetFromId(text_5.id);
+  const AXNode* text_7_node = tree->GetFromId(text_7.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -6781,10 +6802,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=7, text_offset=6
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
-      range, owner, tree_id,
-      /*start_anchor_id*/ text_5.id, /*start_offset*/ 0,
+      range, owner,
+      /*start_anchor*/ text_5_node, /*start_offset*/ 0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_7.id, /*end_offset*/ 6,
+      /*end_anchor*/ text_7_node, /*end_offset*/ 6,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L" two three");
@@ -6896,7 +6917,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.has_tree_data = true;
   update.nodes = {root_1, text_2, gc_3, gc_4,    gc_5,  text_6,
                   gc_7,   text_8, gc_9, text_10, gc_11, text_12};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* text_6_node = tree->GetFromId(text_6.id);
+  const AXNode* text_10_node = tree->GetFromId(text_10.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -6909,10 +6934,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=7, text_offset=6
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
-      range, owner, tree_id,
-      /*start_anchor_id*/ text_6.id, /*start_offset*/ 2,
+      range, owner,
+      /*start_anchor*/ text_6_node, /*start_offset*/ 2,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_10.id, /*end_offset*/ 6,
+      /*end_anchor*/ text_10_node, /*end_offset*/ 6,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"wo three");
@@ -7020,7 +7045,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.has_tree_data = true;
   update.nodes = {root_1, text_2, gc_3, gc_4,    gc_5,  text_6,
                   gc_7,   text_8, gc_9, text_10, gc_11, text_12};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* text_6_node = tree->GetFromId(text_6.id);
+  const AXNode* text_8_node = tree->GetFromId(text_8.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -7033,10 +7062,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // end  : TextPosition, anchor_id=7, text_offset=6
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
-      range, owner, tree_id,
-      /*start_anchor_id*/ text_6.id, /*start_offset*/ 2,
+      range, owner,
+      /*start_anchor*/ text_6_node, /*start_offset*/ 2,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_8.id, /*end_offset*/ 6,
+      /*end_anchor*/ text_8_node, /*end_offset*/ 6,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"wo three");
@@ -7188,7 +7217,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
   update.nodes = {root_1, text_2, group_3, text_4, text_5};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* text_2_node = tree->GetFromId(text_2.id);
+  const AXNode* text_4_node = tree->GetFromId(text_4.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -7197,10 +7230,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
-      range, owner, tree_id,
-      /*start_anchor_id*/ text_2.id, /*start_offset*/ 0,
+      range, owner,
+      /*start_anchor*/ text_2_node, /*start_offset*/ 0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_4.id, /*end_offset*/ 0,
+      /*end_anchor*/ text_4_node, /*end_offset*/ 0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"text 2");
@@ -7314,7 +7347,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, CaretAtEndOfTextFieldReadOnly) {
   update.nodes = {root_1,        text_field_2,  generic_container_3,
                   static_text_4, inline_text_5, static_text_6,
                   inline_text_7};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+  const AXNode* inline_text_5_node = tree->GetFromId(inline_text_5.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -7325,10 +7360,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, CaretAtEndOfTextFieldReadOnly) {
   base::win::ScopedVariant expected_variant;
 
   CreateTextRangeProviderWin(
-      range, owner, tree_id,
-      /*start_anchor_id*/ inline_text_5.id, /*start_offset*/ 3,
+      range, owner,
+      /*start_anchor*/ inline_text_5_node, /*start_offset*/ 3,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ inline_text_5.id, /*end_offset*/ 4,
+      /*end_anchor*/ inline_text_5_node, /*end_offset*/ 4,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"l");
@@ -7449,7 +7484,15 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                   text_field_4, generic_container_5, image_6,
                   text_field_7, generic_container_8, text_field_9,
                   text_field_10};
-  Init(update);
+
+  const AXTree* tree = Init(update);
+
+  const AXNode* image_3_node = tree->GetFromId(image_3.id);
+  const AXNode* image_6_node = tree->GetFromId(image_6.id);
+  const AXNode* text_field_4_node = tree->GetFromId(text_field_4.id);
+  const AXNode* text_field_7_node = tree->GetFromId(text_field_7.id);
+  const AXNode* text_field_9_node = tree->GetFromId(text_field_9.id);
+  const AXNode* text_field_10_node = tree->GetFromId(text_field_10.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -7460,10 +7503,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range_1;
   CreateTextRangeProviderWin(
-      range_1, owner, tree_id,
-      /*start_anchor_id*/ image_3.id, /*start_offset*/ 1,
+      range_1, owner,
+      /*start_anchor*/ image_3_node, /*start_offset*/ 1,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_field_4.id, /*end_offset*/ 0,
+      /*end_anchor*/ text_field_4_node, /*end_offset*/ 0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range_1, /*expected_text*/ L"\n");
@@ -7475,10 +7518,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range_2;
   CreateTextRangeProviderWin(
-      range_2, owner, tree_id,
-      /*start_anchor_id*/ image_6.id, /*start_offset*/ 1,
+      range_2, owner,
+      /*start_anchor*/ image_6_node, /*start_offset*/ 1,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_field_7.id, /*end_offset*/ 0,
+      /*end_anchor*/ text_field_7_node, /*end_offset*/ 0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range_2, /*expected_text*/ L"\n");
@@ -7494,10 +7537,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // normalization doesn't work when the range spans text fields.
   ComPtr<AXPlatformNodeTextRangeProviderWin> range_3;
   CreateTextRangeProviderWin(
-      range_3, owner, tree_id,
-      /*start_anchor_id*/ text_field_9.id, /*start_offset*/ 1,
+      range_3, owner,
+      /*start_anchor*/ text_field_9_node, /*start_offset*/ 1,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ text_field_10.id, /*end_offset*/ 0,
+      /*end_anchor*/ text_field_10_node, /*end_offset*/ 0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range_3, /*expected_text*/ L"\n");
@@ -7548,7 +7591,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.has_tree_data = true;
   update.nodes = {root_1, static_text_2, inline_text_3, generic_container_4};
 
-  Init(update);
+  const AXTree* tree = Init(update);
+  const AXNode* inline_text_3_node = tree->GetFromId(inline_text_3.id);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
@@ -7559,10 +7603,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   base::win::ScopedVariant expected_variant;
 
   CreateTextRangeProviderWin(
-      range, owner, tree_id,
-      /*start_anchor_id*/ inline_text_3.id, /*start_offset*/ 0,
+      range, owner,
+      /*start_anchor*/ inline_text_3_node, /*start_offset*/ 0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ inline_text_3.id, /*end_offset*/ 3,
+      /*end_anchor*/ inline_text_3_node, /*end_offset*/ 3,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"abc");

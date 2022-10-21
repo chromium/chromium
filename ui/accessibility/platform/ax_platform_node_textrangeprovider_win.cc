@@ -519,22 +519,22 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
     AXPositionInstance end_ancestor_position = end()->CreateAncestorPosition(
         common_anchor, ax::mojom::MoveDirection::kForward);
     DCHECK(!end_ancestor_position->IsNullPosition());
-    AXTreeID tree_id = start_ancestor_position->tree_id();
-    AXNodeID anchor_id = start_ancestor_position->anchor_id();
+    const AXNode* anchor = start_ancestor_position->GetAnchor();
+    DCHECK(anchor);
     const int start_offset =
         start_ancestor_position->text_offset() + find_start;
     const int end_offset = start_offset + find_length - appended_newlines_count;
     const int max_end_offset = end_ancestor_position->text_offset();
     DCHECK(start_offset <= end_offset && end_offset <= max_end_offset);
 
-    AXPositionInstance start = ui::AXNodePosition::CreateTextPosition(
-                                   tree_id, anchor_id, start_offset,
-                                   ax::mojom::TextAffinity::kDownstream)
-                                   ->AsLeafTextPosition();
-    AXPositionInstance end = ui::AXNodePosition::CreateTextPosition(
-                                 tree_id, anchor_id, end_offset,
-                                 ax::mojom::TextAffinity::kDownstream)
-                                 ->AsLeafTextPosition();
+    AXPositionInstance start =
+        ui::AXNodePosition::CreateTextPosition(
+            *anchor, start_offset, ax::mojom::TextAffinity::kDownstream)
+            ->AsLeafTextPosition();
+    AXPositionInstance end =
+        ui::AXNodePosition::CreateTextPosition(
+            *anchor, end_offset, ax::mojom::TextAffinity::kDownstream)
+            ->AsLeafTextPosition();
 
     *result = CreateTextRangeProvider(start->Clone(), end->Clone());
   }

@@ -64,7 +64,7 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     int text_offset = child_index_or_text_offset == BEFORE_TEXT
                           ? 0
                           : child_index_or_text_offset;
-    return CreateTextPosition(tree_id, node.id(), text_offset, affinity);
+    return CreateTextPosition(node, text_offset, affinity);
   }
 
   DCHECK_LE(child_index_or_text_offset,
