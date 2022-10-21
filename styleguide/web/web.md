@@ -230,8 +230,12 @@ compatibility issues are less relevant for Chrome-only code).
 * Use scalable `font-size` units like `%` or `em` to respect users' default font
   size
 
-* Don't use CSS Mixins (`--mixin: {}` or `@apply --mixin;`) in new code. [We're
-  removing them.](https://crbug.com/973674)
+* Don't use CSS Mixins (`--mixin: {}` or `@apply --mixin;`).
+    * CSS Mixins are defunct after Oct 2022, see
+      [crrev.com/c/3953559](https://crrev.com/c/3953559)
+    * All CSS Mixins usages have been removed from Chromium, see
+      [crbug.com/973674](https://crbug.com/973674) and
+      [crbug.com/1320797](https://crbug.com/1320797)
     * Mixins were [dropped from CSS](https://www.xanthir.com/b4o00) in favor of
       [CSS Shadow Parts](https://drafts.csswg.org/css-shadow-parts/).
     * Instead, replace CSS mixin usage with one of these natively supported
