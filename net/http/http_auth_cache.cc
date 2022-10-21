@@ -183,13 +183,13 @@ HttpAuthCache::Entry* HttpAuthCache::Add(
       DLOG(WARNING) << "Num auth cache entries reached limit -- evicting";
       EvictLeastRecentlyUsedEntry();
     }
-    entry = &(
-        entries_
-            .emplace(std::make_pair(
-                EntryMapKey(scheme_host_port, target, network_anonymization_key,
-                            key_server_entries_by_network_anonymization_key_),
-                Entry()))
-            ->second);
+    entry =
+        &(entries_
+              .insert({EntryMapKey(
+                           scheme_host_port, target, network_anonymization_key,
+                           key_server_entries_by_network_anonymization_key_),
+                       Entry()})
+              ->second);
     entry->scheme_host_port_ = scheme_host_port;
     entry->realm_ = realm;
     entry->scheme_ = scheme;

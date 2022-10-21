@@ -57,9 +57,10 @@ interface ProxyResolver {
   //
   // |network_anonymization_key| is the NetworkAnonymizationKey used by the DNS cache
   // to separate requests made in different contexts.
-  GetProxyForUrl(url.mojom.Url url,
-                 network.mojom.NetworkAnonymizationKey network_anonymization_key,
-                 pending_remote<ProxyResolverRequestClient> client);
+  GetProxyForUrl(
+    url.mojom.Url url,
+    network.mojom.NetworkAnonymizationKey network_anonymization_key,
+    pending_remote<ProxyResolverRequestClient> client);
 };
 
 interface ProxyResolverRequestClient {
@@ -75,10 +76,11 @@ interface ProxyResolverRequestClient {
   // to separate requests made in different contexts. An IP address received
   // from a resolution using one NetworkAnonymizationKey must not be used for a
   // request made with a different NetworkAnonymizationKey.
-  ResolveDns(string host,
-             HostResolveOperation operation,
-             network.mojom.NetworkAnonymizationKey network_anonymization_key,
-             pending_remote<HostResolverRequestClient> client);
+  ResolveDns(
+    string host,
+    HostResolveOperation operation,
+    network.mojom.NetworkAnonymizationKey network_anonymization_key,
+    pending_remote<HostResolverRequestClient> client);
 };
 
 // Creates a ProxyResolver that uses the provided PAC script. The ProxyResolver

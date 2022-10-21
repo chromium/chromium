@@ -369,7 +369,7 @@ void Job::StartCreateV8Resolver(
   CheckIsOnOriginThread();
 
   // |network_anonymization_key_| is not populated, so any resolutions done
-  // while loading the PAC sript will be done with an empty
+  // while loading the PAC script will be done with an empty
   // net::NetworkAnonymizationKey. Since a PAC script is considered trusted, and
   // is loaded once and then handles requests made by multiple
   // NetworkAnonymizationKeys, using an empty key makes sense.
