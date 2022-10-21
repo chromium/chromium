@@ -151,6 +151,18 @@ bool ValidateStudyAndComputeTotalProbability(
     }
   }
 
+  for (const auto& experiment : study.experiment()) {
+    const auto& flag = experiment.forcing_flag();
+    // Forcing flags are passed to CommandLine::HasSwitch. It should be safe to
+    // pass invalid flags to that, but we do validation to prevent triggering
+    // the DCHECK there.
+    if (base::ToLowerASCII(flag) != flag) {
+      LogInvalidReason(InvalidStudyReason::kInvalidForcingFlag);
+      DVLOG(1) << study.name() << " has an invalid forcing flag " << flag;
+      return false;
+    }
+  }
+
   base::FieldTrial::Probability divisor = 0;
   bool multiple_assigned_groups = false;
 

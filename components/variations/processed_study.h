@@ -31,7 +31,8 @@ enum class InvalidStudyReason {
   kInvalidStudyName = 11,
   kInvalidExperimentName = 12,
   kInvalidFeatureName = 13,
-  kMaxValue = kInvalidFeatureName,
+  kInvalidForcingFlag = 14,
+  kMaxValue = kInvalidForcingFlag,
 };
 
 class Study;

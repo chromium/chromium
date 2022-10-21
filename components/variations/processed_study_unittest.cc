@@ -156,6 +156,20 @@ TEST(ProcessedStudyTest, InitInvalidForcingFeatureOffName) {
       kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidFeatureName, 1);
 }
 
+TEST(ProcessedStudyTest, InitInvalidForcingFlag) {
+  base::HistogramTester histogram_tester;
+
+  Study study = CreateValidStudy();
+  auto* experiment = study.add_experiment();
+  experiment->set_name("Forced");
+  experiment->set_forcing_flag("Not,Valid");
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidForcingFlag, 1);
+}
+
 // Verifies that a study with an invalid min version filter is invalid.
 TEST(ProcessedStudyTest, InitInvalidMinVersion) {
   base::HistogramTester histogram_tester;
