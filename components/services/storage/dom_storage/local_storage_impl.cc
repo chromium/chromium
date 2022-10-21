@@ -74,16 +74,6 @@ const int64_t kCurrentLocalStorageSchemaVersion = 1;
 // database.
 const int kCommitErrorThreshold = 8;
 
-// Limits on the cache size and number of areas in memory, over which the areas
-// are purged.
-#if BUILDFLAG(IS_ANDROID)
-const unsigned kMaxLocalStorageAreaCount = 10;
-const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
-#else
-const unsigned kMaxLocalStorageAreaCount = 50;
-const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
-#endif
-
 DomStorageDatabase::Key CreateMetaDataKey(
     const blink::StorageKey& storage_key) {
   std::string storage_key_str = storage_key.SerializeForLocalStorage();
@@ -428,12 +418,6 @@ void LocalStorageImpl::PurgeUnusedAreasIfNeeded() {
   // Nothing to purge.
   if (!unused_area_count)
     return;
-
-  // No purge is needed.
-  if (total_cache_size > kMaxLocalStorageCacheSize &&
-      areas_.size() > kMaxLocalStorageAreaCount && !is_low_end_device_) {
-    return;
-  }
 
   for (auto it = areas_.begin(); it != areas_.end();) {
     if (it->second->has_bindings())
