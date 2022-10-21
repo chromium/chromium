@@ -406,7 +406,13 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   double Determinant() const;
 
-  void RoundTranslationComponents();
+  // Rounds 2d translation components rc(0, 3), rc(1, 3) to integers.
+  void Round2dTranslationComponents();
+
+  // Rounds translation components to integers, and all other components to
+  // identity. Normally this function is meaningful only if
+  // IsApproximatelyIdentityOrIntegerTranslation() is true.
+  void RoundToIdentityOrIntegerTranslation();
 
   // Returns |this| * |other|.
   Transform operator*(const Transform& other) const {

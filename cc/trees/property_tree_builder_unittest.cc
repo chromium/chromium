@@ -455,7 +455,7 @@ TEST_F(PropertyTreeBuilderTest, TextureLayerSnapping) {
 
   auto child_screen_space_transform = ImplOf(child)->ScreenSpaceTransform();
   EXPECT_NE(child_screen_space_transform, fractional_translate);
-  fractional_translate.RoundTranslationComponents();
+  fractional_translate.Round2dTranslationComponents();
   EXPECT_TRANSFORM_EQ(child_screen_space_transform, fractional_translate);
   gfx::RectF layer_bounds_in_screen_space = MathUtil::MapClippedRect(
       child_screen_space_transform, gfx::RectF(gfx::SizeF(child->bounds())));

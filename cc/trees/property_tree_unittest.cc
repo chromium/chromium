@@ -528,7 +528,7 @@ TEST(PropertyTreeTest, SingularTransformSnapTest) {
 
   gfx::Transform rounded;
   property_trees.GetToTarget(child, effect_parent, &rounded);
-  rounded.RoundTranslationComponents();
+  rounded.Round2dTranslationComponents();
   property_trees.GetToTarget(child, effect_parent, &to_target);
   EXPECT_NE(to_target, rounded);
 }

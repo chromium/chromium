@@ -141,29 +141,11 @@ void InitializeTestMatrix2(Transform* transform) {
   EXPECT_ROW4_EQ(33.0f, 37.0f, 41.0f, 45.0f, (*transform));
 }
 
-const SkScalar kApproxZero = std::numeric_limits<float>::epsilon();
-const SkScalar kApproxOne = 1 - kApproxZero;
-
-void InitializeApproxIdentityMatrix(Transform* transform) {
-  transform->set_rc(0, 0, kApproxOne);
-  transform->set_rc(0, 1, kApproxZero);
-  transform->set_rc(0, 2, kApproxZero);
-  transform->set_rc(0, 3, kApproxZero);
-
-  transform->set_rc(1, 0, kApproxZero);
-  transform->set_rc(1, 1, kApproxOne);
-  transform->set_rc(1, 2, kApproxZero);
-  transform->set_rc(1, 3, kApproxZero);
-
-  transform->set_rc(2, 0, kApproxZero);
-  transform->set_rc(2, 1, kApproxZero);
-  transform->set_rc(2, 2, kApproxOne);
-  transform->set_rc(2, 3, kApproxZero);
-
-  transform->set_rc(3, 0, kApproxZero);
-  transform->set_rc(3, 1, kApproxZero);
-  transform->set_rc(3, 2, kApproxZero);
-  transform->set_rc(3, 3, kApproxOne);
+Transform ApproxIdentityMatrix(double error) {
+  return Transform::ColMajor(1.0 - error, error, error, error,   // col0
+                             error, 1.0 - error, error, error,   // col1
+                             error, error, 1.0 - error, error,   // col2
+                             error, error, error, 1.0 - error);  // col3
 }
 
 #define ERROR_THRESHOLD 1e-7
@@ -2268,94 +2250,125 @@ TEST(XFormTest, verifyIsIdentityOrTranslation) {
   EXPECT_FALSE(A.IsIdentityOrTranslation());
 }
 
-TEST(XFormTest, verifyIsApproximatelyIdentityOrTranslation) {
-  Transform A;
+TEST(XFormTest, ApproximatelyIdentityOrTranslation) {
+  constexpr double kBigError = 1e-4;
+  constexpr double kSmallError = std::numeric_limits<float>::epsilon() / 2.0;
 
   // Exact pure translation.
-  A.MakeIdentity();
-
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
+  Transform a;
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrIntegerTranslation(kBigError));
 
   // Set translate values to integer values other than 0 or 1.
-  A.set_rc(0, 3, 3);
-  A.set_rc(1, 3, 4);
-  A.set_rc(2, 3, 5);
+  a.set_rc(0, 3, 3);
+  a.set_rc(1, 3, 4);
+  a.set_rc(2, 3, 5);
 
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrIntegerTranslation(kBigError));
 
   // Set translate values to values other than 0 or 1.
-  A.set_rc(0, 3, 3.4f);
-  A.set_rc(1, 3, 4.4f);
-  A.set_rc(2, 3, 5.6f);
+  a.set_rc(0, 3, 3.4f);
+  a.set_rc(1, 3, 4.4f);
+  a.set_rc(2, 3, 5.6f);
 
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kBigError));
 
   // Approximately pure translation.
-  InitializeApproxIdentityMatrix(&A);
+  a = ApproxIdentityMatrix(kBigError);
 
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
+  // All these are false because the perspective error is bigger than the
+  // allowed std::min(float_epsilon, tolerance);
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kSmallError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kSmallError));
 
-  // Some values must be exact.
-  A.set_rc(3, 0, 0);
-  A.set_rc(3, 1, 0);
-  A.set_rc(3, 2, 0);
-  A.set_rc(3, 3, 1);
+  // Set perspective components to be exact identity.
+  a.set_rc(3, 0, 0);
+  a.set_rc(3, 1, 0);
+  a.set_rc(3, 2, 0);
+  a.set_rc(3, 3, 1);
 
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
-
-  // Set translate values to values other than 0 or 1.
-  A.set_rc(0, 3, A.rc(0, 3) + 3);
-  A.set_rc(1, 3, A.rc(1, 3) + 4);
-  A.set_rc(2, 3, A.rc(2, 3) + 5);
-
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kSmallError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrIntegerTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kSmallError));
 
   // Set translate values to values other than 0 or 1.
-  A.set_rc(0, 3, 3.4f);
-  A.set_rc(1, 3, 4.4f);
-  A.set_rc(2, 3, 5.6f);
+  // The error is set to kBigError / 2 instead of kBigError because the
+  // arithmetic may make the error bigger.
+  a.set_rc(0, 3, 3.0 + kBigError / 2);
+  a.set_rc(1, 3, 4.0 + kBigError / 2);
+  a.set_rc(2, 3, 5.0 + kBigError / 2);
 
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_TRUE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kSmallError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrIntegerTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kSmallError));
 
-  // Not approximately pure translation.
-  InitializeApproxIdentityMatrix(&A);
+  // Set translate values to values other than 0 or 1.
+  a.set_rc(0, 3, 3.4f);
+  a.set_rc(1, 3, 4.4f);
+  a.set_rc(2, 3, 5.6f);
 
-  // Some values must be exact.
-  A.set_rc(3, 0, 0);
-  A.set_rc(3, 1, 0);
-  A.set_rc(3, 2, 0);
-  A.set_rc(3, 3, 1);
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kSmallError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kSmallError));
+
+  // Test with kSmallError in the matrix.
+  a = ApproxIdentityMatrix(kSmallError);
+
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kSmallError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_TRUE(a.IsApproximatelyIdentityOrIntegerTranslation(kSmallError));
 
   // Set some values (not translate values) to values other than 0 or 1.
-  A.set_rc(0, 1, 3.4f);
-  A.set_rc(3, 2, 4.4f);
-  A.set_rc(2, 0, 5.6f);
+  a.set_rc(0, 1, 3.4f);
+  a.set_rc(3, 2, 4.4f);
+  a.set_rc(2, 0, 5.6f);
 
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrTranslation(0));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrTranslation(kApproxZero));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(0));
-  EXPECT_FALSE(A.IsApproximatelyIdentityOrIntegerTranslation(kApproxZero));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(0));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrTranslation(kSmallError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(0));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kBigError));
+  EXPECT_FALSE(a.IsApproximatelyIdentityOrIntegerTranslation(kSmallError));
+}
+
+TEST(XFormTest, RoundToIdentityOrIntegerTranslation) {
+  Transform a = ApproxIdentityMatrix(0.1);
+  EXPECT_FALSE(a.IsIdentityOrIntegerTranslation());
+  a.RoundToIdentityOrIntegerTranslation();
+  EXPECT_TRUE(a.IsIdentity());
+  EXPECT_TRUE(a.IsIdentityOrIntegerTranslation());
+
+  a.Translate3d(1.1, 2.2, 3.8);
+  EXPECT_FALSE(a.IsIdentityOrIntegerTranslation());
+  a.RoundToIdentityOrIntegerTranslation();
+  EXPECT_TRUE(a.IsIdentityOrIntegerTranslation());
+  EXPECT_EQ(1.0, a.rc(0, 3));
+  EXPECT_EQ(2.0, a.rc(1, 3));
+  EXPECT_EQ(4.0, a.rc(2, 3));
 }
 
 TEST(XFormTest, verifyIsScaleOrTranslation) {
@@ -2837,27 +2850,27 @@ TEST(XFormTest, MapBox) {
   EXPECT_EQ(expected, transformed);
 }
 
-TEST(XFormTest, RoundTranslationComponents) {
+TEST(XFormTest, Round2dTranslationComponents) {
   Transform translation;
   Transform expected;
 
-  translation.RoundTranslationComponents();
+  translation.Round2dTranslationComponents();
   EXPECT_EQ(expected.ToString(), translation.ToString());
 
   translation.Translate(1.0f, 1.0f);
   expected.Translate(1.0f, 1.0f);
-  translation.RoundTranslationComponents();
+  translation.Round2dTranslationComponents();
   EXPECT_EQ(expected.ToString(), translation.ToString());
 
   translation.Translate(0.5f, 0.4f);
   expected.Translate(1.0f, 0.0f);
-  translation.RoundTranslationComponents();
+  translation.Round2dTranslationComponents();
   EXPECT_EQ(expected.ToString(), translation.ToString());
 
   // Rounding should only affect 2d translation components.
   translation.Translate3d(0.f, 0.f, 0.5f);
   expected.Translate3d(0.f, 0.f, 0.5f);
-  translation.RoundTranslationComponents();
+  translation.Round2dTranslationComponents();
   EXPECT_EQ(expected.ToString(), translation.ToString());
 }
 

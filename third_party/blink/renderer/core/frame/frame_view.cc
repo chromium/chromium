@@ -217,7 +217,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   // non-pixel-aligned location.
   gfx::Transform main_frame_gfx_transform =
       main_frame_transform_matrix.ToTransform();
-  main_frame_gfx_transform.RoundTranslationComponents();
+  main_frame_gfx_transform.Round2dTranslationComponents();
 
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(
       viewport_intersection, mainframe_intersection, gfx::Rect(),

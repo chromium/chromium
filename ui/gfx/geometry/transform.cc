@@ -326,18 +326,25 @@ bool Transform::IsApproximatelyIdentityOrTranslation(double tolerance) const {
            ApproximatelyOne(axis_2d_.scale().y(), tolerance);
   }
 
-  return ApproximatelyOne(matrix_->rc(0, 0), tolerance) &&
-         ApproximatelyZero(matrix_->rc(1, 0), tolerance) &&
-         ApproximatelyZero(matrix_->rc(2, 0), tolerance) &&
-         matrix_->rc(3, 0) == 0 &&
-         ApproximatelyZero(matrix_->rc(0, 1), tolerance) &&
-         ApproximatelyOne(matrix_->rc(1, 1), tolerance) &&
-         ApproximatelyZero(matrix_->rc(2, 1), tolerance) &&
-         matrix_->rc(3, 1) == 0 &&
-         ApproximatelyZero(matrix_->rc(0, 2), tolerance) &&
-         ApproximatelyZero(matrix_->rc(1, 2), tolerance) &&
-         ApproximatelyOne(matrix_->rc(2, 2), tolerance) &&
-         matrix_->rc(3, 2) == 0 && matrix_->rc(3, 3) == 1;
+  if (!ApproximatelyOne(matrix_->rc(0, 0), tolerance) ||
+      !ApproximatelyZero(matrix_->rc(1, 0), tolerance) ||
+      !ApproximatelyZero(matrix_->rc(2, 0), tolerance) ||
+      !ApproximatelyZero(matrix_->rc(0, 1), tolerance) ||
+      !ApproximatelyOne(matrix_->rc(1, 1), tolerance) ||
+      !ApproximatelyZero(matrix_->rc(2, 1), tolerance) ||
+      !ApproximatelyZero(matrix_->rc(0, 2), tolerance) ||
+      !ApproximatelyZero(matrix_->rc(1, 2), tolerance) ||
+      !ApproximatelyOne(matrix_->rc(2, 2), tolerance)) {
+    return false;
+  }
+
+  // Check perspective components more strictly by using the smaller of float
+  // epsilon and |tolerance|.
+  const double perspective_tolerance = std::min(kEpsilon, tolerance);
+  return ApproximatelyZero(matrix_->rc(3, 0), perspective_tolerance) &&
+         ApproximatelyZero(matrix_->rc(3, 1), perspective_tolerance) &&
+         ApproximatelyZero(matrix_->rc(3, 2), perspective_tolerance) &&
+         ApproximatelyOne(matrix_->rc(3, 3), perspective_tolerance);
 }
 
 bool Transform::IsApproximatelyIdentityOrIntegerTranslation(
@@ -754,7 +761,7 @@ bool Transform::Blend(const Transform& from, double progress) {
   return true;
 }
 
-void Transform::RoundTranslationComponents() {
+void Transform::Round2dTranslationComponents() {
   if (LIKELY(!matrix_)) {
     axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
         axis_2d_.scale(), Vector2dF(std::round(axis_2d_.translation().x()),
@@ -762,6 +769,19 @@ void Transform::RoundTranslationComponents() {
   } else {
     matrix_->set_rc(0, 3, std::round(matrix_->rc(0, 3)));
     matrix_->set_rc(1, 3, std::round(matrix_->rc(1, 3)));
+  }
+}
+
+void Transform::RoundToIdentityOrIntegerTranslation() {
+  if (LIKELY(!matrix_)) {
+    axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
+        Vector2dF(1, 1), Vector2dF(std::round(axis_2d_.translation().x()),
+                                   std::round(axis_2d_.translation().y())));
+  } else {
+    *matrix_ = Matrix44(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,  // col0-2
+                        std::round(matrix_->rc(0, 3)),       // col3
+                        std::round(matrix_->rc(1, 3)),
+                        std::round(matrix_->rc(2, 3)), 1);
   }
 }
 

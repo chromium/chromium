@@ -614,7 +614,7 @@ void TransformTree::UpdateSnapping(TransformNode* node) {
   // X = ST^-1 * ST'. We cache ST and ST^-1 to make this more efficient.
   DCHECK_LT(node->id, static_cast<int>(cached_data_.size()));
   gfx::Transform& to_screen = cached_data_[node->id].to_screen;
-  to_screen.RoundTranslationComponents();
+  to_screen.Round2dTranslationComponents();
   gfx::Transform& from_screen = cached_data_[node->id].from_screen;
   gfx::Transform delta = from_screen;
   delta *= to_screen;
@@ -632,7 +632,7 @@ void TransformTree::UpdateSnapping(TransformNode* node) {
   node->to_parent.Translate(translation);
   // Avoid accumulation of errors in to_parent.
   if (node->to_parent.IsApproximatelyIdentityOrIntegerTranslation(kTolerance))
-    node->to_parent.RoundTranslationComponents();
+    node->to_parent.RoundToIdentityOrIntegerTranslation();
 }
 
 void TransformTree::UpdateTransformChanged(TransformNode* node,
