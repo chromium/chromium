@@ -126,43 +126,32 @@
     TRAP_SEQUENCE2_();   \
   } while (false)
 
-// CHECK() and the trap sequence can be invoked from a constexpr function.
-// This could make compilation fail on GCC, as it forbids directly using inline
-// asm inside a constexpr function. However, it allows calling a lambda
-// expression including the same asm.
-// The side effect is that the top of the stacktrace will not point to the
-// calling function, but to this anonymous lambda. This is still useful as the
-// full name of the lambda will typically include the name of the function that
-// calls CHECK() and the debugger will still break at the right line of code.
-#if !defined(COMPILER_GCC) || defined(__clang__)
-
-#define WRAPPED_TRAP_SEQUENCE_() TRAP_SEQUENCE_()
-
+// This version of ALWAYS_INLINE inlines even in is_debug=true.
+// TODO(pbos): See if NDEBUG can be dropped from ALWAYS_INLINE as well, and if
+// so merge. Otherwise document why it cannot inline in debug in
+// base/compiler_specific.h.
+#if defined(COMPILER_GCC)
+#define IMMEDIATE_CRASH_ALWAYS_INLINE inline __attribute__((__always_inline__))
+#elif defined(COMPILER_MSVC)
+#define IMMEDIATE_CRASH_ALWAYS_INLINE __forceinline
 #else
+#define IMMEDIATE_CRASH_ALWAYS_INLINE inline
+#endif
 
-#define WRAPPED_TRAP_SEQUENCE_() \
-  do {                           \
-    [] { TRAP_SEQUENCE_(); }();  \
-  } while (false)
+namespace base {
 
-#endif  // !defined(COMPILER_GCC) || defined(__clang__)
-
+[[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void ImmediateCrash() {
+  TRAP_SEQUENCE_();
 #if defined(__clang__) || defined(COMPILER_GCC)
-
-// __builtin_unreachable() hints to the compiler that this is noreturn and can
-// be packed in the function epilogue.
-#define IMMEDIATE_CRASH()     \
-  ({                          \
-    WRAPPED_TRAP_SEQUENCE_(); \
-    __builtin_unreachable();  \
-  })
-
-#else
-
-// This is supporting non-chromium user of logging.h to build with MSVC, like
-// pdfium. On MSVC there is no __builtin_unreachable().
-#define IMMEDIATE_CRASH() WRAPPED_TRAP_SEQUENCE_()
-
+  __builtin_unreachable();
 #endif  // defined(__clang__) || defined(COMPILER_GCC)
+}
+
+}  // namespace base
+
+// TODO(pbos): Migrate callers to base::ImmediateCrash(). This should be done
+// within a week or two so if you see this at or after November 2022 please ping
+// me.
+#define IMMEDIATE_CRASH() base::ImmediateCrash()
 
 #endif  // BASE_IMMEDIATE_CRASH_H_
