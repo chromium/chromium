@@ -1,8 +1,11 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <iterator>
 #include <map>
+#include <set>
 #include <utility>
 
 #include "base/callback.h"
@@ -35,6 +38,16 @@
 #include "base/command_line.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #endif
+
+namespace {
+template <typename Value>
+bool ContainsAll(const std::set<Value>& first, const std::set<Value>& second) {
+  std::set<Value> difference;
+  std::set_difference(second.begin(), second.end(), first.begin(), first.end(),
+                      std::inserter(difference, difference.end()));
+  return difference.empty();
+}
+}  // namespace
 
 class NewTabPageTest : public InProcessBrowserTest,
                        public content::DevToolsAgentHostClient {
@@ -71,7 +84,10 @@ class NewTabPageTest : public InProcessBrowserTest,
       auto request_id = *parsed_message.FindStringPath("params.requestId");
       auto url = loading_resources_[request_id];
       loading_resources_.erase(request_id);
-      if (loading_resources_.empty() && network_load_quit_closure_) {
+      loaded_resources_.insert(url);
+      if (loading_resources_.empty() &&
+          ContainsAll(loaded_resources_, required_resources_) &&
+          network_load_quit_closure_) {
         std::move(network_load_quit_closure_).Run();
       }
     } else if (*method == "DOM.attributeModified") {
@@ -141,11 +157,14 @@ class NewTabPageTest : public InProcessBrowserTest,
     run_loop.Run();
   }
 
-  // Blocks until all network requests have completed.
-  void WaitForNetworkLoad() {
-    if (loading_resources_.empty()) {
+  // Blocks until all network requests have completed and |required_resources|
+  // have been loaded.
+  void WaitForNetworkLoad(const std::set<GURL>& required_resources) {
+    if (loading_resources_.empty() &&
+        ContainsAll(loaded_resources_, required_resources)) {
       return;
     }
+    required_resources_ = required_resources;
     base::RunLoop run_loop;
     network_load_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -185,20 +204,23 @@ class NewTabPageTest : public InProcessBrowserTest,
   raw_ptr<BrowserView> browser_view_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::map<std::string, GURL> loading_resources_;
+  std::set<GURL> loaded_resources_;
+  std::set<GURL> required_resources_;
   base::OnceClosure network_load_quit_closure_;
   bool lazy_loaded_ = false;
   base::OnceClosure lazy_load_quit_closure_;
 };
 
-// TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
-#else
-#define MAYBE_LandingPagePixelTest LandingPagePixelTest
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_LandingPagePixelTest) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, LandingPagePixelTest) {
   WaitForLazyLoad();
-  WaitForNetworkLoad();
+  // By default WaitForNetworkLoad waits for all resources that have started
+  // loading at this point. However, sometimes not all required resources have
+  // started loading yet. Specifically, images set via -webkit-mask-image cause
+  // grief. To work around this we specify resources we explicitly wait for even
+  // if they haven't yet started loading.
+  // TODO(crbug.com/1250156): This is brittle and will rot easily. Find a better
+  // way to capture those resources.
+  WaitForNetworkLoad({GURL("chrome://new-tab-page/icons/icon_pencil.svg")});
   WaitForAnimationFrame();
 
   EXPECT_TRUE(VerifyUi("NewTabPageTest", "LandingPagePixelTest"));
