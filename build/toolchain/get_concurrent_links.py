@@ -1,12 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # This script computs the number of concurrent links we want to run in the build
 # as a function of machine spec. It's based on GetDefaultConcurrentLinks in GYP.
-
-from __future__ import print_function
 
 import argparse
 import multiprocessing
@@ -67,11 +65,12 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
     mem_total_gb = override_ram_in_gb
   else:
     mem_total_gb = float(_GetTotalMemoryInBytes()) / 2**30
-  mem_total_gb = max(0, mem_total_gb - reserve_gb)
+  adjusted_mem_total_gb = max(0, mem_total_gb - reserve_gb)
 
   # Ensure that there is at least as many links allocated for the secondary as
   # there is for the primary. The secondary link usually uses fewer gbs.
-  mem_cap = int(max(1, mem_total_gb / (per_link_gb + secondary_per_link_gb)))
+  mem_cap = int(
+      max(1, adjusted_mem_total_gb / (per_link_gb + secondary_per_link_gb)))
 
   try:
     cpu_count = multiprocessing.cpu_count()
@@ -88,8 +87,9 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
       assert thin_lto_type == 'local'
       cpu_cap = min(cpu_count, 6)
 
-  explanation.append('cpu_count={} cpu_cap={} mem_total_gb={:.1f}GiB'.format(
-      cpu_count, cpu_cap, mem_total_gb))
+  explanation.append(
+      'cpu_count={} cpu_cap={} mem_total_gb={:.1f}GiB adjusted_mem_total_gb={:.1f}GiB'
+      .format(cpu_count, cpu_cap, mem_total_gb, adjusted_mem_total_gb))
 
   num_links = min(mem_cap, cpu_cap)
   if num_links == cpu_cap:
@@ -111,7 +111,7 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
 
   # Use remaining RAM for a secondary pool if needed.
   if secondary_per_link_gb:
-    mem_remaining = mem_total_gb - num_links * per_link_gb
+    mem_remaining = adjusted_mem_total_gb - num_links * per_link_gb
     secondary_size = int(max(0, mem_remaining / secondary_per_link_gb))
     if secondary_size > cpu_count:
       secondary_size = cpu_count
@@ -141,8 +141,8 @@ def main():
                                  options.secondary_mem_per_link,
                                  options.override_ram_in_gb_for_testing))
   if options.override_ram_in_gb_for_testing:
-    print('primary={} secondary={}'.format(primary_pool_size,
-                                           secondary_pool_size))
+    print('primary={} secondary={} explanation={}'.format(
+        primary_pool_size, secondary_pool_size, explanation))
   else:
     sys.stdout.write(
         gn_helpers.ToGNString({
