@@ -1693,7 +1693,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.CrossOriginRedirectionDomain{PrerenderTriggerType}"
-    enum="PrerenderCrossOriginRedirectionDomain" expires_after="2022-10-27">
+    enum="PrerenderCrossOriginRedirectionDomain" expires_after="2023-01-31">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1711,7 +1711,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 <histogram
     name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PrerenderTriggerType}"
     enum="PrerenderCrossOriginRedirectionProtocolChange"
-    expires_after="2022-10-27">
+    expires_after="2023-01-31">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1806,7 +1806,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch{PrerenderTriggerType}"
-    enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2022-10-27">
+    enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2023-01-31">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
