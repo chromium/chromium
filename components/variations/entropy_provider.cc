@@ -55,11 +55,10 @@ double SHA1EntropyProvider::GetEntropyForTrial(
 }
 
 NormalizedMurmurHashEntropyProvider::NormalizedMurmurHashEntropyProvider(
-    uint16_t entropy_value,
-    size_t entropy_domain)
-    : entropy_value_(entropy_value), entropy_domain_(entropy_domain) {
-  DCHECK_LT(entropy_value, entropy_domain);
-  DCHECK_LE(entropy_domain, std::numeric_limits<uint16_t>::max());
+    ValueInRange entropy_value)
+    : entropy_value_(entropy_value) {
+  DCHECK_LT(entropy_value.value, entropy_value.range);
+  DCHECK_LE(entropy_value.range, std::numeric_limits<uint16_t>::max());
 }
 
 NormalizedMurmurHashEntropyProvider::~NormalizedMurmurHashEntropyProvider() {}
@@ -73,9 +72,9 @@ double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
         trial_name.length());
   }
   uint32_t x = internal::VariationsMurmurHash::Hash16(randomization_seed,
-                                                      entropy_value_);
+                                                      entropy_value_.value);
   int x_ordinal = 0;
-  for (uint32_t i = 0; i < entropy_domain_; i++) {
+  for (uint32_t i = 0; i < entropy_value_.range; i++) {
     uint32_t y = internal::VariationsMurmurHash::Hash16(randomization_seed, i);
     x_ordinal += (y < x);
   }
@@ -84,8 +83,8 @@ double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
   // There must have been at least one iteration where |x| == |y|, because
   // |i| == |entropy_value_|, and |x_ordinal| was not incremented in that
   // iteration, so |x_ordinal| < |entropy_domain_|.
-  DCHECK_LT(static_cast<size_t>(x_ordinal), entropy_domain_);
-  return static_cast<double>(x_ordinal) / entropy_domain_;
+  DCHECK_LT(static_cast<uint32_t>(x_ordinal), entropy_value_.range);
+  return static_cast<double>(x_ordinal) / entropy_value_.range;
 }
 
 SessionEntropyProvider::~SessionEntropyProvider() = default;
@@ -97,9 +96,8 @@ double SessionEntropyProvider::GetEntropyForTrial(
 }
 
 EntropyProviders::EntropyProviders(const std::string& high_entropy_value,
-                                   uint16_t low_entropy_value,
-                                   size_t low_entropy_domain)
-    : low_entropy_(low_entropy_value, low_entropy_domain) {
+                                   ValueInRange low_entropy_value)
+    : low_entropy_(low_entropy_value) {
   if (!high_entropy_value.empty()) {
     high_entropy_.emplace(high_entropy_value);
   }

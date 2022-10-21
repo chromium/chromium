@@ -22,7 +22,7 @@ using AssignmentCounts = std::map<std::string, std::map<std::string, int>>;
 // These studies must match the ones in crosstalk_test.py.
 const char* const kDnsStudyName = "DnsProbe-Attempts";
 const char* const kInstantStudyName = "InstantExtended";
-constexpr size_t kMaxLowEntropySize = 8000;
+constexpr uint32_t kMaxLowEntropySize = 8000;
 
 scoped_refptr<base::FieldTrial> CreateDnsStudy(double value) {
   scoped_refptr<base::FieldTrial> trial(
@@ -53,7 +53,7 @@ AssignmentCounts CountAssignments(bool salt) {
   AssignmentCounts counts;
 
   for (uint16_t source = 0; source < kMaxLowEntropySize; source++) {
-    NormalizedMurmurHashEntropyProvider provider(source, kMaxLowEntropySize);
+    NormalizedMurmurHashEntropyProvider provider({source, kMaxLowEntropySize});
 
     double dns_value = provider.GetEntropyForTrial(kDnsStudyName, 0);
     std::string dns_name = CreateDnsStudy(dns_value)->group_name();

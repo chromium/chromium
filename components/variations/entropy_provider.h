@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <string>
 
 #include "base/component_export.h"
@@ -41,6 +42,12 @@ class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
   const std::string entropy_source_;
 };
 
+// A |value| in the range [0, range).
+struct ValueInRange {
+  uint32_t value;
+  uint32_t range;
+};
+
 // NormalizedMurmurHashEntropyProvider is an entropy provider suitable for low
 // entropy sources (below 16 bits). It uses MurmurHash3_32 to hash the study
 // name along with all possible low entropy sources. It finds the index where
@@ -50,9 +57,8 @@ class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
 class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
     : public base::FieldTrial::EntropyProvider {
  public:
-  // Creates a provider with |entropy_value| in the domain [0, entropy_domain).
-  NormalizedMurmurHashEntropyProvider(uint16_t entropy_value,
-                                      size_t entropy_domain);
+  // Creates a provider with |entropy_value| in the range of possible values.
+  explicit NormalizedMurmurHashEntropyProvider(ValueInRange entropy_value);
 
   NormalizedMurmurHashEntropyProvider(
       const NormalizedMurmurHashEntropyProvider&) = default;
@@ -63,11 +69,10 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
   double GetEntropyForTrial(base::StringPiece trial_name,
                             uint32_t randomization_seed) const override;
 
-  size_t entropy_domain() const { return entropy_domain_; }
+  uint32_t entropy_domain() const { return entropy_value_.range; }
 
  private:
-  const uint16_t entropy_value_;
-  const size_t entropy_domain_;
+  const ValueInRange entropy_value_;
 };
 
 class SessionEntropyProvider : public base::FieldTrial::EntropyProvider {
@@ -84,8 +89,7 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
   // Construct providers from the given entropy sources.
   // If |high_entropy_source| is empty, no high entropy provider is created.
   EntropyProviders(const std::string& high_entropy_value,
-                   uint16_t low_entropy_value,
-                   size_t low_entropy_domain);
+                   ValueInRange low_entropy_value);
   EntropyProviders(const EntropyProviders&) = delete;
   EntropyProviders& operator=(const EntropyProviders&) = delete;
   virtual ~EntropyProviders();

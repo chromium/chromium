@@ -72,7 +72,7 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
   // TODO(b/244252663): Add more coverage of client_state and entropy
   // provider arguments.
   auto client_state = MockChromeClientFilterableState();
-  EntropyProviders entropy_providers("client_id", 7999, 8000);
+  EntropyProviders entropy_providers("client_id", {7999, 8000});
 
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, override_callback.callback(), entropy_providers,

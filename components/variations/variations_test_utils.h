@@ -130,7 +130,7 @@ class MockEntropyProviders : public EntropyProviders {
     absl::optional<double> high_entropy = absl::nullopt;
   };
   explicit MockEntropyProviders(Results results,
-                                size_t low_entropy_domain = 8000);
+                                uint32_t low_entropy_domain = 8000);
   ~MockEntropyProviders() override;
 
   const base::FieldTrial::EntropyProvider& low_entropy() const override;

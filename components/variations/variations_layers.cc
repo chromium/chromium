@@ -47,12 +47,6 @@ const Layer::LayerMember* FindActiveMemberBySlot(uint32_t chosen_slot,
   return nullptr;
 }
 
-// A |value| in the range [0, range).
-struct ValueInRange {
-  uint32_t value;
-  uint32_t range;
-};
-
 // The result of SelectSlot.
 struct SlotSelection {
   // The slot selected.
@@ -137,7 +131,7 @@ NormalizedMurmurHashEntropyProvider ComputeRemainderEntropy(
       SlotOfMember(chosen_member, selection.slot.value);
   ValueInRange remainder =
       CombineRanges(slot_of_member, selection.pseudorandom_remainder);
-  return NormalizedMurmurHashEntropyProvider(remainder.value, remainder.range);
+  return NormalizedMurmurHashEntropyProvider(remainder);
 }
 
 bool ValidSlotBounds(const Layer& layer_proto) {
@@ -159,14 +153,14 @@ bool ValidSlotBounds(const Layer& layer_proto) {
 
 VariationsLayers::VariationsLayers(const VariationsSeed& seed,
                                    const EntropyProviders& entropy_providers)
-    : nil_entropy(0, 1) {
+    : nil_entropy({0, 1}) {
   // TODO(crbug.com/1154033): Support a way to expire old/unused layers so they
   // no longer get processed by the clients.
   for (const Layer& layer_proto : seed.layers())
     ConstructLayer(entropy_providers, layer_proto);
 }
 
-VariationsLayers::VariationsLayers() : nil_entropy(0, 1) {}
+VariationsLayers::VariationsLayers() : nil_entropy({0, 1}) {}
 
 VariationsLayers::~VariationsLayers() = default;
 

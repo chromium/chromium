@@ -131,13 +131,13 @@ std::vector<std::string> GetUniformityAssignments(const VariationsSeed& seed) {
   // Add 20 clients that do not have client IDs, 1 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy; i++) {
     result.push_back(
-        GetUniformityAssignment(seed, EntropyProviders("", i, kMaxEntropy)));
+        GetUniformityAssignment(seed, EntropyProviders("", {i, kMaxEntropy})));
   }
   // Add 100 clients that do have client IDs, 5 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy * 5; i++) {
     result.push_back(GetUniformityAssignment(
         seed, EntropyProviders(base::StringPrintf("clientid_%02d", i),
-                               i % kMaxEntropy, kMaxEntropy)));
+                               {i % kMaxEntropy, kMaxEntropy})));
   }
   return result;
 }
@@ -293,7 +293,7 @@ TEST(VariationsUniformityTest, SessionEntropyStudyChiSquare) {
   }
 
   // The persistent entropy shouldn't matter here.
-  EntropyProviders entropy_providers("not_used", 0, 8000);
+  EntropyProviders entropy_providers("not_used", {0, 8000});
 
   for (size_t i = 1; i <= kMaxIterationCount; i += kCheckIterationCount) {
     for (size_t j = 0; j < kCheckIterationCount; j++) {

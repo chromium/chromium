@@ -315,10 +315,9 @@ std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState() {
 
 MockEntropyProviders::MockEntropyProviders(
     MockEntropyProviders::Results results,
-    size_t low_entropy_domain)
+    uint32_t low_entropy_domain)
     : EntropyProviders(results.high_entropy.has_value() ? "client_id" : "",
-                       0,
-                       low_entropy_domain),
+                       {0, low_entropy_domain}),
       low_provider_(results.low_entropy),
       high_provider_(results.high_entropy.value_or(0)) {}
 

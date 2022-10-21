@@ -16,11 +16,6 @@ namespace metrics {
 
 namespace {
 
-// The argument used to generate a non-identifying entropy source. We want no
-// more than 13 bits of entropy, so use this max to return a number in the range
-// [0, 7999] as the entropy source (12.97 bits of entropy).
-const int kMaxLowEntropySize = 8000;
-
 // Generates a new non-identifying entropy source used to seed persistent
 // activities. Make it static so that the new low entropy source value will
 // only be generated on first access. And thus, even though we may write the
@@ -28,7 +23,7 @@ const int kMaxLowEntropySize = 8000;
 // value.
 int GenerateLowEntropySource() {
   static const int low_entropy_source =
-      base::RandInt(0, kMaxLowEntropySize - 1);
+      base::RandInt(0, EntropyState::kMaxLowEntropySize - 1);
   ;
   return low_entropy_source;
 }
@@ -39,7 +34,7 @@ int GenerateLowEntropySource() {
 // assignment.
 int GeneratePseudoLowEntropySource() {
   static const int pseudo_low_entropy_source =
-      base::RandInt(0, kMaxLowEntropySize - 1);
+      base::RandInt(0, EntropyState::kMaxLowEntropySize - 1);
   ;
   return pseudo_low_entropy_source;
 }
