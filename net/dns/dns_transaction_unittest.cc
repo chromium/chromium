@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -827,8 +828,7 @@ class DnsTransactionTestBase : public testing::Test {
         }
       } else if (!server.use_post() && request->method() == "GET") {
         std::string prefix = url_base + "?dns=";
-        auto mispair = std::mismatch(prefix.begin(), prefix.end(),
-                                     request->url().spec().begin());
+        auto mispair = base::ranges::mismatch(prefix, request->url().spec());
         if (mispair.first == prefix.end()) {
           server_found = true;
           socket_factory_->remote_endpoints_.emplace_back(server);

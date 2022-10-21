@@ -2284,9 +2284,7 @@ void MenuController::BuildPathsAndCalculateDiff(
   BuildMenuItemPath(new_item, new_path);
 
   *first_diff_at = static_cast<size_t>(std::distance(
-      old_path->cbegin(), std::mismatch(old_path->cbegin(), old_path->cend(),
-                                        new_path->cbegin(), new_path->cend())
-                              .first));
+      old_path->begin(), base::ranges::mismatch(*old_path, *new_path).first));
 }
 
 void MenuController::BuildMenuItemPath(MenuItemView* item,

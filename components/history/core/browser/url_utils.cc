@@ -4,8 +4,7 @@
 
 #include "components/history/core/browser/url_utils.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 
@@ -54,7 +53,7 @@ bool IsPathPrefix(const std::string& p1, const std::string& p2) {
   if (p1.length() > p2.length())
     return false;
   std::pair<std::string::const_iterator, std::string::const_iterator>
-      first_diff = std::mismatch(p1.begin(), p1.end(), p2.begin());
+      first_diff = base::ranges::mismatch(p1, p2);
   // Necessary condition: `p1` is a string prefix of `p2`.
   if (first_diff.first != p1.end())
     return false;  // E.g.: (`p1` = "/test", `p2` = "/exam") => false.
