@@ -40,7 +40,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -118,7 +117,7 @@ public class ReturnToChromeUtilTest {
 
     public ReturnToChromeUtilTest(boolean useInstantStart) {
         mUseInstantStart = useInstantStart;
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.INSTANT_START, useInstantStart);
+        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
         if (mUseInstantStart) {
             CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
         }

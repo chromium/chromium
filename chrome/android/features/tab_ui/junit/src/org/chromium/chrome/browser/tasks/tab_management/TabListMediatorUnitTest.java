@@ -35,10 +35,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.COMMERCE_COUPONS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.STORE_HOURS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
@@ -100,7 +98,6 @@ import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
@@ -1428,7 +1425,7 @@ public class TabListMediatorUnitTest {
      * Set flags and initialize for verifying coupon annotations behavior
      */
     private void prepareForCoupon() {
-        CachedFeatureFlags.setForTesting(COMMERCE_COUPONS, true);
+        ChromeFeatureList.sCommerceCoupons.setForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PersistedTabDataConfiguration.setUseTestConfig(true);
         initAndAssertAllProperties();
@@ -1493,7 +1490,7 @@ public class TabListMediatorUnitTest {
      * Set flags and initialize for verifying store hours behavior
      */
     private void prepareForStoreHours() {
-        CachedFeatureFlags.setForTesting(STORE_HOURS, true);
+        ChromeFeatureList.sStoreHoursAndroid.setForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PersistedTabDataConfiguration.setUseTestConfig(true);
         initAndAssertAllProperties();
@@ -3986,7 +3983,7 @@ public class TabListMediatorUnitTest {
             uiType = TabProperties.UiType.STRIP;
         }
         // TODO(crbug.com/1058196): avoid re-instanciate TabListMediator by using annotation.
-        CachedFeatureFlags.setForTesting(TAB_GROUPS_ANDROID, true);
+        ChromeFeatureList.sTabGroupsAndroid.setForTesting(true);
 
         mMediator = new TabListMediator(mActivity, mModel, mode, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider,

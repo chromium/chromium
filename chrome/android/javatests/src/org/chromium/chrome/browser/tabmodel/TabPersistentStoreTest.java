@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -298,7 +297,7 @@ public class TabPersistentStoreTest {
 
     @Before
     public void setUp() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, false);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mChromeActivity = new ChromeActivity() {
                 @Override
@@ -391,8 +390,8 @@ public class TabPersistentStoreTest {
     @Feature("TabPersistentStore")
     @ParameterAnnotations.UseMethodParameter(StoreParamProvider.class)
     public void testBasic(boolean isCriticalPersistedTabDataEnabled) throws Exception {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, isCriticalPersistedTabDataEnabled);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(
+                isCriticalPersistedTabDataEnabled);
         TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V4;
         int numExpectedTabs = info.contents.length;
 
@@ -516,8 +515,8 @@ public class TabPersistentStoreTest {
     @ParameterAnnotations.UseMethodParameter(StoreParamProvider.class)
     public void testInterruptedButStillRestoresAllTabs(boolean isCriticalPersistedTabDataEnabled)
             throws Exception {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, isCriticalPersistedTabDataEnabled);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(
+                isCriticalPersistedTabDataEnabled);
         TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V4;
         int numExpectedTabs = info.contents.length;
 
@@ -694,7 +693,7 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature({"TabPersistentStore"})
     public void testFallbackTabStateEmptyByteBufferCriticalPersistedTabData() throws Exception {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, true);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Always return Empty Byte buffer (ByteBuffer with limit = 0 from storage)
             PersistedTabDataConfiguration.setUseEmptyByteBufferTestConfig(true);
@@ -799,8 +798,8 @@ public class TabPersistentStoreTest {
     @Feature({"TabPersistentStore"})
     @ParameterAnnotations.UseMethodParameter(StoreParamProvider.class)
     public void testPrefetchActiveTab(boolean isCriticalPersistedTabDataEnabled) throws Exception {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, isCriticalPersistedTabDataEnabled);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(
+                isCriticalPersistedTabDataEnabled);
         final TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V5_NO_M18;
         mMockDirectory.writeTabModelFiles(info, true);
 
@@ -944,7 +943,7 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature("TabPersistentStore")
     public void testMigrateStaleTabsToCriticalPersistedTabData() throws Exception {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, true);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
         Pair<TabPersistentStore, Tab[]> res = restoreTabsFromTabStateAndPrepareForSaving();
         TabPersistentStore store = res.first;
         Tab[] restoredTabs = res.second;
@@ -969,7 +968,7 @@ public class TabPersistentStoreTest {
     public void testDontMigrateDestroyedTab() throws Exception {
         // Variation on testMigrateStaleTabsToCriticalPersistedTabData. See comments in
         // testMigrateStaleTabsToCriticalPersistedTabData.
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, true);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
         Pair<TabPersistentStore, Tab[]> res = restoreTabsFromTabStateAndPrepareForSaving();
         TabPersistentStore store = res.first;
         Tab[] restoredTabs = res.second;
@@ -994,7 +993,7 @@ public class TabPersistentStoreTest {
     public void testDontMigrateClosedTab() throws Exception {
         // Variation on testMigrateStaleTabsToCriticalPersistedTabData. See comments in
         // testMigrateStaleTabsToCriticalPersistedTabData
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, true);
+        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
         Pair<TabPersistentStore, Tab[]> res = restoreTabsFromTabStateAndPrepareForSaving();
         TabPersistentStore store = res.first;
         Tab[] restoredTabs = res.second;

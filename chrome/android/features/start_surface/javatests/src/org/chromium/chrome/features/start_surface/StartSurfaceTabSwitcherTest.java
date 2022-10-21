@@ -54,7 +54,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -107,7 +106,7 @@ public class StartSurfaceTabSwitcherTest {
     @LayoutType
     private int mCurrentlyActiveLayout;
     public StartSurfaceTabSwitcherTest(boolean useInstantStart, boolean immediateReturn) {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.INSTANT_START, useInstantStart);
+        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
 
         mUseInstantStart = useInstantStart;
         mImmediateReturn = immediateReturn;

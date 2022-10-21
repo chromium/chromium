@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -281,7 +280,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setTabSelectionEditorV2Enabled(boolean enabled) {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, enabled);
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, enabled);
+        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(enabled);
     }
 
     private void setWebApkUniqueIdEnabled(boolean enabled) {
@@ -294,7 +293,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
         ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
         ReadingListUtils.setReadingListSupportedForTesting(null);
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, null);
+        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(null);
     }
 
     @Test

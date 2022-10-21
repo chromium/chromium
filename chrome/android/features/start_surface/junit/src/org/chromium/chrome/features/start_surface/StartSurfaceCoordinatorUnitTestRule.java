@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -150,7 +149,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() {
-                CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
+                ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
 
                 mTabModelSelector = Mockito.mock(TabModelSelector.class);
                 mContainerView = Mockito.mock(ViewGroup.class);

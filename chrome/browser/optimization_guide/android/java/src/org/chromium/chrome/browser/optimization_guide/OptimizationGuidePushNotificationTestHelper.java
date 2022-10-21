@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
@@ -75,8 +74,7 @@ public class OptimizationGuidePushNotificationTestHelper {
 
     @CalledByNative
     public static void setFeatureEnabled() {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, true);
+        ChromeFeatureList.sOptimizationGuidePushNotifications.setForTesting(true);
     }
 
     @CalledByNative

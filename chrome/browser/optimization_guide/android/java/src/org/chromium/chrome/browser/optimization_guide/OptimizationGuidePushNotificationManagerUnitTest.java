@@ -84,8 +84,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         testFeatures.put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, isEnabled);
         FeatureList.setTestFeatures(testFeatures);
 
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, isEnabled);
+        ChromeFeatureList.sOptimizationGuidePushNotifications.setForTesting(isEnabled);
     }
 
     @Before

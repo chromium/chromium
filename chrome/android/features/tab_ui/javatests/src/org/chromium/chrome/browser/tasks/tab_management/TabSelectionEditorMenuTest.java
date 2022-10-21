@@ -42,7 +42,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -166,7 +165,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, true);
+        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(true);
         MockitoAnnotations.initMocks(this);
 
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -211,7 +210,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, false);
+        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mPropertyListModel.clear(); });
     }
 

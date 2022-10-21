@@ -34,7 +34,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -106,7 +105,7 @@ public class ReturnToChromeUtilUnitTest {
                 .when(mUrlFormatterJniMock)
                 .fixupUrl(UrlConstants.NTP_NON_NATIVE_URL);
 
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
+        ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
 
         // HomepageManager:
         ShadowHomepageManager.sHomepageUrl = UrlConstants.NTP_NON_NATIVE_URL;

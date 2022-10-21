@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -134,7 +133,7 @@ public class StripStackerUnitTest {
     }
 
     private void setTabStripImprovementFeature(boolean value) {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, value);
+        ChromeFeatureList.sTabStripImprovements.setForTesting(value);
     }
 
     class DummyStacker extends StripStacker {

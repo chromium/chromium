@@ -58,7 +58,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -383,11 +382,11 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testStartSurfaceLayout_Disabled_LowEndPhone() throws Exception {
         // clang-format on
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, true);
+        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(true);
         verifyOverviewListLayoutEnabled();
 
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_ANDROID, false);
+        ChromeFeatureList.sTabGroupsAndroid.setForTesting(false);
         verifyOverviewListLayoutEnabled();
 
         // Test accessibility
@@ -420,11 +419,11 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testStartSurfaceLayout_Enabled_HighEndPhone() throws Exception {
         // clang-format on
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, true);
+        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(true);
         verifyStartSurfaceLayoutEnable(TabListCoordinator.TabListMode.GRID);
 
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, false);
+        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(false);
         verifyStartSurfaceLayoutEnable(TabListCoordinator.TabListMode.GRID);
 
         // Verify accessibility
@@ -711,8 +710,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @After
     public void tearDown() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, null);
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_ANDROID, null);
+        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(null);
+        ChromeFeatureList.sTabGroupsAndroid.setForTesting(null);
         setAccessibilityEnabledForTesting(null);
     }
 

@@ -92,7 +92,7 @@ public class LogoCoordinatorUnitTest {
 
         mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridge);
 
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
+        ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
     }

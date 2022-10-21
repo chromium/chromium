@@ -91,7 +91,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -1675,7 +1674,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // clang-format on
         // Finish the activity and disable the ChromeFeatureList.TAB_GROUPS_ANDROID flag.
         finishActivity(mActivityTestRule.getActivity());
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_ANDROID, false);
+        ChromeFeatureList.sTabGroupsAndroid.setForTesting(false);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1695,7 +1694,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         // Restart activity with tab group enabled, and the tabs should remain as single tabs.
         finishActivity(cta);
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_ANDROID, true);
+        ChromeFeatureList.sTabGroupsAndroid.setForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity ctaRestarted = mActivityTestRule.getActivity();
         assertTrue(ctaRestarted.getTabModelSelector()

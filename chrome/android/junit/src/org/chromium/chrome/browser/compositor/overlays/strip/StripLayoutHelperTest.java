@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -1597,7 +1596,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testDrag_UpdatesScrollOffset_CascadingStrip() {
         // Arrange
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false);
+        ChromeFeatureList.sTabStripImprovements.setForTesting(false);
         initializeTest(false, false, false, 0, 10);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
@@ -1622,7 +1621,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testDrag_ReorderMode_CascadingStrip() {
         // Arrange
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false);
+        ChromeFeatureList.sTabStripImprovements.setForTesting(false);
         initializeTest(false, false, false, 5, 10);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is

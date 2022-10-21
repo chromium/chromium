@@ -28,7 +28,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -59,13 +58,12 @@ public class AdaptiveToolbarTest {
 
     @After
     public void tearDown() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, null);
+        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     private void setupFlagsAndLaunchActivity(boolean isGridTabSwitcherEnabled) {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, isGridTabSwitcherEnabled);
+        ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(isGridTabSwitcherEnabled);
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);

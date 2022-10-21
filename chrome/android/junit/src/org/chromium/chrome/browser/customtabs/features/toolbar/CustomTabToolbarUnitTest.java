@@ -54,7 +54,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.Tab;
@@ -154,7 +153,7 @@ public class CustomTabToolbarUnitTest {
     public void tearDown() {
         mActivity.finish();
         ShadowPostTask.reset();
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, null);
+        ChromeFeatureList.sCctBrandTransparency.setForTesting(null);
     }
 
     @Test
@@ -217,7 +216,7 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testToolbarBrandingDelegateImpl_EmptyToRegular() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, true);
+        ChromeFeatureList.sCctBrandTransparency.setForTesting(true);
 
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         mLocationBar.showEmptyLocationBar();
@@ -239,7 +238,7 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testToolbarBrandingDelegateImpl_EmptyToBranding() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, true);
+        ChromeFeatureList.sCctBrandTransparency.setForTesting(true);
 
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         mLocationBar.showEmptyLocationBar();

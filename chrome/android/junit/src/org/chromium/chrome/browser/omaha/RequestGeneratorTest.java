@@ -44,7 +44,7 @@ public class RequestGeneratorTest {
     @Before
     public void setUp() {
         CachedFeatureFlags.resetFlagsForTesting();
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true);
+        ChromeFeatureList.sAnonymousUpdateChecks.setForTesting(true);
     }
 
     @After
@@ -124,7 +124,7 @@ public class RequestGeneratorTest {
     @Test
     @Feature({"Omaha"})
     public void testXMLCreationWithUID() {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, false);
+        ChromeFeatureList.sAnonymousUpdateChecks.setForTesting(false);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));

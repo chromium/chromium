@@ -566,7 +566,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
         CachedFeatureFlags.resetFlagsForTesting();
         // Pretend that we've flipped the continuation flag.
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false);
+        ChromeFeatureList.sTabGroupsContinuationAndroid.setForTesting(false);
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(

@@ -81,7 +81,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
     public void setUp() {
         when(mBasicSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
         when(mHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
+        ChromeFeatureList.sOmniboxModernizeVisualUpdate.setForTesting(true);
 
         mSuggestionModels = new ModelList();
         mSuggestionModels.addObserver(mListObserver);

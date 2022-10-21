@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -138,6 +137,6 @@ public final class ScrollingStripStackerUnitTest {
     }
 
     private void setTabStripImprovementFeature(boolean value) {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, value);
+        ChromeFeatureList.sTabStripImprovements.setForTesting(value);
     }
 }

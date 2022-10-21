@@ -75,7 +75,8 @@ public class CachedFeatureFlags {
 
     /**
      * Rules from highest to lowest priority:
-     * 1. If the flag has been forced by {@link #setForTesting}, the forced value is returned.
+     * 1. If the flag has been forced by @EnableFeatures/@DisableFeatures or
+     *    {@link CachedFlag#setForTesting}, the forced value is returned.
      * 2. If a value was previously returned in the same run, the same value is returned for
      *    consistency.
      * 3. If native is loaded, the value from {@link ChromeFeatureList} is returned.
