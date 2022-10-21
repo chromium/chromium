@@ -571,16 +571,19 @@ suite('NotificationPermissionReview', function() {
     // The element becomes visible if the list of permissions is no longer
     // empty.
     webUIListenerCallback(
-        'notification-permission-review-list-changed', oneElementMockData);
+        'notification-permission-review-list-maybe-changed',
+        oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
 
     // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback('notification-permission-review-list-changed', []);
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed', []);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
     webUIListenerCallback(
-        'notification-permission-review-list-changed', oneElementMockData);
+        'notification-permission-review-list-maybe-changed',
+        oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
   });

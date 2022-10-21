@@ -126,7 +126,7 @@ export class SettingsSafetyCheckPageElement extends
 
     // Register for notification permission review list updates.
     this.addWebUIListener(
-        'notification-permission-review-list-changed',
+        'notification-permission-review-list-maybe-changed',
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
 

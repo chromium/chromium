@@ -998,12 +998,13 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
         {safetyCheckNotificationPermissionsEnabled: true});
     createPage();
     webUIListenerCallback(
-        'notification-permission-review-list-changed', mockData);
+        'notification-permission-review-list-maybe-changed', mockData);
     flush();
     assertTrue(
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
 
-    webUIListenerCallback('notification-permission-review-list-changed', []);
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed', []);
     flush();
 
     assertFalse(
@@ -1032,7 +1033,7 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
       notificationInfoString: 'About 4 notifications a day',
     }];
     webUIListenerCallback(
-        'notification-permission-review-list-changed', mockData);
+        'notification-permission-review-list-maybe-changed', mockData);
     flush();
 
     assertTrue(
