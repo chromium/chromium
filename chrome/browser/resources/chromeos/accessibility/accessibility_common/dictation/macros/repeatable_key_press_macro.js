@@ -286,3 +286,29 @@ export class NavEndText extends RepeatableKeyPressMacro {
     EventGenerator.sendKeyPress(KeyCode.RIGHT, {});
   }
 }
+
+/** Macro to select the previous word in the input field. */
+export class SelectPrevWord extends RepeatableKeyPressMacro {
+  /** @param {number=} repeat The number of previous words to select. */
+  constructor(repeat = 1) {
+    super(MacroName.SELECT_PREV_WORD, repeat);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.LEFT, {ctrl: true, shift: true});
+  }
+}
+
+/** Macro to select the next word in the input field. */
+export class SelectNextWord extends RepeatableKeyPressMacro {
+  /** @param {number=} repeat The number of next words to select. */
+  constructor(repeat = 1) {
+    super(MacroName.SELECT_NEXT_WORD, repeat);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true, shift: true});
+  }
+}

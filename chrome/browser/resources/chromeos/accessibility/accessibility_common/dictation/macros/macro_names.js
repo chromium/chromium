@@ -109,5 +109,11 @@ export const MacroName = {
   // Moves the cursor to the end of the input field.
   NAV_END_TEXT: 29,
 
+  // Select the previous word in the input field.
+  SELECT_PREV_WORD: 30,
+
+  // Select the next word in the input field.
+  SELECT_NEXT_WORD: 31,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

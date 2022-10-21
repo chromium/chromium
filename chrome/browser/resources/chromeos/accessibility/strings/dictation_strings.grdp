@@ -87,4 +87,10 @@
   <message name="DICTATION_COMMAND_NAV_END_TEXT" desc="A spoken command to move the cursor to the end of the input field." is_accessibility_with_no_ui="true">
     move to the end
   </message>
+  <message name="DICTATION_COMMAND_SELECT_PREV_WORD" desc="A spoken command to select the previous word in the input field." is_accessibility_with_no_ui="true">
+    highlight the previous word
+  </message>
+  <message name="DICTATION_COMMAND_SELECT_NEXT_WORD" desc="A spoken command to select the next word in the input field." is_accessibility_with_no_ui="true">
+    highlight the next word
+  </message>
 </grit-part>

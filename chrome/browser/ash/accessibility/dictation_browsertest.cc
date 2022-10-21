@@ -1216,6 +1216,40 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextMultiLineString) {
   SendFinalResultAndWaitForTextAreaValue("good", expected);
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordSimple) {
+  SendFinalResultAndWaitForTextAreaValue("The weather today is bad",
+                                         "The weather today is bad");
+  SendFinalResultAndWaitForSelectionChanged("highlight the previous word");
+  std::string expected = "The weather today is nice";
+  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordNewLine) {
+  std::string text = "The weather today is bad\n";
+  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWait("highlight the previous word");
+  std::string expected = "The weather today is badnice";
+  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextWordSimple) {
+  SendFinalResultAndWaitForTextAreaValue("The weather today is bad",
+                                         "The weather today is bad");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForSelectionChanged("highlight the next word");
+  std::string expected = "The weather today is nice";
+  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextWordNewLine) {
+  std::string text = "The weather today is\n";
+  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWait("move to the previous character");
+  SendFinalResultAndWait("highlight the next word");
+  std::string expected = "The weather today isnice";
+  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+}
+
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
   SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
   SendFinalResultAndWaitForTextAreaValue("delete the previous sentence", "");
