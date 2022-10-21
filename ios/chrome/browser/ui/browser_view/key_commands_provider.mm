@@ -383,12 +383,7 @@
 }
 
 - (void)keyCommand_closeTab {
-  // -closeCurrentTab might destroy the object that implements this shortcut
-  // (BVC), so this selector might not be registered with the dispatcher
-  // anymore. Check if it's still available. See crbug.com/967637 for context.
-  if ([_dispatcher respondsToSelector:@selector(closeCurrentTab)]) {
-    [_browserCoordinatorCommandsHandler closeCurrentTab];
-  }
+  [_browserCoordinatorCommandsHandler closeCurrentTab];
 }
 
 - (void)keyCommand_showNextTab {
