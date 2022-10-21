@@ -49,7 +49,7 @@ void AXTreeFormatterMac::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   static NSArray* default_attributes = [@[
     @"AXAutocompleteValue", @"AXDescription", @"AXRole", @"AXSubrole",
-    @"AXTitle", @"AXTitleUIElement", @"AXHelp", @"AXValue"
+    @"AXTitle", @"AXTitleUIElement", @"AXValue"
   ] retain];
 
   for (NSString* attribute : default_attributes) {
