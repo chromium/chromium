@@ -2618,7 +2618,7 @@
   {
     "name": "enable-local-web-approvals",
     "owners": [ "agawronska@chromium.org", "courtneywong@chromium.org", "danan@chromium.org" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 110
   },
   {
     "name": "enable-lock-screen-notification",
@@ -3300,7 +3300,7 @@
   {
     "name": "enable-web-filter-interstitial-refresh",
     "owners": [ "agawronska@chromium.org", "courtneywong@chromium.org", "danan@chromium.org" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 110
   },
   {
     "name": "enable-web-hid-on-extension-service-worker",
