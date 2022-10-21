@@ -895,7 +895,7 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
 
-  return MakeGarbageCollected<StyleRuleMedia>(media, rules);
+  return MakeGarbageCollected<StyleRuleMedia>(media, std::move(rules));
 }
 
 StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
@@ -940,7 +940,7 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
 
   return MakeGarbageCollected<StyleRuleSupports>(
       prelude_serialized, supported == CSSSupportsParser::Result::kSupported,
-      rules);
+      std::move(rules));
 }
 
 StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(
@@ -1157,7 +1157,7 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
 
-  return MakeGarbageCollected<StyleRuleScope>(*style_scope, rules);
+  return MakeGarbageCollected<StyleRuleScope>(*style_scope, std::move(rules));
 }
 
 StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
@@ -1202,7 +1202,8 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
 
-  return MakeGarbageCollected<StyleRuleContainer>(*container_query, rules);
+  return MakeGarbageCollected<StyleRuleContainer>(*container_query,
+                                                  std::move(rules));
 }
 
 StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
@@ -1268,7 +1269,8 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
 
-  return MakeGarbageCollected<StyleRuleLayerBlock>(std::move(name), rules);
+  return MakeGarbageCollected<StyleRuleLayerBlock>(std::move(name),
+                                                   std::move(rules));
 }
 
 StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(

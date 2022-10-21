@@ -541,8 +541,8 @@ void StyleRuleFontFace::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 StyleRuleScope::StyleRuleScope(const StyleScope& style_scope,
-                               HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleGroup(kScope, adopt_rules), style_scope_(&style_scope) {}
+                               HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleGroup(kScope, std::move(rules)), style_scope_(&style_scope) {}
 
 StyleRuleScope::StyleRuleScope(const StyleRuleScope& other)
     : StyleRuleGroup(other),
@@ -562,10 +562,8 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
 }
 
 StyleRuleGroup::StyleRuleGroup(RuleType type,
-                               HeapVector<Member<StyleRuleBase>>& adopt_rule)
-    : StyleRuleBase(type) {
-  child_rules_.swap(adopt_rule);
-}
+                               HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleBase(type), child_rules_(std::move(rules)) {}
 
 StyleRuleGroup::StyleRuleGroup(const StyleRuleGroup& group_rule)
     : StyleRuleBase(group_rule), child_rules_(group_rule.child_rules_.size()) {
@@ -600,8 +598,8 @@ String StyleRuleBase::LayerNameAsString(
 
 StyleRuleLayerBlock::StyleRuleLayerBlock(
     LayerName&& name,
-    HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleGroup(kLayerBlock, adopt_rules), name_(std::move(name)) {}
+    HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleGroup(kLayerBlock, std::move(rules)), name_(std::move(name)) {}
 
 StyleRuleLayerBlock::StyleRuleLayerBlock(const StyleRuleLayerBlock& other) =
     default;
@@ -632,34 +630,31 @@ Vector<String> StyleRuleLayerStatement::GetNamesAsStrings() const {
   return result;
 }
 
-StyleRuleCondition::StyleRuleCondition(
-    RuleType type,
-    HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleGroup(type, adopt_rules) {}
+StyleRuleCondition::StyleRuleCondition(RuleType type,
+                                       HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleGroup(type, std::move(rules)) {}
 
-StyleRuleCondition::StyleRuleCondition(
-    RuleType type,
-    const String& condition_text,
-    HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleGroup(type, adopt_rules), condition_text_(condition_text) {}
+StyleRuleCondition::StyleRuleCondition(RuleType type,
+                                       const String& condition_text,
+                                       HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleGroup(type, std::move(rules)), condition_text_(condition_text) {}
 
 StyleRuleCondition::StyleRuleCondition(
     const StyleRuleCondition& condition_rule) = default;
 
 StyleRuleMedia::StyleRuleMedia(const MediaQuerySet* media,
-                               HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleCondition(kMedia, adopt_rules), media_queries_(media) {}
+                               HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleCondition(kMedia, std::move(rules)), media_queries_(media) {}
 
 void StyleRuleMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleCondition::TraceAfterDispatch(visitor);
   visitor->Trace(media_queries_);
 }
 
-StyleRuleSupports::StyleRuleSupports(
-    const String& condition_text,
-    bool condition_is_supported,
-    HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleCondition(kSupports, condition_text, adopt_rules),
+StyleRuleSupports::StyleRuleSupports(const String& condition_text,
+                                     bool condition_is_supported,
+                                     HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleCondition(kSupports, condition_text, std::move(rules)),
       condition_is_supported_(condition_is_supported) {}
 
 StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& supports_rule)
@@ -680,10 +675,11 @@ void StyleRuleSupports::SetConditionText(
   condition_is_supported_ = result == CSSSupportsParser::Result::kSupported;
 }
 
-StyleRuleContainer::StyleRuleContainer(
-    ContainerQuery& container_query,
-    HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleCondition(kContainer, container_query.ToString(), adopt_rules),
+StyleRuleContainer::StyleRuleContainer(ContainerQuery& container_query,
+                                       HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleCondition(kContainer,
+                         container_query.ToString(),
+                         std::move(rules)),
       container_query_(&container_query) {}
 
 StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& container_rule)

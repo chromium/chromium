@@ -377,7 +377,7 @@ class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  protected:
-  StyleRuleGroup(RuleType, HeapVector<Member<StyleRuleBase>>& adopt_rule);
+  StyleRuleGroup(RuleType, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleGroup(const StyleRuleGroup&);
 
  private:
@@ -386,8 +386,7 @@ class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
 
 class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
  public:
-  StyleRuleScope(const StyleScope&,
-                 HeapVector<Member<StyleRuleBase>>& adopt_rules);
+  StyleRuleScope(const StyleScope&, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleScope(const StyleRuleScope&);
 
   StyleRuleScope* Copy() const {
@@ -408,7 +407,7 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
 class CORE_EXPORT StyleRuleLayerBlock : public StyleRuleGroup {
  public:
   StyleRuleLayerBlock(LayerName&& name,
-                      HeapVector<Member<StyleRuleBase>>& adopt_rule);
+                      HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleLayerBlock(const StyleRuleLayerBlock&);
 
   const LayerName& GetName() const { return name_; }
@@ -452,18 +451,17 @@ class CORE_EXPORT StyleRuleCondition : public StyleRuleGroup {
   }
 
  protected:
-  StyleRuleCondition(RuleType, HeapVector<Member<StyleRuleBase>>& adopt_rule);
+  StyleRuleCondition(RuleType, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleCondition(RuleType,
                      const String& condition_text,
-                     HeapVector<Member<StyleRuleBase>>& adopt_rule);
+                     HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleCondition(const StyleRuleCondition&);
   String condition_text_;
 };
 
 class CORE_EXPORT StyleRuleMedia : public StyleRuleCondition {
  public:
-  StyleRuleMedia(const MediaQuerySet*,
-                 HeapVector<Member<StyleRuleBase>>& adopt_rules);
+  StyleRuleMedia(const MediaQuerySet*, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleMedia(const StyleRuleMedia&) = default;
 
   const MediaQuerySet* MediaQueries() const { return media_queries_.Get(); }
@@ -486,7 +484,7 @@ class StyleRuleSupports : public StyleRuleCondition {
  public:
   StyleRuleSupports(const String& condition_text,
                     bool condition_is_supported,
-                    HeapVector<Member<StyleRuleBase>>& adopt_rules);
+                    HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleSupports(const StyleRuleSupports&);
 
   bool ConditionIsSupported() const { return condition_is_supported_; }
@@ -506,8 +504,7 @@ class StyleRuleSupports : public StyleRuleCondition {
 
 class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
  public:
-  StyleRuleContainer(ContainerQuery&,
-                     HeapVector<Member<StyleRuleBase>>& adopt_rules);
+  StyleRuleContainer(ContainerQuery&, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleContainer(const StyleRuleContainer&);
 
   ContainerQuery& GetContainerQuery() const { return *container_query_; }
