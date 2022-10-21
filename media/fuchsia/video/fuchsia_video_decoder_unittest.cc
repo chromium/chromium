@@ -26,6 +26,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -333,6 +334,8 @@ class TestFuchsiaMediaResourceProvider
     decoder_factory->CreateDecoder(std::move(decoder_params),
                                    std::move(stream_processor_request));
   }
+
+  mojo::Receiver<media::mojom::FuchsiaMediaResourceProvider> receiver_{this};
 };
 
 }  // namespace
@@ -344,7 +347,9 @@ class FuchsiaVideoDecoderTest : public testing::Test {
             base::MakeRefCounted<TestRasterContextProvider>()),
         decoder_(std::make_unique<FuchsiaVideoDecoder>(
             raster_context_provider_.get(),
-            &test_media_resource_provider_,
+            mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>(
+                test_media_resource_provider_.receiver_
+                    .BindNewPipeAndPassRemote()),
             /*allow_overlays=*/false)) {}
 
   FuchsiaVideoDecoderTest(const FuchsiaVideoDecoderTest&) = delete;

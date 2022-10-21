@@ -7,7 +7,7 @@
 
 #include "media/base/decoder_factory.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace media {
 
@@ -15,7 +15,7 @@ class FuchsiaDecoderFactory final : public DecoderFactory {
  public:
   FuchsiaDecoderFactory(
       mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
-          media_resource_provider_handle,
+          resource_provider,
       bool allow_overlays);
   ~FuchsiaDecoderFactory() final;
 
@@ -23,22 +23,19 @@ class FuchsiaDecoderFactory final : public DecoderFactory {
   void CreateAudioDecoders(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
-      std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) final;
+      std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) override;
   void CreateVideoDecoders(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       GpuVideoAcceleratorFactories* gpu_factories,
       MediaLog* media_log,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space,
-      std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) final;
+      std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) override;
 
  private:
-  mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider_handle_;
+  const mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>
+      resource_provider_;
   const bool allow_overlays_;
-
-  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider_;
 };
 
 }  // namespace media

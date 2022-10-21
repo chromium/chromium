@@ -17,6 +17,8 @@
 #include "media/base/video_decoder_config.h"
 #include "media/fuchsia/common/sysmem_buffer_stream.h"
 #include "media/fuchsia/common/sysmem_client.h"
+#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 namespace gfx {
@@ -29,17 +31,14 @@ class RasterContextProvider;
 
 namespace media {
 
-namespace mojom {
-class FuchsiaMediaResourceProvider;
-}  // namespace mojom
-
 class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
                                          public SysmemBufferStream::Sink,
                                          public StreamProcessorHelper::Client {
  public:
   FuchsiaVideoDecoder(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      media::mojom::FuchsiaMediaResourceProvider* media_resource_provider,
+      const mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>&
+          media_resource_provider,
       bool allow_overlays);
   ~FuchsiaVideoDecoder() override;
 
@@ -114,8 +113,8 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   void ReleaseOutputBuffers();
 
   const scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  media::mojom::FuchsiaMediaResourceProvider* media_resource_provider_;
-
+  const mojo::SharedRemote<media::mojom::FuchsiaMediaResourceProvider>
+      media_resource_provider_;
   const bool use_overlays_for_video_;
 
   OutputCB output_cb_;
@@ -147,8 +146,7 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
 
   size_t num_used_output_buffers_ = 0;
 
-  base::WeakPtr<FuchsiaVideoDecoder> weak_this_;
-  base::WeakPtrFactory<FuchsiaVideoDecoder> weak_factory_{this};
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // WeakPtrFactory used to schedule CallNextDecodeCallbacks(). These pointers
   // are discarded in DropInputQueue() in order to avoid calling
