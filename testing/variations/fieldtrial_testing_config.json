@@ -7891,24 +7891,6 @@
             ]
         }
     ],
-    "PartialCustomTabs3rdPartyPolicy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "default_policy": "use-denylist"
-                    },
-                    "enable_features": [
-                        "CCTResizableForThirdParties"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocBackupRefPtr": [
         {
             "platforms": [
