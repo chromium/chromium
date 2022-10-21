@@ -42,6 +42,7 @@ class ElementInternals;
 class ExceptionState;
 class FormAssociated;
 class HTMLFormElement;
+class HTMLSelectMenuElement;
 class KeyboardEvent;
 class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
 
@@ -56,6 +57,44 @@ enum class ContentEditableType {
   kContentEditable,
   kNotContentEditable,
   kPlaintextOnly,
+};
+
+enum class PopupValueType {
+  kNone,
+  kAuto,
+  kHint,
+  kManual,
+};
+constexpr const char* kPopupTypeValueAuto = "auto";
+constexpr const char* kPopupTypeValueHint = "hint";
+constexpr const char* kPopupTypeValueManual = "manual";
+
+enum class PopupTriggerAction {
+  kNone,
+  kToggle,
+  kShow,
+  kHide,
+};
+
+enum class HidePopupFocusBehavior {
+  kNone,
+  kFocusPreviousElement,
+};
+
+enum class HidePopupForcingLevel {
+  kHideAfterAnimations,
+  kHideImmediately,
+};
+
+enum class HidePopupIndependence {
+  kLeaveUnrelated,
+  kHideUnrelated,
+};
+
+enum class PopUpAncestorType {
+  kDefault,
+  kNewPopUp,
+  kInclusive,
 };
 
 class CORE_EXPORT HTMLElement : public Element {
@@ -180,6 +219,44 @@ class CORE_EXPORT HTMLElement : public Element {
   // https://html.spec.whatwg.org/C/#potentially-render-blocking
   virtual bool IsPotentiallyRenderBlocking() const { return false; }
 
+  // Pop-up API related functions.
+  void UpdatePopupAttribute(String);
+  bool HasPopupAttribute() const;
+  PopupValueType PopupType() const;
+  bool popupOpen() const;
+  void showPopUp(ExceptionState& exception_state);
+  void hidePopUp(ExceptionState& exception_state);
+  void HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
+                         HidePopupForcingLevel forcing_level);
+  void PopupHideFinishIfNeeded();
+  static const HTMLElement* NearestOpenAncestralPopup(const Node&,
+                                                      PopUpAncestorType);
+
+  // Retrieves the element pointed to by this element's 'anchor' content
+  // attribute, if that element exists, and if this element is a pop-up.
+  Element* anchorElement() const;
+  static void HandlePopupLightDismiss(const Event& event);
+  void InvokePopup(Element* invoker);
+  void SetPopupFocusOnShow();
+  // This hides all visible popups up to, but not including,
+  // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
+  static void HideAllPopupsUntil(const HTMLElement*,
+                                 Document&,
+                                 HidePopupFocusBehavior,
+                                 HidePopupForcingLevel,
+                                 HidePopupIndependence);
+
+  // TODO(crbug.com/1197720): The popup position should be provided by the new
+  // anchored positioning scheme.
+  void SetNeedsRepositioningForSelectMenu(bool flag);
+  void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
+  void AdjustPopupPositionForSelectMenu(ComputedStyle& style);
+
+  bool DispatchFocusEvent(
+      Element* old_focused_element,
+      mojom::blink::FocusType,
+      InputDeviceCapabilities* source_capabilities) override;
+
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };
@@ -222,6 +299,9 @@ class CORE_EXPORT HTMLElement : public Element {
       MutableCSSPropertyValueSet*) override;
   unsigned ParseBorderWidthAttribute(const AtomicString&) const;
 
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) override;
+
   void ChildrenChanged(const ChildrenChange&) override;
   bool CalculateAndAdjustAutoDirectionality(Node* stay_within);
 
@@ -260,6 +340,9 @@ class CORE_EXPORT HTMLElement : public Element {
 
   static AttributeTriggers* TriggersForAttributeName(
       const QualifiedName& attr_name);
+
+  // Special focus handling for popups.
+  Element* GetPopupFocusableArea() const;
 
   void OnDirAttrChanged(const AttributeModificationParams&);
   void OnFormAttrChanged(const AttributeModificationParams&);

@@ -105,15 +105,15 @@ TextControlElement::TextControlElement(const QualifiedName& tag_name,
 
 TextControlElement::~TextControlElement() = default;
 
-void TextControlElement::DispatchFocusEvent(
+bool TextControlElement::DispatchFocusEvent(
     Element* old_focused_element,
     mojom::blink::FocusType type,
     InputDeviceCapabilities* source_capabilities) {
   if (SupportsPlaceholder())
     UpdatePlaceholderVisibility();
   HandleFocusEvent(old_focused_element, type);
-  HTMLFormControlElementWithState::DispatchFocusEvent(old_focused_element, type,
-                                                      source_capabilities);
+  return HTMLFormControlElementWithState::DispatchFocusEvent(
+      old_focused_element, type, source_capabilities);
 }
 
 void TextControlElement::DispatchBlurEvent(

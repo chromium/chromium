@@ -870,7 +870,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
 }
 
-void HTMLSelectElement::DispatchFocusEvent(
+bool HTMLSelectElement::DispatchFocusEvent(
     Element* old_focused_element,
     mojom::blink::FocusType type,
     InputDeviceCapabilities* source_capabilities) {
@@ -878,8 +878,8 @@ void HTMLSelectElement::DispatchFocusEvent(
   // dispatching change events during blur event dispatch.
   if (UsesMenuList())
     select_type_->SaveLastSelection();
-  HTMLFormControlElementWithState::DispatchFocusEvent(old_focused_element, type,
-                                                      source_capabilities);
+  return HTMLFormControlElementWithState::DispatchFocusEvent(
+      old_focused_element, type, source_capabilities);
 }
 
 void HTMLSelectElement::DispatchBlurEvent(

@@ -271,7 +271,7 @@ interface Event
 # The Pop-Up API (crbug.com/1307772) is enabled by the fieldtrial_testing_config,
 # but only for desktop and Android platforms. It is not shipped to stable yet,
 # on any platform.
-interface Element : Node
+interface HTMLElement : Element
 	  getter popUp
 	  method hidePopUp
 	  setter defaultOpen

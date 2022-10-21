@@ -91,7 +91,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   struct PopupTargetElement final {
    public:
     DISALLOW_NEW();
-    WeakMember<Element> element;
+    WeakMember<HTMLElement> element;
     PopupTriggerAction action;
     QualifiedName attribute_name;
     void Trace(Visitor* visitor) const { visitor->Trace(element); }

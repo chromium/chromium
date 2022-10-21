@@ -6,15 +6,15 @@
 
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
 
 PopupAnimationFinishedEventListener::PopupAnimationFinishedEventListener(
-    Member<Element> popup_element,
+    Member<HTMLElement> popup_element,
     HeapHashSet<Member<EventTarget>>&& animations)
     : popup_element_(popup_element), animations_(std::move(animations)) {
   DCHECK(popup_element->HasPopupAttribute());

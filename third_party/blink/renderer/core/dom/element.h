@@ -91,7 +91,6 @@ class ElementRareData;
 class ExceptionState;
 class FocusOptions;
 class GetInnerHTMLOptions;
-class HTMLSelectMenuElement;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
@@ -160,44 +159,6 @@ enum class NamedItemType {
   kName,
   kNameOrId,
   kNameOrIdWithName,
-};
-
-enum class PopupValueType {
-  kNone,
-  kAuto,
-  kHint,
-  kManual,
-};
-constexpr const char* kPopupTypeValueAuto = "auto";
-constexpr const char* kPopupTypeValueHint = "hint";
-constexpr const char* kPopupTypeValueManual = "manual";
-
-enum class PopupTriggerAction {
-  kNone,
-  kToggle,
-  kShow,
-  kHide,
-};
-
-enum class HidePopupFocusBehavior {
-  kNone,
-  kFocusPreviousElement,
-};
-
-enum class HidePopupForcingLevel {
-  kHideAfterAnimations,
-  kHideImmediately,
-};
-
-enum class HidePopupIndependence {
-  kLeaveUnrelated,
-  kHideUnrelated,
-};
-
-enum class PopUpAncestorType {
-  kDefault,
-  kNewPopUp,
-  kInclusive,
 };
 
 typedef HeapVector<Member<Attr>> AttrNodeList;
@@ -598,39 +559,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void DefaultEventHandler(Event&) override;
 
-  // Popup API related functions.
-  void UpdatePopupAttribute(String);
-  bool HasPopupAttribute() const;
-  PopupData* GetPopupData() const;
-  PopupValueType PopupType() const;
-  bool popupOpen() const;
-  void showPopUp(ExceptionState& exception_state);
-  void hidePopUp(ExceptionState& exception_state);
-  void HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
-                         HidePopupForcingLevel forcing_level);
-  void PopupHideFinishIfNeeded();
-  static const Element* NearestOpenAncestralPopup(const Node&,
-                                                  PopUpAncestorType);
-  // Retrieves the element pointed to by this element's 'anchor' content
-  // attribute, if that element exists, and if this element is a pop-up.
-  Element* anchorElement() const;
-  static void HandlePopupLightDismiss(const Event& event);
-  void InvokePopup(Element* invoker);
-  void SetPopupFocusOnShow();
-  // This hides all visible popups up to, but not including,
-  // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
-  static void HideAllPopupsUntil(const Element*,
-                                 Document&,
-                                 HidePopupFocusBehavior,
-                                 HidePopupForcingLevel,
-                                 HidePopupIndependence);
-
-  // TODO(crbug.com/1197720): The popup position should be provided by the new
-  // anchored positioning scheme.
-  void SetNeedsRepositioningForSelectMenu(bool flag);
-  void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
-  void AdjustPopupPositionForSelectMenu(ComputedStyle& style);
-
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
   virtual const QualifiedName& SubResourceAttributeName() const;
 
@@ -851,7 +779,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Element* AdjustedFocusedElementInTreeScope() const;
   bool IsAutofocusable() const;
 
-  virtual void DispatchFocusEvent(
+  // Returns false if the event was canceled, and true otherwise.
+  virtual bool DispatchFocusEvent(
       Element* old_focused_element,
       mojom::blink::FocusType,
       InputDeviceCapabilities* source_capabilities = nullptr);
@@ -1234,6 +1163,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   CSSToggleMap* GetToggleMap();
   CSSToggleMap& EnsureToggleMap();
 
+  void RemovePopupData();
+  PopupData* EnsurePopupData();
+  PopupData* GetPopupData() const;
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
@@ -1407,9 +1340,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kRebuildLayoutTree,
     kAttachLayoutTree,
   };
-
-  // Special focus handling for popups.
-  Element* GetPopupFocusableArea() const;
 
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase,
                                       const StyleRecalcContext&);

@@ -192,7 +192,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
                       TextFieldSelectionDirection);
   static unsigned IndexForPosition(HTMLElement* inner_editor, const Position&);
 
-  void DispatchFocusEvent(Element* old_focused_element,
+  bool DispatchFocusEvent(Element* old_focused_element,
                           mojom::blink::FocusType,
                           InputDeviceCapabilities* source_capabilities) final;
   void DispatchBlurEvent(Element* new_focused_element,

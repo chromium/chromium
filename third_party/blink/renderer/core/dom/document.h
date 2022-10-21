@@ -1545,19 +1545,21 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  Element* PopupHintShowing() const { return popup_hint_showing_; }
-  void SetPopupHintShowing(Element* element) { popup_hint_showing_ = element; }
-  HeapVector<Member<Element>>& PopupStack() { return popup_stack_; }
-  const HeapVector<Member<Element>>& PopupStack() const { return popup_stack_; }
+  HTMLElement* PopupHintShowing() const { return popup_hint_showing_; }
+  void SetPopupHintShowing(HTMLElement* element);
+  HeapVector<Member<HTMLElement>>& PopupStack() { return popup_stack_; }
+  const HeapVector<Member<HTMLElement>>& PopupStack() const {
+    return popup_stack_;
+  }
   bool PopupAutoShowing() const { return !popup_stack_.empty(); }
-  Element* TopmostPopupAutoOrHint() const;
-  HeapHashSet<Member<Element>>& PopupsWaitingToHide() {
+  HTMLElement* TopmostPopupAutoOrHint() const;
+  HeapHashSet<Member<HTMLElement>>& PopupsWaitingToHide() {
     return popups_waiting_to_hide_;
   }
-  const Element* PopUpPointerdownTarget() const {
+  const HTMLElement* PopUpPointerdownTarget() const {
     return pop_up_pointerdown_target_;
   }
-  void SetPopUpPointerdownTarget(const Element*);
+  void SetPopUpPointerdownTarget(const HTMLElement*);
 
   // Add an element to the set of elements that, because of CSS toggle
   // creation, need style recalc done later.
@@ -2395,14 +2397,14 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // The stack of currently-displayed `popup=auto` elements. Elements in the
   // stack go from earliest (bottom-most) to latest (top-most).
-  HeapVector<Member<Element>> popup_stack_;
+  HeapVector<Member<HTMLElement>> popup_stack_;
   // The `popup=hint` that is currently showing, if any.
-  Member<Element> popup_hint_showing_;
+  Member<HTMLElement> popup_hint_showing_;
   // The pop-up (if any) that received the most recent pointerdown event.
-  Member<const Element> pop_up_pointerdown_target_;
+  Member<const HTMLElement> pop_up_pointerdown_target_;
   // A set of popups for which hidePopUp() has been called, but animations are
   // still running.
-  HeapHashSet<Member<Element>> popups_waiting_to_hide_;
+  HeapHashSet<Member<HTMLElement>> popups_waiting_to_hide_;
 
   // Elements that need to be restyled because a toggle was created on them,
   // or a prior sibling, during the previous restyle.

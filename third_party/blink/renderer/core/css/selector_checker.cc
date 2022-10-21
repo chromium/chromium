@@ -1501,8 +1501,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       break;
     }
     case CSSSelector::kPseudoOpen:
-      if (element.HasPopupAttribute()) {
-        return element.popupOpen();
+      if (auto* html_element = DynamicTo<HTMLElement>(element);
+          html_element && html_element->HasPopupAttribute()) {
+        return html_element->popupOpen();
       }
       return false;
     case CSSSelector::kPseudoPopupOpeningOrOpen:
@@ -1513,8 +1514,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // important to *not* match when the feature is *disabled*.
         return false;
       }
-      if (element.HasPopupAttribute()) {
-        return element.GetPopupData()->visibilityState() !=
+      if (auto* html_element = DynamicTo<HTMLElement>(element);
+          html_element && html_element->HasPopupAttribute()) {
+        return html_element->GetPopupData()->visibilityState() !=
                PopupVisibilityState::kHidden;
       }
       return false;

@@ -15,7 +15,7 @@
 
 namespace blink {
 
-class Element;
+class HTMLElement;
 class EventTarget;
 
 // Helper class used to manage popup hide animations.
@@ -24,7 +24,7 @@ class PopupAnimationFinishedEventListener : public NativeEventListener {
 
  public:
   explicit PopupAnimationFinishedEventListener(
-      Member<Element>,
+      Member<HTMLElement>,
       HeapHashSet<Member<EventTarget>>&&);
   ~PopupAnimationFinishedEventListener() override;
 
@@ -38,7 +38,7 @@ class PopupAnimationFinishedEventListener : public NativeEventListener {
  private:
   void RemoveEventListeners(EventTarget* animation) const;
 
-  Member<Element> popup_element_;
+  Member<HTMLElement> popup_element_;
   HeapHashSet<Member<EventTarget>> animations_;
 };
 

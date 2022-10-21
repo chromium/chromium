@@ -62,7 +62,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   PartType AssignedPartType(Node* node) const;
 
-  Element* ButtonPart() const { return button_part_; }
+  HTMLElement* ButtonPart() const { return button_part_; }
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
@@ -75,9 +75,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void CloseListbox();
 
   HTMLOptionElement* FirstOptionPart() const;
-  Element* FirstValidButtonPart() const;
-  Element* FirstValidListboxPart() const;
-  Element* FirstValidSelectedValuePart() const;
+  HTMLElement* FirstValidButtonPart() const;
+  HTMLElement* FirstValidListboxPart() const;
+  HTMLElement* FirstValidSelectedValuePart() const;
   void EnsureButtonPartIsValid();
   void EnsureSelectedValuePartIsValid();
   void EnsureListboxPartIsValid();
@@ -86,14 +86,14 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void SelectPreviousOption();
   void UpdateSelectedValuePartContents();
 
-  void ButtonPartInserted(Element*);
-  void ButtonPartRemoved(Element*);
+  void ButtonPartInserted(HTMLElement*);
+  void ButtonPartRemoved(HTMLElement*);
   void UpdateButtonPart();
-  void SelectedValuePartInserted(Element*);
-  void SelectedValuePartRemoved(Element*);
+  void SelectedValuePartInserted(HTMLElement*);
+  void SelectedValuePartRemoved(HTMLElement*);
   void UpdateSelectedValuePart();
-  void ListboxPartInserted(Element*);
-  void ListboxPartRemoved(Element*);
+  void ListboxPartInserted(HTMLElement*);
+  void ListboxPartRemoved(HTMLElement*);
   void UpdateListboxPart();
   void OptionPartInserted(HTMLOptionElement*);
   void OptionPartRemoved(HTMLOptionElement*);
@@ -108,9 +108,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
   bool IsValidListboxPart(const Node* node, bool show_warning) const;
   bool IsValidOptionPart(const Node* node, bool show_warning) const;
 
-  void SetButtonPart(Element* new_button_part);
+  void SetButtonPart(HTMLElement* new_button_part);
   // Returns true if the listbox part actually changed to something different.
-  bool SetListboxPart(Element* new_listbox_part);
+  bool SetListboxPart(HTMLElement* new_listbox_part);
 
   bool IsRequiredFormControl() const override;
   bool IsOptionalFormControl() const override;
@@ -165,9 +165,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   Member<SelectMutationCallback> select_mutation_callback_;
 
-  Member<Element> button_part_;
-  Member<Element> selected_value_part_;
-  Member<Element> listbox_part_;
+  Member<HTMLElement> button_part_;
+  Member<HTMLElement> selected_value_part_;
+  Member<HTMLElement> listbox_part_;
   HeapLinkedHashSet<Member<HTMLOptionElement>> option_parts_;
   Member<HTMLSlotElement> button_slot_;
   Member<HTMLSlotElement> listbox_slot_;

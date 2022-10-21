@@ -297,7 +297,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
-  if (!popup_style_sheet_ && element.HasPopupAttribute()) {
+  if (!popup_style_sheet_ && IsA<HTMLElement>(element) &&
+      To<HTMLElement>(element).HasPopupAttribute()) {
     // TODO: We should assert that this sheet only contains rules for popups.
     DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
         element.GetDocument().GetExecutionContext()));

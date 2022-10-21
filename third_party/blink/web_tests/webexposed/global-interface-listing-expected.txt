@@ -2286,7 +2286,6 @@ interface Element : Node
     getter clientWidth
     getter computedName
     getter computedRole
-    getter defaultOpen
     getter elementTiming
     getter firstElementChild
     getter id
@@ -2305,7 +2304,6 @@ interface Element : Node
     getter onwebkitfullscreenerror
     getter outerHTML
     getter part
-    getter popUp
     getter prefix
     getter previousElementSibling
     getter role
@@ -2343,7 +2341,6 @@ interface Element : Node
     method hasAttributeNS
     method hasAttributes
     method hasPointerCapture
-    method hidePopUp
     method insertAdjacentElement
     method insertAdjacentHTML
     method insertAdjacentText
@@ -2371,7 +2368,6 @@ interface Element : Node
     method setAttributeNodeNS
     method setHTML
     method setPointerCapture
-    method showPopUp
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen
@@ -2428,7 +2424,6 @@ interface Element : Node
     setter ariaVirtualContent
     setter classList
     setter className
-    setter defaultOpen
     setter elementTiming
     setter id
     setter innerHTML
@@ -2442,7 +2437,6 @@ interface Element : Node
     setter onwebkitfullscreenerror
     setter outerHTML
     setter part
-    setter popUp
     setter role
     setter scrollLeft
     setter scrollTop
@@ -3230,6 +3224,7 @@ interface HTMLElement : Element
     getter autofocus
     getter contentEditable
     getter dataset
+    getter defaultOpen
     getter dir
     getter draggable
     getter editContext
@@ -3352,6 +3347,7 @@ interface HTMLElement : Element
     getter onwebkittransitionend
     getter onwheel
     getter outerText
+    getter popUp
     getter spellcheck
     getter style
     getter tabIndex
@@ -3363,10 +3359,13 @@ interface HTMLElement : Element
     method click
     method constructor
     method focus
+    method hidePopUp
+    method showPopUp
     setter accessKey
     setter autocapitalize
     setter autofocus
     setter contentEditable
+    setter defaultOpen
     setter dir
     setter draggable
     setter editContext
@@ -3483,6 +3482,7 @@ interface HTMLElement : Element
     setter onwebkittransitionend
     setter onwheel
     setter outerText
+    setter popUp
     setter spellcheck
     setter style
     setter tabIndex

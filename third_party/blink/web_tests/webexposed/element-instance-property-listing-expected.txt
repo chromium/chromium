@@ -1360,7 +1360,6 @@ namespace http://www.w3.org/2000/svg
     property computedStyleMap
     property contains
     property dataset
-    property defaultOpen
     property dispatchEvent
     property elementTiming
     property firstChild
@@ -1385,7 +1384,6 @@ namespace http://www.w3.org/2000/svg
     property hasAttributes
     property hasChildNodes
     property hasPointerCapture
-    property hidePopUp
     property id
     property innerHTML
     property insertAdjacentElement
@@ -1528,7 +1526,6 @@ namespace http://www.w3.org/2000/svg
     property parentElement
     property parentNode
     property part
-    property popUp
     property prefix
     property prepend
     property previousElementSibling
@@ -1564,7 +1561,6 @@ namespace http://www.w3.org/2000/svg
     property setHTML
     property setPointerCapture
     property shadowRoot
-    property showPopUp
     property slot
     property style
     property tabIndex

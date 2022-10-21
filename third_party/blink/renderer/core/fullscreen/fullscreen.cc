@@ -207,10 +207,10 @@ void GoFullscreen(Element& element,
   // If there are any open popups, close them immediately.
   if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
           document.GetExecutionContext())) {
-    Element::HideAllPopupsUntil(nullptr, document,
-                                HidePopupFocusBehavior::kNone,
-                                HidePopupForcingLevel::kHideImmediately,
-                                HidePopupIndependence::kHideUnrelated);
+    HTMLElement::HideAllPopupsUntil(nullptr, document,
+                                    HidePopupFocusBehavior::kNone,
+                                    HidePopupForcingLevel::kHideImmediately,
+                                    HidePopupIndependence::kHideUnrelated);
   }
 
   // To fullscreen an |element| within a |document|, set the |element|'s
@@ -405,8 +405,11 @@ bool RequestFullscreenConditionsMet(Element& pending, Document& document) {
     return false;
 
   // |pending| is not a dialog or popup element.
-  if (IsA<HTMLDialogElement>(pending) || pending.HasPopupAttribute())
+  if (IsA<HTMLDialogElement>(pending) ||
+      (IsA<HTMLElement>(pending) &&
+       To<HTMLElement>(pending).HasPopupAttribute())) {
     return false;
+  }
 
   // The fullscreen element ready check for |pending| returns false.
   if (!FullscreenElementReady(pending, ReportOptions::kReportOnFailure))

@@ -7665,7 +7665,12 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-Element* Document::TopmostPopupAutoOrHint() const {
+void Document::SetPopupHintShowing(HTMLElement* element) {
+  DCHECK(!element || element->HasPopupAttribute());
+  popup_hint_showing_ = element;
+}
+
+HTMLElement* Document::TopmostPopupAutoOrHint() const {
   if (PopupHintShowing())
     return PopupHintShowing();
   if (PopupStack().empty())
@@ -7673,7 +7678,7 @@ Element* Document::TopmostPopupAutoOrHint() const {
   return PopupStack().back();
 }
 
-void Document::SetPopUpPointerdownTarget(const Element* pop_up) {
+void Document::SetPopUpPointerdownTarget(const HTMLElement* pop_up) {
   DCHECK(
       RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(GetExecutionContext()));
   DCHECK(!pop_up || pop_up->HasPopupAttribute());

@@ -204,7 +204,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   bool ShouldHaveFocusAppearance() const final;
 
-  void DispatchFocusEvent(
+  bool DispatchFocusEvent(
       Element* old_focused_element,
       mojom::blink::FocusType,
       InputDeviceCapabilities* source_capabilities) override;
