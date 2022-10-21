@@ -1815,6 +1815,10 @@ int HttpCache::Transaction::DoCacheUpdateStaleWhileRevalidateTimeout() {
   response_.stale_revalidate_timeout =
       cache_->clock_->Now() + kStaleRevalidateTimeout;
   TransitionToState(STATE_CACHE_UPDATE_STALE_WHILE_REVALIDATE_TIMEOUT_COMPLETE);
+
+  // We shouldn't be using stale truncated entries; if we did, the false below
+  // would be wrong.
+  DCHECK(!truncated_);
   return WriteResponseInfoToEntry(response_, false);
 }
 
