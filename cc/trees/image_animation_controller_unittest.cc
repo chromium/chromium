@@ -5,6 +5,7 @@
 #include "cc/trees/image_animation_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
