@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -158,9 +159,9 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
                            item.TextLength());
     // 2.2. Set middle to true if the character at index i is the second or
     // later character that corresponds to a typographic character.
-    for (unsigned text_offset = item_string.NextCodePointOffset(0);
-         text_offset < item_string.length();
-         text_offset = item_string.NextCodePointOffset(text_offset)) {
+    WTF::CodePointIterator iterator = item_string.begin();
+    const WTF::CodePointIterator end = item_string.end();
+    for (++iterator; iterator != end; ++iterator) {
       SvgPerCharacterInfo middle_info;
       middle_info.middle = true;
       middle_info.item_index = info.item_index;

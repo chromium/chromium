@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -291,6 +292,14 @@ unsigned StringView::NextCodePointOffset(unsigned i) const {
   if (i < length() && U16_IS_LEAD(*str++) && U16_IS_TRAIL(*str))
     ++i;
   return i;
+}
+
+CodePointIterator StringView::begin() const {
+  return CodePointIterator(*this, 0u);
+}
+
+CodePointIterator StringView::end() const {
+  return CodePointIterator(*this, length_);
 }
 
 }  // namespace WTF

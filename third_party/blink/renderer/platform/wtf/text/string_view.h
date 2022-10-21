@@ -22,6 +22,7 @@
 namespace WTF {
 
 class AtomicString;
+class CodePointIterator;
 class String;
 
 enum UTF8ConversionMode {
@@ -231,6 +232,21 @@ class WTF_EXPORT StringView {
 
   template <bool isSpecialCharacter(UChar)>
   bool IsAllSpecialCharacters() const;
+
+  // Iterator support
+  //
+  // begin() and end() return iterators for UChar32, neither UChar nor LChar.
+  // If you'd like to iterate code units, just use [] and length().
+  //
+  // * Iterate code units
+  //    for (unsigned i = 0; i < view.length(); ++i) {
+  //      UChar code_unit = view[i];
+  //      ...
+  // * Iterate code points
+  //    for (UChar32 code_point : view) {
+  //      ...
+  CodePointIterator begin() const;
+  CodePointIterator end() const;
 
  private:
   void Set(const StringImpl&, unsigned offset, unsigned length);
