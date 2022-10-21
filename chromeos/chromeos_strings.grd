@@ -3474,6 +3474,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_BACK_BUTTON_LABEL" desc="label for the back button to return to a prior page">
         Back
       </message>
+      <message name="IDS_FEEDBACK_TOOL_DIALOG_BACK_BUTTON_ARIA_LABEL" desc="Aria label for the back button in the dialogs to close the dialog and return to the feedback app page">
+        Back button
+      </message>
       <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_HINT" desc="Label for the hint in description textarea">
         Share your feedback or describe your issue. If possible, include steps to reproduce your issue.
       </message>
