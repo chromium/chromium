@@ -96,6 +96,7 @@ chromevox_es6_modules = [
   "background/output/output_format_tree.js",
   "background/output/output_logger.js",
   "background/output/output_role_info.js",
+  "background/output/output_rules.js",
   "background/output/output_types.js",
   "background/page_load_sound_handler.js",
   "background/panel/i_search.js",

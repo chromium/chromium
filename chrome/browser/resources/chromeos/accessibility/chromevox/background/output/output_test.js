@@ -102,6 +102,8 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     await importModule('Output', '/chromevox/background/output/output.js');
     await importModule(
         'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
+    await importModule(
+        'OUTPUT_RULES', '/chromevox/background/output/output_rules.js');
     await importModule('CursorRange', '/common/cursors/range.js');
     await importModule('Cursor', '/common/cursors/cursor.js');
     await importModule(
@@ -965,8 +967,8 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
   let missingState = [];
   let missingRestriction = [];
   let missingDescription = [];
-  for (const key in Output.RULES.navigate) {
-    const speak = Output.RULES.navigate[key].speak;
+  for (const key in OUTPUT_RULES.navigate) {
+    const speak = OUTPUT_RULES.navigate[key].speak;
     if (!speak) {
       continue;
     }
@@ -1079,12 +1081,12 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateRoles', function() {
     RoleType.STATIC_TEXT,
     RoleType.WINDOW,
   ];
-  for (const key in Output.RULES.navigate) {
+  for (const key in OUTPUT_RULES.navigate) {
     if (allowedMissingRoles.indexOf(key) !== -1) {
       continue;
     }
-    const speak = Output.RULES.navigate[key].speak;
-    let enter = Output.RULES.navigate[key].enter;
+    const speak = OUTPUT_RULES.navigate[key].speak;
+    let enter = OUTPUT_RULES.navigate[key].enter;
     if (enter && enter.speak) {
       enter = enter.speak;
     }
