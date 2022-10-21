@@ -1,0 +1,13 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+module blink.mojom;
+
+// These enum values should not be persisted nor logged to histograms.
+enum RuntimeEnabledFeatures {
+  {% for feature in browser_read_access_features %}
+  k{{feature.name}},
+  {% endfor %}
+};

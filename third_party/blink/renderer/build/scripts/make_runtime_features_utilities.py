@@ -88,3 +88,14 @@ def origin_trials(features):
             dfs(str(feature['name']))
 
     return origin_trials_set
+
+
+def browser_read_access(features):
+    return [
+        f for f in features if f['browser_process_read_access']
+        or f['browser_process_read_write_access']
+    ]
+
+
+def browser_write_access(features):
+    return [f for f in features if f['browser_process_read_write_access']]

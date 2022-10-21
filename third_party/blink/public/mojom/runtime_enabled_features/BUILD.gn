@@ -1,0 +1,37 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("runtime_enabled_features") {
+  sources = [ "$root_gen_dir/third_party/blink/public/mojom/runtime_enabled_features/runtime_enabled_features.mojom" ]
+
+  deps = [ "//mojo/public/mojom/base" ]
+
+  parser_deps = [ ":generate_blink_runtime_enabled_features" ]
+
+  generate_java = true
+}
+
+blink_python_runner("generate_blink_runtime_enabled_features") {
+  script = "../../../renderer/build/scripts/make_runtime_enabled_features_mojom_defs.py"
+
+  args = [
+    rebase_path(
+        "//third_party/blink/renderer/platform/runtime_enabled_features.json5",
+        root_build_dir),
+    "--output_dir",
+    rebase_path(
+        "$root_gen_dir/third_party/blink/public/mojom/runtime_enabled_features/",
+        root_build_dir),
+  ]
+
+  inputs = scripts_for_json5_files + [
+             "../../../renderer/platform/runtime_enabled_features.json5",
+             "../../../renderer/build/scripts/templates/runtime_enabled_features.mojom.tmpl",
+           ]
+  outputs = [ "$root_gen_dir/third_party/blink/public/mojom/runtime_enabled_features/runtime_enabled_features.mojom" ]
+}
