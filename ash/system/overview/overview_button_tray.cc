@@ -80,6 +80,9 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kOverview),
       icon_(new views::ImageView()),
       scoped_session_observer_(this) {
+  SetPressedCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
+                                         base::Unretained(this)));
+
   const gfx::ImageSkia image = GetIconImage();
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
@@ -116,6 +119,8 @@ void OverviewButtonTray::SnapRippleToActivated() {
 
 void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
   Button::OnGestureEvent(event);
+  // TODO(crbug/1374368): React to long press via `OnButtonPressed()` once this
+  // is enabled.
   if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
     // TODO(crbug.com/970013): Properly implement the multi-display behavior (in
     // tablet position with an external pointing device).
@@ -124,7 +129,50 @@ void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-bool OverviewButtonTray::PerformAction(const ui::Event& event) {
+void OverviewButtonTray::HandlePerformActionResult(bool action_performed,
+                                                   const ui::Event& event) {
+  // Do nothing, prevent the default ripple handling.
+}
+
+void OverviewButtonTray::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  UpdateIconVisibility();
+}
+
+void OverviewButtonTray::OnTabletModeEventsBlockingChanged() {
+  UpdateIconVisibility();
+}
+
+void OverviewButtonTray::OnShelfConfigUpdated() {
+  UpdateIconVisibility();
+}
+
+void OverviewButtonTray::OnOverviewModeStarting() {
+  SetIsActive(true);
+}
+
+void OverviewButtonTray::OnOverviewModeEnded() {
+  SetIsActive(false);
+}
+
+void OverviewButtonTray::ClickedOutsideBubble() {}
+
+std::u16string OverviewButtonTray::GetAccessibleNameForTray() {
+  return l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME);
+}
+
+void OverviewButtonTray::HandleLocaleChange() {}
+
+void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
+  // This class has no bubbles to hide.
+}
+
+void OverviewButtonTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(GetIconImage());
+}
+
+void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
   DCHECK(event.type() == ui::ET_MOUSE_RELEASED ||
          event.type() == ui::ET_GESTURE_TAP);
 
@@ -173,7 +221,7 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
           views::InkDropState::DEACTIVATED, nullptr);
       wm::ActivateWindow(new_active_window);
       last_press_event_time_ = absl::nullopt;
-      return true;
+      return;
     }
   }
 
@@ -188,51 +236,6 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
   else
     overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
   base::RecordAction(base::UserMetricsAction("Tray_Overview"));
-
-  // The return value doesn't matter here. OnOverviewModeStarting() and
-  // OnOverviewModeEnded() will do the right thing to set the button state.
-  return true;
-}
-
-void OverviewButtonTray::HandlePerformActionResult(bool action_performed,
-                                                   const ui::Event& event) {}
-
-void OverviewButtonTray::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  UpdateIconVisibility();
-}
-
-void OverviewButtonTray::OnTabletModeEventsBlockingChanged() {
-  UpdateIconVisibility();
-}
-
-void OverviewButtonTray::OnShelfConfigUpdated() {
-  UpdateIconVisibility();
-}
-
-void OverviewButtonTray::OnOverviewModeStarting() {
-  SetIsActive(true);
-}
-
-void OverviewButtonTray::OnOverviewModeEnded() {
-  SetIsActive(false);
-}
-
-void OverviewButtonTray::ClickedOutsideBubble() {}
-
-std::u16string OverviewButtonTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME);
-}
-
-void OverviewButtonTray::HandleLocaleChange() {}
-
-void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
-  // This class has no bubbles to hide.
-}
-
-void OverviewButtonTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(GetIconImage());
 }
 
 void OverviewButtonTray::UpdateIconVisibility() {
