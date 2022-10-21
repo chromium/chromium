@@ -236,23 +236,10 @@ void DocumentTransitionStyleTracker::RemoveSharedElement(Element* element) {
 void DocumentTransitionStyleTracker::AddSharedElementsFromCSS() {
   DCHECK(document_ && document_->View());
 
-  // TODO(vmpstr): This needs some thought :(
-  // From khushalsagar:
-  // We have to change this such that discovering of tags happens at the end of
-  // reaching the paint phase of the lifecycle update at the next frame. So the
-  // way this would be setup is:
-  // - At the next frame, acquire the scope before dispatching raf callbacks.
-  // - When we hit paint, discover all the tags and then release the scope.
-  // We can have recursive lifecycle updates after this to invalidate the pseudo
-  // DOM but the decision for which elements will be shared is not changeable
-  // after that point.
-  auto scope =
-      document_->GetDisplayLockDocumentState().GetScopedForceActivatableLocks();
-
   // We need our paint layers, and z-order lists which is done during
   // compositing inputs update.
-  document_->View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kDocumentTransition);
+  DCHECK_GE(document_->Lifecycle().GetState(),
+            DocumentLifecycle::kCompositingInputsClean);
 
   AddSharedElementsFromCSSRecursive(
       document_->GetLayoutView()->PaintingLayer());
@@ -545,6 +532,14 @@ bool DocumentTransitionStyleTracker::Start() {
 
     document_->GetStyleEngine().SetDocumentTransitionTags(new_tags);
   }
+
+  DCHECK_GE(document_->Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
+  // We need to run post prepaint steps here to ensure that the style would be
+  // correct if computed by either the main frame or by getComputedStyle call.
+  // TODO(vmpstr): Rename to something like UpdatePseudoGeometry.
+  RunPostPrePaintSteps();
 
   // We need a style invalidation to generate new content pseudo elements for
   // new elements in the DOM.

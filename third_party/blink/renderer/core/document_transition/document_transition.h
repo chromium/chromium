@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_request.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
@@ -30,23 +29,40 @@ namespace blink {
 
 class Document;
 class Element;
-class ExceptionState;
 class LayoutObject;
 class PseudoElement;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
 
+// An interface class that allows us to store requests in some object that isn't
+// tied to the lifetime of the transition.
+class DocumentTransitionDirectiveStore {
+ public:
+  virtual void AddPendingRequest(
+      std::unique_ptr<DocumentTransitionRequest>) = 0;
+};
+
 class CORE_EXPORT DocumentTransition
     : public ScriptWrappable,
       public ActiveScriptWrappable<DocumentTransition>,
       public ExecutionContextLifecycleObserver,
-      public LocalFrameView::LifecycleNotificationObserver,
       public ChromeClient::CommitObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DocumentTransition(Document*);
+  // Creating a document transition also starts it.
+  DocumentTransition(Document*,
+                     ScriptState*,
+                     V8DocumentTransitionCallback*,
+                     DocumentTransitionDirectiveStore*);
+
+  // IDL implementation. Refer to document_transition.idl for additional
+  // comments.
+  void skipTransition();
+  ScriptPromise finished() const;
+  ScriptPromise ready() const;
+  ScriptPromise domUpdated() const;
 
   // GC functionality.
   void Trace(Visitor* visitor) const override;
@@ -56,26 +72,6 @@ class CORE_EXPORT DocumentTransition
 
   // ActiveScriptWrappable functionality.
   bool HasPendingActivity() const override;
-
-  // Initiates a new transition via createDocumentTransition() API. Returns
-  // false if a transition was already active which must finish before a new one
-  // can be started.
-  bool StartNewTransition();
-
-  ScriptPromise start(ScriptState*, ExceptionState&);
-  ScriptPromise start(ScriptState*,
-                      V8DocumentTransitionCallback* callback,
-                      ExceptionState&);
-  void abandon(ScriptState*, ExceptionState&);
-
-  ScriptPromise prepare(ScriptState*, ExceptionState&);
-  ScriptPromise prepare(ScriptState*,
-                        V8DocumentTransitionCallback* callback,
-                        ExceptionState&);
-  ScriptPromise finished() const;
-
-  // This uses std::move semantics to take the request from this object.
-  std::unique_ptr<DocumentTransitionRequest> TakePendingRequest();
 
   // Returns true if this object needs to create an EffectNode for the shared
   // element transition.
@@ -103,8 +99,15 @@ class CORE_EXPORT DocumentTransition
   // https://github.com/vmpstr/shared-element-transitions/issues/17
   void VerifySharedElements();
 
-  // Dispatched during a lifecycle update after clean layout.
-  void RunPostPrePaintSteps();
+  // Dispatched during a lifecycle update after prepaint has finished its work.
+  // This is only done if we're in the main lifecycle update that will produce
+  // painted output.
+  void RunDocumentTransitionStepsDuringMainFrame();
+
+  // This returns true if this transition object needs to gather tags as the
+  // next step in the process. This is used to force activatable
+  // content-visibility locks.
+  bool NeedsUpToDateTags() const;
 
   // Creates a pseudo element for the given |pseudo_id|.
   PseudoElement* CreatePseudoElement(
@@ -116,14 +119,6 @@ class CORE_EXPORT DocumentTransition
   // transition.
   String UAStyleSheet() const;
 
-  // Used by web tests to retain the pseudo-element tree after a
-  // DocumentTransition finishes. This is used to capture a static version of
-  // the last rendered frame.
-  void DisableEndTransition() { disable_end_transition_ = true; }
-
-  // LifecycleNotificationObserver overrides.
-  void WillStartLifecycleUpdate(const LocalFrameView&) override;
-
   // CommitObserver overrides.
   void WillCommitCompositorFrame() override;
 
@@ -132,8 +127,6 @@ class CORE_EXPORT DocumentTransition
     return style_tracker_ ? style_tracker_->GetTransitioningElements()
                           : VectorOf<Element>{};
   }
-
-  bool IsIdle() const { return state_ == State::kIdle; }
 
   bool IsRootTransitioning() const {
     return style_tracker_ && style_tracker_->IsRootTransitioning();
@@ -144,20 +137,67 @@ class CORE_EXPORT DocumentTransition
   gfx::Rect GetSnapshotViewportRect() const;
   gfx::Vector2d GetRootSnapshotPaintOffset() const;
 
+  bool IsDone() const { return IsTerminalState(state_); }
+
  private:
   friend class DocumentTransitionTest;
   friend class AXDocumentTransitionTest;
 
-  enum class State { kIdle, kCapturing, kCaptured, kStarted };
+  // Note the states are possibly overly verbose, and several states can
+  // transition in one function call, but it's useful to keep track of what is
+  // happening. For the most part, the states transition in order, with the
+  // exception of us being able to jump to some terminal states from other
+  // states.
+  enum class State {
+    // Initial state.
+    kInitial,
 
-  // Invoked when the async callback dispatched after capture finishes
-  // executing.
-  class PostCaptureResolved : public ScriptFunction::Callable {
+    // Capture states.
+    kCaptureTagDiscovery,
+    kCaptureRequestPending,
+    kCapturing,
+    kCaptured,
+
+    // Callback states.
+    kDOMCallbackRunning,
+    kDOMCallbackFinished,
+
+    // Animate states.
+    kAnimateTagDiscovery,
+    kAnimateRequestPending,
+    kAnimating,
+
+    // Terminal states.
+    kFinished,
+    kAborted,
+    kTimedOut
+  };
+
+  // Advance to the new state. This returns true if the state should be
+  // processed immediately.
+  bool AdvanceTo(State state);
+
+  bool CanAdvanceTo(State state) const;
+  static bool StateRunsInDocumentTransitionStepsDuringMainFrame(State state);
+
+  // Returns true if we're in a state that doesn't require explicit flow (i.e.
+  // we don't need to post task or schedule a frame). We're waiting for some
+  // external notifications, like capture is finished, or callback finished
+  // running.
+  static bool WaitsForNotification(State state);
+
+  static bool IsTerminalState(State state);
+
+  void ProcessCurrentState();
+
+  // Invoked when DocumentTransitionCallback finishes running.
+  class DOMChangeFinishedCallback : public ScriptFunction::Callable {
    public:
-    explicit PostCaptureResolved(DocumentTransition* transition,
-                                 bool success,
-                                 Document*);
-    ~PostCaptureResolved() override;
+    explicit DOMChangeFinishedCallback(
+        DocumentTransition* transition,
+        ScriptPromiseResolver* dom_updated_resolver,
+        bool success);
+    ~DOMChangeFinishedCallback() override;
 
     ScriptValue Call(ScriptState*, ScriptValue) override;
     void Trace(Visitor* visitor) const override;
@@ -165,85 +205,55 @@ class CORE_EXPORT DocumentTransition
     void Cancel();
 
    private:
-    Member<DocumentTransition> transition_;
+    WeakMember<DocumentTransition> transition_;
+    Member<ScriptPromiseResolver> dom_updated_resolver_;
     const bool success_;
-    Member<Document> document_;
   };
 
-  void NotifyHasChangesToCommit();
-
-  void NotifyCaptureFinished(uint32_t sequence_id);
-  void NotifyStartFinished(uint32_t sequence_id);
+  void NotifyCaptureFinished();
 
   // Dispatched when the DocumentTransitionCallback has finished executing and
   // start phase of the animation can be initiated.
-  void NotifyPostCaptureCallbackResolved(bool success);
+  void NotifyDOMCallbackFinished(bool success);
 
   // Used to defer visual updates between transition prepare dispatching and
   // transition start to allow the page to set up the final scene
   // asynchronously.
   void PauseRendering();
-  void OnRenderingPausedTimeout(uint32_t sequence_id);
+  void OnRenderingPausedTimeout();
   void ResumeRendering();
 
-  // Allow canceling a transition until it reaches start().
-  void CancelPendingTransition(const char* abort_message);
-
-  // Resets internal state, called in both abort situations and transition
-  // finished situations.
-  void ResetTransitionState(bool abort_style_tracker = true);
-  void ResetScriptState(const char* abort_message);
-
-  // A common helper for start() and prepare() calls.
-  bool InitiateTransition(ScriptState*,
-                          V8DocumentTransitionCallback* callback,
-                          ExceptionState&);
+  // Returns true if we invoked the callback and the result was not nothing,
+  // and false otherwise. False would be returned if we failed to run the
+  // callback (the result was "Nothing"). Note that this returns true if there
+  // is no dom callback, since effectively we called "noop".
+  bool InvokeDOMChangeCallback();
 
   Member<Document> document_;
 
-  State state_ = State::kIdle;
-
-  // Script callback passed to the start() API. Dispatched when capturing
-  // snapshots from the old DOM finishes.
-  Member<V8DocumentTransitionCallback> capture_resolved_callback_;
-
-  // Script state cached from the start() API.
-  Member<ScriptState> start_script_state_;
-
-  // The following callables are used to track when the async
-  // |capture_resolved_callback_| finishes executing.
-  Member<PostCaptureResolved> post_capture_success_callable_;
-  Member<PostCaptureResolved> post_capture_reject_callable_;
-
-  // The following promise is provided to script and resolved when all
-  // animations from the start phase finish.
-  Member<ScriptPromiseResolver> finished_promise_resolver_;
-  // The following promise is provided to script and resolved after the prepare
-  // callback finishes.
-  Member<ScriptPromiseResolver> prepare_promise_resolver_;
-
-  // Created conditionally if renderer based SharedElementTransitions is
-  // enabled.
-  Member<DocumentTransitionStyleTracker> style_tracker_;
-
-  std::unique_ptr<DocumentTransitionRequest> pending_request_;
-
-  uint32_t last_prepare_sequence_id_ = 0u;
-  uint32_t last_start_sequence_id_ = 0u;
-
-  // Use a common counter for sequence ids to avoid confusion. Prepare
-  // and start sequence ids are technically in a different namespace, but this
-  // avoids any confusion while debugging.
-  uint32_t next_sequence_id_ = 1u;
+  State state_ = State::kInitial;
 
   // The document tag identifies the document to which this transition belongs.
   // It's unique among other local documents.
   uint32_t document_tag_ = 0u;
 
+  Member<ScriptState> script_state_;
+
+  Member<V8DocumentTransitionCallback> update_dom_callback_;
+
+  Member<DocumentTransitionStyleTracker> style_tracker_;
+
+  Member<ScriptPromiseResolver> dom_updated_promise_resolver_;
+  Member<ScriptPromiseResolver> ready_promise_resolver_;
+  Member<ScriptPromiseResolver> finished_promise_resolver_;
+
+  DocumentTransitionDirectiveStore* directive_store_;
+
   std::unique_ptr<cc::ScopedPauseRendering> rendering_paused_scope_;
 
-  // Set only for tests.
-  bool disable_end_transition_ = false;
+  bool in_main_lifecycle_update_ = false;
+  bool dom_callback_succeeded_ = false;
+  bool first_animating_frame_ = true;
 };
 
 }  // namespace blink

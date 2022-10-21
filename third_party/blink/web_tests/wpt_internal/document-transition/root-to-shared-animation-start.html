@@ -28,8 +28,7 @@ html::page-transition-outgoing-image(*) { animation: unset; opacity: 1; }
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     document.documentElement.style.pageTransitionTag = "none";
     box.style.pageTransitionTag = "root";
     // We should not see the "live" body at all.

@@ -62,8 +62,7 @@ html::page-transition-incoming-image(root) { animation: unset; opacity: 1; heigh
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     // Add a shared element to ensure its bounds don't expand the root snapshot
     // size.
     target2.style = "page-transition-tag: target2";

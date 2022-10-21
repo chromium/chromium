@@ -44,13 +44,13 @@ Other than green and pink background no other colors should appear.
 let classes = ["top", "bottom"]
 let i = 0;
 async function runAnimation() {
-  let t = document.createDocumentTransition();
   target.style.pageTransitionTag = "target";
-  await t.start(() => {
+  let t = document.createDocumentTransition(() => {
     target.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
     target.classList.add(classes[i]);
   });
+  await t.finished;
 }
 
 function init() {

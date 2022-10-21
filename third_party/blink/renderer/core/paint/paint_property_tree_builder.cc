@@ -12,7 +12,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -1649,14 +1649,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateSharedElementTransitionEffect() {
   if (NeedsPaintPropertyUpdate()) {
     if (full_context_.direct_compositing_reasons &
         CompositingReason::kDocumentTransitionSharedElement) {
-      auto* supplement =
-          DocumentTransitionSupplement::FromIfExists(object_.GetDocument());
-      DCHECK(supplement);
+      auto* transition =
+          DocumentTransitionUtils::GetActiveTransition(object_.GetDocument());
+      DCHECK(transition);
 
-      OnUpdateEffect(supplement->GetTransition()->UpdateEffect(
-          object_, *context_.current_effect, context_.current.clip,
-          context_.current.transform));
-      context_.current_effect = supplement->GetTransition()->GetEffect(object_);
+      OnUpdateEffect(transition->UpdateEffect(object_, *context_.current_effect,
+                                              context_.current.clip,
+                                              context_.current.transform));
+      context_.current_effect = transition->GetEffect(object_);
     }
   }
 }
@@ -2911,12 +2911,12 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   // navigations where the state of such UI can change (e.g. URL bar hidden ->
   // shown). Offset painting of content so that it paints at the fixed viewport
   // origin rather than behind the UI.
-  if (auto* supplement =
-          DocumentTransitionSupplement::FromIfExists(object_.GetDocument())) {
-    if (object_.IsDocumentElement() &&
-        supplement->GetTransition()->IsRootTransitioning()) {
-      PhysicalOffset offset = PhysicalOffset(
-          supplement->GetTransition()->GetRootSnapshotPaintOffset());
+  if (auto* transition =
+          DocumentTransitionUtils::GetActiveTransition(object_.GetDocument());
+      transition && transition->IsRootTransitioning()) {
+    if (object_.IsDocumentElement()) {
+      PhysicalOffset offset =
+          PhysicalOffset(transition->GetRootSnapshotPaintOffset());
       context_.current.paint_offset += offset;
       context_.absolute_position.paint_offset += offset;
       context_.fixed_position.paint_offset += offset;

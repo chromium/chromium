@@ -57,8 +57,7 @@ html::page-transition-incoming-image(target1) { animation: unset; opacity: 1; }
 async function runTest() {
   scrollblue.scrollIntoView();
 
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     requestAnimationFrame(() => requestAnimationFrame(() => 
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
     ));

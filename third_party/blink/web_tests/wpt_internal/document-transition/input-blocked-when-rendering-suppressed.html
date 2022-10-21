@@ -31,10 +31,7 @@ async function runTest(resolve, reject) {
         reject(point);
     });
 
-    let transition = document.createDocumentTransition();
-
-    // Send an event while rendering is suppressed.
-    await transition.start(() => {
+    let transition = document.createDocumentTransition(() => {
       return new Promise(async (inner_resolve) => {
         new test_driver.Actions()
                  .setContext(window)
@@ -49,6 +46,7 @@ async function runTest(resolve, reject) {
         step_timeout(inner_resolve, 1000);
       });
     });
+    await transition.finished;
 
     await new test_driver.Actions()
              .setContext(window)

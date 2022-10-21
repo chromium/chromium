@@ -62,7 +62,7 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -707,11 +707,10 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedContentsSize(
   // considered at least as large as the container. Otherwise, the snapshot
   // will be clipped by PendingLayer to the content size.
   if (IsA<LayoutView>(GetLayoutBox())) {
-    auto* supplement = DocumentTransitionSupplement::FromIfExists(
-        GetLayoutBox()->GetDocument());
-    if (supplement && supplement->GetTransition()->IsRootTransitioning()) {
-      PhysicalSize container_size(
-          supplement->GetTransition()->GetSnapshotViewportRect().size());
+    if (auto* transition = DocumentTransitionUtils::GetActiveTransition(
+            GetLayoutBox()->GetDocument());
+        transition && transition->IsRootTransitioning()) {
+      PhysicalSize container_size(transition->GetSnapshotViewportRect().size());
       size.width = std::max(container_size.width, size.width);
       size.height = std::max(container_size.height, size.height);
     }

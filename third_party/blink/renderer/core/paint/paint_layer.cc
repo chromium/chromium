@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1551,13 +1551,11 @@ PaintLayer* PaintLayer::HitTestLayer(
   // TODO(vmpstr): We need to add a simple document flag which says whether
   // there is an ongoing transition, since this may be too heavy of a check for
   // each hit test.
-  if (auto* supplement = DocumentTransitionSupplement::FromIfExists(
+  if (auto* transition = DocumentTransitionUtils::GetActiveTransition(
           layout_object.GetDocument())) {
     // This means that the contents of the object are drawn elsewhere.
-    if (supplement->GetTransition()->IsRepresentedViaPseudoElements(
-            layout_object)) {
+    if (transition->IsRepresentedViaPseudoElements(layout_object))
       return nullptr;
-    }
   }
 
   ShouldRespectOverflowClipType clip_behavior = kRespectOverflowClip;

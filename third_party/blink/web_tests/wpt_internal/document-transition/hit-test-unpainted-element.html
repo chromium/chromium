@@ -51,7 +51,7 @@ function mouseMoveToTarget(x, y) {
 }
 
 async function runTest() {
-  document.createDocumentTransition().start(() => {
+  document.createDocumentTransition(() => {
     target.classList.toggle("before");
     target.classList.toggle("after");
     // Ensure that we exit the capture phase before doing the rest of the test,

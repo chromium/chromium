@@ -58,7 +58,7 @@ function mouseMoveToTarget(x, y) {
 }
 
 async function runTest() {
-  document.createDocumentTransition().start(() => {
+  document.createDocumentTransition(() => {
     target.classList.toggle("before");
     requestAnimationFrame(async () => {
       await mouseMoveToTarget(210, 310);

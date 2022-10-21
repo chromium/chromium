@@ -67,11 +67,10 @@ html::page-transition { background: lightpink; }
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
   s1.style = "page-transition-tag: s1";
   s2.style = "page-transition-tag: s2";
   s3.style = "page-transition-tag: s3";
-  t.start(() => {
+  document.createDocumentTransition(() => {
     s1.remove();
     s2.remove();
     s3.remove();

@@ -39,8 +39,7 @@ html::page-transition-incoming-image(root) { animation: unset; opacity: 0 }
 <div id=shared></div>
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     e1.classList.add("dst");
     document.body.style.background = "red";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));

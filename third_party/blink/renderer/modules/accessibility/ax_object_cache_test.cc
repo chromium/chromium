@@ -187,10 +187,6 @@ TEST_F(AXDocumentTransitionTest, TransitionPseudoNotRelevant) {
     <div id=target class=shared></div>
   )HTML");
 
-  auto* transition =
-      DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
-  ASSERT_TRUE(transition->StartNewTransition());
-
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
@@ -199,22 +195,21 @@ TEST_F(AXDocumentTransitionTest, TransitionPseudoNotRelevant) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  ScriptPromiseTester start_tester(
-      script_state,
-      transition->start(script_state, document_transition_callback,
-                        exception_state));
+  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+      script_state, GetDocument(), document_transition_callback,
+      exception_state);
+
+  ScriptPromiseTester finish_tester(script_state, transition->finished());
+
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(GetState(transition), State::kCapturing);
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
-  EXPECT_EQ(GetState(transition), State::kCaptured);
+  EXPECT_EQ(GetState(transition), State::kDOMCallbackRunning);
 
   // We should have a start request from the async callback passed to start()
   // resolving.
   test::RunPendingTasks();
-  auto start_request = transition->TakePendingRequest();
-  EXPECT_TRUE(start_request);
-  EXPECT_EQ(GetState(transition), State::kStarted);
-
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
   // We should have a transition pseudo

@@ -30,7 +30,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -593,23 +593,23 @@ PhysicalRect LayoutView::ViewRect() const {
   // TODO(bokan): This shouldn't be just for the outermost main frame, we
   // should do it for all frames. crbug.com/1311518.
   if (frame_view_->GetFrame().IsOutermostMainFrame()) {
-    auto* supplement =
-        DocumentTransitionSupplement::FromIfExists(GetDocument());
-    if (supplement && supplement->GetTransition()->IsRootTransitioning()) {
-      // If we're capturing a transition snapshot, the root transition needs to
-      // produce the snapshot at a known stable size, excluding all insetting
-      // UI like mobile URL bars and virtual keyboards.
+    if (auto* transition =
+            DocumentTransitionUtils::GetActiveTransition(GetDocument());
+        transition && transition->IsRootTransitioning()) {
+      // If we're capturing a transition snapshot, the root transition
+      // needs to produce the snapshot at a known stable size, excluding
+      // all insetting UI like mobile URL bars and virtual keyboards.
 
-      // This adjustment should always be an expansion of the current viewport.
-      DCHECK_GE(supplement->GetTransition()->GetSnapshotViewportRect().width(),
+      // This adjustment should always be an expansion of the current
+      // viewport.
+      DCHECK_GE(transition->GetSnapshotViewportRect().width(),
                 frame_view_->Size().width());
-      DCHECK_GE(supplement->GetTransition()->GetSnapshotViewportRect().height(),
+      DCHECK_GE(transition->GetSnapshotViewportRect().height(),
                 frame_view_->Size().height());
 
       return PhysicalRect(
           PhysicalOffset(),
-          PhysicalSize(
-              supplement->GetTransition()->GetSnapshotViewportRect().size()));
+          PhysicalSize(transition->GetSnapshotViewportRect().size()));
     }
   }
 
@@ -628,12 +628,12 @@ PhysicalRect LayoutView::OverflowClipRect(
 
   rect.offset += location;
 
-  // When capturing the root snapshot for a transition, we paint the background
-  // color where the scrollbar would be so keep the clip rect the full ViewRect
-  // size.
-  auto* supplement = DocumentTransitionSupplement::FromIfExists(GetDocument());
-  bool is_in_transition =
-      supplement && supplement->GetTransition()->IsRootTransitioning();
+  // When capturing the root snapshot for a transition, we paint the
+  // background color where the scrollbar would be so keep the clip rect
+  // the full ViewRect size.
+  auto* transition =
+      DocumentTransitionUtils::GetActiveTransition(GetDocument());
+  bool is_in_transition = transition && transition->IsRootTransitioning();
   if (IsScrollContainer() && !is_in_transition)
     ExcludeScrollbars(rect, overlay_scrollbar_clip_behavior);
 

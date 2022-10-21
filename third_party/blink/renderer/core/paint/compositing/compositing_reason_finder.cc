@@ -6,7 +6,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -344,12 +344,12 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
       break;
   }
 
-  if (auto* supplement =
-          DocumentTransitionSupplement::FromIfExists(object.GetDocument())) {
+  if (auto* transition =
+          DocumentTransitionUtils::GetActiveTransition(object.GetDocument())) {
     // Note that `NeedsSharedElementEffectNode` returns true for values that are
     // in the non-transition-pseudo tree DOM. That is, things like layout view
     // or the shared elements that we are transitioning.
-    if (supplement->GetTransition()->NeedsSharedElementEffectNode(object))
+    if (transition->NeedsSharedElementEffectNode(object))
       reasons |= CompositingReason::kDocumentTransitionSharedElement;
   }
 

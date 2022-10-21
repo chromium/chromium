@@ -35,8 +35,7 @@ div {
 
 <script>
 async function startTransition() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     e1.classList.remove("left");
     e1.classList.add("right");
     setTimeout(takeScreenshot, 500);

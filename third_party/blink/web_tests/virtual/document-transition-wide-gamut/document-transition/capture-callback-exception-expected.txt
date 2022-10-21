@@ -1,4 +1,2 @@
-CONSOLE ERROR: Uncaught ReferenceError: foo is not defined
-CONSOLE ERROR: Uncaught (in promise) AbortError: Aborted due to failure in DocumentTransitionCallback
-CONSOLE ERROR: Uncaught (in promise) AbortError: Aborted due to failure in DocumentTransitionCallback
+CONSOLE ERROR: Uncaught (in promise) ReferenceError: foo is not defined
 

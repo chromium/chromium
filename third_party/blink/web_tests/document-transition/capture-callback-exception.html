@@ -17,7 +17,7 @@ function waitForRafs(n) {
 }
 
 async function test() {
-  document.createDocumentTransition().prepare(() => { foo.bar = baz; });
+  document.createDocumentTransition(() => { foo.bar = baz; });
   await waitForRafs(10);
   testRunner.notifyDone();
 }

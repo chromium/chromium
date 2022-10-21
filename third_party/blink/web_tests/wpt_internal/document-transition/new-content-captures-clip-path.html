@@ -36,8 +36,7 @@ html::page-transition { background: lightpink; }
 <div id=e1 class=box></div>
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  let t = document.createDocumentTransition(() => {
     e1.classList.add("dst");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });

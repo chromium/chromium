@@ -149,12 +149,12 @@ bool ShouldUseInfiniteCullRect(
   }
 
   if (document_transition_supplement) {
+    auto* transition = document_transition_supplement->GetActiveTransition();
+
     // This means that the contents of the object are drawn elsewhere, so we
     // shouldn't cull it.
-    if (document_transition_supplement->GetTransition()
-            ->IsRepresentedViaPseudoElements(object)) {
+    if (transition && transition->IsRepresentedViaPseudoElements(object))
       return true;
-    }
   }
 
   return false;

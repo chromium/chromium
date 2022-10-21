@@ -6,5 +6,5 @@
     ImplementedAs=DocumentTransitionSupplement,
     RuntimeEnabled=DocumentTransition
 ] partial interface Document {
-    [MeasureAs=DocumentTransition, RaisesException] DocumentTransition createDocumentTransition();
+    [MeasureAs=DocumentTransition, CallWith=ScriptState, RaisesException] DocumentTransition createDocumentTransition(optional DocumentTransitionCallback? callback = null);
 };

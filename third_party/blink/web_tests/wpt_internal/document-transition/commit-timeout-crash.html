@@ -21,8 +21,7 @@
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(async () => {
+  document.createDocumentTransition(async () => {
     await new Promise(resolve => setTimeout(resolve, 5000));
     takeScreenshot();
   });

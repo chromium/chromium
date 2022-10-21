@@ -62,8 +62,7 @@ html::page-transition { background: lightpink; }
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     left.classList.remove("left-tag");
     left.classList.add("right-tag");
 

@@ -123,12 +123,6 @@ void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
   ScheduleAnimationForWebTests();
 }
 
-void WebTestWebFrameWidgetImpl::DisableEndDocumentTransition() {
-  DocumentTransitionSupplement::EnsureDocumentTransition(
-      *LocalRootImpl()->GetFrame()->GetDocument())
-      ->DisableEndTransition();
-}
-
 void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   // When using threaded compositing, have the WeFrameWidgetImpl normally
   // schedule a request for a frame, as we use the compositor's scheduler.

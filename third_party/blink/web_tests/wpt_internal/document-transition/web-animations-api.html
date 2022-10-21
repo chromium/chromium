@@ -39,9 +39,8 @@ function setAnimation() {
 }
 
 async function runTest() {
-  let t = document.createDocumentTransition();
   first.style.pageTransitionTag = "first";
-  t.start(() => {
+  document.createDocumentTransition(() => {
     first.style.pageTransitionTag = "";
     second.style.pageTransitionTag = "second";
     requestAnimationFrame(setAnimation);

@@ -52,7 +52,7 @@ div { box-sizing: border-box; will-change: transform }
 
 <script>
 function runTest() {
-  document.createDocumentTransition().prepare(() => {
+  document.createDocumentTransition(() => {
     wrapper.classList.toggle("wrap_perspective");
     target.classList.toggle("rotatex");
     target.classList.toggle("rotate3d");

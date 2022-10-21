@@ -75,15 +75,15 @@ let pseudoStyle = document.createElement('style');
 pseudoStyle.appendChild(document.createTextNode(transitionStyle));
 
 async function runAnimation() {
-  let t = document.createDocumentTransition();
   target.style.pageTransitionTag = "target";
-  await t.start(() => {
+  let t = document.createDocumentTransition(() => {
     target.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
     target.classList.add(classes[i]);
 
     document.head.appendChild(pseudoStyle);
   });
+  await t.finished;
   document.head.removeChild(pseudoStyle)
 }
 

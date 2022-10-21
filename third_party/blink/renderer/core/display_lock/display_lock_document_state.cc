@@ -6,7 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -268,12 +268,11 @@ void DisplayLockDocumentState::NotifySharedElementPseudoTreeChanged() {
 }
 
 void DisplayLockDocumentState::UpdateSharedElementAncestorLocks() {
-  auto* supplement = DocumentTransitionSupplement::FromIfExists(*document_);
-  if (!supplement)
+  auto* transition = DocumentTransitionUtils::GetActiveTransition(*document_);
+  if (!transition)
     return;
 
-  const auto& shared_elements =
-      supplement->GetTransition()->GetTransitioningElements();
+  const auto& shared_elements = transition->GetTransitioningElements();
   for (auto element : shared_elements) {
     auto* ancestor = element.Get();
     // When the element which has c-v:auto is itself a shared element, marking

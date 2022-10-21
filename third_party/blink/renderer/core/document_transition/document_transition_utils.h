@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -50,6 +52,24 @@ class CORE_EXPORT DocumentTransitionUtils {
         func(content);
       }
     }
+  }
+
+  static DocumentTransition* GetActiveTransition(const Document& document) {
+    auto* supplement = DocumentTransitionSupplement::FromIfExists(document);
+    if (!supplement)
+      return nullptr;
+    auto* transition = supplement->GetActiveTransition();
+    if (!transition || transition->IsDone())
+      return nullptr;
+    return transition;
+  }
+
+  static VectorOf<std::unique_ptr<DocumentTransitionRequest>>
+  GetPendingRequests(const Document& document) {
+    auto* supplement = DocumentTransitionSupplement::FromIfExists(document);
+    if (supplement)
+      return supplement->TakePendingRequests();
+    return {};
   }
 };
 

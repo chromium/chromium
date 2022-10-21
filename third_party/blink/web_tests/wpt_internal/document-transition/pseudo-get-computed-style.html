@@ -24,36 +24,38 @@ div {
 
 <script>
 promise_test(() => {
-  return document.createDocumentTransition().start(() => {
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed");
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute");
-    // We changed this in the style block above but it will not apply until the animation phase.
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "absolute");
+  return new Promise(async (resolve, reject) => {
+    let transition = document.createDocumentTransition(() => {
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed", ":page-transition");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute", "container(target)");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "absolute", "wrapper(target)");
 
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(target)").position, "absolute");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(target)").position, "absolute", "outgoing(target)");
 
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").position, "absolute");
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").position, "absolute");
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").position, "absolute");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").position, "absolute", "container(root)");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").position, "absolute", "wrapper(root)");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").position, "absolute", "outgoing(root)");
 
-    requestAnimationFrame(() => {
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed");
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute");
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "fixed");
+      requestAnimationFrame(() => {
+        assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed", "raf :page-transition");
+        assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute", "raf container(target)");
+        assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "fixed", "raf wrapper(target)");
 
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(target)").position, "absolute");
+        assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(target)").position, "absolute", "raf outgoing(target)");
 
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").position, "absolute");
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").position, "absolute");
-      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").position, "absolute");
+        assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").position, "absolute", "raf container(root)");
+        assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").position, "absolute", "raf wrapper(root)");
+        assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").position, "absolute", "raf outgoing(root)");
+      });
     });
+    await transition.finished;
+    resolve();
   });
 }, "position property of pseudo elements");
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    let transition = document.createDocumentTransition();
-    await transition.prepare(() => {
+    let transition = document.createDocumentTransition(() => {
       assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed");
       assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute");
       assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "absolute");

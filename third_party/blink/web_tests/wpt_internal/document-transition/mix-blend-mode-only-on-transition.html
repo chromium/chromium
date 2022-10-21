@@ -25,8 +25,7 @@ div {
 
 <script>
 async_test(t => {
-  let transition = document.createDocumentTransition();
-  transition.start(() => {
+  let transition = document.createDocumentTransition(() => {
     first.classList.toggle("tagone");
     second.classList.toggle("tagtwo");
     requestAnimationFrame(() => {

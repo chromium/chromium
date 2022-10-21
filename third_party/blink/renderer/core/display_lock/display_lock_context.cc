@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/display_lock/content_visibility_auto_state_changed_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -1161,11 +1161,10 @@ void DisplayLockContext::ResetAndDetermineIfAncestorIsSharedElement() {
   if (!ConnectedToView())
     return;
 
-  auto* supplement = DocumentTransitionSupplement::FromIfExists(*document_);
-  if (!supplement)
+  auto* transition = DocumentTransitionUtils::GetActiveTransition(*document_);
+  if (!transition)
     return;
 
-  auto* transition = supplement->GetTransition();
   bool has_shared_element_ancestor = false;
   for (auto* candidate = element_.Get(); candidate;
        candidate = FlatTreeTraversal::ParentElement(*candidate)) {

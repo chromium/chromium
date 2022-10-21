@@ -38,8 +38,7 @@ html::page-transition-outgoing-image(*) { animation: unset; opacity: 1; }
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     document.documentElement.style.pageTransitionTag = "none";
     document.body.style.background = "yellow";
     box.style.pageTransitionTag = "root";

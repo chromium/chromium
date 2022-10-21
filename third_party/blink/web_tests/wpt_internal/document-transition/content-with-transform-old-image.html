@@ -49,8 +49,7 @@ html::page-transition-incoming-image(target) { animation: unset; opacity: 0; }
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     requestAnimationFrame(() =>  requestAnimationFrame(takeScreenshot));
   });
 }

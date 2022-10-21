@@ -22,21 +22,25 @@ div {
 <script>
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    let transition = document.createDocumentTransition();
     first.style = "page-transition-tag: target";
     second.style = "page-transition-tag: target";
-    transition.start(()=>{}).then(reject, resolve);
+    let transition = document.createDocumentTransition();
+    transition.ready.then(() => {}, () => {});
+    transition.domUpdated.then(() => {}, () => {});
+    transition.finished.then(reject, resolve);
   });
 }, "Two different elements with the same tag rejects capture");
 
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    let transition = document.createDocumentTransition();
     first.style = "page-transition-tag: target";
-    transition.start(() => {
+    let transition = document.createDocumentTransition(() => {
       first.style = "page-transition-tag: target";
       second.style = "page-transition-tag: target";
-    }).then(reject, resolve);
+    });
+    transition.ready.then(() => {}, () => {});
+    transition.domUpdated.then(() => {}, () => {});
+    transition.finished.then(reject, resolve);
   });
 }, "Two different elements with the same tag rejects start");
 </script>

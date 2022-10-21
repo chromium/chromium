@@ -64,10 +64,6 @@ class FrameWidgetTestHelper {
   // to the user in the display compositor.
   virtual void UpdateAllLifecyclePhasesAndComposite(
       base::OnceClosure completion_callback) = 0;
-
-  // Retains the pseudo-element transition DOM generated for a
-  // DocumentTransition after all animations have finished.
-  virtual void DisableEndDocumentTransition() = 0;
 };
 
 }  // namespace blink

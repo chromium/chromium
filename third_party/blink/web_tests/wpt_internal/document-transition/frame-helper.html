@@ -14,7 +14,7 @@ html { height: 50%; }
 
 <script>
 function run() {
-  document.createDocumentTransition().prepare(() => {
+  document.createDocumentTransition(() => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       window.parent.postMessage({}, "*");
     }));

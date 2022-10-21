@@ -64,7 +64,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -2371,6 +2371,20 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
         unthrottled_frame_views.push_back(&frame_view);
       });
 
+  // TODO(vmpstr): Figure out what to do with frames.
+  // This may change due to https://github.com/w3c/csswg-drafts/issues/7874
+  absl::optional<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
+      forced_activatable_locks_scope;
+  if (auto* transition = DocumentTransitionUtils::GetActiveTransition(
+          *frame_->GetDocument())) {
+    if (transition->NeedsUpToDateTags()) {
+      forced_activatable_locks_scope.emplace(
+          frame_->GetDocument()
+              ->GetDisplayLockDocumentState()
+              .GetScopedForceActivatableLocks());
+    }
+  }
+
   while (true) {
     for (LocalFrameView* frame_view : unthrottled_frame_views) {
       // RunResizeObserverSteps may run arbitrary script, which can cause a
@@ -2487,6 +2501,19 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // shared elements to UA created elements. This may dirty style/layout
     // requiring another lifecycle update.
     needs_to_repeat_lifecycle = RunDocumentTransitionSteps(target_state);
+
+#if DCHECK_IS_ON()
+    // We shouldn't need up to date tags after running document transition
+    // steps. The only way we should run into a situation where we need up to
+    // date tags is outside of the lifecycle, and the value should be cleared in
+    // document transition steps.
+    if (auto* transition = DocumentTransitionUtils::GetActiveTransition(
+            *frame_->GetDocument())) {
+      DCHECK(!transition->NeedsUpToDateTags());
+    }
+#endif
+
+    forced_activatable_locks_scope.reset();
     if (!needs_to_repeat_lifecycle)
       break;
   }
@@ -2549,12 +2576,12 @@ bool LocalFrameView::RunDocumentTransitionSteps(
   if (target_state != DocumentLifecycle::kPaintClean)
     return false;
 
-  auto* document_transition_supplement =
-      DocumentTransitionSupplement::FromIfExists(*frame_->GetDocument());
-  if (!document_transition_supplement)
+  auto* transition =
+      DocumentTransitionUtils::GetActiveTransition(*frame_->GetDocument());
+  if (!transition)
     return false;
 
-  document_transition_supplement->GetTransition()->RunPostPrePaintSteps();
+  transition->RunDocumentTransitionStepsDuringMainFrame();
   return Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean;
 }
 
@@ -3119,25 +3146,20 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 void LocalFrameView::AppendDocumentTransitionRequests(
     WTF::Vector<std::unique_ptr<DocumentTransitionRequest>>& requests) {
   DCHECK(frame_ && frame_->GetDocument());
-  auto* document_transition_supplement =
-      DocumentTransitionSupplement::FromIfExists(*frame_->GetDocument());
-  if (!document_transition_supplement)
-    return;
-  auto* document_transition = document_transition_supplement->GetTransition();
-  auto pending_request = document_transition->TakePendingRequest();
-  if (pending_request)
+  auto pending_requests =
+      DocumentTransitionUtils::GetPendingRequests(*frame_->GetDocument());
+  for (auto& pending_request : pending_requests)
     requests.push_back(std::move(pending_request));
 }
 
 void LocalFrameView::VerifySharedElementsForDocumentTransition() {
   DCHECK(frame_ && frame_->GetDocument());
-  auto* document_transition_supplement =
-      DocumentTransitionSupplement::FromIfExists(*frame_->GetDocument());
-  if (!document_transition_supplement)
+  auto* transition =
+      DocumentTransitionUtils::GetActiveTransition(*frame_->GetDocument());
+  if (!transition)
     return;
 
-  auto* document_transition = document_transition_supplement->GetTransition();
-  document_transition->VerifySharedElements();
+  transition->VerifySharedElements();
 }
 
 std::unique_ptr<JSONObject> LocalFrameView::CompositedLayersAsJSON(

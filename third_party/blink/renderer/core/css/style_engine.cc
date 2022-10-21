@@ -70,7 +70,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -1998,10 +1998,10 @@ void StyleEngine::EnsureUAStyleForTransitionPseudos() {
   // Note that we don't need to mark any state dirty for style invalidation
   // here. This is done externally by the code which invalidates this style
   // sheet.
-  auto* document_transition =
-      DocumentTransitionSupplement::From(GetDocument())->GetTransition();
-  auto* style_sheet_contents =
-      CSSDefaultStyleSheets::ParseUASheet(document_transition->UAStyleSheet());
+  auto* transition =
+      DocumentTransitionUtils::GetActiveTransition(GetDocument());
+  auto* style_sheet_contents = CSSDefaultStyleSheets::ParseUASheet(
+      transition ? transition->UAStyleSheet() : "");
   ua_document_transition_style_ = MakeGarbageCollected<RuleSet>();
   ua_document_transition_style_->AddRulesFromSheet(
       style_sheet_contents, CSSDefaultStyleSheets::ScreenEval());

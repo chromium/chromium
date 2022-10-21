@@ -53,8 +53,7 @@ function flipClass() {
 }
 
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  document.createDocumentTransition(() => {
     hidden.style.width="20px";
     requestAnimationFrame(() => requestAnimationFrame(flipClass));
   });

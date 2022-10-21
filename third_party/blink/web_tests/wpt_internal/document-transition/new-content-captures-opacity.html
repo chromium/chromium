@@ -33,8 +33,7 @@ html::page-transition { background: lightpink; }
 <div id=e3 class=box></div>
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition();
-  t.start(() => {
+  let t = document.createDocumentTransition(() => {
     e1.classList.add("dst");
     e2.classList.add("dst");
     e3.classList.add("dst");
