@@ -259,3 +259,47 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
                 # ConsoleLogEntry
                 "type": "javascript"}},
         event_response)
+
+
+@pytest.mark.asyncio
+async def test_buffer_bufferedEventsReturned(websocket, context_id):
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 15,
+        "method": "script.evaluate",
+        "params": {
+            "expression":
+                "console.info('LOG_ENTRY_1');console.info('LOG_ENTRY_2');",
+            "target": {"context": context_id},
+            "awaitPromise": True}})
+
+    # Wait for command to be finished.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 15
+
+    # Subscribe to events with buffer.
+    await send_JSON_command(websocket, {
+        "id": 16,
+        "method": "session.subscribe",
+        "params": {
+            "events": ["log.entryAdded"]}})
+
+    # Wait for `LOG_ENTRY_1`.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "log.entryAdded",
+        "params": any_value},
+        resp)
+    assert resp["params"]["text"] == "LOG_ENTRY_1"
+
+    # Wait for `LOG_ENTRY_2`.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "log.entryAdded",
+        "params": any_value},
+        resp)
+    assert resp["params"]["text"] == "LOG_ENTRY_2"
+
+    # Wait for subscription command to finish.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 16
