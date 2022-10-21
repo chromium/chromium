@@ -196,20 +196,12 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_folder_id_obj,
-      const base::android::JavaParamRef<jobject>& j_callback_obj,
       const base::android::JavaParamRef<jobject>& j_result_obj);
 
   jboolean IsFolderVisible(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            jlong id,
                            jint type);
-
-  void GetCurrentFolderHierarchy(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_folder_id_obj,
-      const base::android::JavaParamRef<jobject>& j_callback_obj,
-      const base::android::JavaParamRef<jobject>& j_result_obj);
 
   void SearchBookmarks(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj,

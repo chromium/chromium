@@ -682,7 +682,6 @@ void BookmarkBridge::GetBookmarksForFolder(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_folder_id_obj,
-    const JavaParamRef<jobject>& j_callback_obj,
     const JavaParamRef<jobject>& j_result_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
@@ -709,11 +708,6 @@ void BookmarkBridge::GetBookmarksForFolder(
     ExtractBookmarkNodeInformation(
         partner_bookmarks_shim_->GetPartnerBookmarksRoot(), j_result_obj);
   }
-
-  if (j_callback_obj) {
-    Java_BookmarksCallback_onBookmarksAvailable(env, j_callback_obj,
-                                                folder_id_obj, j_result_obj);
-  }
 }
 
 jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env,
@@ -730,37 +724,6 @@ jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env,
   const BookmarkNode* node =
       partner_bookmarks_shim_->GetNodeByID(static_cast<long>(id));
   return partner_bookmarks_shim_->IsReachable(node);
-}
-
-void BookmarkBridge::GetCurrentFolderHierarchy(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_folder_id_obj,
-    const JavaParamRef<jobject>& j_callback_obj,
-    const JavaParamRef<jobject>& j_result_obj) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(IsLoaded());
-
-  long folder_id = JavaBookmarkIdGetId(env, j_folder_id_obj);
-  int type = JavaBookmarkIdGetType(env, j_folder_id_obj);
-  const BookmarkNode* folder = GetFolderWithFallback(folder_id, type);
-
-  if (!folder->is_folder() || !IsReachable(folder))
-    return;
-
-  // Recreate the java bookmarkId object due to fallback.
-  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
-      env, folder->id(), GetBookmarkType(folder));
-
-  // Get the folder hierarchy.
-  const BookmarkNode* node = folder;
-  while (node) {
-    ExtractBookmarkNodeInformation(node, j_result_obj);
-    node = GetParentNode(node);
-  }
-
-  Java_BookmarksCallback_onBookmarksFolderHierarchyAvailable(
-      env, j_callback_obj, folder_id_obj, j_result_obj);
 }
 
 void BookmarkBridge::SearchBookmarks(JNIEnv* env,
