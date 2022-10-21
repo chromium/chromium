@@ -27,6 +27,9 @@ namespace extensions {
 
 namespace {
 
+// Bail out on larger inputs to prevent out-of-memory failures.
+constexpr int kMaxInputSizeBytes = 200 * 1024;
+
 const mojom::ManifestLocation kLocations[] = {
     mojom::ManifestLocation::kInternal,
     mojom::ManifestLocation::kExternalPref,
@@ -77,6 +80,8 @@ struct PerInputEnvironment {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
+  if (size > kMaxInputSizeBytes)
+    return 0;
   FuzzedDataProvider fuzzed_data_provider(data, size);
   PerInputEnvironment per_input_env(fuzzed_data_provider);
 
