@@ -1538,16 +1538,16 @@
   },
   {
     "name": "download-bubble",
-    "owners": [ "bhatiarohit", "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 108
+    "owners": [ "drubery", "chrome-counter-abuse-alerts@google.com"],
+    "expiry_milestone": 111
   },
   {
     "name": "download-bubble-v2",
     "owners": [
-      "bhatiarohit",
+      "drubery",
       "chrome-counter-abuse-alerts@google.com"
     ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "download-later",
