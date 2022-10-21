@@ -846,6 +846,7 @@ class GpuIntegrationTest(
     display_server = gpu_helper.GetDisplayServer(browser.browser_type)
     if display_server:
       tags.append(display_server)
+    tags = gpu_helper.ReplaceTags(tags)
     return tags
 
   @classmethod

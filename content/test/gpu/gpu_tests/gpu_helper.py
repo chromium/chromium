@@ -33,6 +33,11 @@ REMOTE_BROWSER_TYPES = [
     'cast-streaming-shell',
 ]
 
+TAG_REPLACEMENTS = {
+    # nvidia on desktop, nvidia-coproration on Android.
+    'nvidia-corporation': 'nvidia',
+}
+
 
 def _ParseANGLEGpuVendorString(device_string: str) -> Optional[str]:
   if not device_string:
@@ -200,6 +205,22 @@ def HasGlSkiaRenderer(gpu_feature_status: Dict[str, str]) -> bool:
 def HasVulkanSkiaRenderer(gpu_feature_status: Dict[str, str]) -> bool:
   return (bool(gpu_feature_status)
           and gpu_feature_status.get('vulkan') == 'enabled_on')
+
+
+def ReplaceTags(tags: List[str]) -> List[str]:
+  """Replaces certain strings in tags to make them consistent across platforms.
+
+  Args:
+    tags: A list of strings containing expectation tags.
+
+  Returns:
+    |tags| but potentially with some substrings replaced.
+  """
+  replaced_tags = []
+  for t in tags:
+    for original, replacement in TAG_REPLACEMENTS.items():
+      replaced_tags.append(t.replace(original, replacement))
+  return replaced_tags
 
 
 # used by unittests to create a mock arguments object
