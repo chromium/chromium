@@ -430,18 +430,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.PriceTracking.SidePanelImageLoad"
-    enum="BooleanSuccess" expires_after="2023-10-01">
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <owner>chrome-shopping@google.org</owner>
-  <summary>
-    Records every time we try to load an image in the price tracking side panel
-    UI. This histogram logs 'Success' when loading was successful and 'Failure'
-    when there was an error.
-  </summary>
-</histogram>
-
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataContent"
     enum="ShoppingDataProviderFallback" expires_after="2023-06-01">
   <owner>ayman@chromium.org</owner>
