@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
@@ -25,42 +26,11 @@
 namespace blink {
 
 namespace {
-enum class OomInterventionState {
-  // Initial value for a variable.
-  None,
-  // Before the intervention has been triggered.
-  Before,
-  // While the intervention is active.
-  During,
-  // After the intervention has triggered at least once.
-  After
-};
-void UpdateStateCrashKey(OomInterventionState next_state) {
-  static OomInterventionState current_state = OomInterventionState::None;
-  // Once an intervention is trigger, the state shall never go back to the
-  // Before state.
-  if (next_state == OomInterventionState::Before &&
-      current_state != OomInterventionState::None)
-    return;
-  if (current_state == next_state)
-    return;
-  current_state = next_state;
+
+base::debug::CrashKeyString* GetStateCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "oom_intervention_state", base::debug::CrashKeySize::Size32);
-  switch (current_state) {
-    case OomInterventionState::None:
-      base::debug::SetCrashKeyString(crash_key, "none");
-      break;
-    case OomInterventionState::Before:
-      base::debug::SetCrashKeyString(crash_key, "before");
-      break;
-    case OomInterventionState::During:
-      base::debug::SetCrashKeyString(crash_key, "during");
-      break;
-    case OomInterventionState::After:
-      base::debug::SetCrashKeyString(crash_key, "after");
-      break;
-  }
+  return crash_key;
 }
 
 void NavigateLocalAdsFrames(LocalFrame* frame) {
@@ -80,45 +50,34 @@ void NavigateLocalAdsFrames(LocalFrame* frame) {
   }
 }
 
-OomInterventionImpl& GetOomIntervention() {
-  DEFINE_STATIC_LOCAL(OomInterventionImpl, oom_intervention, ());
-  return oom_intervention;
-}
-
 }  // namespace
 
 // static
 void OomInterventionImpl::BindReceiver(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::blink::OomIntervention> receiver) {
-  GetOomIntervention().Bind(std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<OomInterventionImpl>(
+          base::PassKey<OomInterventionImpl>(), task_runner),
+      std::move(receiver), task_runner);
 }
 
-OomInterventionImpl::OomInterventionImpl() {
-  UpdateStateCrashKey(OomInterventionState::Before);
+OomInterventionImpl::OomInterventionImpl(
+    base::PassKey<OomInterventionImpl> pass_key,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : OomInterventionImpl(std::move(task_runner)) {}
+
+OomInterventionImpl::OomInterventionImpl(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {
+  static bool initial_crash_key_set = false;
+  if (!initial_crash_key_set) {
+    initial_crash_key_set = true;
+    base::debug::SetCrashKeyString(GetStateCrashKey(), "before");
+  }
 }
 
 OomInterventionImpl::~OomInterventionImpl() {
-  UpdateStateCrashKey(OomInterventionState::After);
-  MemoryUsageMonitorInstance().RemoveObserver(this);
-}
-
-void OomInterventionImpl::Bind(
-    mojo::PendingReceiver<mojom::blink::OomIntervention> receiver) {
-  // This interface can be bound multiple time, however, there should never be
-  // multiple callers bound at a time.
-  Reset();
-  receiver_.Bind(std::move(receiver));
-
-  // Disconnection means the user closed the dialog without activating the OOM
-  // intervention.
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&OomInterventionImpl::Reset, base::Unretained(this)));
-}
-
-void OomInterventionImpl::Reset() {
-  receiver_.reset();
-  host_.reset();
-  pauser_.reset();
   MemoryUsageMonitorInstance().RemoveObserver(this);
 }
 
@@ -172,7 +131,7 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
                       detection_args_->virtual_memory_thresold;
 
   if (oom_detected) {
-    UpdateStateCrashKey(OomInterventionState::During);
+    base::debug::SetCrashKeyString(GetStateCrashKey(), "during");
 
     if (navigate_ads_enabled_ || purge_v8_memory_enabled_) {
       for (const auto& page : Page::OrdinaryPages()) {
@@ -198,8 +157,7 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     host_->OnHighMemoryUsage();
     MemoryUsageMonitorInstance().RemoveObserver(this);
     // Send memory pressure notification to trigger GC.
-    Thread::MainThread()->GetDeprecatedTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&TriggerGC));
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(&TriggerGC));
     // Notify V8GCForContextDispose that page navigation gc is needed when
     // intervention runs, as it indicates that memory usage is high.
     V8GCForContextDispose::Instance().SetForcePageNavigationGC();

@@ -224,18 +224,15 @@ void SetIsIsolatedContext(bool value) {
 
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   ModulesInitializer::RegisterInterfaces(binders);
-  Thread* main_thread = Thread::MainThread();
-  // GetSingleThreadTaskRunner() uses GetTaskRunner() internally.
-  // crbug.com/781664
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
-      main_thread->GetDeprecatedTaskRunner();
-  if (!main_thread_task_runner)
-    return;
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
+  CHECK(main_thread_task_runner);
 
 #if BUILDFLAG(IS_ANDROID)
   binders.Add<mojom::blink::OomIntervention>(
       ConvertToBaseRepeatingCallback(
-          CrossThreadBindRepeating(&OomInterventionImpl::BindReceiver)),
+          CrossThreadBindRepeating(&OomInterventionImpl::BindReceiver,
+                                   WTF::RetainedRef(main_thread_task_runner))),
       main_thread_task_runner);
 
   binders.Add<mojom::blink::CrashMemoryMetricsReporter>(

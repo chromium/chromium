@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -69,7 +70,8 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
 class MockOomInterventionImpl : public OomInterventionImpl {
  public:
   MockOomInterventionImpl()
-      : mock_memory_usage_monitor_(std::make_unique<MockMemoryUsageMonitor>()) {
+      : OomInterventionImpl(scheduler::GetSingleThreadTaskRunnerForTesting()),
+        mock_memory_usage_monitor_(std::make_unique<MockMemoryUsageMonitor>()) {
   }
   ~MockOomInterventionImpl() override {}
 
@@ -157,7 +159,7 @@ TEST_F(OomInterventionImplTest, BlinkThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_->Reset();
+  intervention_.reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -175,7 +177,7 @@ TEST_F(OomInterventionImplTest, PmfThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_->Reset();
+  intervention_.reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -193,7 +195,7 @@ TEST_F(OomInterventionImplTest, SwapThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_->Reset();
+  intervention_.reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -211,29 +213,7 @@ TEST_F(OomInterventionImplTest, VmSizeThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_->Reset();
-  EXPECT_FALSE(page->Paused());
-}
-
-TEST_F(OomInterventionImplTest, MojoDisconnection) {
-  mojo::Remote<mojom::blink::OomIntervention> remote_host;
-  intervention_->Bind(remote_host.BindNewPipeAndPassReceiver());
-
-  MemoryUsage usage;
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
-  usage.private_footprint_bytes = 0;
-  usage.swap_bytes = 0;
-  // Set value more than the threshold to trigger intervention.
-  usage.vm_size_bytes = kTestVmSizeThreshold + 1024;
-  intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-
-  Page* page = DetectOnceOnBlankPage();
-
-  EXPECT_TRUE(page->Paused());
-  remote_host.reset();
-  base::RunLoop().RunUntilIdle();
+  intervention_.reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -320,7 +300,7 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   RunDetection(true, true, false);
 
   EXPECT_TRUE(page->Paused());
-  intervention_->Reset();
+  intervention_.reset();
 
   // The about:blank navigation won't actually happen until the page unpauses.
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(

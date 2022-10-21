@@ -15,6 +15,7 @@ namespace blink {
 class MainThreadTaskRunnerRestricted {
  private:
   // Permitted users of `MainThread::GetTaskRunner`.
+  friend class BlinkInitializer;
   friend class BlobBytesProvider;
   friend class CachedStorageArea;
   friend class CategorizedWorkerPoolImpl;
