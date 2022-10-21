@@ -107,5 +107,21 @@
 }`, '@supports is added');
 
     assert_equals(ss.cssRules[0].cssRules[1].parentRule, ss.cssRules[0]);
+    ss.cssRules[0].deleteRule(1);
+    assert_equals(ss.cssRules[0].cssText, sampleSheetText);
+  });
+
+  // Nested rules are not part of declaration lists, and thus should not
+  // be possible to insert with .style.
+  test(() => {
+    document.getElementById('ss').innerHTML = sampleSheetText;
+    let [ss] = document.styleSheets;
+    ss.cssRules[0].style = 'color: olivedrab; &.d { color: peru; }';
+    assert_equals(ss.cssRules[0].cssText,
+`.a {
+  color: olivedrab;
+  & .b { color: green; }
+  & .c { color: blue; }
+}`, 'color is changed, new rule is ignored');
   });
 </script>
