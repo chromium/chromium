@@ -36,7 +36,7 @@ namespace features {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 BASE_FEATURE(kLacrosAuraCapture,
              "LacrosAuraCapture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features
