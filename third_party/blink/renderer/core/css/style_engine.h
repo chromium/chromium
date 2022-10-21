@@ -772,23 +772,16 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void ReattachContainerSubtree(Element& container);
 
   // Invalidate ancestors or siblings affected by :has() state change
-  inline void InvalidateElementAffectedByHas(Element&, bool for_pseudo_change);
-  void InvalidateAncestorsOrSiblingsAffectedByHas(Element* parent,
-                                                  Element* previous_sibling,
-                                                  bool for_pseudo_change);
+  inline void InvalidateElementAffectedByHas(
+      Element&,
+      bool for_element_affected_by_pseudo_in_has);
+  class PseudoHasInvalidationTraversalContext;
   inline void InvalidateAncestorsOrSiblingsAffectedByHas(
-      Element& changed_element);
-  void InvalidateAncestorsOrSiblingsAffectedByHas(Element* parent,
-                                                  Element* previous_sibling);
-  inline void InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
-      Element& changed_element);
-  void InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
-      Element* parent,
-      Element* previous_sibling);
+      const PseudoHasInvalidationTraversalContext&);
   // Invalidate changed element affected by logical combinations in :has()
   inline void InvalidateChangedElementAffectedByLogicalCombinationsInHas(
       Element& changed_element,
-      bool for_pseudo_change);
+      bool for_element_affected_by_pseudo_in_has);
 
   // Initialization value for SkipStyleRecalcScope.
   bool AllowSkipStyleRecalcForScope() const;
