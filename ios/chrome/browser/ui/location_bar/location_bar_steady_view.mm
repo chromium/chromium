@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
@@ -96,7 +97,11 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 
   scheme.fontColor = [UIColor colorNamed:kTextPrimaryColor];
   scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  scheme.trailingButtonColor = [UIColor colorNamed:kGrey500Color];
+  if (UseSymbols()) {
+    scheme.trailingButtonColor = [UIColor colorNamed:kGrey600Color];
+  } else {
+    scheme.trailingButtonColor = [UIColor colorNamed:kGrey500Color];
+  }
 
   return scheme;
 }
