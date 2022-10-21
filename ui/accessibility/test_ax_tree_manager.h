@@ -66,14 +66,32 @@ class TestAXTreeManager : public AXTreeManager {
                const AXNodeData& node11 = AXNodeData(),
                const AXNodeData& node12 = AXNodeData());
 
-  // Create an AXPosition instance, a simple wrapper around
+  // Creates a tree position, a simple wrapper around
+  // AXNodePosition::CreateTreePosition.
+  AXNodePosition::AXPositionInstance CreateTreePosition(const AXNode& anchor,
+                                                        int child_index) const;
+
+  // Creates a tree position for the given |anchor_data| of a node from the
+  // given tree.
+  AXNodePosition::AXPositionInstance CreateTreePosition(
+      const AXTree* tree,
+      const AXNodeData& anchor_data,
+      int child_index) const;
+
+  // Creates a tree position for the given |anchor_data| of a node from the
+  // current tree.
+  AXNodePosition::AXPositionInstance CreateTreePosition(
+      const AXNodeData& anchor_data,
+      int child_index) const;
+
+  // Creates a text position, a simple wrapper around
   // AXNodePosition::CreateTextPosition.
   AXNodePosition::AXPositionInstance CreateTextPosition(
       const AXNode& anchor,
       int text_offset,
       ax::mojom::TextAffinity affinity) const;
 
-  // Create AXPosition instance for the given |anchor_id| belonging to the
+  // Creates a text position for the given |anchor_id| belonging to the
   // current tree.
   AXNodePosition::AXPositionInstance CreateTextPosition(
       const AXNodeID& anchor_id,

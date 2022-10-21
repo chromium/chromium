@@ -156,7 +156,7 @@ AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(
   if (node_->IsLeaf()) {
     return AXNodePosition::CreateTextPosition(*node_, offset, affinity);
   }
-  return AXNodePosition::CreateTreePosition(*tree_, *node_, offset);
+  return AXNodePosition::CreateTreePosition(*node_, offset);
 }
 
 AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreateTextPositionAt(

@@ -7122,10 +7122,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   AXTree* tree = Init(update);
 
   AXNode* root_node = GetRoot();
-  AXNode* generic_container_2_node = tree->GetFromId(generic_container_2.id);
   AXNodePosition::AXPositionInstance range_start =
-      AXNodePosition::CreateTreePosition(*tree, *generic_container_2_node,
-                                         /*child_index*/ 3);
+      CreateTreePosition(generic_container_2,
+                         /*child_index*/ 3);
   AXNodePosition::AXPositionInstance range_end = range_start->Clone();
 
   AXPlatformNodeWin* owner =

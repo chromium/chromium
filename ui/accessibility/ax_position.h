@@ -253,10 +253,13 @@ class AXPosition {
     return new_position;
   }
 
-  static AXPositionInstance CreateTreePosition(const AXTree& tree,
-                                               const AXNode& anchor,
+  static AXPositionInstance CreateTreePosition(const AXNode& anchor,
                                                int child_index) {
-    return CreateTreePosition(tree.GetAXTreeID(), anchor.id(), child_index);
+    DCHECK(anchor.tree());
+    DCHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown());
+    DCHECK_NE(anchor.id(), kInvalidAXNodeID);
+    return CreateTreePosition(anchor.tree()->GetAXTreeID(), anchor.id(),
+                              child_index);
   }
 
   static AXPositionInstance CreateTreePositionAtStartOfAnchor(
@@ -265,13 +268,13 @@ class AXPosition {
     // - For a leaf, the child index will be BEFORE_TEXT.
     // - Otherwise the child index will be 0.
     int child_index = IsLeafNodeForTreePosition(anchor) ? BEFORE_TEXT : 0;
-    return CreateTreePosition(*anchor.tree(), anchor, child_index);
+    return CreateTreePosition(anchor, child_index);
   }
 
   static AXPositionInstance CreateTreePositionAtEndOfAnchor(
       const AXNode& anchor) {
     // Initialize the child index to the anchor's child count.
-    return CreateTreePosition(*anchor.tree(), anchor,
+    return CreateTreePosition(anchor,
                               anchor.GetChildCountCrossingTreeBoundary());
   }
 
@@ -2482,7 +2485,7 @@ class AXPosition {
         // last child in its parent anchor.
         int child_index = AnchorIndexInParent();
         if (AtEndOfAnchor())
-          return CreateTreePosition(*tree, *parent_anchor, (child_index + 1));
+          return CreateTreePosition(*parent_anchor, (child_index + 1));
 
         switch (move_direction) {
           case ax::mojom::MoveDirection::kNone:
@@ -2499,7 +2502,7 @@ class AXPosition {
             // "AnchorIndexInParent" always returns a child index that is before
             // any "object replacement character" in our parent, we use that for
             // both situations.
-            return CreateTreePosition(*tree, *parent_anchor, child_index);
+            return CreateTreePosition(*parent_anchor, child_index);
           case ax::mojom::MoveDirection::kForward:
             // "move_direction" is only important when this position is an
             // "embedded object in parent", i.e., when this position's anchor is
@@ -2511,7 +2514,7 @@ class AXPosition {
             // "AnchorIndexInParent" for the child index.
             if (!AtStartOfAnchor() && IsEmbeddedObjectInParent())
               ++child_index;
-            return CreateTreePosition(*tree, *parent_anchor, child_index);
+            return CreateTreePosition(*parent_anchor, child_index);
         }
       }
 

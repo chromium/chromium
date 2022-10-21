@@ -76,7 +76,7 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
       << "\n* IsLeafNodeForTreePosition(): " << IsLeafNodeForTreePosition(node)
       << "\n* Tree: " << node.tree()->ToString();
 
-  return CreateTreePosition(*node.tree(), node, child_index_or_text_offset);
+  return CreateTreePosition(node, child_index_or_text_offset);
 }
 
 // static

@@ -142,8 +142,8 @@ TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTextPosition) {
 }
 
 TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTreePosition) {
-  TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), *ax_tree()->root(), /*child_index=*/4);
+  TestPositionType tree_position =
+      CreateTreePosition(*ax_tree()->root(), /*child_index=*/4);
 
   base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
   for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
