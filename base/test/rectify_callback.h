@@ -44,13 +44,12 @@ namespace base {
 // You can also make RectifyCallback implicit by embedding it in a template
 // version of your function.
 //
-//    template<typename T>
+//    template <typename T>
 //    void Fn(T&& t) { FnImpl(RectifyCallback<CbType>(std::forward<T>(t))); }
 //
-template <typename Desired,
-          typename Actual,
-          typename Impl = internal::RectifyCallbackImpl<Desired, Actual>>
-auto RectifyCallback(Actual callback) {
+template <typename Desired, typename Actual>
+auto RectifyCallback(Actual&& callback) {
+  using Impl = internal::RectifyCallbackImpl<Desired, std::decay_t<Actual>>;
   return Impl::Rectify(std::move(callback));
 }
 
