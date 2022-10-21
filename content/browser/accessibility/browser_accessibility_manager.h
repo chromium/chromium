@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -426,12 +425,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
                               ui::AXNodeID node_id) const override;
   ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
 
-  // AXPlatformTreeManager overrides.
-  ui::AXPlatformNode* GetPlatformNodeFromTree(
-      const ui::AXNodeID node_id) const override;
-  ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
-  ui::AXPlatformNodeDelegate* RootDelegate() const override;
-
   WebAXPlatformTreeManagerDelegate* delegate() const { return delegate_; }
 
   // If this BrowserAccessibilityManager is a child frame or guest frame,
@@ -528,13 +521,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // An object that can retrieve information or perform actions on our behalf,
   // based on which layer this code is running on, Web vs. Views.
   raw_ptr<WebAXPlatformTreeManagerDelegate> delegate_;
-
-  // A mapping from a node id to its wrapper of type BrowserAccessibility.
-  // This is different from the map in AXTree, which does not contain extra mac
-  // nodes from AXTableInfo.
-  // TODO(accessibility) Find a way to have a single map for both, perhaps by
-  // having BrowserAccessibility into a subclass of AXNode.
-  std::map<ui::AXNodeID, std::unique_ptr<BrowserAccessibility>> id_wrapper_map_;
 
   // True if the user has initiated a navigation to another page.
   bool user_is_navigating_away_;

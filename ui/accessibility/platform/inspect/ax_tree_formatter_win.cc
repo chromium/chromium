@@ -94,7 +94,7 @@ Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
   LONG root_width, root_height;
 
   HRESULT hr = static_cast<AXPlatformTreeManager*>(root_manager)
-                   ->RootDelegate()
+                   ->GetPlatformNodeDelegateForRoot()
                    ->GetNativeViewAccessible()
                    ->accLocation(&root_x, &root_y, &root_width, &root_height,
                                  variant_self);

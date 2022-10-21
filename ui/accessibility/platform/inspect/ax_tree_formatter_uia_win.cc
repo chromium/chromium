@@ -123,7 +123,7 @@ void GetUIARoot(ui::AXPlatformNodeDelegate* start,
 
   // Start by getting the root element for the HWND hosting the web content.
   HWND hwnd = static_cast<ui::AXPlatformTreeManager*>(tree_manager)
-                  ->RootDelegate()
+                  ->GetPlatformNodeDelegateForRoot()
                   ->GetTargetForNativeAccessibilityEvent();
   uia->ElementFromHandle(hwnd, root);
 }

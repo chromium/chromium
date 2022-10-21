@@ -16,6 +16,7 @@
 #include "base/win/variant_vector.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
@@ -1150,7 +1151,7 @@ std::u16string AXPlatformNodeTextRangeProviderWin::GetString(
 }
 
 AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
-  // Unit tests can't call |GetPlatformNodeFromTree|, so they must provide an
+  // Unit tests can't call `GetPlatformNode`, so they must provide an
   // owner node.
   if (owner_for_test_.Get())
     return owner_for_test_.Get();
@@ -1171,7 +1172,7 @@ AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
   DCHECK(platform_tree_manager);
 
   return static_cast<AXPlatformNodeWin*>(
-      platform_tree_manager->GetPlatformNodeFromTree(*anchor));
+      platform_tree_manager->GetPlatformNode(*anchor));
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(

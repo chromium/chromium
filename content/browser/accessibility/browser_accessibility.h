@@ -88,10 +88,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // Returns true if this object can fire events.
   virtual bool CanFireEvents() const;
 
-  // Return the AXPlatformNode corresponding to this node, if applicable
-  // on this platform.
-  virtual ui::AXPlatformNode* GetAXPlatformNode() const;
-
   // Returns the number of children of this object, or 0 if PlatformIsLeaf()
   // returns true.
   virtual size_t PlatformChildCount() const;
@@ -679,6 +675,22 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // A unique ID, since node IDs are frame-local.
   ui::AXUniqueId unique_id_;
 };
+
+//
+// Functions for safe down-casting.
+//
+
+CONTENT_EXPORT const BrowserAccessibility& DynamicToBrowserAccessibility(
+    const ui::AXPlatformNodeDelegate& delegate);
+
+CONTENT_EXPORT BrowserAccessibility& DynamicToBrowserAccessibility(
+    ui::AXPlatformNodeDelegate& delegate);
+
+CONTENT_EXPORT const BrowserAccessibility* DynamicToBrowserAccessibility(
+    const ui::AXPlatformNodeDelegate* delegate);
+
+CONTENT_EXPORT BrowserAccessibility* DynamicToBrowserAccessibility(
+    ui::AXPlatformNodeDelegate* delegate);
 
 }  // namespace content
 

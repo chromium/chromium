@@ -35,13 +35,14 @@ source_set("platform") {
     # Used by web_ax_platform_tree_manager_delegate.cc.
     "ax_platform_tree_manager_delegate.h",
 
-    # Used by browser_accessibility_state_impl.cc.
+    # Used by browser_accessibility_state_impl.cc and by ax_platform_tree_manager.cc.
     "ax_platform_node.cc",
     "ax_platform_node.h",
     "ax_platform_node_delegate.cc",
     "ax_platform_node_delegate.h",
 
-    # Used by browser_accessibility_manager.cc.
+    # Used by ax_platform_node_textrange_provider_win.cc  and by browser_accessibility_manager.cc.
+    "ax_platform_tree_manager.cc",
     "ax_platform_tree_manager.h",
 
     # Used by browser_accessibility.cc.

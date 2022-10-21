@@ -35,6 +35,8 @@ const GUID GUID_ISimpleDOM = {0x0c539790,
                               {0xb6, 0x61, 0x00, 0xaa, 0x00, 0x4c, 0xd6, 0xd8}};
 
 namespace content {
+
+class BrowserAccessibilityManager;
 class BrowserAccessibilityWin;
 
 ////////////////////////////////////////////////////////////////////////////////
