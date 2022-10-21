@@ -2603,7 +2603,18 @@ uint64_t aom_mse_wxh_16bit_c(uint8_t* dst,
                              int sstride,
                              int w,
                              int h);
-#define aom_mse_wxh_16bit aom_mse_wxh_16bit_c
+uint64_t aom_mse_wxh_16bit_neon(uint8_t* dst,
+                                int dstride,
+                                uint16_t* src,
+                                int sstride,
+                                int w,
+                                int h);
+RTCD_EXTERN uint64_t (*aom_mse_wxh_16bit)(uint8_t* dst,
+                                          int dstride,
+                                          uint16_t* src,
+                                          int sstride,
+                                          int w,
+                                          int h);
 
 void aom_paeth_predictor_16x16_c(uint8_t* dst,
                                  ptrdiff_t y_stride,
@@ -6186,6 +6197,9 @@ static void setup_rtcd_internal(void) {
   aom_mse8x8 = aom_mse8x8_c;
   if (flags & HAS_NEON)
     aom_mse8x8 = aom_mse8x8_neon;
+  aom_mse_wxh_16bit = aom_mse_wxh_16bit_c;
+  if (flags & HAS_NEON)
+    aom_mse_wxh_16bit = aom_mse_wxh_16bit_neon;
   aom_paeth_predictor_16x16 = aom_paeth_predictor_16x16_c;
   if (flags & HAS_NEON)
     aom_paeth_predictor_16x16 = aom_paeth_predictor_16x16_neon;

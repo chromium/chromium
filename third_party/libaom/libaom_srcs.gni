@@ -408,6 +408,11 @@ aom_dsp_common_intrin_avx2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/loopfilter_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/blend_a64_mask_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/bitdepth_conversion_avx2.h",
+  "//third_party/libaom/source/libaom/third_party/SVT-AV1/convolve_2d_avx2.h",
+  "//third_party/libaom/source/libaom/third_party/SVT-AV1/convolve_avx2.h",
+  "//third_party/libaom/source/libaom/third_party/SVT-AV1/EbMemory_AVX2.h",
+  "//third_party/libaom/source/libaom/third_party/SVT-AV1/EbMemory_SSE4_1.h",
+  "//third_party/libaom/source/libaom/third_party/SVT-AV1/synonyms.h",
 ]
 
 aom_dsp_common_intrin_neon = [
