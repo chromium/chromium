@@ -444,7 +444,7 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
     attributes.support_grcontext = true;
 
     Platform::GraphicsInfo info;
-    encoder_thread_context_ = CreateContextProviderOnWorkerThread(
+    encoder_thread_context_ = CreateOffscreenGraphicsContext3DProvider(
         attributes, &info, KURL("chrome://VideoTrackRecorderImpl"));
 
     if (encoder_thread_context_ &&

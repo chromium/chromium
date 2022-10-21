@@ -546,16 +546,10 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
     context_attributes.prefer_low_power_gpu = false;
   }
 
-  std::unique_ptr<WebGraphicsContext3DProvider> context_provider;
   const auto& url = execution_context->Url();
-  if (IsMainThread()) {
-    context_provider =
-        Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
-            context_attributes, url, graphics_info);
-  } else {
-    context_provider = CreateContextProviderOnWorkerThread(context_attributes,
-                                                           graphics_info, url);
-  }
+  std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
+      CreateOffscreenGraphicsContext3DProvider(context_attributes,
+                                               graphics_info, url);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
     graphics_info->error_message = String("BindToCurrentSequence failed: " +
@@ -8516,17 +8510,10 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
       CreationAttributes(), context_type_,
       SupportOwnOffscreenSurface(execution_context));
   Platform::GraphicsInfo gl_info;
-  std::unique_ptr<WebGraphicsContext3DProvider> context_provider;
   const auto& url = Host()->GetExecutionContextUrl();
 
-  if (IsMainThread()) {
-    context_provider =
-        Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
-            attributes, url, &gl_info);
-  } else {
-    context_provider =
-        CreateContextProviderOnWorkerThread(attributes, &gl_info, url);
-  }
+  std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
+      CreateOffscreenGraphicsContext3DProvider(attributes, &gl_info, url);
   scoped_refptr<DrawingBuffer> buffer;
   if (context_provider && context_provider->BindToCurrentSequence()) {
     // Construct a new drawing buffer with the new GL context.

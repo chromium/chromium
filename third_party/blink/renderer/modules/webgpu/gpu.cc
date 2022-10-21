@@ -34,56 +34,22 @@
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
 namespace {
 
-void CreateContextProvider(
-    const KURL& url,
-    base::WaitableEvent* waitable_event,
-    std::unique_ptr<WebGraphicsContext3DProvider>* created_context_provider) {
-  DCHECK(IsMainThread());
-  *created_context_provider =
-      Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
-  waitable_event->Signal();
-}
-
-std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProviderOnMainThread(
-    const KURL& url) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::MainThread()->GetDeprecatedTaskRunner();
-
-  base::WaitableEvent waitable_event;
-  std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
-  PostCrossThreadTask(
-      *task_runner, FROM_HERE,
-      CrossThreadBindOnce(&CreateContextProvider, url,
-                          CrossThreadUnretained(&waitable_event),
-                          CrossThreadUnretained(&created_context_provider)));
-
-  waitable_event.Wait();
-  return created_context_provider;
-}
-
 std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
     ExecutionContext& execution_context) {
   const KURL& url = execution_context.Url();
-  std::unique_ptr<WebGraphicsContext3DProvider> context_provider;
-  if (IsMainThread()) {
-    context_provider =
-        Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
-  } else {
-    context_provider = CreateContextProviderOnMainThread(url);
-  }
+  std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
+      CreateWebGPUGraphicsContext3DProvider(url);
 
   // Note that we check for API blocking *after* creating the context. This is
   // because context creation synchronizes against GpuProcessHost lifetime in

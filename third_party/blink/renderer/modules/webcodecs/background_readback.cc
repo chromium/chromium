@@ -187,7 +187,7 @@ bool SyncReadbackThread::LazyInitialize() {
   attributes.prefer_low_power_gpu = true;
 
   Platform::GraphicsInfo info;
-  context_provider_ = CreateContextProviderOnWorkerThread(
+  context_provider_ = CreateOffscreenGraphicsContext3DProvider(
       attributes, &info, KURL("chrome://BackgroundReadback"));
 
   if (!context_provider_) {

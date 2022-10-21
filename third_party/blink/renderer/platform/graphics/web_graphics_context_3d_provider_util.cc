@@ -13,6 +13,14 @@
 
 namespace blink {
 
+// Define a function that is allowed to access MainThreadTaskRunnerRestricted.
+MainThreadTaskRunnerRestricted
+AccessMainThreadForWebGraphicsContext3DProvider() {
+  return {};
+}
+
+namespace {
+
 struct ContextProviderCreationInfo {
   // Inputs.
   Platform::ContextAttributes context_attributes;
@@ -22,7 +30,7 @@ struct ContextProviderCreationInfo {
   std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
 };
 
-static void CreateContextProviderOnMainThread(
+void CreateOffscreenGraphicsContextOnMainThread(
     ContextProviderCreationInfo* creation_info,
     base::WaitableEvent* waitable_event) {
   DCHECK(IsMainThread());
@@ -35,23 +43,62 @@ static void CreateContextProviderOnMainThread(
   waitable_event->Signal();
 }
 
+void CreateWebGPUGraphicsContextOnMainThread(
+    const KURL& url,
+    base::WaitableEvent* waitable_event,
+    std::unique_ptr<WebGraphicsContext3DProvider>* created_context_provider) {
+  DCHECK(IsMainThread());
+  *created_context_provider =
+      Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
+  waitable_event->Signal();
+}
+
+}  // namespace
+
 std::unique_ptr<WebGraphicsContext3DProvider>
-CreateContextProviderOnWorkerThread(
+CreateOffscreenGraphicsContext3DProvider(
     Platform::ContextAttributes context_attributes,
     Platform::GraphicsInfo* gl_info,
     const KURL& url) {
-  base::WaitableEvent waitable_event;
-  ContextProviderCreationInfo creation_info;
-  creation_info.context_attributes = context_attributes;
-  creation_info.gl_info = gl_info;
-  creation_info.url = url;
-  PostCrossThreadTask(
-      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&CreateContextProviderOnMainThread,
-                          CrossThreadUnretained(&creation_info),
-                          CrossThreadUnretained(&waitable_event)));
-  waitable_event.Wait();
-  return std::move(creation_info.created_context_provider);
+  if (IsMainThread()) {
+    return Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+        context_attributes, url, gl_info);
+  } else {
+    base::WaitableEvent waitable_event;
+    ContextProviderCreationInfo creation_info;
+    creation_info.context_attributes = context_attributes;
+    creation_info.gl_info = gl_info;
+    creation_info.url = url;
+    PostCrossThreadTask(
+        *Thread::MainThread()->GetTaskRunner(
+            AccessMainThreadForWebGraphicsContext3DProvider()),
+        FROM_HERE,
+        CrossThreadBindOnce(&CreateOffscreenGraphicsContextOnMainThread,
+                            CrossThreadUnretained(&creation_info),
+                            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+    return std::move(creation_info.created_context_provider);
+  }
+}
+
+std::unique_ptr<WebGraphicsContext3DProvider>
+CreateWebGPUGraphicsContext3DProvider(const KURL& url) {
+  if (IsMainThread()) {
+    return Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
+  } else {
+    base::WaitableEvent waitable_event;
+    std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
+    PostCrossThreadTask(
+        *Thread::MainThread()->GetTaskRunner(
+            AccessMainThreadForWebGraphicsContext3DProvider()),
+        FROM_HERE,
+        CrossThreadBindOnce(&CreateWebGPUGraphicsContextOnMainThread, url,
+                            CrossThreadUnretained(&waitable_event),
+                            CrossThreadUnretained(&created_context_provider)));
+
+    waitable_event.Wait();
+    return created_context_provider;
+  }
 }
 
 }  // namespace blink

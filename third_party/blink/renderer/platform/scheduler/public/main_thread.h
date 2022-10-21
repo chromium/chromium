@@ -27,11 +27,13 @@ class MainThreadTaskRunnerRestricted {
   friend class RendererResourceCoordinatorImpl;
   friend class SharedGpuContext;
   friend class ThreadedIconLoader;
+  friend class V8WorkerMemoryReporter;
   friend class WebGLWebCodecsVideoFrame;
   friend class WebRtcVideoFrameAdapter;
-  friend class V8WorkerMemoryReporter;
   friend class WorkerGlobalScope;
   friend MainThreadTaskRunnerRestricted AccessMainThreadForGpuFactories();
+  friend MainThreadTaskRunnerRestricted
+  AccessMainThreadForWebGraphicsContext3DProvider();
 
   MainThreadTaskRunnerRestricted() = default;
 };
