@@ -62,11 +62,6 @@ class CORE_EXPORT DocumentLifecycle {
     kAfterPerformLayout,
     kLayoutClean,
 
-    // In InAccessibility step, fire deferred accessibility events which
-    // require layout to be in a clean state.
-    kInAccessibility,
-    kAccessibilityClean,
-
     kInCompositingInputsUpdate,
     kCompositingInputsClean,
 

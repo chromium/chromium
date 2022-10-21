@@ -128,19 +128,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (next_state == kStyleClean)
         return true;
-      // InAccessibility only runs if there is an ExistingAXObjectCache.
-      if (next_state == kInAccessibility)
-        return true;
-      if (next_state == kInCompositingInputsUpdate)
-        return true;
-      if (next_state == kInPrePaint)
-        return true;
-      break;
-    case kInAccessibility:
-      if (next_state == kAccessibilityClean)
-        return true;
-      break;
-    case kAccessibilityClean:
       if (next_state == kInCompositingInputsUpdate)
         return true;
       if (next_state == kInPrePaint)
@@ -156,8 +143,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (next_state == kInPrePaint)
         return true;
-      if (next_state == kInAccessibility)
-        return true;
       break;
     case kInPrePaint:
       if (next_state == kPrePaintClean)
@@ -172,8 +157,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (next_state == kInPrePaint)
         return true;
-      if (next_state == kInAccessibility)
-        return true;
       break;
     case kInPaint:
       if (next_state == kPaintClean)
@@ -187,8 +170,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
       if (next_state == kInPrePaint)
         return true;
       if (next_state == kInPaint)
-        return true;
-      if (next_state == kInAccessibility)
         return true;
       break;
     case kStopping:
@@ -209,9 +190,8 @@ bool DocumentLifecycle::CanRewindTo(LifecycleState next_state) const {
       next_state == g_deprecated_transition_stack->To())
     return true;
   return state_ == kStyleClean || state_ == kAfterPerformLayout ||
-         state_ == kLayoutClean || state_ == kAccessibilityClean ||
-         state_ == kCompositingInputsClean || state_ == kPrePaintClean ||
-         state_ == kPaintClean;
+         state_ == kLayoutClean || state_ == kCompositingInputsClean ||
+         state_ == kPrePaintClean || state_ == kPaintClean;
 }
 
 #define DEBUG_STRING_CASE(StateName) \
@@ -229,8 +209,6 @@ static WTF::String StateAsDebugString(
     DEBUG_STRING_CASE(kInPerformLayout);
     DEBUG_STRING_CASE(kAfterPerformLayout);
     DEBUG_STRING_CASE(kLayoutClean);
-    DEBUG_STRING_CASE(kInAccessibility);
-    DEBUG_STRING_CASE(kAccessibilityClean);
     DEBUG_STRING_CASE(kInCompositingInputsUpdate);
     DEBUG_STRING_CASE(kCompositingInputsClean);
     DEBUG_STRING_CASE(kInPrePaint);

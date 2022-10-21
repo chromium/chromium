@@ -558,7 +558,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
   void ProcessDeferredAccessibilityEventsImpl(Document&);
-  void UpdateLayoutForAllDocuments();
   void UpdateLifecycleIfNeeded(Document& document);
 
   bool IsMainDocumentDirty() const;
@@ -665,6 +664,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   WeakMember<AXObject> active_aria_modal_dialog_;
 
   std::unique_ptr<AXRelationCache> relation_cache_;
+
+  bool processing_deferred_events_ = false;
 
   // Verified when finalizing.
   bool has_been_disposed_ = false;

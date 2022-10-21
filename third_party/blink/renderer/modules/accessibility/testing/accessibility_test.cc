@@ -25,8 +25,7 @@ void AccessibilityTest::SetUp() {
 
 AXObjectCacheImpl& AccessibilityTest::GetAXObjectCache() const {
   DCHECK(GetDocument().View());
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kAccessibility);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   auto* ax_object_cache =
       To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
   DCHECK(ax_object_cache);

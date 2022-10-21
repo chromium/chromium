@@ -139,8 +139,8 @@ async_test((t) => {
   ]);
   // SelectedTextChanged at 10.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(setSelection,none,character,forward)',
     'AXEventIntent(delete,deleteContentBackward,none,none)',
+    'AXEventIntent(setSelection,none,character,forward)',
   ]);
   eventSender.keyDown('Backspace', []);
 }, 'Ensures that moving the cursor in a contentEditable sends a selected text change notification, and typing in a contentEditable sends both a value changed and selected text changed notification.');
