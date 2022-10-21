@@ -87,9 +87,7 @@ std::string GetAudioProcesingPropertiesLogString(
       "goog_noise_suppression: %s, "
       "goog_experimental_noise_suppression: %s, "
       "goog_highpass_filter: %s, "
-      "goog_experimental_agc: %s, "
-      "hybrid_agc: %s"
-      "analog_agc_clipping_control: %s",
+      "goog_experimental_agc: %s, ",
       aec_to_string(properties.echo_cancellation_type),
       bool_to_string(properties.disable_hw_noise_suppression),
       bool_to_string(properties.goog_audio_mirroring),
@@ -98,11 +96,7 @@ std::string GetAudioProcesingPropertiesLogString(
       bool_to_string(properties.goog_noise_suppression),
       bool_to_string(properties.goog_experimental_noise_suppression),
       bool_to_string(properties.goog_highpass_filter),
-      bool_to_string(properties.goog_experimental_auto_gain_control),
-      bool_to_string(
-          base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)),
-      bool_to_string(base::FeatureList::IsEnabled(
-          ::features::kWebRtcAnalogAgcClippingControl)));
+      bool_to_string(properties.goog_experimental_auto_gain_control));
   return str;
 }
 

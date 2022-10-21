@@ -1802,12 +1802,6 @@ extern const char kWebAuthnNewDesktopUIDescription[];
 extern const char kWebrtcHideLocalIpsWithMdnsName[];
 extern const char kWebrtcHideLocalIpsWithMdnsDecription[];
 
-extern const char kWebrtcHybridAgcName[];
-extern const char kWebrtcHybridAgcDescription[];
-
-extern const char kWebrtcAnalogAgcClippingControlName[];
-extern const char kWebrtcAnalogAgcClippingControlDescription[];
-
 extern const char kWebRtcAllowInputVolumeAdjustmentName[];
 extern const char kWebRtcAllowInputVolumeAdjustmentDescription[];
 

@@ -139,16 +139,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   EXPECT_EQ(config.gain_controller2, kDefaultApmConfig.gain_controller2);
 }
 
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     Agc2ConfigUnchangedIfAgcSettingsDisabledAndHybridAgcEnabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebRtcAnalogAgcClippingControl);
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = false,
-                    .experimental_automatic_gain_control = false});
-  EXPECT_EQ(config.gain_controller2, kDefaultApmConfig.gain_controller2);
-}
-
 TEST(CreateWebRtcAudioProcessingModuleTest, DisableAgcEnableExperimentalAgc) {
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = false,
@@ -179,210 +169,38 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CannotDisableAnalogAgc) {
 }
 #endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// Checks that on mobile the AGC1 Analog startup minimum volume cannot be
-// overridden.
-TEST(CreateWebRtcAudioProcessingModuleTest, CannotOverrideAgcStartupMinVolume) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebRtcAnalogAgcStartupMinVolume, {{"volume", "123"}});
-  ASSERT_NE(kDefaultApmConfig.gain_controller1.analog_gain_controller
-                .startup_min_volume,
-            123);
-  auto config = CreateApmGetConfig(/*settings=*/{});
-  EXPECT_EQ(config.gain_controller1.analog_gain_controller.startup_min_volume,
-            kDefaultApmConfig.gain_controller1.analog_gain_controller
-                .startup_min_volume);
-}
-#else   // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
-// Checks that on all the platforms other than mobile the AGC1 Analog startup
-// minimum volume can be overridden.
-TEST(CreateWebRtcAudioProcessingModuleTest, OverrideAgcStartupMinVolume) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebRtcAnalogAgcStartupMinVolume, {{"volume", "123"}});
-  ASSERT_NE(kDefaultApmConfig.gain_controller1.analog_gain_controller
-                .startup_min_volume,
-            123);
-  auto config = CreateApmGetConfig(/*settings=*/{});
-  EXPECT_EQ(config.gain_controller1.analog_gain_controller.startup_min_volume,
-            123);
-}
-#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
-
-TEST(CreateWebRtcAudioProcessingModuleTest, EnableAgc1AnalogClippingControl) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebRtcAnalogAgcClippingControl,
-      {{"mode", "2"},
-       {"window_length", "111"},
-       {"reference_window_length", "222"},
-       {"reference_window_delay", "333"},
-       {"clipping_threshold", "4.44"},
-       {"crest_factor_margin", ".555"},
-       {"clipped_level_step", "255"},
-       {"clipped_ratio_threshold", "0.77"},
-       {"clipped_wait_frames", "888"},
-       {"use_predicted_step", "false"}});
-
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  const auto& analog_agc = config.gain_controller1.analog_gain_controller;
-  EXPECT_TRUE(analog_agc.clipping_predictor.enabled);
-
-  using Mode = webrtc::AudioProcessing::Config::GainController1::
-      AnalogGainController::ClippingPredictor::Mode;
-  EXPECT_EQ(analog_agc.clipping_predictor.mode,
-            Mode::kFixedStepClippingPeakPrediction);
-  EXPECT_EQ(analog_agc.clipping_predictor.window_length, 111);
-  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_length, 222);
-  EXPECT_EQ(analog_agc.clipping_predictor.reference_window_delay, 333);
-  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.clipping_threshold, 4.44f);
-  EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.crest_factor_margin, 0.555f);
-  EXPECT_FALSE(analog_agc.clipping_predictor.use_predicted_step);
-  EXPECT_EQ(analog_agc.clipped_level_step, 255);
-  EXPECT_FLOAT_EQ(analog_agc.clipped_ratio_threshold, 0.77f);
-  EXPECT_EQ(analog_agc.clipped_wait_frames, 888);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, DisableAgc1AnalogClippingControl) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kWebRtcAnalogAgcClippingControl);
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  const auto& analog_agc = config.gain_controller1.analog_gain_controller;
-  EXPECT_FALSE(analog_agc.clipping_predictor.enabled);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     CannotEnableAgc1AnalogClippingControlWhenAgcIsDisabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebRtcAnalogAgcClippingControl);
-  auto config =
-      CreateApmGetConfig(/*settings=*/{.automatic_gain_control = false});
-  EXPECT_FALSE(config.gain_controller1.analog_gain_controller.clipping_predictor
-                   .enabled);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     CannotEnableAgc1AnalogClippingControlWhenExperimentalAgcIsDisabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebRtcAnalogAgcClippingControl);
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = false});
-  EXPECT_FALSE(config.gain_controller1.analog_gain_controller.clipping_predictor
-                   .enabled);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, EnableHybridAgc) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebRtcHybridAgc, {{"dry_run", "false"},
-                                   {"vad_reset_period_ms", "1230"},
-                                   {"adjacent_speech_frames_threshold", "4"},
-                                   {"max_gain_change_db_per_second", "5"},
-                                   {"max_output_noise_level_dbfs", "-6"}});
-
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-
-  // Checks that the analog AGC is enabled and that its digital adaptive
-  // controller is disabled.
-  const auto& agc1_analog = config.gain_controller1.analog_gain_controller;
-  EXPECT_TRUE(agc1_analog.enabled);
-  EXPECT_FALSE(agc1_analog.enable_digital_adaptive);
-
-  // Check that AGC2 is enabled and that the properties are correctly read from
-  // the field trials.
-  const auto& agc2 = config.gain_controller2;
-  EXPECT_TRUE(agc2.enabled);
-  EXPECT_EQ(config.gain_controller2.fixed_digital.gain_db, 0);
-  EXPECT_TRUE(agc2.adaptive_digital.enabled);
-  EXPECT_FALSE(agc2.adaptive_digital.dry_run);
-  EXPECT_EQ(agc2.adaptive_digital.vad_reset_period_ms, 1230);
-  EXPECT_EQ(agc2.adaptive_digital.adjacent_speech_frames_threshold, 4);
-  EXPECT_FLOAT_EQ(agc2.adaptive_digital.max_gain_change_db_per_second, 5.0f);
-  EXPECT_FLOAT_EQ(agc2.adaptive_digital.max_output_noise_level_dbfs, -6.0f);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, EnableHybridAgcDryRun) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kWebRtcHybridAgc,
-                                                  {{"dry_run", "true"}});
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  // Checks that the analog AGC is enabled together with its digital adaptive
-  // controller.
-  const auto& agc1_analog = config.gain_controller1.analog_gain_controller;
-  EXPECT_TRUE(agc1_analog.enabled);
-  EXPECT_TRUE(agc1_analog.enable_digital_adaptive);
-
-  // Check that AGC2 is enabled in dry run mode.
-  const auto& agc2 = config.gain_controller2;
-  EXPECT_TRUE(agc2.enabled);
-  EXPECT_TRUE(agc2.adaptive_digital.enabled);
-  EXPECT_TRUE(agc2.adaptive_digital.dry_run);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     HybridAgcDisabledWhenAgcIsDisabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebRtcHybridAgc);
-  auto config =
-      CreateApmGetConfig(/*settings=*/{.automatic_gain_control = false});
-  EXPECT_FALSE(config.gain_controller2.enabled);
-  EXPECT_FALSE(config.gain_controller2.adaptive_digital.enabled);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     HybridAgcDisabledWhenExperimentalAgcIsDisabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebRtcHybridAgc);
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = false});
-  EXPECT_FALSE(config.gain_controller2.enabled);
-  EXPECT_FALSE(config.gain_controller2.adaptive_digital.enabled);
-}
-
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST(CreateWebRtcAudioProcessingModuleTest,
      InputVolumeAdjustmentEnabledWithHybridAgc) {
   ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kWebRtcAllowInputVolumeAdjustment,
-                            features::kWebRtcHybridAgc},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(
+      features::kWebRtcAllowInputVolumeAdjustment);
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = true,
                     .experimental_automatic_gain_control = true});
   EXPECT_TRUE(config.gain_controller1.enabled);
   EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
 }
-
+#else
 TEST(CreateWebRtcAudioProcessingModuleTest,
      InputVolumeAdjustmentEnabledWithAgc1) {
   ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kWebRtcAllowInputVolumeAdjustment},
-      /*disabled_features=*/{features::kWebRtcHybridAgc});
+  feature_list.InitAndDisableFeature(
+      features::kWebRtcAllowInputVolumeAdjustment);
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = true,
                     .experimental_automatic_gain_control = true});
   EXPECT_TRUE(config.gain_controller1.enabled);
   EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST(CreateWebRtcAudioProcessingModuleTest,
      CanDisableInputVolumeAdjustmentWithHybridAgc) {
   ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kWebRtcHybridAgc},
-      /*disabled_features=*/{features::kWebRtcAllowInputVolumeAdjustment});
+  feature_list.InitAndDisableFeature(
+      features::kWebRtcAllowInputVolumeAdjustment);
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = true,
                     .experimental_automatic_gain_control = true});
@@ -390,20 +208,19 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   // is only used for input volume adaptations.
   EXPECT_FALSE(config.gain_controller1.enabled);
 }
-
+#else
 TEST(CreateWebRtcAudioProcessingModuleTest,
      CannotDisableInputVolumeAdjustmentWithAgc1) {
   ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kWebRtcHybridAgc,
-                             features::kWebRtcAllowInputVolumeAdjustment});
+  feature_list.InitAndDisableFeature(
+      features::kWebRtcAllowInputVolumeAdjustment);
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = true,
                     .experimental_automatic_gain_control = true});
   EXPECT_TRUE(config.gain_controller1.enabled);
   EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
   for (bool noise_suppressor_enabled : {true, false}) {

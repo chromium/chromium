@@ -17,6 +17,19 @@
 namespace media {
 namespace {
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr bool kUseHybridAgc = true;
+#else
+constexpr bool kUseHybridAgc = false;
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+constexpr bool kUseClippingController = true;
+#else
+constexpr bool kUseClippingController = false;
+#endif
+
 // The analog gain controller is not supported on mobile - i.e., Android, iOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr bool kAnalogAgcSupported = false;
@@ -43,94 +56,9 @@ constexpr Agc1Mode kAgc1Mode = Agc1Mode::kFixedDigital;
 constexpr Agc1Mode kAgc1Mode = Agc1Mode::kAdaptiveAnalog;
 #endif
 
-using Agc1AnalagConfig =
-    ::webrtc::AudioProcessing::Config::GainController1::AnalogGainController;
-
-Agc1AnalagConfig::ClippingPredictor::Mode GetClippingPredictorMode(int mode) {
-  using Mode = Agc1AnalagConfig::ClippingPredictor::Mode;
-  switch (mode) {
-    case 1:
-      return Mode::kAdaptiveStepClippingPeakPrediction;
-    case 2:
-      return Mode::kFixedStepClippingPeakPrediction;
-    default:
-      return Mode::kClippingEventPrediction;
-  }
-}
-
-bool Allow48kHzApmProcessing() {
-  return base::FeatureList::IsEnabled(
-      ::features::kWebRtcAllow48kHzProcessingOnArm);
-}
-
-absl::optional<int> GetAgcStartupMinVolume() {
-  if (!base::FeatureList::IsEnabled(
-          ::features::kWebRtcAnalogAgcStartupMinVolume)) {
-    return absl::nullopt;
-  }
-  return base::GetFieldTrialParamByFeatureAsInt(
-      ::features::kWebRtcAnalogAgcStartupMinVolume, "volume", 0);
-}
-
 bool DisallowInputVolumeAdjustment() {
   return !base::FeatureList::IsEnabled(
       ::features::kWebRtcAllowInputVolumeAdjustment);
-}
-
-void ConfigAgc2AdaptiveDigitalForHybridExperiment(
-    ::webrtc::AudioProcessing::Config::GainController2::AdaptiveDigital&
-        config) {
-  config.dry_run = base::GetFieldTrialParamByFeatureAsBool(
-      ::features::kWebRtcHybridAgc, "dry_run", false);
-  config.vad_reset_period_ms = base::GetFieldTrialParamByFeatureAsInt(
-      ::features::kWebRtcHybridAgc, "vad_reset_period_ms", 1500);
-  config.adjacent_speech_frames_threshold =
-      base::GetFieldTrialParamByFeatureAsInt(
-          ::features::kWebRtcHybridAgc, "adjacent_speech_frames_threshold", 12);
-  config.max_gain_change_db_per_second =
-      static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-          ::features::kWebRtcHybridAgc, "max_gain_change_db_per_second", 3));
-  config.max_output_noise_level_dbfs =
-      static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-          ::features::kWebRtcHybridAgc, "max_output_noise_level_dbfs", -50));
-}
-
-void ConfigAgc1AnalogForClippingControlExperiment(Agc1AnalagConfig& config) {
-  config.clipped_level_step = base::GetFieldTrialParamByFeatureAsInt(
-      ::features::kWebRtcAnalogAgcClippingControl, "clipped_level_step", 15);
-  config.clipped_ratio_threshold =
-      static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-          ::features::kWebRtcAnalogAgcClippingControl,
-          "clipped_ratio_threshold", 0.1));
-  config.clipped_wait_frames = base::GetFieldTrialParamByFeatureAsInt(
-      ::features::kWebRtcAnalogAgcClippingControl, "clipped_wait_frames", 300);
-
-  config.clipping_predictor.mode =
-      GetClippingPredictorMode(base::GetFieldTrialParamByFeatureAsInt(
-          ::features::kWebRtcAnalogAgcClippingControl, "mode", 0));
-  config.clipping_predictor.window_length =
-      base::GetFieldTrialParamByFeatureAsInt(
-          ::features::kWebRtcAnalogAgcClippingControl, "window_length", 5);
-  config.clipping_predictor.reference_window_length =
-      base::GetFieldTrialParamByFeatureAsInt(
-          ::features::kWebRtcAnalogAgcClippingControl,
-          "reference_window_length", 5);
-  config.clipping_predictor.reference_window_delay =
-      base::GetFieldTrialParamByFeatureAsInt(
-          ::features::kWebRtcAnalogAgcClippingControl, "reference_window_delay",
-          5);
-  config.clipping_predictor.clipping_threshold =
-      static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-          ::features::kWebRtcAnalogAgcClippingControl, "clipping_threshold",
-          -1.0));
-  config.clipping_predictor.crest_factor_margin =
-      static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-          ::features::kWebRtcAnalogAgcClippingControl, "crest_factor_margin",
-          3.0));
-  config.clipping_predictor.use_predicted_step =
-      base::GetFieldTrialParamByFeatureAsBool(
-          ::features::kWebRtcAnalogAgcClippingControl, "use_predicted_step",
-          true);
 }
 
 // Configures automatic gain control in `apm_config`.
@@ -147,10 +75,6 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
   // Enable and configure AGC1 Analog if needed.
   if (kAnalogAgcSupported && settings.experimental_automatic_gain_control) {
     agc1_analog_config.enabled = true;
-    absl::optional<int> startup_min_volume = GetAgcStartupMinVolume();
-    // TODO(crbug.com/555577): Do not zero if `startup_min_volume` if no
-    // override is specified, instead fall back to the config default value.
-    agc1_analog_config.startup_min_volume = startup_min_volume.value_or(0);
   }
   // Disable AGC1 Analog.
   if (kAllowToDisableAnalogAgc &&
@@ -173,33 +97,17 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
   }
 
   // AGC1 Analog Clipping Controller experiment.
-  if (base::FeatureList::IsEnabled(
-          ::features::kWebRtcAnalogAgcClippingControl)) {
-    agc1_analog_config.clipping_predictor.enabled = true;
-    ConfigAgc1AnalogForClippingControlExperiment(agc1_analog_config);
-  }
+  agc1_analog_config.clipping_predictor.enabled = kUseClippingController;
 
-  // Hybrid AGC feature.
-  const bool use_hybrid_agc =
-      base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc);
+  // Use either the AGC1 or the AGC2 adapative digital gain controller.
+  agc1_analog_config.enable_digital_adaptive = !kUseHybridAgc;
   auto& agc2_config = apm_config.gain_controller2;
-  agc2_config.enabled = use_hybrid_agc;
+  agc2_config.enabled = kUseHybridAgc;
   agc2_config.fixed_digital.gain_db = 0.0f;
-  if (use_hybrid_agc) {
-    agc2_config.adaptive_digital.enabled = true;
-    ConfigAgc2AdaptiveDigitalForHybridExperiment(agc2_config.adaptive_digital);
-    // Disable AGC1 adaptive digital unless AGC2 adaptive digital runs in
-    // dry-run mode.
-    agc1_analog_config.enable_digital_adaptive =
-        agc2_config.adaptive_digital.dry_run;
-  } else {
-    // Use the adaptive digital controller of AGC1 and disable that of AGC2.
-    agc1_analog_config.enable_digital_adaptive = true;
-    agc2_config.adaptive_digital.enabled = false;
-  }
+  agc2_config.adaptive_digital.enabled = kUseHybridAgc;
 
   if (DisallowInputVolumeAdjustment()) {
-    if (use_hybrid_agc) {
+    if (agc2_config.enabled) {
       // Completely disable AGC1, which is only used as input volume controller.
       apm_config.gain_controller1.enabled = false;
     } else {
@@ -274,11 +182,6 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
       settings.transient_noise_suppression;
 #endif
   ConfigAutomaticGainControl(settings, apm_config);
-  // Ensure that 48 kHz APM processing is always active. This overrules the
-  // default setting in WebRTC of 32 kHz for ARM platforms.
-  if (Allow48kHzApmProcessing()) {
-    apm_config.pipeline.maximum_internal_processing_rate = 48000;
-  }
   return ap_builder.SetConfig(apm_config).Create();
 }
 }  // namespace media
