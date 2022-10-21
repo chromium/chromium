@@ -274,6 +274,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   set_use_bounce_in_animation(false);
 
   ShelfConfig::Get()->AddObserver(this);
+
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
@@ -471,6 +473,14 @@ void UnifiedSystemTray::OnTransitioningFromCalendarToMainView() {
   SetIsActive(true);
   for (auto& observer : observers_)
     observer.OnLeavingCalendarView();
+}
+
+void UnifiedSystemTray::OnTabletModeStarted() {
+  UpdateLayout();
+}
+
+void UnifiedSystemTray::OnTabletModeEnded() {
+  UpdateLayout();
 }
 
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {

@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -62,7 +63,8 @@ class UnifiedMessageCenterBubble;
 class ASH_EXPORT UnifiedSystemTray
     : public TrayBackgroundView,
       public ShelfConfig::Observer,
-      public UnifiedSystemTrayController::Observer {
+      public UnifiedSystemTrayController::Observer,
+      public TabletModeObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -196,6 +198,10 @@ class ASH_EXPORT UnifiedSystemTray
   void OnOpeningCalendarView() override;
   void OnTransitioningFromCalendarToMainView() override;
 
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
+
   // Gets called when an action is performed on the `DateTray`.
   void OnDateTrayActionPerformed(const ui::Event& event);
 
@@ -299,6 +305,9 @@ class ASH_EXPORT UnifiedSystemTray
 
   // Records time the QS bubble was shown. Used for metrics.
   base::TimeTicks time_opened_;
+
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
 
   base::WeakPtrFactory<UnifiedSystemTray> weak_factory_{this};
 };
