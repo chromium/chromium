@@ -27,7 +27,7 @@ export async function getParentAccessParams() {
   return parentAccessParams;
 }
 
-/** @param  {!{params: !ParentAccessParams}} params*/
-export function setParentAccessParamsForTest(params) {
-  parentAccessParams = params;
+/** @type {!ParentAccessUIHandlerRemote} */
+export function setParentAccessUIHandlerForTest(handler) {
+  parentAccessUIHandler = handler;
 }

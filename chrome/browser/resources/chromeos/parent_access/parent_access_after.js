@@ -8,10 +8,15 @@ import './flows/local_web_approvals_after.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LocalWebApprovalsAfterElement} from './flows/local_web_approvals_after.js';
-import {ParentAccessParams, ParentAccessParams_FlowType} from './parent_access_ui.mojom-webui.js';
-import {getParentAccessParams} from './parent_access_ui_handler.js';
+import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessParams, getParentAccessUIHandler} from './parent_access_ui_handler.js';
 
 class ParentAccessAfter extends PolymerElement {
+  constructor() {
+    super();
+    this.parentAccessUIHandler = getParentAccessUIHandler();
+  }
+
   static get is() {
     return 'parent-access-after';
   }
@@ -24,7 +29,6 @@ class ParentAccessAfter extends PolymerElement {
   ready() {
     super.ready();
     this.renderFlowSpecificContent_();
-    // TODO(b/199753153): Implement handlers for deny and approve buttons.
   }
 
   /**
@@ -41,6 +45,22 @@ class ParentAccessAfter extends PolymerElement {
       default:
         return;
     }
+  }
+
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onParentApproved_(e) {
+    this.parentAccessUIHandler.onParentAccessDone(ParentAccessResult.kApproved);
+  }
+
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onParentDeclined_(e) {
+    this.parentAccessUIHandler.onParentAccessDone(ParentAccessResult.kDeclined);
   }
 }
 

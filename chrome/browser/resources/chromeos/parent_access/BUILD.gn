@@ -31,6 +31,7 @@ js_type_check("closure_compile_local") {
 js_library("parent_access_after") {
   deps = [
     "flows:local_web_approvals_after",
+    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =

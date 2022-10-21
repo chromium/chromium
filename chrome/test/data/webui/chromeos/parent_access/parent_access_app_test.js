@@ -6,9 +6,11 @@ import '../../mojo_webui_test_support.js';
 import 'chrome://parent-access/parent_access_app.js';
 
 import {Screens} from 'chrome://parent-access/parent_access_app.js';
-import {ParentAccessParams, ParentAccessParams_FlowType, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
-import {setParentAccessParamsForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
+import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {buildWebApprovalsParams} from './parent_access_test_utils.js';
+import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
 
 window.parent_access_app_tests = {};
 parent_access_app_tests.suiteName = 'ParentAccessAppTest';
@@ -19,10 +21,6 @@ parent_access_app_tests.TestNames = {
       'Tests that the web approvals after flow is shown',
 };
 
-function strToMojoString16(str) {
-  return {data: str.split('').map(ch => ch.charCodeAt(0))};
-}
-
 suite(parent_access_app_tests.suiteName, function() {
   setup(function() {
     PolymerTest.clearBody();
@@ -32,15 +30,9 @@ suite(parent_access_app_tests.suiteName, function() {
       parent_access_app_tests.TestNames.TestShowWebApprovalsAfterFlow,
       async () => {
         // Set up the ParentAccessParams for the web approvals flow.
-        const parentAccessParams = new ParentAccessParams();
-        parentAccessParams.flowType =
-            ParentAccessParams_FlowType.kWebsiteAccess;
-        const webApprovalsParams = new WebApprovalsParams();
-        webApprovalsParams.url = {url: 'https://testing.com'};
-        webApprovalsParams.childDisplayName = strToMojoString16('Child Name');
-        webApprovalsParams.faviconPngBytes = [];
-        parentAccessParams.flowTypeParams = {webApprovalsParams};
-        setParentAccessParamsForTest({params: parentAccessParams});
+        const handler = new TestParentAccessUIHandler();
+        handler.setParentAccessParams(buildWebApprovalsParams());
+        setParentAccessUIHandlerForTest(handler);
 
         // Create app element.
         const parentAccessApp = document.createElement('parent-access-app');
