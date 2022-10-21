@@ -21,11 +21,7 @@ class WebLayerFieldTrials : public variations::PlatformFieldTrials {
   ~WebLayerFieldTrials() override = default;
 
   // variations::PlatformFieldTrials:
-  void SetUpFieldTrials() override;
-  void SetUpFeatureControllingFieldTrials(
-      bool has_seed,
-      const variations::EntropyProviders& entropy_providers,
-      base::FeatureList* feature_list) override {}
+  void OnVariationsSetupComplete() override;
 };
 
 }  // namespace weblayer

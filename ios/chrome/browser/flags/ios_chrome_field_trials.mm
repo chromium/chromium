@@ -17,15 +17,15 @@
 #error "This file requires ARC support."
 #endif
 
-void IOSChromeFieldTrials::SetUpFieldTrials() {
-  // Persistent histograms must be enabled as soon as possible.
+void IOSChromeFieldTrials::OnVariationsSetupComplete() {
+  // Persistent histograms must be enabled ASAP, but depends on Features.
   base::FilePath user_data_dir;
   if (base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir)) {
     InstantiatePersistentHistograms(user_data_dir);
   }
 }
 
-void IOSChromeFieldTrials::SetUpFeatureControllingFieldTrials(
+void IOSChromeFieldTrials::SetUpClientSideFieldTrials(
     bool has_seed,
     const variations::EntropyProviders& entropy_providers,
     base::FeatureList* feature_list) {

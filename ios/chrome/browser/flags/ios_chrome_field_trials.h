@@ -19,8 +19,8 @@ class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
   ~IOSChromeFieldTrials() override {}
 
   // variations::PlatformFieldTrials:
-  void SetUpFieldTrials() override;
-  void SetUpFeatureControllingFieldTrials(
+  void OnVariationsSetupComplete() override;
+  void SetUpClientSideFieldTrials(
       bool has_seed,
       const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) override;

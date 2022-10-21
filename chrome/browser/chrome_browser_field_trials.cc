@@ -29,7 +29,6 @@
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "chrome/browser/android/signin/fre_mobile_identity_consistency_field_trial.h"
-#include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_features.h"
@@ -48,16 +47,15 @@ ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() {
 }
 
-void ChromeBrowserFieldTrials::SetUpFieldTrials() {
-  // Field trials that are shared by all platforms.
-  InstantiateDynamicTrials();
-
-#if BUILDFLAG(IS_ANDROID)
-  chrome::SetupMobileFieldTrials();
-#endif
+void ChromeBrowserFieldTrials::OnVariationsSetupComplete() {
+  // Persistent histograms must be enabled ASAP, but depends on Features.
+  base::FilePath metrics_dir;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
+    InstantiatePersistentHistograms(metrics_dir);
+  }
 }
 
-void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
+void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
     bool has_seed,
     const variations::EntropyProviders& entropy_providers,
     base::FeatureList* feature_list) {
@@ -162,12 +160,4 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeBrowserFieldTrials::InstantiateDynamicTrials() {
-  // Persistent histograms must be enabled as soon as possible.
-  base::FilePath metrics_dir;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
-    InstantiatePersistentHistograms(metrics_dir);
-  }
 }

@@ -19,11 +19,7 @@ class AwFieldTrials : public variations::PlatformFieldTrials {
   ~AwFieldTrials() override = default;
 
   // variations::PlatformFieldTrials:
-  void SetUpFieldTrials() override;
-  void SetUpFeatureControllingFieldTrials(
-      bool has_seed,
-      const variations::EntropyProviders& entropy_providers,
-      base::FeatureList* feature_list) override {}
+  void OnVariationsSetupComplete() override;
 };
 
 #endif  // ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_

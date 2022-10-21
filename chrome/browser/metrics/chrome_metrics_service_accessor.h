@@ -10,7 +10,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/common/metrics.mojom.h"
 #include "components/metrics/metrics_service_accessor.h"

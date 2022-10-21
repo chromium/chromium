@@ -2950,8 +2950,6 @@ static_library("browser") {
       "bookmarks/android/bookmark_bridge.h",
       "browser_process_platform_part_android.cc",
       "browser_process_platform_part_android.h",
-      "chrome_browser_field_trials_mobile.cc",
-      "chrome_browser_field_trials_mobile.h",
       "chrome_browser_main_android.cc",
       "chrome_browser_main_android.h",
       "commerce/android/shopping_service_factory_android.cc",

@@ -212,8 +212,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
           cert_verifier_creation_params);
 
  private:
-  class ShellFieldTrials;
-
   std::unique_ptr<PrefService> CreateLocalState();
   // Needed so that content_shell can use fieldtrial_testing_config.
   void SetUpFieldTrials();
@@ -240,7 +238,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       nullptr;
 
   std::unique_ptr<PrefService> local_state_;
-  std::unique_ptr<ShellFieldTrials> field_trials_;
 };
 
 // The delay for sending reports when running with --run-web-tests

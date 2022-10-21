@@ -317,7 +317,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
                                      safe_seed_manager);
   }
 
-  platform_field_trials->SetUpFeatureControllingFieldTrials(
+  platform_field_trials->SetUpClientSideFieldTrials(
       used_seed, *entropy_providers, feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
@@ -332,7 +332,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   }
 
   // This must be called after |local_state_| is initialized.
-  platform_field_trials->SetUpFieldTrials();
+  platform_field_trials->OnVariationsSetupComplete();
 
   return used_seed;
 }

@@ -30,11 +30,11 @@ TEST(ChromeBrowserFieldTrialsTest, SamplingTrials) {
 #endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(base::FieldTrialList::TrialExists(kUkmSamplingTrialName));
 
-  // Call SetUpFeatureControllingFieldTrials(), which should create fallback
+  // Call SetUpClientSideFieldTrials(), which should create fallback
   // sampling trials since they do not exist yet.
   variations::EntropyProviders entropy_providers("client_id", 0, 8000);
   auto feature_list = std::make_unique<base::FeatureList>();
-  chrome_browser_field_trials.SetUpFeatureControllingFieldTrials(
+  chrome_browser_field_trials.SetUpClientSideFieldTrials(
       /*has_seed=*/false, entropy_providers, feature_list.get());
 
   // Verify that the sampling trials were created.
@@ -44,10 +44,10 @@ TEST(ChromeBrowserFieldTrialsTest, SamplingTrials) {
 #endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kUkmSamplingTrialName));
 
-  // Call SetUpFeatureControllingFieldTrials() again. This should be a no-op,
+  // Call SetUpClientSideFieldTrials() again. This should be a no-op,
   // since the sampling trials already exist. If the trials are created again,
   // a CHECK will be triggered and this will crash.
-  chrome_browser_field_trials.SetUpFeatureControllingFieldTrials(
+  chrome_browser_field_trials.SetUpClientSideFieldTrials(
       /*has_seed=*/false, entropy_providers, feature_list.get());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

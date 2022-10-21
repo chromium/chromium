@@ -136,23 +136,6 @@ std::string SerializeSeed(const VariationsSeed& seed) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-class TestPlatformFieldTrials : public PlatformFieldTrials {
- public:
-  TestPlatformFieldTrials() = default;
-
-  TestPlatformFieldTrials(const TestPlatformFieldTrials&) = delete;
-  TestPlatformFieldTrials& operator=(const TestPlatformFieldTrials&) = delete;
-
-  ~TestPlatformFieldTrials() override = default;
-
-  // PlatformFieldTrials:
-  void SetUpFieldTrials() override {}
-  void SetUpFeatureControllingFieldTrials(
-      bool has_seed,
-      const variations::EntropyProviders& entropy_providers,
-      base::FeatureList* feature_list) override {}
-};
-
 class MockSafeSeedManager : public SafeSeedManager {
  public:
   explicit MockSafeSeedManager(PrefService* local_state)
@@ -296,7 +279,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   // A convenience wrapper around SetUpFieldTrials() which passes default values
   // for uninteresting params.
   bool SetUpFieldTrials() {
-    TestPlatformFieldTrials platform_field_trials;
+    PlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -811,7 +794,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedPath) {
   auto metrics_state_manager = metrics::MetricsStateManager::Create(
       local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
 
-  TestPlatformFieldTrials platform_field_trials;
+  PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
 
   ASSERT_FALSE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
@@ -845,7 +828,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   initial_seed->is_gzip_compressed = false;
 
   TestVariationsServiceClient variations_service_client;
-  TestPlatformFieldTrials platform_field_trials;
+  PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
 
   // Note: Unlike other tests, this test does not mock out the seed store, since

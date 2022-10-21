@@ -24,8 +24,8 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
   ~ChromeBrowserFieldTrials() override;
 
   // variations::PlatformFieldTrials:
-  void SetUpFieldTrials() override;
-  void SetUpFeatureControllingFieldTrials(
+  void OnVariationsSetupComplete() override;
+  void SetUpClientSideFieldTrials(
       bool has_seed,
       const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) override;

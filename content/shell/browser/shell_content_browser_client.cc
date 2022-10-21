@@ -205,20 +205,6 @@ void BindNetworkHintsHandler(
 
 }  // namespace
 
-class ShellContentBrowserClient::ShellFieldTrials
-    : public variations::PlatformFieldTrials {
- public:
-  ShellFieldTrials() = default;
-  ~ShellFieldTrials() override = default;
-
-  // variations::PlatformFieldTrials:
-  void SetUpFieldTrials() override {}
-  void SetUpFeatureControllingFieldTrials(
-      bool has_seed,
-      const variations::EntropyProviders& entropy_providers,
-      base::FeatureList* feature_list) override {}
-};
-
 std::string GetShellUserAgent() {
   if (base::FeatureList::IsEnabled(blink::features::kFullUserAgent))
     return GetShellFullUserAgent();
@@ -702,8 +688,6 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
   std::vector<std::string> variation_ids;
   auto feature_list = std::make_unique<base::FeatureList>();
 
-  field_trials_ = std::make_unique<ShellFieldTrials>();
-
   std::unique_ptr<variations::SeedResponse> initial_seed;
 #if BUILDFLAG(IS_ANDROID)
   if (!local_state_->HasPrefPath(variations::prefs::kVariationsSeedSignature)) {
@@ -727,13 +711,14 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
   // Since this is a test-only code path, some arguments to SetUpFieldTrials are
   // null.
   // TODO(crbug/1248066): Consider passing a low entropy source.
+  variations::PlatformFieldTrials platform_field_trials;
   field_trial_creator.SetUpFieldTrials(
       variation_ids,
       command_line->GetSwitchValueASCII(
           variations::switches::kForceVariationIds),
       content::GetSwitchDependentFeatureOverrides(*command_line),
-      std::move(feature_list), metrics_state_manager.get(), field_trials_.get(),
-      &safe_seed_manager,
+      std::move(feature_list), metrics_state_manager.get(),
+      &platform_field_trials, &safe_seed_manager,
       /*low_entropy_source_value=*/absl::nullopt);
 }
 

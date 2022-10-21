@@ -22,21 +22,22 @@ class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
 
   virtual ~PlatformFieldTrials() = default;
 
-  // Set up field trials for a specific platform.
-  virtual void SetUpFieldTrials() = 0;
+  // Called once trials are set up to do platform-specific initialization.
+  // Mainly used for setting up persistent histograms.
+  virtual void OnVariationsSetupComplete() {}
 
-  // Create field trials that will control feature list features. This should be
-  // called during the same timing window as
-  // FeatureList::AssociateReportingFieldTrial. |has_seed| indicates that the
-  // variations service used a seed to create field trials. This can be used to
-  // prevent associating a field trial with a feature that you expect to be
-  // controlled by the variations seed. |entropy_providers| can be used as a
-  // parameter to creating a FieldTrial that should be visible to Google web
-  // properties.
-  virtual void SetUpFeatureControllingFieldTrials(
+  // Create field trials that are defined by client code rather than being sent
+  // from the variations server. Called after server trials are set up.
+  // |has_seed| indicates that the variations service used a seed to create
+  // field trials. This can be used to prevent associating a field trial with a
+  // feature that you expect to be controlled by the variations seed.
+  // |entropy_providers| should be used for randomizing trials. Trials that
+  // should be visible to Google web properties should use the low_entropy()
+  // provider.
+  virtual void SetUpClientSideFieldTrials(
       bool has_seed,
       const variations::EntropyProviders& entropy_providers,
-      base::FeatureList* feature_list) = 0;
+      base::FeatureList* feature_list) {}
 
   // Register any synthetic field trials. Will be called later than the above
   // methods, in particular after g_browser_process is available..
