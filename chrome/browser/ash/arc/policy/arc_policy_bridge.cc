@@ -61,7 +61,7 @@ void MapBoolToBool(const std::string& arc_policy_name,
                    const std::string& policy_name,
                    const policy::PolicyMap& policy_map,
                    bool invert_bool_value,
-                   base::Value* filtered_policies) {
+                   base::Value::Dict* filtered_policies) {
   if (!policy_map.IsPolicySet(policy_name))
     return;
 
@@ -71,8 +71,8 @@ void MapBoolToBool(const std::string& arc_policy_name,
     NOTREACHED() << "Policy " << policy_name << " is not a boolean.";
     return;
   }
-  filtered_policies->SetBoolKey(arc_policy_name,
-                                policy_value->GetBool() != invert_bool_value);
+  filtered_policies->Set(arc_policy_name,
+                         policy_value->GetBool() != invert_bool_value);
 }
 
 // int_true: value of Chrome OS policy for which arc policy is set to true.
@@ -81,7 +81,7 @@ void MapIntToBool(const std::string& arc_policy_name,
                   const std::string& policy_name,
                   const policy::PolicyMap& policy_map,
                   int int_true,
-                  base::Value* filtered_policies) {
+                  base::Value::Dict* filtered_policies) {
   if (!policy_map.IsPolicySet(policy_name))
     return;
 
@@ -91,8 +91,7 @@ void MapIntToBool(const std::string& arc_policy_name,
     NOTREACHED() << "Policy " << policy_name << " is not an integer.";
     return;
   }
-  filtered_policies->SetBoolKey(arc_policy_name,
-                                policy_value->GetInt() == int_true);
+  filtered_policies->Set(arc_policy_name, policy_value->GetInt() == int_true);
 }
 
 // |arc_policy_name| is only set if the |pref_name| pref is managed.
@@ -102,12 +101,12 @@ void MapManagedIntPrefToBool(const std::string& arc_policy_name,
                              const std::string& pref_name,
                              const PrefService* profile_prefs,
                              int int_true,
-                             base::Value* filtered_policies) {
+                             base::Value::Dict* filtered_policies) {
   if (!profile_prefs->IsManagedPreference(pref_name))
     return;
 
-  filtered_policies->SetBoolKey(
-      arc_policy_name, profile_prefs->GetInteger(pref_name) == int_true);
+  filtered_policies->Set(arc_policy_name,
+                         profile_prefs->GetInteger(pref_name) == int_true);
 }
 
 // Checks whether |policy_name| is present as an object and has all |fields|,
@@ -115,7 +114,7 @@ void MapManagedIntPrefToBool(const std::string& arc_policy_name,
 void MapObjectToPresenceBool(const std::string& arc_policy_name,
                              const std::string& policy_name,
                              const policy::PolicyMap& policy_map,
-                             base::Value* filtered_policies,
+                             base::Value::Dict* filtered_policies,
                              const std::vector<std::string>& fields) {
   if (!policy_map.IsPolicySet(policy_name))
     return;
@@ -130,11 +129,11 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
     if (!policy_value->FindKey(field))
       return;
   }
-  filtered_policies->SetBoolKey(arc_policy_name, true);
+  filtered_policies->Set(arc_policy_name, true);
 }
 
 void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
-                             base::Value* filtered_policies) {
+                             base::Value::Dict* filtered_policies) {
   const base::Value* const policy_value = policy_map.GetValue(
       policy::key::kArcCertificatesSyncMode, base::Value::Type::INTEGER);
   // Old certs should be uninstalled if the sync is disabled or policy is not
@@ -214,12 +213,12 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     ca_certs.Append(std::move(data));
   }
   if (!ca_certs.GetList().empty())
-    filtered_policies->SetKey("credentialsConfigDisabled", base::Value(true));
-  filtered_policies->SetKey(kArcCaCerts, std::move(ca_certs));
+    filtered_policies->Set("credentialsConfigDisabled", base::Value(true));
+  filtered_policies->Set(kArcCaCerts, std::move(ca_certs));
 }
 
 void AddRequiredKeyPairs(const CertStoreService* cert_store_service,
-                         base::Value* filtered_policies) {
+                         base::Value::Dict* filtered_policies) {
   if (!cert_store_service)
     return;
   base::Value cert_names(base::Value::Type::LIST);
@@ -228,7 +227,7 @@ void AddRequiredKeyPairs(const CertStoreService* cert_store_service,
     value.SetStringKey("alias", name);
     cert_names.Append(std::move(value));
   }
-  filtered_policies->SetKey(kArcRequiredKeyPairs, std::move(cert_names));
+  filtered_policies->Set(kArcRequiredKeyPairs, std::move(cert_names));
 }
 
 bool LooksLikeAndroidPackageName(const std::string& name) {
@@ -238,7 +237,7 @@ bool LooksLikeAndroidPackageName(const std::string& name) {
 void AddChoosePrivateKeyRuleToPolicy(
     policy::PolicyService* const policy_service,
     const CertStoreService* cert_store_service,
-    base::Value* filtered_policies) {
+    base::Value::Dict* filtered_policies) {
   if (!cert_store_service)
     return;
 
@@ -262,17 +261,17 @@ void AddChoosePrivateKeyRuleToPolicy(
     rules.Append(std::move(value));
   }
 
-  filtered_policies->SetBoolKey(kPrivateKeySelectionEnabled, true);
-  filtered_policies->SetKey(kChoosePrivateKeyRules, std::move(rules));
+  filtered_policies->Set(kPrivateKeySelectionEnabled, true);
+  filtered_policies->Set(kChoosePrivateKeyRules, std::move(rules));
 }
 
 // Finds managed configurations of applications in |arc_policy| and replace
 // string values that refer to template variables.
 void ReplaceManagedConfigurationVariables(const Profile* profile,
-                                          base::Value* arc_policy) {
+                                          base::Value::Dict* arc_policy) {
   // Replace template variables in application managed configuration.
   base::Value::List* applications =
-      arc_policy->GetDict().FindList(ArcPolicyBridge::kApplications);
+      arc_policy->FindList(ArcPolicyBridge::kApplications);
   if (applications) {
     for (base::Value& entry : *applications) {
       base::Value* config =
@@ -293,7 +292,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   const policy::PolicyMap& policy_map =
       policy_service->GetPolicies(policy_namespace);
 
-  base::Value filtered_policies(base::Value::Type::DICTIONARY);
+  base::Value::Dict filtered_policies;
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
   // Parse ArcPolicy as JSON string before adding other policies to the
@@ -311,7 +310,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
       // Need a deep copy of all values here instead of doing a swap, because
       // JSONReader::Read constructs a dictionary whose StringValues are
       // JSONStringValues which are based on StringPiece instead of string.
-      filtered_policies.MergeDictionary(&app_policy_dict.value());
+      filtered_policies.Merge(std::move(app_policy_dict.value().GetDict()));
     } else {
       std::string app_policy_string =
           app_policy_value->is_string() ? app_policy_value->GetString() : "";
@@ -326,7 +325,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
       arc::data_snapshotd::ArcDataSnapshotdManager::Get()
           ->IsSnapshotInProgress()) {
     base::Value::List* applications_value =
-        filtered_policies.GetDict().FindList(ArcPolicyBridge::kApplications);
+        filtered_policies.FindList(ArcPolicyBridge::kApplications);
     if (applications_value) {
       for (base::Value& entry : *applications_value) {
         auto* installType = entry.FindStringKey("installType");
@@ -337,14 +336,14 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
       }
     }
     // Always reset android_id if ARC data snapshot update is in progress.
-    filtered_policies.SetBoolKey(ArcPolicyBridge::kResetAndroidIdEnabled, true);
+    filtered_policies.Set(ArcPolicyBridge::kResetAndroidIdEnabled, true);
   }
 
   if (profile->IsChild() &&
       ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     // Adds "playStoreMode" policy. The policy value is used to restrict the
     // user from being able to toggle between different accounts in ARC++.
-    filtered_policies.SetStringKey("playStoreMode", "SUPERVISED");
+    filtered_policies.Set("playStoreMode", "SUPERVISED");
   }
 
   const PrefService* profile_prefs = profile->GetPrefs();
@@ -381,14 +380,14 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   // "debuggingFeaturesDisabled".
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kForceDevToolsAvailable)) {
-    filtered_policies.SetBoolKey("debuggingFeaturesDisabled", false);
+    filtered_policies.Set("debuggingFeaturesDisabled", false);
   }
 
   // Always enable APK Cache for affiliated users, and always disable it for not
   // affiliated ones.
-  filtered_policies.SetBoolKey("apkCacheEnabled", is_affiliated);
+  filtered_policies.Set("apkCacheEnabled", is_affiliated);
 
-  filtered_policies.SetStringKey("guid", guid);
+  filtered_policies.Set("guid", guid);
 
   // Always allow mounting physical media because mounts are controlled outside
   // of ARC based on policy in file_manager::VolumeManager.
@@ -396,7 +395,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   // policy::key::kExternalStoragePolicy before, we hard-code it to false to
   // ensure that the old policy setting does not remain on the ARC side.
   // See b/217531658 for details.
-  filtered_policies.SetBoolKey("mountPhysicalMediaDisabled", false);
+  filtered_policies.Set("mountPhysicalMediaDisabled", false);
 
   AddRequiredKeyPairs(cert_store_service, &filtered_policies);
   AddChoosePrivateKeyRuleToPolicy(policy_service, cert_store_service,
