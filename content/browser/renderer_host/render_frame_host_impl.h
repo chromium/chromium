@@ -933,6 +933,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // call FrameTreeNode::IsLoading.
   bool is_loading() const { return is_loading_; }
 
+  // Sets `is_loading_` to true to handle renderer debug URLs. This is needed
+  // to generate DidStopLoading events for these URLs.
+  void SetIsLoadingForRendererDebugURL() { is_loading_ = true; }
+
   // Returns true if this is a top-level frame, or if this frame
   // uses a proxy to communicate with its parent frame. Local roots are
   // distinguished by owning a RenderWidgetHost, which manages input events

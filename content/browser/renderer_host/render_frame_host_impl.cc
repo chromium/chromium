@@ -9396,18 +9396,6 @@ void RenderFrameHostImpl::FailedNavigation(
 void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   DCHECK(blink::IsRendererDebugURL(url));
 
-  // Several tests expect a load of Chrome Debug URLs to send a DidStopLoading
-  // notification, so set is loading to true here to properly surface it when
-  // the renderer process is done handling the URL.
-  // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
-  if (!url.SchemeIs(url::kJavaScriptScheme)) {
-    bool was_loading =
-        frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
-    is_loading_ = true;
-    frame_tree_node()->DidStartLoading(true /* should_show_loading_ui */,
-                                       was_loading);
-  }
-
   GetAssociatedLocalFrame()->HandleRendererDebugURL(url);
 
   // Ensure that the renderer process is marked as used after processing a
