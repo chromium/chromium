@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_PLATFORM_GRPC_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_PLATFORM_GRPC_H_
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_SERVICE_IMPL_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_SERVICE_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -28,12 +28,12 @@ namespace chromecast {
 
 class MessagePortService;
 
-class RuntimeApplicationPlatformGrpc : public RuntimeApplication::Delegate {
+class RuntimeApplicationServiceImpl : public RuntimeApplication::Delegate {
  public:
-  RuntimeApplicationPlatformGrpc(
+  RuntimeApplicationServiceImpl(
       std::unique_ptr<RuntimeApplication> runtime_application,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
-  ~RuntimeApplicationPlatformGrpc() override;
+  ~RuntimeApplicationServiceImpl() override;
 
   const std::string& app_id() const {
     DCHECK(runtime_application_);
@@ -93,9 +93,9 @@ class RuntimeApplicationPlatformGrpc : public RuntimeApplication::Delegate {
   absl::optional<std::string> cast_media_service_grpc_endpoint_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<RuntimeApplicationPlatformGrpc> weak_factory_{this};
+  base::WeakPtrFactory<RuntimeApplicationServiceImpl> weak_factory_{this};
 };
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_PLATFORM_GRPC_H_
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_SERVICE_IMPL_H_

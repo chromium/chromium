@@ -13,7 +13,7 @@
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_platform_grpc.h"
+#include "chromecast/cast_core/runtime/browser/runtime_service_impl.h"
 #include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "content/public/common/content_switches.h"

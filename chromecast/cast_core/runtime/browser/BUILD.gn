@@ -207,12 +207,12 @@ cast_source_set("runtime_application_dispatcher") {
   ]
 }
 
-cast_source_set("runtime_application_dispatcher_grpc") {
+cast_source_set("runtime_service_impl") {
   sources = [
-    "runtime_application_dispatcher_platform_grpc.cc",
-    "runtime_application_dispatcher_platform_grpc.h",
-    "runtime_application_platform_grpc.cc",
-    "runtime_application_platform_grpc.h",
+    "runtime_application_service_impl.cc",
+    "runtime_application_service_impl.h",
+    "runtime_service_impl.cc",
+    "runtime_service_impl.h",
   ]
 
   public_deps = [
@@ -265,8 +265,7 @@ cast_source_set("browser") {
   ]
 
   deps = [
-    ":runtime_application_dispatcher",
-    ":runtime_application_dispatcher_grpc",
+    ":runtime_service_impl",
     "//base",
     "//chromecast/cast_core:cast_core_switches",
     "//chromecast/media/base:video_plane_controller",

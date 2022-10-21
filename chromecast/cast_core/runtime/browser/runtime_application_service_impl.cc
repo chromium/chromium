@@ -2,26 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/runtime_application_platform_grpc.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
-#include "chromecast/browser/cast_web_service.h"
-#include "chromecast/browser/cast_web_view_factory.h"
-#include "chromecast/browser/visibility_types.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
-#include "chromecast/common/feature_constants.h"
 
 namespace chromecast {
 
-RuntimeApplicationPlatformGrpc::RuntimeApplicationPlatformGrpc(
+RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
     std::unique_ptr<RuntimeApplication> runtime_application,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : runtime_application_(std::move(runtime_application)),
@@ -32,9 +24,9 @@ RuntimeApplicationPlatformGrpc::RuntimeApplicationPlatformGrpc(
   runtime_application_->SetDelegate(*this);
 }
 
-RuntimeApplicationPlatformGrpc::~RuntimeApplicationPlatformGrpc() = default;
+RuntimeApplicationServiceImpl::~RuntimeApplicationServiceImpl() = default;
 
-void RuntimeApplicationPlatformGrpc::Load(
+void RuntimeApplicationServiceImpl::Load(
     const cast::runtime::LoadApplicationRequest& request,
     RuntimeApplication::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -52,35 +44,35 @@ void RuntimeApplicationPlatformGrpc::Load(
       base::BindPostTask(
           task_runner_,
           base::BindRepeating(
-              &RuntimeApplicationPlatformGrpc::HandleSetUrlRewriteRules,
+              &RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules,
               weak_factory_.GetWeakPtr())));
   grpc_server_
       ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetMediaState>(
           base::BindPostTask(
               task_runner_,
               base::BindRepeating(
-                  &RuntimeApplicationPlatformGrpc::HandleSetMediaState,
+                  &RuntimeApplicationServiceImpl::HandleSetMediaState,
                   weak_factory_.GetWeakPtr())));
   grpc_server_
       ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetVisibility>(
           base::BindPostTask(
               task_runner_,
               base::BindRepeating(
-                  &RuntimeApplicationPlatformGrpc::HandleSetVisibility,
+                  &RuntimeApplicationServiceImpl::HandleSetVisibility,
                   weak_factory_.GetWeakPtr())));
   grpc_server_
       ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetTouchInput>(
           base::BindPostTask(
               task_runner_,
               base::BindRepeating(
-                  &RuntimeApplicationPlatformGrpc::HandleSetTouchInput,
+                  &RuntimeApplicationServiceImpl::HandleSetTouchInput,
                   weak_factory_.GetWeakPtr())));
   grpc_server_->SetHandler<
       cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage>(
-      base::BindPostTask(task_runner_,
-                         base::BindRepeating(
-                             &RuntimeApplicationPlatformGrpc::HandlePostMessage,
-                             weak_factory_.GetWeakPtr())));
+      base::BindPostTask(
+          task_runner_,
+          base::BindRepeating(&RuntimeApplicationServiceImpl::HandlePostMessage,
+                              weak_factory_.GetWeakPtr())));
   grpc_server_->Start(
       request.runtime_application_service_info().grpc_endpoint());
   LOG(INFO) << "Runtime application server started: endpoint="
@@ -96,7 +88,7 @@ void RuntimeApplicationPlatformGrpc::Load(
   runtime_application_->Load(std::move(callback));
 }
 
-void RuntimeApplicationPlatformGrpc::Launch(
+void RuntimeApplicationServiceImpl::Launch(
     const cast::runtime::LaunchApplicationRequest& request,
     RuntimeApplication::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -127,7 +119,7 @@ void RuntimeApplicationPlatformGrpc::Launch(
   std::move(callback).Run(true);
 }
 
-void RuntimeApplicationPlatformGrpc::HandlePostMessage(
+void RuntimeApplicationServiceImpl::HandlePostMessage(
     cast::web::Message request,
     cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage::Reactor*
         reactor) {
@@ -150,7 +142,7 @@ void RuntimeApplicationPlatformGrpc::HandlePostMessage(
   }
 }
 
-void RuntimeApplicationPlatformGrpc::HandleSetUrlRewriteRules(
+void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
     cast::v2::SetUrlRewriteRulesRequest request,
     cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
         reactor) {
@@ -170,7 +162,7 @@ void RuntimeApplicationPlatformGrpc::HandleSetUrlRewriteRules(
   reactor->Write(cast::v2::SetUrlRewriteRulesResponse());
 }
 
-void RuntimeApplicationPlatformGrpc::HandleSetMediaState(
+void RuntimeApplicationServiceImpl::HandleSetMediaState(
     cast::v2::SetMediaStateRequest request,
     cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor*
         reactor) {
@@ -179,7 +171,7 @@ void RuntimeApplicationPlatformGrpc::HandleSetMediaState(
   reactor->Write(cast::v2::SetMediaStateResponse());
 }
 
-void RuntimeApplicationPlatformGrpc::HandleSetVisibility(
+void RuntimeApplicationServiceImpl::HandleSetVisibility(
     cast::v2::SetVisibilityRequest request,
     cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
         reactor) {
@@ -188,7 +180,7 @@ void RuntimeApplicationPlatformGrpc::HandleSetVisibility(
   reactor->Write(cast::v2::SetVisibilityResponse());
 }
 
-void RuntimeApplicationPlatformGrpc::HandleSetTouchInput(
+void RuntimeApplicationServiceImpl::HandleSetTouchInput(
     cast::v2::SetTouchInputRequest request,
     cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor*
         reactor) {
@@ -197,7 +189,7 @@ void RuntimeApplicationPlatformGrpc::HandleSetTouchInput(
   reactor->Write(cast::v2::SetTouchInputResponse());
 }
 
-void RuntimeApplicationPlatformGrpc::NotifyApplicationStarted() {
+void RuntimeApplicationServiceImpl::NotifyApplicationStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_app_stub_);
 
@@ -213,7 +205,7 @@ void RuntimeApplicationPlatformGrpc::NotifyApplicationStarted() {
       }));
 }
 
-void RuntimeApplicationPlatformGrpc::NotifyApplicationStopped(
+void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
     cast::common::StopReason::Type stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -236,7 +228,7 @@ void RuntimeApplicationPlatformGrpc::NotifyApplicationStopped(
   grpc_server_.reset();
 }
 
-void RuntimeApplicationPlatformGrpc::NotifyMediaPlaybackChanged(bool playing) {
+void RuntimeApplicationServiceImpl::NotifyMediaPlaybackChanged(bool playing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_app_stub_);
 
@@ -255,7 +247,7 @@ void RuntimeApplicationPlatformGrpc::NotifyMediaPlaybackChanged(bool playing) {
       }));
 }
 
-void RuntimeApplicationPlatformGrpc::GetAllBindings(
+void RuntimeApplicationServiceImpl::GetAllBindings(
     GetAllBindingsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_message_port_app_stub_);
@@ -263,12 +255,12 @@ void RuntimeApplicationPlatformGrpc::GetAllBindings(
       cast::v2::CoreMessagePortApplicationServiceStub::GetAll>();
   std::move(call).InvokeAsync(base::BindPostTask(
       task_runner_,
-      base::BindOnce(&RuntimeApplicationPlatformGrpc::OnAllBindingsReceived,
+      base::BindOnce(&RuntimeApplicationServiceImpl::OnAllBindingsReceived,
                      weak_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 std::unique_ptr<MessagePortService>
-RuntimeApplicationPlatformGrpc::CreateMessagePortService() {
+RuntimeApplicationServiceImpl::CreateMessagePortService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_message_port_app_stub_);
   return std::make_unique<MessagePortServiceGrpc>(
@@ -276,7 +268,7 @@ RuntimeApplicationPlatformGrpc::CreateMessagePortService() {
 }
 
 std::unique_ptr<content::WebUIControllerFactory>
-RuntimeApplicationPlatformGrpc::CreateWebUIControllerFactory(
+RuntimeApplicationServiceImpl::CreateWebUIControllerFactory(
     std::vector<std::string> hosts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_app_stub_);
@@ -284,7 +276,7 @@ RuntimeApplicationPlatformGrpc::CreateWebUIControllerFactory(
                                                       &core_app_stub_.value());
 }
 
-void RuntimeApplicationPlatformGrpc::OnAllBindingsReceived(
+void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
     GetAllBindingsCallback callback,
     cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

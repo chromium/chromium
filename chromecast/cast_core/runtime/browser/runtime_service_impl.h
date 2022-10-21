@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_PLATFORM_GRPC_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_PLATFORM_GRPC_H_
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_SERVICE_IMPL_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_SERVICE_IMPL_H_
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder_service.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_base.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_platform_grpc.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/common/public/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,18 +28,17 @@ class CastWebService;
 
 // A gRPC-based implementation of RuntimeApplicationDispatcher for use
 // with Cast Core.
-class RuntimeApplicationDispatcherPlatformGrpc final
-    : public RuntimeApplicationDispatcherBase<RuntimeApplicationPlatformGrpc>,
+class RuntimeServiceImpl final
+    : public RuntimeApplicationDispatcherBase<RuntimeApplicationServiceImpl>,
       public CastRuntimeMetricsRecorder::EventBuilderFactory {
  public:
   // |application_client| is expected to persist for the lifetime of this
   // instance.
-  RuntimeApplicationDispatcherPlatformGrpc(
-      cast_receiver::ApplicationClient& application_client,
-      CastWebService* web_service,
-      std::string runtime_id,
-      std::string runtime_service_endpoint);
-  ~RuntimeApplicationDispatcherPlatformGrpc() override;
+  RuntimeServiceImpl(cast_receiver::ApplicationClient& application_client,
+                     CastWebService* web_service,
+                     std::string runtime_id,
+                     std::string runtime_service_endpoint);
+  ~RuntimeServiceImpl() override;
 
   // RuntimeApplicationDispatcher implementation.
   cast_receiver::Status Start() override;
@@ -49,7 +48,7 @@ class RuntimeApplicationDispatcherPlatformGrpc final
   std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
 
  private:
-  using Base = RuntimeApplicationDispatcherBase<RuntimeApplicationPlatformGrpc>;
+  using Base = RuntimeApplicationDispatcherBase<RuntimeApplicationServiceImpl>;
 
   // RuntimeService gRPC handlers:
   void HandleLoadApplication(
@@ -125,10 +124,9 @@ class RuntimeApplicationDispatcherPlatformGrpc final
   cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor* heartbeat_reactor_ =
       nullptr;
 
-  base::WeakPtrFactory<RuntimeApplicationDispatcherPlatformGrpc> weak_factory_{
-      this};
+  base::WeakPtrFactory<RuntimeServiceImpl> weak_factory_{this};
 };
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_PLATFORM_GRPC_H_
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_SERVICE_IMPL_H_
