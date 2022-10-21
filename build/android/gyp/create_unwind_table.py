@@ -1033,8 +1033,7 @@ def ReadTextSectionStartAddress(readobj_path: str, libchrome_path: str) -> int:
       encoding='ascii')
 
   elfs = json.loads(proc.stdout.read())[0]
-  assert len(elfs) == 1
-  sections = list(elfs.values())[0]['Sections']
+  sections = elfs['Sections']
 
   return next(s['Section']['Address'] for s in sections
               if s['Section']['Name']['Value'] == '.text')
