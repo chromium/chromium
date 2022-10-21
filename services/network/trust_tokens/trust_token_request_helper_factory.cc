@@ -19,8 +19,6 @@
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/boringssl_trust_token_issuance_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
-#include "services/network/trust_tokens/ecdsa_p256_key_pair_generator.h"
-#include "services/network/trust_tokens/ecdsa_sha256_trust_token_request_signer.h"
 #include "services/network/trust_tokens/local_trust_token_operation_delegate.h"
 #include "services/network/trust_tokens/local_trust_token_operation_delegate_impl.h"
 #include "services/network/trust_tokens/operating_system_matching.h"
@@ -29,7 +27,6 @@
 #include "services/network/trust_tokens/trust_token_key_commitment_controller.h"
 #include "services/network/trust_tokens/trust_token_operation_metrics_recorder.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
-#include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_request_redemption_helper.h"
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 #include "services/network/trust_tokens/types.h"
@@ -168,7 +165,7 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
       auto helper = std::make_unique<TrustTokenRequestRedemptionHelper>(
           std::move(top_frame_origin), params->refresh_policy, store,
           key_commitment_getter_, params->custom_key_commitment,
-          params->custom_issuer, std::make_unique<EcdsaP256KeyPairGenerator>(),
+          params->custom_issuer,
           std::make_unique<BoringsslTrustTokenRedemptionCryptographer>(),
           std::move(net_log));
       std::move(done).Run(TrustTokenStatusOrRequestHelper(
@@ -200,19 +197,13 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
         issuers.emplace_back(std::move(*maybe_issuer));
       }
 
-      TrustTokenRequestSigningHelper::Params signing_params(
-          std::move(issuers), top_frame_origin,
-          std::move(params->additional_signed_headers),
-          params->include_timestamp_header, params->sign_request_data,
-          params->possibly_unsafe_additional_signing_data);
+      TrustTokenRequestSigningHelper::Params signing_params(std::move(issuers),
+                                                            top_frame_origin);
 
       LogOutcome(net_log, params->type,
                  Outcome::kSuccessfullyCreatedASigningHelper);
       auto helper = std::make_unique<TrustTokenRequestSigningHelper>(
-          store, std::move(signing_params),
-          std::make_unique<EcdsaSha256TrustTokenRequestSigner>(),
-          std::make_unique<TrustTokenRequestCanonicalizer>(),
-          std::move(net_log));
+          store, std::move(signing_params), std::move(net_log));
       std::move(done).Run(TrustTokenStatusOrRequestHelper(
           std::make_unique<OperationTimingRequestHelperWrapper>(
               std::move(metrics_recorder), std::move(helper))));

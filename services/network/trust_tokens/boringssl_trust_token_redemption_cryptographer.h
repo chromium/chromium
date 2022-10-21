@@ -23,7 +23,6 @@ class BoringsslTrustTokenRedemptionCryptographer
                   int issuer_configured_batch_size) override;
   absl::optional<std::string> BeginRedemption(
       TrustToken token,
-      base::StringPiece verification_key,
       const url::Origin& top_level_origin) override;
   absl::optional<std::string> ConfirmRedemption(
       base::StringPiece response_header) override;

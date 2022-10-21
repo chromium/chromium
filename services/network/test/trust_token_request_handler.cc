@@ -21,9 +21,6 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
-#include "services/network/trust_tokens/test/signed_request_verification_util.h"
-#include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
-#include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
@@ -100,10 +97,6 @@ struct TrustTokenRequestHandler::Rep {
   mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback
       unavailable_local_operation_fallback;
 
-  // Expect that client-side signing operations succeeded or failed according to
-  // the value of this field.
-  SigningOutcome client_signing_outcome;
-
   std::vector<IssuanceKeyPair> issuance_keys;
 
   // Whether to peremptorily reject issuance and redemption or whether to
@@ -119,19 +112,12 @@ struct TrustTokenRequestHandler::Rep {
   // Verifies the redemption request's client datal is a valid CBOR
   // encoding of a structure matching the format specified in the design doc.
   //
-  // If this is the case, returns true and stores the contained
-  // browser-generated public key hash in
-  // |hashes_of_redemption_bound_public_keys| for comparison against subsequent
-  // signed requests. Otherwise, returns false and, if |error| is not null, sets
-  // |error| to a human-readable explanation of why the input was not valid.
+  // If this is the case, returns true. Otherwise, returns false and, if |error|
+  // is not null, sets |error| to a human-readable explanation of why the input
+  // was not valid.
   bool ConfirmClientDataIntegrityAndStoreKeyHash(
       base::span<const uint8_t> client_data,
       std::string* error = nullptr);
-
-  // Maintains all key pairs bound to successful redemptions.
-  // TODO(davidvc): This can be expanded to map per top-frame origin for
-  // tests across multiple origins.
-  std::set<std::string> hashes_of_redemption_bound_public_keys;
 
   // This is a structured representation of the most recent input to
   // RecordSignedRequest.
@@ -206,7 +192,6 @@ bool TrustTokenRequestHandler::Rep::ConfirmClientDataIntegrityAndStoreKeyHash(
     *error = "client data 'key-hash' field was not a bytestring";
     return false;
   }
-  base::StringPiece key_hash = it->second.GetBytestringAsString();
 
   // Even though we don't yet examine the remaining fields in detail, perform
   // some structural integrity checks to make sure all's generally well:
@@ -224,8 +209,6 @@ bool TrustTokenRequestHandler::Rep::ConfirmClientDataIntegrityAndStoreKeyHash(
     *error = "Missing or type-unsafe redemption-timestamp field in client data";
     return false;
   }
-
-  hashes_of_redemption_bound_public_keys.insert(std::string(key_hash));
 
   return true;
 }
@@ -382,12 +365,6 @@ void TrustTokenRequestHandler::RecordSignedRequest(
       TrustTokenSignedRequest{destination, headers};
 }
 
-std::set<std::string>
-TrustTokenRequestHandler::hashes_of_redemption_bound_public_keys() const {
-  base::AutoLock lock(mutex_);
-  return rep_->hashes_of_redemption_bound_public_keys;
-}
-
 absl::optional<TrustTokenSignedRequest>
 TrustTokenRequestHandler::last_incoming_signed_request() const {
   base::AutoLock lock(mutex_);
@@ -402,7 +379,6 @@ void TrustTokenRequestHandler::UpdateOptions(Options options) {
   rep_->protocol_version = options.protocol_version;
   rep_->id = options.id;
   rep_->batch_size = options.batch_size;
-  rep_->client_signing_outcome = options.client_signing_outcome;
   rep_->issuance_outcome = options.issuance_outcome;
   rep_->redemption_outcome = options.redemption_outcome;
 

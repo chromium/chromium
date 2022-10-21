@@ -107,11 +107,7 @@ struct TrustTokenTestParameters final {
   TrustTokenTestParameters(
       mojom::TrustTokenOperationType type,
       absl::optional<mojom::TrustTokenRefreshPolicy> refresh_policy,
-      absl::optional<mojom::TrustTokenSignRequestData> sign_request_data,
-      absl::optional<bool> include_timestamp_header,
-      absl::optional<std::vector<std::string>> issuer_specs,
-      absl::optional<std::vector<std::string>> additional_signed_headers,
-      absl::optional<std::string> possibly_unsafe_additional_signing_data);
+      absl::optional<std::vector<std::string>> issuer_specs);
 
   ~TrustTokenTestParameters();
 
@@ -120,14 +116,10 @@ struct TrustTokenTestParameters final {
 
   mojom::TrustTokenOperationType type;
   absl::optional<mojom::TrustTokenRefreshPolicy> refresh_policy;
-  absl::optional<mojom::TrustTokenSignRequestData> sign_request_data;
-  absl::optional<bool> include_timestamp_header;
   // Because static initialization of GURLs/Origins isn't allowed in tests, use
   // the string representation of the issuer origins and convert them to Origins
   // in the test.
   absl::optional<std::vector<std::string>> issuer_specs;
-  absl::optional<std::vector<std::string>> additional_signed_headers;
-  absl::optional<std::string> possibly_unsafe_additional_signing_data;
 };
 
 // Serializes the value of a Trust Tokens enum parameter to its JS string
@@ -172,10 +164,6 @@ const TrustTokenTestParameters kIssuanceTrustTokenTestParameters[]{
     // For issuance, there are no additional parameters to specify.
     TrustTokenTestParameters(mojom::TrustTokenOperationType::kIssuance,
                              absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
                              absl::nullopt)};
 
 const TrustTokenTestParameters kRedemptionTrustTokenTestParameters[]{
@@ -183,57 +171,26 @@ const TrustTokenTestParameters kRedemptionTrustTokenTestParameters[]{
     // values (and a default).
     TrustTokenTestParameters(mojom::TrustTokenOperationType::kRedemption,
                              mojom::TrustTokenRefreshPolicy::kRefresh,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
                              absl::nullopt),
     TrustTokenTestParameters(mojom::TrustTokenOperationType::kRedemption,
                              mojom::TrustTokenRefreshPolicy::kUseCached,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
                              absl::nullopt),
     TrustTokenTestParameters(mojom::TrustTokenOperationType::kRedemption,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
-                             absl::nullopt,
                              absl::nullopt,
                              absl::nullopt)};
 
 const TrustTokenTestParameters kSigningTrustTokenTestParameters[]{
-    // Signing's inputs are issuers, signRequestData, additionalSignedHeaders,
-    // includeTimestampHeader, and additionalSigningData; "issuers" must be
-    // nonempty and must only contain secure origins.
+    // Signing's inputs are issuers; "issuers" must be nonempty and must only
+    // contain secure origins.
     TrustTokenTestParameters(
         mojom::TrustTokenOperationType::kSigning,
         absl::nullopt,
-        mojom::TrustTokenSignRequestData::kOmit,
-        /*include_timestamp_header=*/true,
-        std::vector<std::string>{"https://issuer.example"},
-        std::vector<std::string>{"one additional header's name",
-                                 "another additional header's name"},
-        "some additional data to sign"),
+        std::vector<std::string>{"https://issuer.example"}),
     TrustTokenTestParameters(
         mojom::TrustTokenOperationType::kSigning,
         absl::nullopt,
-        mojom::TrustTokenSignRequestData::kHeadersOnly,
-        /*include_timestamp_header=*/false,
         std::vector<std::string>{"https://issuer.example",
-                                 "https://another-issuer.example"},
-        absl::nullopt,
-        absl::nullopt),
-    TrustTokenTestParameters(
-        mojom::TrustTokenOperationType::kSigning,
-        absl::nullopt,
-        mojom::TrustTokenSignRequestData::kInclude,
-        /*include_timestamp_header=*/absl::nullopt,
-        std::vector<std::string>{"https://issuer.example",
-                                 "https://another-issuer.example"},
-        absl::nullopt,
-        absl::nullopt),
+                                 "https://another-issuer.example"}),
 };
 
 // Given a well-formed key commitment record JSON and an issuer origin, returns

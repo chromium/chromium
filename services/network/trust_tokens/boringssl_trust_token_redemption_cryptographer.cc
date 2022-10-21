@@ -50,7 +50,6 @@ bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
 absl::optional<std::string>
 BoringsslTrustTokenRedemptionCryptographer::BeginRedemption(
     TrustToken token,
-    base::StringPiece verification_key_to_bind,
     const url::Origin& top_level_origin) {
   if (!ctx_)
     return absl::nullopt;
@@ -61,8 +60,8 @@ BoringsslTrustTokenRedemptionCryptographer::BeginRedemption(
   base::Time redemption_timestamp = base::Time::Now();
 
   absl::optional<std::vector<uint8_t>> maybe_client_data =
-      CanonicalizeTrustTokenClientDataForRedemption(
-          redemption_timestamp, top_level_origin, verification_key_to_bind);
+      CanonicalizeTrustTokenClientDataForRedemption(redemption_timestamp,
+                                                    top_level_origin);
   if (!maybe_client_data)
     return absl::nullopt;
 

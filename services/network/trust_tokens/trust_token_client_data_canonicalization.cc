@@ -13,7 +13,6 @@ namespace {
 
 const char kRedemptionTimestampKey[] = "redemption-timestamp";
 const char kRedeemingOriginKey[] = "redeeming-origin";
-const char kKeyHashKey[] = "key-hash";
 
 }  // namespace
 
@@ -26,15 +25,11 @@ const char kKeyHashKey[] = "key-hash";
 //
 //    // “redeeming-origin”’s value is of CBOR type “text string.”
 //    “redeeming-origin”: <Top-level origin at the time of redemption>,
-//
-//    // “key-hash”’s value is of CBOR type “byte string.”
-//    “key-hash”: SHA256(client public key)
 // },
 absl::optional<std::vector<uint8_t>>
 CanonicalizeTrustTokenClientDataForRedemption(
     base::Time redemption_timestamp,
-    const url::Origin& top_frame_origin,
-    base::StringPiece public_key) {
+    const url::Origin& top_frame_origin) {
   DCHECK(!top_frame_origin.opaque());
 
   cbor::Value::MapValue map;
@@ -50,9 +45,6 @@ CanonicalizeTrustTokenClientDataForRedemption(
 
   map[cbor::Value(kRedeemingOriginKey, cbor::Value::Type::STRING)] =
       cbor::Value(top_frame_origin.Serialize(), cbor::Value::Type::STRING);
-
-  map[cbor::Value(kKeyHashKey, cbor::Value::Type::STRING)] = cbor::Value(
-      crypto::SHA256HashString(public_key), cbor::Value::Type::BYTE_STRING);
 
   return cbor::Writer::Write(cbor::Value(std::move(map)));
 }

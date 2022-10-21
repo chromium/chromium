@@ -511,8 +511,6 @@ TEST(TrustTokenQueryAnswerer,
 
   auto redemption_record = network::TrustTokenRedemptionRecord();
   redemption_record.set_body("rr_body");
-  redemption_record.set_public_key("rr_public_key");
-  redemption_record.set_signing_key("rr_signing_key");
   redemption_record.set_token_verification_key("rr_token_verification_key");
   redemption_record.set_lifetime(12345);
   raw_store->SetRedemptionRecord(kIssuer, kToplevel, redemption_record);

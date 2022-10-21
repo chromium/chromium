@@ -19,7 +19,7 @@ namespace network {
 TEST(TrustTokenClientDataCanonicalization, TimeBeforeUnixEpoch) {
   EXPECT_FALSE(CanonicalizeTrustTokenClientDataForRedemption(
       base::Time::UnixEpoch() - base::Seconds(1),
-      url::Origin::Create(GURL("https://topframe.example")), "public key"));
+      url::Origin::Create(GURL("https://topframe.example"))));
 }
 
 TEST(TrustTokenClientDataCanonicalization, SerializeThenDeserialize) {
@@ -29,7 +29,7 @@ TEST(TrustTokenClientDataCanonicalization, SerializeThenDeserialize) {
   absl::optional<std::vector<uint8_t>> maybe_serialization =
       CanonicalizeTrustTokenClientDataForRedemption(
           base::Time::Now(),
-          url::Origin::Create(GURL("https://topframe.example")), "public key");
+          url::Origin::Create(GURL("https://topframe.example")));
 
   ASSERT_TRUE(maybe_serialization);
 
@@ -49,10 +49,6 @@ TEST(TrustTokenClientDataCanonicalization, SerializeThenDeserialize) {
   ASSERT_EQ(map.at(cbor::Value("redeeming-origin", cbor::Value::Type::STRING))
                 .GetString(),
             "https://topframe.example");
-
-  ASSERT_EQ(map.at(cbor::Value("key-hash", cbor::Value::Type::STRING))
-                .GetBytestringAsString(),
-            crypto::SHA256HashString("public key"));
 }
 
 }  // namespace network

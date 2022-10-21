@@ -42,14 +42,6 @@ class TrustTokenRequestHandler {
 
   // TODO(davidvc): Provide a way to specify when keys expire.
 
-  // See |Options::client_signing_outcome| below.
-  enum class SigningOutcome {
-    // Expect a well-formed RR and possibly a Sec-Signature header.
-    kSuccess,
-    // Expect an empty Sec-Redemption-Record header and no Sec-Signature header.
-    kFailure,
-  };
-
   enum class ServerOperationOutcome {
     kExecuteOperationAsNormal,
     kUnconditionalFailure,
@@ -63,12 +55,6 @@ class TrustTokenRequestHandler {
 
     // The number of issuance key pairs to provide via key commitment results.
     int num_keys = 1;
-
-    // Specifies whether the client-side signing operation is expected to
-    // succeed. Unlike issuance and redemption, clients send signed requests
-    // even when the operation failures, but the outcome affects the shape of
-    // the expected request.
-    SigningOutcome client_signing_outcome = SigningOutcome::kSuccess;
 
     // The protocol version with which to parameterize the server-side
     // cryptographic logic. We return this value in key commitment results.

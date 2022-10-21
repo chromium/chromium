@@ -330,8 +330,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
   }
 
   network::TrustTokenTestParameters trust_token_params(
-      test_description.op, absl::nullopt, absl::nullopt, absl::nullopt,
-      absl::nullopt, absl::nullopt, absl::nullopt);
+      test_description.op, absl::nullopt, absl::nullopt);
 
   network::TrustTokenParametersAndSerialization
       expected_params_and_serialization =

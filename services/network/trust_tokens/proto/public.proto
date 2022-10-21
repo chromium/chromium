@@ -24,17 +24,11 @@ message TrustToken {
 
 // A TrustTokenRedemptionRecord message stores state associated with a single
 // Trust Token's redemption record ("RR"). The "body" field is the contents of
-// the RR itself; when the protocol is configured to use RR-bound key pairs,
-// "public_key" and "signing_key" are the keys associated with the RR.
+// the RR itself.
 message TrustTokenRedemptionRecord {
   // The body of an RR contains an arbitrary bundle of issuer-provided bytes
   // set as part of the redemption.
   optional bytes body = 1;  // required
-
-  // If one of public_key or signing_key is present, the other must also be
-  // present.
-  optional bytes public_key = 2;
-  optional bytes signing_key = 3;
 
   // The token verification key for the token redeemed to obtain this RR.
   optional bytes token_verification_key = 4;  // required

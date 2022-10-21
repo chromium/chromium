@@ -22,15 +22,7 @@ dictionary TrustToken {
   // --- Parameters only for request signing
   // The following parameters are ignored unless |type| is "send-redemption-record":
   // 1. |issuers|
-  // 2. |additionalSignedHeaders|
-  // 3. |includeTimestampHeader|
-  // 4. |signRequestData|
-  // 5. |additionalSigningData|
   //
   // Additionally, |issuers| must be nonempty when |type| is "send-redemption-record".
   sequence<USVString> issuers;
-  sequence<USVString> additionalSignedHeaders;
-  boolean includeTimestampHeader = false;
-  SignRequestData signRequestData = "omit";
-  DOMString additionalSigningData;
 };

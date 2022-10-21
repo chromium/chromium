@@ -21,17 +21,8 @@ network::mojom::blink::TrustTokenParamsPtr NetworkParamsToBlinkParams(
   auto ret = network::mojom::blink::TrustTokenParams::New();
   ret->type = params->type;
   ret->refresh_policy = params->refresh_policy;
-  ret->sign_request_data = params->sign_request_data;
-  ret->include_timestamp_header = params->include_timestamp_header;
   for (const url::Origin& issuer : params->issuers) {
     ret->issuers.push_back(SecurityOrigin::CreateFromUrlOrigin(issuer));
-  }
-  for (const std::string& header : params->additional_signed_headers) {
-    ret->additional_signed_headers.push_back(String::FromUTF8(header));
-  }
-  if (params->possibly_unsafe_additional_signing_data) {
-    ret->possibly_unsafe_additional_signing_data =
-        String::FromUTF8(*params->possibly_unsafe_additional_signing_data);
   }
   return ret;
 }
@@ -83,9 +74,6 @@ TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
   // address-to-address comparison of the pointers.
   EXPECT_EQ(result->type, expectation->type);
   EXPECT_EQ(result->refresh_policy, expectation->refresh_policy);
-  EXPECT_EQ(result->sign_request_data, expectation->sign_request_data);
-  EXPECT_EQ(result->include_timestamp_header,
-            expectation->include_timestamp_header);
 
   EXPECT_EQ(result->issuers.size(), expectation->issuers.size());
   for (wtf_size_t i = 0; i < result->issuers.size(); ++i) {
@@ -95,12 +83,6 @@ TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
                 expectation->issuers.at(i)->ToString());
     }
   }
-
-  EXPECT_EQ(result->additional_signed_headers,
-            expectation->additional_signed_headers);
-
-  EXPECT_EQ(result->possibly_unsafe_additional_signing_data,
-            expectation->possibly_unsafe_additional_signing_data);
 }
 
 TEST(TrustTokenAttributeParsing, NotADictionary) {
@@ -148,33 +130,6 @@ TEST(TrustTokenAttributeParsing, InvalidRefreshPolicy) {
   auto json = ParseJSON(R"(
     { "type": "token-request",
       "refreshPolicy": "not a valid refresh policy" }
-  )");
-  ASSERT_TRUE(json);
-  ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
-}
-
-TEST(TrustTokenAttributeParsing, TypeUnsafeSignRequestData) {
-  auto json = ParseJSON(R"(
-    { "type": "token-request",
-      "signRequestData": 3 }
-  )");
-  ASSERT_TRUE(json);
-  ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
-}
-
-TEST(TrustTokenAttributeParsing, InvalidSignRequestData) {
-  auto json = ParseJSON(R"(
-    { "type": "token-request",
-      "signRequestData": "not a member of the signRequestData enum" }
-  )");
-  ASSERT_TRUE(json);
-  ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
-}
-
-TEST(TrustTokenAttributeParsing, TypeUnsafeIncludeTimestampHeader) {
-  auto json = ParseJSON(R"(
-    { "type": "token-request",
-      "includeTimestampHeader": 3 }
   )");
   ASSERT_TRUE(json);
   ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
@@ -239,36 +194,6 @@ TEST(TrustTokenAttributeParsing, NonHttpNonHttpsIssuer) {
   auto json = ParseJSON(R"(
     { "type": "token-request",
       "issuers": ["https://ok.test", "file:///"] }
-  )");
-  ASSERT_TRUE(json);
-  ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
-}
-
-TEST(TrustTokenAttributeParsing, TypeUnsafeAdditionalSignedHeaders) {
-  auto json = ParseJSON(R"(
-    { "type": "token-request",
-      "additionalSignedHeaders": 3}
-  )");
-  ASSERT_TRUE(json);
-  ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
-}
-
-// Test that the parser requires that all members of the additionalSignedHeaders
-// be strings.
-TEST(TrustTokenAttributeParsing, TypeUnsafeAdditionalSignedHeader) {
-  auto json = ParseJSON(R"(
-    { "type": "token-request",
-      "additionalSignedHeaders": ["plausible header", 17] }
-  )");
-  ASSERT_TRUE(json);
-  ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
-}
-
-// Test that the parser requires that additionalSigningData be a string.
-TEST(TrustTokenAttributeParsing, TypeUnsafeAdditionalSigningData) {
-  auto json = ParseJSON(R"(
-    { "type": "token-request",
-      "additionalSigningData": 15 }
   )");
   ASSERT_TRUE(json);
   ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));

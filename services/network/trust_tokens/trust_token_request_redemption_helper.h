@@ -86,13 +86,11 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
     // redemption request is currently considered an implementation detail of
     // the underlying cryptographic code.
     //
-    // Some representation of each of |verification_key_to_bind| and
-    // |top_level_origin| is embedded in the redemption request so that a token
-    // redemption can be bound to a particular top-level origin and client-owned
-    // key pair; see the design doc for more details.
+    // Some representation of  |top_level_origin| is embedded in the redemption
+    // request so that a token redemption can be bound to a particular top-level
+    // origin; see the design doc for more details.
     virtual absl::optional<std::string> BeginRedemption(
         TrustToken token,
-        base::StringPiece verification_key_to_bind,
         const url::Origin& top_level_origin) = 0;
 
     // Given a base64-encoded Sec-Trust-Token redemption response header,
@@ -121,9 +119,8 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // - |token_store| will be responsible for storing underlying Trust Tokens
   // state. It must outlive this object.
   //
-  // - |key_commitment_getter|, |key_pair_generator|, and
-  // |cryptographer| are delegates that help execute the protocol; see
-  // their class comments.
+  // - |key_commitment_getter| and |cryptographer| are delegates that help
+  // execute the protocol; see their class comments.
   TrustTokenRequestRedemptionHelper(
       SuitableTrustTokenOrigin top_level_origin,
       mojom::TrustTokenRefreshPolicy refresh_policy,
@@ -131,7 +128,6 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
       absl::optional<std::string> custom_key_commitment,
       absl::optional<url::Origin> custom_issuer,
-      std::unique_ptr<KeyPairGenerator> key_pair_generator,
       std::unique_ptr<Cryptographer> cryptographer,
       net::NetLogWithSource net_log = net::NetLogWithSource());
   ~TrustTokenRequestRedemptionHelper() override;
@@ -203,11 +199,6 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   const SuitableTrustTokenOrigin top_level_origin_;
   const mojom::TrustTokenRefreshPolicy refresh_policy_;
 
-  // |bound_signing_key_| and |bound_verification_key_| form the key pair
-  // "bound" to the redemption; they are generated speculatively near the
-  // beginning of redemption and committed to storage if the operation succeeds.
-  std::string bound_signing_key_;
-  std::string bound_verification_key_;
   // |token_verification_key_| is the token issuance verification key
   // corresponding to the token being redeemed. It's stored here speculatively
   // when beginning redemption so that it can be placed in persistent storage

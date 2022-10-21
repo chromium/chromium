@@ -13,8 +13,6 @@
 #include "services/network/trust_tokens/boringssl_trust_token_issuance_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
-#include "services/network/trust_tokens/test/signed_request_verification_util.h"
-#include "services/network/trust_tokens/trust_token_client_data_canonicalization.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -162,10 +160,8 @@ void RedeemSingleToken(const ProtocolKeys& keys,
                                                   kNumTokensToRequest));
 
   absl::optional<std::string> maybe_base64_encoded_redemption_request =
-      redemption_cryptographer.BeginRedemption(
-          token_to_redeem,
-          "client-generated public key bound to the redemption",
-          kRedeemingOrigin);
+      redemption_cryptographer.BeginRedemption(token_to_redeem,
+                                               kRedeemingOrigin);
 
   ASSERT_TRUE(maybe_base64_encoded_redemption_request);
 
@@ -193,18 +189,6 @@ void RedeemSingleToken(const ProtocolKeys& keys,
   // Put the issuer-receied token in a smart pointer so it will get deleted on
   // leaving scope.
   bssl::UniquePtr<TRUST_TOKEN> redeemed_token_scoper(redeemed_token);
-
-  // Note: It might seem reasonable to compare |redeemed_token| with
-  // |token_to_redeem|, but the TRUST_TOKEN type represents different things in
-  // client and server settings, so these structs don't necessarily have equal
-  // contents.
-  auto expected_client_data = *CanonicalizeTrustTokenClientDataForRedemption(
-      base::Time::Now(), kRedeemingOrigin,
-      "client-generated public key bound to the redemption");
-  EXPECT_TRUE(std::equal(redeemed_client_data.as_span().begin(),
-                         redeemed_client_data.as_span().end(),
-                         expected_client_data.begin(),
-                         expected_client_data.end()));
 
   std::string base64_encoded_redemption_response =
       base::Base64Encode(raw_redemption_response.as_span());

@@ -53,7 +53,6 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
     absl::optional<std::string> custom_key_commitment,
     absl::optional<url::Origin> custom_issuer,
-    std::unique_ptr<KeyPairGenerator> key_pair_generator,
     std::unique_ptr<Cryptographer> cryptographer,
     net::NetLogWithSource net_log)
     : top_level_origin_(top_level_origin),
@@ -62,12 +61,10 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
       key_commitment_getter_(std::move(key_commitment_getter)),
       custom_key_commitment_(custom_key_commitment),
       custom_issuer_(custom_issuer),
-      key_pair_generator_(std::move(key_pair_generator)),
       cryptographer_(std::move(cryptographer)),
       net_log_(std::move(net_log)) {
   DCHECK(token_store_);
   DCHECK(key_commitment_getter_);
-  DCHECK(key_pair_generator_);
   DCHECK(cryptographer_);
 }
 
@@ -163,16 +160,9 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     return;
   }
 
-  if (!key_pair_generator_->Generate(&bound_signing_key_,
-                                     &bound_verification_key_)) {
-    LogOutcome(net_log_, kBegin, "Internal error generating RR-bound key pair");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kInternalError);
-    return;
-  }
-
   absl::optional<std::string> maybe_redemption_header =
-      cryptographer_->BeginRedemption(
-          *maybe_token_to_redeem, bound_verification_key_, top_level_origin_);
+      cryptographer_->BeginRedemption(*maybe_token_to_redeem,
+                                      top_level_origin_);
 
   if (!maybe_redemption_header) {
     LogOutcome(net_log_, kBegin, "Internal error beginning redemption");
@@ -277,8 +267,6 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   // 5. Otherwise, if these checks succeed, store the RR and return success.
   TrustTokenRedemptionRecord record_to_store;
   record_to_store.set_body(std::move(*maybe_redemption_record));
-  record_to_store.set_signing_key(std::move(bound_signing_key_));
-  record_to_store.set_public_key(std::move(bound_verification_key_));
   record_to_store.set_token_verification_key(
       std::move(token_verification_key_));
   if (has_lifetime)
