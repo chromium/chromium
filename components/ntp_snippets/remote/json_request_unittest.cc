@@ -26,13 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/961023): Fix memory leaks in tests and re-enable on LSAN.
-#ifdef LEAK_SANITIZER
-#define MAYBE_BuildRequestAuthenticated DISABLED_BuildRequestAuthenticated
-#else
-#define MAYBE_BuildRequestAuthenticated BuildRequestAuthenticated
-#endif
-
 namespace ntp_snippets {
 
 namespace internal {
@@ -126,7 +119,7 @@ class JsonRequestTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
 
-TEST_F(JsonRequestTest, MAYBE_BuildRequestAuthenticated) {
+TEST_F(JsonRequestTest, BuildRequestAuthenticated) {
   JsonRequest::Builder builder = CreateMinimalBuilder();
   RequestParams params;
   params.excluded_ids = {"1234567890"};
