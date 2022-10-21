@@ -117,9 +117,12 @@ public class FieldTrials {
         Set<String> enableFeaturesSet = new HashSet<>();
         if (enableFeatures != null) {
             Collections.addAll(enableFeaturesSet, enableFeatures.split(","));
+
+            Map<String, Boolean> enabledFeaturesMap = new HashMap<>();
             for (String enabledFeature : enableFeaturesSet) {
-                CachedFeatureFlags.setForTesting(cleanupFeatureName(enabledFeature), true);
+                enabledFeaturesMap.put(cleanupFeatureName(enabledFeature), true);
             }
+            CachedFeatureFlags.setFeaturesForTesting(enabledFeaturesMap);
         }
 
         if (forceFieldTrials == null || forceFieldTrialParams == null || enableFeatures == null) {

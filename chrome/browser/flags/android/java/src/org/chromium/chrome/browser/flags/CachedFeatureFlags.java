@@ -127,15 +127,14 @@ public class CachedFeatureFlags {
     /**
      * Forces a feature to be enabled or disabled for testing.
      *
-     * @deprecated Use @EnableFeatures/@DisableFeatures annotations or
-     *     {@link CachedFlag#setForTesting(Boolean)} instead.
+     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations or
+     *      {@link CachedFlag#setForTesting(Boolean)} instead.
      *
      * @param featureName the feature name from ChromeFeatureList.
      * @param value the value that {@link CachedFlag#isEnabled()} will be forced to return. If null,
      *     remove any values previously forced.
      */
-    @Deprecated
-    public static void setForTesting(String featureName, @Nullable Boolean value) {
+    static void setForTesting(String featureName, @Nullable Boolean value) {
         String preferenceName = getPrefForFeatureFlag(featureName);
         synchronized (sValuesReturned.boolValues) {
             sValuesReturned.boolValues.put(preferenceName, value);
@@ -144,6 +143,9 @@ public class CachedFeatureFlags {
 
     /**
      * Sets the feature flags to use in JUnit and instrumentation tests.
+     *
+     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations or
+     *      {@link CachedFlag#setForTesting(Boolean)} instead.
      */
     @VisibleForTesting
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
