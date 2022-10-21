@@ -49,6 +49,7 @@ ts_library("library") {
 
   if (is_chromeos_ash) {
     in_files += [
+      "ui/base/accelerators/mojom/accelerator.mojom-webui.js",
       "ui/gfx/range/mojom/range.mojom-webui.js",
       "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
       "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
@@ -68,6 +69,7 @@ ts_library("library") {
       "//chromeos/services/network_config/public/mojom:network_types_js__generator",
       "//chromeos/services/network_health/public/mojom:mojom_js__generator",
       "//services/network/public/mojom:mojom_ip_address_js__generator",
+      "//ui/base/accelerators/mojom:mojom_js__generator",
       "//ui/gfx/range/mojom:mojom_js__generator",
     ]
   }

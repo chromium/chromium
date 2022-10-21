@@ -11,20 +11,19 @@ mojom("mojom") {
   disable_variants = true
 
   sources = [
-    "accelerator_info.mojom",
     "accelerator_keys.mojom",
     "assistant_volume_control.mojom",
     "tray_action.mojom",
   ]
 
   public_deps = [
+    ":accelerator_info",
     "//chromeos/ash/components/proximity_auth/public/mojom",
     "//components/account_id/mojom",
     "//components/sync/mojom",
     "//mojo/public/mojom/base",
     "//services/preferences/public/mojom",
     "//skia/public/mojom",
-    "//ui/base/accelerators/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",
     "//ui/gfx/range/mojom",
@@ -52,4 +51,20 @@ mojom("mojom") {
   export_class_attribute = "ASH_PUBLIC_EXPORT"
   export_define = "ASH_PUBLIC_IMPLEMENTATION=1"
   export_header = "ash/public/cpp/ash_public_export.h"
+}
+
+# This is a separate target so that downstream WebUI targets can take
+# advantage of JS module Mojom files, without having to generate WebUI Mojom
+# files for all dependencies (and their dependencies) in //ash/public/mojom.
+mojom("accelerator_info") {
+  disable_variants = true
+
+  webui_module_path = "/ash/public/mojom"
+
+  sources = [ "accelerator_info.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/base/accelerators/mojom",
+  ]
 }
