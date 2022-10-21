@@ -34,59 +34,47 @@ class MockModuleUnwindPrerequisitesDelegate
 };
 
 TEST(UnwindPrerequisitesTest, RequestInstall) {
-  // No process type switch implies browser process.
-  *base::CommandLine::ForCurrentProcess() =
-      base::CommandLine(base::CommandLine::NO_PROGRAM);
-  {
-    MockModuleUnwindPrerequisitesDelegate mock_delegate;
-
+  struct {
+    version_info::Channel channel;
+    bool enable_feature_install_android_unwind_dfm;
+    bool is_installation_expected;
+  } test_cases[] = {
+    {version_info::Channel::CANARY, false, false},
+    {version_info::Channel::DEV, false, false},
+    {version_info::Channel::BETA, false, false},
+    {version_info::Channel::STABLE, false, false},
+    {version_info::Channel::UNKNOWN, false, false},
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) &&           \
     BUILDFLAG(ENABLE_ARM_CFI_TABLE) && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    EXPECT_CALL(mock_delegate,
-                RequestInstallation(version_info::Channel::CANARY))
-        .Times(1);
-    EXPECT_CALL(mock_delegate, RequestInstallation(version_info::Channel::DEV))
-        .Times(1);
-
-    RequestUnwindPrerequisitesInstallation(version_info::Channel::CANARY,
-                                           &mock_delegate);
-    RequestUnwindPrerequisitesInstallation(version_info::Channel::DEV,
-                                           &mock_delegate);
+    {version_info::Channel::CANARY, true, true},
+    {version_info::Channel::DEV, true, true},
+    {version_info::Channel::BETA, true, true},
+    {version_info::Channel::STABLE, true, true},
+    {version_info::Channel::UNKNOWN, true, true},
 #else
-    EXPECT_CALL(mock_delegate, RequestInstallation(_)).Times(0);
-
-    RequestUnwindPrerequisitesInstallation(version_info::Channel::CANARY,
-                                           &mock_delegate);
-    RequestUnwindPrerequisitesInstallation(version_info::Channel::DEV,
-                                           &mock_delegate);
+    {version_info::Channel::CANARY, true, false},
+    {version_info::Channel::DEV, true, false},
+    {version_info::Channel::BETA, true, false},
+    {version_info::Channel::STABLE, true, false},
+    {version_info::Channel::UNKNOWN, true, false},
 #endif
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::test::ScopedFeatureList feature_list;
+    if (test_case.enable_feature_install_android_unwind_dfm) {
+      feature_list.InitAndEnableFeature(kInstallAndroidUnwindDfm);
+    } else {
+      feature_list.InitAndDisableFeature(kInstallAndroidUnwindDfm);
+    }
+
+    MockModuleUnwindPrerequisitesDelegate mock_delegate;
+    EXPECT_CALL(mock_delegate, RequestInstallation(_))
+        .Times(test_case.is_installation_expected ? 1 : 0);
+
+    RequestUnwindPrerequisitesInstallation(test_case.channel, &mock_delegate);
   }
-  MockModuleUnwindPrerequisitesDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, RequestInstallation(_)).Times(0);
-
-  RequestUnwindPrerequisitesInstallation(version_info::Channel::BETA,
-                                         &mock_delegate);
-  RequestUnwindPrerequisitesInstallation(version_info::Channel::STABLE,
-                                         &mock_delegate);
-  RequestUnwindPrerequisitesInstallation(version_info::Channel::UNKNOWN,
-                                         &mock_delegate);
-}
-
-TEST(UnwindPrerequisitesTest, RequestInstallOnBeta) {
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) &&           \
-    BUILDFLAG(ENABLE_ARM_CFI_TABLE) && defined(OFFICIAL_BUILD) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInstallAndroidUnwindDfm);
-
-  MockModuleUnwindPrerequisitesDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, RequestInstallation(version_info::Channel::BETA))
-      .Times(1);
-
-  RequestUnwindPrerequisitesInstallation(version_info::Channel::BETA,
-                                         &mock_delegate);
-#endif
 }
 
 TEST(UnwindPrerequisitesDeathTest, CannotRequestInstallOutsideBrowser) {

@@ -202,10 +202,7 @@ void RequestUnwindPrerequisitesInstallation(
   //
   // The install occurs asynchronously, with the module available at the first
   // run of Chrome following install.
-  if (channel == version_info::Channel::CANARY ||
-      channel == version_info::Channel::DEV ||
-      (channel == version_info::Channel::BETA &&
-       base::FeatureList::IsEnabled(kInstallAndroidUnwindDfm))) {
+  if (base::FeatureList::IsEnabled(kInstallAndroidUnwindDfm)) {
     prerequites_delegate->RequestInstallation(channel);
   }
 #endif
