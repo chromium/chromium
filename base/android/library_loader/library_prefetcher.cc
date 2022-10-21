@@ -9,7 +9,7 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <algorithm>
+
 #include <atomic>
 #include <cstdlib>
 #include <memory>
@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -67,7 +68,7 @@ std::pair<size_t, size_t> GetTextRange() {
   // Set the end to the page on which the beginning of the last symbol is. The
   // actual symbol may spill into the next page by a few bytes, but this is
   // outside of the executable code range anyway.
-  size_t end_page = base::bits::AlignUp(kEndOfText, kPageSize);
+  size_t end_page = bits::AlignUp(kEndOfText, kPageSize);
   return {start_page, end_page};
 }
 
@@ -77,7 +78,7 @@ std::pair<size_t, size_t> GetOrderedTextRange() {
   size_t start_page = kStartOfOrderedText - kStartOfOrderedText % kPageSize;
   // kEndOfUnorderedText is not considered ordered, but the byte immediately
   // before is considered ordered and so can not be contained in the start page.
-  size_t end_page = base::bits::AlignUp(kEndOfOrderedText, kPageSize);
+  size_t end_page = bits::AlignUp(kEndOfOrderedText, kPageSize);
   return {start_page, end_page};
 }
 
@@ -108,8 +109,8 @@ struct TimestampAndResidency {
 bool CollectResidency(size_t start,
                       size_t end,
                       std::vector<TimestampAndResidency>* data) {
-  // Not using base::TimeTicks() to not call too many base:: symbol that would
-  // pollute the reached symbols dumps.
+  // Not using TimeTicks() to not call too many base:: symbol that would pollute
+  // the reached symbols dumps.
   struct timespec ts;
   if (HANDLE_EINTR(clock_gettime(CLOCK_MONOTONIC, &ts))) {
     PLOG(ERROR) << "Cannot get the time.";
@@ -129,10 +130,9 @@ void DumpResidency(size_t start,
                    size_t end,
                    std::unique_ptr<std::vector<TimestampAndResidency>> data) {
   LOG(WARNING) << "Dumping native library residency";
-  auto path = base::FilePath(
-      base::StringPrintf("/data/local/tmp/chrome/residency-%d.txt", getpid()));
-  auto file =
-      base::File(path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  auto path = FilePath(
+      StringPrintf("/data/local/tmp/chrome/residency-%d.txt", getpid()));
+  auto file = File(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   if (!file.IsValid()) {
     PLOG(ERROR) << "Cannot open file to dump the residency data "
                 << path.value();
@@ -143,13 +143,12 @@ void DumpResidency(size_t start,
   CHECK(AreAnchorsSane());
   CHECK_LE(start, kStartOfText);
   CHECK_LE(kEndOfText, end);
-  auto start_end = base::StringPrintf("%" PRIuS " %" PRIuS "\n",
-                                      kStartOfText - start, kEndOfText - start);
+  auto start_end = StringPrintf("%" PRIuS " %" PRIuS "\n", kStartOfText - start,
+                                kEndOfText - start);
   file.WriteAtCurrentPos(start_end.c_str(), static_cast<int>(start_end.size()));
 
   for (const auto& data_point : *data) {
-    auto timestamp =
-        base::StringPrintf("%" PRIu64 " ", data_point.timestamp_nanos);
+    auto timestamp = StringPrintf("%" PRIu64 " ", data_point.timestamp_nanos);
     file.WriteAtCurrentPos(timestamp.c_str(),
                            static_cast<int>(timestamp.size()));
 
@@ -285,9 +284,8 @@ int NativeLibraryPrefetcher::PercentageOfResidentCode(size_t start,
   if (!ok)
     return -1;
   total_pages += residency.size();
-  resident_pages +=
-      static_cast<size_t>(std::count_if(residency.begin(), residency.end(),
-                                        [](unsigned char x) { return x & 1; }));
+  resident_pages += static_cast<size_t>(
+      ranges::count_if(residency, [](unsigned char x) { return x & 1; }));
   if (total_pages == 0)
     return -1;
   return static_cast<int>((100 * resident_pages) / total_pages);
