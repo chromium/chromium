@@ -10,10 +10,10 @@
 
   var indexedDBModel = ApplicationTestRunner.createIndexedDBModel();
   var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
-  var securityOrigin = 'http://127.0.0.1:8000';
+  var storageKey = 'http://127.0.0.1:8000/';
   var databaseName = 'testDatabase - ' + self.location;
   var objectStoreName = 'testObjectStore';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, /* storageKey */ undefined, databaseName);
+  var databaseId = new Resources.IndexedDBModel.DatabaseId(storageKey, databaseName);
 
   function onConsoleError(callback) {
     var old = console.error;
@@ -50,7 +50,7 @@
     }
   }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', fillDatabase, false);
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', fillDatabase, false);
 
   function fillDatabase() {
     TestRunner.addResult('Preparing database');
@@ -104,22 +104,22 @@
   }
 
   function checkDatabaseDoesExist(callback) {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesBySecurityOrigin.get(securityOrigin);
+      var names = indexedDBModel.databaseNamesByStorageKey.get(storageKey);
       TestRunner.assertEquals(true, names.has(databaseName), 'Database should exist');
       callback();
     }
   }
 
   function checkDatabaseDoesNotExist(callback) {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesBySecurityOrigin.get(securityOrigin);
+      var names = indexedDBModel.databaseNamesByStorageKey.get(storageKey);
       TestRunner.assertEquals(false, names.has(databaseName), 'Database should not exist');
       callback();
     }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Validate IndexeddbModel clearForOrigin\n`);
+  TestRunner.addResult(`Validate IndexeddbModel clearForStorageKey\n`);
   await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
@@ -30,7 +30,7 @@
     TestRunner.addResult('Database Length: ' + databases.length);
     TestRunner.addResult('Database Entries:');
     for (let j = 0; j < databases.length; ++j)
-      TestRunner.addResult(`  Security Origin:${databases[j].securityOrigin}, Database Name:${databases[j].name}`);
+      TestRunner.addResult(`  Storage key:${databases[j].storageKey}, Database Name:${databases[j].name}`);
     TestRunner.addResult('**done**\n');
   }
 
@@ -40,11 +40,11 @@
   dumpDatabases();
 
   TestRunner.addResult('Removing bogus security origin...');
-  model.clearForOrigin('http://bogus-security-origin.com');
+  model.clearForStorageKey('http://bogus-security-origin.com/');
   dumpDatabases();
 
   TestRunner.addResult('Removing http://127.0.0.1:8000 security origin...');
-  model.clearForOrigin('http://127.0.0.1:8000');
+  model.clearForStorageKey('http://127.0.0.1:8000/');
   dumpDatabases();
 
   TestRunner.completeTest();

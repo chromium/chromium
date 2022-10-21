@@ -77,6 +77,11 @@
 
   function navigatedAway() {
     TestRunner.addResult('Navigated to another security origin.');
+    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseRemoved, dumpAfterNavigation);
+  }
+
+  function dumpAfterNavigation() {
+    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseRemoved, dumpAfterNavigation);
     ApplicationTestRunner.dumpIndexedDBTree();
     TestRunner.addResult('Navigating back.');
     TestRunner.navigate(originalURL, navigatedBack);
@@ -104,7 +109,7 @@
     TestRunner.addResult('Refreshing.');
     UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
     TestRunner.addSniffer(
-        Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', databaseNamesLoadedAfterDeleting, false);
+        Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', databaseNamesLoadedAfterDeleting, false);
   }
 
   function databaseNamesLoadedAfterDeleting() {

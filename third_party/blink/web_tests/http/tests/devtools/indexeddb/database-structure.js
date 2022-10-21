@@ -11,8 +11,8 @@
   var indexedDBModel = ApplicationTestRunner.createIndexedDBModel();
   var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
   var databaseName = 'testDatabase1';
-  var securityOrigin = 'http://127.0.0.1:8000';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, /* storageKey */ undefined, databaseName);
+  var storageKey = 'http://127.0.0.1:8000/';
+  var databaseId = new Resources.IndexedDBModel.DatabaseId(storageKey, databaseName);
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
@@ -43,14 +43,14 @@
     TestRunner.addResult('');
   }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
 
   function step2() {
     ApplicationTestRunner.createDatabase(mainFrameId, databaseName, step3);
   }
 
   function step3() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step4, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step4, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
