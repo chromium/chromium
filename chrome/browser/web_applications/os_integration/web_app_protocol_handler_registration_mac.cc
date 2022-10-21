@@ -1,37 +1,44 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_registration.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
 namespace web_app {
 
-// This block defines stub implementations of OS specific methods for
-// FileHandling. Currently, Windows and MacOSX have their own
-// implementations.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
-// Registers a protocol handler for the web app with the OS.
 void RegisterProtocolHandlersWithOs(
     const AppId& app_id,
     const std::string& app_name,
     Profile* profile,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     ResultCallback callback) {
+  // Protocol handlers are managed through app shims. However when creating
+  // those shims, we do need to know protocol handlers for all profiles an app
+  // is installed in. As such, persist the protocol handler information in
+  // AppShimRegistry.
+  std::set<std::string> protocols;
+  for (const auto& handler : protocol_handlers) {
+    if (!handler.protocol.empty())
+      protocols.insert(handler.protocol);
+  }
+  AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
+      app_id, profile->GetPath(), std::move(protocols));
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
-// Unregisters protocol handlers for a web app with the OS.
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
                                       Profile* profile,
                                       ResultCallback callback) {
+  AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
+      app_id, profile->GetPath(), {});
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
-#endif
 
 }  // namespace web_app

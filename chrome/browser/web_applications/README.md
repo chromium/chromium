@@ -230,6 +230,22 @@ declaration and definition locations).
 
 TODO
 
+### [`AppShimRegistry`](app_shim_registry_mac.h)
+
+On Mac OS we sometimes need to reason about the state of installed PWAs in all
+profiles without loading those profiles into memory. For this purpose,
+`AppShimRegistry` stores the needed information in Chrome's "Local State"
+(global preferences). The information stored here includes:
+
+ * All profiles a particular web app is installed in.
+ * What profiles a particular web app was open in when it was last used.
+ * What file and protocol handlers are enabled for a web app in each profile
+   it is installed in.
+
+This information is used when launching a web app (to determine what profile
+or profiles to open the web app in), as well as when updating an App Shim
+(to make sure all file and protocol handlers for the app are accounted for).
+
 ## Deep Dives
 
 * [Installation Sources & Pipeline](docs/installation_pipeline.md)

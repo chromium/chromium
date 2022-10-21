@@ -169,4 +169,159 @@ TEST_F(AppShimRegistryTest, InstalledAppsForProfile) {
   EXPECT_TRUE(apps.empty());
 }
 
+TEST_F(AppShimRegistryTest, FileHandlers) {
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  base::FilePath profile_path_a("/x/y/z/Profile A");
+  base::FilePath profile_path_b("/x/y/z/Profile B");
+
+  std::set<std::string> extensions;
+  extensions.insert(".jpg");
+  extensions.insert(".jpeg");
+  std::set<std::string> mime_types;
+  mime_types.insert("text/plain");
+
+  auto handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_TRUE(handlers.empty());
+
+  // Updating handlers for an app that isn't installed in any profile should be
+  // a noop.
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_a,
+                                              extensions, mime_types);
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_TRUE(handlers.empty());
+
+  // Install app A in profile B.
+  registry_->OnAppInstalledForProfile(app_id, profile_path_b);
+
+  // Verify updating handlers in profile A.
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_a,
+                                              extensions, mime_types);
+  handlers = registry_->GetHandlersForApp(app_id);
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_EQ(profile_path_a, handlers.begin()->first);
+  EXPECT_EQ(extensions, handlers.begin()->second.file_handler_extensions);
+  EXPECT_EQ(mime_types, handlers.begin()->second.file_handler_mime_types);
+
+  // Also update handlers in profile B.
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_b,
+                                              extensions, mime_types);
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_EQ(2u, handlers.size());
+  EXPECT_EQ(1u, handlers.count(profile_path_a));
+  EXPECT_EQ(1u, handlers.count(profile_path_b));
+
+  // Verify updating handlers to be empty removes them.
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_a, {}, {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_EQ(1u, handlers.size());
+  EXPECT_EQ(1u, handlers.count(profile_path_b));
+
+  // Only setting mime types to empty should not remove extensions and vice
+  // versa.
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_b,
+                                              extensions, {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_EQ(1u, handlers.size());
+  EXPECT_EQ(1u, handlers.count(profile_path_b));
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_b, {},
+                                              mime_types);
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_EQ(1u, handlers.size());
+  EXPECT_EQ(1u, handlers.count(profile_path_b));
+
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_b, {}, {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_TRUE(handlers.empty());
+
+  // Verify that updating protocol handlers does not change file handlers.
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_a,
+                                              extensions, mime_types);
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_a,
+                                                  {"ftp"});
+  handlers = registry_->GetHandlersForApp(app_id);
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_EQ(profile_path_a, handlers.begin()->first);
+  EXPECT_EQ(extensions, handlers.begin()->second.file_handler_extensions);
+  EXPECT_EQ(mime_types, handlers.begin()->second.file_handler_mime_types);
+
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_a, {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_EQ(profile_path_a, handlers.begin()->first);
+  EXPECT_EQ(extensions, handlers.begin()->second.file_handler_extensions);
+  EXPECT_EQ(mime_types, handlers.begin()->second.file_handler_mime_types);
+
+  // Verify uninstalling an app also removes handler information.
+  EXPECT_FALSE(registry_->GetHandlersForApp(app_id).empty());
+  EXPECT_TRUE(registry_->OnAppUninstalledForProfile(app_id, profile_path_b));
+  EXPECT_TRUE(registry_->GetHandlersForApp(app_id).empty());
+}
+
+TEST_F(AppShimRegistryTest, ProtocolHandlers) {
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  base::FilePath profile_path_a("/x/y/z/Profile A");
+  base::FilePath profile_path_b("/x/y/z/Profile B");
+
+  std::set<std::string> protocols;
+  protocols.insert("myprotocol");
+
+  auto handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_TRUE(handlers.empty());
+
+  // Updating handlers for an app that isn't installed in any profile should be
+  // a noop.
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_a,
+                                                  protocols);
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_TRUE(handlers.empty());
+
+  // Install app A in profile B.
+  registry_->OnAppInstalledForProfile(app_id, profile_path_b);
+
+  // Verify updating handlers in profile A.
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_a,
+                                                  protocols);
+  handlers = registry_->GetHandlersForApp(app_id);
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_EQ(profile_path_a, handlers.begin()->first);
+  EXPECT_EQ(protocols, handlers.begin()->second.protocol_handlers);
+
+  // Also update handlers in profile B.
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_b,
+                                                  protocols);
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_EQ(2u, handlers.size());
+  EXPECT_EQ(1u, handlers.count(profile_path_a));
+  EXPECT_EQ(1u, handlers.count(profile_path_b));
+
+  // Verify updating handlers to be empty removes them.
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_a, {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_EQ(1u, handlers.size());
+  EXPECT_EQ(1u, handlers.count(profile_path_b));
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_b, {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  EXPECT_TRUE(handlers.empty());
+
+  // Verify that updating file handlers does not change protocol handlers.
+  registry_->SaveProtocolHandlersForAppAndProfile(app_id, profile_path_a,
+                                                  protocols);
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_a, {".jpg"},
+                                              {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_EQ(profile_path_a, handlers.begin()->first);
+  EXPECT_EQ(protocols, handlers.begin()->second.protocol_handlers);
+
+  registry_->SaveFileHandlersForAppAndProfile(app_id, profile_path_a, {}, {});
+  handlers = registry_->GetHandlersForApp(app_id);
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_EQ(profile_path_a, handlers.begin()->first);
+  EXPECT_EQ(protocols, handlers.begin()->second.protocol_handlers);
+
+  // Verify uninstalling an app also removes handler information.
+  EXPECT_TRUE(registry_->OnAppUninstalledForProfile(app_id, profile_path_b));
+  EXPECT_TRUE(registry_->GetHandlersForApp(app_id).empty());
+}
+
 }  // namespace

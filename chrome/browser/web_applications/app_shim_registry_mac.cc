@@ -18,7 +18,41 @@ namespace {
 const char kAppShims[] = "app_shims";
 const char kInstalledProfiles[] = "installed_profiles";
 const char kLastActiveProfiles[] = "last_active_profiles";
+const char kHandlers[] = "handlers";
+const char kFileHandlerExtensions[] = "extensions";
+const char kFileHandlerMimeTypes[] = "mime_types";
+const char kProtocolHandlers[] = "protocols";
+
+base::Value::List SetToValueList(const std::set<std::string>& values) {
+  base::Value::List result;
+  for (const auto& s : values) {
+    result.Append(s);
+  }
+  return result;
+}
+
+std::set<std::string> ValueListToSet(const base::Value::List* list) {
+  std::set<std::string> result;
+  if (list) {
+    for (const auto& v : *list) {
+      if (!v.is_string())
+        continue;
+      result.insert(v.GetString());
+    }
+  }
+  return result;
+}
+
 }  // namespace
+
+AppShimRegistry::HandlerInfo::HandlerInfo() = default;
+AppShimRegistry::HandlerInfo::~HandlerInfo() = default;
+AppShimRegistry::HandlerInfo::HandlerInfo(HandlerInfo&&) = default;
+AppShimRegistry::HandlerInfo::HandlerInfo(const HandlerInfo&) = default;
+AppShimRegistry::HandlerInfo& AppShimRegistry::HandlerInfo::operator=(
+    HandlerInfo&&) = default;
+AppShimRegistry::HandlerInfo& AppShimRegistry::HandlerInfo::operator=(
+    const HandlerInfo&) = default;
 
 // static
 AppShimRegistry* AppShimRegistry::Get() {
@@ -85,7 +119,8 @@ void AppShimRegistry::OnAppInstalledForProfile(const std::string& app_id,
   std::set<base::FilePath> last_active_profiles =
       GetLastActiveProfilesForApp(app_id);
   last_active_profiles.insert(profile);
-  SetAppInfo(app_id, &installed_profiles, &last_active_profiles);
+  SetAppInfo(app_id, &installed_profiles, &last_active_profiles,
+             /*handlers=*/nullptr);
 }
 
 bool AppShimRegistry::OnAppUninstalledForProfile(
@@ -95,7 +130,8 @@ bool AppShimRegistry::OnAppUninstalledForProfile(
   auto found = installed_profiles.find(profile);
   if (found != installed_profiles.end()) {
     installed_profiles.erase(profile);
-    SetAppInfo(app_id, &installed_profiles, nullptr);
+    SetAppInfo(app_id, &installed_profiles, /*last_active_profiles=*/nullptr,
+               /*handlers=*/nullptr);
   }
   return installed_profiles.empty();
 }
@@ -103,7 +139,8 @@ bool AppShimRegistry::OnAppUninstalledForProfile(
 void AppShimRegistry::SaveLastActiveProfilesForApp(
     const std::string& app_id,
     std::set<base::FilePath> last_active_profiles) {
-  SetAppInfo(app_id, nullptr, &last_active_profiles);
+  SetAppInfo(app_id, /*installed_profiles=*/nullptr, &last_active_profiles,
+             /*handlers=*/nullptr);
 }
 
 std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
@@ -124,6 +161,59 @@ std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
         break;
       }
     }
+  }
+  return result;
+}
+
+void AppShimRegistry::SaveFileHandlersForAppAndProfile(
+    const std::string& app_id,
+    const base::FilePath& profile,
+    std::set<std::string> file_handler_extensions,
+    std::set<std::string> file_handler_mime_types) {
+  std::map<base::FilePath, HandlerInfo> handlers = GetHandlersForApp(app_id);
+  auto it = handlers.emplace(profile, HandlerInfo()).first;
+  it->second.file_handler_extensions = std::move(file_handler_extensions);
+  it->second.file_handler_mime_types = std::move(file_handler_mime_types);
+  if (it->second.IsEmpty())
+    handlers.erase(it);
+  SetAppInfo(app_id, /*installed_profiles=*/nullptr,
+             /*last_active_profiles=*/nullptr, &handlers);
+}
+
+void AppShimRegistry::SaveProtocolHandlersForAppAndProfile(
+    const std::string& app_id,
+    const base::FilePath& profile,
+    std::set<std::string> protocol_handlers) {
+  std::map<base::FilePath, HandlerInfo> handlers = GetHandlersForApp(app_id);
+  auto it = handlers.emplace(profile, HandlerInfo()).first;
+  it->second.protocol_handlers = std::move(protocol_handlers);
+  if (it->second.IsEmpty())
+    handlers.erase(it);
+  SetAppInfo(app_id, /*installed_profiles=*/nullptr,
+             /*last_active_profiles=*/nullptr, &handlers);
+}
+
+std::map<base::FilePath, AppShimRegistry::HandlerInfo>
+AppShimRegistry::GetHandlersForApp(const std::string& app_id) {
+  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
+  const base::Value::Dict* app_info = cache.FindDict(app_id);
+  if (!app_info)
+    return {};
+  const base::Value::Dict* handlers = app_info->FindDict(kHandlers);
+  if (!handlers)
+    return {};
+  std::map<base::FilePath, HandlerInfo> result;
+  for (auto profile_handler : *handlers) {
+    const base::Value::Dict* dict = profile_handler.second.GetIfDict();
+    if (!dict)
+      continue;
+    HandlerInfo info;
+    info.file_handler_extensions =
+        ValueListToSet(dict->FindList(kFileHandlerExtensions));
+    info.file_handler_mime_types =
+        ValueListToSet(dict->FindList(kFileHandlerMimeTypes));
+    info.protocol_handlers = ValueListToSet(dict->FindList(kProtocolHandlers));
+    result.emplace(GetFullProfilePath(profile_handler.first), std::move(info));
   }
   return result;
 }
@@ -159,7 +249,8 @@ base::FilePath AppShimRegistry::GetFullProfilePath(
 void AppShimRegistry::SetAppInfo(
     const std::string& app_id,
     const std::set<base::FilePath>* installed_profiles,
-    const std::set<base::FilePath>* last_active_profiles) {
+    const std::set<base::FilePath>* last_active_profiles,
+    const std::map<base::FilePath, HandlerInfo>* handlers) {
   ScopedDictPrefUpdate update(GetPrefService(), kAppShims);
 
   // If there are no installed profiles, clear the app's key.
@@ -190,5 +281,21 @@ void AppShimRegistry::SetAppInfo(
     for (const auto& profile : *last_active_profiles)
       values.Append(profile.BaseName().value());
     app_info->Set(kLastActiveProfiles, std::move(values));
+  }
+  if (handlers) {
+    base::Value::Dict values;
+    for (const auto& profile_handlers : *handlers) {
+      base::Value::Dict value;
+      value.Set(
+          kFileHandlerExtensions,
+          SetToValueList(profile_handlers.second.file_handler_extensions));
+      value.Set(
+          kFileHandlerMimeTypes,
+          SetToValueList(profile_handlers.second.file_handler_mime_types));
+      value.Set(kProtocolHandlers,
+                SetToValueList(profile_handlers.second.protocol_handlers));
+      values.Set(profile_handlers.first.BaseName().value(), std::move(value));
+    }
+    app_info->Set(kHandlers, std::move(values));
   }
 }
