@@ -4,6 +4,7 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
@@ -13,6 +14,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/common/api_error_codes.h"
@@ -49,7 +51,9 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
 
 }  // namespace
 
-class CalendarViewEventListViewTest : public AshTestBase {
+class CalendarViewEventListViewTest : public AshTestBase,
+                                      public testing::WithParamInterface<
+                                          /*is_calendar_jelly_enabled=*/bool> {
  public:
   CalendarViewEventListViewTest() = default;
   CalendarViewEventListViewTest(const CalendarViewEventListViewTest&) = delete;
@@ -58,6 +62,8 @@ class CalendarViewEventListViewTest : public AshTestBase {
   ~CalendarViewEventListViewTest() override = default;
 
   void SetUp() override {
+    if (GetParam())
+      features_.InitAndEnableFeature(features::kCalendarJelly);
     AshTestBase::SetUp();
     controller_ = std::make_unique<CalendarViewController>();
   }
@@ -65,6 +71,7 @@ class CalendarViewEventListViewTest : public AshTestBase {
   void TearDown() override {
     event_list_view_.reset();
     controller_.reset();
+    features_.Reset();
     AshTestBase::TearDown();
   }
 
@@ -118,9 +125,14 @@ class CalendarViewEventListViewTest : public AshTestBase {
  private:
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
+  base::test::ScopedFeatureList features_;
 };
 
-TEST_F(CalendarViewEventListViewTest, ShowEvents) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         CalendarViewEventListViewTest,
+                         /*is_calendar_jelly_enabled=*/testing::Bool());
+
+TEST_P(CalendarViewEventListViewTest, ShowEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
 
@@ -162,7 +174,7 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
   EXPECT_EQ(u"summary_5", GetSummary(1)->GetText());
 }
 
-TEST_F(CalendarViewEventListViewTest, LaunchEmptyList) {
+TEST_P(CalendarViewEventListViewTest, LaunchEmptyList) {
   base::HistogramTester histogram_tester;
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
@@ -179,7 +191,7 @@ TEST_F(CalendarViewEventListViewTest, LaunchEmptyList) {
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
 }
 
-TEST_F(CalendarViewEventListViewTest, LaunchItem) {
+TEST_P(CalendarViewEventListViewTest, LaunchItem) {
   base::HistogramTester histogram_tester;
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
@@ -198,7 +210,7 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
 }
 
-TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
+TEST_P(CalendarViewEventListViewTest, CheckTimeFormat) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Date of first day which holds a normal event and a multi-day event.
@@ -236,7 +248,7 @@ TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
   EXPECT_EQ(u"00:00 – 00:30", GetTimeRange(0)->GetText());
 }
 
-TEST_F(CalendarViewEventListViewTest, RefreshEvents) {
+TEST_P(CalendarViewEventListViewTest, RefreshEvents) {
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
   base::Time date;

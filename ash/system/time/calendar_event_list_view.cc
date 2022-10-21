@@ -14,11 +14,12 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_event_list_item_view.h"
+#include "ash/system/time/calendar_event_list_item_view_jelly.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "calendar_event_list_item_view.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -190,10 +191,8 @@ void CalendarEventListView::UpdateListItems() {
     });
 
     for (const google_apis::calendar::CalendarEvent& event : events) {
-      auto* event_entry = content_view_->AddChildView(
-          std::make_unique<CalendarEventListItemView>(calendar_view_controller_,
-                                                      event));
-
+      auto* event_entry =
+          content_view_->AddChildView(CreateCalendarEventListItemView(event));
       // Needs to repaint the `content_view_`'s children.
       event_entry->InvalidateLayout();
     }
@@ -229,6 +228,17 @@ void CalendarEventListView::UpdateListItems() {
 
   // Needs to repaint the `content_view_`'s children.
   empty_list_view->InvalidateLayout();
+}
+
+std::unique_ptr<views::View>
+CalendarEventListView::CreateCalendarEventListItemView(
+    const google_apis::calendar::CalendarEvent& event) {
+  if (features::IsCalendarJellyEnabled()) {
+    return std::make_unique<CalendarEventListItemViewJelly>(
+        calendar_view_controller_, event);
+  }
+  return std::make_unique<CalendarEventListItemView>(calendar_view_controller_,
+                                                     event);
 }
 
 BEGIN_METADATA(CalendarEventListView, views::View);

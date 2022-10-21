@@ -42,6 +42,9 @@ class ASH_EXPORT CalendarEventListView
   // Updates the event list entries.
   void UpdateListItems();
 
+  std::unique_ptr<views::View> CreateCalendarEventListItemView(
+      const google_apis::calendar::CalendarEvent& event);
+
   // Owned by `CalendarView`.
   CalendarViewController* calendar_view_controller_;
 

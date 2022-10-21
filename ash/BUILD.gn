@@ -1681,6 +1681,8 @@ component("ash") {
     "system/time/calendar_event_fetch_types.h",
     "system/time/calendar_event_list_item_view.cc",
     "system/time/calendar_event_list_item_view.h",
+    "system/time/calendar_event_list_item_view_jelly.cc",
+    "system/time/calendar_event_list_item_view_jelly.h",
     "system/time/calendar_event_list_view.cc",
     "system/time/calendar_event_list_view.h",
     "system/time/calendar_metrics.cc",
