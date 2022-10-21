@@ -25,16 +25,13 @@ base::Value::Dict AccessibilityTreeFormatterAndroidExternal::BuildTree(
     return base::Value::Dict();
   }
 
-  BrowserAccessibility* root_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
-
   base::Value::Dict dict;
-  RecursiveBuildTree(*root_internal, &dict);
+  RecursiveBuildTree(*root, &dict);
   return dict;
 }
 
 void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
-    const BrowserAccessibility& node,
+    const ui::AXPlatformNodeDelegate& node,
     base::Value::Dict* dict) const {
   const BrowserAccessibilityAndroid* android_node =
       static_cast<const BrowserAccessibilityAndroid*>(&node);
@@ -52,8 +49,8 @@ void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
 
   base::Value::List children;
 
-  for (size_t i = 0; i < node.PlatformChildCount(); ++i) {
-    BrowserAccessibility* child_node = node.PlatformGetChild(i);
+  for (size_t i = 0; i < node.GetChildCount(); ++i) {
+    BrowserAccessibility* child_node = android_node->PlatformGetChild(i);
     base::Value::Dict child_dict;
     RecursiveBuildTree(*child_node, &child_dict);
     children.Append(std::move(child_dict));

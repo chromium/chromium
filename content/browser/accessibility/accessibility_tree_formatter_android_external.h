@@ -10,8 +10,6 @@
 
 namespace content {
 
-class BrowserAccessibility;
-
 class CONTENT_EXPORT AccessibilityTreeFormatterAndroidExternal
     : public AccessibilityTreeFormatterAndroid {
  public:
@@ -21,7 +19,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroidExternal
   base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
 
  private:
-  void RecursiveBuildTree(const BrowserAccessibility& node,
+  void RecursiveBuildTree(const ui::AXPlatformNodeDelegate& node,
                           base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(

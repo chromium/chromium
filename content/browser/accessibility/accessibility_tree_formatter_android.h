@@ -10,8 +10,6 @@
 
 namespace content {
 
-class BrowserAccessibility;
-
 class CONTENT_EXPORT AccessibilityTreeFormatterAndroid
     : public ui::AXTreeFormatterBase {
  public:
@@ -29,10 +27,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroid
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  void RecursiveBuildTree(const BrowserAccessibility& node,
+  void RecursiveBuildTree(const ui::AXPlatformNodeDelegate& node,
                           base::Value::Dict* dict) const;
 
-  void AddProperties(const BrowserAccessibility& node,
+  void AddProperties(const ui::AXPlatformNodeDelegate& node,
                      base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
