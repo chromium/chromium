@@ -38,6 +38,7 @@ source_set("cpp") {
     ":safe_xml_parser",
     ":service_provider",
     "//base",
+    "//net",
     "//services/data_decoder/public/mojom",
   ]
   deps = []

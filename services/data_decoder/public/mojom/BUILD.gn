@@ -11,6 +11,7 @@ mojom("mojom") {
     "gzipper.mojom",
     "image_decoder.mojom",
     "json_parser.mojom",
+    "structured_headers_parser.mojom",
     "web_bundler.mojom",
   ]
 
@@ -20,6 +21,7 @@ mojom("mojom") {
     "//components/web_package/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//services/network/public/mojom:mojom_structured_headers",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",

@@ -187,11 +187,12 @@ static_library("shopping_service") {
     "//components/resources:components_resources_grit",
     "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:identity_manager",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
     "//ui/base",
     "//url:url",
   ]
+
+  public_deps = [ "//services/data_decoder/public/cpp" ]
 
   if (is_android) {
     sources += [

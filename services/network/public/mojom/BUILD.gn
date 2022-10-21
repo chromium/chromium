@@ -882,6 +882,47 @@ mojom("mojom_first_party_sets") {
   blink_cpp_typemaps = shared_typemaps
 }
 
+mojom("mojom_structured_headers") {
+  generate_java = true
+  sources = [ "structured_headers.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.StructuredHeadersItem"
+          cpp = "::net::structured_headers::Item"
+          move_only = true
+        },
+        {
+          mojom = "network.mojom.StructuredHeadersParameter"
+          cpp = "std::pair<std::string, ::net::structured_headers::Item>"
+          move_only = true
+        },
+        {
+          mojom = "network.mojom.StructuredHeadersParameterizedItem"
+          cpp = "::net::structured_headers::ParameterizedItem"
+          move_only = true
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/structured_headers_mojom_traits.h" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:structured_headers_mojom_support",
+      ]
+    },
+  ]
+}
+
 mojom("cookies_mojom") {
   generate_java = true
   sources = [
@@ -1077,6 +1118,7 @@ mojom("mojom") {
     ":mojom_network_param",
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
+    ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",
     "//mojo/public/mojom/base",

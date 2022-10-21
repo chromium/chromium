@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
@@ -63,6 +64,8 @@ class DataDecoder {
   template <typename T>
   using ResultCallback =
       base::OnceCallback<void(base::expected<T, std::string>)>;
+  using StructuredHeaderParseItemCallback =
+      ResultCallback<net::structured_headers::ParameterizedItem>;
   using ValueParseCallback = ResultCallback<base::Value>;
   using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
   using CancellationFlag = base::RefCountedData<bool>;
@@ -86,6 +89,22 @@ class DataDecoder {
   // platforms.
   static void ParseJsonIsolated(const std::string& json,
                                 ValueParseCallback callback);
+
+  // Parses the potentially unsafe string in |header| as a structured header
+  // item using this DataDecoder's service instance or some other
+  // platform-specific decoding facility.
+  //
+  // Note that |callback| will only be called if the parsing operation succeeds
+  // or fails before this DataDecoder is destroyed.
+  void ParseStructuredHeaderItem(const std::string& header,
+                                 StructuredHeaderParseItemCallback callback);
+
+  // Parses the potentially unsafe string in |header| as a structured header
+  // item. This static helper uses a dedicated instance of the Data Decoder
+  // service on applicable platforms.
+  static void ParseStructuredHeaderItemIsolated(
+      const std::string& header,
+      StructuredHeaderParseItemCallback callback);
 
   // Parses the potentially unsafe XML string in |xml| using this
   // DataDecoder's service instance. The Value provided to the callback

@@ -12,8 +12,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "net/http/structured_headers.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
+#include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -37,7 +39,7 @@ constexpr base::TimeDelta kServiceProcessIdleTimeoutDefault{base::Seconds(5)};
 
 // Encapsulates an in-process data decoder parsing request. This provides shared
 // ownership of the caller's callback so that it may be invoked exactly once by
-// *either* the successful response handler *or* the parsers's disconnection
+// *either* the successful response handler *or* the parser's disconnection
 // handler. This also owns a Remote<T> which is kept alive for the duration of
 // the request.
 template <typename T, typename V>
@@ -246,6 +248,43 @@ void DataDecoder::ParseJsonIsolated(const std::string& json,
                   std::move(callback).Run(std::move(result));
                 },
                 std::move(decoder), std::move(callback)));
+}
+
+void DataDecoder::ParseStructuredHeaderItem(
+    const std::string& header,
+    StructuredHeaderParseItemCallback callback) {
+  auto request = base::MakeRefCounted<
+      ValueParseRequest<mojom::StructuredHeadersParser,
+                        net::structured_headers::ParameterizedItem>>(
+      std::move(callback), cancel_requests_);
+  GetService()->BindStructuredHeadersParser(request->BindRemote());
+  request->remote()->ParseItem(
+      header,
+      base::BindOnce(
+          &ValueParseRequest<
+              mojom::StructuredHeadersParser,
+              net::structured_headers::ParameterizedItem>::OnServiceValue,
+          request));
+}
+
+// static
+void DataDecoder::ParseStructuredHeaderItemIsolated(
+    const std::string& header,
+    StructuredHeaderParseItemCallback callback) {
+  auto decoder = std::make_unique<DataDecoder>();
+  auto* raw_decoder = decoder.get();
+
+  // We bind the DataDecoder's ownership into the result callback to ensure that
+  // it stays alive until the operation is complete.
+  raw_decoder->ParseStructuredHeaderItem(
+      header, base::BindOnce(
+                  [](std::unique_ptr<DataDecoder>,
+                     StructuredHeaderParseItemCallback callback,
+                     base::expected<net::structured_headers::ParameterizedItem,
+                                    std::string> result) {
+                    std::move(callback).Run(std::move(result));
+                  },
+                  std::move(decoder), std::move(callback)));
 }
 
 void DataDecoder::ParseXml(

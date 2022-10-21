@@ -17,6 +17,7 @@
 #include "services/data_decoder/gzipper.h"
 #include "services/data_decoder/json_parser_impl.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
+#include "services/data_decoder/structured_headers_parser_impl.h"
 #include "services/data_decoder/web_bundler.h"
 #include "services/data_decoder/xml_parser.h"
 
@@ -61,6 +62,12 @@ void DataDecoderService::BindJsonParser(
   if (drop_json_parsers_)
     return;
   mojo::MakeSelfOwnedReceiver(std::make_unique<JsonParserImpl>(),
+                              std::move(receiver));
+}
+
+void DataDecoderService::BindStructuredHeadersParser(
+    mojo::PendingReceiver<mojom::StructuredHeadersParser> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<StructuredHeadersParserImpl>(),
                               std::move(receiver));
 }
 

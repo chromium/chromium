@@ -255,6 +255,20 @@ component("proxy_config_mojom_support") {
   defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]
 }
 
+component("structured_headers_mojom_support") {
+  sources = [
+    "structured_headers_mojom_traits.cc",
+    "structured_headers_mojom_traits.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/mojom/base",
+    "//net",
+    "//services/network/public/mojom:mojom_structured_headers_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_STRUCTURED_HEADERS_IMPL" ]
+}
+
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:url_loader_base.
 component("cross_origin_embedder_policy") {
@@ -367,6 +381,7 @@ component("cpp_base") {
     ":network_param_mojom_support",
     ":proxy_config_mojom_support",
     ":schemeful_site_mojom_support",
+    ":structured_headers_mojom_support",
     "//services/network/public/mojom:url_loader_base",
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_gurl",
@@ -479,6 +494,7 @@ source_set("tests") {
     "schemeful_site_mojom_traits_unittest.cc",
     "simple_url_loader_unittest.cc",
     "source_stream_to_data_pipe_unittest.cc",
+    "structured_headers_mojom_traits_unittest.cc",
     "supports_loading_mode/supports_loading_mode_parser_unittest.cc",
     "timing_allow_origin_parser_unittest.cc",
     "transferable_directory_unittest.cc",
