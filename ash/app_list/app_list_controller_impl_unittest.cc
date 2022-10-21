@@ -4,7 +4,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 
-#include <set>
 #include <string>
 
 #include "ash/app_list/app_list_badge_controller.h"
@@ -27,6 +26,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -51,11 +51,9 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/test/event_generator.h"
@@ -64,7 +62,6 @@
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/views_test_utils.h"
-#include "ui/views/test/widget_animation_waiter.h"
 
 namespace ash {
 
@@ -773,10 +770,15 @@ TEST_F(AppListControllerImplTest, CreatePage) {
 
 // The test parameter indicates whether the shelf should auto-hide. In either
 // case the animation behaviors should be the same.
+// TODO(crbug.com/1344199): Remove after flipping
+// `kAnimateScaleOnTabletModeTransition`.
 class AppListAnimationTest : public AshTestBase,
                              public testing::WithParamInterface<bool> {
  public:
-  AppListAnimationTest() = default;
+  AppListAnimationTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        app_list_features::kAnimateScaleOnTabletModeTransition);
+  }
 
   AppListAnimationTest(const AppListAnimationTest&) = delete;
   AppListAnimationTest& operator=(const AppListAnimationTest&) = delete;
@@ -835,6 +837,7 @@ class AppListAnimationTest : public AshTestBase,
  private:
   // Set during setup.
   gfx::Rect shown_shelf_bounds_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutoHideShelf, AppListAnimationTest, testing::Bool());

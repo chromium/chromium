@@ -74,7 +74,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
@@ -4259,6 +4258,50 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
   // Layer's opacity and transform should stay the same.
   EXPECT_EQ(layer->opacity(), expected_opacity);
   EXPECT_EQ(layer->transform(), expected_transform);
+}
+
+// Tests that dismiss animation while animating to fullscreen state and open
+// animation while animating to closed state continue from the same
+// opacity/scale values where it was interrupted.
+TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
+       TransitionContinuesWhereItWasInterrupted) {
+  EnsureAppListViewIsCached();
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto* const layer = GetAppListTestHelper()
+                          ->GetAppListView()
+                          ->GetWidget()
+                          ->GetNativeWindow()
+                          ->layer();
+  const auto center_point = gfx::Rect(layer->size()).CenterPoint();
+  const auto no_transform = gfx::GetScaleTransform(center_point, 1.0f);
+  const auto scaled_down_transform =
+      gfx::GetScaleTransform(center_point, 0.92f);
+
+  const auto initial_opacity = 0.01f;
+  const auto initial_transform = scaled_down_transform;
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_EQ(layer->opacity(), initial_opacity);
+  EXPECT_EQ(layer->GetTargetOpacity(), 1.0f);
+  EXPECT_EQ(layer->transform(), initial_transform);
+  EXPECT_EQ(layer->GetTargetTransform(), no_transform);
+
+  // Interrupt clamshell -> tablet transition by switching back to clamshell
+  // mode. Current transform and opacity stay at initial values.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_EQ(layer->opacity(), initial_opacity);
+  EXPECT_EQ(layer->GetTargetOpacity(), 0.0f);
+  EXPECT_EQ(layer->transform(), initial_transform);
+  EXPECT_EQ(layer->GetTargetTransform(), scaled_down_transform);
+
+  // Interrupt tablet -> clamshell transition by switching back to tablet mode.
+  // Current transform and opacity stay at initial values.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_EQ(layer->opacity(), initial_opacity);
+  EXPECT_EQ(layer->GetTargetOpacity(), 1.0f);
+  EXPECT_EQ(layer->transform(), initial_transform);
+  EXPECT_EQ(layer->GetTargetTransform(), no_transform);
 }
 
 }  // namespace ash

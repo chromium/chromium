@@ -276,23 +276,27 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
 
   auto* layer = view_->GetWidget()->GetNativeWindow()->layer();
 
-  float initial_opacity;
+  float initial_opacity = 1.0f;
+  bool has_aborted_animation = false;
   if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
+    if (layer->GetAnimator()->is_animating()) {
+      layer->GetAnimator()->AbortAllAnimations();
+      // Mark that animation was aborted in order to keep initial opacity and
+      // scale values in sync.
+      has_aborted_animation = true;
+    }
     // `0.01f` prevents a DCHECK error (widgets cannot be shown when visible and
     // fully transparent at the same time).
     initial_opacity = layer->opacity() == 0.0f ? 0.01f : layer->opacity();
-  } else {
-    initial_opacity = 1.0f;
   }
   layer->SetOpacity(initial_opacity);
 
   view_->Show(preferred_state, IsSideShelf(shelf));
 
   if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
-    // Set initial transform only if layer is not currently animating one (for
-    // example during hide animation).
-    if (!layer->GetAnimator()->IsAnimatingProperty(
-            ui::LayerAnimationElement::TRANSFORM)) {
+    // If there was no aborted dismiss animation before - set the initial value,
+    // otherwise smoothly continue where it was aborted.
+    if (!has_aborted_animation) {
       layer->SetTransform(
           gfx::GetScaleTransform(gfx::Rect(layer->size()).CenterPoint(),
                                  kFullscreenLauncherFadeAnimationScale));
@@ -385,6 +389,13 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
           weak_ptr_factory_.GetWeakPtr());
       auto* animation_observer = new FullscreenLauncherAnimationObserver(
           std::move(animation_complete_callback));
+      // Aborts show animation (if it's running, noop otherwise). This helps to
+      // run dismiss animation smoothly from the aborted scale/opacity points.
+      view_->GetWidget()
+          ->GetNativeWindow()
+          ->layer()
+          ->GetAnimator()
+          ->AbortAllAnimations();
       UpdateScaleAndOpacityForHomeLauncher(
           kFullscreenLauncherFadeAnimationScale, 0.0f, absl::nullopt,
           base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
@@ -781,7 +792,7 @@ void AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone() {
     return;
 
   auto* window = view_->GetWidget()->GetNativeWindow();
-  if (window->layer()->GetTargetOpacity() == 0.0f)
+  if (!window->is_destroying() && window->layer()->GetTargetOpacity() == 0.0f)
     window->Hide();
 }
 
