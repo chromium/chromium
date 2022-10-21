@@ -19,9 +19,9 @@ TEST(PrintMediaL10N, LocalizeSomeCommonNames) {
     const char* vendor_id;
     const char* expected_localized_name;
   } kTestCases[] = {
-      {"na_c_17x22in", "Engineering-C"}, {"iso_a0_841x1189mm", "A0"},
-      {"iso_a1_594x841mm", "A1"},        {"iso_a4_210x297mm", "A4"},
-      {"oe_photo-l_3.5x5in", "3.5x5"},
+      {"na_c_17x22in", "Engineering-C"},    {"iso_a0_841x1189mm", "A0"},
+      {"iso_a1_594x841mm", "A1"},           {"iso_a4_210x297mm", "A4"},
+      {"oe_photo-l_3.5x5in", "3.5 x 5 in"},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -48,4 +48,24 @@ TEST(PrintMediaL10N, DoWithoutCommonName) {
   }
 }
 
+// Verifies that duplicates have the same localization.
+TEST(PrintMediaL10N, LocalizeDuplicateNames) {
+  const struct {
+    const char* duplicate_vendor_id;
+    const char* vendor_id;
+  } kTestCases[] = {
+      {"oe_photo-s10r_10x15in", "na_10x15_10x15in"},
+      {"om_large-photo_200x300", "om_large-photo_200x300mm"},
+      {"om_postfix_114x229mm", "iso_c6c5_114x229mm"},
+      {"prc_10_324x458mm", "iso_c3_324x458mm"},
+      {"prc_3_125x176mm", "iso_b6_125x176mm"},
+      {"prc_5_110x220mm", "iso_dl_110x220mm"},
+      {"iso_id-3_88x125mm", "iso_b7_88x125mm"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(LocalizePaperDisplayName(test_case.duplicate_vendor_id),
+              LocalizePaperDisplayName(test_case.vendor_id));
+  }
+}
 }  // namespace printing
