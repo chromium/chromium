@@ -413,7 +413,7 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
                            const GURL& url,
                            bool is_incognito,
                            const std::string& api_call,
-                           std::unique_ptr<base::DictionaryValue> details) {
+                           base::Value::Dict details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (IsExtensionAllowlisted(extension_id))
     return;
@@ -426,9 +426,8 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
       extension_id, base::Time::Now(), Action::ACTION_WEB_REQUEST, api_call);
   action->set_page_url(url);
   action->set_page_incognito(is_incognito);
-  action->mutable_other().Set(
-      activity_log_constants::kActionWebRequest,
-      base::Value::FromUniquePtrValue(std::move(details)));
+  action->mutable_other().Set(activity_log_constants::kActionWebRequest,
+                              std::move(details));
   activity_log->LogAction(action);
 }
 

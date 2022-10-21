@@ -63,7 +63,7 @@ void OnWebRequestApiUsed(content::BrowserContext* browser_context,
                          const GURL& url,
                          bool is_incognito,
                          const std::string& api_call,
-                         std::unique_ptr<base::DictionaryValue> details) {
+                         base::Value::Dict details) {
   if (g_web_request_monitor) {
     g_web_request_monitor(browser_context, extension_id, url, is_incognito,
                           api_call, std::move(details));

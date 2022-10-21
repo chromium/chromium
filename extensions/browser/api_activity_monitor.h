@@ -23,13 +23,12 @@ using Monitor = void (*)(content::BrowserContext* browser_context,
                          const std::string& extension_id,
                          const std::string& activity_name,
                          const base::Value::List& event_args);
-using WebRequestMonitor =
-    void (*)(content::BrowserContext* browser_context,
-             const std::string& extension_id,
-             const GURL& url,
-             bool is_incognito,
-             const std::string& api_call,
-             std::unique_ptr<base::DictionaryValue> details);
+using WebRequestMonitor = void (*)(content::BrowserContext* browser_context,
+                                   const std::string& extension_id,
+                                   const GURL& url,
+                                   bool is_incognito,
+                                   const std::string& api_call,
+                                   base::Value::Dict details);
 
 // Get or set the current global monitor for API events and functions. Note that
 // these handlers *must* be allowed to be called on any thread!
@@ -63,7 +62,7 @@ void OnWebRequestApiUsed(content::BrowserContext* browser_context,
                          const GURL& url,
                          bool is_incognito,
                          const std::string& api_call,
-                         std::unique_ptr<base::DictionaryValue> details);
+                         base::Value::Dict details);
 
 }  // namespace activity_monitor
 }  // namespace extensions
