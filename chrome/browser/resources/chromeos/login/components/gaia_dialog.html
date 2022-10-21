@@ -52,8 +52,8 @@ found in the LICENSE file.
   }
 
   /* WebviewScrollShadowsHelper */
-  #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom)::before {
-  #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll.is-scrolled:not(.scrolled-to-bottom)::before {
+  #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom)::before,
+  #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll.is-scrolled:not(.scrolled-to-bottom)::before,
   #signin-frame-container:not([hideshadows]) #signin-frame.is-scrolled.scrolled-to-bottom::before {
     content: '';
     height: 100%;
