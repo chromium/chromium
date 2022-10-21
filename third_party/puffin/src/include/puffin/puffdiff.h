@@ -69,6 +69,10 @@ bool PuffDiff(const Buffer& src,
               const std::string& tmp_filepath,
               Buffer* patch);
 
+bool PuffDiff(const std::string& src_file_path,
+              const std::string& dest_file_path,
+              const std::string& output_patch_path);
+
 }  // namespace puffin
 
 #endif  // SRC_INCLUDE_PUFFIN_PUFFDIFF_H_

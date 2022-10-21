@@ -9,6 +9,9 @@
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/logging.h"
 #include "zucchini/buffer_view.h"
 #include "zucchini/patch_writer.h"
 #include "zucchini/zucchini.h"
@@ -196,6 +199,88 @@ bool PuffDiff(const Buffer& src,
               Buffer* patch) {
   return PuffDiff(src, dst, src_deflates, dst_deflates,
                   {puffin::CompressorType::kBrotli}, tmp_filepath, patch);
+}
+
+bool PuffDiff(const string& src_file_path,
+              const string& dest_file_path,
+              const string& output_patch_path) {
+  auto src_deflates_byte = vector<ByteExtent>();
+  auto dst_deflates_byte = vector<ByteExtent>();
+  auto src_deflates_bit = vector<BitExtent>();
+  auto dst_deflates_bit = vector<BitExtent>();
+  auto src_puffs = vector<ByteExtent>();
+  auto dst_puffs = vector<ByteExtent>();
+  puffin::UniqueStreamPtr src_stream =
+      FileStream::Open(src_file_path, true, false);
+  if (!src_stream) {
+    LOG(ERROR) << "Invalid source filepath";
+    return false;
+  }
+  puffin::UniqueStreamPtr dest_stream =
+      FileStream::Open(dest_file_path, true, false);
+  if (!dest_stream) {
+    LOG(ERROR) << "Invalid destination filepath";
+    return false;
+  }
+
+  // Get Src Deflates.
+  uint64_t src_stream_size = 0;
+  if (!src_stream->GetSize(&src_stream_size)) {
+    LOG(ERROR) << "Unable to get streamsize for file: " << src_file_path;
+    return false;
+  }
+  Buffer src_data(src_stream_size);
+  if (!src_stream->Read(src_data.data(), src_data.size())) {
+    LOG(ERROR) << "Unable to read stream for file: " << src_file_path;
+    return false;
+  }
+  if (!puffin::LocateDeflatesInZipArchive(src_data, &src_deflates_bit)) {
+    LOG(ERROR) << "No zip deflates found for source filepath: "
+               << src_file_path;
+    return false;
+  }
+
+  // Get Dest Deflates.
+  uint64_t dest_stream_size = 0;
+  if (!dest_stream->GetSize(&dest_stream_size)) {
+    LOG(ERROR) << "Unable to get streamsize for file: " << dest_file_path;
+    return false;
+  }
+  Buffer dest_data(dest_stream_size);
+  if (!dest_stream->Read(dest_data.data(), dest_data.size())) {
+    LOG(ERROR) << "Unable to read stream for file: " << dest_file_path;
+    return false;
+  }
+  if (!puffin::LocateDeflatesInZipArchive(dest_data, &dst_deflates_bit)) {
+    LOG(ERROR) << "No zip deflates for destination filepath: "
+               << dest_file_path;
+    return false;
+  }
+
+  Buffer puffdiff_delta;
+  if (!puffin::PuffDiff(std::move(src_stream), std::move(dest_stream),
+                        src_deflates_bit, dst_deflates_bit,
+                        {puffin::CompressorType::kBrotli},
+                        // TODO(crbug.com/1321247): we are currently just ALWAYS
+                        // doing zucchini with brotli, we might come back and
+                        // support bsdiff and/or bzip2.
+                        puffin::PatchAlgorithm::kZucchini, "/tmp/patch.tmp",
+                        &puffdiff_delta)) {
+    LOG(ERROR) << "Unable to generate PuffDiff";
+    return false;
+  }
+  LOG(INFO) << "patch_size: " << puffdiff_delta.size();
+  puffin::UniqueStreamPtr patch_stream =
+      FileStream::Open(output_patch_path, false, true);
+  if (!patch_stream) {
+    LOG(ERROR) << "Unable to open patch Stream";
+    return false;
+  }
+  if (!patch_stream->Write(puffdiff_delta.data(), puffdiff_delta.size())) {
+    LOG(ERROR) << "Unable to write to patch stream to patch filepath.";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace puffin

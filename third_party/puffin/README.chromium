@@ -42,3 +42,5 @@ components.
 so the tests will pass in back-to-back runs.
 - Updated puffin::ApplyPuffPatch test to use base::ContentsEqual rather than
 manually reading each file and comparing the results.
+- Added puffin::PuffDiff definition that only requires source, destination,
+and output patch filepaths as arguments.

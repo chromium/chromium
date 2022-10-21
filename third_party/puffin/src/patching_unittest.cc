@@ -171,6 +171,32 @@ TEST(PatchingTest, ApplyPuffPatchTest) {
   EXPECT_TRUE(base::ContentsEqual(app_v1_crx, app_v2_to_v1_crx));
 }
 
+TEST(PatchingTest, PuffDiffTest) {
+  base::FilePath app_v1_crx = out_test_file("puffin_app_v1.crx3");
+  base::FilePath app_v2_crx = out_test_file("puffin_app_v2.crx3");
+  base::FilePath expected_patch_v1_to_v2_puff =
+      out_test_file("puffin_app_v1_to_v2.puff");
+  base::FilePath expected_patch_v2_to_v1_puff =
+      out_test_file("puffin_app_v2_to_v1.puff");
+  base::FilePath actual_patch_v1_to_v2_puff =
+      out_test_file("actual_puffin_app_v1_to_v2.puff");
+  base::FilePath actual_patch_v2_to_v1_puff =
+      out_test_file("actual_puffin_app_v2_to_v1.puff");
+  // Test patching v1 to v2:
+  ASSERT_TRUE(base::DeleteFile(actual_patch_v1_to_v2_puff));
+  ASSERT_TRUE(PuffDiff(app_v1_crx.MaybeAsASCII(), app_v2_crx.MaybeAsASCII(),
+                       actual_patch_v1_to_v2_puff.MaybeAsASCII()));
+  EXPECT_TRUE(base::ContentsEqual(expected_patch_v1_to_v2_puff,
+                                  actual_patch_v1_to_v2_puff));
+
+  // Test patching v2 to v1:
+  ASSERT_TRUE(base::DeleteFile(actual_patch_v2_to_v1_puff));
+  ASSERT_TRUE(PuffDiff(app_v2_crx.MaybeAsASCII(), app_v1_crx.MaybeAsASCII(),
+                       actual_patch_v2_to_v1_puff.MaybeAsASCII()));
+  EXPECT_TRUE(base::ContentsEqual(expected_patch_v2_to_v1_puff,
+                                  actual_patch_v2_to_v1_puff));
+}
+
 // TODO(ahassani): add tests for:
 //   TestPatchingNoDeflateTo2
 
