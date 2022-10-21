@@ -23894,6 +23894,27 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="9" label="D3D_SHADER_MODEL_6_7"/>
 </enum>
 
+<enum name="DaemonError">
+  <int value="132" label="SIGILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
+  </int>
+  <int value="134" label="SIGABRT">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="137" label="SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
+  </int>
+  <int value="139" label="SIGSEGV">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
+  </int>
+  <int value="143" label="SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="253" label="Seccomp violation">
+    MINIJAIL_ERR_JAIL from libminijail
+  </int>
+</enum>
+
 <enum name="DailyEventIntervalType">
   <int value="0" label="First Run"/>
   <int value="1" label="Day Elapsed"/>

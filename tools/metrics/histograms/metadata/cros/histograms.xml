@@ -93,6 +93,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.PrematureTermination.{Daemon}" enum="DaemonError"
+    expires_after="2023-12-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by a FUSE daemon that unexpectedly terminated (i.e. before
+    being requested by cros-disks to unmount and exit).
+  </summary>
+  <token key="Daemon">
+    <variant name="drivefs"/>
+    <variant name="fuse-archive"/>
+    <variant name="fusebox"/>
+    <variant name="mount-exfat-fuse"/>
+    <variant name="mount-zip"/>
+    <variant name="ntfs-3g"/>
+    <variant name="rar2fs"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
+  </token>
+</histogram>
+
 <histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
     enum="CrosDisksFilesystemType" expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
