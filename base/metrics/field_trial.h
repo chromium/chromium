@@ -306,10 +306,6 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // status.
   void FinalizeGroupChoice();
 
-  // Implements FinalizeGroupChoice() with the added flexibility of being
-  // deadlock-free if |is_locked| is true and the caller is holding a lock.
-  void FinalizeGroupChoiceImpl(bool is_locked);
-
   // Returns the trial name and selected group name for this field trial via
   // the output parameter |active_group|, but only if the group has already
   // been chosen and has been externally observed via |group()| and the trial
@@ -568,10 +564,6 @@ class BASE_EXPORT FieldTrialList {
   // FieldTrial::group() (typically, this means that no other thread should be
   // running when this is invoked).
   static void RemoveObserver(Observer* observer);
-
-  // Grabs the lock if necessary and adds the field trial to the allocator. This
-  // should only be called from FinalizeGroupChoice().
-  static void OnGroupFinalized(bool is_locked, FieldTrial* field_trial);
 
   // Notify all observers that a group has been finalized for |field_trial|.
   static void NotifyFieldTrialGroupSelection(FieldTrial* field_trial);

@@ -404,10 +404,6 @@ void FieldTrial::SetGroupChoice(const std::string& group_name, int number) {
 }
 
 void FieldTrial::FinalizeGroupChoice() {
-  FinalizeGroupChoiceImpl(false);
-}
-
-void FieldTrial::FinalizeGroupChoiceImpl(bool is_locked) {
   if (group_ != kNotFinalized)
     return;
   accumulated_group_probability_ = divisor_;
@@ -415,10 +411,6 @@ void FieldTrial::FinalizeGroupChoiceImpl(bool is_locked) {
   // finalized.
   DCHECK(!forced_);
   SetGroupChoice(default_group_name_, kDefaultGroupNumber);
-
-  // Add the field trial to shared memory.
-  if (trial_registered_)
-    FieldTrialList::OnGroupFinalized(is_locked, this);
 }
 
 bool FieldTrial::GetActiveGroup(ActiveGroup* active_group) const {
@@ -431,7 +423,7 @@ bool FieldTrial::GetActiveGroup(ActiveGroup* active_group) const {
 }
 
 void FieldTrial::GetStateWhileLocked(PickleState* field_trial_state) {
-  FinalizeGroupChoiceImpl(true);
+  FinalizeGroupChoice();
   field_trial_state->trial_name = &trial_name_;
   field_trial_state->group_name = &group_name_;
   field_trial_state->activated = group_reported_;
@@ -861,20 +853,6 @@ void FieldTrialList::RemoveObserver(Observer* observer) {
   Erase(global_->observers_, observer);
   DCHECK_EQ(global_->num_ongoing_notify_field_trial_group_selection_calls_, 0)
       << "Cannot call RemoveObserver while accessing FieldTrial::group_name().";
-}
-
-// static
-void FieldTrialList::OnGroupFinalized(bool is_locked, FieldTrial* field_trial) {
-  if (!global_)
-    return;
-  if (is_locked) {
-    AddToAllocatorWhileLocked(global_->field_trial_allocator_.get(),
-                              field_trial);
-  } else {
-    AutoLock auto_lock(global_->lock_);
-    AddToAllocatorWhileLocked(global_->field_trial_allocator_.get(),
-                              field_trial);
-  }
 }
 
 // static
