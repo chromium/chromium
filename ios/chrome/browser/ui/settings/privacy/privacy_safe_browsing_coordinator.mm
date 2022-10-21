@@ -80,6 +80,8 @@
   self.mediator.handler = self;
   self.viewController.modelDelegate = self.mediator;
   DCHECK(self.baseNavigationController);
+  base::RecordAction(
+      base::UserMetricsAction("Options_ShowSafeBrowsingEnhancedProtection"));
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
