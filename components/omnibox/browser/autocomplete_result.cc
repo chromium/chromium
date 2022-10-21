@@ -427,13 +427,10 @@ void AutocompleteResult::SortAndCull(
   //  - If the default match has no |destination_url|. An example of this is the
   //    default match after the user has tabbed into keyword search mode, but
   //    has not typed a query yet.
-  //  - The default match is a Search for a query that resembles scheme (e.g.
-  //    "chrome:", "chrome:123", etc.).
   //  - The user is using on-focus or on-clobber (ZeroSuggest) mode. In those
   //    modes, there is no explicit user input so these checks don't make sense.
   auto* default_match = this->default_match();
   if (default_match && default_match->destination_url.is_valid() &&
-      !AutocompleteMatch::IsSearchType(default_match->type) &&
       input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
       input.type() == metrics::OmniboxInputType::URL &&
       input.parts().scheme.is_nonempty()) {

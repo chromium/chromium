@@ -1385,63 +1385,6 @@ TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {
   }
 }
 
-TEST_F(AutocompleteResultTest, SortAndCullFailsWithIncorrectDefaultScheme) {
-  // Scenario:
-  // - User navigates to a webpage whose URL looks like a scheme,
-  //   e.g. "chrome:123" (note the colon).
-  // - The navigation becomes an entry in the user's URL history.
-  // - User types "chrome:" again.
-  // - The top suggestion will match the previous user entry and may be the
-  //   "chrome:123" again, except typing ":" invokes scheme checker.
-  // Make sure the scheme checker is not causing trouble when the default
-  // suggestion is Search.
-
-  const AutocompleteMatchTestData data[] = {
-      {"https://chrome:123", AutocompleteMatchType::HISTORY_URL},
-      {"chrome://history", AutocompleteMatchType::HISTORY_URL}};
-  ACMatches matches;
-  PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
-  matches[0].allowed_to_be_default_match = true;
-  matches[1].allowed_to_be_default_match = true;
-  TestSchemeClassifier test_scheme_classifier;
-
-  AutocompleteInput input(u"chrome:", metrics::OmniboxEventProto::HOME_PAGE,
-                          test_scheme_classifier);
-  AutocompleteResult result;
-  result.AppendMatches(matches);
-  EXPECT_DEATH_IF_SUPPORTED(
-      result.SortAndCull(input, template_url_service_.get()), "");
-}
-
-TEST_F(AutocompleteResultTest, SortAndCullPermitSearchForSchemeMatching) {
-  // Scenario:
-  // - User searches for something that looks like a scheme,
-  //   e.g. "chrome: how to do x" (note the colon).
-  // - The search becomes an entry in the user's history (local or remote)
-  //   outranking any HistoryURL matches.
-  // - User types "chrome:" again.
-  // - The top suggestion will match the previous user entry and may be the
-  //   "chrome: how to do x" again, except typing ":" invokes scheme checker.
-  // Make sure the scheme checker is not causing trouble when the default
-  // suggestion is Search.
-  const AutocompleteMatchTestData data[] = {
-      {"https://google.com/search?q=chrome:123",
-       AutocompleteMatchType::SEARCH_SUGGEST},
-      {"chrome://history", AutocompleteMatchType::HISTORY_URL}};
-  ACMatches matches;
-  PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
-  matches[0].allowed_to_be_default_match = true;
-  matches[1].allowed_to_be_default_match = true;
-  TestSchemeClassifier test_scheme_classifier;
-
-  AutocompleteInput input(u"chrome:", metrics::OmniboxEventProto::HOME_PAGE,
-                          test_scheme_classifier);
-  AutocompleteResult result;
-  result.AppendMatches(matches);
-  // Must not assert.
-  result.SortAndCull(input, template_url_service_.get());
-}
-
 TEST_F(AutocompleteResultTest, SortAndCullPromoteDefaultMatch) {
   TestData data[] = {
     { 0, 1, 1300, false },
