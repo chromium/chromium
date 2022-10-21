@@ -6,23 +6,60 @@
 
 #include <string>
 
+#include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
+#include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
+// A toggle icon button in the VC tray, which is used for toggling camera,
+// microphone, and screen sharing.
+// Note that it's safe to use `base::Unretained()` in IconButton since callback
+// is destroyed with `this`.
+class VcTrayButton : public IconButton {
+ public:
+  VcTrayButton(const gfx::VectorIcon* icon, const int accessible_name_id)
+      : IconButton(base::BindRepeating(&VcTrayButton::ToggleButton,
+                                       base::Unretained(this)),
+                   IconButton::Type::kMedium,
+                   icon,
+                   accessible_name_id,
+                   /*is_togglable=*/true,
+                   /*has_border=*/true) {}
+  VcTrayButton(const VcTrayButton&) = delete;
+  VcTrayButton& operator=(const VcTrayButton&) = delete;
+  ~VcTrayButton() override = default;
+
+ private:
+  void ToggleButton() { SetToggled(!toggled()); }
+};
+
 VcTray::VcTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kVcTray) {
-  audio_icon_ =
+  audio_icon_ = tray_container()->AddChildView(std::make_unique<VcTrayButton>(
+      &kPrivacyIndicatorsMicrophoneIcon, IDS_PRIVACY_NOTIFICATION_TITLE_MIC));
+  camera_icon_ = tray_container()->AddChildView(std::make_unique<VcTrayButton>(
+      &kPrivacyIndicatorsCameraIcon, IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA));
+  screen_share_icon_ = tray_container()->AddChildView(
+      std::make_unique<VcTrayButton>(&kPrivacyIndicatorsScreenShareIcon,
+                                     IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE));
+  expand_indicator_ =
       tray_container()->AddChildView(std::make_unique<views::ImageView>());
 }
 
@@ -53,11 +90,15 @@ void VcTray::ShowBubble() {
   bubble_view->AddChildView(std::move(icon));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
+
   SetIsActive(true);
+  UpdateExpandIndicator();
 }
 
 void VcTray::CloseBubble() {
   SetIsActive(false);
+  UpdateExpandIndicator();
+
   bubble_.reset();
   shelf()->UpdateAutoHideState();
 }
@@ -88,17 +129,52 @@ void VcTray::HandleLocaleChange() {
   // TODO(b/253646076): Finish this function.
 }
 
-void VcTray::OnThemeChanged() {
-  views::View::OnThemeChanged();
+void VcTray::UpdateLayout() {
+  TrayBackgroundView::UpdateLayout();
 
-  audio_icon_->SetImage(gfx::CreateVectorIcon(
-      kPrivacyIndicatorsMicrophoneIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  // Updates expand indicator for shelf alignment change.
+  UpdateExpandIndicator();
+}
+
+void VcTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+
+  UpdateExpandIndicator();
 }
 
 void VcTray::UpdateAfterLoginStatusChange() {
   SetVisiblePreferred(true);
+}
+
+void VcTray::UpdateExpandIndicator() {
+  auto image = gfx::CreateVectorIcon(
+      kUnifiedMenuExpandIcon,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+
+  SkBitmapOperations::RotationAmount rotation;
+  switch (shelf()->alignment()) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      if (!is_active()) {
+        // When bubble is not showing in horizontal shelf, no need to rotate and
+        // return early.
+        expand_indicator_->SetImage(image);
+        return;
+      }
+      rotation = SkBitmapOperations::ROTATION_180_CW;
+      break;
+    case ShelfAlignment::kLeft:
+      rotation = is_active() ? SkBitmapOperations::ROTATION_270_CW
+                             : SkBitmapOperations::ROTATION_90_CW;
+      break;
+    case ShelfAlignment::kRight:
+      rotation = is_active() ? SkBitmapOperations::ROTATION_90_CW
+                             : SkBitmapOperations::ROTATION_270_CW;
+      break;
+  }
+
+  expand_indicator_->SetImage(
+      gfx::ImageSkiaOperations::CreateRotatedImage(image, rotation));
 }
 
 BEGIN_METADATA(VcTray, TrayBackgroundView)

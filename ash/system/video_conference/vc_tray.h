@@ -18,6 +18,7 @@ class Widget;
 
 namespace ash {
 
+class IconButton;
 class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
@@ -42,12 +43,22 @@ class ASH_EXPORT VcTray : public TrayBackgroundView {
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void HandleLocaleChange() override;
+  void UpdateLayout() override;
   void OnThemeChanged() override;
   void UpdateAfterLoginStatusChange() override;
 
  private:
+  friend class VcTrayTest;
+
+  // Updates the orientation of the expand indicator, based on shelf alignment
+  // and whether the bubble is opened.
+  void UpdateExpandIndicator();
+
   // Owned by the views hierarchy.
-  views::ImageView* audio_icon_ = nullptr;
+  IconButton* audio_icon_ = nullptr;
+  IconButton* camera_icon_ = nullptr;
+  IconButton* screen_share_icon_ = nullptr;
+  views::ImageView* expand_indicator_ = nullptr;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
