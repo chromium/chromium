@@ -111,7 +111,8 @@
     <cr-menu-selector>
       <iron-selector id="menu" selected="{{selectedPage}}"
           selectable=".page-item" attr-for-selected="path"
-          on-iron-activate="onSelectorActivate_" selected-attribute="selected">
+          on-iron-activate="onSelectorActivate_" selected-attribute="selected"
+          role="presentation">
         <a id="history" role="menuitem" class="page-item cr-nav-menu-item"
             href="[[getHistoryItemHref_(selectedTab, showHistoryClusters_)]]"
             path$="[[getHistoryItemPath_(selectedTab, showHistoryClusters_)]]"
