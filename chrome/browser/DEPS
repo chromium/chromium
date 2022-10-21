@@ -117,6 +117,7 @@ include_rules = [
   "+components/crash/core/app",
   "+components/crash/core/browser",
   "+components/crash/core/common",
+  "+components/creator",
   "+components/crx_file",
   "+components/data_use_measurement/core",
   "+components/desks_storage",

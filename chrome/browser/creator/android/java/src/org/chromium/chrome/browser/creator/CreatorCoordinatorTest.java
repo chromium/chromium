@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.creator.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.TestActivity;
@@ -36,6 +37,12 @@ public class CreatorCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    private CreatorApiBridge.Natives mBridgeJniMock;
+
     @Mock
     private Profile mProfile;
 
@@ -44,6 +51,7 @@ public class CreatorCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(CreatorApiBridgeJni.TEST_HOOKS, mBridgeJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
 
         mCreatorCoordinator = new CreatorCoordinator(mActivity);
