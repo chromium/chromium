@@ -95,7 +95,9 @@ class RenderWidgetHostViewAuraBrowserTest : public ContentBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
-                       StaleFrameContentOnEvictionNormal) {
+                       // TODO(crbug.com/1377184): Re-enable this test
+                       // TODO(crbug.com/1376643): Re-enable this test
+                       DISABLED_StaleFrameContentOnEvictionNormal) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
 
   // Make sure the renderer submits at least one frame before hiding it.
