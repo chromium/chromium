@@ -12,6 +12,8 @@ if (use_partition_alloc_as_malloc_default) {
 }
 
 declare_args() {
+  # PartitionAlloc-Everywhere (PA-E).
+  #
   # Temporarily move |use_allocator| to partition_alloc.gni, because
   # some bots use |use_allocator|="none" with
   # |use_partition_alloc_as_malloc_default|=true. This causes PA_CHECK()
@@ -26,6 +28,13 @@ declare_args() {
   use_partition_alloc_as_malloc = use_partition_alloc_as_malloc_default
 }
 
+assert(use_allocator == "partition" || use_allocator == "none",
+       "use_allocator can either be 'partition' or 'none'")
+
+assert(
+    use_partition_alloc_as_malloc == (use_allocator == "partition"),
+    "use_partition_alloc_as_malloc must be true iff use_allocator=='partition'")
+
 declare_args() {
   use_freeslot_bitmap = false
 
@@ -35,10 +44,6 @@ declare_args() {
 }
 
 declare_args() {
-  # PartitionAlloc-Everywhere (PA-E).
-  enable_partition_alloc_as_malloc_support =
-      use_partition_alloc_as_malloc_default && use_allocator == "partition"
-
   # Build support for Use-after-Free protection via BackupRefPtr (BRP) or
   # MTECheckedPtr. To be effective, these need to be paired with raw_ptr<>.
   #
@@ -48,10 +53,6 @@ declare_args() {
   enable_backup_ref_ptr_support = enable_backup_ref_ptr_support_default
   enable_mte_checked_ptr_support = enable_mte_checked_ptr_support_default
 }
-
-assert(
-    !enable_partition_alloc_as_malloc_support || use_allocator == "partition",
-    "PA-E support can be enabled only if use_allocator == \"partition\"")
 
 assert(!(enable_backup_ref_ptr_support && enable_mte_checked_ptr_support),
        "MTECheckedPtrSupport conflicts with BRPSupport.")

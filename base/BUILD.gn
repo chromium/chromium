@@ -1607,7 +1607,7 @@ mixed_component("base") {
       ]
     }
 
-    if (use_allocator == "none") {
+    if (!use_partition_alloc_as_malloc) {
       if (is_android) {
         sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc" ]
       }
@@ -2513,7 +2513,7 @@ mixed_component("base") {
       ]
     }
 
-    if (use_allocator == "partition") {
+    if (use_partition_alloc_as_malloc) {
       sources += [
         "trace_event/address_space_dump_provider.cc",
         "trace_event/address_space_dump_provider.h",

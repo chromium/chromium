@@ -44,7 +44,7 @@ disabled PartitionAlloc-Everywhere. `enable_backup_ref_ptr_support = true` can't
 be used without PartitionAlloc-Everywhere, leading to error:
 ```
 ERROR at //base/allocator/allocator.gni:126:3: Assertion failed.
-  assert(!use_backup_ref_ptr || use_allocator == "partition",
+  assert(!use_backup_ref_ptr || use_partition_alloc_as_malloc,
 ```
 
 ## Runtime flags

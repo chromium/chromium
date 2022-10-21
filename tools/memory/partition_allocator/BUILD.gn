@@ -6,9 +6,8 @@ import("//base/allocator/allocator.gni")
 
 # Only support x86_64 Linux as the system calls used are Linux-specific. No
 # point in building this if PartitionAlloc is not the allocator used.
-_tcache_tool_supported =
-    ((target_cpu == "x64" && is_linux) || is_mac) &&
-    (use_allocator == "partition" || use_partition_alloc_as_malloc)
+_tcache_tool_supported = ((target_cpu == "x64" && is_linux) || is_mac) &&
+                         use_partition_alloc_as_malloc
 
 if (_tcache_tool_supported) {
   source_set("pa_tool_utils") {

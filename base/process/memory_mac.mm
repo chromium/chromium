@@ -27,8 +27,8 @@ void EnableTerminationOnHeapCorruption() {
 
 bool UncheckedMalloc(size_t size, void** result) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // Unlike use_allocator="none", the default malloc zone is replaced with
-  // PartitionAlloc, so the allocator shim functions work best.
+  // Unlike use_partition_alloc_as_malloc=false, the default malloc zone is
+  // replaced with PartitionAlloc, so the allocator shim functions work best.
   *result = allocator_shim::UncheckedAlloc(size);
   return *result != nullptr;
 #else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
