@@ -17,6 +17,7 @@ PasswordEditDialog::~PasswordEditDialog() = default;
 std::unique_ptr<PasswordEditDialog> PasswordEditDialogBridge::Create(
     content::WebContents* web_contents,
     DialogAcceptedCallback dialog_accepted_callback,
+    LegacyDialogAcceptedCallback legacy_dialog_accepted_callback,
     DialogDismissedCallback dialog_dismissed_callback) {
   DCHECK(web_contents);
 
@@ -25,14 +26,18 @@ std::unique_ptr<PasswordEditDialog> PasswordEditDialogBridge::Create(
     return nullptr;
   return base::WrapUnique(new PasswordEditDialogBridge(
       window_android->GetJavaObject(), std::move(dialog_accepted_callback),
+      std::move(legacy_dialog_accepted_callback),
       std::move(dialog_dismissed_callback)));
 }
 
 PasswordEditDialogBridge::PasswordEditDialogBridge(
     base::android::ScopedJavaLocalRef<jobject> j_window_android,
     DialogAcceptedCallback dialog_accepted_callback,
+    LegacyDialogAcceptedCallback legacy_dialog_accepted_callback,
     DialogDismissedCallback dialog_dismissed_callback)
     : dialog_accepted_callback_(std::move(dialog_accepted_callback)),
+      legacy_dialog_accepted_callback_(
+          std::move(legacy_dialog_accepted_callback)),
       dialog_dismissed_callback_(std::move(dialog_dismissed_callback)) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_password_dialog_ = Java_PasswordEditDialogBridge_create(
@@ -92,6 +97,11 @@ void PasswordEditDialogBridge::OnDialogAccepted(
   std::move(dialog_accepted_callback_)
       .Run(base::android::ConvertJavaStringToUTF16(username),
            base::android::ConvertJavaStringToUTF16(password));
+}
+
+void PasswordEditDialogBridge::OnLegacyDialogAccepted(JNIEnv* env,
+                                                      jint username_index) {
+  std::move(legacy_dialog_accepted_callback_).Run(username_index);
 }
 
 void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,

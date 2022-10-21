@@ -19,10 +19,10 @@ import java.util.List;
 /**
  * The custom view for password edit modal dialog.
  */
-public class UsernameSelectionConfirmationView
+class UsernameSelectionConfirmationView
         extends PasswordEditDialogView implements OnItemSelectedListener {
     private Spinner mUsernamesSpinner;
-    private Callback<String> mUsernameSelectedCallback;
+    private Callback<Integer> mUsernameSelectedCallback;
 
     public UsernameSelectionConfirmationView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -39,32 +39,36 @@ public class UsernameSelectionConfirmationView
     }
 
     @Override
-    public void setUsernames(List<String> usernames, String initialUsername) {
-        ArrayAdapter<String> usernamesAdapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
-        usernamesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        usernamesAdapter.addAll(usernames);
-        mUsernamesSpinner.setAdapter(usernamesAdapter);
-
-        int initialUsernameIndex = usernames.indexOf(initialUsername);
-        assert initialUsernameIndex >= 0
-            : "Initial username should be present in all usernames list";
-        mUsernamesSpinner.setSelection(initialUsernameIndex);
-    }
-
-    @Override
-    public void setUsernameChangedCallback(Callback<String> callback) {
-        mUsernameSelectedCallback = callback;
-    }
-
-    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (mUsernameSelectedCallback != null) {
-            String username = mUsernamesSpinner.getItemAtPosition(position).toString();
-            mUsernameSelectedCallback.onResult(username);
+            mUsernameSelectedCallback.onResult(position);
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {}
+
+    /**
+     * Sets callback for handling username change
+     *
+     * @param callback The callback to be called with new index of the selected username
+     */
+    public void setUsernameChangedCallback(Callback<Integer> callback) {
+        mUsernameSelectedCallback = callback;
+    }
+
+    /**
+     * Sets list of known usernames which can be selected from the list by user
+     *
+     * @param usernames Known usernames list
+     * @param initialUsernameIndex Username that will be selected in the spinner
+     */
+    public void setUsernames(List<String> usernames, int initialUsernameIndex) {
+        ArrayAdapter<String> usernamesAdapter =
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        usernamesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        usernamesAdapter.addAll(usernames);
+        mUsernamesSpinner.setAdapter(usernamesAdapter);
+        mUsernamesSpinner.setSelection(initialUsernameIndex);
+    }
 }

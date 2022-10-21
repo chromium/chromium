@@ -54,6 +54,7 @@ class SaveUpdatePasswordMessageDelegate {
       base::RepeatingCallback<std::unique_ptr<PasswordEditDialog>(
           content::WebContents*,
           PasswordEditDialog::DialogAcceptedCallback,
+          PasswordEditDialog::LegacyDialogAcceptedCallback,
           PasswordEditDialog::DialogDismissedCallback)>;
 
   SaveUpdatePasswordMessageDelegate();
@@ -122,6 +123,7 @@ class SaveUpdatePasswordMessageDelegate {
   void HandleDialogDismissed(bool dialogAccepted);
   void HandleSavePasswordFromDialog(const std::u16string& username,
                                     const std::u16string& password);
+  void HandleSavePasswordFromLegacyDialog(int username_index);
 
   void ClearState();
 

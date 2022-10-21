@@ -15,12 +15,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -30,12 +36,16 @@ import java.util.Arrays;
 
 /** View tests for UsernameSelectionConfirmationView. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+@Batch(Batch.PER_CLASS)
 public class UsernameSelectionConfirmationViewTest {
     private static final String[] USERNAMES = {"user1", "user2", "user3"};
     private static final int INITIAL_USERNAME_INDEX = 1;
     private static final int SELECTED_USERNAME_INDEX = 2;
-    private static final String PASSWORD = "password";
     private static final String FOOTER = "Footer";
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -46,7 +56,7 @@ public class UsernameSelectionConfirmationViewTest {
     UsernameSelectionConfirmationView mDialogView;
     Spinner mUsernamesView;
     TextView mFooterView;
-    String mUsername;
+    int mUsernameIndex;
 
     @BeforeClass
     public static void setupSuite() {
@@ -66,17 +76,16 @@ public class UsernameSelectionConfirmationViewTest {
         });
     }
 
-    void handleUsernameChanged(String username) {
-        mUsername = username;
+    void handleUsernameSelected(int usernameIndex) {
+        mUsernameIndex = usernameIndex;
     }
 
     PropertyModel.Builder populateDialogPropertiesBuilder() {
         return new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                 .with(PasswordEditDialogProperties.USERNAMES, Arrays.asList(USERNAMES))
-                .with(PasswordEditDialogProperties.USERNAME, USERNAMES[INITIAL_USERNAME_INDEX])
-                .with(PasswordEditDialogProperties.PASSWORD, PASSWORD)
-                .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
-                        this::handleUsernameChanged);
+                .with(PasswordEditDialogProperties.USERNAME_INDEX, INITIAL_USERNAME_INDEX)
+                .with(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
+                        this::handleUsernameSelected);
     }
 
     /** Tests that all the properties propagated correctly. */
@@ -130,9 +139,9 @@ public class UsernameSelectionConfirmationViewTest {
                     model, mDialogView, PasswordEditDialogViewBinder::bind);
             mUsernamesView.setSelection(SELECTED_USERNAME_INDEX);
         });
-        CriteriaHelper.pollUiThread(() -> USERNAMES[SELECTED_USERNAME_INDEX].equals(mUsername));
+        CriteriaHelper.pollUiThread(() -> SELECTED_USERNAME_INDEX == mUsernameIndex);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mUsernamesView.setSelection(INITIAL_USERNAME_INDEX); });
-        CriteriaHelper.pollUiThread(() -> USERNAMES[INITIAL_USERNAME_INDEX].equals(mUsername));
+        CriteriaHelper.pollUiThread(() -> INITIAL_USERNAME_INDEX == mUsernameIndex);
     }
 }

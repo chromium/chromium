@@ -24,7 +24,7 @@ import java.util.List;
  * a password label and input control.
  * The view has the functionality of editing both password and username.
  */
-public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
+class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     private AutoCompleteTextView mUsernameView;
     private TextInputEditText mPasswordField;
     private TextInputLayout mPasswordInputLayout;
@@ -78,19 +78,6 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     }
 
     @Override
-    public void setUsernames(List<String> usernames, String initialUsername) {
-        ArrayAdapter<String> usernamesAdapter = new NoFilterArrayAdapter<>(
-                getContext(), R.layout.password_edit_dialog_dropdown_item, usernames);
-        mUsernameView.setAdapter(usernamesAdapter);
-        mUsernameView.setText(initialUsername);
-    }
-
-    @Override
-    public void setUsernameChangedCallback(Callback<String> callback) {
-        mUsernameChangedCallback = callback;
-    }
-
-    @Override
     public void setPassword(String password) {
         if (mPasswordField.getText().toString().equals(password)) return;
         mPasswordField.setText(password);
@@ -104,5 +91,28 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     @Override
     public void setPasswordError(String error) {
         mPasswordInputLayout.setError(error);
+    }
+
+    /** Sets usernames list in the AutoCompleteTextView */
+    public void setUsernames(List<String> usernames) {
+        ArrayAdapter<String> usernamesAdapter = new NoFilterArrayAdapter<>(
+                getContext(), R.layout.password_edit_dialog_dropdown_item, usernames);
+        mUsernameView.setAdapter(usernamesAdapter);
+    }
+
+    /**
+     * Sets callback for handling username change.
+     *
+     * @param callback The callback to be called with new username typed into the
+     *         AutoCompleteTextView
+     */
+    public void setUsernameChangedCallback(Callback<String> callback) {
+        mUsernameChangedCallback = callback;
+    }
+
+    /** Sets username in the text input */
+    public void setUsername(String username) {
+        if (mUsernameView.getText().toString().equals(username)) return;
+        mUsernameView.setText(username);
     }
 }

@@ -118,6 +118,8 @@ class SaveUpdatePasswordMessageDelegateTest
   std::unique_ptr<PasswordEditDialog> CreatePasswordEditDialog(
       content::WebContents* web_contents,
       PasswordEditDialog::DialogAcceptedCallback dialog_accepted_callback,
+      PasswordEditDialog::LegacyDialogAcceptedCallback
+          legacy_dialog_accepted_callback,
       PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback);
 
   // Creates a mock of PasswordEditDialog that will be passed to
@@ -128,6 +130,7 @@ class SaveUpdatePasswordMessageDelegateTest
 
   void TriggerDialogAcceptedCallback(const std::u16string& username,
                                      const std::u16string& password);
+  void TriggerLegacyDialogAcceptedCallback(int selected_username_index);
   void TriggerDialogDismissedCallback(bool dialog_accepted);
 
   void CommitPasswordFormMetrics();
@@ -162,6 +165,8 @@ class SaveUpdatePasswordMessageDelegateTest
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockPasswordEditDialog> mock_password_edit_dialog_;
   PasswordEditDialog::DialogAcceptedCallback dialog_accepted_callback_;
+  PasswordEditDialog::LegacyDialogAcceptedCallback
+      legacy_dialog_accepted_callback_;
   PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback_;
 };
 
@@ -304,8 +309,11 @@ std::unique_ptr<PasswordEditDialog>
 SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog(
     content::WebContents* web_contents,
     PasswordEditDialog::DialogAcceptedCallback dialog_accepted_callback,
+    PasswordEditDialog::LegacyDialogAcceptedCallback
+        legacy_dialog_accepted_callback,
     PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback) {
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
+  legacy_dialog_accepted_callback_ = std::move(legacy_dialog_accepted_callback);
   dialog_dismissed_callback_ = std::move(dialog_dismissed_callback);
   return std::move(mock_password_edit_dialog_);
 }
@@ -320,6 +328,11 @@ void SaveUpdatePasswordMessageDelegateTest::TriggerDialogAcceptedCallback(
     const std::u16string& username,
     const std::u16string& password) {
   std::move(dialog_accepted_callback_).Run(username, password);
+}
+
+void SaveUpdatePasswordMessageDelegateTest::TriggerLegacyDialogAcceptedCallback(
+    int selected_username_index) {
+  std::move(legacy_dialog_accepted_callback_).Run(selected_username_index);
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerDialogDismissedCallback(
@@ -650,8 +663,7 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
-  TriggerDialogAcceptedCallback(/*username=*/kUsername,
-                                /*password=*/kPassword);
+  TriggerLegacyDialogAcceptedCallback(/*selected_username_index=*/0);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 
   CommitPasswordFormMetrics();
@@ -661,6 +673,34 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
   histogram_tester.ExpectUniqueSample(
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+// Tests triggering password edit dialog and saving credentials with
+// empty username after the user accepts the dialog.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       TriggerEditDialog_WithEmptyUsername_Accept) {
+  SetPendingCredentials(kUsername, kPassword);
+  PasswordForm any_pasword_form = CreatePasswordForm(kUsername, kPassword);
+  PasswordForm empty_username_password_form =
+      CreatePasswordForm(u"", kPassword);
+  std::vector<const PasswordForm*> best_matches = {
+      &any_pasword_form, &empty_username_password_form};
+
+  auto form_manager = CreateFormManager(GURL(kDefaultUrl), &best_matches);
+  MockPasswordFormManagerForUI* form_manager_pointer = form_manager.get();
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+  EXPECT_CALL(*mock_dialog, ShowUpdatePasswordDialog);
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*form_manager_pointer, Save());
+  EXPECT_CALL(*form_manager_pointer,
+              OnUpdateUsernameFromPrompt(testing::Eq(u"")));
+  TriggerLegacyDialogAcceptedCallback(/*selected_username_index=*/1);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 }
 
 // Tests that credentials are not saved if the user cancels password edit
