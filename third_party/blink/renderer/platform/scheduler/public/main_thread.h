@@ -31,6 +31,7 @@ class MainThreadTaskRunnerRestricted {
   friend class WebRtcVideoFrameAdapter;
   friend class V8WorkerMemoryReporter;
   friend class WorkerGlobalScope;
+  friend MainThreadTaskRunnerRestricted AccessMainThreadForGpuFactories();
 
   MainThreadTaskRunnerRestricted() = default;
 };

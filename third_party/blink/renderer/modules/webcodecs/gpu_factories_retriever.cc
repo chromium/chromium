@@ -13,6 +13,11 @@
 
 namespace blink {
 
+// Define a function that is allowed to access MainThreadTaskRunnerRestricted.
+MainThreadTaskRunnerRestricted AccessMainThreadForGpuFactories() {
+  return {};
+}
+
 namespace {
 
 media::GpuVideoAcceleratorFactories* GetGpuFactoriesOnMainThread() {
@@ -26,11 +31,13 @@ void RetrieveGpuFactories(OutputCB result_callback) {
     return;
   }
 
-  Thread::MainThread()->GetDeprecatedTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      ConvertToBaseOnceCallback(
-          CrossThreadBindOnce(&GetGpuFactoriesOnMainThread)),
-      ConvertToBaseOnceCallback(std::move(result_callback)));
+  Thread::MainThread()
+      ->GetTaskRunner(AccessMainThreadForGpuFactories())
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          ConvertToBaseOnceCallback(
+              CrossThreadBindOnce(&GetGpuFactoriesOnMainThread)),
+          ConvertToBaseOnceCallback(std::move(result_callback)));
 }
 
 void OnSupportKnown(OutputCB result_cb,
