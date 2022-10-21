@@ -288,13 +288,14 @@ TEST(CSSParserImplTest, NestingAtTopLevelIsLegalThoughIsMatchesNothing) {
   EXPECT_EQ("&.element", rule->SelectorsText());
 }
 
-// NOTE: We currently don't support _properties_ within nested media queries.
 TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
   ScopedCSSNestingForTest enabled(true);
   String sheet_text = R"CSS(
     .element {
       color: green;
       @media (width < 1000px) {
+        color: navy;
+        font-size: 12px;
         & + #foo { color: red; }
       }
     }
@@ -319,13 +320,20 @@ TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
       DynamicTo<StyleRuleMedia>((*parent->ChildRules())[0].Get());
   ASSERT_NE(nullptr, media_query);
 
-  ASSERT_EQ(1u, media_query->ChildRules().size());
-  const StyleRule* child =
-      DynamicTo<StyleRule>(media_query->ChildRules()[0].Get());
-  ASSERT_NE(nullptr, child);
+  ASSERT_EQ(2u, media_query->ChildRules().size());
 
-  EXPECT_EQ("color: red;", child->Properties().AsText());
-  EXPECT_EQ("& + #foo", child->SelectorsText());
+  // Implicit & {} rule around the properties.
+  const StyleRule* child0 =
+      DynamicTo<StyleRule>(media_query->ChildRules()[0].Get());
+  ASSERT_NE(nullptr, child0);
+  EXPECT_EQ("color: navy; font-size: 12px;", child0->Properties().AsText());
+  EXPECT_EQ("&", child0->SelectorsText());
+
+  const StyleRule* child1 =
+      DynamicTo<StyleRule>(media_query->ChildRules()[1].Get());
+  ASSERT_NE(nullptr, child1);
+  EXPECT_EQ("color: red;", child1->Properties().AsText());
+  EXPECT_EQ("& + #foo", child1->SelectorsText());
 }
 
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {

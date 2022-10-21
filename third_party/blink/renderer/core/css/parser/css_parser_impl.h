@@ -217,11 +217,14 @@ class CORE_EXPORT CSSParserImpl {
   StyleRule* ConsumeStyleRuleContents(base::span<CSSSelector> selector_vector,
                                       CSSParserTokenStream& stream);
 
-  void ConsumeDeclarationList(CSSParserTokenStream&,
-                              StyleRule::RuleType,
-                              StyleRule* parent_rule_for_nesting);
-  void ConsumeNestedRule(CSSParserTokenStream& stream,
-                         StyleRule* parent_rule_for_nesting);
+  void ConsumeDeclarationList(
+      CSSParserTokenStream&,
+      StyleRule::RuleType,
+      StyleRule* parent_rule_for_nesting,
+      HeapVector<Member<StyleRuleBase>, 4>* child_rules);
+  StyleRuleBase* ConsumeNestedRule(CSSAtRuleID id,
+                                   CSSParserTokenStream& stream,
+                                   StyleRule* parent_rule_for_nesting);
   void ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
   void ConsumeDeclarationValue(const CSSTokenizedValue&,
                                CSSPropertyID,
@@ -240,6 +243,13 @@ class CORE_EXPORT CSSParserImpl {
   // and returns the result after caching it.
   const MediaQuerySet* CachedMediaQuerySet(String prelude_string,
                                            CSSParserTokenRange prelude);
+
+  // Create an implicit & {} rule to wrap properties in, and insert every
+  // property from parsed_properties_ in it. Used when there are properties
+  // directly in @media, @supports or similar (which cannot hold properties
+  // by themselves, only rules; see
+  // https://github.com/w3c/csswg-drafts/issues/7850).
+  StyleRule* CreateImplicitNestedRule(StyleRule* parent_rule_for_nesting);
 
   // FIXME: Can we build CSSPropertyValueSets directly?
   HeapVector<CSSPropertyValue, 64> parsed_properties_;

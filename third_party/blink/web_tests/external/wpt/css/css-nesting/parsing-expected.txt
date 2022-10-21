@@ -36,7 +36,7 @@ PASS .foo {
 }
 FAIL .foo {
   @media (min-width: 50px) { color: green; }
-} assert_equals: expected ".foo {\n  @media (min-width: 50px) { color: green; }\n}" but got ".foo {\n  @media (min-width: 50px) {\n}\n}"
+} assert_equals: expected ".foo {\n  @media (min-width: 50px) { color: green; }\n}" but got ".foo {\n  @media (min-width: 50px) {\n  & { color: green; }\n}\n}"
 PASS main {
   & > section, & > article {
   & > header { color: green; }
