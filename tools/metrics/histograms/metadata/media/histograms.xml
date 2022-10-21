@@ -72,6 +72,11 @@ chromium-metrics-reviews@google.com.
   <variant name="RendererImpl"/>
 </variants>
 
+<variants name="ResolveOrReject">
+  <variant name="" summary="resolve"/>
+  <variant name=".Reject" summary="reject"/>
+</variants>
+
 <!-- The names should match media::GetCodecNameForUMA(). -->
 
 <variants name="VideoCodec">
@@ -2721,12 +2726,13 @@ chromium-metrics-reviews@google.com.
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
-<histogram name="Media.EME.{KeySystem}.TimeTo.{EmeApi}" units="ms"
-    expires_after="2023-05-07">
+<histogram name="Media.EME.{KeySystem}.TimeTo{ResolveOrReject}.{EmeApi}"
+    units="ms" expires_after="2023-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
-  <summary>The time it takes to resolve a EME promise.</summary>
+  <summary>The time it takes to {ResolveOrReject} a EME promise.</summary>
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
+  <token key="ResolveOrReject" variants="ResolveOrReject"/>
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 

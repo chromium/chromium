@@ -16,7 +16,8 @@
 
 namespace blink {
 
-const char kTimeUMAPrefix[] = "TimeTo.";
+const char kTimeToResolveUmaPrefix[] = "TimeTo.";
+const char kTimeToRejectUmaPrefix[] = "TimeTo.Reject.";
 
 // Used to convert a WebContentDecryptionModuleResult into a CdmPromiseTemplate
 // so that it can be passed through Chromium. When resolve(T) is called, the
@@ -83,9 +84,9 @@ inline void CdmResultPromise<>::resolve() {
   MarkPromiseSettled();
   ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, 0, SUCCESS);
 
-  // Only report time for promise resolution (not rejection).
-  base::UmaHistogramTimes(key_system_uma_prefix_ + kTimeUMAPrefix + uma_name_,
-                          base::TimeTicks::Now() - creation_time_);
+  base::UmaHistogramTimes(
+      key_system_uma_prefix_ + kTimeToResolveUmaPrefix + uma_name_,
+      base::TimeTicks::Now() - creation_time_);
 
   web_cdm_result_.Complete();
 }
@@ -96,9 +97,9 @@ inline void CdmResultPromise<media::CdmKeyInformation::KeyStatus>::resolve(
   MarkPromiseSettled();
   ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, 0, SUCCESS);
 
-  // Only report time for promise resolution (not rejection).
-  base::UmaHistogramTimes(key_system_uma_prefix_ + kTimeUMAPrefix + uma_name_,
-                          base::TimeTicks::Now() - creation_time_);
+  base::UmaHistogramTimes(
+      key_system_uma_prefix_ + kTimeToResolveUmaPrefix + uma_name_,
+      base::TimeTicks::Now() - creation_time_);
 
   web_cdm_result_.CompleteWithKeyStatus(ConvertCdmKeyStatus(key_status));
 }
@@ -110,6 +111,11 @@ void CdmResultPromise<T...>::reject(media::CdmPromise::Exception exception_code,
   MarkPromiseSettled();
   ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, system_code,
                      ConvertCdmExceptionToResultForUMA(exception_code));
+
+  base::UmaHistogramTimes(
+      key_system_uma_prefix_ + kTimeToRejectUmaPrefix + uma_name_,
+      base::TimeTicks::Now() - creation_time_);
+
   web_cdm_result_.CompleteWithError(ConvertCdmException(exception_code),
                                     system_code,
                                     WebString::FromUTF8(error_message));
