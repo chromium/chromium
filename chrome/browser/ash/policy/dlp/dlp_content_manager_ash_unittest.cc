@@ -163,6 +163,8 @@ class DlpContentManagerAshTest : public testing::Test {
     testing::Test::TearDown();
 
     helper_.ResetWarnNotifierForTesting();
+
+    task_environment_.RunUntilIdle();
   }
 
   void SetReportQueueForReportingManager() {

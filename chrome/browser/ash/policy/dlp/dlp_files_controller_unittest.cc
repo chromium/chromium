@@ -178,6 +178,8 @@ class DlpFilesControllerTest : public testing::Test {
     reporting_manager_.reset();
 
     chromeos::DlpClient::Shutdown();
+
+    task_environment_.RunUntilIdle();
   }
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
