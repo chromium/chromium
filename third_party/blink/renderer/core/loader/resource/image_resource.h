@@ -74,7 +74,8 @@ class CORE_EXPORT ImageResource final
 
   void DidAddClient(ResourceClient*) override;
 
-  ResourcePriority PriorityFromObservers() override;
+  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
+      override;
 
   void AllClientsAndObserversRemoved() override;
 

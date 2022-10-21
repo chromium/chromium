@@ -697,6 +697,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectiveInOrderScriptTarget);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kSelectiveInOrderScriptAllowList;
 
+// If enabled, a fix for image loading prioritization based on visibility is
+// applied. See https://crbug.com/1369823.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kImageLoadingPrioritizationFix);
+
 // If enabled, allows MediaStreamVideoSource objects to be restarted by a
 // successful source switch. Normally, switching the source would only allowed
 // on streams that are in started state. However, changing the source also first

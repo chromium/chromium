@@ -41800,6 +41800,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4373" label="SandboxIneffectiveAllowOriginAllowScript"/>
   <int value="4374" label="DocumentOpenDifferentWindow"/>
   <int value="4375" label="DocumentOpenMutateSandbox"/>
+  <int value="4376" label="EligibleForImageLoadingPrioritizationFix"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

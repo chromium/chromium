@@ -147,6 +147,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
  protected:
   void ImageChanged(ImageResourceContent*, CanDeferInvalidation) override;
   void ImageNotifyFinished(ImageResourceContent*) override;
+  ResourcePriority ComputeResourcePriority() const override;
 
  private:
   class Task;
@@ -184,7 +185,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   void DispatchPendingLoadEvent(std::unique_ptr<IncrementLoadEventDelayCount>);
   void DispatchPendingErrorEvent(std::unique_ptr<IncrementLoadEventDelayCount>);
 
-  LayoutImageResource* GetLayoutImageResource();
+  LayoutImageResource* GetLayoutImageResource() const;
   void UpdateLayoutObject();
 
   // Note: SetImage.*() are not a simple setter.

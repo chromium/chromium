@@ -2182,10 +2182,45 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
     if (!resource->IsLoading())
       continue;
 
-    ResourcePriority resource_priority = resource->PriorityFromObservers();
+    auto priorities = resource->PriorityFromObservers();
+    ResourcePriority resource_priority = priorities.first;
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(
         ResourceType::kImage, resource->GetResourceRequest(),
         resource_priority.visibility);
+
+    ResourcePriority resource_priority_excluding_image_loader =
+        priorities.second;
+    ResourceLoadPriority computed_load_priority_excluding_image_loader =
+        ComputeLoadPriority(
+            ResourceType::kImage, resource->GetResourceRequest(),
+            resource_priority_excluding_image_loader.visibility);
+
+    // When enabled, `priority` is used, which considers the resource priority
+    // via ImageLoader, i.e. ImageResourceContent
+    // -> ImageLoader (as ImageResourceObserver)
+    // -> LayoutImageResource
+    // -> LayoutObject.
+    //
+    // The same priority is considered in `priority_excluding_image_loader` via
+    // ImageResourceContent
+    // -> LayoutObject (as ImageResourceObserver),
+    // but the LayoutObject might be not registered yet as an
+    // ImageResourceObserver while loading.
+    // See https://crbug.com/1369823 for details.
+    static const bool fix_enabled =
+        base::FeatureList::IsEnabled(features::kImageLoadingPrioritizationFix);
+
+    if (computed_load_priority !=
+        computed_load_priority_excluding_image_loader) {
+      // Mark pages affected by this fix for performance evaluation.
+      use_counter_->CountUse(
+          WebFeature::kEligibleForImageLoadingPrioritizationFix);
+    }
+    if (!fix_enabled) {
+      resource_priority = resource_priority_excluding_image_loader;
+      computed_load_priority = computed_load_priority_excluding_image_loader;
+    }
+
     // Only boost the priority of an image, never lower it. This ensures that
     // there isn't priority churn if images move in and out of the viewport, or
     // are displayed more than once, both in and out of the viewport.

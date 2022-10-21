@@ -503,7 +503,8 @@ const ImageResourceContent* ImageResource::GetContent() const {
   return content_;
 }
 
-ResourcePriority ImageResource::PriorityFromObservers() {
+std::pair<ResourcePriority, ResourcePriority>
+ImageResource::PriorityFromObservers() {
   return GetContent()->PriorityFromObservers();
 }
 

@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -180,25 +181,36 @@ void ImageResourceContent::DidRemoveObserver() {
   info_->DidRemoveClientOrObserver();
 }
 
-static void PriorityFromObserver(const ImageResourceObserver* observer,
-                                 ResourcePriority& priority) {
+static void PriorityFromObserver(
+    const ImageResourceObserver* observer,
+    ResourcePriority& priority,
+    ResourcePriority& priority_excluding_image_loader) {
   ResourcePriority next_priority = observer->ComputeResourcePriority();
   if (next_priority.visibility == ResourcePriority::kNotVisible)
     return;
+
   priority.visibility = ResourcePriority::kVisible;
   priority.intra_priority_value += next_priority.intra_priority_value;
+
+  if (next_priority.source != ResourcePriority::Source::kImageLoader) {
+    priority_excluding_image_loader.visibility = ResourcePriority::kVisible;
+    priority_excluding_image_loader.intra_priority_value +=
+        next_priority.intra_priority_value;
+  }
 }
 
-ResourcePriority ImageResourceContent::PriorityFromObservers() const {
+std::pair<ResourcePriority, ResourcePriority>
+ImageResourceContent::PriorityFromObservers() const {
   ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
   ResourcePriority priority;
+  ResourcePriority priority_excluding_image_loader;
 
   for (const auto& it : finished_observers_)
-    PriorityFromObserver(it.key, priority);
+    PriorityFromObserver(it.key, priority, priority_excluding_image_loader);
   for (const auto& it : observers_)
-    PriorityFromObserver(it.key, priority);
+    PriorityFromObserver(it.key, priority, priority_excluding_image_loader);
 
-  return priority;
+  return std::make_pair(priority, priority_excluding_image_loader);
 }
 
 void ImageResourceContent::DestroyDecodedData() {

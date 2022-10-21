@@ -186,8 +186,14 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   ResourceLoaderOptions& MutableOptions() { return options_; }
 
   void DidChangePriority(ResourceLoadPriority, int intra_priority_value);
-  virtual ResourcePriority PriorityFromObservers() {
-    return ResourcePriority();
+
+  // Returns two priorities:
+  // - `first` is the priority with the fix of https://crbug.com/1369823.
+  // - `second` is the priority without the fix, ignoring the priority from
+  //   ImageLoader.
+  virtual std::pair<ResourcePriority, ResourcePriority>
+  PriorityFromObservers() {
+    return std::make_pair(ResourcePriority(), ResourcePriority());
   }
 
   // If this Resource is already finished when AddClient is called, the

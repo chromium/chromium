@@ -85,6 +85,12 @@ void LayoutImageResource::SetImageResource(ImageResourceContent* new_image) {
   }
 }
 
+ResourcePriority LayoutImageResource::ComputeResourcePriority() const {
+  if (!layout_object_)
+    return ResourcePriority();
+  return layout_object_->ComputeResourcePriority();
+}
+
 void LayoutImageResource::ResetAnimation() {
   DCHECK(layout_object_);
 

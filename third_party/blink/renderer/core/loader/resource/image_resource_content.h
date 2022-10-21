@@ -192,7 +192,7 @@ class CORE_EXPORT ImageResourceContent final
 
   void SetImageResourceInfo(ImageResourceInfo*);
 
-  ResourcePriority PriorityFromObservers() const;
+  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() const;
   scoped_refptr<const SharedBuffer> ResourceBuffer() const;
   bool ShouldUpdateImageImmediately() const;
   bool HasObservers() const {

@@ -3694,6 +3694,7 @@ enum WebFeature {
   kSandboxIneffectiveAllowOriginAllowScript = 4373,
   kDocumentOpenDifferentWindow = 4374,
   kDocumentOpenMutateSandbox = 4375,
+  kEligibleForImageLoadingPrioritizationFix = 4376,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

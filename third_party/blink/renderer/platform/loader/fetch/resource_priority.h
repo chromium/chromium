@@ -45,6 +45,14 @@ struct ResourcePriority final {
 
   VisibilityStatus visibility;
   int intra_priority_value;
+
+  // For tracking priority information from ImageLoader
+  // https://crbug.com/1369823.
+  enum class Source {
+    kImageLoader,
+    kOther,
+  };
+  Source source = Source::kOther;
 };
 
 }  // namespace blink

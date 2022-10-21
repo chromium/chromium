@@ -847,7 +847,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
                         GetElement()->GetDocument())));
 }
 
-LayoutImageResource* ImageLoader::GetLayoutImageResource() {
+LayoutImageResource* ImageLoader::GetLayoutImageResource() const {
   LayoutObject* layout_object = element_->GetLayoutObject();
 
   if (!layout_object)
@@ -881,6 +881,16 @@ void ImageLoader::UpdateLayoutObject() {
   if (image_content_ != cached_image_content &&
       (image_complete_ || !cached_image_content))
     image_resource->SetImageResource(image_content_.Get());
+}
+
+ResourcePriority ImageLoader::ComputeResourcePriority() const {
+  LayoutImageResource* image_resource = GetLayoutImageResource();
+  if (!image_resource)
+    return ResourcePriority();
+
+  ResourcePriority priority = image_resource->ComputeResourcePriority();
+  priority.source = ResourcePriority::Source::kImageLoader;
+  return priority;
 }
 
 bool ImageLoader::HasPendingEvent() const {
