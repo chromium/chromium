@@ -30,9 +30,6 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kAnswerCard:
     case AppListSearchResultType::kZeroStateFile:
     case AppListSearchResultType::kZeroStateDrive:
-    case AppListSearchResultType::kFileChip:
-    case AppListSearchResultType::kDriveChip:
-    case AppListSearchResultType::kAssistantChip:
     case AppListSearchResultType::kOsSettings:
     case AppListSearchResultType::kInternalPrivacyInfo:
     case AppListSearchResultType::kAssistantText:
@@ -63,9 +60,6 @@ bool IsContinueSectionResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kAnswerCard:
     case AppListSearchResultType::kPlayStoreReinstallApp:
     case AppListSearchResultType::kArcAppShortcut:
-    case AppListSearchResultType::kFileChip:
-    case AppListSearchResultType::kDriveChip:
-    case AppListSearchResultType::kAssistantChip:
     case AppListSearchResultType::kOsSettings:
     case AppListSearchResultType::kInternalPrivacyInfo:
     case AppListSearchResultType::kAssistantText:

@@ -196,9 +196,7 @@ TEST_P(RecentAppsViewTest, IsEmptyWithLessThan4Results) {
 
 TEST_P(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
   AddSearchResult("id1", AppListSearchResultType::kAnswerCard);
-  AddSearchResult("id2", AppListSearchResultType::kFileChip);
-  AddSearchResult("id3", AppListSearchResultType::kAssistantText);
-  AddSearchResult("id4", AppListSearchResultType::kAssistantText);
+  AddSearchResult("id2", AppListSearchResultType::kAssistantText);
 
   ShowAppList();
 

@@ -31,10 +31,6 @@ bool ShouldIgnoreProvider(ProviderType type) {
       // Deprecated providers:
     case ProviderType::kLauncher:
     case ProviderType::kAnswerCard:
-      // Suggestion chip results:
-    case ProviderType::kFileChip:
-    case ProviderType::kDriveChip:
-    case ProviderType::kAssistantChip:
       // Internal results:
     case ProviderType::kUnknown:
     case ProviderType::kInternalPrivacyInfo:

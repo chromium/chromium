@@ -44,8 +44,6 @@ Category ResultTypeToCategory(ResultType result_type) {
       return Category::kWeb;
     case ResultType::kZeroStateFile:
     case ResultType::kZeroStateDrive:
-    case ResultType::kFileChip:
-    case ResultType::kDriveChip:
     case ResultType::kFileSearch:
     case ResultType::kDriveSearch:
       return Category::kFiles;
@@ -59,7 +57,6 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kPlayStoreReinstallApp:
     case ResultType::kPlayStoreApp:
       return Category::kPlayStore;
-    case ResultType::kAssistantChip:
     case ResultType::kAssistantText:
       return Category::kSearchAndAssistant;
     // Never used in the search backend.

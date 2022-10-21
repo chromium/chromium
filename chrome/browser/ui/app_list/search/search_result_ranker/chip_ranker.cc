@@ -131,12 +131,6 @@ void ChipRanker::Rank(Mixer::SortedResults* results) {
       case ash::AppListSearchResultType::kInternalApp:
         app_results.emplace_back(&result);
         break;
-      case ash::AppListSearchResultType::kFileChip:
-        local_results.emplace_back(&result);
-        break;
-      case ash::AppListSearchResultType::kDriveChip:
-        drive_results.emplace_back(&result);
-        break;
       default:
         break;
     }
@@ -241,8 +235,7 @@ int ChipRanker::NumAvailableChips(Mixer::SortedResults* results) {
 
   for (const auto& result : *results) {
     const auto type = result.result->result_type();
-    if (type == ash::AppListSearchResultType::kAssistantChip ||
-        type == ash::AppListSearchResultType::kPlayStoreReinstallApp ||
+    if (type == ash::AppListSearchResultType::kPlayStoreReinstallApp ||
         IsSuggestionChip(result.result->id())) {
       --num_chips;
     }

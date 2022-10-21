@@ -33,10 +33,6 @@ class ChipTestResult : public TestResult {
   ChipTestResult(const std::string& id, ResultType type)
       : TestResult(id, type), instance_id_(instantiation_count++) {
     switch (type) {
-      case ResultType::kFileChip:
-      case ResultType::kDriveChip:
-        SetDisplayType(DisplayType::kChip);
-        break;
       case ResultType::kInstalledApp:
         // Apps that should be in the chips
         SetDisplayType(DisplayType::kTile);
@@ -171,24 +167,6 @@ TEST_F(ChipRankerTest, UnchangedItem) {
                                               HasId("omni1"), HasId("omni2"))));
   EXPECT_THAT(results, WhenSorted(ElementsAre(HasScore(8.9), HasScore(8.7),
                                               HasScore(0.8), HasScore(0.7))));
-}
-
-// With no training, we expect the results list to be: app, app, file, app,
-// file. Note this might be different from what is actually seen on devices,
-// depending on whether apps initially have identical scores.
-TEST_F(ChipRankerTest, DefaultInitialization) {
-  Mixer::SortedResults results = MakeSearchResults(
-      {"app1", "app2", "app3", "drive1", "drive2", "local1", "local2"},
-      {ResultType::kInstalledApp, ResultType::kInstalledApp,
-       ResultType::kInstalledApp, ResultType::kDriveChip,
-       ResultType::kDriveChip, ResultType::kFileChip, ResultType::kFileChip},
-      {8.9, 8.7, 8.5, 0.9, 0.7, 0.8, 0.6});
-  ranker_->Rank(&results);
-
-  EXPECT_THAT(results, WhenSorted(ElementsAre(HasId("app1"), HasId("app2"),
-                                              HasId("drive1"), HasId("drive2"),
-                                              HasId("local1"), HasId("app3"),
-                                              HasId("local2"))));
 }
 
 }  // namespace app_list

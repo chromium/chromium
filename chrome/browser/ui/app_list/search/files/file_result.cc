@@ -124,11 +124,9 @@ FileResult::FileResult(const std::string& id,
 
   SetResultType(result_type);
   switch (result_type) {
-    case ResultType::kDriveChip:
     case ResultType::kZeroStateDrive:
       SetMetricsType(ash::ZERO_STATE_DRIVE);
       break;
-    case ResultType::kFileChip:
     case ResultType::kZeroStateFile:
       SetMetricsType(ash::ZERO_STATE_FILE);
       break;

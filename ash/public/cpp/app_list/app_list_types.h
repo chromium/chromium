@@ -351,9 +351,6 @@ enum class AppListLaunchType { kSearchResult, kAppSearchResult, kApp };
 //
 // This should not be used for metrics. Please use ash::SearchResultType in
 // ash/public/cpp/app_list/app_list_metrics.h instead.
-//
-// TODO(crbug.com/1258415): kFileChip and kDriveChip can be removed once the
-// productivity launcher is launched.
 enum class AppListSearchResultType {
   kUnknown,       // Unknown type. Don't use over IPC
   kInstalledApp,  // Installed apps.
@@ -367,9 +364,6 @@ enum class AppListSearchResultType {
   kArcAppShortcut,         // ARC++ app shortcuts.
   kZeroStateFile,          // Zero state local file results.
   kZeroStateDrive,         // Drive QuickAccess results.
-  kFileChip,               // Local file results in suggestion chips.
-  kDriveChip,              // Drive file results in suggestion chips.
-  kAssistantChip,          // Assistant results in suggestion chips.
   kOsSettings,             // OS settings results.
   kInternalPrivacyInfo,    // Result used internally by privacy notices.
   kAssistantText,          // Assistant text results.

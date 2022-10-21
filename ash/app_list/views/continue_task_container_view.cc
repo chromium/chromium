@@ -282,9 +282,7 @@ void ContinueTaskContainerView::Update() {
   num_file_results_ = 0;
   for (size_t i = 0; i < num_results_; ++i) {
     if (tasks[i]->result_type() == AppListSearchResultType::kZeroStateFile ||
-        tasks[i]->result_type() == AppListSearchResultType::kFileChip ||
-        tasks[i]->result_type() == AppListSearchResultType::kZeroStateDrive ||
-        tasks[i]->result_type() == AppListSearchResultType::kDriveChip) {
+        tasks[i]->result_type() == AppListSearchResultType::kZeroStateDrive) {
       ++num_file_results_;
     }
   }

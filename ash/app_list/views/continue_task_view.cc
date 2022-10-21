@@ -315,10 +315,8 @@ void ContinueTaskView::OpenResult(int event_flags) {
 
 ContinueTaskView::TaskResultType ContinueTaskView::GetTaskResultType() {
   switch (result()->result_type()) {
-    case AppListSearchResultType::kFileChip:
     case AppListSearchResultType::kZeroStateFile:
       return TaskResultType::kLocalFile;
-    case AppListSearchResultType::kDriveChip:
     case AppListSearchResultType::kZeroStateDrive:
       return TaskResultType::kDriveFile;
     default:
