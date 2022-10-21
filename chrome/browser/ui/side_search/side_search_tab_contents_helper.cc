@@ -75,6 +75,32 @@ content::WebContents* SideSearchTabContentsHelper::OpenURLFromTab(
   return delegate_ ? delegate_->OpenURLFromTab(source, params) : nullptr;
 }
 
+void SideSearchTabContentsHelper::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  DCHECK(new_contents);
+  DCHECK_NE(new_contents, GetTabWebContents());
+  const GURL& current_url = GetTabWebContents()->GetLastCommittedURL();
+
+  // Ensure current_url is a search URL.
+  if (GetConfig()->ShouldNavigateInSidePanel(current_url)) {
+    auto* new_helper =
+        SideSearchTabContentsHelper::FromWebContents(new_contents);
+
+    // "Open link in incognito window" yields a null new_helper.
+    if (new_helper) {
+      new_helper->last_search_url_ = current_url;
+      new_helper->GetConfig()->set_is_side_panel_srp_available(true);
+    }
+  }
+}
+
 void SideSearchTabContentsHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
