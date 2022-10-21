@@ -96,7 +96,6 @@ class FakeNearbyShareCertificateStorage : public NearbyShareCertificateStorage {
   ~FakeNearbyShareCertificateStorage() override;
 
   // NearbyShareCertificateStorage:
-  std::vector<std::string> GetPublicCertificateIds() const override;
   void GetPublicCertificates(PublicCertificateCallback callback) override;
   absl::optional<std::vector<NearbySharePrivateCertificate>>
   GetPrivateCertificates() const override;
@@ -105,17 +104,12 @@ class FakeNearbyShareCertificateStorage : public NearbyShareCertificateStorage {
   void ReplacePrivateCertificates(
       const std::vector<NearbySharePrivateCertificate>& private_certificates)
       override;
-  void ReplacePublicCertificates(
-      const std::vector<nearbyshare::proto::PublicCertificate>&
-          public_certificates,
-      ResultCallback callback) override;
   void AddPublicCertificates(
       const std::vector<nearbyshare::proto::PublicCertificate>&
           public_certificates,
       ResultCallback callback) override;
   void RemoveExpiredPublicCertificates(base::Time now,
                                        ResultCallback callback) override;
-  void ClearPublicCertificates(ResultCallback callback) override;
 
   void SetPublicCertificateIds(const std::vector<std::string>& ids);
   void SetNextPublicCertificateExpirationTime(absl::optional<base::Time> time);

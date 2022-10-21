@@ -519,14 +519,9 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Operation">
     <variant name="AddPublicCertificates" summary="AddPublicCertificates"/>
-    <variant name="ClearPublicCertificates" summary="ClearPublicCertificates"/>
     <variant name="Initialize" summary="Initialize"/>
     <variant name="RemoveExpiredPublicCertificates"
         summary="RemoveExpiredPublicCertificates"/>
-    <variant name="ReplacePublicCertificatesDestroy"
-        summary="ReplacePublicCertificatesDestroy"/>
-    <variant name="ReplacePublicCertificatesUpdateEntries"
-        summary="ReplacePublicCertificatesUpdateEntries"/>
   </token>
 </histogram>
 

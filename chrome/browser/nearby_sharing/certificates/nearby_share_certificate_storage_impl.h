@@ -65,7 +65,6 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   void operator=(NearbyShareCertificateStorageImpl&) = delete;
 
   // NearbyShareCertificateStorage
-  std::vector<std::string> GetPublicCertificateIds() const override;
   void GetPublicCertificates(PublicCertificateCallback callback) override;
   absl::optional<std::vector<NearbySharePrivateCertificate>>
   GetPrivateCertificates() const override;
@@ -74,17 +73,12 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   void ReplacePrivateCertificates(
       const std::vector<NearbySharePrivateCertificate>& private_certificates)
       override;
-  void ReplacePublicCertificates(
-      const std::vector<nearbyshare::proto::PublicCertificate>&
-          public_certificates,
-      ResultCallback callback) override;
   void AddPublicCertificates(
       const std::vector<nearbyshare::proto::PublicCertificate>&
           public_certificates,
       ResultCallback callback) override;
   void RemoveExpiredPublicCertificates(base::Time now,
                                        ResultCallback callback) override;
-  void ClearPublicCertificates(ResultCallback callback) override;
 
  private:
   enum class InitStatus { kUninitialized, kInitialized, kFailed };
@@ -95,21 +89,9 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   void FinishInitialization(bool success);
 
   void OnDatabaseDestroyedReinitialize(bool success);
-  void OnDatabaseDestroyed(ResultCallback callback, bool success);
 
   void DestroyAndReinitialize();
 
-  void ReplacePublicCertificatesDestroyCallback(
-      std::unique_ptr<std::vector<
-          std::pair<std::string, nearbyshare::proto::PublicCertificate>>>
-          public_certificates,
-      std::unique_ptr<ExpirationList> expirations,
-      ResultCallback callback,
-      bool proceed);
-  void ReplacePublicCertificatesUpdateEntriesCallback(
-      std::unique_ptr<ExpirationList> expirations,
-      ResultCallback callback,
-      bool proceed);
   void AddPublicCertificatesCallback(
       std::unique_ptr<ExpirationList> new_expirations,
       ResultCallback callback,

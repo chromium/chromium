@@ -71,11 +71,6 @@ FakeNearbyShareCertificateStorage::FakeNearbyShareCertificateStorage() =
 FakeNearbyShareCertificateStorage::~FakeNearbyShareCertificateStorage() =
     default;
 
-std::vector<std::string>
-FakeNearbyShareCertificateStorage::GetPublicCertificateIds() const {
-  return public_certificate_ids_;
-}
-
 void FakeNearbyShareCertificateStorage::GetPublicCertificates(
     PublicCertificateCallback callback) {
   get_public_certificates_callbacks_.push_back(std::move(callback));
@@ -96,14 +91,6 @@ void FakeNearbyShareCertificateStorage::ReplacePrivateCertificates(
   private_certificates_ = private_certificates;
 }
 
-void FakeNearbyShareCertificateStorage::ReplacePublicCertificates(
-    const std::vector<nearbyshare::proto::PublicCertificate>&
-        public_certificates,
-    ResultCallback callback) {
-  replace_public_certificates_calls_.emplace_back(public_certificates,
-                                                  std::move(callback));
-}
-
 void FakeNearbyShareCertificateStorage::AddPublicCertificates(
     const std::vector<nearbyshare::proto::PublicCertificate>&
         public_certificates,
@@ -117,11 +104,6 @@ void FakeNearbyShareCertificateStorage::RemoveExpiredPublicCertificates(
     ResultCallback callback) {
   remove_expired_public_certificates_calls_.emplace_back(now,
                                                          std::move(callback));
-}
-
-void FakeNearbyShareCertificateStorage::ClearPublicCertificates(
-    ResultCallback callback) {
-  clear_public_certificates_callbacks_.push_back(std::move(callback));
 }
 
 void FakeNearbyShareCertificateStorage::SetPublicCertificateIds(
