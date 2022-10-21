@@ -8,9 +8,18 @@
 
 namespace ui {
 
+// Overlay delegation is required for delegated compositing. Linux doesn't
+// support many protocols that are required for delegated compositing. Thus,
+// enable that only on LaCrOS that uses exo, which implements all the required
+// protocols.
 BASE_FEATURE(kWaylandOverlayDelegation,
              "WaylandOverlayDelegation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // This feature flag enables a mode where the wayland client would submit
 // buffers at a scale of 1 and the server applies the respective scale transform
