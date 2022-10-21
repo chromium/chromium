@@ -150,9 +150,16 @@ export class SettingsToggleButtonElement extends
    * Set up the contents of sub label with link.
    */
   private getSubLabelWithLinkContent_(contents: string) {
-    return sanitizeInnerHtml(
-        contents,
-        {attrs: ['id', 'is', 'aria-hidden', 'aria-labelledby', 'tabindex']});
+    return sanitizeInnerHtml(contents, {
+      attrs: [
+        'id',
+        'is',
+        'aria-hidden',
+        'aria-label',
+        'aria-labelledby',
+        'tabindex',
+      ],
+    });
   }
 
   private onSubLabelTextWithLinkClick_(e: Event) {
