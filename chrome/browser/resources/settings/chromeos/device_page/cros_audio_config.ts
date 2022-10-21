@@ -2,28 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrosAudioConfig, CrosAudioConfigInterface} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
-
 /**
  * @fileoverview
  * Provides singleton access to the CrosAudioConfig mojo interface and the
  * ability to override it with a fake implementation needed for tests.
  */
 
-/** @type {?CrosAudioConfigInterface} */
-let crosAudioConfig = null;
+import {CrosAudioConfig, CrosAudioConfigInterface} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+
+let crosAudioConfig: CrosAudioConfigInterface|null = null;
 
 /**
- * @param {?CrosAudioConfigInterface} testCrosAudioConfig
  * The CrosAudioConfig implementation used for testing. Passing null reverses
  * the override.
  */
-export function setCrosAudioConfigForTesting(testCrosAudioConfig) {
+export function setCrosAudioConfigForTesting(
+    testCrosAudioConfig: CrosAudioConfigInterface): void {
   crosAudioConfig = testCrosAudioConfig;
 }
 
-/** @return {!CrosAudioConfigInterface} */
-export function getCrosAudioConfig() {
+export function getCrosAudioConfig(): CrosAudioConfigInterface {
   if (!crosAudioConfig) {
     crosAudioConfig = CrosAudioConfig.getRemote();
   }

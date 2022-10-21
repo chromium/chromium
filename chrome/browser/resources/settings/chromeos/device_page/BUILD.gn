@@ -11,8 +11,6 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":audio",
-    ":cros_audio_config",
     ":device_page_browser_proxy",
     ":drag_behavior",
     ":layout_behavior",
@@ -20,26 +18,6 @@ js_type_check("closure_compile_module") {
     ":storage_external",
     ":storage_external_entry",
   ]
-}
-
-js_library("audio") {
-  deps = [
-    ":cros_audio_config",
-    "..:os_route",
-    "..:route_observer_behavior",
-    "../..:router",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chromeos/ash/components/audio/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
-  ]
-
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
-}
-
-js_library("cros_audio_config") {
-  deps = [ "//chromeos/ash/components/audio/public/mojom:mojom_webui_js" ]
 }
 
 js_library("device_page_browser_proxy") {
@@ -103,7 +81,6 @@ js_library("storage_external_entry") {
 
 html_to_js("web_components") {
   js_files = [
-    "audio.js",
     "storage_external_entry.js",
     "storage_external.js",
     "storage.js",
