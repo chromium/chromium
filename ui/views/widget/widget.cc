@@ -750,7 +750,11 @@ void Widget::CloseNow() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetClosing(this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
-  native_widget_->CloseNow();
+
+  DCHECK(native_widget_) << "Native widget is never initialized.";
+
+  if (!native_widget_destroyed_)
+    native_widget_->CloseNow();
 }
 
 bool Widget::IsClosed() const {
