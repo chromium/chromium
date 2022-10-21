@@ -14,6 +14,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_controller_client.h"
+#include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -331,6 +333,15 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
           ui_manager, web_contents, main_frame_url, {resource}, true));
 }
 
+std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
+    content::WebContents* web_contents) {
+  GURL request_url("https://url-warned-example.net");
+  return std::make_unique<EnterpriseWarnPage>(
+      web_contents, request_url,
+      std::make_unique<EnterpriseWarnControllerClient>(web_contents,
+                                                       request_url));
+}
+
 std::unique_ptr<TestSafeBrowsingBlockingPageQuiet>
 CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
@@ -494,6 +505,8 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateBlockedInterceptionBlockingPage(web_contents);
   } else if (path_without_query == "/safebrowsing") {
     interstitial_delegate = CreateSafeBrowsingBlockingPage(web_contents);
+  } else if (path_without_query == "/enterprise-warn") {
+    interstitial_delegate = CreateEnterpriseWarnPage(web_contents);
   } else if (path_without_query == "/clock") {
     interstitial_delegate = CreateBadClockBlockingPage(web_contents);
   } else if (path_without_query == "/lookalike") {

@@ -113,6 +113,11 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, CTInterstitial) {
                    u"NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED");
 }
 
+IN_PROC_BROWSER_TEST_F(InterstitialUITest, EnterpriseWarnInterstitial) {
+  TestInterstitial(GURL("chrome://interstitials/enterprise-warn"),
+                   "Admin warning", IDS_ENTERPRISE_WARN_HEADING);
+}
+
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MalwareInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=malware"),
                    "Security error", IDS_MALWARE_V3_HEADING);
