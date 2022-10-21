@@ -34,3 +34,6 @@ This is a list of all the places where we represent
 
  - [payments::WebAppInstallationInfo](../../../../components/payments/content/web_app_manifest.h)\
    Payments code doesn't live under /chrome/browser, they have their own parser and representation.
+
+ - [apps.proto.AppProvisioningResponse](../../apps/app_preload_service/proto/app_provisioning.proto)\
+   Apps Preload Service server communication proto containing default web app install data.
