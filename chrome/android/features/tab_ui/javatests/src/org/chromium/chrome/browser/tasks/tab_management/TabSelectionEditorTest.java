@@ -8,19 +8,13 @@ import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -713,11 +707,11 @@ public class TabSelectionEditorTest {
             mTabSelectionEditorController.show(tabs);
         });
 
-        mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(2);
-
         final String httpsCanonicalUrl =
                 sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
         sActivityTestRule.loadUrl(httpsCanonicalUrl);
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(2);
 
         final int shareId = R.id.tab_selection_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);
@@ -833,7 +827,7 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    public void testToolbarMenuItem_ShareActionToast() throws Exception {
+    public void testToolbarMenuItem_ShareActionAllFilterableTabs() throws Exception {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -849,18 +843,8 @@ public class TabSelectionEditorTest {
 
         final int shareId = R.id.tab_selection_editor_share_menu_item;
         mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(1);
-        mRobot.resultRobot.verifyToolbarActionViewEnabled(shareId).verifyToolbarSelectionText(
+        mRobot.resultRobot.verifyToolbarActionViewDisabled(shareId).verifyToolbarSelectionText(
                 "2 tabs");
-
-        View share = mTabSelectionEditorLayout.getToolbar().findViewById(shareId);
-        assertEquals("Share 2 selected tabs", share.getContentDescription());
-
-        mRobot.actionRobot.clickToolbarActionView(shareId);
-
-        onView(withText(R.string.browser_sharing_error_dialog_text_internal_error))
-                .inRoot(withDecorView(
-                        not(sActivityTestRule.getActivity().getWindow().getDecorView())))
-                .check(matches(isDisplayed()));
     }
 
     @Test

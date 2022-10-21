@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionObserver;
@@ -117,6 +118,8 @@ public class TabSelectionEditorShareActionUnitTest {
             }
         }));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getTabModelFilterProvider())
+                .thenReturn(new TabModelFilterProvider());
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
         mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
     }
@@ -335,15 +338,14 @@ public class TabSelectionEditorShareActionUnitTest {
 
         mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 2, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
 
-        Assert.assertFalse(mAction.perform());
         verify(mShareDelegate, never())
                 .share(any(ShareParams.class), any(ChromeShareExtras.class),
                         eq(ShareOrigin.TAB_GROUP));
-        verifyIfToastShown(true);
+        verifyIfToastShown(false);
     }
 
     private void verifyIfToastShown(boolean wasShown) {

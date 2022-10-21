@@ -298,7 +298,7 @@ public abstract class TabSelectionEditorAction {
         return selectedTabs;
     }
 
-    private List<Tab> getTabsAndRelatedTabsFromSelection() {
+    protected List<Tab> getTabsAndRelatedTabsFromSelection() {
         if (!(mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
                             instanceof TabGroupModelFilter)) {
             return getTabsFromSelection();
