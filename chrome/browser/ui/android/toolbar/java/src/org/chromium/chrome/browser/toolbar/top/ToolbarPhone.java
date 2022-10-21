@@ -238,6 +238,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private boolean mPendingTriggerUrlFocusRequest;
     private ToolbarSnapshotState mToolbarSnapshotState;
     private ButtonData mButtonData;
+    /**
+     * Whether the tab switcher is currently showing and controlled by the start surface. For
+     * legacy reasons this bypasses the normal tab switcher state logic.
+     * TODO(https://crbug.com/1315676): revisit the need for this once the tab switcher and start
+     * surface are decoupled.
+     */
+    private boolean mIsShowingStartSurfaceTabSwitcher;
 
     /**
      * Used to specify the visual state of the toolbar.
@@ -1289,7 +1296,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         canvas.save();
         canvas.clipRect(mBackgroundOverlayBounds);
 
-        float previousAlpha = 0.f;
+        float previousAlpha;
         if (mHomeButton.getVisibility() != View.GONE) {
             previousAlpha = mHomeButton.getAlpha();
             mHomeButton.setAlpha(previousAlpha * floatAlpha);
@@ -1578,6 +1585,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             // TODO(https://crbug.com/1356153): It may be possible to remove the above null check.
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS);
+        } else if (isInTabSwitcherMode() || mIsShowingStartSurfaceTabSwitcher) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
         } else {
             return CaptureReadinessResult.readyWithSnapshotDifference(snapshotDifference);
         }
@@ -1734,8 +1743,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private void updateViewsForTabSwitcherMode() {
-        setVisibility(mTabSwitcherState == STATIC_TAB ? View.VISIBLE : View.INVISIBLE);
-
+        setVisibility(mTabSwitcherState == TAB_SWITCHER ? View.INVISIBLE : View.VISIBLE);
         updateProgressBarVisibility();
         updateShadowVisibility();
         updateTabSwitcherButtonRipple();
@@ -1744,7 +1752,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private void updateProgressBarVisibility() {
         getProgressBar().setVisibility(
                 (mTabSwitcherState != STATIC_TAB
-                        || getToolbarDataProvider().isInOverviewAndShowingOmnibox())
+                        || getToolbarDataProvider().isInOverviewAndShowingOmnibox()
+                        || mIsShowingStartSurfaceTabSwitcher)
                         ? INVISIBLE
                         : VISIBLE);
     }
@@ -1841,9 +1850,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    void onStartSurfaceStateChanged(boolean shouldBeVisible, boolean isShowingStartSurface) {
-        super.onStartSurfaceStateChanged(shouldBeVisible, isShowingStartSurface);
+    void onStartSurfaceStateChanged(boolean shouldBeVisible, boolean isShowingStartSurfaceHomepage,
+            boolean isShowingStartSurfaceTabSwitcher) {
+        if (mLocationBar == null || mLocationBar.isDestroyed()) return;
+        super.onStartSurfaceStateChanged(
+                shouldBeVisible, isShowingStartSurfaceHomepage, isShowingStartSurfaceTabSwitcher);
 
+        mIsShowingStartSurfaceTabSwitcher = isShowingStartSurfaceTabSwitcher;
         // Update visibilities of toolbar layout, progress bar and shadow.
         setVisibility(shouldBeVisible ? VISIBLE : GONE);
         updateProgressBarVisibility();
@@ -1853,7 +1866,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mLocationBar.setUrlBarFocusable(true);
 
         // Toolbar should be expanded when it's shown on the start surface homepage.
-        float startSurfaceScrollFraction = shouldBeVisible && isShowingStartSurface ? 1.0f : 0.0f;
+        float startSurfaceScrollFraction =
+                shouldBeVisible && isShowingStartSurfaceHomepage ? 1.0f : 0.0f;
         if (mStartSurfaceScrollFraction != startSurfaceScrollFraction) {
             mStartSurfaceScrollFraction = startSurfaceScrollFraction;
             updateUrlExpansionFraction();
@@ -1871,7 +1885,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mTabSwitcherState = STATIC_TAB;
             updateVisualsForLocationBarState();
         }
-        if (mTabSwitcherState == ENTERING_TAB_SWITCHER) mTabSwitcherState = TAB_SWITCHER;
+        if (mTabSwitcherState == ENTERING_TAB_SWITCHER) {
+            mTabSwitcherState = TAB_SWITCHER;
+        }
 
         // The width of location bar depends on mTabSwitcherState so layout request is needed. See
         // crbug.com/974745.
@@ -2265,7 +2281,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // TODO(twellington): Move this shadow state information to ToolbarDataProvider and show
         // shadow when incognito NTP is scrolled.
         return mTabSwitcherState == STATIC_TAB && !mForceHideShadow && !hideShadowForIncognitoNtp()
-                && !hideShadowForInterstitial() && getVisibility() == View.VISIBLE;
+                && !hideShadowForInterstitial() && getVisibility() == View.VISIBLE
+                && !mIsShowingStartSurfaceTabSwitcher;
     }
 
     private boolean hideShadowForIncognitoNtp() {
