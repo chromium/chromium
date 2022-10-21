@@ -100,7 +100,7 @@ class ProfilePickerWidget : public views::Widget {
   ~ProfilePickerWidget() override = default;
 
  private:
-  const raw_ptr<ProfilePickerView> profile_picker_view_;
+  const raw_ptr<ProfilePickerView, DanglingUntriaged> profile_picker_view_;
 };
 
 // Returns whether the current flow is part of the classic profile picker flow.

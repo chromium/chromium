@@ -183,9 +183,11 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     return GetPromoBubbleView()->GetDefaultButtonForTesting();
   }
 
-  raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
-  raw_ptr<BrowserFeaturePromoController> promo_controller_;
-  raw_ptr<user_education::FeaturePromoSnoozeService> snooze_service_;
+  raw_ptr<NiceMock<feature_engagement::test::MockTracker>, DanglingUntriaged>
+      mock_tracker_;
+  raw_ptr<BrowserFeaturePromoController, DanglingUntriaged> promo_controller_;
+  raw_ptr<user_education::FeaturePromoSnoozeService, DanglingUntriaged>
+      snooze_service_;
 
  private:
   static void RegisterMockTracker(content::BrowserContext* context) {

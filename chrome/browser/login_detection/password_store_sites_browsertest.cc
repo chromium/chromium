@@ -80,8 +80,10 @@ class LoginDetectionPasswordStoreSitesBrowserTest
 
  protected:
   base::HistogramTester histogram_tester;
-  raw_ptr<PasswordStoreInterface> profile_password_store_ = nullptr;
-  raw_ptr<PasswordStoreInterface> account_password_store_ = nullptr;
+  raw_ptr<PasswordStoreInterface, DanglingUntriaged> profile_password_store_ =
+      nullptr;
+  raw_ptr<PasswordStoreInterface, DanglingUntriaged> account_password_store_ =
+      nullptr;
   base::CallbackListSubscription create_services_subscription_;
 };
 

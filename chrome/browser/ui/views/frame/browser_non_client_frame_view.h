@@ -193,13 +193,14 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 #endif  // BUILDFLAG(IS_WIN)
 
   // The frame that hosts this view.
-  const raw_ptr<BrowserFrame> frame_;
+  const raw_ptr<BrowserFrame, DanglingUntriaged> frame_;
 
   // The BrowserView hosted within this View.
-  const raw_ptr<BrowserView> browser_view_;
+  const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
 
   // Menu button and page status icons. Only used by web-app windows.
-  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+      nullptr;
 
   base::CallbackListSubscription paint_as_active_subscription_ =
       frame_->RegisterPaintAsActiveChangedCallback(

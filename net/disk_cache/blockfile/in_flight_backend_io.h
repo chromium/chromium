@@ -161,7 +161,7 @@ class BackendIO : public BackgroundIO {
   // Used for ops that open or create entries.
   EntryResultCallback entry_result_callback_;
   // if set, already has the user's ref added.
-  raw_ptr<Entry> out_entry_ = nullptr;
+  raw_ptr<Entry, DanglingUntriaged> out_entry_ = nullptr;
   bool out_entry_opened_ = false;
 
   // For GetAvailableRange

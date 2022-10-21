@@ -51,7 +51,8 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
   }
 
  private:
-  raw_ptr<SaveUpdateAddressProfileBubbleControllerImpl> controller_ = nullptr;
+  raw_ptr<SaveUpdateAddressProfileBubbleControllerImpl, DanglingUntriaged>
+      controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

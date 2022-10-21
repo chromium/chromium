@@ -96,7 +96,7 @@ class NET_EXPORT CTLogVerifier
   ct::DigitallySigned::SignatureAlgorithm signature_algorithm_ =
       ct::DigitallySigned::SIG_ALGO_ANONYMOUS;
 
-  raw_ptr<EVP_PKEY> public_key_ = nullptr;
+  raw_ptr<EVP_PKEY, DanglingUntriaged> public_key_ = nullptr;
 };
 
 }  // namespace net

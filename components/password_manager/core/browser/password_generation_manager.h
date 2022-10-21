@@ -74,7 +74,7 @@ class PasswordGenerationManager {
                              const PasswordForm& pending);
 
   // The client for the password form.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
   // Stores the pre-saved credential.
   absl::optional<PasswordForm> presaved_;
   // Used to produce callbacks.

@@ -50,10 +50,10 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   gfx::Size CalculatePreferredSize() const override;
 
   // Sub view that displays the actual generated password.
-  raw_ptr<GeneratedPasswordBox> password_view_ = nullptr;
+  raw_ptr<GeneratedPasswordBox, DanglingUntriaged> password_view_ = nullptr;
 
   // The footer label.
-  raw_ptr<views::StyledLabel> help_styled_label_ = nullptr;
+  raw_ptr<views::StyledLabel, DanglingUntriaged> help_styled_label_ = nullptr;
 
   // Controller for this view. Weak reference.
   base::WeakPtr<PasswordGenerationPopupController> controller_;

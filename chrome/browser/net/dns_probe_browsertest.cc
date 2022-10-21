@@ -181,10 +181,11 @@ class DnsProbeBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<FakeHostResolverNetworkContext> network_context_;
   std::unique_ptr<FakeDnsConfigChangeManager> dns_config_change_manager_;
-  raw_ptr<DelayingDnsProbeService> delaying_dns_probe_service_;
+  raw_ptr<DelayingDnsProbeService, DanglingUntriaged>
+      delaying_dns_probe_service_;
 
   // Browser that methods apply to.
-  raw_ptr<Browser> active_browser_;
+  raw_ptr<Browser, DanglingUntriaged> active_browser_;
   // Helper that current has its DnsProbeStatus messages monitored.
   raw_ptr<NetErrorTabHelper> monitored_tab_helper_;
 

@@ -156,7 +156,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // SafeElementReference here, but there are cases where we want to do
     // additional processing if this element goes away, so we'll add the
     // listeners manually instead.
-    raw_ptr<TrackedElement> element = nullptr;
+    raw_ptr<TrackedElement, DanglingUntriaged> element = nullptr;
   };
 
   // Use a Builder to specify parameters when creating an InteractionSequence.

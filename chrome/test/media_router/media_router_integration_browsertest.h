@@ -179,7 +179,7 @@ class MediaRouterIntegrationBrowserTest
   void WaitUntilNoRoutes(content::WebContents* web_contents);
 
   // Test API for manipulating the UI.
-  raw_ptr<MediaRouterUiForTestBase> test_ui_ = nullptr;
+  raw_ptr<MediaRouterUiForTestBase, DanglingUntriaged> test_ui_ = nullptr;
 
   // Enabled features.
   base::test::ScopedFeatureList scoped_feature_list_;

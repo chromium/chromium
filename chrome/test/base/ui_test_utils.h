@@ -357,7 +357,7 @@ class BrowserChangeObserver : public BrowserListObserver {
  private:
   // TODO(crbug.com/1298696): browser_tests (pixel_browser_tests)
   // breaks with MTECheckedPtr enabled. Triage.
-  raw_ptr<Browser, DegradeToNoOpWhenMTE> browser_;
+  raw_ptr<Browser, DanglingUntriagedDegradeToNoOpWhenMTE> browser_;
   ChangeType type_;
   base::RunLoop run_loop_;
 };

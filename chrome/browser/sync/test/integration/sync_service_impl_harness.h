@@ -223,7 +223,7 @@ class SyncServiceImplHarness {
   const raw_ptr<Profile> profile_;
 
   // SyncServiceImpl object associated with |profile_|.
-  const raw_ptr<syncer::SyncServiceImpl> service_;
+  const raw_ptr<syncer::SyncServiceImpl, DanglingUntriaged> service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

@@ -86,9 +86,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
   // Executes highlight animation on toolbar's avatar icon.
   void ShowAvatarHighlightAnimation();
 
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
 
-  raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
+  raw_ptr<ToolbarButtonProvider, DanglingUntriaged> toolbar_button_provider_ =
+      nullptr;
 
   // Whether a save local card sign in promo bubble could pop up from the avatar
   // button after the highlight animation finishes.

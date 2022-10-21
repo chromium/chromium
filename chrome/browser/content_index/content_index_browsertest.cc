@@ -159,7 +159,7 @@ class ContentIndexTest : public InProcessBrowserTest,
   }
 
   std::map<std::string, OfflineItem> offline_items_;
-  raw_ptr<ContentIndexProviderImpl> provider_;
+  raw_ptr<ContentIndexProviderImpl, DanglingUntriaged> provider_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::OnceClosure wait_for_tab_change_;
 };

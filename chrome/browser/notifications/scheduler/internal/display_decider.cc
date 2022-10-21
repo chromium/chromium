@@ -159,7 +159,7 @@ class DecisionHelper {
   Notifications notifications_;
 
   const ClientStates client_states_;
-  raw_ptr<const SchedulerConfig> config_;
+  raw_ptr<const SchedulerConfig, DanglingUntriaged> config_;
   const std::vector<SchedulerClientType> clients_;
   raw_ptr<base::Clock> clock_;
 

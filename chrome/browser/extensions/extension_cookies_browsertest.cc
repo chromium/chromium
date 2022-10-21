@@ -308,7 +308,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   net::EmbeddedTestServer test_server_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestExtensionDir> extension_dir_;
-  raw_ptr<const Extension> extension_ = nullptr;
+  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
 };
 
 // Tests for special handling of SameSite cookies for extensions:

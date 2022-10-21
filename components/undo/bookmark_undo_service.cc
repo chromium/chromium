@@ -39,7 +39,7 @@ class BookmarkUndoOperation : public UndoOperation {
   BookmarkModel* bookmark_model() { return bookmark_model_; }
 
  private:
-  raw_ptr<BookmarkModel> bookmark_model_;
+  raw_ptr<BookmarkModel, DanglingUntriaged> bookmark_model_;
 };
 
 // BookmarkAddOperation -------------------------------------------------------
@@ -115,7 +115,7 @@ class BookmarkRemoveOperation : public BookmarkUndoOperation {
   int GetRedoLabelId() const override;
 
  private:
-  raw_ptr<BookmarkUndoProvider> undo_provider_;
+  raw_ptr<BookmarkUndoProvider, DanglingUntriaged> undo_provider_;
   const int64_t parent_node_id_;
   const size_t index_;
   std::unique_ptr<BookmarkNode> node_;

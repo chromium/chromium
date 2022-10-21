@@ -1014,8 +1014,8 @@ class NavigatingExtensionPopupInteractiveTest
     }
   }
 
-  raw_ptr<const Extension> popup_extension_;
-  raw_ptr<const Extension> other_extension_;
+  raw_ptr<const Extension, DanglingUntriaged> popup_extension_;
+  raw_ptr<const Extension, DanglingUntriaged> other_extension_;
 };
 
 // Tests that an extension pop-up cannot be navigated to a web page.

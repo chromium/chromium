@@ -61,7 +61,7 @@ class ScopedFileWriter {
 
  private:
   bool valid_ = false;
-  raw_ptr<FILE> file_ =
+  raw_ptr<FILE, DanglingUntriaged> file_ =
       nullptr;  // base::ScopedFILE doesn't check errors on close.
 };
 

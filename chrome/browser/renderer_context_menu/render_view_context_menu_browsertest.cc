@@ -487,9 +487,11 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
   content::RenderFrameHost* extension_frame() { return extension_frame_; }
 
  private:
-  raw_ptr<content::RenderFrameHost> extension_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> extension_frame_ =
+      nullptr;
   guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager, DanglingUntriaged>
+      test_guest_view_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,

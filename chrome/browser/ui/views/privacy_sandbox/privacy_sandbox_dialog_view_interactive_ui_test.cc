@@ -36,7 +36,7 @@ class PrivacySandboxDialogViewInteractiveUiTest : public InProcessBrowserTest {
   MockPrivacySandboxService* mock_service() { return mock_service_; }
 
  private:
-  raw_ptr<MockPrivacySandboxService> mock_service_;
+  raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
 };
 
 // The build flag OZONE_PLATFORM_WAYLAND is only available on

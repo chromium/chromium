@@ -170,7 +170,7 @@ class DomDistillerViewerSourceBrowserTest : public InProcessBrowserTest {
   // Database entries.
   bool expect_distillation_ = false;
   bool expect_distiller_page_ = false;
-  raw_ptr<MockDistillerFactory> distiller_factory_ = nullptr;
+  raw_ptr<MockDistillerFactory, DanglingUntriaged> distiller_factory_ = nullptr;
 };
 
 // The DomDistillerViewerSource renders untrusted content, so ensure no bindings

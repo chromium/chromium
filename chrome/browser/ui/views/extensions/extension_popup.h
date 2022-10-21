@@ -139,7 +139,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;
 
-  raw_ptr<ExtensionViewViews> extension_view_;
+  raw_ptr<ExtensionViewViews, DanglingUntriaged> extension_view_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

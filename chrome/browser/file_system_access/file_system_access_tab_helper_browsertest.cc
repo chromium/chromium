@@ -93,7 +93,8 @@ class FileSystemAccessTabHelperPrerenderingBrowserTest
     return std::move(service);
   }
 
-  raw_ptr<MockFileSystemAccessPermissionContext> mock_service_;
+  raw_ptr<MockFileSystemAccessPermissionContext, DanglingUntriaged>
+      mock_service_;
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 

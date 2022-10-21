@@ -138,8 +138,8 @@ class BASE_EXPORT BigEndianWriter {
   bool Write(T v);
 
   // TODO(crbug.com/1298696): Breaks net_unittests.
-  raw_ptr<char, DegradeToNoOpWhenMTE> ptr_;
-  raw_ptr<char, DegradeToNoOpWhenMTE> end_;
+  raw_ptr<char, DanglingUntriagedDegradeToNoOpWhenMTE> ptr_;
+  raw_ptr<char, DanglingUntriagedDegradeToNoOpWhenMTE> end_;
 };
 
 }  // namespace base

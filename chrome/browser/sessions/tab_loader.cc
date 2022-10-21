@@ -111,7 +111,7 @@ class TabLoader::ReentrancyHelper {
 
   void DestroyTabLoader() { tab_loader_->this_retainer_ = nullptr; }
 
-  raw_ptr<TabLoader> tab_loader_;
+  raw_ptr<TabLoader, DanglingUntriaged> tab_loader_;
 };
 
 // static

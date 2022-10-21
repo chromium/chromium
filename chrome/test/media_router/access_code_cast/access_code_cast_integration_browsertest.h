@@ -157,7 +157,8 @@ class AccessCodeCastIntegrationBrowserTest
       network_connection_tracker_;
 
  protected:
-  raw_ptr<media_router::MockMediaRouter> media_router_ = nullptr;
+  raw_ptr<media_router::MockMediaRouter, DanglingUntriaged> media_router_ =
+      nullptr;
   std::vector<MediaSinksObserver*> media_sinks_observers_;
   std::vector<media_router::MediaRoutesObserver*> media_routes_observers_;
 

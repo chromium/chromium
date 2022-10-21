@@ -34,7 +34,7 @@ class AnnouncementNotificationDelegate
   bool IsFirstRun() override;
 
   // Used to show the notification.
-  raw_ptr<NotificationDisplayService> display_service_;
+  raw_ptr<NotificationDisplayService, DanglingUntriaged> display_service_;
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_

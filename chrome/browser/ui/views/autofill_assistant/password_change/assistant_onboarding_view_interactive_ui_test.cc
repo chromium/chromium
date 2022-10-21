@@ -119,7 +119,7 @@ class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
   base::MockCallback<AssistantOnboardingController::Callback> callback_;
 
   // The object to be tested.
-  raw_ptr<AssistantOnboardingView> view_ = nullptr;
+  raw_ptr<AssistantOnboardingView, DanglingUntriaged> view_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, CancelDialog) {

@@ -309,7 +309,7 @@ class VideoPictureInPictureWindowControllerBrowserTest
   }
 
  private:
-  raw_ptr<content::VideoPictureInPictureWindowController>
+  raw_ptr<content::VideoPictureInPictureWindowController, DanglingUntriaged>
       pip_window_controller_ = nullptr;
   MockVideoPictureInPictureWindowController mock_controller_;
 };
@@ -2091,7 +2091,7 @@ class WebAppVideoPictureInPictureWindowControllerBrowserTest
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 // Hide pwa page and check that Picture-in-Picture is entered automatically.

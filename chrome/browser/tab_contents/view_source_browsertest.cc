@@ -790,7 +790,7 @@ class ViewSourcePrerenderTest : public ViewSourceTest {
                           base::Unretained(this))};
 
   // The WebContents which is expected to request prerendering.
-  raw_ptr<content::WebContents> target_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> target_ = nullptr;
 };
 
 // A frame in a prerendered page should be able to have its source viewed, like

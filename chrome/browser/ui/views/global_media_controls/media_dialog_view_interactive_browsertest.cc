@@ -560,7 +560,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<TestWebContentsPresentationManager> presentation_manager_;
-  raw_ptr<TestMediaRouter> media_router_ = nullptr;
+  raw_ptr<TestMediaRouter, DanglingUntriaged> media_router_ = nullptr;
   MediaDialogUiForTest ui_{base::BindRepeating(&InProcessBrowserTest::browser,
                                                base::Unretained(this))};
 

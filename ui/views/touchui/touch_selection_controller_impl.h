@@ -112,13 +112,13 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   View* GetHandle1View();
   View* GetHandle2View();
 
-  raw_ptr<ui::TouchEditable> client_view_;
-  raw_ptr<Widget> client_widget_ = nullptr;
+  raw_ptr<ui::TouchEditable, DanglingUntriaged> client_view_;
+  raw_ptr<Widget, DanglingUntriaged> client_widget_ = nullptr;
   // Non-owning pointers to EditingHandleViews. These views are owned by their
   // Widget and cleaned up when their Widget closes.
-  raw_ptr<EditingHandleView> selection_handle_1_;
-  raw_ptr<EditingHandleView> selection_handle_2_;
-  raw_ptr<EditingHandleView> cursor_handle_;
+  raw_ptr<EditingHandleView, DanglingUntriaged> selection_handle_1_;
+  raw_ptr<EditingHandleView, DanglingUntriaged> selection_handle_2_;
+  raw_ptr<EditingHandleView, DanglingUntriaged> cursor_handle_;
   bool command_executed_ = false;
   base::TimeTicks selection_start_time_;
 
@@ -128,7 +128,7 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   base::OneShotTimer quick_menu_timer_;
 
   // Pointer to the SelectionHandleView being dragged during a drag session.
-  raw_ptr<EditingHandleView> dragging_handle_ = nullptr;
+  raw_ptr<EditingHandleView, DanglingUntriaged> dragging_handle_ = nullptr;
 
   // In cursor mode, the two selection bounds are the same and correspond to
   // |cursor_handle_|; otherwise, they correspond to |selection_handle_1_| and

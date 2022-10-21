@@ -242,7 +242,8 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
 
   net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  raw_ptr<content::RenderFrameHost> frame_to_use_for_connecting_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged>
+      frame_to_use_for_connecting_ = nullptr;
 
  private:
   // content::URLLoaderInterceptor callback

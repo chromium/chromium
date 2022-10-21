@@ -365,9 +365,9 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
       external_protocol_handler_delegate_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
-  raw_ptr<TestNoStatePrefetchContentsFactory>
+  raw_ptr<TestNoStatePrefetchContentsFactory, DanglingUntriaged>
       no_state_prefetch_contents_factory_;
-  raw_ptr<Browser> explicitly_set_browser_;
+  raw_ptr<Browser, DanglingUntriaged> explicitly_set_browser_;
   bool autostart_test_server_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<net::EmbeddedTestServer> https_src_server_;

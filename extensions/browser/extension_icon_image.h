@@ -114,7 +114,7 @@ class IconImage : public ExtensionRegistryObserver {
                            UnloadedExtensionReason reason) override;
   void OnShutdown(ExtensionRegistry* extension_registry) override;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
   scoped_refptr<const Extension> extension_;
   ExtensionIconSet icon_set_;
   const int resource_size_in_dip_;
@@ -127,7 +127,7 @@ class IconImage : public ExtensionRegistryObserver {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  raw_ptr<Source> source_;  // Owned by ImageSkia storage.
+  raw_ptr<Source, DanglingUntriaged> source_;  // Owned by ImageSkia storage.
   gfx::ImageSkia image_skia_;
   // The icon with whose representation |image_skia_| should be updated if
   // its own representation load fails.

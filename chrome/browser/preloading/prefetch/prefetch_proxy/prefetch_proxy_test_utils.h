@@ -41,8 +41,8 @@ class TestProxySocketDataPump {
   void Write();
   void HandleWriteResult(int result);
 
-  raw_ptr<net::StreamSocket> from_socket_;
-  raw_ptr<net::StreamSocket> to_socket_;
+  raw_ptr<net::StreamSocket, DanglingUntriaged> from_socket_;
+  raw_ptr<net::StreamSocket, DanglingUntriaged> to_socket_;
 
   scoped_refptr<net::IOBuffer> read_buffer_;
   scoped_refptr<net::DrainableIOBuffer> write_buffer_;

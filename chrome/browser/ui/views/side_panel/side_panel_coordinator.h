@@ -172,7 +172,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Used to update SidePanelEntry options in the header_combobox_ based on
   // their availability in the observed side panel registries.
   std::unique_ptr<SidePanelComboboxModel> combobox_model_;
-  raw_ptr<views::Combobox> header_combobox_ = nullptr;
+  raw_ptr<views::Combobox, DanglingUntriaged> header_combobox_ = nullptr;
 
   // Used to update the visibility of the 'Open in New Tab' header button.
   raw_ptr<views::ImageButton> header_open_in_new_tab_button_ = nullptr;

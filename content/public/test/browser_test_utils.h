@@ -1372,7 +1372,7 @@ class WebContentsAddedObserver {
 
   base::CallbackListSubscription creation_subscription_;
 
-  raw_ptr<WebContents> web_contents_ = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 

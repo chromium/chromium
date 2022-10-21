@@ -239,7 +239,7 @@ class Browser : public TabStripModelObserver,
     Type type;
 
     // The associated profile.
-    raw_ptr<Profile> profile;
+    raw_ptr<Profile, DanglingUntriaged> profile;
 
     // Specifies the browser `is_trusted_source_` value.
     bool trusted_source = false;
@@ -294,7 +294,7 @@ class Browser : public TabStripModelObserver,
 
     // Supply a custom BrowserWindow implementation, to be used instead of the
     // default. Intended for testing.
-    raw_ptr<BrowserWindow> window = nullptr;
+    raw_ptr<BrowserWindow, DanglingUntriaged> window = nullptr;
 
     // User-set title of this browser window, if there is one.
     std::string user_title;
@@ -1154,7 +1154,7 @@ class Browser : public TabStripModelObserver,
   const Type type_;
 
   // This Browser's profile.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Prevent Profile deletion until this browser window is closed.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

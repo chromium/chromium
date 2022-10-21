@@ -47,7 +47,7 @@ class PasswordsNavigationObserver : public content::WebContentsObserver {
 
  private:
   std::string wait_for_path_;
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> render_frame_host_;
   bool quit_on_entry_committed_ = false;
   base::RunLoop run_loop_;
 };

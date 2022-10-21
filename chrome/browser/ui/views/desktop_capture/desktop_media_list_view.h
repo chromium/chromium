@@ -62,11 +62,11 @@ class DesktopMediaListView
 
   DesktopMediaSourceView* GetSelectedView();
 
-  raw_ptr<DesktopMediaListController> controller_;
+  raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
 
   DesktopMediaSourceViewStyle single_style_;
   DesktopMediaSourceViewStyle generic_style_;
-  raw_ptr<DesktopMediaSourceViewStyle> active_style_;
+  raw_ptr<DesktopMediaSourceViewStyle, DanglingUntriaged> active_style_;
 
   const std::u16string accessible_name_;
 };

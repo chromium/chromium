@@ -81,8 +81,8 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   // The title of the certificate viewer dialog, Certificate Viewer: CN.
   std::u16string title_;
 
-  raw_ptr<content::WebUI> webui_ = nullptr;
-  raw_ptr<ConstrainedWebDialogDelegate> delegate_ = nullptr;
+  raw_ptr<content::WebUI, DanglingUntriaged> webui_ = nullptr;
+  raw_ptr<ConstrainedWebDialogDelegate, DanglingUntriaged> delegate_ = nullptr;
 };
 
 // Dialog handler which handles calls from the JS WebUI code to view certificate

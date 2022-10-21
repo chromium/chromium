@@ -87,14 +87,15 @@ class ExtensionServiceWorkerMessageFilter
   void DidFailDecrementInflightEvent();
 
   // Only accessed from the UI thread.
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   const int render_process_id_;
 
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   // Owned by the StoragePartition of our profile.
-  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+  raw_ptr<content::ServiceWorkerContext, DanglingUntriaged>
+      service_worker_context_;
 
   std::unique_ptr<ExtensionFunctionDispatcher,
                   content::BrowserThread::DeleteOnUIThread>

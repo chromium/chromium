@@ -72,7 +72,7 @@ class SerialTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
-  raw_ptr<SerialChooserContext> context_;
+  raw_ptr<SerialChooserContext, DanglingUntriaged> context_;
 };
 
 IN_PROC_BROWSER_TEST_F(SerialTest, NavigateWithChooserCrossOrigin) {

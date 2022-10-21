@@ -184,7 +184,8 @@ class HintsFetcher {
   base::TimeTicks hints_fetch_start_time_;
 
   // Owned by OptimizationGuideKeyedService and outlives |this|.
-  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger, DanglingUntriaged>
+      optimization_guide_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

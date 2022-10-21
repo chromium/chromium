@@ -831,7 +831,7 @@ class GetDisplayMediaVideoTrackBrowserTest
   const DisplaySurfaceType display_surface_type_;
 
  private:
-  raw_ptr<content::WebContents> tab_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> tab_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(

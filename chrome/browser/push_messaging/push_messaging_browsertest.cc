@@ -400,7 +400,7 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  raw_ptr<PushMessagingServiceImpl> push_service_;
+  raw_ptr<PushMessagingServiceImpl, DanglingUntriaged> push_service_;
 };
 
 void PushMessagingBrowserTestBase::RequestAndAcceptPermission() {

@@ -73,7 +73,7 @@ class TabListModel : public ui::TableModel,
   TabListModel(const TabListModel&) = delete;
   TabListModel operator=(const TabListModel&) = delete;
 
-  raw_ptr<DesktopMediaListController> controller_;
+  raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
   raw_ptr<ui::TableModelObserver> observer_ = nullptr;
   base::RepeatingCallback<void(size_t)> preview_updated_callback_;
 };
@@ -159,7 +159,7 @@ class TabListViewObserver : public views::TableViewObserver {
   TabListViewObserver(const TabListViewObserver&) = delete;
   TabListViewObserver operator=(const TabListViewObserver&) = delete;
 
-  const raw_ptr<DesktopMediaListController> controller_;
+  const raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
   base::RepeatingClosure selection_changed_callback_;
 };
 

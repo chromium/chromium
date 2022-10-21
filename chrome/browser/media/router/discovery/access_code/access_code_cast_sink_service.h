@@ -336,7 +336,7 @@ class AccessCodeCastSinkService : public KeyedService,
 
   std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
-  raw_ptr<PrefService> prefs_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 

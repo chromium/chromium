@@ -105,7 +105,7 @@ class WasRecentlyAudibleWatcher {
     }
   }
 
-  const raw_ptr<RecentlyAudibleHelper> audible_helper_;
+  const raw_ptr<RecentlyAudibleHelper, DanglingUntriaged> audible_helper_;
 
   base::RepeatingTimer timer_;
   std::unique_ptr<base::RunLoop> run_loop_;

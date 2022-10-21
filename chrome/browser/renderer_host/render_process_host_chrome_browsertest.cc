@@ -713,7 +713,7 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
   base::Process audio_process_;
   base::Process no_audio_process_;
 
-  raw_ptr<content::WebContents> audio_tab_web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> audio_tab_web_contents_;
 
  private:
   bool IsProcessBackgrounded(const base::Process& process) {

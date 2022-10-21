@@ -127,7 +127,7 @@ class TestGetConfigFunction : public TestExtensionFunction {
     friend struct base::DefaultSingletonTraits<TestConfigState>;
     TestConfigState();
 
-    raw_ptr<base::DictionaryValue> config_state_;
+    raw_ptr<base::DictionaryValue, DanglingUntriaged> config_state_;
   };
 
   ~TestGetConfigFunction() override;

@@ -98,7 +98,7 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
   }
 
  private:
-  raw_ptr<const Extension> extension_;
+  raw_ptr<const Extension, DanglingUntriaged> extension_;
 };
 
 class ExtensionURLLoaderThrottleWithSplitCacheBrowserTest

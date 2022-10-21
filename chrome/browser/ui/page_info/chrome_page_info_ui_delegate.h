@@ -76,7 +76,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
  private:
   Profile* GetProfile() const;
 
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   GURL site_url_;
 };
 

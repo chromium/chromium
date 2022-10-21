@@ -50,7 +50,7 @@ class ObservableWebView : public WebView {
   void ResetDelegate();
 
  private:
-  raw_ptr<ui::WebDialogDelegate> delegate_;
+  raw_ptr<ui::WebDialogDelegate, DanglingUntriaged> delegate_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // and plumb all the calls through to |delegate_|, is a lot of code overhead
   // to support having this view know about dialog closure. There is probably a
   // lighter-weight way to achieve that.
-  raw_ptr<ui::WebDialogDelegate> delegate_;
+  raw_ptr<ui::WebDialogDelegate, DanglingUntriaged> delegate_;
 
   raw_ptr<ObservableWebView> web_view_;
 

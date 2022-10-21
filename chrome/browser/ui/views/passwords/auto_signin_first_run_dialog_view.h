@@ -35,7 +35,7 @@ class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
 
   // A weak pointer to the controller.
   raw_ptr<CredentialManagerDialogController> controller_;
-  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_AUTO_SIGNIN_FIRST_RUN_DIALOG_VIEW_H_

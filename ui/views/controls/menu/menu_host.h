@@ -106,12 +106,12 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   // Parent of the MenuHost widget.
-  raw_ptr<Widget> owner_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> owner_ = nullptr;
 
   gfx::NativeView native_view_for_gestures_ = nullptr;
 
   // The view we contain.
-  raw_ptr<SubmenuView> submenu_;
+  raw_ptr<SubmenuView, DanglingUntriaged> submenu_;
 
   // If true, DestroyMenuHost has been invoked.
   bool destroying_;

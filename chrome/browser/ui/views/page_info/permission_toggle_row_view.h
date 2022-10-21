@@ -52,13 +52,14 @@ class PermissionToggleRowView : public views::View {
 
   PageInfo::PermissionInfo permission_;
 
-  raw_ptr<PageInfoRowView> row_view_ = nullptr;
-  raw_ptr<views::Label> state_label_ = nullptr;
-  raw_ptr<views::ToggleButton> toggle_button_ = nullptr;
-  raw_ptr<views::View> spacer_view_ = nullptr;
+  raw_ptr<PageInfoRowView, DanglingUntriaged> row_view_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> state_label_ = nullptr;
+  raw_ptr<views::ToggleButton, DanglingUntriaged> toggle_button_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> spacer_view_ = nullptr;
 
-  raw_ptr<ChromePageInfoUiDelegate> delegate_ = nullptr;
-  raw_ptr<PageInfoNavigationHandler> navigation_handler_ = nullptr;
+  raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<PageInfoNavigationHandler, DanglingUntriaged> navigation_handler_ =
+      nullptr;
 
   base::ObserverList<PermissionToggleRowViewObserver, false>::Unchecked
       observer_list_;

@@ -73,7 +73,7 @@ class BASE_EXPORT AtExitManager {
 #endif
 
   // Stack of managers to allow shadowing.
-  const raw_ptr<AtExitManager> next_manager_;
+  const raw_ptr<AtExitManager, DanglingUntriaged> next_manager_;
 };
 
 #if defined(UNIT_TEST)

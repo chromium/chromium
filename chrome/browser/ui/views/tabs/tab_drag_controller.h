@@ -568,7 +568,7 @@ class TabDragController : public views::WidgetObserver {
 
   // The TabDragContext the dragged Tab is currently attached to, or
   // null if the dragged Tab is detached.
-  raw_ptr<TabDragContext> attached_context_;
+  raw_ptr<TabDragContext, DanglingUntriaged> attached_context_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observe the target TabDragContext to attach to after the drag

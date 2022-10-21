@@ -480,7 +480,8 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
   constexpr static char kSearchDomain[] = "a.test";
   constexpr static char16_t kSearchDomain16[] = u"a.test";
   raw_ptr<PrerenderManager> prerender_manager_ = nullptr;
-  raw_ptr<SearchPrefetchService> search_prefetch_service_ = nullptr;
+  raw_ptr<SearchPrefetchService, DanglingUntriaged> search_prefetch_service_ =
+      nullptr;
   net::test_server::EmbeddedTestServer search_engine_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 

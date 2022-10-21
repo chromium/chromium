@@ -113,7 +113,7 @@ class ViewTextInputTypeObserver : public content::TextInputManagerObserverBase {
       OnSuccess();
   }
 
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   raw_ptr<content::RenderWidgetHostView> view_;
   const ui::TextInputType expected_type_;
 };

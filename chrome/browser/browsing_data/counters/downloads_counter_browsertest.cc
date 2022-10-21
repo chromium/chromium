@@ -229,9 +229,9 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   // a set of IDs.
   std::set<uint32_t> ids_to_remove_;
 
-  raw_ptr<content::DownloadManager> manager_;
-  raw_ptr<content::DownloadManager> otr_manager_;
-  raw_ptr<DownloadHistory> history_;
+  raw_ptr<content::DownloadManager, DanglingUntriaged> manager_;
+  raw_ptr<content::DownloadManager, DanglingUntriaged> otr_manager_;
+  raw_ptr<DownloadHistory, DanglingUntriaged> history_;
   base::Time time_;
 
   int items_count_;

@@ -226,12 +226,12 @@ class ConfigSingleton {
 
   // Callback to call when the interstitial timer is started. Used for
   // testing.
-  raw_ptr<SSLErrorHandler::TimerStartedCallback> timer_started_callback_ =
-      nullptr;
+  raw_ptr<SSLErrorHandler::TimerStartedCallback, DanglingUntriaged>
+      timer_started_callback_ = nullptr;
 
   // The clock to use when deciding which error type to display. Used for
   // testing.
-  raw_ptr<base::Clock> testing_clock_ = nullptr;
+  raw_ptr<base::Clock, DanglingUntriaged> testing_clock_ = nullptr;
 
   base::OnceClosure report_network_connectivity_callback_;
 

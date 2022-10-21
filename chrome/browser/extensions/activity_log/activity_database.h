@@ -180,7 +180,7 @@ class ActivityDatabase {
 
   // A reference a Delegate for policy-specific database behavior.  See the
   // top-level comment for ActivityDatabase for comments on cleanup.
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   sql::Database db_;
   bool valid_db_;

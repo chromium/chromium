@@ -869,7 +869,7 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
   int times_discard_called_ = 0;
 
  private:
-  raw_ptr<ContentAnalysisDialog> dialog_;
+  raw_ptr<ContentAnalysisDialog, DanglingUntriaged> dialog_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

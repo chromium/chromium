@@ -83,7 +83,7 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
   }
 
  private:
-  const raw_ptr<content::RenderFrameHost> frame_;
+  const raw_ptr<content::RenderFrameHost, DanglingUntriaged> frame_;
   content::RenderWidgetHost::KeyPressEventCallback callback_;
 };
 

@@ -84,7 +84,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   void LogOnCloseEvents();
   AutofillMetrics::UnmaskPromptEvent GetCloseReasonEvent();
 
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   bool new_card_link_clicked_ = false;
   CreditCard card_;
   AutofillClient::UnmaskCardReason reason_;

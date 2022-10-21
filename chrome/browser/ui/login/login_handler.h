@@ -234,7 +234,8 @@ class LoginNotificationDetails {
  private:
   LoginNotificationDetails() = default;
 
-  raw_ptr<LoginHandler> handler_;  // Where to send the response.
+  raw_ptr<LoginHandler, DanglingUntriaged>
+      handler_;  // Where to send the response.
 };
 
 // Details to provide the NotificationObserver.  Used by the automation proxy

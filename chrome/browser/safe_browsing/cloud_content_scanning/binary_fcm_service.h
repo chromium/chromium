@@ -113,8 +113,8 @@ class BinaryFCMService : public gcm::GCMAppHandler {
 
   // References to the profile's GCMDriver and InstanceIDDriver. Both are
   // unowned.
-  raw_ptr<gcm::GCMDriver> gcm_driver_;
-  raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
+  raw_ptr<gcm::GCMDriver, DanglingUntriaged> gcm_driver_;
+  raw_ptr<instance_id::InstanceIDDriver, DanglingUntriaged> instance_id_driver_;
 
   // Queue of pending GetToken calls.
   std::deque<base::OnceClosure> pending_token_calls_;

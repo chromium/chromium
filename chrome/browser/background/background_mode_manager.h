@@ -429,7 +429,7 @@ class BackgroundModeManager : public BrowserListObserver,
 
   // Reference to our status tray. If null, the platform doesn't support status
   // icons.
-  raw_ptr<StatusTray> status_tray_ = nullptr;
+  raw_ptr<StatusTray, DanglingUntriaged> status_tray_ = nullptr;
 
   // Reference to our status icon (if any) - owned by the StatusTray.
   raw_ptr<StatusIcon, DanglingUntriaged> status_icon_ = nullptr;

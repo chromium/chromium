@@ -177,10 +177,10 @@ class BrowserTabStripController::TabContextMenuContents
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The tab we're showing a menu for.
-  raw_ptr<Tab> tab_;
+  raw_ptr<Tab, DanglingUntriaged> tab_;
 
   // A pointer back to our hosting controller, for command state information.
-  raw_ptr<BrowserTabStripController> controller_;
+  raw_ptr<BrowserTabStripController, DanglingUntriaged> controller_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

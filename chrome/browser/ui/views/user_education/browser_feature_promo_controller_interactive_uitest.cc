@@ -37,8 +37,9 @@ class BrowserFeaturePromoControllerUiTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<BrowserView> browser_view_ = nullptr;
-  raw_ptr<BrowserFeaturePromoController> controller_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<BrowserFeaturePromoController, DanglingUntriaged> controller_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest, CanShowPromo) {

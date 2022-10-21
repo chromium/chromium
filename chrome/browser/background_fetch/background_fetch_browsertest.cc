@@ -235,7 +235,7 @@ class OfflineContentProviderObserver final
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;
-  raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl, DanglingUntriaged> delegate_ = nullptr;
   bool pause_ = false;
   bool resume_ = false;
 

@@ -33,7 +33,7 @@ class FakeSyncInstanceIDDriver : public instance_id::InstanceIDDriver {
   bool ExistsInstanceID(const std::string& app_id) const override;
 
  private:
-  raw_ptr<gcm::GCMDriver> gcm_driver_;
+  raw_ptr<gcm::GCMDriver, DanglingUntriaged> gcm_driver_;
   std::map<std::string, std::unique_ptr<FakeSyncInstanceID>> fake_instance_ids_;
 };
 

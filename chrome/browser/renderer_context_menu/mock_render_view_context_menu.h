@@ -107,18 +107,18 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
   // An observer used for initializing the status of menu items added in this
   // test. This is owned by our owner and the owner is responsible for its
   // lifetime.
-  raw_ptr<RenderViewContextMenuObserver> observer_;
+  raw_ptr<RenderViewContextMenuObserver, DanglingUntriaged> observer_;
 
   // A dummy profile used in this test. Call GetPrefs() when a test needs to
   // change this profile and use PrefService methods.
   std::unique_ptr<TestingProfile> original_profile_;
 
   // Either |original_profile_| or its incognito profile.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // The WebContents returned by GetWebContents(). This is owned by our owner
   // and the owner is responsible for its lifetime.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 
   // A list of menu items added.
   std::vector<MockMenuItem> items_;

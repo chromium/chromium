@@ -168,7 +168,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     ~PendingCheck();
 
     // The SafeBrowsing client that's waiting for the safe/unsafe verdict.
-    raw_ptr<Client> client;
+    raw_ptr<Client, DanglingUntriaged> client;
 
     // Determines which funtion from the |client| needs to be called once we
     // know whether the URL in |url| is safe or unsafe.
