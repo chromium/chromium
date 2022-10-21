@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -400,6 +401,7 @@ public class DetachedResourceRequestTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "http://crbug.com/1376972")
     public void testSameSiteLaxByDefaultCookies() throws Exception {
         CustomTabsSessionToken session = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
