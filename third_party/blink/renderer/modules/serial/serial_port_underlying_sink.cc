@@ -56,7 +56,8 @@ ScriptPromise SerialPortUnderlyingSink::start(
     Member<SerialPortUnderlyingSink> sink_;
   };
 
-  controller->signal()->AddAlgorithm(
+  DCHECK(!abort_handle_);
+  abort_handle_ = controller->signal()->AddAlgorithm(
       MakeGarbageCollected<AbortAlgorithm>(this));
 
   return ScriptPromise::CastUndefined(script_state);
@@ -93,6 +94,7 @@ ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
 
   watcher_.Cancel();
   data_pipe_.reset();
+  abort_handle_.Clear();
 
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -110,6 +112,7 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
 
   watcher_.Cancel();
   data_pipe_.reset();
+  abort_handle_.Clear();
 
   // If the port is closing the flush will be performed when it closes so we
   // don't need to do it here.
@@ -129,6 +132,7 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
 void SerialPortUnderlyingSink::SignalError(SerialSendError error) {
   watcher_.Cancel();
   data_pipe_.reset();
+  abort_handle_.Clear();
 
   ScriptState* script_state = pending_operation_
                                   ? pending_operation_->GetScriptState()
@@ -167,6 +171,7 @@ void SerialPortUnderlyingSink::Trace(Visitor* visitor) const {
   visitor->Trace(serial_port_);
   visitor->Trace(script_state_);
   visitor->Trace(controller_);
+  visitor->Trace(abort_handle_);
   visitor->Trace(buffer_source_);
   visitor->Trace(pending_operation_);
   UnderlyingSinkBase::Trace(visitor);
@@ -174,6 +179,7 @@ void SerialPortUnderlyingSink::Trace(Visitor* visitor) const {
 
 void SerialPortUnderlyingSink::OnAborted() {
   watcher_.Cancel();
+  abort_handle_.Clear();
 
   // Rejecting |pending_operation_| allows the rest of the process of aborting
   // the stream to be handled by abort().
@@ -257,6 +263,7 @@ void SerialPortUnderlyingSink::WriteData() {
 void SerialPortUnderlyingSink::PipeClosed() {
   watcher_.Cancel();
   data_pipe_.reset();
+  abort_handle_.Clear();
 }
 
 }  // namespace blink

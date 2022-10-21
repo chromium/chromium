@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/device/public/mojom/serial.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 
 namespace blink {
@@ -51,6 +52,7 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   Member<SerialPort> serial_port_;
   Member<ScriptState> script_state_;
   Member<WritableStreamDefaultController> controller_;
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
 
   Member<V8BufferSource> buffer_source_;
   size_t offset_ = 0;
