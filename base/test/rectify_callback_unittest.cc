@@ -314,4 +314,22 @@ TEST(RectifyCallbackTest, TemplateOverloadCoerceRepeatingTarget) {
       BindLambdaForTesting([&]() { return result; }));
 }
 
+TEST(RectifyCallbackTest, NullCallbackPassthrough) {
+  {
+    OnceCallback<void()> once;
+    RepeatingCallback<void()> repeating;
+    EXPECT_TRUE(RectifyCallback<void()>(std::move(once)).is_null());
+    EXPECT_TRUE(RectifyCallback<void()>(repeating).is_null());
+    EXPECT_TRUE(RectifyCallback<void()>(NullCallback()).is_null());
+  }
+
+  {
+    OnceCallback<void()> once;
+    RepeatingCallback<void()> repeating;
+    EXPECT_TRUE(RectifyCallback<void(int)>(std::move(once)).is_null());
+    EXPECT_TRUE(RectifyCallback<void(int)>(repeating).is_null());
+    EXPECT_TRUE(RectifyCallback<void(int)>(NullCallback()).is_null());
+  }
+}
+
 }  // namespace base

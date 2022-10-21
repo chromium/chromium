@@ -90,11 +90,17 @@ template <template <typename> typename DesiredCallbackType,
           typename... ActualArgs>
 struct RectifyCallbackImpl<DesiredCallbackType<R(DesiredArgs...)>,
                            ActualCallbackType<R(ActualArgs...)>> {
-  template <typename Actual>
-  static DesiredCallbackType<R(DesiredArgs...)> Rectify(Actual&& callback) {
+  static DesiredCallbackType<R(DesiredArgs...)> Rectify(
+      ActualCallbackType<R(ActualArgs...)> callback) {
     if constexpr (std::is_same_v<R(DesiredArgs...), R(ActualArgs...)>) {
       // No adapting needed when the parameter lists already match.
       return callback;
+    }
+
+    // For uniformity, if the input callback is null, the output callback should
+    // be null as well.
+    if (!callback) {
+      return NullCallback();
     }
 
     using IgnoreSignature =
@@ -103,7 +109,7 @@ struct RectifyCallbackImpl<DesiredCallbackType<R(DesiredArgs...)>,
                                          void(DesiredArgs...)>::type;
     return RectifyCallbackWrapper<
         DesiredCallbackType, R(ActualArgs...),
-        IgnoreSignature>::Rectify(std::forward<Actual>(callback));
+        IgnoreSignature>::Rectify(std::move(callback));
   }
 };
 
