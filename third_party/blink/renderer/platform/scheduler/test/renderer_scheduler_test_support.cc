@@ -7,9 +7,8 @@
 #include <memory>
 
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
@@ -55,12 +54,12 @@ void RunIdleTasksForTesting(WebThreadScheduler* scheduler,
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetSequencedTaskRunnerForTesting() {
-  return base::SequencedTaskRunnerHandle::Get();
+  return base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
 GetSingleThreadTaskRunnerForTesting() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 }  // namespace scheduler

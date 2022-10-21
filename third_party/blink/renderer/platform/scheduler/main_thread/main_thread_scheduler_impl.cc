@@ -22,7 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -2173,12 +2173,14 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
   if (scheduling_settings().mbi_override_task_runner_handle &&
       next_task_runner != previous_task_runner) {
     // per-thread and per-AgentSchedulingGroup task runner allows nested
-    // runloop. |MainThreadSchedulerImpl| guarantees that
-    // |ThreadTaskRunnerHandle::Get()| and |SequencedTaskRunnerHandle::Get()|
-    // return a proper task runner even when a nested runloop is used. Because
-    // |MainThreadSchedulerImpl::OnTaskStarted()| always overrides
-    // TTRH/STRH::Get() properly. So there is no concern about returning an
-    // unexpected task runner from TTRH/STRH::Get() in this specific case.
+    // runloop. `MainThreadSchedulerImpl` guarantees that
+    // `SingleThreadTaskRunner::GetCurrentDefault()` and
+    // `SequencedTaskRunner::GetCurrentDefault()` return a proper task runner
+    // even when a nested runloop is used. Because
+    // `MainThreadSchedulerImpl::OnTaskStarted()` always overrides
+    // STTR/STR::GetCurrentDefault() properly. So there is no concern about
+    // returning an unexpected task runner from STTR/STR::GetCurrentDefault() in
+    // this specific case.
     thread_task_runner_handle_override =
         std::unique_ptr<base::ThreadTaskRunnerHandleOverride>(
             new base::ThreadTaskRunnerHandleOverride(
@@ -2199,15 +2201,15 @@ void MainThreadSchedulerImpl::EndAgentGroupSchedulerScope() {
       main_thread_only().agent_group_scheduler_scope_stack.back();
 
   if (scheduling_settings().mbi_override_task_runner_handle) {
-    DCHECK_EQ(base::ThreadTaskRunnerHandle::Get(),
+    DCHECK_EQ(base::SingleThreadTaskRunner::GetCurrentDefault(),
               agent_group_scheduler_scope.current_task_runner);
-    DCHECK_EQ(base::SequencedTaskRunnerHandle::Get(),
+    DCHECK_EQ(base::SequencedTaskRunner::GetCurrentDefault(),
               agent_group_scheduler_scope.current_task_runner);
   }
   agent_group_scheduler_scope.thread_task_runner_handle_override = nullptr;
-  DCHECK_EQ(base::ThreadTaskRunnerHandle::Get(),
+  DCHECK_EQ(base::SingleThreadTaskRunner::GetCurrentDefault(),
             agent_group_scheduler_scope.previous_task_runner);
-  DCHECK_EQ(base::SequencedTaskRunnerHandle::Get(),
+  DCHECK_EQ(base::SequencedTaskRunner::GetCurrentDefault(),
             agent_group_scheduler_scope.previous_task_runner);
 
   current_agent_group_scheduler_ =

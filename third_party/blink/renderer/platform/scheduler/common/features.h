@@ -121,8 +121,8 @@ PLATFORM_EXPORT bool IsIntensiveWakeUpThrottlingEnabled();
 PLATFORM_EXPORT base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(
     bool loading);
 
-// If enabled, base::ThreadTaskRunnerHandle::Get() and
-// base::SequencedTaskRunnerHandle::Get() returns the current active
+// If enabled, base::SingleThreadTaskRunner::GetCurrentDefault() and
+// base::SequencedTaskRunner::GetCurrentDefault() returns the current active
 // per-ASG task runner instead of the per-thread task runner.
 BASE_FEATURE(kMbiOverrideTaskRunnerHandle,
              "MbiOverrideTaskRunnerHandle",

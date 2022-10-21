@@ -128,8 +128,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // Prioritise one BeginMainFrame after an input task.
     bool prioritize_compositing_after_input;
 
-    // If enabled, base::ThreadTaskRunnerHandle::Get() and
-    // base::SequencedTaskRunnerHandle::Get() returns the current active
+    // If enabled, base::SingleThreadTaskRunner::GetCurrentDefault() and
+    // base::SequencedTaskRunner::GetCurrentDefault() returns the current active
     // per-ASG task runner instead of the per-thread task runner.
     bool mbi_override_task_runner_handle;
 

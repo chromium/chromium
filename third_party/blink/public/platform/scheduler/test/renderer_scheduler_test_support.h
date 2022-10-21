@@ -37,13 +37,13 @@ void RunIdleTasksForTesting(WebThreadScheduler* scheduler,
                             base::OnceClosure callback);
 
 // Returns a SequencedTaskRunner. This implementation is same as
-// SequencedTaskRunnerHandle::Get(), but this is intended to be used for
-// testing. See crbug.com/794123.
+// base::SequencedTaskRunner::GetCurrentDefault(), but this is intended to be
+// used for testing. See crbug.com/794123.
 scoped_refptr<base::SequencedTaskRunner> GetSequencedTaskRunnerForTesting();
 
 // Returns the SingleThreadTaskRunner for the current thread for testing. This
-// implementation is same as ThreadTaskRunnerHandle::Get(), but this is intended
-// to be used for testing. See crbug.com/794123.
+// implementation is same as base::SingleThreadTaskRunner::GetCurrentDefault(),
+// but this is intended to be used for testing. See crbug.com/794123.
 scoped_refptr<base::SingleThreadTaskRunner>
 GetSingleThreadTaskRunnerForTesting();
 
