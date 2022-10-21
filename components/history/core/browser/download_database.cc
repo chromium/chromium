@@ -373,14 +373,10 @@ bool DownloadDatabase::InitDownloadTable() {
       "PRIMARY KEY (download_id, offset) )",
       kDownloadsSlicesTable);
 
-  const std::string kRerouteInfoSchema = base::StringPrintf(
-      "CREATE TABLE %s ("
-      "download_id INTEGER NOT NULL,"               // downloads.id.
-      "reroute_info_serialized  VARCHAR NOT NULL,"  // Reroute info.
-      "PRIMARY KEY (download_id) )",
-      kDownloadsRerouteInfoTable);
+  const std::string kRerouteInfoDropTable =
+      base::StringPrintf("DROP TABLE %s", kDownloadsRerouteInfoTable);
 
-  bool ret;
+  bool ret = true;
   if (GetDB().DoesTableExist(kDownloadsTable)) {
     // If the "downloads" table exists, "downloads_url_chain" might not be there
     // as it is introduced in version 24. A migration function will be run to
@@ -396,15 +392,17 @@ bool DownloadDatabase::InitDownloadTable() {
           GetDB().Execute(kUrlChainSchema);
   }
 
-  // Making sure these tables introduced in later versions are created. They
-  // don't require migration of existing tables. The "downloads_slices" table is
-  // introduced in version 33. The "downloads_reroute_info" table is introduced
-  // in version 46.
-  return ret &&
-         (GetDB().DoesTableExist(kDownloadsSlicesTable) ||
-          GetDB().Execute(kSlicesSchema.c_str())) &&
-         (GetDB().DoesTableExist(kDownloadsRerouteInfoTable) ||
-          GetDB().Execute(kRerouteInfoSchema.c_str()));
+  // The "downloads_reroute_info" table is introduced in version 46 but needs
+  // to be dropped as part of the removal of the FileSystem Connector code.
+  if (GetDB().DoesTableExist(kDownloadsRerouteInfoTable)) {
+    ret = ret && GetDB().Execute(kRerouteInfoDropTable.c_str());
+  }
+
+  // Making sure these tables introduced in later versions are created or
+  // dropped as needed. They don't require migration of existing tables.
+  // The "downloads_slices" table is introduced in version 33.
+  return ret && (GetDB().DoesTableExist(kDownloadsSlicesTable) ||
+                 GetDB().Execute(kSlicesSchema.c_str()));
 }
 
 uint32_t DownloadDatabase::GetNextDownloadId() {
@@ -559,7 +557,6 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
   }
 
   QueryDownloadSlices(&info_map);
-  QueryDownloadRerouteInfos(&info_map);
 
   for (auto it = info_map.begin(); it != info_map.end(); ++it) {
     DownloadRow* row = it->second;
@@ -635,13 +632,6 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
       if (!CreateOrUpdateDownloadSlice(data.download_slice_info[i]))
         return false;
     }
-  }
-
-  if (data.reroute_info_serialized.empty()) {
-    RemoveDownloadRerouteInfo(data.id);
-  } else if (!CreateOrUpdateDownloadRerouteInfo(data.id,
-                                                data.reroute_info_serialized)) {
-    return false;
   }
 
   return true;
@@ -780,11 +770,6 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
     }
   }
 
-  if (!CreateOrUpdateDownloadRerouteInfo(info.id,
-                                         info.reroute_info_serialized)) {
-    return false;
-  }
-
   return true;
 }
 
@@ -803,7 +788,6 @@ void DownloadDatabase::RemoveDownload(DownloadId id) {
   }
   RemoveDownloadURLs(id);
   RemoveDownloadSlices(id);
-  RemoveDownloadRerouteInfo(id);
 }
 
 void DownloadDatabase::RemoveDownloadURLs(DownloadId id) {
@@ -888,71 +872,6 @@ void DownloadDatabase::QueryDownloadSlices(DownloadRowMap* download_row_map) {
       continue;
     }
     it->second->download_slice_info.push_back(info);
-  }
-}
-
-bool DownloadDatabase::CreateOrUpdateDownloadRerouteInfo(
-    DownloadId id,
-    const std::string& reroute_info_serialized) {
-  // If `reroute_info` is empty, remove it from the table the table.
-  if (reroute_info_serialized.empty()) {
-    RemoveDownloadRerouteInfo(id);
-    return true;
-  }
-  sql::Statement statement_replace(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf("REPLACE INTO %s "
-                         "(download_id, reroute_info_serialized) "
-                         "VALUES (?, ?)",
-                         kDownloadsRerouteInfoTable)
-          .c_str()));
-  int column = 0;
-  statement_replace.BindInt64(column++, id);
-  statement_replace.BindString(column++, reroute_info_serialized);
-  return statement_replace.Run();
-}
-
-void DownloadDatabase::RemoveDownloadRerouteInfo(DownloadId id) {
-  sql::Statement statement_delete(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s WHERE download_id=?",
-                                        kDownloadsRerouteInfoTable)
-                         .c_str()));
-  statement_delete.BindInt64(0, id);
-  statement_delete.Run();
-}
-
-void DownloadDatabase::QueryDownloadRerouteInfos(
-    DownloadRowMap* download_row_map) {
-  DCHECK(download_row_map);
-  sql::Statement statement_query(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf("SELECT download_id, reroute_info_serialized "
-                         "FROM %s "
-                         "ORDER BY download_id",
-                         kDownloadsRerouteInfoTable)
-          .c_str()));
-
-  while (statement_query.Step()) {
-    int column = 0;
-    // Convert signed integer from sqlite to unsigned DownloadId.
-    int64_t signed_id = statement_query.ColumnInt64(column++);
-    DownloadId download_id;
-    bool success = ConvertIntToDownloadId(signed_id, &download_id);
-    DCHECK(success) << "Invalid download ID found in "
-                    << kDownloadsRerouteInfoTable << " table " << signed_id;
-
-    std::string reroute_info_serialized =
-        statement_query.ColumnString(column++);
-
-    // Confirm the download_id has already been seen--if it hasn't, discard the
-    // record.
-    auto it = download_row_map->find(download_id);
-    bool found = (it != download_row_map->end());
-    if (!found) {
-      RemoveDownloadRerouteInfo(download_id);
-      continue;
-    }
-    it->second->reroute_info_serialized = reroute_info_serialized;
   }
 }
 

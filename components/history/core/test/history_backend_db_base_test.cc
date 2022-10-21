@@ -149,7 +149,6 @@ bool HistoryBackendDBBaseTest::AddDownload(uint32_t id,
   download.transient = true;
   download.by_ext_id = "by_ext_id";
   download.by_ext_name = "by_ext_name";
-  download.reroute_info_serialized = "";
   return db_->CreateDownload(download);
 }
 
