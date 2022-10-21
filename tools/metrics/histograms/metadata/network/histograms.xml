@@ -2704,8 +2704,12 @@ chromium-metrics-reviews@google.com.
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network usage metric. The channel type used for each successful
-    WiFi connection.
+    Chrome OS network usage metric. The standard advertised by the AP for each
+    successful WiFi connection. It is not necessarily the same as the standard
+    used by the AP and STA to communicate. For example, if the AP supports
+    802.11ax and the STA only supports 802.11ac, this metric will report
+    802.11ax even though STA and AP will use 802.11ac. The metric is emitted
+    when the device connects successfully to an AP.
   </summary>
 </histogram>
 
