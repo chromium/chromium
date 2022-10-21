@@ -1037,10 +1037,6 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsDIP(
 }
 
 bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px) {
-  // TODO(crbug.com/1307501): Optimize this to be less expensive. Maybe
-  // precompute in pixels for configure events. pending_configures_ can have 10s
-  // of elements in it for several frames under some conditions.
-  // The `pending_configures_` should store px size instead of dip.
   auto result =
       base::ranges::find_if(pending_configures_, [&size_px](auto& configure) {
         // Should we adjust?
