@@ -15,16 +15,20 @@ namespace wayland {
 ////////////////////////////////////////////////////////////////////////////////
 // zxdg_output_v1_interface
 
-void xdg_output_destroy(wl_client* client, wl_resource* resource) {
+// wl_resource_destroy_func_t for xdg_output wl_resource
+void xdg_output_destroy(wl_resource* resource) {
   WaylandDisplayHandler* handler =
       GetUserDataAs<WaylandDisplayHandler>(resource);
   if (handler)
     handler->UnsetXdgOutputResource();
+}
+
+void xdg_output_client_destroy(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
 
 const struct zxdg_output_v1_interface xdg_output_implementation = {
-    xdg_output_destroy};
+    xdg_output_client_destroy};
 
 ////////////////////////////////////////////////////////////////////////////////
 // zxdg_output_manager_v1_interface
@@ -49,7 +53,7 @@ void xdg_output_manager_get_xdg_output(wl_client* client,
       GetUserDataAs<WaylandDisplayHandler>(output_resource);
   if (handler) {
     wl_resource_set_implementation(resource, &xdg_output_implementation,
-                                   handler, nullptr);
+                                   handler, &xdg_output_destroy);
     handler->OnXdgOutputCreated(resource);
   }
 }
