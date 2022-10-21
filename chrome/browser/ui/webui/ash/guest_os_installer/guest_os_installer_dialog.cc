@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/guest_os_installer/guest_os_installer_dialog.h"
+#include "chrome/browser/ui/webui/ash/guest_os_installer/guest_os_installer_dialog.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -18,7 +18,7 @@ constexpr int kDialogHeight = 608;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 void GuestOSInstallerDialog::Show(const GURL& page_url) {
   if (!base::FeatureList::IsEnabled(ash::features::kGuestOSGenericInstaller)) {
@@ -77,4 +77,4 @@ void GuestOSInstallerDialog::AdjustWidgetInitParams(
                                                 image);
 }
 
-}  // namespace chromeos
+}  // namespace ash

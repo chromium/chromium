@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_GUEST_OS_INSTALLER_GUEST_OS_INSTALLER_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_GUEST_OS_INSTALLER_GUEST_OS_INSTALLER_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_GUEST_OS_INSTALLER_GUEST_OS_INSTALLER_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_GUEST_OS_INSTALLER_GUEST_OS_INSTALLER_DIALOG_H_
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 class GuestOSInstallerDialog : public SystemWebDialogDelegate {
  public:
@@ -26,6 +26,6 @@ class GuestOSInstallerDialog : public SystemWebDialogDelegate {
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_GUEST_OS_INSTALLER_GUEST_OS_INSTALLER_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_GUEST_OS_INSTALLER_GUEST_OS_INSTALLER_DIALOG_H_
