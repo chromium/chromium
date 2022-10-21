@@ -167,15 +167,6 @@ void BrowserMainRunnerImpl::Shutdown() {
   DCHECK(initialization_started_);
   DCHECK(!is_shutdown_);
 
-#ifdef LEAK_SANITIZER
-  // Invoke leak detection now, to avoid dealing with shutdown-only leaks.
-  // Normally this will have already happened in
-  // BroserProcessImpl::ReleaseModule(), so this call has no effect. This is
-  // only for processes which do not instantiate a BrowserProcess.
-  // If leaks are found, the process will exit here.
-  __lsan_do_leak_check();
-#endif
-
   main_loop_->PreShutdown();
 
   // Finalize the startup tracing session if it is still active.

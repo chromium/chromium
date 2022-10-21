@@ -1050,6 +1050,21 @@ void BrowserMainLoop::RunMainMessageLoop() {
 }
 
 void BrowserMainLoop::PreShutdown() {
+#ifdef LEAK_SANITIZER
+#if BUILDFLAG(IS_MAC)
+  // Ensure autorelease pool is drained before we do the leak check to avoid
+  // catching about-to-be-released objects as false positives.
+  if (parameters_.autorelease_pool)
+    parameters_.autorelease_pool->Recycle();
+#endif  // BUILDFLAG(IS_MAC)
+  // Invoke leak detection now, to avoid dealing with shutdown-only leaks.
+  // Normally this will have already happened in
+  // BrowserProcessImpl::Unpin(), so this call has no effect. This is
+  // only for processes which do not instantiate a BrowserProcess.
+  // If leaks are found, the process will exit here.
+  __lsan_do_leak_check();
+#endif  // LEAK_SANITIZER
+
   // Clear OnNextIdleCallback if it's still pending. Failure to do so can result
   // in an OnFirstIdle phase incorrectly triggering during shutdown if an early
   // exit paths results in a shutdown path that happens to RunLoop.
