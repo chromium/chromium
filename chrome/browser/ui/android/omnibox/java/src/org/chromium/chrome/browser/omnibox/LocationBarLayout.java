@@ -366,8 +366,7 @@ public class LocationBarLayout extends FrameLayout {
     protected void setLocationBarPaddingPercent(float percent) {
         // The height increase should only be applied to omnibox phase 2 feature enabled and active
         // color parameter enabled at the same time
-        if (!(OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
-                    && OmniboxFeatures.shouldShowActiveColorOnOmnibox())) {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
             return;
         }
 

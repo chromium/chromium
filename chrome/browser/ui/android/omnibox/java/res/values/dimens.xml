@@ -14,8 +14,9 @@ found in the LICENSE file.
     <dimen name="toolbar_identity_disc_size">24dp</dimen>
     <dimen name="toolbar_identity_disc_size_duet">32dp</dimen>
     <dimen name="toolbar_url_focus_translation_x">10dp</dimen>
-    <dimen name="toolbar_url_focus_height_increase">16dp</dimen>
-    <dimen name="toolbar_url_focus_bottom_padding_increase">8dp</dimen>
+    <dimen name="toolbar_url_focus_height_increase_active_color">8dp</dimen>
+    <dimen name="toolbar_url_focus_height_increase_no_active_color">10dp</dimen>
+    <dimen name="toolbar_url_focus_bottom_padding">2dp</dimen>
 
     <!-- Bottom Toolbar -->
     <dimen name="split_toolbar_button_height">56dp</dimen>
