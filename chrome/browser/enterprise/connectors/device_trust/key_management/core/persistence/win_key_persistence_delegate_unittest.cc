@@ -7,8 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/util/install_util.h"
@@ -20,6 +23,9 @@
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 namespace {
+
+constexpr char kErrorHistogramFormat[] =
+    "Enterprise.DeviceTrust.Persistence.%s.Error";
 
 // Returns the device trust signing key path.
 std::wstring GetKeyPath() {
@@ -109,10 +115,81 @@ class WinKeyPersistenceDelegateTest : public testing::Test {
 // key with an unspecified trust level results in the existing key being
 // deleted.
 TEST_F(WinKeyPersistenceDelegateTest, DeleteKey) {
+  base::HistogramTester histogram_tester;
+
   SetRegistryKeyInfo();
   EXPECT_TRUE(persistence_delegate_->StoreKeyPair(
       BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
   EXPECT_FALSE(persistence_delegate_->LoadKeyPair());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kKeyPairMissingTrustLevel, 1);
+}
+
+// Tests that a call to load a key that does not exist results in an error with
+// the correct metric being recorded.
+TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_OpenSigningKeyFailure) {
+  base::HistogramTester histogram_tester;
+
+  auto loaded_key_pair = persistence_delegate_->LoadKeyPair();
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kOpenPersistenceStorageFailed, 1);
+}
+
+// Tests that a call to load a key with an invalid trust level
+// results in an error with the correct metric being recorded. A trust level is
+// invalid if it is not one of the following: KEY_TRUST_LEVEL_UNSPECIFIED,
+// CHROME_BROWSER_OS_KEY, CHROME_BROWSER_HW_KEY.
+TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_InvalidTrustLevel) {
+  base::HistogramTester histogram_tester;
+
+  base::win::RegKey key;
+  std::wstring signingkey_name;
+  std::wstring trustlevel_name;
+
+  auto key_pair = persistence_delegate_->CreateKeyPair();
+  std::vector<uint8_t> wrapped = key_pair.get()->key()->GetWrappedKey();
+
+  std::tie(key, signingkey_name, trustlevel_name) =
+      InstallUtil::GetDeviceTrustSigningKeyLocation(
+          InstallUtil::ReadOnly(false));
+  EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), wrapped.data(),
+                             wrapped.size(), REG_BINARY) == ERROR_SUCCESS);
+  EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), 20) == ERROR_SUCCESS);
+  auto loaded_key_pair = persistence_delegate_->LoadKeyPair();
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kInvalidTrustLevel, 1);
+}
+
+// Tests that a call to load a key with an invalid signing key
+// results in an error with the correct metric being recorded.
+TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_InvalidSigningKey) {
+  base::HistogramTester histogram_tester;
+
+  base::win::RegKey key;
+  std::wstring signingkey_name;
+  std::wstring trustlevel_name;
+
+  const std::wstring invalid_key(L"invalid_key");
+  auto trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
+
+  std::tie(key, signingkey_name, trustlevel_name) =
+      InstallUtil::GetDeviceTrustSigningKeyLocation(
+          InstallUtil::ReadOnly(false));
+  EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), invalid_key.c_str()) ==
+              ERROR_SUCCESS);
+  EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), trust_level) ==
+              ERROR_SUCCESS);
+  auto loaded_key_pair = persistence_delegate_->LoadKeyPair();
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kInvalidSigningKey, 1);
 }
 
 // Tests creating an OS key pair when the EC key algorithm is not set and the
@@ -120,6 +197,8 @@ TEST_F(WinKeyPersistenceDelegateTest, DeleteKey) {
 // OS key provider and create an OS key pair. Also tests storing and loading the
 // key pair.
 TEST_F(WinKeyPersistenceDelegateTest, ValidOsKeyPair_Success) {
+  base::HistogramTester histogram_tester;
+
   auto key_pair = persistence_delegate_->CreateKeyPair();
   auto trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
   ValidateSigningKey(key_pair.get(), trust_level);
@@ -132,12 +211,18 @@ TEST_F(WinKeyPersistenceDelegateTest, ValidOsKeyPair_Success) {
   auto loaded_key_pair = persistence_delegate_->LoadKeyPair();
   EXPECT_EQ(key_pair.get()->key()->GetWrappedKey(),
             loaded_key_pair.get()->key()->GetWrappedKey());
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
 }
 
 // Tests creating a hardware key pair when the EC key algorithm is set and the
 // TPM key provider successfully creates the hardware generated key. Also tests
 // storing and loading the key pair.
 TEST_F(WinKeyPersistenceDelegateTest, ValidHardwareKeyPair_Success) {
+  base::HistogramTester histogram_tester;
+
   SetAcceptableTestingAlgorithm();
   auto key_pair = persistence_delegate_->CreateKeyPair();
   auto trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
@@ -151,6 +236,10 @@ TEST_F(WinKeyPersistenceDelegateTest, ValidHardwareKeyPair_Success) {
   auto loaded_key_pair = persistence_delegate_->LoadKeyPair();
   EXPECT_EQ(key_pair.get()->key()->GetWrappedKey(),
             loaded_key_pair.get()->key()->GetWrappedKey());
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
 }
 
 }  // namespace enterprise_connectors

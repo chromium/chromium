@@ -11,7 +11,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +23,9 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 namespace {
 
 base::FilePath::CharType kFileName[] = FILE_PATH_LITERAL("test_file");
+
+constexpr char kErrorHistogramFormat[] =
+    "Enterprise.DeviceTrust.Persistence.%s.Error";
 
 // Represents gibberish that gets appended to the file.
 constexpr char kGibberish[] = "dfnsdfjdsn";
@@ -119,22 +124,38 @@ class LinuxKeyPersistenceDelegateTest : public testing::Test {
 
 // Tests when the file does not exist and a write operation is attempted.
 TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_FileDoesNotExist) {
-  EXPECT_FALSE(persistence_delegate_.StoreKeyPair(
-      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_FALSE(persistence_delegate_.StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY,
+                                                  std::vector<uint8_t>()));
   EXPECT_FALSE(base::PathExists(GetKeyFilePath()));
+
+  // Should expect a failure to open persistence storage metric for the store
+  // key pair operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "StoreKeyPair"),
+      KeyPersistenceError::kOpenPersistenceStorageFailed, 1);
 }
 
 // Tests storing a key with an unspecified trust level.
 TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_UnspecifiedKey) {
+  base::HistogramTester histogram_tester;
+
   CreateFile("");
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
       BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
   EXPECT_EQ("", GetFileContents());
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "StoreKeyPair"), 0);
 }
 
 // Tests when a OS key is stored and file contents are modified before storing
 // a new OS key pair.
 TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidOSKeyPair) {
+  base::HistogramTester histogram_tester;
+
   CreateFile("");
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
       BPKUR::CHROME_BROWSER_OS_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
@@ -151,11 +172,17 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidOSKeyPair) {
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
       BPKUR::CHROME_BROWSER_OS_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
   EXPECT_EQ(kValidOSKeyFileContent, GetFileContents());
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "StoreKeyPair"), 0);
 }
 
 // Tests when a hardware key is stored and file contents are modified before
 // storing a new hardware key pair.
 TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidHWKeyPair) {
+  base::HistogramTester histogram_tester;
+
   CreateFile("");
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
       BPKUR::CHROME_BROWSER_HW_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
@@ -172,92 +199,168 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidHWKeyPair) {
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(
       BPKUR::CHROME_BROWSER_HW_KEY, ParseKeyWrapped(kValidKeyWrappedBase64)));
   EXPECT_EQ(kValidHWKeyFileContent, GetFileContents());
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "StoreKeyPair"), 0);
 }
 
 // Tests trying to load a signing key pair when there is no file.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_NoKeyFile) {
+  base::HistogramTester histogram_tester;
+
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect a metric for failure in reading from the persistence storage
+  // for the load key pair operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kReadPersistenceStorageFailed, 1);
 }
 
 // Tests loading a valid OS signing key pair from a file.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_ValidOSKeyFile) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(CreateFile(kValidOSKeyFileContent));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_OS_KEY);
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
 }
 
 // Tests that loading a Hardware key pair fails since hardware keys
 // are not supported on linux.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_ValidHWKeyFile) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(CreateFile(kValidHWKeyFileContent));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect an invalid trust level metric for the load key pair
+  // operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kInvalidTrustLevel, 1);
 }
 
 // Tests loading a key pair from a key file with an invalid trust level.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_InvalidTrustLevel) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(CreateFile(kInvalidTrustLevelKeyFileContent));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect an invalid trust level metric for the load key pair
+  // operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kInvalidTrustLevel, 1);
 }
 
 // Tests loading a key pair from a key file when the signing key property is
 // missing.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_MissingSigningKey) {
-  const char file_content[] = "{\"trustLevel\":\"2\"}";
+  base::HistogramTester histogram_tester;
+
+  const char file_content[] = "{\"trustLevel\":2}";
 
   ASSERT_TRUE(CreateFile(file_content));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect an invalid signing key metric for the load key pair
+  // operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kKeyPairMissingSigningKey, 1);
 }
 
 // Tests loading a key pair from a key file when the trust level property is
 // missing.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_MissingTrustLevel) {
+  base::HistogramTester histogram_tester;
+
   const std::string file_content =
       base::StringPrintf("{\"signingKey\":\"%s\"}", kValidKeyWrappedBase64);
 
   ASSERT_TRUE(CreateFile(file_content));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect a missing trust level metric for the load key pair
+  // operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kKeyPairMissingTrustLevel, 1);
 }
 
 // Tests loading a key pair from a key file when the file content is invalid
 // (not a JSON dictionary).
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_InvalidContent) {
+  base::HistogramTester histogram_tester;
+
   const char file_content[] = "just some text";
 
   ASSERT_TRUE(CreateFile(file_content));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect an invalid signing key pair format metric for the load key
+  // pair operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kInvalidSigningKeyPairFormat, 1);
 }
 
 // Tests loading a key pair from a key file when there is a valid key, but the
 // key file contains random trailing values.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_TrailingGibberish) {
+  base::HistogramTester histogram_tester;
+
   const std::string file_content = base::StringPrintf(
-      "{\"signingKey\":\"%s\",\"trustLevel\":\"2\"}someother random content",
+      "{\"signingKey\":\"%s\",\"trustLevel\":2}someother random content",
       kValidKeyWrappedBase64);
 
   ASSERT_TRUE(CreateFile(file_content));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect an invalid signing key pair format metric for the load key
+  // pair operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kInvalidSigningKeyPairFormat, 1);
 }
 
 // Tests loading a key pair from a key file when the key value is not a valid
 // base64 encoded string.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_KeyNotBase64) {
+  base::HistogramTester histogram_tester;
+
   const std::string file_content = base::StringPrintf(
-      "{\"signingKey\":\"%s\",\"trustLevel\":\"2\"}", kInvalidBase64String);
+      "{\"signingKey\":\"%s\",\"trustLevel\":2}", kInvalidBase64String);
 
   ASSERT_TRUE(CreateFile(file_content));
   auto key_pair = persistence_delegate_.LoadKeyPair();
   EXPECT_FALSE(key_pair);
+
+  // Should expect a signing key decoding failure metric for the load key pair
+  // operation.
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kFailureDecodingSigningKey, 1);
 }
 
 // Tests the flow of both storing and loading a key.
 TEST_F(LinuxKeyPersistenceDelegateTest, StoreAndLoadKeyPair) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(CreateFile(""));
   auto trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
   auto wrapped = ParseKeyWrapped(kValidKeyWrappedBase64);
@@ -265,12 +368,22 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreAndLoadKeyPair) {
 
   auto key_pair = persistence_delegate_.LoadKeyPair();
   ValidateSigningKey(key_pair.get(), trust_level);
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
 }
 
 // Test creating a key pair returns the correct trust level and a signing key.
 TEST_F(LinuxKeyPersistenceDelegateTest, CreateKeyPair) {
+  base::HistogramTester histogram_tester;
+
   auto key_pair = persistence_delegate_.CreateKeyPair();
   ValidateSigningKey(key_pair.get(), key_pair->trust_level());
+
+  // Should expect no failure metrics.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(kErrorHistogramFormat, "CreateKeyPair"), 0);
 }
 
 }  // namespace enterprise_connectors
