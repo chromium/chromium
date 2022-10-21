@@ -81,7 +81,8 @@ declare_args() {
   # TODO(crbug.com/1329657): Remove the `is_fuchsia` condition once fuchsia
   # builds set enable_cast_receiver.
   enable_hls_sample_aes =
-      proprietary_codecs && (enable_cast_receiver || is_fuchsia)
+      proprietary_codecs &&
+      (enable_cast_receiver || is_fuchsia || use_fuzzing_engine)
 
   # Enable logging override, e.g. enable DVLOGs through level 2 at build time.
   # On Cast devices, these are logged as INFO.
