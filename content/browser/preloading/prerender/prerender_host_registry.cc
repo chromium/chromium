@@ -105,9 +105,9 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.
-    WebContentsImpl* web_contents_impl =
-        static_cast<WebContentsImpl*>(&web_contents);
-    if (web_contents_impl->IsPrerender2Disabled()) {
+    WebContentsImpl& web_contents_impl =
+        static_cast<WebContentsImpl&>(web_contents);
+    if (web_contents_impl.IsPrerender2Disabled()) {
       if (attempt)
         attempt->SetEligibility(PreloadingEligibility::kPreloadingDisabled);
       return RenderFrameHost::kNoFrameTreeNodeId;
@@ -230,7 +230,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     }
 
     auto prerender_host = std::make_unique<PrerenderHost>(
-        attributes, web_contents, attempt ? attempt->GetWeakPtr() : nullptr);
+        attributes, web_contents_impl,
+        attempt ? attempt->GetWeakPtr() : nullptr);
     frame_tree_node_id = prerender_host->frame_tree_node_id();
 
     CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,

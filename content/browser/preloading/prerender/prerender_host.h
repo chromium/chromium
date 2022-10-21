@@ -15,6 +15,8 @@
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -41,12 +43,9 @@ class Origin;
 
 namespace content {
 
-class FrameTree;
 class FrameTreeNode;
 class PrerenderHostRegistry;
-class PrerenderPageHolder;
 class RenderFrameHostImpl;
-class WebContentsImpl;
 
 // Prerender2:
 // PrerenderHost creates a new FrameTree in WebContents associated with the page
@@ -56,7 +55,8 @@ class WebContentsImpl;
 // process via SpeculationHostImpl or will directly be created for
 // browser-initiated prerendering (this code path is not implemented yet). This
 // is owned by PrerenderHostRegistry.
-class CONTENT_EXPORT PrerenderHost {
+class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
+                                     public NavigationControllerDelegate {
  public:
   // The time to allow prerendering kept alive in the background. PrerenderHost
   // will be terminated with kTimeoutBackgrounded when the timer exceeds this.
@@ -116,14 +116,48 @@ class CONTENT_EXPORT PrerenderHost {
       FrameTreeNode& frame_tree_node);
 
   PrerenderHost(const PrerenderAttributes& attributes,
-                WebContents& web_contents,
+                WebContentsImpl& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt);
-  ~PrerenderHost();
+  ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
   PrerenderHost& operator=(const PrerenderHost&) = delete;
   PrerenderHost(PrerenderHost&&) = delete;
   PrerenderHost& operator=(PrerenderHost&&) = delete;
+
+  // FrameTree::Delegate
+
+  // TODO(https://crbug.com/1199682): Correctly handle load events. Ignored for
+  // now as it confuses WebContentsObserver instances because they can not
+  // distinguish between the different FrameTrees.
+
+  void DidStartLoading(FrameTreeNode* frame_tree_node,
+                       bool should_show_loading_ui) override {}
+  void DidStopLoading() override;
+  bool IsHidden() override;
+  FrameTree* LoadingTree() override;
+  void NotifyPageChanged(PageImpl& page) override {}
+  int GetOuterDelegateFrameTreeNodeId() override;
+  bool IsPortal() override;
+
+  // NavigationControllerDelegate
+  void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override {}
+  void NotifyBeforeFormRepostWarningShow() override {}
+  void NotifyNavigationEntryCommitted(
+      const LoadCommittedDetails& load_details) override {}
+  void NotifyNavigationEntryChanged(
+      const EntryChangedDetails& change_details) override {}
+  void NotifyNavigationListPruned(
+      const PrunedDetails& pruned_details) override {}
+  void NotifyNavigationEntriesDeleted() override {}
+  void ActivateAndShowRepostFormWarningDialog() override;
+  bool ShouldPreserveAbortedURLs() override;
+  WebContents* DeprecatedGetWebContents() override;
+  void UpdateOverridingUserAgent() override {}
+
+  NavigationControllerImpl& GetNavigationController() {
+    return frame_tree_->controller();
+  }
 
   // Returns false if prerendering hasn't been started.
   bool StartPrerendering();
@@ -245,8 +279,6 @@ class CONTENT_EXPORT PrerenderHost {
                          ukm::SourceId initiator_ukm_id,
                          ukm::SourceId prerendered_ukm_id);
 
-  void CreatePageHolder(WebContentsImpl& web_contents);
-
   // Asks the registry to cancel prerendering.
   void Cancel(PrerenderFinalStatus status);
 
@@ -268,7 +300,7 @@ class CONTENT_EXPORT PrerenderHost {
 
   const PrerenderAttributes attributes_;
 
-  // Indicates if `page_holder_` is ready for activation.
+  // Indicates if this PrerenderHost is ready for activation.
   bool is_ready_for_activation_ = false;
 
   // The ID of the root node of the frame tree for the prerendered page `this`
@@ -277,8 +309,6 @@ class CONTENT_EXPORT PrerenderHost {
   int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
   absl::optional<PrerenderFinalStatus> final_status_;
-
-  std::unique_ptr<PrerenderPageHolder> page_holder_;
 
   base::ObserverList<Observer> observers_;
 
@@ -309,6 +339,23 @@ class CONTENT_EXPORT PrerenderHost {
 
   // Holds the navigation ID for the main frame initial navigation.
   absl::optional<int64_t> initial_navigation_id_;
+
+  // WebContents where this prerenderer is embedded. Keeping a reference is safe
+  // as WebContentsImpl owns PrerenderHostRegistry, which in turn owns
+  // PrerenderHost.
+  WebContentsImpl& web_contents_;
+
+  // Used for testing, this closure is only set when waiting a page to be either
+  // loaded for prerendering. |frame_tree_| provides us with a trigger for when
+  // the page is loaded.
+  base::OnceCallback<void(PrerenderHost::LoadingOutcome)>
+      on_wait_loading_finished_;
+
+  // Frame tree created for the prerenderer to load the page and prepare it for
+  // a future activation. During activation, the prerendered page will be taken
+  // out from |frame_tree_| and moved over to |web_contents_|'s primary frame
+  // tree, while |frame_tree_| will be deleted.
+  std::unique_ptr<FrameTree> frame_tree_;
 };
 
 }  // namespace content

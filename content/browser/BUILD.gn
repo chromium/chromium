@@ -1483,8 +1483,6 @@ source_set("browser") {
     "preloading/prerender/prerender_navigation_throttle.h",
     "preloading/prerender/prerender_navigation_utils.cc",
     "preloading/prerender/prerender_navigation_utils.h",
-    "preloading/prerender/prerender_page_holder.cc",
-    "preloading/prerender/prerender_page_holder.h",
     "preloading/prerender/prerender_subframe_navigation_throttle.cc",
     "preloading/prerender/prerender_subframe_navigation_throttle.h",
     "preloading/speculation_rules/speculation_host_impl.cc",
