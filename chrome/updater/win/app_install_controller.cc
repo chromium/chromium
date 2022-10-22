@@ -35,7 +35,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/win/atl.h"
@@ -624,7 +623,6 @@ void AppInstallControllerImpl::InstallApp(
     const std::string& app_name,
     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
   app_id_ = app_id;
   app_name_ = base::UTF8ToUTF16(app_name);
@@ -677,7 +675,6 @@ void AppInstallControllerImpl::InstallAppOffline(
     const std::string& app_name,
     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
   app_id_ = app_id;
   app_name_ = base::UTF8ToUTF16(app_name);
