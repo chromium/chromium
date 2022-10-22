@@ -1569,11 +1569,10 @@
         ],
       },
       'ToTAndroid': {
-        # TODO(crbug/1255748): Move to Pie/Pixel2.
         'mixins': [
           'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
+          'pie_fleet',
+          'walleye',
         ],
         'additional_compile_targets': [
           'all',
