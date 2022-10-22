@@ -306964,6 +306964,12 @@
       "c8243ac73199435f3a7dc0da0bd839fed9a77a14",
       []
      ],
+     "media": {
+      "sound-state-expected.txt": [
+       "909115e6297593b3af85c4cd21e502b62353dbd8",
+       []
+      ]
+     },
      "not-links-ref.html": [
       "1b2515a5cd1ec257fa8ebda2041699f5d4d09230",
       []
@@ -422923,6 +422929,31 @@
        {}
       ]
      ],
+     "media": {
+      "media-loading-state.html": [
+       "b48cfc13fb7a3c2cedcaa6de250c04a4bec5f790",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
+      "media-playback-state.html": [
+       "628daa25214231570affc02f47f5f0d2078a50fd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sound-state.html": [
+       "d9eb86a5ebe3935359040b6478046a2dd4ffee0b",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "missing-right-token.html": [
       "8fe33a95795354117177f78eae7f1081ef0b1947",
       [
