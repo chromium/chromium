@@ -262,6 +262,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private int mUrlFocusTranslationX;
 
     private boolean mOptimizationsEnabled;
+    private boolean mDropdownListScrolled;
 
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
@@ -408,6 +409,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private int getToolbarDefaultColor() {
         if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
+            if (mDropdownListScrolled && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+                return isIncognito()
+                        ? getContext().getColor(R.color.default_bg_color_dark_elev_2_baseline)
+                        : ChromeColors.getSurfaceColor(
+                                getContext(), R.dimen.toolbar_text_box_elevation);
+            }
             return mLocationBar.getDropdownBackgroundColor(isIncognito());
         }
         return ChromeColors.getDefaultThemeColor(getContext(), isIncognito());
@@ -1989,6 +1996,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private void updateBackground(final boolean hasFocus) {
         if (hasFocus) {
+            mDropdownListScrolled = false;
             mActiveLocationBarBackground = mLocationBarBackground;
         } else if (isLocationBarShownInNTP()) {
             updateToNtpBackground();
@@ -2660,5 +2668,30 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public boolean isAnimationRunningForTesting() {
         return mUrlFocusChangeInProgress || mBrandColorTransitionActive
                 || mOptionalButtonAnimationRunning;
+    }
+
+    @Override
+    public void onSuggestionDropdownScroll() {
+        if (!mShouldShowModernizeVisualUpdate || OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            return;
+        }
+        mDropdownListScrolled = true;
+        updateToolbarAndLocationBarColor();
+    }
+
+    @Override
+    public void onSuggestionDropdownOverscrolledToTop() {
+        if (!mShouldShowModernizeVisualUpdate || OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            return;
+        }
+        mDropdownListScrolled = false;
+        updateToolbarAndLocationBarColor();
+    }
+
+    private void updateToolbarAndLocationBarColor() {
+        int toolbarDefaultColor = getToolbarDefaultColor();
+        updateToolbarBackground(toolbarDefaultColor);
+        updateModernLocationBarColor(
+                getLocationBarDefaultColorForToolbarColor(toolbarDefaultColor));
     }
 }

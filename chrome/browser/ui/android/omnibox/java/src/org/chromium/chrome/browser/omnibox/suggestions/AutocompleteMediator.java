@@ -67,7 +67,8 @@ import java.util.List;
  * Handles updating the model state for the currently visible omnibox suggestions.
  */
 class AutocompleteMediator implements OnSuggestionsReceivedListener,
-                                      OmniboxSuggestionsDropdown.Observer, SuggestionHost {
+                                      OmniboxSuggestionsDropdown.GestureObserver,
+                                      OmniboxSuggestionsDropdownScrollListener, SuggestionHost {
     private static final int SUGGESTION_NOT_FOUND = -1;
     private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
 
@@ -1006,7 +1007,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      *
      * @param newHeightPx New height of the suggestion list in pixels.
      */
-    @Override
     public void onSuggestionDropdownHeightChanged(@Px int newHeight) {
         // Report the dropdown height whenever we intend to - or do show soft keyboard. This
         // addresses cases where hardware keyboard is attached to a device, or where user explicitly
