@@ -5277,11 +5277,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Document.BeforeUnloadDialog" enum="BeforeUnloadDialogResult"
-    expires_after="M77">
+    expires_after="2023-10-01">
   <owner>panicker@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
   <summary>
     Records result of invoking beforeunload handler, that determines whether to
     show the dialog.
+
+    Warning: this histogram was expired from M77 to M108; data may be missing.
   </summary>
 </histogram>
 
@@ -5312,12 +5315,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DocumentEventTiming.BeforeUnloadDialogDuration.ByNavigation"
-    units="ms" expires_after="2020-09-05">
+    units="ms" expires_after="2023-10-01">
   <owner>sullivan@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
   <summary>
     Milliseconds spent in beforeunload dialog. Does not include time to process
     beforeunload event in JavaScript. Recorded immediately after closing dialog,
     upon user confirmation to navigate away from the page.
+
+    Warning: this histogram was expired from 2020-09-05 to M108; data may be
+    missing.
   </summary>
 </histogram>
 
