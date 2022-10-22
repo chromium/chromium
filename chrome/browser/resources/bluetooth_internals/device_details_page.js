@@ -18,7 +18,7 @@ import {ConnectionStatus} from './device_collection.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 import {ObjectFieldSet} from './object_fieldset.js';
 import {Page} from './page.js';
-import {Snackbar, SnackbarType} from './snackbar.js';
+import {showSnackbar, SnackbarType} from './snackbar.js';
 
 /**
  * Property names that will be displayed in the ObjectFieldSet which contains
@@ -125,7 +125,7 @@ export class DeviceDetailsPage extends Page {
             this.device_ = null;
           }
 
-          Snackbar.show(
+          showSnackbar(
               this.deviceInfo.nameForDisplay + ': ' + error.message,
               SnackbarType.ERROR, 'Retry', this.connect.bind(this));
 

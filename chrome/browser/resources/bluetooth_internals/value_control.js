@@ -11,7 +11,7 @@ import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
 
 import {GattResult, Property} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
-import {Snackbar, SnackbarType} from './snackbar.js';
+import {showSnackbar, SnackbarType} from './snackbar.js';
 
 /**
  * @typedef {{
@@ -240,7 +240,7 @@ ValueControl.prototype = {
       try {
         this.value_.setAs(this.typeSelect_.value, this.valueInput_.value);
       } catch (e) {
-        Snackbar.show(e.message, SnackbarType.ERROR);
+        showSnackbar(e.message, SnackbarType.ERROR);
       }
     }.bind(this));
 
@@ -364,13 +364,13 @@ ValueControl.prototype = {
 
           if (response.result === GattResult.SUCCESS) {
             this.setValue(response.value);
-            Snackbar.show(
+            showSnackbar(
                 this.deviceAddress_ + ': Read succeeded', SnackbarType.SUCCESS);
             return;
           }
 
           const errorString = this.getErrorString_(response.result);
-          Snackbar.show(
+          showSnackbar(
               this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
               'Retry', this.readValue_.bind(this));
         }.bind(this));
@@ -401,14 +401,14 @@ ValueControl.prototype = {
           this.writeBtn_.disabled = false;
 
           if (response.result === GattResult.SUCCESS) {
-            Snackbar.show(
+            showSnackbar(
                 this.deviceAddress_ + ': Write succeeded',
                 SnackbarType.SUCCESS);
             return;
           }
 
           const errorString = this.getErrorString_(response.result);
-          Snackbar.show(
+          showSnackbar(
               this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
               'Retry', this.writeValue_.bind(this));
         }.bind(this));

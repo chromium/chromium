@@ -21,7 +21,7 @@ import {DeviceDetailsPage} from './device_details_page.js';
 import {DevicesPage, ScanStatus} from './devices_page.js';
 import {PageManager, PageManagerObserver} from './page_manager.js';
 import {Sidebar} from './sidebar.js';
-import {Snackbar, SnackbarType} from './snackbar.js';
+import {showSnackbar, SnackbarType} from './snackbar.js';
 
 
 // Expose for testing.
@@ -180,7 +180,7 @@ function setupAdapterSystem(response) {
     if (event.detail.property === AdapterProperty.DISCOVERING &&
         !event.detail.value && !userRequestedScanStop && discoverySession) {
       updateStoppedDiscoverySession();
-      Snackbar.show(
+      showSnackbar(
           'Discovery session ended unexpectedly', SnackbarType.WARNING);
     }
   });
@@ -241,7 +241,7 @@ function setupDeviceSystem(response) {
         }
 
         devicesPage.setScanStatus(ScanStatus.ON);
-        Snackbar.show('Failed to stop discovery session', SnackbarType.ERROR);
+        showSnackbar('Failed to stop discovery session', SnackbarType.ERROR);
         userRequestedScanStop = false;
       });
 
@@ -255,15 +255,14 @@ function setupDeviceSystem(response) {
 
           discoverySession.onConnectionError.addListener(() => {
             updateStoppedDiscoverySession();
-            Snackbar.show('Discovery session ended', SnackbarType.WARNING);
+            showSnackbar('Discovery session ended', SnackbarType.WARNING);
           });
 
           devicesPage.setScanStatus(ScanStatus.ON);
         })
         .catch(function(error) {
           devicesPage.setScanStatus(ScanStatus.OFF);
-          Snackbar.show(
-              'Failed to start discovery session', SnackbarType.ERROR);
+          showSnackbar('Failed to start discovery session', SnackbarType.ERROR);
           console.error(error);
         });
   });
@@ -317,7 +316,7 @@ export function initializeViews() {
       })
       .then(setupDeviceSystem)
       .catch(function(error) {
-        Snackbar.show(error.message, SnackbarType.ERROR);
+        showSnackbar(error.message, SnackbarType.ERROR);
         console.error(error);
       });
 }

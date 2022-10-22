@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
-import {$, ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.js';
+
+import {getTemplate} from './snackbar.html.js';
 
 /**
  * Javascript for Snackbar controls, served from chrome://bluetooth-internals/.
@@ -37,27 +40,49 @@ export const SnackbarType = {
 /**
  * Notification bar for displaying a simple message with an action link.
  * This element should not be instantiated directly. Instead, users should
- * use the Snackbar.show and Snackbar.dismiss functions to ensure proper
+ * use the showSnackbar and dismissSnackbar functions to ensure proper
  * queuing of messages.
- * @constructor
- * @extends {HTMLDivElement}
  */
-export const Snackbar = crUiDefine('div');
+class BluetoothSnackbarElement extends CustomElement {
+  static get template() {
+    return getTemplate();
+  }
 
-Snackbar.prototype = {
-  __proto__: HTMLDivElement.prototype,
+  static get is() {
+    return 'bluetooth-snackbar';
+  }
 
-  /**
-   * Decorates an element as a UI element class. Creates the message div and
-   * action link for the new Snackbar.
-   */
-  decorate() {
-    this.classList.add('snackbar');
-    this.messageDiv_ = document.createElement('div');
-    this.appendChild(this.messageDiv_);
-    this.actionLink_ = document.createElement('a', {is: 'action-link'});
-    this.actionLink_.setAttribute('is', 'action-link');
-    this.appendChild(this.actionLink_);
+  constructor() {
+    super();
+
+    /** @type {?Function} */
+    this.boundStartTimeout_ = null;
+
+    /** @type {?Function} */
+    this.boundStopTimeout_ = null;
+
+    /** @type {?number} */
+    this.timeoutId_ = null;
+
+    /** @type {?SnackbarOptions} */
+    this.options_ = null;
+  }
+
+  connectedCallback() {
+    assert(this.options_);
+
+    this.shadowRoot.querySelector('#message').textContent =
+        this.options_.message;
+    this.classList.add(this.options_.type);
+    const actionLink = this.shadowRoot.querySelector('a');
+    actionLink.textContent = this.options_.actionText || 'Dismiss';
+
+    actionLink.addEventListener('click', () => {
+      if (this.options_.action) {
+        this.options_.action();
+      }
+      this.dismiss();
+    });
 
     this.boundStartTimeout_ = this.startTimeout_.bind(this);
     this.boundStopTimeout_ = this.stopTimeout_.bind(this);
@@ -65,32 +90,24 @@ Snackbar.prototype = {
     this.addEventListener('mouseenter', this.boundStopTimeout_);
 
     this.timeoutId_ = null;
-  },
+  }
 
   /**
    * Initializes the content of the Snackbar with the given |options|
    * including the message, action link text, and click action of the link.
+   * This must be called before the element is added to the DOM.
    * @param {!SnackbarOptions} options
    */
   initialize(options) {
-    this.messageDiv_.textContent = options.message;
-    this.classList.add(options.type);
-    this.actionLink_.textContent = options.actionText || 'Dismiss';
-
-    this.actionLink_.addEventListener('click', function() {
-      if (options.action) {
-        options.action();
-      }
-      this.dismiss();
-    }.bind(this));
-  },
+    this.options_ = options;
+  }
 
   /**
    * Shows the Snackbar and dispatches the 'showed' event.
    */
   show() {
     this.classList.add('open');
-    if (Snackbar.hasContentFocus_) {
+    if (hasContentFocus) {
       this.startTimeout_();
     } else {
       this.stopTimeout_();
@@ -98,8 +115,9 @@ Snackbar.prototype = {
 
     document.addEventListener('contentfocus', this.boundStartTimeout_);
     document.addEventListener('contentblur', this.boundStopTimeout_);
-    this.dispatchEvent(new CustomEvent('showed'));
-  },
+    this.dispatchEvent(
+        new CustomEvent('showed', {bubbles: true, composed: true}));
+  }
 
   /**
    * Dismisses the Snackbar. Once the Snackbar is completely hidden, the
@@ -126,7 +144,7 @@ Snackbar.prototype = {
       document.removeEventListener('contentfocus', this.boundStartTimeout_);
       document.removeEventListener('contentblur', this.boundStopTimeout_);
     }.bind(this));
-  },
+  }
 
   /**
    * Starts the timeout for dismissing the Snackbar.
@@ -136,7 +154,7 @@ Snackbar.prototype = {
     this.timeoutId_ = setTimeout(function() {
       this.dismiss();
     }.bind(this), SHOW_DURATION);
-  },
+  }
 
   /**
    * Stops the timeout for dismissing the Snackbar. Only clears the timeout
@@ -148,27 +166,39 @@ Snackbar.prototype = {
       clearTimeout(this.timeoutId_);
       this.timeoutId_ = null;
     }
-  },
-};
+  }
+}
 
-/** @private {?Snackbar} */
-Snackbar.current_ = null;
+customElements.define('bluetooth-snackbar', BluetoothSnackbarElement);
 
-/** @private {!Array<!Snackbar>} */
-Snackbar.queue_ = [];
+/** @type {?BluetoothSnackbarElement} */
+let current = null;
 
-/** @private {boolean} */
-Snackbar.hasContentFocus_ = true;
+/** @type {!Array<!BluetoothSnackbarElement>} */
+let queue = [];
+
+/** @type {boolean} */
+let hasContentFocus = true;
 
 // There is a chance where the snackbar is shown but the content doesn't have
 // focus. In this case, the current focus state must be tracked so the
 // snackbar can pause the dismiss timeout.
 document.addEventListener('contentfocus', function() {
-  Snackbar.hasContentFocus_ = true;
+  hasContentFocus = true;
 });
 document.addEventListener('contentblur', function() {
-  Snackbar.hasContentFocus_ = false;
+  hasContentFocus = false;
 });
+
+/**
+ * @return {{current: ?BluetoothSnackbarElement, numPending: number}}
+ */
+export function getSnackbarStateForTest() {
+  return {
+    current: current,
+    numPending: queue.length,
+  };
+}
 
 /**
  * TODO(crbug.com/675299): Add ability to specify parent element to Snackbar.
@@ -180,68 +210,69 @@ document.addEventListener('contentblur', function() {
  * @param {string=} opt_actionText The text to display for the action link.
  * @param {function()=} opt_action A function to be called when the user
  *     presses the action link.
- * @return {!Snackbar}
+ * @return {!BluetoothSnackbarElement}
  */
-Snackbar.show = function(message, opt_type, opt_actionText, opt_action) {
+export function showSnackbar(message, opt_type, opt_actionText, opt_action) {
   const options = {
     message: message,
     type: opt_type || SnackbarType.INFO,
     actionText: opt_actionText,
     action: opt_action,
   };
-
-  const newSnackbar = new Snackbar();
+  const newSnackbar = document.createElement('bluetooth-snackbar');
   newSnackbar.initialize(options);
 
-  if (Snackbar.current_) {
-    Snackbar.queue_.push(newSnackbar);
+  if (current) {
+    queue.push(newSnackbar);
   } else {
-    Snackbar.show_(newSnackbar);
+    show(newSnackbar);
   }
 
   return newSnackbar;
-};
+}
+
+window.showSnackbar = showSnackbar;
 
 /**
  * TODO(crbug.com/675299): Add ability to specify parent element to Snackbar.
  * Creates a Snackbar and sets events for queuing the next Snackbar to show.
- * @param {!Snackbar} newSnackbar
- * @private
+ * @param {!BluetoothSnackbarElement} snackbar
  */
-Snackbar.show_ = function(newSnackbar) {
-  $('snackbar-container').appendChild(newSnackbar);
+function show(snackbar) {
+  document.body.querySelector('#snackbar-container').appendChild(snackbar);
 
-  newSnackbar.addEventListener('dismissed', function() {
-    $('snackbar-container').removeChild(Snackbar.current_);
+  snackbar.addEventListener('dismissed', function() {
+    document.body.querySelector('#snackbar-container').removeChild(current);
 
-    const newSnackbar = Snackbar.queue_.shift();
+    const newSnackbar = queue.shift();
     if (newSnackbar) {
-      Snackbar.show_(newSnackbar);
+      show(newSnackbar);
       return;
     }
 
-    Snackbar.current_ = null;
+    current = null;
   });
 
-  Snackbar.current_ = newSnackbar;
+  current = snackbar;
 
   // Show the Snackbar after a slight delay to allow for a layout reflow.
   setTimeout(function() {
-    newSnackbar.show();
+    snackbar.show();
   }, 10);
-};
+}
 
 /**
  * Dismisses the Snackbar currently showing.
  * @param {boolean} clearQueue If true, clears the Snackbar queue before
  *     dismissing.
+ * @return {!Promise}
  */
-Snackbar.dismiss = function(clearQueue) {
+export function dismissSnackbar(clearQueue) {
   if (clearQueue) {
-    Snackbar.queue_ = [];
+    queue = [];
   }
-  if (Snackbar.current_) {
-    return Snackbar.current_.dismiss();
+  if (current) {
+    return current.dismiss();
   }
   return Promise.resolve();
-};
+}

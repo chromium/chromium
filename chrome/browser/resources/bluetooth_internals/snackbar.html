@@ -1,0 +1,80 @@
+<style>
+  :host {
+    background-color: #323232;
+    border-radius: 2px;
+    bottom: 0;
+    color: #f1f1f1;
+    display: flex;
+    font-size: 1.5em;
+    justify-content: center;
+    left: 0;
+    margin: 0 auto;
+    max-height: 52px;
+    min-height: 20px;
+    opacity: 0;
+    padding: 14px 24px;
+    position: fixed;
+    right: 0;
+    transform: translate3d(0, 80px, 0);
+    transition: opacity var(--fade-duration), transform var(--fade-duration),
+        visibility var(--fade-duration);
+    transition-timing-function: var(--md-timing-function);
+    visibility: hidden;
+  }
+
+  a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-start: auto;
+    text-transform: uppercase;
+  }
+
+  @media screen and (min-width: 601px) {
+    :host {
+      max-width: 568px;
+      min-width: 288px;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    :host {
+      border-radius: 0;
+      margin: 0;
+      right: 0;
+    }
+  }
+
+  div {
+    align-self: flex-start;
+    margin-inline-end: 24px;
+  }
+
+  a {
+    color: rgb(238, 255, 65);
+  }
+
+  :host(.success) {
+    background-color: rgb(76, 175, 80);
+  }
+
+  :host(.warning) {
+    background-color: rgb(255, 152, 0);
+  }
+
+  :host(.warning) a {
+    color: rgb(17, 85, 204);
+  }
+
+  :host(.error) {
+    background-color: rgb(244, 67, 54);
+  }
+
+  :host(.open) {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+</style>
+<div id="message"></div>
+<a is="action-link"></a>

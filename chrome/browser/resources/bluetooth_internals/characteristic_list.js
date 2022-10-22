@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {connectToDevice} from './device_broker.js';
 import {ExpandableListElement} from './expandable_list.js';
-import {Snackbar, SnackbarType} from './snackbar.js';
+import {showSnackbar, SnackbarType} from './snackbar.js';
 
 export class CharacteristicListElement extends ExpandableListElement {
   constructor() {
@@ -62,7 +62,7 @@ export class CharacteristicListElement extends ExpandableListElement {
         }.bind(this))
         .catch(function(error) {
           this.characteristicsRequested_ = false;
-          Snackbar.show(
+          showSnackbar(
               deviceAddress + ': ' + error.message, SnackbarType.ERROR, 'Retry',
               function() {
                 this.load(deviceAddress, serviceId);

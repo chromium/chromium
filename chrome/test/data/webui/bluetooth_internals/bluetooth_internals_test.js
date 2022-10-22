@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {adapterBroker, devices, initializeViews, pageManager, sidebarObj} from 'chrome://bluetooth-internals/bluetooth_internals.js';
 import {BluetoothInternalsHandler} from 'chrome://bluetooth-internals/bluetooth_internals.mojom-webui.js';
 import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
-import {Snackbar} from 'chrome://bluetooth-internals/snackbar.js';
+import {dismissSnackbar, getSnackbarStateForTest, showSnackbar} from 'chrome://bluetooth-internals/snackbar.js';
 import {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
 import {ValueControl, ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -70,7 +70,7 @@ suite('bluetooth_internals', function() {
   teardown(function() {
     internalsHandler.reset();
     sidebarObj.close();
-    Snackbar.dismiss(true);
+    dismissSnackbar(true);
     connectedDevices.clear();
 
     pageManager.registeredPages.get('adapter').setAdapterInfo(
@@ -354,14 +354,14 @@ suite('bluetooth_internals', function() {
       // Let event queue finish.
       setTimeout(function() {
         assertEquals(0, $('snackbar-container').children.length);
-        assertFalse(!!Snackbar.current_);
+        assertFalse(!!getSnackbarStateForTest().current);
         resolve();
       }, 50);
     });
   }
 
   test('Snackbar_ShowTimeout', function(done) {
-    const snackbar1 = Snackbar.show('Message 1');
+    const snackbar1 = showSnackbar('Message 1');
     assertEquals(1, $('snackbar-container').children.length);
 
     snackbar1.addEventListener('dismissed', function() {
@@ -370,12 +370,12 @@ suite('bluetooth_internals', function() {
   });
 
   test('Snackbar_ShowDismiss', function() {
-    const snackbar1 = Snackbar.show('Message 1');
+    const snackbar1 = showSnackbar('Message 1');
     assertEquals(1, $('snackbar-container').children.length);
 
     return whenSnackbarShows(snackbar1)
         .then(function() {
-          return Snackbar.dismiss();
+          return dismissSnackbar();
         })
         .then(finishSnackbarTest);
   });
@@ -384,16 +384,16 @@ suite('bluetooth_internals', function() {
     const expectedCalls = 3;
     let actualCalls = 0;
 
-    const snackbar1 = Snackbar.show('Message 1');
-    const snackbar2 = Snackbar.show('Message 2');
-    const snackbar3 = Snackbar.show('Message 3');
+    const snackbar1 = showSnackbar('Message 1');
+    const snackbar2 = showSnackbar('Message 2');
+    const snackbar3 = showSnackbar('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
-    assertEquals(2, Snackbar.queue_.length);
+    assertEquals(2, getSnackbarStateForTest().numPending);
 
     function next() {
       actualCalls++;
-      return Snackbar.dismiss();
+      return dismissSnackbar();
     }
 
     whenSnackbarShows(snackbar1).then(next);
@@ -410,12 +410,12 @@ suite('bluetooth_internals', function() {
     const expectedCalls = 1;
     const actualCalls = 0;
 
-    const snackbar1 = Snackbar.show('Message 1');
-    const snackbar2 = Snackbar.show('Message 2');
-    const snackbar3 = Snackbar.show('Message 3');
+    const snackbar1 = showSnackbar('Message 1');
+    const snackbar2 = showSnackbar('Message 2');
+    const snackbar3 = showSnackbar('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
-    assertEquals(2, Snackbar.queue_.length);
+    assertEquals(2, getSnackbarStateForTest().numPending);
 
     function next() {
       assertTrue(false);
@@ -428,11 +428,11 @@ suite('bluetooth_internals', function() {
 
     return whenSnackbarShows(snackbar1)
         .then(function() {
-          return Snackbar.dismiss(true);
+          return dismissSnackbar(true);
         })
         .then(function() {
-          assertEquals(0, Snackbar.queue_.length);
-          assertFalse(!!Snackbar.current_);
+          assertEquals(0, getSnackbarStateForTest().numPending);
+          assertFalse(!!getSnackbarStateForTest().current);
         })
         .then(finishSnackbarTest);
   });
