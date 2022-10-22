@@ -39,7 +39,7 @@ class LocationIconViewBrowserTest : public InProcessBrowserTest {
   LocationIconView* icon_view() const { return icon_view_.get(); }
 
  private:
-  raw_ptr<LocationBarView> location_bar_;
+  raw_ptr<LocationBarView, DanglingUntriaged> location_bar_;
 
   std::unique_ptr<LocationIconView> icon_view_;
 };

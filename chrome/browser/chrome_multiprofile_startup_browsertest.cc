@@ -181,7 +181,7 @@ class ChromeMultiProfileStartupBrowserTestBase
     }
   }
 
-  raw_ptr<MockMainExtraParts> mock_part_;
+  raw_ptr<MockMainExtraParts, DanglingUntriaged> mock_part_;
 
  protected:
   base::test::ScopedFeatureList feature_list_;

@@ -450,13 +450,13 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
 
   // If IdentityTestEnvironment doesn't use TestSigninClient, stores a
   // non-owning pointer to the SigninClient.
-  raw_ptr<SigninClient> raw_signin_client_ = nullptr;
+  raw_ptr<SigninClient, DanglingUntriaged> raw_signin_client_ = nullptr;
 
   // Depending on which constructor is used, exactly one of these will be
   // non-null. See the documentation on the constructor wherein IdentityManager
   // is passed in for required lifetime invariants in that case.
   std::unique_ptr<IdentityManager> owned_identity_manager_;
-  raw_ptr<IdentityManager> raw_identity_manager_ = nullptr;
+  raw_ptr<IdentityManager, DanglingUntriaged> raw_identity_manager_ = nullptr;
 
   std::unique_ptr<TestIdentityManagerObserver> test_identity_manager_observer_;
 

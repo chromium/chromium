@@ -56,7 +56,7 @@ class PaymentHandlerModalDialogManagerDelegate
   base::WeakPtr<content::WebContents> host_web_contents_;
 
   // A not-owned pointer to the WebContents behind the modal dialogs.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 }  // namespace payments

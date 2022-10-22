@@ -102,7 +102,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  raw_ptr<content::WebContents> other_;
+  raw_ptr<content::WebContents, DanglingUntriaged> other_;
 };
 
 class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {

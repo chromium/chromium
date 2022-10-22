@@ -1072,8 +1072,9 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  raw_ptr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
-  raw_ptr<PushMessagingServiceImpl> push_service_;
+  raw_ptr<instance_id::FakeGCMDriverForInstanceID, DanglingUntriaged>
+      gcm_driver_;
+  raw_ptr<PushMessagingServiceImpl, DanglingUntriaged> push_service_;
 };
 
 class ServiceWorkerLazyBackgroundTest : public ServiceWorkerTest {

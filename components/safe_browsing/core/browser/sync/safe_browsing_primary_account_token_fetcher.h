@@ -48,7 +48,7 @@ class SafeBrowsingPrimaryAccountTokenFetcher : public SafeBrowsingTokenFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Reference to the identity manager to fetch from.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 
   // Active fetchers, keyed by ID.
   base::flat_map<int, std::unique_ptr<signin::AccessTokenFetcher>>

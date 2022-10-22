@@ -182,7 +182,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   std::string script_;
   bool has_user_gesture_ = false;
   bool script_was_executed_ = false;
-  raw_ptr<content::RenderFrameHost> rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> rfh_ = nullptr;
 };
 
 // Handles requests for URLs with paths of "/test*" sent to the test server, so

@@ -100,7 +100,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   const bool shared_tab_;
 
   // Creates and removes delegate's infobar; outlives delegate.
-  const raw_ptr<TabSharingUI> ui_;
+  const raw_ptr<TabSharingUI, DanglingUntriaged> ui_;
 
   // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;

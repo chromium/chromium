@@ -146,7 +146,7 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
   }
 
  private:
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {

@@ -126,7 +126,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
   int failure_count = 0;
 
  private:
-  raw_ptr<MockHatsService> hats_service_;
+  raw_ptr<MockHatsService, DanglingUntriaged> hats_service_;
 };
 
 // Test that the web dialog correctly receives change to history state that

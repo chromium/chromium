@@ -288,7 +288,8 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     EXPECT_CALL(*mock_sentiment_service_, PageInfoClosed);
   }
 
-  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
+  raw_ptr<MockTrustSafetySentimentService, DanglingUntriaged>
+      mock_sentiment_service_;
 
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
@@ -1132,7 +1133,8 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
  private:
   base::test::ScopedFeatureList feature_list_;
   PrefService* prefs_;
-  raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
+  raw_ptr<MockPrivacySandboxService, DanglingUntriaged>
+      mock_privacy_sandbox_service_;
 };
 
 // Checks if there is correct number of buttons in cookies subpage when fps are

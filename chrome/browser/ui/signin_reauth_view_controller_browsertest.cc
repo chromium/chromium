@@ -142,7 +142,7 @@ class ReauthTestObserver : SigninReauthViewController::Observer {
   }
 
  private:
-  raw_ptr<SigninReauthViewController> controller_;
+  raw_ptr<SigninReauthViewController, DanglingUntriaged> controller_;
   base::RunLoop run_loop_;
 };
 

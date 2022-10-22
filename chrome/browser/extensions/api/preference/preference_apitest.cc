@@ -159,7 +159,7 @@ class ExtensionPreferenceApiTest
     extensions::ExtensionApiTest::TearDownOnMainThread();
   }
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 

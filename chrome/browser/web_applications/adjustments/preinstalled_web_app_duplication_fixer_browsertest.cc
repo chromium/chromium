@@ -191,7 +191,7 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
   base::test::ScopedFeatureList feature_list_;
   ScopedTestingPreinstalledAppData preinstalled_app_data_;
   base::HistogramTester histogram_tester_;

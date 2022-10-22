@@ -75,8 +75,8 @@ class TestTitleObserver : public TabStripModelObserver {
  private:
   bool seen_target_title_ = false;
 
-  raw_ptr<content::WebContents> contents_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
   std::u16string target_title_;
   base::RunLoop awaiter_;
 };
@@ -224,11 +224,12 @@ class CustomTabBarViewBrowserTest
     Install(std::move(web_app_info));
   }
 
-  raw_ptr<BrowserView> browser_view_;
-  raw_ptr<LocationBarView> location_bar_;
-  raw_ptr<CustomTabBarView> custom_tab_bar_;
-  raw_ptr<Browser> app_browser_ = nullptr;
-  raw_ptr<web_app::AppBrowserController> app_controller_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
+  raw_ptr<LocationBarView, DanglingUntriaged> location_bar_;
+  raw_ptr<CustomTabBarView, DanglingUntriaged> custom_tab_bar_;
+  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<web_app::AppBrowserController, DanglingUntriaged> app_controller_ =
+      nullptr;
 
  private:
   void Install(std::unique_ptr<WebAppInstallInfo> web_app_info) {

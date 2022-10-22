@@ -164,7 +164,8 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
-  raw_ptr<content::WebContents> web_contents_showing_accuracy_tip_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged>
+      web_contents_showing_accuracy_tip_ = nullptr;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

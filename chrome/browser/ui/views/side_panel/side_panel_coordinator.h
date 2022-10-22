@@ -155,7 +155,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // to delays for loading content. This is used for metrics.
   base::TimeTicks opened_timestamp_;
 
-  const raw_ptr<BrowserView> browser_view_;
+  const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
   raw_ptr<SidePanelRegistry> global_registry_;
   absl::optional<SidePanelEntry::Key> last_active_global_entry_key_;
 
@@ -175,7 +175,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   raw_ptr<views::Combobox, DanglingUntriaged> header_combobox_ = nullptr;
 
   // Used to update the visibility of the 'Open in New Tab' header button.
-  raw_ptr<views::ImageButton> header_open_in_new_tab_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged>
+      header_open_in_new_tab_button_ = nullptr;
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
 

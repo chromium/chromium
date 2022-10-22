@@ -449,8 +449,8 @@ class TestPrintRenderFrame
   }
 
  private:
-  raw_ptr<content::RenderFrameHost> frame_host_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> frame_host_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   const int document_cookie_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::RepeatingClosure msg_callback_;
@@ -2921,7 +2921,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-  raw_ptr<PrintJob> print_job_ = nullptr;
+  raw_ptr<PrintJob, DanglingUntriaged> print_job_ = nullptr;
   bool reset_errors_after_check_ = true;
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)

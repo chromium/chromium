@@ -293,7 +293,7 @@ class VIEWS_EXPORT TreeView : public View,
     //
     // This is a weak pointer. This class doesn't own its virtual accessibility
     // view but the Views system does.
-    raw_ptr<AXVirtualView> accessibility_view_ = nullptr;
+    raw_ptr<AXVirtualView, DanglingUntriaged> accessibility_view_ = nullptr;
 
     // Whether the children have been loaded.
     bool loaded_children_ = false;
@@ -477,10 +477,10 @@ class VIEWS_EXPORT TreeView : public View,
   InternalNode root_;
 
   // The selected node, may be null.
-  raw_ptr<InternalNode> selected_node_ = nullptr;
+  raw_ptr<InternalNode, DanglingUntriaged> selected_node_ = nullptr;
 
   // The current active node, may be null.
-  raw_ptr<InternalNode> active_node_ = nullptr;
+  raw_ptr<InternalNode, DanglingUntriaged> active_node_ = nullptr;
 
   bool editing_ = false;
 

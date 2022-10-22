@@ -83,8 +83,8 @@ class ExtensionInstallFrictionDialogViewTest
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  raw_ptr<const extensions::Extension> extension_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 // Regression test for https://crbug.com/1201031: Ensures that while an

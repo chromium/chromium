@@ -115,7 +115,8 @@ class BluetoothApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  raw_ptr<testing::StrictMock<MockBluetoothAdapter>> mock_adapter_;
+  raw_ptr<testing::StrictMock<MockBluetoothAdapter>, DanglingUntriaged>
+      mock_adapter_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device1_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device2_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device3_;

@@ -58,7 +58,7 @@ class SettingsSyncProcessor {
   const syncer::ModelType type_;
 
   // The sync processor used to send changes to sync.
-  const raw_ptr<syncer::SyncChangeProcessor> sync_processor_;
+  const raw_ptr<syncer::SyncChangeProcessor, DanglingUntriaged> sync_processor_;
 
   // Whether Init() has been called.
   bool initialized_;

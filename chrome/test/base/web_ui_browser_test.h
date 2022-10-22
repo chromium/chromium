@@ -208,7 +208,8 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
 
   // When this is non-NULL, this is The WebUI instance used for testing.
   // Otherwise the selected tab's web_ui is used.
-  raw_ptr<content::WebUI> override_selected_web_ui_ = nullptr;
+  raw_ptr<content::WebUI, DanglingUntriaged> override_selected_web_ui_ =
+      nullptr;
 
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
   std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
@@ -226,7 +227,8 @@ class WebUIBrowserTest : public BaseWebUIBrowserTest {
 
  private:
   // Owned by |test_handler_| in BaseWebUIBrowserTest.
-  const raw_ptr<WebUITestMessageHandler> test_message_handler_;
+  const raw_ptr<WebUITestMessageHandler, DanglingUntriaged>
+      test_message_handler_;
 };
 
 #endif  // CHROME_TEST_BASE_WEB_UI_BROWSER_TEST_H_

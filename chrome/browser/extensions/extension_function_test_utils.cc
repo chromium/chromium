@@ -44,7 +44,7 @@ class TestFunctionDispatcherDelegate
 
   WebContents* GetAssociatedWebContents() const override { return nullptr; }
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
 };
 
 }  // namespace

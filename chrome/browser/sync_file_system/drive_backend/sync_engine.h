@@ -195,9 +195,11 @@ class SyncEngine
   // The owner of the SyncEngine is responsible for their lifetime.
   // I.e. the owner should declare the dependency explicitly by calling
   // KeyedService::DependsOn().
-  raw_ptr<drive::DriveNotificationManager> notification_manager_;
-  raw_ptr<extensions::ExtensionServiceInterface> extension_service_;
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  raw_ptr<drive::DriveNotificationManager, DanglingUntriaged>
+      notification_manager_;
+  raw_ptr<extensions::ExtensionServiceInterface, DanglingUntriaged>
+      extension_service_;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> extension_registry_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -209,7 +211,8 @@ class SyncEngine
   std::unique_ptr<drive::DriveUploaderInterface> drive_uploader_;
   std::unique_ptr<DriveUploaderWrapper> drive_uploader_wrapper_;
 
-  raw_ptr<RemoteChangeProcessor> remote_change_processor_;  // Not owned.
+  raw_ptr<RemoteChangeProcessor, DanglingUntriaged>
+      remote_change_processor_;  // Not owned.
   std::unique_ptr<RemoteChangeProcessorWrapper>
       remote_change_processor_wrapper_;
   // Delete this on worker.

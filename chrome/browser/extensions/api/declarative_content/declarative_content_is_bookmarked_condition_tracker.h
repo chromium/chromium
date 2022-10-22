@@ -54,7 +54,7 @@ class DeclarativeContentIsBookmarkedPredicate : public ContentPredicate {
       bool is_bookmarked);
 
   // Weak.
-  const raw_ptr<ContentPredicateEvaluator> evaluator_;
+  const raw_ptr<ContentPredicateEvaluator, DanglingUntriaged> evaluator_;
 
   scoped_refptr<const Extension> extension_;
   bool is_bookmarked_;

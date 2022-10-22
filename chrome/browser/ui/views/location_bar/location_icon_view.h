@@ -135,7 +135,7 @@ class LocationIconView : public IconLabelBubbleView {
   // location icon was updated.
   bool was_editing_or_empty_ = false;
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   // Used to scope the lifetime of asynchronous icon fetch callbacks to the
   // lifetime of the object. Weak pointers issued by this factory are

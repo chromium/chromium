@@ -188,19 +188,20 @@ class PaymentRequestSheetController {
   base::WeakPtr<PaymentRequestDialogView> const dialog_;
 
   // This view is owned by its encompassing ScrollView.
-  raw_ptr<views::View> pane_ = nullptr;
-  raw_ptr<views::View> content_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> pane_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> content_view_ = nullptr;
 
   // Hold on to the ScrollView because it must be explicitly laid out in some
   // cases.
-  raw_ptr<views::ScrollView> scroll_ = nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_ = nullptr;
 
   // Hold on to the primary and secondary buttons to use them as initial focus
   // targets when subclasses don't want to focus anything else.
-  raw_ptr<views::MdTextButton> primary_button_ = nullptr;
-  raw_ptr<views::Button> secondary_button_ = nullptr;
-  raw_ptr<views::View> header_view_ = nullptr;
-  raw_ptr<views::View> header_content_separator_container_ = nullptr;
+  raw_ptr<views::MdTextButton, DanglingUntriaged> primary_button_ = nullptr;
+  raw_ptr<views::Button, DanglingUntriaged> secondary_button_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> header_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> header_content_separator_container_ =
+      nullptr;
 
   // Whether the controller should be controlling the UI.
   bool is_active_ = true;

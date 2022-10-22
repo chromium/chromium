@@ -93,7 +93,7 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
   Criterion criterion_;
 
   // This is the MatcherStringPattern that is used in a SubstringSetMatcher.
-  raw_ptr<const base::MatcherStringPattern> string_pattern_;
+  raw_ptr<const base::MatcherStringPattern, DanglingUntriaged> string_pattern_;
 };
 
 // Class to map the problem of finding {host, path, query} {prefixes, suffixes,

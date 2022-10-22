@@ -236,7 +236,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   // PlaceholderContainer beneath the controls button for PWAs with window
   // controls overlay display override.
-  raw_ptr<CaptionButtonPlaceholderContainer>
+  raw_ptr<CaptionButtonPlaceholderContainer, DanglingUntriaged>
       caption_button_placeholder_container_ = nullptr;
 };
 

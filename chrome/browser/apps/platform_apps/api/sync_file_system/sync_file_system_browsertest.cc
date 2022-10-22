@@ -152,7 +152,8 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  raw_ptr<drive_backend::SyncEngine> remote_service_ = nullptr;
+  raw_ptr<drive_backend::SyncEngine, DanglingUntriaged> remote_service_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {

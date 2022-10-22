@@ -160,7 +160,8 @@ class TCPSocket : public Socket {
   absl::optional<net::IPEndPoint> peer_addr_;
 
   // Only used in tests.
-  raw_ptr<content::StoragePartition> storage_partition_ = nullptr;
+  raw_ptr<content::StoragePartition, DanglingUntriaged> storage_partition_ =
+      nullptr;
 
   // WeakPtr is used when posting tasks to |task_runner_| which might outlive
   // |this|.

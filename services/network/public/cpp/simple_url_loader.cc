@@ -1221,7 +1221,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     body_reader_->Resume();
   }
 
-  raw_ptr<SimpleURLLoaderStreamConsumer> stream_consumer_;
+  raw_ptr<SimpleURLLoaderStreamConsumer, DanglingUntriaged> stream_consumer_;
 
   const base::Location url_loader_created_from_;
 

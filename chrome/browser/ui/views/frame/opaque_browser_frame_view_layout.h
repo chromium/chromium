@@ -236,9 +236,10 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   views::Button* close_button_;
 
   raw_ptr<views::View> window_icon_;
-  raw_ptr<views::Label> window_title_;
+  raw_ptr<views::Label, DanglingUntriaged> window_title_;
 
-  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+      nullptr;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;
@@ -247,7 +248,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   bool is_window_controls_overlay_enabled_ = false;
   bool is_borderless_mode_enabled_ = false;
-  raw_ptr<CaptionButtonPlaceholderContainer>
+  raw_ptr<CaptionButtonPlaceholderContainer, DanglingUntriaged>
       caption_button_placeholder_container_;
 };
 

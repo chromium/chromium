@@ -127,7 +127,7 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
 
  private:
   base::SimpleTestClock test_clock_;
-  raw_ptr<DIPSTabHelper> helper_ = nullptr;
+  raw_ptr<DIPSTabHelper, DanglingUntriaged> helper_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,

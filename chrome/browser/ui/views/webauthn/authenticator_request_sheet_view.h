@@ -116,10 +116,10 @@ class AuthenticatorRequestSheetView : public views::View {
   raw_ptr<views::Button> back_arrow_button_ = nullptr;
   raw_ptr<views::ImageButton> back_arrow_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
-  raw_ptr<views::View> step_specific_content_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> step_specific_content_ = nullptr;
   AutoFocus should_focus_step_specific_content_ = AutoFocus::kNo;
   raw_ptr<NonAccessibleImageView> step_illustration_ = nullptr;
-  raw_ptr<views::Label> error_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> error_label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_VIEW_H_

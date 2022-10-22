@@ -65,7 +65,7 @@ class UsbChooserController : public permissions::ChooserController,
   blink::mojom::WebUsbService::GetPermissionCallback callback_;
   url::Origin origin_;
 
-  const raw_ptr<content::RenderFrameHost> requesting_frame_;
+  const raw_ptr<content::RenderFrameHost, DanglingUntriaged> requesting_frame_;
   base::WeakPtr<UsbChooserContext> chooser_context_;
   base::ScopedObservation<UsbChooserContext, UsbChooserContext::DeviceObserver>
       observation_{this};

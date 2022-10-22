@@ -126,10 +126,10 @@ class AutofillContextMenuManager {
   // menu for Autofill.
   absl::optional<CommandId> GetNextAvailableAutofillCommandId();
 
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
   raw_ptr<ui::SimpleMenuModel> menu_model_;
   raw_ptr<RenderViewContextMenuBase> delegate_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
   content::ContextMenuParams params_;
 
   // Stores the count of items added to the context menu from Autofill.

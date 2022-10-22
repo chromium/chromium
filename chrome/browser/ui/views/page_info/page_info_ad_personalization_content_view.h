@@ -27,8 +27,8 @@ class PageInfoAdPersonalizationContentView : public views::View,
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
 
  private:
-  const raw_ptr<PageInfo> presenter_;
-  const raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
+  const raw_ptr<PageInfo, DanglingUntriaged> presenter_;
+  const raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
 
   raw_ptr<views::View> info_container_ = nullptr;
 };

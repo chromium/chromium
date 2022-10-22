@@ -54,7 +54,7 @@ class DeclarativeContentPageUrlPredicate : public ContentPredicate {
           url_matcher_condition_set);
 
   // Weak.
-  const raw_ptr<ContentPredicateEvaluator> evaluator_;
+  const raw_ptr<ContentPredicateEvaluator, DanglingUntriaged> evaluator_;
 
   scoped_refptr<url_matcher::URLMatcherConditionSet> url_matcher_condition_set_;
 };

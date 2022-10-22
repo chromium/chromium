@@ -2629,7 +2629,7 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  raw_ptr<WebContents> guest_contents_;
+  raw_ptr<WebContents, DanglingUntriaged> guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlLeft) {
@@ -2859,7 +2859,7 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  raw_ptr<WebContents> guest_contents_;
+  raw_ptr<WebContents, DanglingUntriaged> guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, CtrlLeft) {
@@ -3032,7 +3032,7 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  raw_ptr<WebContents> guest_contents_ = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> guest_contents_ = nullptr;
 };
 
 class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {

@@ -36,7 +36,7 @@ class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
   }
 
  private:
-  raw_ptr<SaveUPIBubbleControllerImpl> controller_ = nullptr;
+  raw_ptr<SaveUPIBubbleControllerImpl, DanglingUntriaged> controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUPIBubbleControllerImplTest, InvokeUi) {

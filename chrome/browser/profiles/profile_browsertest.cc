@@ -263,7 +263,7 @@ class BrowserCloseObserver : public BrowserListObserver {
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
   base::RunLoop run_loop_;
 };
 

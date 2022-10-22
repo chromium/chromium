@@ -246,7 +246,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Sets the border padding around this view.
   void UpdateBorder();
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   // The contents of the bubble.
   raw_ptr<SeparatorView> separator_view_;

@@ -69,7 +69,8 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
   }
 
  private:
-  raw_ptr<::testing::NiceMock<MockRemoteFileSyncService>> mock_remote_service_;
+  raw_ptr<::testing::NiceMock<MockRemoteFileSyncService>, DanglingUntriaged>
+      mock_remote_service_;
   int64_t real_default_quota_;
 };
 

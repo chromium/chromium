@@ -720,7 +720,7 @@ class NetworkContextConfigurationBrowserTest
     FlushNetworkInterface();
   }
 
-  raw_ptr<Browser> incognito_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> incognito_ = nullptr;
 
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>

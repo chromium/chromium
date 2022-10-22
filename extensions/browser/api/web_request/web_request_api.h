@@ -279,7 +279,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // permissions.
   int web_request_extension_count_ = 0;
 
-  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   RequestIDGenerator request_id_generator_;
   std::unique_ptr<ProxySet> proxies_;

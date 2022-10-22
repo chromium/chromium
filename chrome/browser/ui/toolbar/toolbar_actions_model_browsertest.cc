@@ -39,7 +39,7 @@ class ToolbarActionsModelBrowserTest : public extensions::ExtensionBrowserTest {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  raw_ptr<ToolbarActionsModel> toolbar_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel, DanglingUntriaged> toolbar_model_ = nullptr;
   base::HistogramTester histogram_tester_;
 };
 

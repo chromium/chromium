@@ -168,10 +168,10 @@ class PageInfoViewFactory {
       std::u16string title,
       std::u16string subtitle);
 
-  raw_ptr<PageInfo> presenter_;
-  raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
+  raw_ptr<PageInfo, DanglingUntriaged> presenter_;
+  raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
   raw_ptr<PageInfoNavigationHandler> navigation_handler_;
-  raw_ptr<PageInfoHistoryController> history_controller_;
+  raw_ptr<PageInfoHistoryController, DanglingUntriaged> history_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_

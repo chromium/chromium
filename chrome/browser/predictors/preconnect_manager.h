@@ -106,7 +106,7 @@ struct PreresolveJob {
   // outlive PreresolveInfo. It's only accessed on PreconnectManager class
   // context and PreresolveInfo lifetime is tied to PreconnectManager.
   // May be equal to nullptr in case of detached job.
-  raw_ptr<PreresolveInfo> info;
+  raw_ptr<PreresolveInfo, DanglingUntriaged> info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client;
   base::TimeTicks creation_time;

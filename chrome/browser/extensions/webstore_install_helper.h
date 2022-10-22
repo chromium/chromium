@@ -83,7 +83,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
   void ReportResultsIfComplete();
 
   // The client who we'll report results back to.
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   // The extension id of the manifest we're parsing.
   std::string id_;

@@ -114,7 +114,7 @@ class LazyBackgroundTaskQueue : public KeyedService,
       content::BrowserContext* browser_context,
       const Extension* extension);
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
   PendingTasksMap pending_tasks_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

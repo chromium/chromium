@@ -34,7 +34,7 @@ class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
   void InitWindow();
 
   // A weak pointer to the controller.
-  raw_ptr<CredentialManagerDialogController> controller_;
+  raw_ptr<CredentialManagerDialogController, DanglingUntriaged> controller_;
   const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 };
 

@@ -166,7 +166,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
  protected:
   base::HistogramTester histograms_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
-  raw_ptr<SharingService> sharing_service_;
+  raw_ptr<SharingService, DanglingUntriaged> sharing_service_;
   std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 

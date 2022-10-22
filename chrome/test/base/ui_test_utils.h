@@ -315,7 +315,7 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   base::RunLoop run_loop_;
 
   // The last tab that was added.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 // Enumerates all history contents on the backend thread. Returns them in

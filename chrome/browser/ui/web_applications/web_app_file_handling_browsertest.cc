@@ -264,7 +264,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
   TestServerRedirectHandle redirect_handle_;
   base::test::ScopedFeatureList feature_list_{
       blink::features::kFileHandlingAPI};
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   std::unique_ptr<content::WebContentsDestroyedWatcher> destroyed_watcher_;
 };
 

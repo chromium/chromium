@@ -93,9 +93,9 @@ class BrowserNonClientFrameViewBrowserTest
 
  protected:
   SkColor app_theme_color_ = SK_ColorBLUE;
-  raw_ptr<Browser> app_browser_ = nullptr;
-  raw_ptr<BrowserView> app_browser_view_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged> app_browser_view_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }

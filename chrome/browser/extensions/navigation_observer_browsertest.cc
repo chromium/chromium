@@ -57,8 +57,8 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   GURL extension_resource_url_;
-  raw_ptr<ExtensionRegistry> registry_;
-  raw_ptr<ExtensionPrefs> prefs_;
+  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_;
+  raw_ptr<ExtensionPrefs, DanglingUntriaged> prefs_;
 };
 
 // Test that visiting an url associated with a disabled extension offers to

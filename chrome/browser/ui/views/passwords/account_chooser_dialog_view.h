@@ -49,7 +49,7 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   void CredentialsItemPressed(const password_manager::PasswordForm* form);
 
   // A weak pointer to the controller.
-  raw_ptr<CredentialManagerDialogController> controller_;
+  raw_ptr<CredentialManagerDialogController, DanglingUntriaged> controller_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 };
 

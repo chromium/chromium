@@ -40,7 +40,7 @@ class BrowsingDataCounter {
     virtual bool Finished() const;
 
    private:
-    raw_ptr<const BrowsingDataCounter> source_;
+    raw_ptr<const BrowsingDataCounter, DanglingUntriaged> source_;
   };
 
   // A subclass of Result returned when the computation has finished. The result

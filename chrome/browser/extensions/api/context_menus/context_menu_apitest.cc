@@ -220,7 +220,7 @@ class ExtensionContextMenuVisibilityApiTest
 
   ProcessManager* process_manager() { return ProcessManager::Get(profile()); }
 
-  raw_ptr<const Extension> extension_ = nullptr;
+  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
   std::unique_ptr<TestRenderViewContextMenu> menu_;
   size_t top_level_index_ = 0;
 };

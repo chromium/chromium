@@ -500,9 +500,9 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
     DebuggerApiTest::TearDownOnMainThread();
   }
 
-  raw_ptr<ProfileManager> profile_manager_ = nullptr;
-  raw_ptr<Profile> other_profile_ = nullptr;
-  raw_ptr<Profile> otr_profile_ = nullptr;
+  raw_ptr<ProfileManager, DanglingUntriaged> profile_manager_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> other_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> otr_profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {

@@ -196,7 +196,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
   scoped_refptr<content::MessageLoopRunner> runner_;
 
  private:
-  raw_ptr<content::WebContents> contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents_;
   std::unique_ptr<TestCardUnmaskPromptController> controller_;
   std::unique_ptr<TestCardUnmaskDelegate> delegate_;
 };

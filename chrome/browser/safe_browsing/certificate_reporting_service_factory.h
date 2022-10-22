@@ -58,10 +58,10 @@ class CertificateReportingServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   // Encryption parameters for certificate reports.
-  raw_ptr<uint8_t> server_public_key_;
+  raw_ptr<uint8_t, DanglingUntriaged> server_public_key_;
   uint32_t server_public_key_version_;
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<base::Clock, DanglingUntriaged> clock_;
   base::TimeDelta queued_report_ttl_;
   size_t max_queued_report_count_;
   base::RepeatingClosure service_reset_callback_;

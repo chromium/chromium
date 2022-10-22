@@ -60,7 +60,8 @@ class FirstRunIntroPixelTest : public UiBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
-  raw_ptr<ProfileManagementStepTestView> profile_picker_view_;
+  raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
+      profile_picker_view_;
 };
 
 IN_PROC_BROWSER_TEST_F(FirstRunIntroPixelTest, InvokeUi_default) {

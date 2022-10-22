@@ -116,10 +116,10 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   DeveloperConsoleLogger log_;
 
   // Downloads the manifests.
-  raw_ptr<PaymentManifestDownloader> downloader_;
+  raw_ptr<PaymentManifestDownloader, DanglingUntriaged> downloader_;
 
   // Parses the manifests.
-  raw_ptr<PaymentManifestParser> parser_;
+  raw_ptr<PaymentManifestParser, DanglingUntriaged> parser_;
 
   // Caches the manifests.
   raw_ptr<PaymentManifestWebDataService> cache_;

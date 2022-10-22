@@ -197,7 +197,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
     }
 
    private:
-    raw_ptr<Profile> profile_;
+    raw_ptr<Profile, DanglingUntriaged> profile_;
     std::string event_name_;
     std::string json_args_;
     base::Value args_;
@@ -266,7 +266,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   base::Time last_wait_;
   std::unique_ptr<Event> waiting_for_;
   base::circular_deque<std::unique_ptr<Event>> events_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 // Object waiting for a download open event.
@@ -748,8 +748,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
 
   raw_ptr<const Extension> extension_;
   raw_ptr<const Extension> second_extension_;
-  raw_ptr<Browser> incognito_browser_;
-  raw_ptr<Browser> current_browser_;
+  raw_ptr<Browser, DanglingUntriaged> incognito_browser_;
+  raw_ptr<Browser, DanglingUntriaged> current_browser_;
   std::unique_ptr<DownloadsEventsListener> events_listener_;
 
   std::unique_ptr<net::test_server::ControllableHttpResponse> first_download_;

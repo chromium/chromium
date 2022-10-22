@@ -240,7 +240,8 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   }
 
  private:
-  raw_ptr<DIPSWebContentsObserver> web_contents_observer_ = nullptr;
+  raw_ptr<DIPSWebContentsObserver, DanglingUntriaged> web_contents_observer_ =
+      nullptr;
 };
 
 // The timing of WCO::OnCookiesAccessed() execution is unpredictable for

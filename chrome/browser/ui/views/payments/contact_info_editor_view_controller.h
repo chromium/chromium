@@ -91,7 +91,7 @@ class ContactInfoEditorViewController : public EditorViewController {
 
     EditorField field_;
     // Outlives this class. Never null.
-    raw_ptr<ContactInfoEditorViewController> controller_;
+    raw_ptr<ContactInfoEditorViewController, DanglingUntriaged> controller_;
     const std::string& locale_;
   };
 };

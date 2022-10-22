@@ -100,7 +100,8 @@ class ManageMigrationUiController
 
   void ShowFeedbackDialog();
 
-  raw_ptr<LocalCardMigrationBubbleControllerImpl> bubble_controller_ = nullptr;
+  raw_ptr<LocalCardMigrationBubbleControllerImpl, DanglingUntriaged>
+      bubble_controller_ = nullptr;
   raw_ptr<LocalCardMigrationDialogControllerImpl, DanglingUntriaged>
       dialog_controller_ = nullptr;
 

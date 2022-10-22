@@ -266,7 +266,8 @@ class PasswordProtectionRequest
 
   // The PasswordProtectionServiceBase instance owns |this|.
   // Can only be accessed on UI thread.
-  raw_ptr<PasswordProtectionServiceBase> password_protection_service_;
+  raw_ptr<PasswordProtectionServiceBase, DanglingUntriaged>
+      password_protection_service_;
 
   // The outcome of the password protection request.
   RequestOutcome request_outcome_;

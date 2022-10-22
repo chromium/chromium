@@ -220,7 +220,7 @@ class SyncServiceImplHarness {
   bool IsSyncEnabledByUser() const;
 
   // Profile associated with this sync client.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // SyncServiceImpl object associated with |profile_|.
   const raw_ptr<syncer::SyncServiceImpl, DanglingUntriaged> service_;

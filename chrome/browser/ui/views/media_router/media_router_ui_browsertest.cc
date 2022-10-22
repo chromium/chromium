@@ -79,7 +79,8 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   // A vector of MediaRoutes that includes a local route.
   std::vector<MediaRoute> routes_;
 
-  raw_ptr<MediaRouterActionController> action_controller_ = nullptr;
+  raw_ptr<MediaRouterActionController, DanglingUntriaged> action_controller_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,

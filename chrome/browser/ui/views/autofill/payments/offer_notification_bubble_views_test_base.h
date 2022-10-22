@@ -151,8 +151,8 @@ class OfferNotificationBubbleViewsTestBase
  private:
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
-  raw_ptr<PersonalDataManager> personal_data_;
-  raw_ptr<CouponService> coupon_service_;
+  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_;
+  raw_ptr<CouponService, DanglingUntriaged> coupon_service_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

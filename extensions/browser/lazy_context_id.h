@@ -78,7 +78,7 @@ class LazyContextId {
 
  private:
   Type type_;
-  raw_ptr<content::BrowserContext> context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
   ExtensionId extension_id_;
   GURL service_worker_scope_;
 };

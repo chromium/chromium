@@ -45,7 +45,7 @@ class RemoteChangeProcessorWrapper
                              SyncStatusCallback callback);
 
  private:
-  raw_ptr<RemoteChangeProcessor> remote_change_processor_;
+  raw_ptr<RemoteChangeProcessor, DanglingUntriaged> remote_change_processor_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

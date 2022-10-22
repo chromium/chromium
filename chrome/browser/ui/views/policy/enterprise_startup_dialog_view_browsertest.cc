@@ -55,7 +55,7 @@ class EnterpriseStartupDialogViewBrowserTest : public DialogBrowserTest {
 #endif
 
  private:
-  raw_ptr<EnterpriseStartupDialogView> dialog;
+  raw_ptr<EnterpriseStartupDialogView, DanglingUntriaged> dialog;
 };
 
 IN_PROC_BROWSER_TEST_F(EnterpriseStartupDialogViewBrowserTest,

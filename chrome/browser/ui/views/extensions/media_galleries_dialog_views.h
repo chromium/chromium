@@ -86,17 +86,17 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   // Callback for MenuRunner.
   void OnMenuClosed();
 
-  raw_ptr<MediaGalleriesDialogController> controller_;
+  raw_ptr<MediaGalleriesDialogController, DanglingUntriaged> controller_;
 
   // The contents of the dialog. Owned by the view hierarchy, except in tests.
-  raw_ptr<views::View> contents_;
+  raw_ptr<views::View, DanglingUntriaged> contents_;
 
   // A map from gallery ID to views::Checkbox view.
   CheckboxMap checkbox_map_;
 
   // Pointer to the controller specific auxiliary button, NULL otherwise.
   // Owned by parent in the dialog views tree.
-  raw_ptr<views::LabelButton> auxiliary_button_;
+  raw_ptr<views::LabelButton, DanglingUntriaged> auxiliary_button_;
 
   // This tracks whether the confirm button can be clicked. It starts as false
   // if no checkboxes are ticked. After there is any interaction, or some

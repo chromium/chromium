@@ -391,8 +391,9 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  raw_ptr<gcm::FakeGCMProfileService> gcm_service_;
-  raw_ptr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
+  raw_ptr<gcm::FakeGCMProfileService, DanglingUntriaged> gcm_service_;
+  raw_ptr<instance_id::FakeGCMDriverForInstanceID, DanglingUntriaged>
+      gcm_driver_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
@@ -2844,7 +2845,7 @@ class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTestBase {
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
-  raw_ptr<Browser> incognito_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 // Regression test for https://crbug.com/476474

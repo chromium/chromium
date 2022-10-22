@@ -2529,14 +2529,14 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache1_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache2_;
   extensions::ScopedIgnoreContentVerifierForTest ignore_content_verifier_;
-  raw_ptr<Profile> profile1_;
-  raw_ptr<Profile> profile2_;
+  raw_ptr<Profile, DanglingUntriaged> profile1_;
+  raw_ptr<Profile, DanglingUntriaged> profile2_;
   MockConfigurationPolicyProvider profile1_policy_;
   MockConfigurationPolicyProvider profile2_policy_;
-  raw_ptr<extensions::ExtensionRegistry> registry1_;
-  raw_ptr<extensions::ExtensionRegistry> registry2_;
-  raw_ptr<extensions::ExtensionService> service1_;
-  raw_ptr<extensions::ExtensionService> service2_;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry1_;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry2_;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> service1_;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> service2_;
 };
 
 // Verifies that default policy host block/allow settings are applied as

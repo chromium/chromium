@@ -136,7 +136,7 @@ class ExternallyManagedAppInstallTask {
       ExternallyManagedAppManager::InstallResult result);
 
   const raw_ptr<Profile> profile_;
-  const raw_ptr<WebAppUrlLoader> url_loader_;
+  const raw_ptr<WebAppUrlLoader, DanglingUntriaged> url_loader_;
   const raw_ptr<WebAppRegistrar> registrar_;
   const raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   const raw_ptr<WebAppCommandManager> command_manager_;

@@ -133,14 +133,14 @@ union POLICY_EXPORT RestrictionNode {
 // Contains arrays of related nodes. All of the offsets in these nodes reference
 // other nodes in these arrays.
 struct POLICY_EXPORT SchemaData {
-  raw_ptr<const SchemaNode> schema_nodes;
-  raw_ptr<const PropertyNode> property_nodes;
-  raw_ptr<const PropertiesNode> properties_nodes;
-  raw_ptr<const RestrictionNode> restriction_nodes;
-  raw_ptr<const char* const> required_properties;
+  raw_ptr<const SchemaNode, DanglingUntriaged> schema_nodes;
+  raw_ptr<const PropertyNode, DanglingUntriaged> property_nodes;
+  raw_ptr<const PropertiesNode, DanglingUntriaged> properties_nodes;
+  raw_ptr<const RestrictionNode, DanglingUntriaged> restriction_nodes;
+  raw_ptr<const char* const, DanglingUntriaged> required_properties;
 
-  raw_ptr<const int> int_enums;
-  raw_ptr<const char* const> string_enums;
+  raw_ptr<const int, DanglingUntriaged> int_enums;
+  raw_ptr<const char* const, DanglingUntriaged> string_enums;
   int validation_schema_root_index;
 };
 

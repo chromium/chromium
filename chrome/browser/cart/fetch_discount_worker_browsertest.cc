@@ -504,7 +504,7 @@ class FetchCodeBasedDiscountWorkerBrowserTest
 
  protected:
   std::vector<std::string> parter_merchant_list_;
-  raw_ptr<CouponService> coupon_service_;
+  raw_ptr<CouponService, DanglingUntriaged> coupon_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(FetchCodeBasedDiscountWorkerBrowserTest,

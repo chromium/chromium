@@ -59,7 +59,7 @@ class AppInfoPanel : public views::View {
       std::unique_ptr<views::View> key,
       std::unique_ptr<views::View> value) const;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   const raw_ptr<const extensions::Extension> app_;
 };
 

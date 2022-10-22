@@ -95,7 +95,7 @@ class BrowserRootView : public views::internal::RootView {
     DropInfo();
     ~DropInfo();
 
-    raw_ptr<DropTarget> target = nullptr;
+    raw_ptr<DropTarget, DanglingUntriaged> target = nullptr;
 
     // Where to drop the url.
     absl::optional<DropIndex> index;

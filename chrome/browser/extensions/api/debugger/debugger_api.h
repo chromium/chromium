@@ -36,7 +36,7 @@ class DebuggerFunction : public ExtensionFunction {
 
   Debuggee debuggee_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  raw_ptr<ExtensionDevToolsClientHost> client_host_;
+  raw_ptr<ExtensionDevToolsClientHost, DanglingUntriaged> client_host_;
 };
 
 // Implements the debugger.attach() extension function.

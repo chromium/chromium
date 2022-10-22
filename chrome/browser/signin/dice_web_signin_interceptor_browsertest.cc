@@ -132,7 +132,7 @@ class FakeDiceWebSigninInterceptorDelegate
   }
 
  private:
-  raw_ptr<Browser> fre_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> fre_browser_ = nullptr;
   CoreAccountId fre_account_id_;
   DiceWebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;

@@ -86,7 +86,7 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockHatsService> mock_hats_service_;
+  raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(TrustSafetySentimentServiceBrowserTest,

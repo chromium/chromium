@@ -815,7 +815,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Essentially all direct usages of this variable need to first check that
   // |loading_| is true, and should call GetDefaultSearchProvider() instead.
   // Example of a regression due to this mistake: https://crbug.com/1164024.
-  raw_ptr<TemplateURL> default_search_provider_ = nullptr;
+  raw_ptr<TemplateURL, DanglingUntriaged> default_search_provider_ = nullptr;
 
   // A temporary location for the DSE until Web Data has been loaded and it can
   // be merged into |template_urls_|.

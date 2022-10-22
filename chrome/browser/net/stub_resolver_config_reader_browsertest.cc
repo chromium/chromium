@@ -98,7 +98,7 @@ class StubResolverConfigReaderBrowsertest
   policy::PolicyMap policy_map_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
-  raw_ptr<StubResolverConfigReader> config_reader_;
+  raw_ptr<StubResolverConfigReader, DanglingUntriaged> config_reader_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

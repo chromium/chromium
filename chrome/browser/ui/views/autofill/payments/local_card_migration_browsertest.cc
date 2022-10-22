@@ -528,9 +528,10 @@ class LocalCardMigrationBrowserTest
 
   void WaitForCardDeletion() { WaitForPersonalDataChange(GetProfile(0)); }
 
-  raw_ptr<LocalCardMigrationManager> local_card_migration_manager_;
+  raw_ptr<LocalCardMigrationManager, DanglingUntriaged>
+      local_card_migration_manager_;
 
-  raw_ptr<PersonalDataManager> personal_data_;
+  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_;
   PersonalDataLoadedObserverMock personal_data_observer_;
 
  private:

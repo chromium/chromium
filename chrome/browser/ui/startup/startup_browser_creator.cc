@@ -247,7 +247,7 @@ class ProfileLaunchObserver : public ProfileObserver,
   // This is null until the profile to activate has been chosen. This value
   // should only be set once all profiles have been launched, otherwise,
   // activation may not happen after the launch of newer profiles.
-  raw_ptr<Profile> profile_to_activate_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_to_activate_ = nullptr;
   // Set once we attempted to activate a profile. We only get one shot at this.
   bool activated_profile_ = false;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>

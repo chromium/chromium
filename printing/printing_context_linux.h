@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
 
  private:
   std::u16string document_name_;
-  raw_ptr<PrintDialogLinuxInterface> print_dialog_;
+  raw_ptr<PrintDialogLinuxInterface, DanglingUntriaged> print_dialog_;
 };
 
 }  // namespace printing

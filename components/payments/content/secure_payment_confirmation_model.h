@@ -163,7 +163,7 @@ class SecurePaymentConfirmationModel {
 
   std::u16string instrument_label_;
   std::u16string instrument_value_;
-  raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
+  raw_ptr<const SkBitmap, DanglingUntriaged> instrument_icon_ = nullptr;
 
   std::u16string total_label_;
   std::u16string total_value_;

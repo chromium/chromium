@@ -566,7 +566,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     return PopString(&message_queue);
   }
 
-  raw_ptr<const Extension> extension_ = nullptr;
+  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,

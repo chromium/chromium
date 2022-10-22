@@ -115,7 +115,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   base::OnceClosure quit_loop_;
 
   // The associated browser context.
-  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   // The ID of the extension whose hosts this helper is watching, if it is
   // restricted to a given ID.
@@ -127,7 +127,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
 
   // The specific host this helper is waiting on, if any (null implies
   // waiting on any host).
-  raw_ptr<const ExtensionHost> restrict_to_host_ = nullptr;
+  raw_ptr<const ExtensionHost, DanglingUntriaged> restrict_to_host_ = nullptr;
 
   // The set of all events this helper has seen and their corresponding
   // ExtensionHosts. ExtensionHosts are nulled out when they are destroyed, but

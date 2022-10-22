@@ -40,7 +40,7 @@ class ProfileListDesktop : public ProfileList {
       const base::FilePath& active_profile_path) override;
 
   // The storage that provides the profile attributes. Not owned.
-  raw_ptr<ProfileAttributesStorage> profile_storage_;
+  raw_ptr<ProfileAttributesStorage, DanglingUntriaged> profile_storage_;
 
   // The path of the currently active profile.
   base::FilePath active_profile_path_;

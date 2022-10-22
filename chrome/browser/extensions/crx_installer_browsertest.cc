@@ -114,7 +114,7 @@ class MockPromptProxy {
 
  private:
   // Data used to create a prompt.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   // Data reported back to us by the prompt we created.
   bool confirmation_requested_;
@@ -146,7 +146,7 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
   }
 
  private:
-  raw_ptr<MockPromptProxy> proxy_;
+  raw_ptr<MockPromptProxy, DanglingUntriaged> proxy_;
 };
 
 MockPromptProxy::MockPromptProxy(

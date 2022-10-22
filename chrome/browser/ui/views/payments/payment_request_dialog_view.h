@@ -204,7 +204,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // The PaymentRequest object that initiated this dialog.
   base::WeakPtr<PaymentRequest> request_;
   ControllerMap controller_map_;
-  raw_ptr<ViewStack> view_stack_;
+  raw_ptr<ViewStack, DanglingUntriaged> view_stack_;
 
   // A full dialog overlay that shows a spinner and the "processing" label. It's
   // hidden until ShowProcessingSpinner is called.

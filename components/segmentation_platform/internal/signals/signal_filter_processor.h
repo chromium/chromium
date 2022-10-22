@@ -52,10 +52,10 @@ class SignalFilterProcessor {
   // Boolean to only record metrics the first time models are updated.
   bool is_first_time_model_update_{true};
 
-  const raw_ptr<StorageService> storage_service_;
+  const raw_ptr<StorageService, DanglingUntriaged> storage_service_;
   const raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
-  const raw_ptr<HistoryServiceObserver> history_observer_;
+  const raw_ptr<HistoryServiceObserver, DanglingUntriaged> history_observer_;
   const base::flat_set<SegmentId> segment_ids_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};

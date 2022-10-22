@@ -285,7 +285,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   GURL test_url_;
 
   // Weak reference to the ErrorConsole.
-  raw_ptr<ErrorConsole> error_console_;
+  raw_ptr<ErrorConsole, DanglingUntriaged> error_console_;
 };
 
 // Test to ensure that we are successfully reporting manifest errors as an

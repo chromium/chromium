@@ -116,7 +116,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DesktopMediaList::Type GetSelectedSourceListType() const;
 
-  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   const bool is_get_display_media_call_;
   const bool audio_requested_;
   const bool suppress_local_audio_playback_;  // Effective only if audio shared.

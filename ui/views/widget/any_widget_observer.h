@@ -183,7 +183,7 @@ class VIEWS_EXPORT NamedWidgetShownWaiter {
   void OnAnyWidgetShown(Widget* widget);
 
   AnyWidgetObserver observer_;
-  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
   base::RunLoop run_loop_;
   const std::string name_;
 };

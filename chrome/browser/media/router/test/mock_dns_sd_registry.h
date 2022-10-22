@@ -27,7 +27,7 @@ class MockDnsSdRegistry : public DnsSdRegistry {
                          const DnsSdServiceList& services);
 
  private:
-  raw_ptr<DnsSdObserver> observer_;
+  raw_ptr<DnsSdObserver, DanglingUntriaged> observer_;
 };
 
 }  // namespace media_router

@@ -37,10 +37,10 @@ class SubframeTask : public RendererTask {
  private:
   std::u16string GetTitle();
 
-  raw_ptr<content::SiteInstance> site_instance_;
+  raw_ptr<content::SiteInstance, DanglingUntriaged> site_instance_;
 
   // The task for the main frame of this WebContents.
-  raw_ptr<RendererTask> main_task_;
+  raw_ptr<RendererTask, DanglingUntriaged> main_task_;
 };
 
 }  // namespace task_manager

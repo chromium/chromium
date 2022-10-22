@@ -54,7 +54,7 @@ class SystemThemeLinux : public CustomThemeSupplier {
   ~SystemThemeLinux() override;
 
   // These pointers are not owned by us.
-  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   const raw_ptr<ui::LinuxUiTheme> linux_ui_theme_;
 };
 

@@ -749,7 +749,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     return &test_url_loader_factory_;
   }
 
-  raw_ptr<CreditCardSaveManager> credit_card_save_manager_ = nullptr;
+  raw_ptr<CreditCardSaveManager, DanglingUntriaged> credit_card_save_manager_ =
+      nullptr;
 
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;

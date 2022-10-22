@@ -61,7 +61,7 @@ struct TabStripLayoutHelper::TabSlot {
   }
 
   ViewType type;
-  raw_ptr<TabSlotView> view;
+  raw_ptr<TabSlotView, DanglingUntriaged> view;
   TabLayoutState state;
 };
 

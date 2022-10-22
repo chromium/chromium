@@ -524,7 +524,7 @@ class InlineLoginHelperBrowserTest : public DialogBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
 };
 

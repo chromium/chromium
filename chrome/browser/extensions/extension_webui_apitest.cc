@@ -141,7 +141,8 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
   }
 
   guest_view::TestGuestViewManagerFactory test_guest_view_manager_factory_;
-  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
+  raw_ptr<guest_view::TestGuestViewManager, DanglingUntriaged>
+      test_guest_view_manager_ = nullptr;
 };
 
 #if !BUILDFLAG(IS_WIN)  // flaky http://crbug.com/530722

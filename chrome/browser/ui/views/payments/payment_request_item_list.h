@@ -114,7 +114,7 @@ class PaymentRequestItemList {
 
     base::WeakPtr<PaymentRequestSpec> spec_;
     base::WeakPtr<PaymentRequestState> state_;
-    raw_ptr<PaymentRequestItemList> list_;
+    raw_ptr<PaymentRequestItemList, DanglingUntriaged> list_;
     std::u16string accessible_item_description_;
     bool selected_;
     bool show_edit_button_;
@@ -151,7 +151,7 @@ class PaymentRequestItemList {
   void UnselectSelectedItem();
 
   std::vector<std::unique_ptr<Item>> items_;
-  raw_ptr<Item> selected_item_;
+  raw_ptr<Item, DanglingUntriaged> selected_item_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
 };
 

@@ -187,7 +187,7 @@ class DnsProbeBrowserTest : public InProcessBrowserTest {
   // Browser that methods apply to.
   raw_ptr<Browser, DanglingUntriaged> active_browser_;
   // Helper that current has its DnsProbeStatus messages monitored.
-  raw_ptr<NetErrorTabHelper> monitored_tab_helper_;
+  raw_ptr<NetErrorTabHelper, DanglingUntriaged> monitored_tab_helper_;
 
   std::unique_ptr<base::RunLoop> awaiting_dns_probe_status_run_loop_;
   // Queue of statuses received but not yet consumed by WaitForSentStatus().

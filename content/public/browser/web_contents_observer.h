@@ -852,7 +852,7 @@ class CONTENT_EXPORT WebContentsObserver {
 
   void ResetWebContents();
 
-  raw_ptr<WebContents> web_contents_ = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 }  // namespace content

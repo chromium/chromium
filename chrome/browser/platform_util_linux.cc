@@ -278,7 +278,7 @@ class ShowItemHelper {
 
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
-  raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, DanglingUntriaged> object_proxy_ = nullptr;
 
   absl::optional<bool> prefer_filemanager_interface_;
 

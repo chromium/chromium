@@ -191,7 +191,7 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void CreateNativeUIInspectionSession(const std::string& url);
   void OnFrontEndFinished();
 
-  const raw_ptr<InspectUI> inspect_ui_;
+  const raw_ptr<InspectUI, DanglingUntriaged> inspect_ui_;
 
   base::WeakPtrFactory<InspectMessageHandler> weak_factory_{this};
 };

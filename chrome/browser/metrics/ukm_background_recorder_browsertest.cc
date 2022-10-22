@@ -66,7 +66,8 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<ukm::UkmBackgroundRecorderService> background_recorder_service_;
+  raw_ptr<ukm::UkmBackgroundRecorderService, DanglingUntriaged>
+      background_recorder_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(UkmBackgroundRecorderBrowserTest,

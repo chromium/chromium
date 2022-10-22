@@ -85,7 +85,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
 
-  raw_ptr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
+  raw_ptr<net::ProxyResolutionService, DanglingUntriaged>
+      proxy_resolution_service_ = nullptr;
 };
 
 }  // namespace network

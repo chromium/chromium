@@ -29,7 +29,7 @@ class HistoryUIBrowserTest : public WebUIBrowserTest {
 
  private:
   // The HistoryService is owned by the profile.
-  raw_ptr<history::HistoryService> history_;
+  raw_ptr<history::HistoryService, DanglingUntriaged> history_;
 };
 
 #endif  // CHROME_TEST_DATA_WEBUI_HISTORY_UI_BROWSERTEST_H_

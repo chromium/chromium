@@ -104,9 +104,9 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
   // Callback for when TemplateURLService has loaded.
   void OnTemplateURLServiceLoaded();
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<BrandcodedDefaultSettings> master_settings_;
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
 
   // Flags of a Resetable indicating which reset operations we are still waiting
   // for.

@@ -44,7 +44,7 @@ class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<HistoryClustersHandler> handler_;
+  raw_ptr<HistoryClustersHandler, DanglingUntriaged> handler_;
 
  private:
   base::test::ScopedFeatureList feature_list_;

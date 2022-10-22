@@ -47,7 +47,7 @@ class PresentationReceiverWindowFrame final : public views::Widget {
       const final;
 
   // The profile from which we get the theme.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_PRESENTATION_RECEIVER_WINDOW_FRAME_H_

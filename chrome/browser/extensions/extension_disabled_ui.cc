@@ -90,7 +90,7 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
 
   void RemoveGlobalError();
 
-  raw_ptr<ExtensionService> service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> service_;
   scoped_refptr<const Extension> extension_;
   bool is_remote_install_;
 

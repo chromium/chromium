@@ -268,12 +268,12 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
       extension_registry_observation_{this};
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
   std::string id_;
   InstallSource install_source_;
   // The DownloadItem is owned by the DownloadManager and is valid from when
   // OnDownloadStarted is called (with no error) until OnDownloadDestroyed().
-  raw_ptr<download::DownloadItem> download_item_ = nullptr;
+  raw_ptr<download::DownloadItem, DanglingUntriaged> download_item_ = nullptr;
   // Used to periodically update the extension's download status. This will
   // trigger at least every second, though sometimes more frequently (depending
   // on number of modules, etc).

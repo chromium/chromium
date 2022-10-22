@@ -54,7 +54,7 @@ class DeclarativeContentCssPredicate : public ContentPredicate {
                                  const std::vector<std::string>& css_selectors);
 
   // Weak.
-  const raw_ptr<ContentPredicateEvaluator> evaluator_;
+  const raw_ptr<ContentPredicateEvaluator, DanglingUntriaged> evaluator_;
   std::vector<std::string> css_selectors_;
 };
 

@@ -62,7 +62,7 @@ class ExtensionIndicatorIcon : public StatusIconObserver,
 
   raw_ptr<const Extension> extension_;
   raw_ptr<StatusTray> status_tray_;
-  raw_ptr<StatusIcon> status_icon_;
+  raw_ptr<StatusIcon, DanglingUntriaged> status_icon_;
   raw_ptr<Profile> profile_;
   IconImage manifest_icon_;
   gfx::Image dynamic_icon_;

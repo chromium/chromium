@@ -370,9 +370,9 @@ class LocalCardMigrationOfferView : public views::View {
  private:
   friend class LocalCardMigrationDialogView;
 
-  raw_ptr<LocalCardMigrationDialogController> controller_;
+  raw_ptr<LocalCardMigrationDialogController, DanglingUntriaged> controller_;
 
-  raw_ptr<views::View> card_list_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> card_list_view_ = nullptr;
 };
 
 BEGIN_METADATA(LocalCardMigrationOfferView, views::View)

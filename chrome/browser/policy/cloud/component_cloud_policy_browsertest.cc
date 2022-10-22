@@ -251,7 +251,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
   EmbeddedPolicyTestServer test_server_;
   scoped_refptr<const extensions::Extension> extension_;
   std::unique_ptr<ExtensionTestMessageListener> event_listener_;
-  raw_ptr<CloudPolicyClient> client_ = nullptr;
+  raw_ptr<CloudPolicyClient, DanglingUntriaged> client_ = nullptr;
 };
 
 // crbug.com/1230268 not working on Lacros.

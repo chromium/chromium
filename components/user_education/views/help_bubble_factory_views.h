@@ -78,7 +78,7 @@ class HelpBubbleViews : public HelpBubble,
       scoped_observation_{this};
 
   // Track the anchor element to determine if/when it goes away.
-  base::raw_ptr<const ui::TrackedElement> anchor_element_;
+  base::raw_ptr<const ui::TrackedElement, DanglingUntriaged> anchor_element_;
   base::CallbackListSubscription anchor_subscription_;
 
   base::WeakPtrFactory<HelpBubbleViews> weak_ptr_factory_{this};

@@ -115,9 +115,9 @@ class ReputationService : public KeyedService {
   // ignored.  Used to avoid re-warning the user.
   std::set<std::string> warning_dismissed_etld1s_;
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  raw_ptr<const char* const> sensitive_keywords_;
+  raw_ptr<const char* const, DanglingUntriaged> sensitive_keywords_;
   size_t num_sensitive_keywords_;
 
   base::WeakPtrFactory<ReputationService> weak_factory_{this};

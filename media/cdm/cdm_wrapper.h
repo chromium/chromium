@@ -294,7 +294,7 @@ class CdmWrapperImpl : public CdmWrapper {
  private:
   CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { DCHECK(cdm_); }
 
-  raw_ptr<CdmInterface> cdm_;
+  raw_ptr<CdmInterface, DanglingUntriaged> cdm_;
 };
 
 // Specialization for cdm::ContentDecryptionModule_10 methods.

@@ -70,7 +70,7 @@ class SigninExperienceForDownloadItemBrowserTest
   }
 
  protected:
-  raw_ptr<content::WebContents> web_contents;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents;
   absl::optional<FileSystemSettings> settings;
   DownloadItemForBrowserTest test_item{FILE_PATH_LITERAL("file.txt")};
   std::unique_ptr<download::DownloadItemRenameHandler> rename_handler;

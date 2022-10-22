@@ -276,7 +276,7 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
   }
 
  private:
-  raw_ptr<WebContents> fullscreened_contents_;
+  raw_ptr<WebContents, DanglingUntriaged> fullscreened_contents_;
 };
 
 class FakeWebContentsDelegate : public WebContentsDelegate {

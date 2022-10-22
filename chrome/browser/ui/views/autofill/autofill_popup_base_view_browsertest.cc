@@ -98,7 +98,7 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
 
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
-  raw_ptr<AutofillPopupBaseView> view_;
+  raw_ptr<AutofillPopupBaseView, DanglingUntriaged> view_;
 
  private:
   base::test::ScopedFeatureList feature_list_;

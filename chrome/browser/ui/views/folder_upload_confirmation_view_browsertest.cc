@@ -53,7 +53,7 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
  protected:
   std::vector<ui::SelectedFileInfo> test_files_;
 
-  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 
   bool callback_called_ = false;
   std::vector<ui::SelectedFileInfo> callback_files_;

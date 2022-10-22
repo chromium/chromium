@@ -159,8 +159,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   // It stores the WebContents* from which a MediaRouterDialogControllerViews
   // opened the dialog for a presentation request. It is nullptr if the dialog
   // is opened from the toolbar.
-  const raw_ptr<content::WebContents> web_contents_for_presentation_request_ =
-      nullptr;
+  const raw_ptr<content::WebContents, DanglingUntriaged>
+      web_contents_for_presentation_request_ = nullptr;
   const global_media_controls::GlobalMediaControlsEntryPoint entry_point_;
 };
 

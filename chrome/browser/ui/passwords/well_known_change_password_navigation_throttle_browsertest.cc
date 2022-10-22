@@ -215,9 +215,9 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   void SetUpOnMainThread() override;
   void TestNavigationThrottleForLocalhost(const std::string& expected_path);
 
-  raw_ptr<MockAffiliationService> url_service_ = nullptr;
-  raw_ptr<MockPasswordChangeSuccessTracker> password_change_success_tracker_ =
-      nullptr;
+  raw_ptr<MockAffiliationService, DanglingUntriaged> url_service_ = nullptr;
+  raw_ptr<MockPasswordChangeSuccessTracker, DanglingUntriaged>
+      password_change_success_tracker_ = nullptr;
 
  private:
 };

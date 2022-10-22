@@ -270,9 +270,10 @@ class JavaScriptDialogDismissalCauseTester {
   void SetLastDismissalCause(DismissalCause cause) { dismissal_cause_ = cause; }
 
  private:
-  raw_ptr<content::WebContents> tab_;
-  raw_ptr<content::RenderFrameHost> frame_;
-  raw_ptr<javascript_dialogs::TabModalDialogManager> js_helper_;
+  raw_ptr<content::WebContents, DanglingUntriaged> tab_;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> frame_;
+  raw_ptr<javascript_dialogs::TabModalDialogManager, DanglingUntriaged>
+      js_helper_;
 
   absl::optional<DismissalCause> dismissal_cause_;
 
@@ -455,7 +456,7 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
   content::WebContents* web_contents() { return web_contents_; }
 
  protected:
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 

@@ -443,7 +443,7 @@ class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
   bool is_on_zoom_changed_called_ = false;
 
   content::test::PrerenderTestHelper prerender_helper_;
-  raw_ptr<ZoomController> zoom_controller_;
+  raw_ptr<ZoomController, DanglingUntriaged> zoom_controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(ZoomControllerForPrerenderingTest,

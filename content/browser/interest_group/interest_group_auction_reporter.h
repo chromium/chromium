@@ -61,7 +61,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     //
     // TODO(mmenke):  Figure out how to make this survive the auction (perhaps
     // pass ownership to the constructor).
-    base::raw_ptr<const blink::AuctionConfig> auction_config;
+    base::raw_ptr<const blink::AuctionConfig, DanglingUntriaged> auction_config;
 
     // Bid fed as input to the seller. If this is the top level seller and the
     // bid came from a component auction, it's the (optionally) modified bid
@@ -92,7 +92,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     ~WinningBidInfo();
 
     // TODO(mmenke): Make this own the StorageInterestGroup.
-    base::raw_ptr<const StorageInterestGroup> storage_interest_group;
+    base::raw_ptr<const StorageInterestGroup, DanglingUntriaged>
+        storage_interest_group;
 
     GURL render_url;
     std::vector<GURL> ad_components;

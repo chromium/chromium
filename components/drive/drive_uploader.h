@@ -240,7 +240,8 @@ class DriveUploader : public DriveUploaderInterface {
 
   // The lifetime of this object should be guaranteed to exceed that of the
   // DriveUploader instance.
-  raw_ptr<DriveServiceInterface> drive_service_;  // Not owned by this class.
+  raw_ptr<DriveServiceInterface, DanglingUntriaged>
+      drive_service_;  // Not owned by this class.
 
   scoped_refptr<base::TaskRunner> blocking_task_runner_;
   scoped_refptr<RefCountedBatchRequest> current_batch_request_;

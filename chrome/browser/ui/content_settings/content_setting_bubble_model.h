@@ -283,8 +283,8 @@ class ContentSettingBubbleModel {
   }
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<Owner> owner_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<Owner, DanglingUntriaged> owner_;
   raw_ptr<Delegate> delegate_;
   BubbleContent bubble_content_;
 };

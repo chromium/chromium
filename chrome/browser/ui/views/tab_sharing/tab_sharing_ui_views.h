@@ -171,10 +171,10 @@ class TabSharingUIViews : public TabSharingUI,
   const bool capturer_restricted_to_same_origin_ = false;
   content::DesktopMediaID shared_tab_media_id_;
   const std::u16string app_name_;
-  raw_ptr<content::WebContents> shared_tab_;
+  raw_ptr<content::WebContents, DanglingUntriaged> shared_tab_;
   std::unique_ptr<SameOriginObserver> shared_tab_origin_observer_;
   std::u16string shared_tab_name_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;
 
   // FaviconPeriodicUpdate() runs on a delayed task which re-posts itself.

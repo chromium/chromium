@@ -125,7 +125,7 @@ class WebAppNavigationBrowserTest : public InProcessBrowserTest {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   AppId test_web_app_;
   base::HistogramTester histogram_tester_;
 };

@@ -133,7 +133,8 @@ class ClientMixin : public ClientInterface {
   std::unique_ptr<MyIpAddressImpl> my_ip_address_impl_;
   std::unique_ptr<MyIpAddressImpl> my_ip_address_impl_ex_;
 
-  const raw_ptr<net::ProxyResolverErrorObserver> error_observer_;
+  const raw_ptr<net::ProxyResolverErrorObserver, DanglingUntriaged>
+      error_observer_;
   const raw_ptr<net::NetLog> net_log_;
   const net::NetLogWithSource net_log_with_source_;
 

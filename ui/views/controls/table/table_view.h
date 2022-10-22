@@ -511,7 +511,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // is selected then.
   bool select_on_remove_ = true;
 
-  raw_ptr<TableViewObserver> observer_ = nullptr;
+  raw_ptr<TableViewObserver, DanglingUntriaged> observer_ = nullptr;
   // If |sort_on_paint_| is true, table will sort before painting.
   bool sort_on_paint_ = false;
 

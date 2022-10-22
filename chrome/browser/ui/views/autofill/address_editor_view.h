@@ -74,7 +74,7 @@ class AddressEditorView : public views::View {
   // Map from TextField to the object that describes it
   std::unordered_map<views::Textfield*, const EditorField> text_fields_;
   const std::string locale_;
-  raw_ptr<AddressEditorController> controller_;
+  raw_ptr<AddressEditorController, DanglingUntriaged> controller_;
 
   base::WeakPtrFactory<AddressEditorView> weak_ptr_factory_{this};
 };

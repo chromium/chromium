@@ -129,7 +129,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   LabelButton* cancel_button_ = nullptr;
 
   // The extra view shown in the row of buttons; may be NULL.
-  raw_ptr<View> extra_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> extra_view_ = nullptr;
 
   // Container view for the button row.
   raw_ptr<ButtonRowContainer> button_row_container_ = nullptr;

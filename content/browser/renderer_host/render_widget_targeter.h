@@ -42,7 +42,7 @@ struct CONTENT_EXPORT RenderWidgetTargetResult {
                            bool latched_target);
   ~RenderWidgetTargetResult();
 
-  raw_ptr<RenderWidgetHostViewBase> view = nullptr;
+  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> view = nullptr;
   bool should_query_view = false;
   absl::optional<gfx::PointF> target_location = absl::nullopt;
   // When |latched_target| is false, we explicitly hit-tested events instead of
@@ -252,7 +252,7 @@ class RenderWidgetTargeter {
 
   uint64_t trace_id_;
 
-  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
   base::WeakPtrFactory<RenderWidgetTargeter> weak_ptr_factory_{this};
 };
 

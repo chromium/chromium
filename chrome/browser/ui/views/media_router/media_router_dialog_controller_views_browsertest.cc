@@ -59,8 +59,9 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
   void CloseWebContents();
 
  protected:
-  raw_ptr<WebContents> initiator_;
-  raw_ptr<MediaRouterDialogControllerViews> dialog_controller_;
+  raw_ptr<WebContents, DanglingUntriaged> initiator_;
+  raw_ptr<MediaRouterDialogControllerViews, DanglingUntriaged>
+      dialog_controller_;
 };
 
 void MediaRouterDialogControllerViewsTest::CreateDialogController() {

@@ -238,10 +238,10 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   const AppId& sub_app_id() { return sub_app_id_; }
   const AppId& cross_site_app_id() { return cross_site_app_id_; }
 
-  raw_ptr<RenderFrameHost> main_frame_;
-  raw_ptr<RenderFrameHost> sub_app_frame_;
-  raw_ptr<RenderFrameHost> in_scope_frame_;
-  raw_ptr<RenderFrameHost> cross_site_frame_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> main_frame_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> sub_app_frame_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> in_scope_frame_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> cross_site_frame_;
 
   // Use this script text with EvalJs() on |main_frame_| to register a service
   // worker.  Use ReplaceJs() to replace $1 with the service worker scope URL.
@@ -285,7 +285,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   AppId sub_app_id_;
   AppId cross_site_app_id_;
   std::unique_ptr<base::RunLoop> awaiter_;
-  raw_ptr<badging::TestBadgeManagerDelegate> delegate_;
+  raw_ptr<badging::TestBadgeManagerDelegate, DanglingUntriaged> delegate_;
   net::EmbeddedTestServer cross_origin_https_server_;
 };
 

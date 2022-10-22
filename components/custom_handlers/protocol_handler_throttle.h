@@ -36,7 +36,8 @@ class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
   void TranslateUrl(GURL& url);
   // The ProtocolHandlerRegistry instance is a KeyedService which ownership is
   // managed by the BrowseContext.
-  raw_ptr<const ProtocolHandlerRegistry> protocol_handler_registry_;
+  raw_ptr<const ProtocolHandlerRegistry, DanglingUntriaged>
+      protocol_handler_registry_;
 };
 
 }  // namespace custom_handlers

@@ -90,7 +90,7 @@ class StatusIconLinuxWrapper : public StatusIcon,
   scoped_refptr<StatusIconLinuxDbus> status_icon_dbus_;
 #endif
   std::unique_ptr<ui::StatusIconLinux> status_icon_linux_;
-  raw_ptr<ui::StatusIconLinux> status_icon_;
+  raw_ptr<ui::StatusIconLinux, DanglingUntriaged> status_icon_;
   StatusIconType status_icon_type_;
 
   gfx::ImageSkia image_;

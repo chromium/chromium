@@ -212,7 +212,7 @@ class NavigateTabMessageHandler {
     navigate_listener_.Reset();
   }
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   ExtensionTestMessageListener navigate_listener_;
 };
 
@@ -6057,7 +6057,7 @@ class ErrorObserver : public ErrorConsole::Observer {
 
  private:
   size_t errors_expected_;
-  raw_ptr<ErrorConsole> error_console_;
+  raw_ptr<ErrorConsole, DanglingUntriaged> error_console_;
   size_t errors_observed_ = 0;
   base::ScopedObservation<ErrorConsole, ErrorConsole::Observer> observation_{
       this};

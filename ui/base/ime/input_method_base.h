@@ -101,11 +101,11 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   }
 
  private:
-  raw_ptr<ImeKeyEventDispatcher> ime_key_event_dispatcher_;
+  raw_ptr<ImeKeyEventDispatcher, DanglingUntriaged> ime_key_event_dispatcher_;
 
   void SetFocusedTextInputClientInternal(TextInputClient* client);
 
-  raw_ptr<TextInputClient> text_input_client_ = nullptr;
+  raw_ptr<TextInputClient, DanglingUntriaged> text_input_client_ = nullptr;
 
   base::ObserverList<InputMethodObserver>::Unchecked observer_list_;
 

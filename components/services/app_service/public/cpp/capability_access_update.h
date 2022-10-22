@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
   raw_ptr<const apps::mojom::CapabilityAccess> mojom_delta_ = nullptr;
 
   raw_ptr<const CapabilityAccess> state_ = nullptr;
-  raw_ptr<const CapabilityAccess> delta_ = nullptr;
+  raw_ptr<const CapabilityAccess, DanglingUntriaged> delta_ = nullptr;
 
   const ::AccountId& account_id_;
 };

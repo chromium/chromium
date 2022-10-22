@@ -277,7 +277,7 @@ class UpdateCheckResultAwaiter {
   }
 
  private:
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
   const GURL& url_;
   base::RunLoop run_loop_;
   absl::optional<ManifestUpdateResult> result_;

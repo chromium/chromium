@@ -51,7 +51,7 @@ class BrowserRemovalWaiter : public BrowserListObserver {
       message_loop_runner_->Quit();
   }
 
-  const raw_ptr<const Browser> browser_;
+  const raw_ptr<const Browser, DanglingUntriaged> browser_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 

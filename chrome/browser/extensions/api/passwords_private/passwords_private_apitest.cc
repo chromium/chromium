@@ -128,7 +128,8 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  raw_ptr<TestPasswordsPrivateDelegate> s_test_delegate_ = nullptr;
+  raw_ptr<TestPasswordsPrivateDelegate, DanglingUntriaged> s_test_delegate_ =
+      nullptr;
 };
 
 }  // namespace

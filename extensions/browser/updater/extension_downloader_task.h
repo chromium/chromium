@@ -75,7 +75,7 @@ struct ExtensionDownloaderTask {
   std::string update_url_data;
 
   // Link to the delegate, set by ExtensionDownloader.
-  raw_ptr<ExtensionDownloaderDelegate> delegate{nullptr};
+  raw_ptr<ExtensionDownloaderDelegate, DanglingUntriaged> delegate{nullptr};
 
   // Notifies delegate about stage change.
   void OnStageChanged(ExtensionDownloaderDelegate::Stage stage);

@@ -29,7 +29,7 @@ class ForceInstalledDeprecatedAppsDialogView : public views::View {
                                          content::WebContents* web_contents);
 
   std::u16string app_name_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_DEPRECATED_APPS_DIALOG_VIEW_H_

@@ -127,7 +127,8 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
   bool expecting_dialog_shutdown_ = false;
   raw_ptr<views::DialogDelegate> signin_confirmation_dlg_ = nullptr;
   raw_ptr<views::Widget> sign_in_widget_ = nullptr;
-  raw_ptr<FileSystemSigninDialogDelegate> sign_in_dlg_ = nullptr;
+  raw_ptr<FileSystemSigninDialogDelegate, DanglingUntriaged> sign_in_dlg_ =
+      nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure stop_waiting_for_signin_confirmation_;
   base::OnceClosure stop_waiting_for_page_load_;

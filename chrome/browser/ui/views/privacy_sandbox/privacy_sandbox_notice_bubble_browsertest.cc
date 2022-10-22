@@ -60,7 +60,7 @@ class PrivacySandboxNoticeBubbleBrowserTest : public DialogBrowserTest {
   MockPrivacySandboxService* mock_service() { return mock_service_; }
 
  private:
-  raw_ptr<MockPrivacySandboxService> mock_service_;
+  raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
   base::test::ScopedFeatureList feature_list_;
 };
 

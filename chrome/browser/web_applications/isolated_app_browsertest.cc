@@ -398,10 +398,10 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
     return version_activated_waiter.AwaitVersionActivated();
   }
 
-  raw_ptr<Browser> app_window_;
-  raw_ptr<content::WebContents> app_web_contents_;
-  raw_ptr<content::RenderFrameHost> app_frame_;
-  raw_ptr<content::StoragePartition> storage_partition_;
+  raw_ptr<Browser, DanglingUntriaged> app_window_;
+  raw_ptr<content::WebContents, DanglingUntriaged> app_web_contents_;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> app_frame_;
+  raw_ptr<content::StoragePartition, DanglingUntriaged> storage_partition_;
 
   GURL app_url_;
 };

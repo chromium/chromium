@@ -2052,7 +2052,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Pointer to the JavaScript dialog manager, lazily assigned. Used because the
   // delegate of this WebContentsImpl is nulled before its destructor is called.
-  raw_ptr<JavaScriptDialogManager> dialog_manager_;
+  raw_ptr<JavaScriptDialogManager, DanglingUntriaged> dialog_manager_;
 
   // Set to true when there is an active JavaScript dialog showing.
   bool is_showing_javascript_dialog_ = false;
@@ -2280,7 +2280,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Stores the Portal object associated with this WebContents, if there is one.
   // If non-null then this WebContents is embedded in a portal and its outer
   // WebContents can be found by using GetOuterWebContents().
-  raw_ptr<Portal> portal_ = nullptr;
+  raw_ptr<Portal, DanglingUntriaged> portal_ = nullptr;
 
   // Stores the rect of the Windows Control Overlay, which contains system UX
   // affordances (e.g. close), for installed desktop Progress Web Apps (PWAs),

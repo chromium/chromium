@@ -62,7 +62,7 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
     DCHECK(extension_);
   }
 
-  raw_ptr<const Extension> extension_ = nullptr;
+  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
   TestExtensionDir dir_;
   base::test::ScopedFeatureList feature_list_;
   ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};

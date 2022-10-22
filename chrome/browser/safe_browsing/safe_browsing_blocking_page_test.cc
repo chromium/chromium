@@ -350,7 +350,7 @@ class TestThreatDetailsFactory : public ThreatDetailsFactory {
   ThreatDetails* get_details() { return details_; }
 
  private:
-  raw_ptr<ThreatDetails> details_;
+  raw_ptr<ThreatDetails, DanglingUntriaged> details_;
 };
 
 // A SafeBrowingBlockingPage class that lets us wait until it's hidden.
@@ -841,7 +841,8 @@ class SafeBrowsingBlockingPageBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
   TestSafeBrowsingServiceFactory factory_;
-  raw_ptr<TestSafeBrowsingBlockingPageFactory> raw_blocking_page_factory_;
+  raw_ptr<TestSafeBrowsingBlockingPageFactory, DanglingUntriaged>
+      raw_blocking_page_factory_;
   net::EmbeddedTestServer https_server_;
 };
 

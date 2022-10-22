@@ -460,7 +460,7 @@ class DownloadDeepScanningBrowserTestBase
   bool is_consumer_;
 
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_sb_factory_;
-  raw_ptr<FakeBinaryFCMService> binary_fcm_service_;
+  raw_ptr<FakeBinaryFCMService, DanglingUntriaged> binary_fcm_service_;
 
   enterprise_connectors::ContentAnalysisRequest last_request_;
 

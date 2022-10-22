@@ -72,7 +72,7 @@ class PasswordGenerationPopupViewTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<TestPasswordGenerationPopupController> controller_;
+  raw_ptr<TestPasswordGenerationPopupController, DanglingUntriaged> controller_;
 };
 
 // Regression test for crbug.com/400543. Verifying that moving the mouse in the
