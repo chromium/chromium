@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_function_test_utils.h"
-#include "base/memory/raw_ptr.h"
 
 #include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -151,22 +151,27 @@ bool RunFunction(ExtensionFunction* function,
   absl::optional<base::Value> maybe_parsed_args(ParseList(args));
   EXPECT_TRUE(maybe_parsed_args)
       << "Could not parse extension function arguments: " << args;
-  std::unique_ptr<base::ListValue> parsed_args(base::ListValue::From(
-      base::Value::ToUniquePtrValue(std::move(*maybe_parsed_args))));
+  return RunFunction(function, std::move(*maybe_parsed_args).TakeList(),
+                     browser, flags);
+}
 
-  return RunFunction(function, std::move(parsed_args), browser, flags);
+bool RunFunction(ExtensionFunction* function,
+                 base::Value::List args,
+                 Browser* browser,
+                 extensions::api_test_utils::RunFunctionFlags flags) {
+  TestFunctionDispatcherDelegate dispatcher_delegate(browser);
+  auto dispatcher = std::make_unique<extensions::ExtensionFunctionDispatcher>(
+      browser->profile());
+  dispatcher->set_delegate(&dispatcher_delegate);
+  return extensions::api_test_utils::RunFunction(function, std::move(args),
+                                                 std::move(dispatcher), flags);
 }
 
 bool RunFunction(ExtensionFunction* function,
                  std::unique_ptr<base::ListValue> args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags) {
-  TestFunctionDispatcherDelegate dispatcher_delegate(browser);
-  std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher(
-      new extensions::ExtensionFunctionDispatcher(browser->profile()));
-  dispatcher->set_delegate(&dispatcher_delegate);
-  return extensions::api_test_utils::RunFunction(function, std::move(args),
-                                                 std::move(dispatcher), flags);
+  return RunFunction(function, std::move(*args).TakeList(), browser, flags);
 }
 
 } // namespace extension_function_test_utils

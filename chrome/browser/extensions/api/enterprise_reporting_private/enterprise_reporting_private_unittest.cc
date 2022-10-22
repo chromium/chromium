@@ -41,7 +41,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/missive/fake_missive_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
-#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #endif
@@ -161,9 +160,9 @@ class EnterpriseReportingPrivateDeviceDataFunctionsTest
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->Append("a");
-  values->Append(base::Value(base::Value::BlobStorage({1, 2, 3})));
+  base::Value::List values;
+  values.Append("a");
+  values.Append(base::Value::BlobStorage({1, 2, 3}));
   extension_function_test_utils::RunFunction(function.get(), std::move(values),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -175,8 +174,8 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->Append("b");
+  base::Value::List values;
+  values.Append("b");
   extension_function_test_utils::RunFunction(function.get(), std::move(values),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -192,10 +191,9 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
   auto set_function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> set_values =
-      std::make_unique<base::ListValue>();
-  set_values->Append("a/b");
-  set_values->Append(base::Value(base::Value::BlobStorage({1, 2, 3})));
+  base::Value::List set_values;
+  set_values.Append("a/b");
+  set_values.Append(base::Value::BlobStorage({1, 2, 3}));
   extension_function_test_utils::RunFunction(set_function.get(),
                                              std::move(set_values), browser(),
                                              extensions::api_test_utils::NONE);
@@ -204,8 +202,8 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
   // Try to read the directory as a file and should fail.
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->Append("a");
+  base::Value::List values;
+  values.Append("a");
   extension_function_test_utils::RunFunction(function.get(), std::move(values),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -217,10 +215,9 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   auto set_function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> set_values =
-      std::make_unique<base::ListValue>();
-  set_values->Append("c");
-  set_values->Append(base::Value(base::Value::BlobStorage({1, 2, 3})));
+  base::Value::List set_values;
+  set_values.Append("c");
+  set_values.Append(base::Value::BlobStorage({1, 2, 3}));
   extension_function_test_utils::RunFunction(set_function.get(),
                                              std::move(set_values), browser(),
                                              extensions::api_test_utils::NONE);
@@ -228,8 +225,8 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
 
   auto get_function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> values = std::make_unique<base::ListValue>();
-  values->Append("c");
+  base::Value::List values;
+  values.Append("c");
   extension_function_test_utils::RunFunction(get_function.get(),
                                              std::move(values), browser(),
                                              extensions::api_test_utils::NONE);
@@ -242,9 +239,8 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   // Clear the data and check that it is gone.
   auto set_function2 =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> reset_values =
-      std::make_unique<base::ListValue>();
-  reset_values->Append("c");
+  base::Value::List reset_values;
+  reset_values.Append("c");
   extension_function_test_utils::RunFunction(set_function2.get(),
                                              std::move(reset_values), browser(),
                                              extensions::api_test_utils::NONE);
@@ -252,9 +248,8 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
 
   auto get_function2 =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  std::unique_ptr<base::ListValue> values2 =
-      std::make_unique<base::ListValue>();
-  values2->Append("c");
+  base::Value::List values2;
+  values2.Append("c");
   extension_function_test_utils::RunFunction(get_function2.get(),
                                              std::move(values2), browser(),
                                              extensions::api_test_utils::NONE);
@@ -1128,8 +1123,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
-  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(base::Value(enqueue_record_request.ToValue()));
+  base::Value::List params;
+  params.Append(enqueue_record_request.ToValue());
 
   // Set up DM token
   const auto dm_token =
@@ -1171,8 +1166,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
-  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(base::Value(enqueue_record_request.ToValue()));
+  base::Value::List params;
+  params.Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
@@ -1201,8 +1196,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
-  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(base::Value(enqueue_record_request.ToValue()));
+  base::Value::List params;
+  params.Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
@@ -1228,8 +1223,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
-  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(base::Value(enqueue_record_request.ToValue()));
+  base::Value::List params;
+  params.Append(enqueue_record_request.ToValue());
 
   // Set up invalid DM token
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
@@ -1262,9 +1257,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
-  // TODO (b/234559917): Use base::Value::List instead
-  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(base::Value(enqueue_record_request.ToValue()));
+  base::Value::List params;
+  params.Append(enqueue_record_request.ToValue());
 
   // Set up invalid DM token
   policy::SetDMTokenForTesting(
@@ -1561,7 +1555,7 @@ class EnterpriseReportingPrivateGetSettingsTest : public UserContextGatedTest {
     enterprise_reporting_private::GetSettingsRequest request;
     request.user_context = GetFakeUserContext();
     request.options.push_back(GetFakeSettingsOptionsParam());
-    base::ListValue params;
+    base::Value::List params;
     params.Append(request.ToValue());
     std::string json_value;
     base::JSONWriter::Write(params, &json_value);
@@ -1730,8 +1724,8 @@ TEST_F(EnterpriseReportingPrivateGetSettingsDisabledTest, FlagDisabled_Test) {
 
 std::string GetFakeUserContextJsonParams() {
   auto user_context = GetFakeUserContext();
-  base::ListValue params;
-  params.Append(base::Value(user_context.ToValue()));
+  base::Value::List params;
+  params.Append(user_context.ToValue());
   std::string json_value;
   base::JSONWriter::Write(params, &json_value);
   return json_value;

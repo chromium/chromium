@@ -206,13 +206,12 @@ bool RunFunction(
                      flags);
 }
 
-bool RunFunction(
-    ExtensionFunction* function,
-    std::unique_ptr<base::ListValue> args,
-    std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
-    RunFunctionFlags flags) {
+bool RunFunction(ExtensionFunction* function,
+                 base::Value::List args,
+                 std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
+                 RunFunctionFlags flags) {
   SendResponseHelper response_helper(function);
-  function->SetArgs(base::Value::FromUniquePtrValue(std::move(args)));
+  function->SetArgs(base::Value(std::move(args)));
 
   CHECK(dispatcher);
   function->SetDispatcher(dispatcher->AsWeakPtr());
@@ -224,6 +223,15 @@ bool RunFunction(
 
   EXPECT_TRUE(response_helper.has_response());
   return response_helper.GetResponse();
+}
+
+bool RunFunction(
+    ExtensionFunction* function,
+    std::unique_ptr<base::ListValue> args,
+    std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
+    RunFunctionFlags flags) {
+  return RunFunction(function, std::move(*args).TakeList(),
+                     std::move(dispatcher), flags);
 }
 
 }  // namespace api_test_utils
