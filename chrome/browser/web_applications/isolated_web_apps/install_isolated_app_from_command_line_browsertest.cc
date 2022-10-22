@@ -7,15 +7,12 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/location.h"
 #include "base/one_shot_event.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -44,9 +41,6 @@ class InstallIsolatedAppFromCommandLineBrowserTest
         GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    SetNextInstallationDoneCallbackForTesting(
-        base::BindLambdaForTesting([&]() { is_installation_done_.Signal(); }));
-
     InProcessBrowserTest::SetUp();
   }
 
@@ -59,12 +53,6 @@ class InstallIsolatedAppFromCommandLineBrowserTest
 
   GURL GetAppUrl() const { return embedded_test_server()->base_url(); }
 
-  void WaitForInstallation() {
-    base::RunLoop loop;
-    is_installation_done_.Post(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-
   WebAppRegistrar& GetWebAppRegistrar() {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider != nullptr);
@@ -72,22 +60,18 @@ class InstallIsolatedAppFromCommandLineBrowserTest
   }
 
  private:
-  base::OneShotEvent is_installation_done_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InstallIsolatedAppFromCommandLineBrowserTest,
                        AppFromCommandLineIsInstalled) {
-  WaitForInstallation();
+  WebAppTestInstallObserver observer(browser()->profile());
+  AppId id = observer.BeginListeningAndWait();
 
-  std::vector<const WebApp*> apps;
-  for (const WebApp& app : GetWebAppRegistrar().GetApps()) {
-    apps.push_back(&app);
-  }
+  ASSERT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
 
-  EXPECT_THAT(
-      apps,
-      ElementsAre(Pointee(Property(&WebApp::isolation_data, Optional(_)))));
+  EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
+              Pointee(Property(&WebApp::isolation_data, Optional(_))));
 }
 
 }  // namespace
