@@ -29,6 +29,7 @@ class BoxLayoutView;
 namespace ash {
 
 class AmbientAnimationAttributionProvider;
+class AmbientAnimationFrameRateController;
 class AmbientAnimationPlayer;
 class AmbientAnimationProgressTracker;
 class AmbientAnimationStaticResources;
@@ -46,7 +47,8 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
       AmbientViewDelegateImpl* view_delegate,
       AmbientAnimationProgressTracker* progress_tracker,
       std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
-      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
+      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder,
+      AmbientAnimationFrameRateController* frame_rate_controller);
   AmbientAnimationView(const AmbientAnimationView&) = delete;
   AmbientAnimationView& operator=(AmbientAnimationView&) = delete;
   ~AmbientAnimationView() override;
@@ -57,6 +59,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   void AnimationCycleEnded(const lottie::Animation* animation) override;
 
   void OnViewBoundsChanged(View* observed_view) override;
+  void OnViewAddedToWidget(View* observed_view) override;
 
   void StartPlayingAnimation();
   void StartThroughputTracking();
@@ -67,6 +70,8 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   const base::raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
   const std::unique_ptr<const AmbientAnimationStaticResources>
       static_resources_;
+  const base::raw_ptr<AmbientAnimationFrameRateController>
+      frame_rate_controller_;
   AmbientAnimationPhotoProvider animation_photo_provider_;
   std::unique_ptr<AmbientAnimationAttributionProvider>
       animation_attribution_provider_;

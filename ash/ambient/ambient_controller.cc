@@ -17,6 +17,7 @@
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 #include "ash/ambient/model/ambient_topic_queue_slideshow_delegate.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
+#include "ash/ambient/ui/ambient_animation_frame_rate_controller.h"
 #include "ash/ambient/ui/ambient_animation_progress_tracker.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
@@ -218,6 +219,9 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       multi_screen_metrics_recorder_ =
           std::make_unique<AmbientMultiScreenMetricsRecorder>(
               GetCurrentTheme());
+      frame_rate_controller_ =
+          std::make_unique<AmbientAnimationFrameRateController>(
+              Shell::Get()->frame_throttling_controller());
 
       // Cancels the timer upon shown.
       inactivity_timer_.Stop();
@@ -261,6 +265,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // not shown.
       AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
 
+      frame_rate_controller_.reset();
       multi_screen_metrics_recorder_.reset();
 
       // |start_time_| may be empty in case of |AmbientUiVisibility::kHidden| if
@@ -805,7 +810,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
       &delegate_, ambient_animation_progress_tracker_.get(),
       AmbientAnimationStaticResources::Create(current_theme,
                                               /*serializable=*/true),
-      multi_screen_metrics_recorder_.get());
+      multi_screen_metrics_recorder_.get(), frame_rate_controller_.get());
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
 

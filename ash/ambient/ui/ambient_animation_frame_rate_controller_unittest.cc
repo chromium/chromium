@@ -105,10 +105,18 @@ class AmbientAnimationFrameRateControllerTest : public AshTestBase {
 
   void AdvanceTimeAndPaint(lottie::Animation& animation,
                            float normalized_amount) {
+    AdvanceTimeAndPaint({&animation}, normalized_amount);
+  }
+
+  void AdvanceTimeAndPaint(std::vector<lottie::Animation*> animations,
+                           float normalized_amount) {
+    CHECK(!animations.empty());
     CHECK_GE(normalized_amount, 0.f);
     CHECK_LE(normalized_amount, 1.f);
-    clock_ += (normalized_amount * animation.GetAnimationDuration());
-    animation.Paint(&canvas_, clock_, kTestAnimationSize);
+    clock_ += (normalized_amount * animations.front()->GetAnimationDuration());
+    for (lottie::Animation* animation : animations) {
+      animation->Paint(&canvas_, clock_, kTestAnimationSize);
+    }
   }
 
   base::TimeTicks clock_;
@@ -127,8 +135,8 @@ TEST_F(AmbientAnimationFrameRateControllerTest, BasicThrottling) {
   lottie::Animation animation(
       base::MakeRefCounted<TestSkottieWrapper>(base::Seconds(1), markers));
   AmbientAnimationFrameRateController ambient_frame_rate_controller(
-      Shell::Get()->frame_throttling_controller(), &animation);
-  ambient_frame_rate_controller.AddWindowToThrottle(window.get());
+      Shell::Get()->frame_throttling_controller());
+  ambient_frame_rate_controller.AddWindowToThrottle(window.get(), &animation);
   animation.Start(lottie::Animation::PlaybackConfig::CreateDefault(animation));
 
   // T: 0
@@ -228,8 +236,8 @@ TEST_F(AmbientAnimationFrameRateControllerTest,
   lottie::Animation animation(
       base::MakeRefCounted<TestSkottieWrapper>(base::Seconds(1), markers));
   AmbientAnimationFrameRateController ambient_frame_rate_controller(
-      Shell::Get()->frame_throttling_controller(), &animation);
-  ambient_frame_rate_controller.AddWindowToThrottle(window.get());
+      Shell::Get()->frame_throttling_controller());
+  ambient_frame_rate_controller.AddWindowToThrottle(window.get(), &animation);
   animation.Start(lottie::Animation::PlaybackConfig::CreateDefault(animation));
 
   // T: 0
@@ -271,8 +279,8 @@ TEST_F(AmbientAnimationFrameRateControllerTest, NoMarkers) {
   lottie::Animation animation(base::MakeRefCounted<TestSkottieWrapper>(
       base::Seconds(1), std::vector<cc::SkottieMarker>()));
   AmbientAnimationFrameRateController ambient_frame_rate_controller(
-      Shell::Get()->frame_throttling_controller(), &animation);
-  ambient_frame_rate_controller.AddWindowToThrottle(window.get());
+      Shell::Get()->frame_throttling_controller());
+  ambient_frame_rate_controller.AddWindowToThrottle(window.get(), &animation);
   animation.Start(lottie::Animation::PlaybackConfig::CreateDefault(animation));
 
   constexpr int kNumTimeStepsToTest = 30;
@@ -302,8 +310,8 @@ TEST_F(AmbientAnimationFrameRateControllerTest, LargeTimesteps) {
   lottie::Animation animation(
       base::MakeRefCounted<TestSkottieWrapper>(base::Seconds(1), markers));
   AmbientAnimationFrameRateController ambient_frame_rate_controller(
-      Shell::Get()->frame_throttling_controller(), &animation);
-  ambient_frame_rate_controller.AddWindowToThrottle(window.get());
+      Shell::Get()->frame_throttling_controller());
+  ambient_frame_rate_controller.AddWindowToThrottle(window.get(), &animation);
   animation.Start(lottie::Animation::PlaybackConfig::CreateDefault(animation));
 
   // T: 0
@@ -349,18 +357,24 @@ TEST_F(AmbientAnimationFrameRateControllerTest, MultipleWindows) {
   std::vector<cc::SkottieMarker> markers = {
       {"_CrOS_Marker_Throttled_10fps", 0.4f, 0.6f},
   };
-  lottie::Animation animation(
+  lottie::Animation animation_1(
+      base::MakeRefCounted<TestSkottieWrapper>(base::Seconds(1), markers));
+  lottie::Animation animation_2(
       base::MakeRefCounted<TestSkottieWrapper>(base::Seconds(1), markers));
   AmbientAnimationFrameRateController ambient_frame_rate_controller(
-      Shell::Get()->frame_throttling_controller(), &animation);
-  animation.Start(lottie::Animation::PlaybackConfig::CreateDefault(animation));
+      Shell::Get()->frame_throttling_controller());
+  animation_1.Start(
+      lottie::Animation::PlaybackConfig::CreateDefault(animation_1));
+  animation_2.Start(
+      lottie::Animation::PlaybackConfig::CreateDefault(animation_2));
 
   // T: 0
-  AdvanceTimeAndPaint(animation, .0f);
+  AdvanceTimeAndPaint({&animation_1, &animation_2}, .0f);
   // T: .41
-  AdvanceTimeAndPaint(animation, .41f);
+  AdvanceTimeAndPaint({&animation_1, &animation_2}, .41f);
 
-  ambient_frame_rate_controller.AddWindowToThrottle(window_1.get());
+  ambient_frame_rate_controller.AddWindowToThrottle(window_1.get(),
+                                                    &animation_1);
   EXPECT_THAT(
       Shell::Get()->frame_throttling_controller()->GetFrameSinkIdsToThrottle(),
       UnorderedElementsAre(kTestFrameSinkId1));
@@ -370,8 +384,9 @@ TEST_F(AmbientAnimationFrameRateControllerTest, MultipleWindows) {
               Eq(10));
 
   // T: .59
-  AdvanceTimeAndPaint(animation, .59f - .41f);
-  ambient_frame_rate_controller.AddWindowToThrottle(window_2.get());
+  AdvanceTimeAndPaint({&animation_1, &animation_2}, .59f - .41f);
+  ambient_frame_rate_controller.AddWindowToThrottle(window_2.get(),
+                                                    &animation_2);
   EXPECT_THAT(
       Shell::Get()->frame_throttling_controller()->GetFrameSinkIdsToThrottle(),
       UnorderedElementsAre(kTestFrameSinkId1, kTestFrameSinkId2));
@@ -381,7 +396,7 @@ TEST_F(AmbientAnimationFrameRateControllerTest, MultipleWindows) {
               Eq(10));
 
   // T: .7
-  AdvanceTimeAndPaint(animation, .7f - .59f);
+  AdvanceTimeAndPaint({&animation_1, &animation_2}, .7f - .59f);
   EXPECT_THAT(
       Shell::Get()->frame_throttling_controller()->GetFrameSinkIdsToThrottle(),
       IsEmpty());
@@ -400,29 +415,38 @@ TEST_F(AmbientAnimationFrameRateControllerTest,
   std::vector<cc::SkottieMarker> markers = {
       {"_CrOS_Marker_Throttled_10fps", 0.f, 0.2f},
   };
-  auto animation = std::make_unique<lottie::Animation>(
+  auto animation_1 = std::make_unique<lottie::Animation>(
+      base::MakeRefCounted<TestSkottieWrapper>(base::Seconds(1), markers));
+  auto animation_2 = std::make_unique<lottie::Animation>(
       base::MakeRefCounted<TestSkottieWrapper>(base::Seconds(1), markers));
   AmbientAnimationFrameRateController ambient_frame_rate_controller(
-      Shell::Get()->frame_throttling_controller(), animation.get());
-  animation->Start(
-      lottie::Animation::PlaybackConfig::CreateDefault(*animation));
-  ambient_frame_rate_controller.AddWindowToThrottle(window_1.get());
-  ambient_frame_rate_controller.AddWindowToThrottle(window_2.get());
+      Shell::Get()->frame_throttling_controller());
+  animation_1->Start(
+      lottie::Animation::PlaybackConfig::CreateDefault(*animation_1));
+  animation_2->Start(
+      lottie::Animation::PlaybackConfig::CreateDefault(*animation_2));
+  ambient_frame_rate_controller.AddWindowToThrottle(window_1.get(),
+                                                    animation_1.get());
+  ambient_frame_rate_controller.AddWindowToThrottle(window_2.get(),
+                                                    animation_2.get());
 
   // T: 0
-  AdvanceTimeAndPaint(*animation, .0f);
+  AdvanceTimeAndPaint({animation_1.get(), animation_2.get()}, .0f);
   ASSERT_THAT(
       Shell::Get()->frame_throttling_controller()->GetFrameSinkIdsToThrottle(),
       UnorderedElementsAre(kTestFrameSinkId1, kTestFrameSinkId2));
 
   window_1.reset();
+  animation_1.reset();
   // T: 0.05f
-  AdvanceTimeAndPaint(*animation, .05f);
+  AdvanceTimeAndPaint({animation_2.get()}, .05f);
   EXPECT_THAT(
       Shell::Get()->frame_throttling_controller()->GetFrameSinkIdsToThrottle(),
       UnorderedElementsAre(kTestFrameSinkId2));
 
-  animation.reset();
+  // Try the reverse destruction order from before.
+  animation_2.reset();
+  window_2.reset();
   // The frame rate should be restored to default when the animation is
   // over.
   EXPECT_THAT(

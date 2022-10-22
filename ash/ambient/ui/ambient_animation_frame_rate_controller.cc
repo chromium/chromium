@@ -6,8 +6,6 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -36,16 +34,10 @@ AmbientAnimationFrameRateSchedule BuildSchedule(lottie::Animation* animation) {
 }  // namespace
 
 AmbientAnimationFrameRateController::AmbientAnimationFrameRateController(
-    FrameThrottlingController* frame_throttling_controller,
-    lottie::Animation* animation)
+    FrameThrottlingController* frame_throttling_controller)
     : frame_throttling_controller_(frame_throttling_controller),
-      animation_(animation),
-      schedule_(BuildSchedule(animation)),
       current_section_(schedule_.end()) {
   DCHECK(frame_throttling_controller_);
-  DCHECK(animation_);
-  current_section_ = FindCurrentSection();
-  animation_observation_.Observe(animation);
 }
 
 AmbientAnimationFrameRateController::~AmbientAnimationFrameRateController() {
@@ -55,6 +47,9 @@ AmbientAnimationFrameRateController::~AmbientAnimationFrameRateController() {
 void AmbientAnimationFrameRateController::AnimationFramePainted(
     const lottie::Animation* animation,
     float) {
+  if (animation != tracking_animation_.get())
+    return;
+
   auto new_current_section = FindCurrentSection();
   if (new_current_section == current_section_)
     return;
@@ -64,31 +59,46 @@ void AmbientAnimationFrameRateController::AnimationFramePainted(
   ThrottleFrameRateForCurrentSection();
 }
 
+// Note either AnimationIsDeleting() or OnWindowDestroying() could come first.
+// Whichever one does should cause both the window and animation to be removed
+// from book-keeping entirely.
 void AmbientAnimationFrameRateController::AnimationIsDeleting(
-    const lottie::Animation* animation) {
-  animation_observation_.Reset();
-  ThrottleFrameRate(kDefaultFrameInterval);
+    const lottie::Animation* deleting_animation) {
+  aura::Window* window_to_remove = nullptr;
+  for (const auto& [window, animation] : windows_to_throttle_) {
+    if (animation == deleting_animation) {
+      window_to_remove = window;
+      break;
+    }
+  }
+  DCHECK(window_to_remove);
+  RemoveWindowToThrottle(window_to_remove);
 }
 
 void AmbientAnimationFrameRateController::OnWindowDestroying(
     aura::Window* window) {
-  if (base::Erase(windows_to_throttle_, window) == 0) {
-    NOTREACHED() << "Received OnWindowDestroying() for unknown window "
-                 << window->GetId();
-  }
-  window_observations_.RemoveObservation(window);
-  // Update throttling with the trimmed list of |windows_to_throttle_|.
-  ThrottleFrameRateForCurrentSection();
+  RemoveWindowToThrottle(window);
 }
 
 void AmbientAnimationFrameRateController::AddWindowToThrottle(
-    aura::Window* window) {
+    aura::Window* window,
+    lottie::Animation* animation) {
   DCHECK(window);
-  DCHECK(window->GetFrameSinkId().is_valid());
-  if (base::Contains(windows_to_throttle_, window))
+  DCHECK(window->GetFrameSinkId().is_valid())
+      << "Window missing frame sink id: " << window->GetId();
+  DCHECK(animation);
+  if (windows_to_throttle_.contains(window))
     return;
 
-  windows_to_throttle_.push_back(window);
+  if (tracking_animation_) {
+    DCHECK_EQ(tracking_animation_->skottie()->id(), animation->skottie()->id())
+        << "All lottie animations must have the same json content";
+  }
+  windows_to_throttle_[window] = animation;
+  TrySetNewTrackingAnimation();
+  // Always observe even if the incoming |animation| is not the
+  // |tracking_animation_| so that we get notified when AnimationIsDeleting().
+  animation_observations_.AddObservation(animation);
   window_observations_.AddObservation(window);
   // Update throttling with the expanded list of |windows_to_throttle_|.
   ThrottleFrameRateForCurrentSection();
@@ -96,7 +106,9 @@ void AmbientAnimationFrameRateController::AddWindowToThrottle(
 
 AmbientAnimationFrameRateScheduleIterator
 AmbientAnimationFrameRateController::FindCurrentSection() const {
-  absl::optional<float> current_progress = animation_->GetCurrentProgress();
+  DCHECK(tracking_animation_);
+  absl::optional<float> current_progress =
+      tracking_animation_->GetCurrentProgress();
   if (!current_progress) {
     DVLOG(1) << "Animation is not playing currently. Cannot map timestamp to "
                 "scheduled frame rate.";
@@ -148,14 +160,63 @@ void AmbientAnimationFrameRateController::ThrottleFrameRateForCurrentSection() {
 
 void AmbientAnimationFrameRateController::ThrottleFrameRate(
     base::TimeDelta frame_interval) {
+  std::vector<aura::Window*> windows_as_vector;
+  for (const auto& [window, animation] : windows_to_throttle_) {
+    windows_as_vector.push_back(window);
+  }
+
   if (frame_interval == kDefaultFrameInterval) {
-    DVLOG(1) << "Resetting frame rate to default";
+    VLOG(1) << "Resetting frame rate to default";
     frame_throttling_controller_->EndThrottling();
   } else {
     DVLOG(1) << "Throttling frame rate to " << frame_interval.ToHz() << "hz";
-    frame_throttling_controller_->StartThrottling(windows_to_throttle_,
+    frame_throttling_controller_->StartThrottling(windows_as_vector,
                                                   frame_interval);
   }
+}
+
+void AmbientAnimationFrameRateController::RemoveWindowToThrottle(
+    aura::Window* window) {
+  window_observations_.RemoveObservation(window);
+  auto iter = windows_to_throttle_.find(window);
+  DCHECK(iter != windows_to_throttle_.end());
+  lottie::Animation* unregistered_animation = iter->second;
+  animation_observations_.RemoveObservation(unregistered_animation);
+  windows_to_throttle_.erase(iter);
+  if (unregistered_animation != tracking_animation_)
+    return;
+
+  tracking_animation_ = nullptr;
+  TrySetNewTrackingAnimation();
+  if (tracking_animation_) {
+    DVLOG(1)
+        << "Observing new lottie Animation. Resetting frame rate throttling.";
+    ThrottleFrameRateForCurrentSection();
+  } else {
+    DVLOG(1) << "No more lottie animations are active. Restoring default frame "
+                "rate and going idle...";
+    ThrottleFrameRate(kDefaultFrameInterval);
+  }
+}
+
+void AmbientAnimationFrameRateController::TrySetNewTrackingAnimation() {
+  if (tracking_animation_) {
+    DVLOG(4) << "Tracking animation already set.";
+    return;
+  }
+
+  if (windows_to_throttle_.empty()) {
+    DVLOG(4) << "No lottie animations to track. Going idle.";
+    return;
+  }
+
+  tracking_animation_ = windows_to_throttle_.begin()->second;
+  schedule_ = BuildSchedule(tracking_animation_.get());
+  // Set |current_section_| to be |schedule_.end()| temporarily so that
+  // FindCurrentSection() knows to start searching the new schedule from
+  // scratch.
+  current_section_ = schedule_.end();
+  current_section_ = FindCurrentSection();
 }
 
 }  // namespace ash

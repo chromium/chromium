@@ -12,6 +12,7 @@
 
 namespace ash {
 
+class AmbientAnimationFrameRateController;
 class AmbientAnimationProgressTracker;
 class AmbientAnimationStaticResources;
 class AmbientMultiScreenMetricsRecorder;
@@ -35,7 +36,8 @@ class ASH_EXPORT AmbientContainerView : public views::View {
       AmbientAnimationProgressTracker* progress_tracker,
       std::unique_ptr<AmbientAnimationStaticResources>
           animation_static_resources,
-      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
+      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder,
+      AmbientAnimationFrameRateController* frame_rate_controller);
   ~AmbientContainerView() override;
 
  private:

@@ -14,6 +14,7 @@
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -101,6 +102,7 @@ class AmbientControllerTest : public AmbientAshTestBase {
 
   // AmbientAshTestBase:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kAmbientModeThrottleAnimation);
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
   }
@@ -136,6 +138,8 @@ class AmbientControllerTest : public AmbientAshTestBase {
         << "observers should all have the same state";
     return ui_model_bound;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests for behavior that are agnostic to the AmbientAnimationTheme selected by

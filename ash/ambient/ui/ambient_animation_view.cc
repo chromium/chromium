@@ -17,6 +17,7 @@
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/ui/ambient_animation_attribution_transformer.h"
 #include "ash/ambient/ui/ambient_animation_background_color.h"
+#include "ash/ambient/ui/ambient_animation_frame_rate_controller.h"
 #include "ash/ambient/ui/ambient_animation_player.h"
 #include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_animation_shield_controller.h"
@@ -24,8 +25,11 @@
 #include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
@@ -177,14 +181,17 @@ AmbientAnimationView::AmbientAnimationView(
     AmbientViewDelegateImpl* view_delegate,
     AmbientAnimationProgressTracker* progress_tracker,
     std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
-    AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder)
+    AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder,
+    AmbientAnimationFrameRateController* frame_rate_controller)
     : view_delegate_(view_delegate),
       progress_tracker_(progress_tracker),
       static_resources_(std::move(static_resources)),
+      frame_rate_controller_(frame_rate_controller),
       animation_photo_provider_(static_resources_.get(),
                                 view_delegate->GetAmbientBackendModel()),
       animation_jitter_calculator_(kAnimationJitterConfig) {
   DCHECK(view_delegate_);
+  DCHECK(frame_rate_controller_);
   SetID(AmbientViewID::kAmbientAnimationView);
   Init(multi_screen_metrics_recorder);
 }
@@ -365,6 +372,23 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
         FROM_HERE, kThroughputTrackerRestartPeriod, this,
         &AmbientAnimationView::RestartThroughputTracking);
   }
+}
+
+void AmbientAnimationView::OnViewAddedToWidget(View* observed_view) {
+  DCHECK_EQ(observed_view, static_cast<View*>(animated_image_view_));
+  DCHECK(observed_view->GetWidget());
+  if (!features::IsAmbientModeThrottleAnimationEnabled())
+    return;
+
+  // Frame throttling requires a window with a valid FrameSinkId. Keep searching
+  // up the window tree until one is found.
+  auto* window_to_throttle = animated_image_view_->GetWidget()->GetNativeView();
+  while (!window_to_throttle->GetFrameSinkId().is_valid()) {
+    window_to_throttle = window_to_throttle->parent();
+    DCHECK(window_to_throttle) << "Search for window to throttle failed";
+  }
+  frame_rate_controller_->AddWindowToThrottle(
+      window_to_throttle, animated_image_view_->animated_image());
 }
 
 void AmbientAnimationView::StartPlayingAnimation() {
