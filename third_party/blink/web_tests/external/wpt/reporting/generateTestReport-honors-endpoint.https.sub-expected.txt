@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Generate Test Report
+FAIL Reporting-Endpoints target received the test report. assert_unreached: A report of test from https://web-platform.test:8444/reporting/generateTestReport-honors-endpoint.https.sub.html was not found. Reached unreachable code
+Harness: the test ran to completion.
+

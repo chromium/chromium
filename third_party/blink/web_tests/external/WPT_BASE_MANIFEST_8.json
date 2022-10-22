@@ -341595,6 +341595,14 @@
      "547cd6a588e6ce4110709f493bcd6561a9c52e2a",
      []
     ],
+    "generateTestReport-honors-endpoint.https.sub-expected.txt": [
+     "031652a742f468d37368e716374c66d4c70d2292",
+     []
+    ],
+    "generateTestReport-honors-endpoint.https.sub.html.sub.headers": [
+     "7167d54d8388fc3aa5bd57ee598e4ab48f88b396",
+     []
+    ],
     "idlharness.any-expected.txt": [
      "55ab8a9bd30bc2473b9faa72c0baf27e7dfdf298",
      []
@@ -543599,6 +543607,15 @@
     ],
     "document-reporting-path-absolute.https.sub.html": [
      "48be010a00be6db990a118f58543a900cb1da259",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "generateTestReport-honors-endpoint.https.sub.html": [
+     "f04f5e00f9e8bef1929ca0e8e2ab93eee89f1acf",
      [
       null,
       {
