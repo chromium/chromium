@@ -31,7 +31,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -463,7 +462,6 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/958558")
     public void testSimpleItemSelection() {
         Dialog dialog = mChooserDialog.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
@@ -485,7 +483,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         });
 
         // Two items showing, the empty view should be no more and the button
-        // should now be enabled.
+        // remains disabled.
         Assert.assertEquals(View.VISIBLE, items.getVisibility());
         Assert.assertEquals(View.GONE, items.getEmptyView().getVisibility());
         Assert.assertEquals("statusActive", statusView.getText().toString());
@@ -501,9 +499,11 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         Assert.assertEquals("statusIdleSomeFound", statusView.getText().toString());
         Assert.assertFalse(button.isEnabled());
 
-        // Select the first item and verify it got selected.
+        // Select the first item and verify it got selected. The "Pair" button
+        // should now be enabled.
         selectItem(dialog, 1, "key1", true);
         Assert.assertTrue(getDescriptionTextView(dialog, 1).isSelected());
+        Assert.assertTrue(button.isEnabled());
     }
 
     @Test
