@@ -1446,8 +1446,8 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {
   for (int i = 0; i < 2; ++i) {
     base::PendingTask task;
     task.task = base::DoNothing();
-    task.posted_from =
-        base::Location("my_func", "my_file", 0, /*program_counter=*/&task);
+    task.posted_from = base::Location::CreateForTesting(
+        "my_func", "my_file", 0, /*program_counter=*/&task);
     // TaskAnnotator::RunTask is responsible for emitting the task execution
     // event.
     task_annotator.RunTask("ThreadControllerImpl::RunTask1", task);
@@ -1508,8 +1508,9 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEventWithoutFunction) {
   base::TaskAnnotator task_annotator;
   base::PendingTask task;
   task.task = base::DoNothing();
-  task.posted_from = base::Location(/*function_name=*/nullptr, "my_file", 0,
-                                    /*program_counter=*/&task);
+  task.posted_from =
+      base::Location::CreateForTesting(/*function_name=*/nullptr, "my_file", 0,
+                                       /*program_counter=*/&task);
 
   // TaskAnnotator::RunTask is responsible for emitting the task execution
   // event.

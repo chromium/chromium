@@ -287,8 +287,8 @@ TEST_F(TypedTraceEventTest, InternedData) {
     // only attributes that are compared are function_name, file_name and
     // line_number.
     const void* dummy_pc = &iid;
-    base::Location base_location =
-        base::Location("TestFunction", "test.cc", 123, dummy_pc);
+    base::Location base_location = base::Location::CreateForTesting(
+        "TestFunction", "test.cc", 123, dummy_pc);
     TraceSourceLocation location3(base_location);
     size_t iid4 = InternedSourceLocation::Get(&ctx, location3);
     EXPECT_EQ(iid, iid4);

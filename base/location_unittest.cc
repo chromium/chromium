@@ -43,8 +43,8 @@ TEST(LocationTest, CurrentYieldsCorrectValue) {
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 TEST(LocationTest, TracingSupport) {
-  EXPECT_EQ(perfetto::TracedValueToString(
-                Location("func", "file", 42, WhereAmI().program_counter())),
+  EXPECT_EQ(perfetto::TracedValueToString(Location::CreateForTesting(
+                "func", "file", 42, WhereAmI().program_counter())),
             "{function_name:func,file_name:file,line_number:42}");
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)

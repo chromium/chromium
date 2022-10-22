@@ -37,18 +37,12 @@ class BASE_EXPORT Location {
   Location(Location&& other) noexcept;
   Location& operator=(const Location& other);
 
-  // Only initializes the file name and program counter, the source information
-  // will be null for the strings, and -1 for the line number.
-  // TODO(http://crbug.com/760702) remove file name from this constructor.
-  Location(const char* file_name, const void* program_counter);
-
-  // Constructor should be called with a long-lived char*, such as __FILE__.
-  // It assumes the provided value will persist as a global constant, and it
-  // will not make a copy of it.
-  Location(const char* function_name,
-           const char* file_name,
-           int line_number,
-           const void* program_counter);
+  static Location CreateForTesting(const char* function_name,
+                                   const char* file_name,
+                                   int line_number,
+                                   const void* program_counter) {
+    return Location(function_name, file_name, line_number, program_counter);
+  }
 
   // Comparator for testing. The program counter should uniquely
   // identify a location.
@@ -92,30 +86,31 @@ class BASE_EXPORT Location {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #if SUPPORTS_LOCATION_BUILTINS
-
 #if BUILDFLAG(ENABLE_LOCATION_SOURCE)
   static Location Current(const char* function_name = __builtin_FUNCTION(),
                           const char* file_name = __builtin_FILE(),
                           int line_number = __builtin_LINE());
 #else
   static Location Current(const char* file_name = __builtin_FILE());
-#endif
-
+#endif  // BUILDFLAG(ENABLE_LOCATION_SOURCE)
 #else
-
   static Location Current();
-
-#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
-  static Location CreateFromHere(const char* function_name,
-                                 const char* file_name,
-                                 int line_number);
-#else
-  static Location CreateFromHere(const char* file_name);
-#endif
-
-#endif
+#endif  // SUPPORTS_LOCATION_BUILTINS
 
  private:
+  // Only initializes the file name and program counter, the source information
+  // will be null for the strings, and -1 for the line number.
+  // TODO(http://crbug.com/760702) remove file name from this constructor.
+  Location(const char* file_name, const void* program_counter);
+
+  // Constructor should be called with a long-lived char*, such as __FILE__.
+  // It assumes the provided value will persist as a global constant, and it
+  // will not make a copy of it.
+  Location(const char* function_name,
+           const char* file_name,
+           int line_number,
+           const void* program_counter);
+
   const char* function_name_ = nullptr;
   const char* file_name_ = nullptr;
   int line_number_ = -1;
@@ -127,22 +122,7 @@ class BASE_EXPORT Location {
 
 BASE_EXPORT const void* GetProgramCounter();
 
-#if SUPPORTS_LOCATION_BUILTINS
-
 #define FROM_HERE ::base::Location::Current()
-
-// The macros defined here will expand to the current function.
-#elif BUILDFLAG(ENABLE_LOCATION_SOURCE)
-
-// Full source information should be included.
-#define FROM_HERE ::base::Location::CreateFromHere(__func__, __FILE__, __LINE__)
-
-#else
-
-// TODO(http://crbug.com/760702) remove the __FILE__ argument from these calls.
-#define FROM_HERE ::base::Location::CreateFromHere(__FILE__)
-
-#endif
 
 }  // namespace base
 

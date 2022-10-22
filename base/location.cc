@@ -147,21 +147,6 @@ NOINLINE Location Location::Current() {
   return Location(nullptr, RETURN_ADDRESS());
 }
 
-#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
-// static
-NOINLINE Location Location::CreateFromHere(const char* function_name,
-                                           const char* file_name,
-                                           int line_number) {
-  return Location(function_name, file_name + kStrippedPrefixLength, line_number,
-                  RETURN_ADDRESS());
-}
-#else
-// static
-NOINLINE Location Location::CreateFromHere(const char* file_name) {
-  return Location(file_name + kStrippedPrefixLength, RETURN_ADDRESS());
-}
-#endif
-
 #endif
 
 //------------------------------------------------------------------------------
