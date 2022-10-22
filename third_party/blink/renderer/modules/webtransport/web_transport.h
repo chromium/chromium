@@ -37,6 +37,7 @@ class ExceptionState;
 class IncomingStream;
 class OutgoingStream;
 class ReadableStream;
+class ReadableByteStreamController;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -150,6 +151,7 @@ class MODULES_EXPORT WebTransport final
   Member<DatagramDuplexStream> datagrams_;
 
   Member<ReadableStream> received_datagrams_;
+  Member<ReadableByteStreamController> received_datagrams_controller_;
   Member<DatagramUnderlyingSource> datagram_underlying_source_;
 
   // This corresponds to the [[SentDatagrams]] internal slot in the standard.

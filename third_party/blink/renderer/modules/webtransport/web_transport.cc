@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -217,26 +219,28 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 // own internal queue of datagrams so that stale datagrams won't remain in
 // ReadableStream's queue.
 class WebTransport::DatagramUnderlyingSource final
-    : public UnderlyingSourceBase {
+    : public UnderlyingByteSourceBase {
  public:
   DatagramUnderlyingSource(ScriptState* script_state,
                            DatagramDuplexStream* datagram_duplex_stream)
-      : UnderlyingSourceBase(script_state),
+      : UnderlyingByteSourceBase(),
+        script_state_(script_state),
         datagram_duplex_stream_(datagram_duplex_stream),
         expiry_timer_(ExecutionContext::From(script_state)
                           ->GetTaskRunner(TaskType::kNetworking),
                       this,
                       &DatagramUnderlyingSource::ExpiryTimerFired) {}
 
-  // Implementation of UnderlyingSourceBase.
-  ScriptPromise pull(ScriptState* script_state) override {
+  // Implementation of UnderlyingByteSourceBase.
+  ScriptPromise Pull(ReadableByteStreamController* controller,
+                     ExceptionState& exception_state) override {
     DVLOG(1) << "DatagramUnderlyingSource::pull()";
 
     if (waiting_for_datagrams_) {
       // This can happen if a second read is issued while a read is already
       // pending.
       DCHECK(queue_.empty());
-      return ScriptPromise::CastUndefined(script_state);
+      return ScriptPromise::CastUndefined(script_state_);
     }
 
     // If high water mark is reset to 0 and then read() is called, it should
@@ -248,12 +252,12 @@ class WebTransport::DatagramUnderlyingSource final
 
     if (queue_.empty()) {
       if (close_when_queue_empty_) {
-        Controller()->Close();
-        return ScriptPromise::CastUndefined(script_state);
+        controller->close(script_state_, exception_state);
+        return ScriptPromise::CastUndefined(script_state_);
       }
 
       waiting_for_datagrams_ = true;
-      return ScriptPromise::CastUndefined(script_state);
+      return ScriptPromise::CastUndefined(script_state_);
     }
 
     const QueueEntry* entry = queue_.front();
@@ -265,48 +269,70 @@ class WebTransport::DatagramUnderlyingSource final
 
     // This has to go after any mutations as it may run JavaScript, leading to
     // re-entry.
-    Controller()->Enqueue(entry->datagram);
+    controller->enqueue(script_state_,
+                        NotShared<DOMUint8Array>(entry->datagram),
+                        exception_state);
+    if (exception_state.HadException()) {
+      return ScriptPromise::CastUndefined(script_state_);
+    }
 
     // JavaScript could have called some other method at this point.
     // However, this is safe, because |close_when_queue_empty_| only ever
     // changes from false to true, and once it is true no more datagrams will
     // be added to |queue_|.
     if (close_when_queue_empty_ && queue_.empty()) {
-      Controller()->Close();
+      controller->close(script_state_, exception_state);
     }
 
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromise::CastUndefined(script_state_);
   }
 
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue) override {
-    DVLOG(1) << "DatagramUnderlyingSource::Cancel()";
+  ScriptPromise Cancel(ExceptionState& exception_state) override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
+  }
+
+  ScriptPromise Cancel(v8::Local<v8::Value> reason, ExceptionState&) override {
+    uint8_t code = 0;
+    WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
+        script_state_->GetIsolate(), reason);
+    if (exception) {
+      code = exception->streamErrorCode().value_or(0);
+    }
+    VLOG(1) << "DatagramUnderlyingSource::Cancel() with code " << code;
+
     waiting_for_datagrams_ = false;
     canceled_ = true;
     DiscardQueue();
 
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromise::CastUndefined(script_state_);
   }
 
+  ScriptState* GetScriptState() override { return script_state_; }
+
   // Interface for use by WebTransport.
-  void Close() {
+  void Close(ReadableByteStreamController* controller,
+             ExceptionState& exception_state) {
     DVLOG(1) << "DatagramUnderlyingSource::Close()";
 
     if (queue_.empty()) {
-      Controller()->Close();
+      controller->close(script_state_, exception_state);
     } else {
       close_when_queue_empty_ = true;
     }
   }
 
-  void Error(v8::Local<v8::Value> error) {
+  void Error(ReadableByteStreamController* controller,
+             v8::Local<v8::Value> error) {
     DVLOG(1) << "DatagramUnderlyingSource::Error()";
 
     waiting_for_datagrams_ = false;
     DiscardQueue();
-    Controller()->Error(error);
+    controller->error(script_state_,
+                      ScriptValue(script_state_->GetIsolate(), error));
   }
 
-  void OnDatagramReceived(base::span<const uint8_t> data) {
+  void OnDatagramReceived(ReadableByteStreamController* controller,
+                          base::span<const uint8_t> data) {
     DVLOG(1) << "DatagramUnderlyingSource::OnDatagramReceived() size="
              << data.size();
 
@@ -317,6 +343,7 @@ class WebTransport::DatagramUnderlyingSource final
       return;
     }
 
+    DCHECK_GT(data.size(), 0u);
     auto* datagram = DOMUint8Array::Create(data.data(), data.size());
 
     // This fast path is expected to be hit frequently. Avoid the queue.
@@ -325,7 +352,12 @@ class WebTransport::DatagramUnderlyingSource final
       waiting_for_datagrams_ = false;
       // This may run JavaScript, so it has to be called immediately before
       // returning to avoid confusion caused by re-entrant usage.
-      Controller()->Enqueue(datagram);
+      ScriptState::Scope scope(script_state_);
+      // |enqueue| throws if close has been requested, stream state
+      // is not readable, or buffer is invalid. We checked
+      // |close_when_queue_empty_| and data.size() so it should not throw.
+      NonThrowableExceptionState exception_state;
+      controller->enqueue(script_state_, NotShared(datagram), exception_state);
       return;
     }
 
@@ -352,10 +384,11 @@ class WebTransport::DatagramUnderlyingSource final
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(script_state_);
     visitor->Trace(queue_);
     visitor->Trace(datagram_duplex_stream_);
     visitor->Trace(expiry_timer_);
-    UnderlyingSourceBase::Trace(visitor);
+    UnderlyingByteSourceBase::Trace(visitor);
   }
 
  private:
@@ -431,7 +464,7 @@ class WebTransport::DatagramUnderlyingSource final
     }
 
     if (discarded && max_age_is_default) {
-      if (auto* execution_context = GetExecutionContext()) {
+      if (auto* execution_context = ExecutionContext::From(script_state_)) {
         execution_context->AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kNetwork,
@@ -471,6 +504,7 @@ class WebTransport::DatagramUnderlyingSource final
         datagram_duplex_stream_->incomingHighWaterMark());
   }
 
+  const Member<ScriptState> script_state_;
   HeapDeque<Member<const QueueEntry>> queue_;
   const Member<DatagramDuplexStream> datagram_duplex_stream_;
   HeapTaskRunnerTimer<DatagramUnderlyingSource> expiry_timer_;
@@ -906,7 +940,8 @@ void WebTransport::OnHandshakeFailed(
 }
 
 void WebTransport::OnDatagramReceived(base::span<const uint8_t> data) {
-  datagram_underlying_source_->OnDatagramReceived(data);
+  datagram_underlying_source_->OnDatagramReceived(
+      received_datagrams_controller_, data);
 }
 
 void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
@@ -1061,6 +1096,7 @@ void WebTransport::ForgetOutgoingStream(uint32_t stream_id) {
 void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(datagrams_);
   visitor->Trace(received_datagrams_);
+  visitor->Trace(received_datagrams_controller_);
   visitor->Trace(datagram_underlying_source_);
   visitor->Trace(outgoing_datagrams_);
   visitor->Trace(datagram_underlying_sink_);
@@ -1211,8 +1247,10 @@ void WebTransport::Init(const String& url,
 
   datagram_underlying_source_ =
       MakeGarbageCollected<DatagramUnderlyingSource>(script_state_, datagrams_);
-  received_datagrams_ = ReadableStream::CreateWithCountQueueingStrategy(
-      script_state_, datagram_underlying_source_, 0);
+  received_datagrams_ = ReadableStream::CreateByteStream(
+      script_state_, datagram_underlying_source_);
+  received_datagrams_controller_ =
+      To<ReadableByteStreamController>(received_datagrams_->GetController());
 
   // We create a WritableStream with high water mark 1 and try to mimic the
   // given high water mark in the Sink, from two reasons:
@@ -1272,7 +1310,7 @@ void WebTransport::Cleanup(v8::Local<v8::Value> reason,
 
   RejectPendingStreamResolvers(error);
   ScriptValue error_value(isolate, error);
-  datagram_underlying_source_->Error(error);
+  datagram_underlying_source_->Error(received_datagrams_controller_, error);
   outgoing_datagrams_->Controller()->error(script_state_, error_value);
 
   // We use local variables to avoid re-entrant problems.
