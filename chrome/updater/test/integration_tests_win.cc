@@ -308,7 +308,7 @@ void CheckInstallation(UpdaterScope scope,
         base::StrCat(
             {L"--wake ", scope == UpdaterScope::kSystem ? L"--system " : L"",
              L"--enable-logging "
-             L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=3"})
+             L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2"})
             .c_str());
   }
 

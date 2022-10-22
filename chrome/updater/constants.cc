@@ -46,9 +46,7 @@ const char kEnableLoggingSwitch[] = "enable-logging";
 const char kLoggingModuleSwitch[] = "vmodule";
 const char kLoggingModuleSwitchValue[] =
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/1376238) - decrease logging level when detailed HTTP
-    // logging is not needed anymore.
-    "*/chrome/updater/*=2,*/components/winhttp/*=3";
+    "*/chrome/updater/*=2,*/components/winhttp/*=2";
 #else
     "*/chrome/updater/*=2,*/components/update_client/*=2";
 #endif  // BUILDFLAG(IS_WIN)
