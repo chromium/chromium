@@ -282,7 +282,10 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       // Allow libglvnd files and libs.
       "/usr/share/glvnd/egl_vendor.d",
       "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
-      "/usr/lib64/libEGL_mesa.so.0", "/usr/lib64/libGLdispatch.so.0"};
+      "/usr/lib64/libEGL_mesa.so.0", "/usr/lib64/libGLdispatch.so.0",
+      // Case of when the only libc++abi.so.1 is preloaded.
+      // See: crbug.com/1366646
+      "/usr/lib64/libc++.so.1"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
