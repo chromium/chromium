@@ -4734,6 +4734,11 @@ if (is_mac) {
   }
 }
 
+fuzzer_test("escape_fuzzer") {
+  sources = [ "strings/escape_fuzzer.cc" ]
+  deps = [ "//base" ]
+}
+
 fuzzer_test("string_number_conversions_fuzzer") {
   sources = [ "strings/string_number_conversions_fuzzer.cc" ]
   deps = [ "//base" ]
