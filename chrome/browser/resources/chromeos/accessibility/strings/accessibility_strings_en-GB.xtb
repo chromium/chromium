@@ -327,6 +327,7 @@
 <translation id="309749186376891736">Move cursor</translation>
 <translation id="3103579948980282461">Medium Violet Red</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
+<translation id="3105857328626674463">highlight the previous word</translation>
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="311015743332597320">Swipe four fingers right</translation>
 <translation id="3112457281078985179">To turn ChromeVox on or off, use Control+Alt+Z.</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">Previous visited link</translation>
 <translation id="3241638166094654466">Cells in each line:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">move to the end</translation>
 <translation id="3260949043575829030">Previous similar item</translation>
 <translation id="3270069636408109001">No next table</translation>
 <translation id="3273791280096244679">Save label</translation>
@@ -947,6 +949,7 @@
 <translation id="743783356331413498">Example</translation>
 <translation id="7439060726180460871">Directory</translation>
 <translation id="744163271241493234">pwded</translation>
+<translation id="7443479558101073378">highlight the next word</translation>
 <translation id="7465123027577412805">Use a natural voice?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Move to next section. Examples include the Status Tray and Launcher.</translation>

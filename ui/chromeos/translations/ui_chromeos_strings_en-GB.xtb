@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Share with Parallels Desktop</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
-<translation id="4929673617759421391">Pasting this file is blocked by administrator policy</translation>
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Football</translation>
 <translation id="4961158930123534723">1 folder shared with Parallels Desktop</translation>
@@ -654,6 +653,7 @@
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
 <translation id="649877868557234318">Extracting <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Disallow proxies for shared networks</translation>
+<translation id="6503285896705205014">Copying <ph name="COUNT" /> files is blocked by administrator policy</translation>
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Allow other users of this device to use this network</translation>
 <translation id="653019979737152879">Syncing <ph name="FILE_NAME" />...</translation>
@@ -756,6 +756,7 @@
 <translation id="7357762654218998920">This file type is not supported. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="7359359531237882347">Copying <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="7375951387215729722">File list sorted by <ph name="COLUMN_NAME" /> in descending order.</translation>
+<translation id="7377161162143020057">Copying this file is blocked by administrator policy</translation>
 <translation id="7402503521691663770">Chrome OS Flex devices</translation>
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Ethiopic keyboard</translation>
@@ -977,7 +978,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> items extracted.</translation>
-<translation id="9210751050717126865">Pasting <ph name="COUNT" /> files is blocked by administrator policy</translation>
 <translation id="9213073329713032541">Installation successfully started.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Lunar</translation>

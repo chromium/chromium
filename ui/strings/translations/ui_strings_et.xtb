@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 päev tagasi}other{# päeva tagasi}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minut tagasi}other{# minutit tagasi}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1m}other{#m}}</translation>
+<translation id="1181037720776840403">Eemalda</translation>
 <translation id="1243314992276662751">Laadi üles</translation>
 <translation id="1266864766717917324">Üksust <ph name="CONTENT_TYPE" /> ei õnnestunud jagada</translation>
 <translation id="1269641567813814718">Win</translation>

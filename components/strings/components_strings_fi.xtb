@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Maa- ja metsätalous</translation>
 <translation id="1080116354587839789">Sovita leveyteen</translation>
 <translation id="1081061862829655580">Lokero 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Lisää kortissa oleva nimi</translation>
 <translation id="1089439967362294234">Vaihda salasana</translation>
 <translation id="1096545575934602868">Kentässä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> kohtaa. Muut kohdat ohitetaan.</translation>
@@ -170,7 +169,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1364822246244961190">Tämä käytäntö on estetty, sen arvo jätetään huomiotta.</translation>
 <translation id="1368318639262510626">Dino-peli. Pikselöity dinosaurus väistelee kaktuksia ja lentoliskoja juostessaan halki aution maiseman. Kun kuulet äänimerkin, hyppää esteiden yli painamalla välilyöntiä.</translation>
 <translation id="1374468813861204354">ehdotuksia</translation>
-<translation id="1374692235857187091">Index-4x6 (postikortti)</translation>
 <translation id="1375198122581997741">Tietoja versiosta</translation>
 <translation id="1376836354785490390">Näytä vähemmän</translation>
 <translation id="1377321085342047638">Kortin numero</translation>
@@ -210,7 +208,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1459693405370120464">Sää</translation>
 <translation id="1462245070427461050">JIS B9 (45 mm x 64 mm)</translation>
 <translation id="1462951478840426066">käyttää tietokoneesi fontteja, jotta voit luoda tasokasta sisältöä</translation>
-<translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="1468653229182955856">Voit jatkaa osoitteeseen <ph name="TOP_ORIGIN" /> koodilla <ph name="ONE_TIME_CODE" /> (<ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="1472675084647422956">Näytä enemmän</translation>
@@ -359,6 +356,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1803351196216024260">Saa pyytää mikrofonin käyttölupaa</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1807528111851433570">Aloitussivu</translation>
+<translation id="181000283860817563">Seuraa hintoja useilla sivustoilla</translation>
 <translation id="1812527064848182527">vaakasuunta</translation>
 <translation id="1813414402673211292">Poista selaustiedot</translation>
 <translation id="182139138257690338">automaattiset lataukset</translation>
@@ -674,7 +672,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2677696497921480781">Syntymä- ja nimipäivät</translation>
 <translation id="2677748264148917807">Poistu</translation>
 <translation id="2679714844901977852">Tallenna kortti- ja laskutustiedot Google-tilillesi (<ph name="USER_EMAIL" />), jotta voit maksaa jatkossa suojatusti ja nopeasti</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Sopivin koko</translation>
 <translation id="2688969097326701645">Kyllä, jatka</translation>
 <translation id="2691924980723297736">Turvallisuusvaroitus</translation>
@@ -708,7 +705,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2775884851269838147">Ensimmäinen tulostettava sivu</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Yhteys katkaistiin.</translation>
-<translation id="2786469568759673015">Kirjekuori kiinalainen #3</translation>
 <translation id="2791176355335562114">Maksa ensi kerralla nopeammin</translation>
 <translation id="2792012897584536778">Tämän laitteen järjestelmänvalvojat ovat ottaneet käyttöön tietosuojavarmenteita, joiden avulla he saattavat nähdä avaamiesi sivustojen sisällöt.</translation>
 <translation id="2799020568854403057">Sivusto sisältää haitallisia sovelluksia</translation>
@@ -1019,7 +1015,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3634530185120165534">Lokero 5</translation>
 <translation id="3634567936866541746">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome suosittelee tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
 <translation id="3637662659967048211">Tallenna Google-tilille</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Sovellus:</translation>
 <translation id="3647286794400715637">Jokaisessa lisätyssä URL-merkkijonossa on oltava 1–2 URL-osoitetta.</translation>
 <translation id="3650584904733503804">Todennus onnistui</translation>
@@ -1150,7 +1145,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4010758435855888356">Sallitaanko tallennustilan pääsyoikeudet?</translation>
 <translation id="401170183602135785">Kirjekuori C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokumentti, jossa on {COUNT} sivu}other{PDF-dokumentti, jossa on {COUNT} sivua}}</translation>
-<translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">Koska lomake lähetetään suojaamattomalla yhteydellä, tietosi näkyvät muille.</translation>
 <translation id="4024923292610332139">laittaa TouchID:n pois päältä salasanojen täyttämistä varten</translation>
 <translation id="4025913568718019429">Tarkista Googlen yksityisyysasetukset ‑painike, siirry Google-tilisi yksityisyysasetuksiin painamalla Enter</translation>
@@ -1368,7 +1362,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Poista laajennukset käytöstä.</translation>
 <translation id="4559134504959026834">Tämä sivusto kuuluu ryhmään, jonka <ph name="SET_OWNER" /> on määritellyt ja joka voi nähdä toimintasi</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Ulkoilu</translation>
 <translation id="4567686777917670400">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromiumin ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Toimitus</translation>
@@ -1412,7 +1405,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4682496302933121474">Käännetäänkö sivu?</translation>
 <translation id="468314109939257734">Katso virtuaalisen kortin numero</translation>
 <translation id="4692623383562244444">Hakukoneet</translation>
-<translation id="4693246800345263879">Kirjekuori 254 x 355 mm</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Puoli</translation>
 <translation id="4702656508969495934">Livetekstitys näkyvissä, siirrä kohdistusta ikkunan vaihdolla</translation>
@@ -1630,7 +1622,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5205222826937269299">Nimi vaaditaan</translation>
 <translation id="5209518306177824490">SHA-1-tunnistetiedosto</translation>
 <translation id="5209670883520018268">Lokero 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Lokero 13</translation>
 <translation id="5216942107514965959">Viimeksi avattu tänään</translation>
 <translation id="5217759126664161410">Virheellinen protokollan muoto.</translation>
@@ -1639,7 +1630,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5229588705416009823">Massiiviset moninpelit</translation>
 <translation id="5230733896359313003">Toimitusosoite</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5239623327352565343">Sijainti sallittu</translation>
 <translation id="5242889659037569123">Matkalaukut ja matkustustarvikkeet</translation>
@@ -1878,7 +1868,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5884465125445718607">Kirjekuori kiinalainen #6</translation>
 <translation id="5887400589839399685">Kortti tallennettu</translation>
 <translation id="5887687176710214216">Avattu viimeksi eilen</translation>
-<translation id="5891155897634819292">Kirjekuori kiinalainen #5</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5895187275912066135">Myönnetty</translation>
 <translation id="5901630391730855834">Keltainen</translation>
@@ -1911,7 +1900,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5974052231147553524">Kuudes rulla</translation>
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5979084224081478209">Tarkista salasanat</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Huoneen kosteus</translation>
 <translation id="5984712050237025014">Lisätty todellisuus ja virtuaalitodellisuus</translation>
 <translation id="598637245381783098">Maksusovelluksen avaaminen ei onnistu.</translation>
@@ -2400,7 +2388,6 @@ Lisätietoja:
 <translation id="7337706099755338005">Ei saatavilla käyttöympäristössäsi</translation>
 <translation id="733923710415886693">Palvelimen varmenteesta ei ole saatu Certificate Transparencyn vaatimia tietoja.</translation>
 <translation id="7341357280245177602">Käytetyt ajoneuvot</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">On yhdistetty:</translation>
 <translation id="7349430561505560861">A4-ekstra</translation>
 <translation id="7349921148288539306">Sallittu, kunnes suljet tämän välilehden</translation>
@@ -2443,7 +2430,6 @@ Lisätietoja:
       &lt;li&gt;Valitse &lt;strong&gt;Käytä&lt;/strong&gt; ja sen jälkeen &lt;strong&gt;OK&lt;/strong&gt;.
       &lt;li&gt;Saat ohjeita ohjelmiston pysyvään poistamiseen tietokoneelta &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome-ohjekeskuksesta&lt;/a&gt;.
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Leveä</translation>
 <translation id="7410471291937727359">Ihana</translation>
 <translation id="741204030948306876">Kyllä</translation>
 <translation id="7416351320495623771">Ylläpidä salasanoja…</translation>
@@ -2489,7 +2475,6 @@ Lisätietoja:
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7517414872996418597">Kirjekuori C10</translation>
 <translation id="7518003948725431193">Verkkosivua ei löytynyt osoitteelle: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Kirjekuori 254 x 330 mm</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Osio "<ph name="SECTION" />" piilotettu</translation>
 <translation id="7523408071729642236">Tuotanto</translation>
@@ -2780,7 +2765,6 @@ Lisätietoja:
 <translation id="8277900682056760511">Maksujenkäsittelytaulukko on avattu</translation>
 <translation id="8279611986089885641">Chrome-ilmoitusten on oltava päällä. Voit laittaa ne päälle valitsemalla <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Lokero 11</translation>
-<translation id="8281084378435768645">Suuri kuva</translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8282947398454257691">Saada selville laitetunnuksesi.</translation>
 <translation id="8284769179630993263">Ylläpidä selaussuojaa ja muita ominaisuuksia Chromen asetuksista</translation>
@@ -2796,7 +2780,6 @@ Lisätietoja:
 <translation id="8299269255470343364">japani</translation>
 <translation id="8303854710873047864">Osio "<ph name="SECTION" />" näkyvissä</translation>
 <translation id="830498451218851433">Keskitaite</translation>
-<translation id="8307358339886459768">Pieni kuva</translation>
 <translation id="8307888238279532626">Asennetut sovellukset ja se, miten usein niitä käytetään</translation>
 <translation id="831997045666694187">Ilta</translation>
 <translation id="8321476692217554900">ilmoitukset</translation>
@@ -2878,7 +2861,6 @@ Lisätietoja:
 <translation id="8557066899867184262">CVC sijaitsee kortin takapuolella.</translation>
 <translation id="8559762987265718583">Verkkotunnukseen <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ei voi muodostaa salattua yhteyttä, koska laitteesi aika ja päivämäärä (<ph name="DATE_AND_TIME" />) ovat virheelliset.</translation>
 <translation id="8564182942834072828">Erilliset dokumentit / Kokoamattomat kopiot</translation>
-<translation id="8564453110650229930">Kirjekuori kiinalainen #10</translation>
 <translation id="8564985650692024650">Chromium suosittelee organisaation <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> salasanasi vaihtamista, jos olet käyttänyt sitä myös muilla sivustoilla.</translation>
 <translation id="8576310925653847813">Kotiteatterijärjestelmät</translation>
 <translation id="8577348305244205642">Virtuaalinen kortti ei käytettävissä</translation>
@@ -2908,7 +2890,6 @@ Lisätietoja:
 <translation id="8687429322371626002"><ph name="MANAGER" /> ylläpitää laitettasi ja tiliäsi.</translation>
 <translation id="8688672835843460752">Saatavilla</translation>
 <translation id="868922510921656628">Sivuja joukkoa kohti</translation>
-<translation id="8694278303623679191">Kirjekuori (postfix)</translation>
 <translation id="869891660844655955">Vanhenemispäivämäärä</translation>
 <translation id="8699041776323235191">HID-laite</translation>
 <translation id="8699899385443889493">Pelaa Chromen Dino peliä ‑painike, pelaa Dino Run ‑peliä Chromessa painamalla Enter</translation>
@@ -2986,7 +2967,6 @@ Lisätietoja:
 <translation id="8874824191258364635">Anna kelvollinen kortin numero.</translation>
 <translation id="8876033571432926051">Helpot pelit</translation>
 <translation id="8877780815363510165">Kalastus</translation>
-<translation id="8879882034055059721">Kirjekuori 254 x 381 mm</translation>
 <translation id="8884537526797090108">Luottamuksellista sisältöä ei voi tallentaa</translation>
 <translation id="8891727572606052622">Virheellinen välityspalvelimen tila.</translation>
 <translation id="8894794286471754040">Pitkä reuna ensin</translation>

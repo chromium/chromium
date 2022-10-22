@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Zemědělství a lesnictví</translation>
 <translation id="1080116354587839789">Přizpůsobit na šířku</translation>
 <translation id="1081061862829655580">Přihrádka 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Přidání jména na kartě</translation>
 <translation id="1089439967362294234">Změnit heslo</translation>
 <translation id="1096545575934602868">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou zahozeny.</translation>
@@ -170,7 +169,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1364822246244961190">Tato zásada je blokována, její hodnota bude ignorována.</translation>
 <translation id="1368318639262510626">Dinosauří hra. Pixelizovaný dinosaurus běží pustou krajinou a vyhýbá se přitom kaktusům a pterodaktylům. Když uslyšíte zvukový signál, stisknutím mezerníku přeskočte překážku.</translation>
 <translation id="1374468813861204354">návrhy</translation>
-<translation id="1374692235857187091">Index-4x6 (pohlednice)</translation>
 <translation id="1375198122581997741">O verzi aplikace</translation>
 <translation id="1376836354785490390">Zobrazit méně</translation>
 <translation id="1377321085342047638">Číslo karty</translation>
@@ -210,7 +208,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1459693405370120464">Počasí</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Použít písma nainstalovaná v počítači, abyste mohli vytvářet obsah ve vysoké kvalitě</translation>
-<translation id="1463543813647160932">5:7</translation>
 <translation id="1467432559032391204">Doleva</translation>
 <translation id="1468653229182955856">Váš kód pro <ph name="EMBEDDED_ORIGIN" /> k pokračování na <ph name="TOP_ORIGIN" /> je <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">Zobrazit více</translation>
@@ -359,6 +356,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1803351196216024260">Může žádat o použití mikrofonu</translation>
 <translation id="1807246157184219062">Světlé</translation>
 <translation id="1807528111851433570">Počáteční list</translation>
+<translation id="181000283860817563">Sledovat ceny na různých webech</translation>
 <translation id="1812527064848182527">na šířku</translation>
 <translation id="1813414402673211292">Vymazat údaje o prohlížení</translation>
 <translation id="182139138257690338">automatické stahování</translation>
@@ -674,7 +672,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2677696497921480781">Svátky a narozeniny</translation>
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2679714844901977852">Uložte si kartu a fakturační údaje do účtu Google <ph name="USER_EMAIL" />, abyste mohli platit bezpečněji a rychleji</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Přizpůsobit</translation>
 <translation id="2688969097326701645">Ano, pokračovat</translation>
 <translation id="2691924980723297736">Bezpečnostní upozornění</translation>
@@ -708,7 +705,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2775884851269838147">První tisková stránka</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Připojení bylo resetováno.</translation>
-<translation id="2786469568759673015">Obálka čínská č. 3</translation>
 <translation id="2791176355335562114">Příště můžete zaplatit rychleji</translation>
 <translation id="2792012897584536778">Administrátoři tohoto zařízení nastavili bezpečnostní certifikáty, které jim mohou umožnit zobrazit obsah webů, které navštěvujete.</translation>
 <translation id="2799020568854403057">Web, na který se chystáte přejít, obsahuje škodlivé aplikace</translation>
@@ -1014,7 +1010,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3634530185120165534">Přihrádka 5</translation>
 <translation id="3634567936866541746">Právě jste své heslo zadali na klamavém webu. Pokud chcete zabezpečit své účty, Chrome vám doporučuje zkontrolovat uložená hesla.</translation>
 <translation id="3637662659967048211">Uložit do účtu Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Aplikace:</translation>
 <translation id="3647286794400715637">Každý zadaný řetězec adres URL musí obsahovat 1 až 2 adresy URL.</translation>
 <translation id="3650584904733503804">Ověření proběhlo úspěšně</translation>
@@ -1145,7 +1140,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4010758435855888356">Povolit přístup k úložišti?</translation>
 <translation id="401170183602135785">Obálka C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF obsahující {COUNT} stránku}few{Dokument PDF obsahující {COUNT} stránky}many{Dokument PDF obsahující {COUNT} stránky}other{Dokument PDF obsahující {COUNT} stránek}}</translation>
-<translation id="4022639246993848966">3,5 × 5</translation>
 <translation id="4023431997072828269">Vaše informace budou viditelné ostatním, protože je tento formulář odesílán prostřednictvím nezabezpečeného připojení.</translation>
 <translation id="4024923292610332139">vypnout TouchID pro vyplňování hesel</translation>
 <translation id="4025913568718019429">Tlačítko správy nastavení soukromí na Googlu. Stisknutím klávesy Enter přejdete do nastavení soukromí účtu Google</translation>
@@ -1363,7 +1357,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Zkuste zakázat rozšíření.</translation>
 <translation id="4559134504959026834">Tento web je ve skupině definované vlastníkem <ph name="SET_OWNER" />, která může sledovat vaši aktivitu</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Příroda</translation>
 <translation id="4567686777917670400">Administrátor může nastavení prohlížeče vzdáleně změnit. Aktivita na tomto zařízení může být spravována také mimo Chromium. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Doručení</translation>
@@ -1407,7 +1400,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4682496302933121474">Přeložit stránku?</translation>
 <translation id="468314109939257734">Zobrazit číslo virtuální karty</translation>
 <translation id="4692623383562244444">Vyhledávače</translation>
-<translation id="4693246800345263879">Obálka 10 × 14 palců</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Boční</translation>
 <translation id="4702656508969495934">Živý přepis je viditelný, vyberete ho pomocí přepínače oken</translation>
@@ -1625,7 +1617,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5205222826937269299">Je nutné zadat jméno</translation>
 <translation id="5209518306177824490">Digitální otisk SHA-1</translation>
 <translation id="5209670883520018268">Přihrádka 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Přihrádka 13</translation>
 <translation id="5216942107514965959">Naposledy navštíveno dnes</translation>
 <translation id="5217759126664161410">Neplatný formát protokolu.</translation>
@@ -1634,7 +1625,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5229588705416009823">MMO hry</translation>
 <translation id="5230733896359313003">Dodací adresa</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5239623327352565343">Poloha je povolena</translation>
 <translation id="5242889659037569123">Zavazadla a cestovní příslušenství</translation>
@@ -1873,7 +1863,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5884465125445718607">Obálka čínská č. 6</translation>
 <translation id="5887400589839399685">Karta byla uložena</translation>
 <translation id="5887687176710214216">Naposledy navštíveno včera</translation>
-<translation id="5891155897634819292">Obálka čínská č. 5</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5895187275912066135">Datum vydání</translation>
 <translation id="5901630391730855834">Žlutá</translation>
@@ -1906,7 +1895,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5974052231147553524">Šestá role</translation>
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Vlhkost komory</translation>
 <translation id="5984712050237025014">Rozšířená a virtuální realita</translation>
 <translation id="598637245381783098">Platební aplikaci nelze otevřít</translation>
@@ -2393,7 +2381,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7337706099755338005">Pro vaši platformu nedostupné.</translation>
 <translation id="733923710415886693">Certifikát serveru nebyl zveřejněn prostřednictvím projektu Certificate Transparency.</translation>
 <translation id="7341357280245177602">Ojetá vozidla</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Je přidružený:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Povoleno, dokud tuto kartu nezavřete</translation>
@@ -2436,7 +2423,6 @@ Kontaktujte administrátora systému.</translation>
       &lt;li&gt;Klikněte na &lt;strong&gt;Použít&lt;/strong&gt; a poté na &lt;strong&gt;OK&lt;/strong&gt;.
       &lt;li&gt;Informace o tom, jak tento software trvale odstranit z počítače, naleznete v &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;centru nápovědy prohlížeče Chrome&lt;/a&gt;.
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Půvabné</translation>
 <translation id="741204030948306876">Ano</translation>
 <translation id="7416351320495623771">Spravovat hesla…</translation>
@@ -2482,7 +2468,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7517414872996418597">Obálka C10</translation>
 <translation id="7518003948725431193">Na webové adrese <ph name="URL" /> se nepodařilo nalézt žádnou webovou stránku.</translation>
-<translation id="7518098469289408841">Obálka 10 × 13 palců</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Sekce <ph name="SECTION" /> je skryta</translation>
 <translation id="7523408071729642236">Výroba</translation>
@@ -2773,7 +2758,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8277900682056760511">List obslužného nástroje pro platby je otevřený</translation>
 <translation id="8279611986089885641">V Chromu musí být zapnutá oznámení. Můžete je zapnout v <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Přihrádka 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8282947398454257691">Znát jedinečný identifikátor vašeho zařízení</translation>
 <translation id="8284769179630993263">Spravujte Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
@@ -2789,7 +2773,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8299269255470343364">japonština</translation>
 <translation id="8303854710873047864">Je zobrazena sekce <ph name="SECTION" /></translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Nainstalované aplikace a četnost jejich používání</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">oznámení</translation>
@@ -2871,7 +2854,6 @@ Další podrobnosti:
 <translation id="8557066899867184262">Kód CVC je uveden na zadní straně karty.</translation>
 <translation id="8559762987265718583">Soukromé připojení k doméně <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nelze navázat, protože máte v zařízení nastaveno chybné datum a čas (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Oddělené dokumenty / nekompletované kopie</translation>
-<translation id="8564453110650229930">Obálka čínská č. 10</translation>
 <translation id="8564985650692024650">Pokud jste heslo organizace <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="8576310925653847813">Systémy pro domácí kino</translation>
 <translation id="8577348305244205642">Virtuální karta není k dispozici</translation>
@@ -2901,7 +2883,6 @@ Další podrobnosti:
 <translation id="8687429322371626002">Vaše zařízení a účet spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostupné</translation>
 <translation id="868922510921656628">Počet stránek na sadu</translation>
-<translation id="8694278303623679191">Obálka Postfix</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>
 <translation id="8699041776323235191">Zařízení HID</translation>
 <translation id="8699899385443889493">Tlačítko dinosauří hry. Stisknutím klávesy Enter v Chromu spustíte dinosauří hru.</translation>
@@ -2979,7 +2960,6 @@ Další podrobnosti:
 <translation id="8874824191258364635">Zadejte platné číslo karty</translation>
 <translation id="8876033571432926051">Nenáročné hry</translation>
 <translation id="8877780815363510165">Rybaření</translation>
-<translation id="8879882034055059721">Obálka 10 × 15 palců</translation>
 <translation id="8884537526797090108">Důvěrný obsah zaznamenat nelze</translation>
 <translation id="8891727572606052622">Neplatný režim proxy serveru.</translation>
 <translation id="8894794286471754040">Dlouhou stranou napřed</translation>

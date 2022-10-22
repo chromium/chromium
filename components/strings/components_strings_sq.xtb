@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Agrikultura dhe pylltaria</translation>
 <translation id="1080116354587839789">Përshtate sipas gjerësisë</translation>
 <translation id="1081061862829655580">Tabakaja 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Shto emrin në kartë</translation>
 <translation id="1089439967362294234">Ndrysho fjalëkalimin</translation>
 <translation id="1096545575934602868">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha regjistrimet e mëtejshme do të refuzohen.</translation>
@@ -170,7 +169,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1364822246244961190">Kjo politikë është bllokuar, vlera do të shpërfillet.</translation>
 <translation id="1368318639262510626">Loja Dino. Një dinozaur i pikselizuar shmang kaktuset dhe pterodaktilët ndërsa vrapon përgjatë një peizazhi të shkretuar. Kur dëgjon një sinjalizim audioje, shtyp hapësirën për të kapërcyer mbi pengesa.</translation>
 <translation id="1374468813861204354">sugjerime</translation>
-<translation id="1374692235857187091">Index-4x6 (Kartolinë)</translation>
 <translation id="1375198122581997741">Rreth versionit</translation>
 <translation id="1376836354785490390">Shfaq më pak</translation>
 <translation id="1377321085342047638">Numri i kartës</translation>
@@ -210,7 +208,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1459693405370120464">Moti</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Përdor fontet në kompjuterin tënd që të mund të krijosh përmbajtje me saktësi të lartë</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> është kodi yt për <ph name="EMBEDDED_ORIGIN" /> për të vazhduar te <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Shfaq më shumë</translation>
@@ -359,6 +356,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1803351196216024260">Mund të kërkojë të përdorë mikrofonin tënd</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
+<translation id="181000283860817563">Monitoro çmimet nëpër disa sajte</translation>
 <translation id="1812527064848182527">peizazh</translation>
 <translation id="1813414402673211292">Pastro të dhënat e shfletimit</translation>
 <translation id="182139138257690338">shkarkimet automatike</translation>
@@ -674,7 +672,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2677696497921480781">Ditëlindjet dhe ditët e emrave</translation>
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2679714844901977852">Ruaj informacionet e kartës dhe të faturimit në "Llogarinë tënde të Google" <ph name="USER_EMAIL" /> për të përfunduar blerjet në mënyrë të sigurt dhe më shpejt</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Përshtatja më e mirë</translation>
 <translation id="2688969097326701645">Po, vazhdo!</translation>
 <translation id="2691924980723297736">Paralajmërimi i sigurisë</translation>
@@ -708,7 +705,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2775884851269838147">Faqja e parë e printimit</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Lidhja u rivendos.</translation>
-<translation id="2786469568759673015">Zarf kinez nr. 3</translation>
 <translation id="2791176355335562114">Paguaj më shpejt herën tjetër</translation>
 <translation id="2792012897584536778">Administratorët e kësaj pajisjeje kanë konfiguruar certifikatat e sigurisë që mund t'i lejojnë të shohin përmbajtjen e sajteve të uebit që viziton.</translation>
 <translation id="2799020568854403057">Sajti përpara përmban aplikacione të dëmshme</translation>
@@ -1018,7 +1014,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3634530185120165534">Tabakaja 5</translation>
 <translation id="3634567936866541746">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chrome rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="3637662659967048211">Ruaje në "Llogarinë e Google"</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Aplikacioni:</translation>
 <translation id="3647286794400715637">Çdo hyrje e vargjeve të URL-ve duhet të përfshijë nga 1 deri në 2 URL.</translation>
 <translation id="3650584904733503804">Vlerësimi është i suksesshëm</translation>
@@ -1149,7 +1144,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4010758435855888356">Të lejohet qasja te hapësira ruajtëse?</translation>
 <translation id="401170183602135785">Zarf C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumenti PDF me {COUNT} faqe}other{Dokumenti PDF me {COUNT} faqe}}</translation>
-<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Për shkak se ky formular po dërgohet duke përdorur një lidhje që nuk është e sigurt, informacionet e tua do të jenë të dukshme për të tjerët.</translation>
 <translation id="4024923292610332139">të çaktivizojë TouchID për plotësimin e fjalëkalimeve</translation>
 <translation id="4025913568718019429">Butoni "Menaxho cilësimet e privatësisë të Google". Shtyp "Enter" për të vizituar cilësimet e privatësisë të "Llogarisë sate të Google"</translation>
@@ -1367,7 +1361,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Provo të çaktivizosh shtesat.</translation>
 <translation id="4559134504959026834">Ky sajt është në një grup, i përcaktuar nga <ph name="SET_OWNER" />, që mund ta shikojë aktivitetin tënd</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Ambientet e hapura</translation>
 <translation id="4567686777917670400">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Dorëzimi</translation>
@@ -1411,7 +1404,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="468314109939257734">Shiko numrin e kartës sate virtuale</translation>
 <translation id="4692623383562244444">Motorët e kërkimit</translation>
-<translation id="4693246800345263879">Zarf 10 x 14 inç</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Ana</translation>
 <translation id="4702656508969495934">"Titrat në çast" janë të dukshëm. Përdor shkëmbyesin e dritareve për t'i fokusuar</translation>
@@ -1629,7 +1621,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5205222826937269299">Emri është i detyrueshëm</translation>
 <translation id="5209518306177824490">Gjurma e gishtit SHA-1</translation>
 <translation id="5209670883520018268">Tabakaja 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Tabakaja 13</translation>
 <translation id="5216942107514965959">Vizituar për herë të fundit sot</translation>
 <translation id="5217759126664161410">Format i pavlefshëm i protokollit.</translation>
@@ -1638,7 +1629,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5229588705416009823">Lojërat masive me shumë lojtarë</translation>
 <translation id="5230733896359313003">Adresa e dërgimit</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5239623327352565343">Vendndodhja lejohet</translation>
 <translation id="5242889659037569123">Aksesorët për bagazhe dhe udhëtime</translation>
@@ -1877,7 +1867,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5884465125445718607">Zarf kinez nr. 6</translation>
 <translation id="5887400589839399685">Karta u ruajt</translation>
 <translation id="5887687176710214216">Vizituar së fundi dje</translation>
-<translation id="5891155897634819292">Zarf kinez nr. 5</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5895187275912066135">Lëshuar më</translation>
 <translation id="5901630391730855834">E verdhë</translation>
@@ -1910,7 +1899,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5974052231147553524">Ruli i gjashtë</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Lagështia e dhomës</translation>
 <translation id="5984712050237025014">Realiteti i zgjeruar dhe virtual</translation>
 <translation id="598637245381783098">Aplikacioni për pagesat nuk mund të hapet</translation>
@@ -2398,7 +2386,6 @@ Detaje shtesë:
 <translation id="7337706099755338005">Nuk ofrohet në këtë platformë.</translation>
 <translation id="733923710415886693">Certifikata e serverit nuk është zbuluar përmes "Transparencës së certifikatave".</translation>
 <translation id="7341357280245177602">Automjetet e përdorura</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Është i lidhur:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Lejohet deri sa ta mbyllësh këtë skedë</translation>
@@ -2441,7 +2428,6 @@ Detaje shtesë:
     &lt;li&gt;Kliko &lt;strong&gt;Zbato&lt;/strong&gt;, më pas kliko &lt;strong&gt;Në rregull&lt;/strong&gt;
     &lt;li&gt;Vizito &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Qendrën e ndihmës së Chrome&lt;/a&gt; për të mësuar se si të heqësh përgjithmonë softuerin nga kompjuteri yt
     &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">I këndshëm</translation>
 <translation id="741204030948306876">Po, jam dakord</translation>
 <translation id="7416351320495623771">Menaxho fjalëkalimet…</translation>
@@ -2487,7 +2473,6 @@ Detaje shtesë:
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7517414872996418597">Zarf C10</translation>
 <translation id="7518003948725431193">Nuk u gjet asnjë faqe interneti për adresën: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Zarf 10 x 13 inç</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Seksioni "<ph name="SECTION" />" është i fshehur</translation>
 <translation id="7523408071729642236">Prodhimtaria</translation>
@@ -2778,7 +2763,6 @@ Detaje shtesë:
 <translation id="8277900682056760511">Fleta e përpunuesit të pagesës është hapur</translation>
 <translation id="8279611986089885641">Njoftimet e Chrome duhet të jenë aktive. Mund t'i aktivizosh te <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Tabakaja 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Kapërceje</translation>
 <translation id="8282947398454257691">Njihu me identifikuesin unik të pajisjes tënde</translation>
 <translation id="8284769179630993263">Menaxho shfletimin e sigurt dhe më shumë te cilësimet e Chrome</translation>
@@ -2794,7 +2778,6 @@ Detaje shtesë:
 <translation id="8299269255470343364">Japonisht</translation>
 <translation id="8303854710873047864">Seksioni "<ph name="SECTION" />" është i shfaqur</translation>
 <translation id="830498451218851433">Palosje në gjysmë</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Aplikacionet e instaluara dhe sa shpesh përdoren</translation>
 <translation id="831997045666694187">Mbrëmje</translation>
 <translation id="8321476692217554900">njoftimet</translation>
@@ -2876,7 +2859,6 @@ Detaje shtesë:
 <translation id="8557066899867184262">Kodi CVC ndodhet në pjesën e pasme të kartës.</translation>
 <translation id="8559762987265718583">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />sepse data dhe ora (<ph name="DATE_AND_TIME" />) e pajisjes tënde nuk janë të sakta.</translation>
 <translation id="8564182942834072828">Dokumente të ndara/kopje të parenditura</translation>
-<translation id="8564453110650229930">Zarf kinez nr. 10</translation>
 <translation id="8564985650692024650">Chromium rekomandon rivendosjen e fjalëkalimit tënd të <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="8576310925653847813">Sistemet e kinemasë së shtëpisë</translation>
 <translation id="8577348305244205642">Karta virtuale nuk ofrohet</translation>
@@ -2905,7 +2887,6 @@ Detaje shtesë:
 <translation id="8687429322371626002">Pajisja dhe llogaria jote menaxhohen nga <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">E disponueshme</translation>
 <translation id="868922510921656628">Faqe për grup</translation>
-<translation id="8694278303623679191">Zarf Postfix</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699041776323235191">Pajisje HID</translation>
 <translation id="8699899385443889493">Butoni "Luaj Chrome Dino". Shtyp "Enter" për të luajtur lojën Dino Run në Chrome</translation>
@@ -2983,7 +2964,6 @@ Detaje shtesë:
 <translation id="8874824191258364635">Fut një numër të vlefshëm karte</translation>
 <translation id="8876033571432926051">Lojërat e rastësishme</translation>
 <translation id="8877780815363510165">Peshkimi</translation>
-<translation id="8879882034055059721">Zarf 10 x 15 inç</translation>
 <translation id="8884537526797090108">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>
 <translation id="8891727572606052622">Modalitet i pavlefshëm përfaqësuesi.</translation>
 <translation id="8894794286471754040">Ana e gjatë në fillim</translation>

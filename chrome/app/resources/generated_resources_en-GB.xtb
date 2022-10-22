@@ -895,6 +895,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1805967612549112634">Confirm PIN</translation>
 <translation id="1806335016774576568">Switch to another open app</translation>
 <translation id="1807246157184219062">Light</translation>
+<translation id="1809201888580326312">You’ve chosen not to save passwords for these sites and apps</translation>
 <translation id="1809483812148634490">Apps that you’ve downloaded from Google Play will be deleted from this Chromebook.
     <ph name="LINE_BREAKS1" />
     Content that you’ve purchased such as movies, TV shows, music, books or other in-app purchases may also be deleted.
@@ -1811,6 +1812,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> can't be downloaded securely.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Train Google Assistant voice model</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Do not allow any site to handle protocols</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">This page is accessing your camera and microphone.</translation>
@@ -2437,6 +2439,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">This tab's audio is being muted.</translation>
+<translation id="3202578601642193415">Newest</translation>
 <translation id="3204648577100496185">Data associated with this app may be removed from this device</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Check now</translation>
@@ -3720,6 +3723,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were enabled and how much memory was typically used.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">To get started, please make sure that your USB or Bluetooth switch is connected to your Chromebook. You can also use keyboard keys.</translation>
+<translation id="4426508677408162512">All Bookmarks</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4427365070557649936">Verifying confirmation code…</translation>
 <translation id="4429163740524851942">Physical keyboard layout</translation>
@@ -3860,6 +3864,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4556194354084985730">Easily sign in to sites and apps with your saved passwords. When turned off, you’ll be asked before signing in.</translation>
 <translation id="4558426062282641716">Auto-launch permission requested</translation>
 <translation id="4559617833001311418">This site is accessing your motion or light sensors.</translation>
+<translation id="4561098487691395071">Or specify your printer PPD</translation>
 <translation id="4561893854334016293">No recently changed permissions</translation>
 <translation id="4562155214028662640">Add Fingerprint</translation>
 <translation id="4563210852471260509">Initial input language is Chinese</translation>
@@ -4358,7 +4363,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5040823038948176460">Additional content settings</translation>
 <translation id="5041509233170835229">Chrome app</translation>
 <translation id="5043440033854483429">Name can use letters, numbers and hyphens (-), and must be between 1 and 15 characters inclusive.</translation>
-<translation id="5043913660911154449">Or specify your printer PPD <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="504561833207953641">Opening in existing browser session.</translation>
 <translation id="5049614114599109018">Use input history</translation>
@@ -4749,6 +4753,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5427278936122846523">Always Translate</translation>
 <translation id="5427459444770871191">Rotate &amp;Clockwise</translation>
 <translation id="542750953150239272">By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
+<translation id="5427936139162668357">View PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is available)</translation>
 <translation id="542948651837270806">An update for the trusted platform module firmware needs to be installed. See <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Fullwidth</translation>
@@ -4958,6 +4963,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5612734644261457353">Sorry, your password still could not be verified. Note: if you changed your password recently, your new password will be applied once you sign out, please use the old password here.</translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
+<translation id="5616571005307953937">Oldest</translation>
 <translation id="5616726534702877126">Reserve size</translation>
 <translation id="561698261642843490">Close Firefox</translation>
 <translation id="5620540760831960151">This list is affected by <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5589,6 +5595,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6212168817037875041">Turn off display</translation>
 <translation id="6212752530110374741">Email Link</translation>
 <translation id="621470880408090483">Don't allow sites to connect to Bluetooth devices</translation>
+<translation id="6216239400972191926">Declined sites and apps</translation>
 <translation id="6216601812881225442">Your container doesn't support being resized. To adjust the amount of space that is pre-allocated to Linux, back up and then restore into a new container.</translation>
 <translation id="6216696360484424239">Sign in automatically</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> is offline. Connect to the Internet and try again.</translation>
@@ -5675,6 +5682,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6295855836753816081">Saving...</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
+<translation id="6300125580697461004">Send feedback about energy saver</translation>
 <translation id="6300177430812514606">Not allowed to finish sending or receiving data</translation>
 <translation id="630065524203833229">E&amp;xit</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> could not be configured automatically. Please specify advanced printer details. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -5875,6 +5883,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6494327278868541139">Show enhanced protection details</translation>
 <translation id="6494445798847293442">Not a Certification Authority</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{This data has sensitive or dangerous content}=1{This file has sensitive or dangerous content}other{These files have sensitive or dangerous content}}</translation>
+<translation id="6497548114956205206">Learn more about energy saver</translation>
 <translation id="6497784818439587832">Change display size to make items on your screen smaller or larger</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
 <translation id="6498249116389603658">&amp;All your languages</translation>
@@ -7436,6 +7445,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7955177647836564772">If Smart Lock is turned on and your phone is unlocked, you don't need to enter a password or PIN</translation>
 <translation id="7956373551960864128">Your saved printers</translation>
 <translation id="7957074856830851026">See device information, such as its serial number or asset ID</translation>
+<translation id="7957186326898555886">Send feedback about Memory Saver</translation>
 <translation id="7959074893852789871">The file contained multiple certificates, some of which were not imported:</translation>
 <translation id="7959665254555683862">New Incognito &amp;Tab</translation>
 <translation id="7961015016161918242">Never</translation>
@@ -7857,6 +7867,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8340547030807793004">More actions for <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Review <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> that recently sent a lot of notifications}other{Review <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> that recently sent a lot of notifications}}</translation>
 <translation id="8342221978608739536">Did not try</translation>
+<translation id="8342399870062010251">Learn more about Memory Saver</translation>
 <translation id="8342861492835240085">Select a collection</translation>
 <translation id="8345848587667658367">You can now view your phone's recent photos, media, notifications and apps</translation>
 <translation id="8347227221149377169">Print jobs</translation>
@@ -8065,6 +8076,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8549316893834449916">You’ll use your Google Account to sign in to your Chromebook – the same account that you use for Gmail, Drive, YouTube and more.</translation>
 <translation id="8551388862522347954">Licences</translation>
 <translation id="8551588720239073785">Date and time settings</translation>
+<translation id="8552102814346875916">Save to the 'always keep these sites active' list</translation>
 <translation id="8553342806078037065">Manage other people</translation>
 <translation id="8554899698005018844">No language</translation>
 <translation id="855604308879080518">Let Android apps access USB devices on this Chromebook. Permission will be requested each time that you plug in a USB device. Individual Android apps will ask for additional permissions.</translation>
@@ -8157,6 +8169,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8645354835496065562">Continue allowing sensor access</translation>
 <translation id="8645920082661222035">Predicts and warns you about dangerous events before they happen</translation>
 <translation id="8646209145740351125">Disable sync</translation>
+<translation id="8646340610303779673">Unable to retrieve PPD.</translation>
 <translation id="864637694230589560">Sites usually send notifications to let you know about breaking news or chat messages</translation>
 <translation id="8647385344110255847">With your permission, your child can use Google Play to install apps</translation>
 <translation id="8647834505253004544">Not a valid web address</translation>
@@ -8217,6 +8230,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="869884720829132584">Applications menu</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
+<translation id="8699188901396699995">PPD for <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Your <ph name="DEVICE_TYPE" /> was locked.</translation>
 <translation id="8703346390800944767">Skip ad</translation>
 <translation id="8705331520020532516">Serial Number</translation>

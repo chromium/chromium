@@ -2418,6 +2418,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3201422919974259695">Los dispositivos USB disponibles se mostrarán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
 <translation id="3202173864863109533">El audio de esta pestaña se está silenciando.</translation>
+<translation id="3202578601642193415">Los más recientes</translation>
 <translation id="3204648577100496185">Puede que los datos asociados a esta aplicación se eliminen de este dispositivo</translation>
 <translation id="3208321278970793882">Aplicación</translation>
 <translation id="3208584281581115441">Comprobar ahora</translation>
@@ -3699,6 +3700,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos ChromeOS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Para empezar, comprueba que tu interruptor USB o Bluetooth esté conectado a tu Chromebook. También puedes usar teclas del teclado.</translation>
+<translation id="4426508677408162512">Todos los marcadores</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y malware.</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación...</translation>
 <translation id="4429163740524851942">Diseño de teclado físico</translation>
@@ -3838,6 +3840,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4556194354084985730">Inicia sesión fácilmente en sitios y aplicaciones con tus contraseñas guardadas. Si desactivas esta opción, se te pedirá la contraseña para poder iniciar sesión.</translation>
 <translation id="4558426062282641716">Solicitud de permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio web tiene acceso a tus sensores de luz o movimiento.</translation>
+<translation id="4561098487691395071">O especifica el archivo PPD de tu impresora</translation>
 <translation id="4561893854334016293">No se ha cambiado ningún permiso recientemente</translation>
 <translation id="4562155214028662640">Añadir huella digital</translation>
 <translation id="4563210852471260509">El lenguaje de entrada inicial es el chino.</translation>
@@ -4336,7 +4339,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5040823038948176460">Configuración de contenido adicional</translation>
 <translation id="5041509233170835229">Aplicación de Chrome</translation>
 <translation id="5043440033854483429">El nombre puede contener letras, números y guiones (-), y debe tener entre 1 y 15 caracteres.</translation>
-<translation id="5043913660911154449">O especifica el archivo PPD de tu impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="504561833207953641">Se está abriendo en una sesión de navegador existente.</translation>
 <translation id="5049614114599109018">Usar historial de entrada</translation>
@@ -4727,6 +4729,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5427278936122846523">Traducir siempre</translation>
 <translation id="5427459444770871191">Girar a la &amp;derecha</translation>
 <translation id="542750953150239272">Al continuar, aceptas que el dispositivo pueda descargar e instalar actualizaciones de aplicaciones de Google, de tu operador y del fabricante del dispositivo automáticamente, y que incluso pueda usar datos móviles. Es posible que algunas de estas aplicaciones ofrezcan compras en la aplicación.</translation>
+<translation id="5427936139162668357">Ver PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (actualización disponible)</translation>
 <translation id="542948651837270806">Se necesita instalar una actualización para el firmware del módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Ancho completo</translation>
@@ -8132,6 +8135,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8645354835496065562">Seguir permitiendo el acceso a los sensores</translation>
 <translation id="8645920082661222035">Predice y te advierte de eventos peligrosos antes de que se produzcan</translation>
 <translation id="8646209145740351125">Inhabilitar sincronización</translation>
+<translation id="8646340610303779673">No se puede obtener el PPD.</translation>
 <translation id="864637694230589560">Los sitios suelen enviar notificaciones para informarte sobre las últimas noticias o mensajes de chat.</translation>
 <translation id="8647385344110255847">Con tu permiso, tu hijo/a puede usar Google Play para descargar aplicaciones.</translation>
 <translation id="8647834505253004544">La dirección web no es válida</translation>
@@ -8192,6 +8196,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="869884720829132584">Menú de aplicaciones</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
+<translation id="8699188901396699995">PPD de <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Se ha bloqueado tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8703346390800944767">Saltar anuncio</translation>
 <translation id="8705331520020532516">Número de serie</translation>

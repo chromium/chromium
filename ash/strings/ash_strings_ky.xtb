@@ -436,6 +436,7 @@
 <translation id="3413817803639110246">Азырынча бир да эскертме жок</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> тармагынан ажыратуу</translation>
 <translation id="3430396595145920809">Артка кайтуу үчүн экраныңыздын оң четинен сүрүп коюңуз</translation>
+<translation id="3431517721463707585">14-иш такта</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Эстеткичти түзөтүү</translation>
 <translation id="3435967511775410570">Манжа изи таанылды</translation>
@@ -676,6 +677,7 @@
 <translation id="4731797938093519117">Ата-эненин кирүү уруксаты</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (cол)</translation>
 <translation id="4734965478015604180">Туурасынан</translation>
+<translation id="4735944890391795473">12-иш такта</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4740516757091333363">Сакталган иш тактаны өчүрөсүзбү?</translation>
 <translation id="4752784485658729358">6 сакталган иш тактага гана уруксат берилген. Жаңы иш тактаны сактоо үчүн эскисин өчүрүңүз.</translation>
@@ -696,6 +698,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> файлын жүктөп алуу үчүн тармакка туташууну текшериңиз</translation>
 <translation id="486056901304535126">Жүктөп алууга кийинчерээк аракет жасалат. Жүктөлүп алынганга чейин иштетүү үчүн кеп Google'га жөнөтүлөт.</translation>
 <translation id="4864369630010738180">Кирүүдө…</translation>
+<translation id="4864648187878336334">15-иш такта</translation>
 <translation id="4868492592575313542">жандырылды</translation>
 <translation id="4872237917498892622">Alt+Search же Shift</translation>
 <translation id="4881695831933465202">Ачуу</translation>
@@ -723,6 +726,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">16-иш такта</translation>
 <translation id="5003993274120026347">Кийинки сүйлөм</translation>
 <translation id="5016558321564993266">Белгилегичти өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Убакыт бүттү</translation>
@@ -739,6 +743,7 @@
 <translation id="5098537242461068432">Иш такта жана терезелер кайра ачылды</translation>
 <translation id="5104236669533825617">Скринкаст түзүлбөй жатат</translation>
 <translation id="5107522548814527560">Интернет</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Кийинки айды көрсөтүү</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
 <translation id="5147567197700016471">Бекилген жок</translation>
@@ -829,6 +834,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофондун оюкчасы</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> колдонмосун караңыз.</translation>
+<translation id="5662075790140998213">10-иш такта</translation>
 <translation id="5662709761327382534">Аудиону жаздыруу <ph name="CURRENT_STATE" />. Микрофонду <ph name="NEW_STATE" /> абалына өткөрүү үчүн "Enter" баскычын басыңыз</translation>
 <translation id="5669267381087807207">Жандырылууда</translation>
 <translation id="5673434351075758678">Жөндөөлөр шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
@@ -1030,6 +1036,8 @@
 <translation id="6753390234084146956">өтмөктөр</translation>
 <translation id="6757237461819837179">Медиа ойнотулган жок</translation>
 <translation id="6777216307882431711">Байланышкан USB-C түзмөктөрү кубатталууда</translation>
+<translation id="6781002679438061620">9-иш такта</translation>
+<translation id="6782182743534150858">13-иш такта</translation>
 <translation id="6786750046913594791">Куржунду жабуу</translation>
 <translation id="6787595647772650851">Акыркы сеансты калыбына келтирүү</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
@@ -1091,6 +1099,7 @@
 <translation id="7098053464892629930">Түзмөктүн жеткиликтүү функцияларынын баарын пайдалануу үчүн Google Play'ден <ph name="NAME" /> колдонмосун жүктөп алыңыз</translation>
 <translation id="7098389117866926363">USB-C түзмөгү (аркасындагы сол жактагы оюкча)</translation>
 <translation id="7106330611027933926">Издөө панелин көрсөтүү</translation>
+<translation id="7116969082764510092">11-иш такта</translation>
 <translation id="7118268675952955085">скриншот</translation>
 <translation id="7126996685418858413">Өткөн аптада ачылган</translation>
 <translation id="7130207228079676353">ЭҢ ЫЛАЙЫКТУУ КОЛДОНМОЛОР</translation>
@@ -1189,6 +1198,7 @@
 <translation id="7662283695561029522">Конфигурациялоо үчүн таптап коюңуз</translation>
 <translation id="7670953955701272011">Бул күндү Google Жылнаамада ачуу</translation>
 <translation id="7671610481353807627">Колдонмолор түсү боюнча иргелет</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> тармагына туташып турат, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067"><ph name="CAMERA_NAME" /> камерадан киргизүү үчүн тандалды.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Жаңы мобилдик тармакты кошуу</translation>
@@ -1473,5 +1483,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> сурамы боюнча <ph name="RESULT_COUNT" /> натыйжа көрсөтүлүүдө</translation>
 <translation id="98515147261107953">Туурасынан</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезеси жабылды.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Жаңы функцияларды жана коопсуздук жакшыртууларын алыңыз. Жаңыртуулар фондо аткарылат.</translation>
 </translationbundle>

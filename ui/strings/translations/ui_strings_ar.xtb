@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{قبل يوم واحد}zero{قبل # من الأيام}two{قبل يومين (#)}few{قبل # أيام}many{قبل # يومًا}other{قبل # من الأيام}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{قبل دقيقة واحدة}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{دقيقة واحدة}zero{# دقيقة}two{دقيقتان (#)}few{# دقائق}many{# دقيقة}other{# دقيقة}}</translation>
+<translation id="1181037720776840403">إزالة</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1269641567813814718">Win</translation>

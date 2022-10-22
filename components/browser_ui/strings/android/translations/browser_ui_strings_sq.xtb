@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Rekomandohet për përvojën më të mirë</translation>
 <translation id="1818308510395330587">Për të lejuar që <ph name="APP_NAME" /> të përdorë AR, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Nga <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Sajtet e lidhura mund ta shikojnë aktivitetin tënd në këtë grup</translation>
 <translation id="1887786770086287077">Qasja te vendndodhja është joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Mbyll</translation>
 <translation id="1919345977826869612">Reklamat</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Përfshi të gjitha sajtet nën këtë domen</translation>
 <translation id="4883854917563148705">Cilësimet e menaxhuara nuk mund të rivendosen</translation>
 <translation id="4887024562049524730">Pyet përpara se sajtet të lejohen të përdorin pajisjen e realitetit virtual dhe të dhënat e tua (rekomandohet)</translation>
+<translation id="4955223779495905865">Një sajt që viziton mund të integrojë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Secili prej këtyre sajteve mund të ruajë kuki dhe të dhëna të tjera për personalizimin e përvojës sate.</translation>
 <translation id="4962975101802056554">Anulo të gjitha lejet për pajisjen</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
 <translation id="4976702386844183910">Vizituar së fundi më <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Lejoju faqeve të të hapin sensorët e lëvizjes (rekomandohet)</translation>
 <translation id="5050380848339752099">Ky sajt është gati për të ndarë informacione me një aplikacion jashtë modalitetit "të fshehtë".</translation>
 <translation id="5063480226653192405">Përdorimi</translation>
+<translation id="5082281938627763039">Kjo fshin kukit dhe të dhënat e tjera të sajtit për <ph name="FPS_MEMBER" /> dhe për sajtet në grupin e sajteve të <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Sajti për celular</translation>
 <translation id="509133520954049755">Kërko pamjen për desktop</translation>
 <translation id="5100237604440890931">I palosur - kliko për ta zgjeruar</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Të bllokuara</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
 <translation id="5690795753582697420">Kamera është çaktivizuar në cilësimet e Android</translation>
+<translation id="5706552988683188916">Kjo fshin kukit dhe të dhënat e tjera të sajtit për <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Kjo do të pastrojë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" /> ose nga aplikacioni i tij në ekranin bazë.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> është bllokuar</translation>
 <translation id="5804241973901381774">Lejet</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
 <translation id="789180354981963912">Blloko kukit e palëve të treta në modalitetin "e fshehtë"</translation>
 <translation id="7940722705963108451">Më kujto</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="FPS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="FPS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="FPS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>
 <translation id="7986741934819883144">Zgjidh një kontakt</translation>
 <translation id="7999064672810608036">Je i sigurt që dëshiron t'i pastrosh të gjitha të dhënat lokale, duke përfshirë kukit, dhe të rivendosësh të gjitha lejet për këtë sajt uebi?</translation>
 <translation id="8007176423574883786">E çaktivizuar për këtë pajisje</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Aktivizo mikrofonin</translation>
 <translation id="851751545965956758">Blloko lidhjen e sajteve me pajisjet</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajt të <ph name="FPS_OWNER" />}other{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajte të <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Harro</translation>
 <translation id="9019902583201351841">Menaxhuar nga prindërit e tu</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
+<translation id="9090268041676521955">Ky sajt është në një grup që mund ta shikojë aktivitetin tënd. Grupi përcaktohet nga <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Të fshihen kukit?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera}}</translation>
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Hai un día}other{Hai # días}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Hai un minuto}other{Hai # minutos}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}other{# m}}</translation>
+<translation id="1181037720776840403">Eliminar</translation>
 <translation id="1243314992276662751">Cargar</translation>
 <translation id="1266864766717917324">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

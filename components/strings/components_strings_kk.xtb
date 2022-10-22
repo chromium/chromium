@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Ауыл және орман шаруашылығы</translation>
 <translation id="1080116354587839789">Еніне сәйкестендіру</translation>
 <translation id="1081061862829655580">19-науа</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Картаға ат енгізу</translation>
 <translation id="1089439967362294234">Құпия сөзді өзгерту</translation>
 <translation id="1096545575934602868">Бұл өрісте <ph name="MAX_ITEMS_LIMIT" /> жазбадан аспауы керек. Кейінгі жазбалардың бәрі өшіріледі.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">Бұл саясат өшірулі, оның мәні еленбейтін болады.</translation>
 <translation id="1368318639262510626">Динозавр ойыны. Пиксельдік динозавр шөл далада жүгіріп, кактустар мен птеродактильдерге тимеу үшін секіруі және бұғып қалуы керек. Дыбыстық сигнал шыққанда, бос орын пернесін басып, кедергілерден аттап өтіңіз.</translation>
 <translation id="1374468813861204354">ұсыныстар</translation>
-<translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
 <translation id="1375198122581997741">Нұсқа туралы</translation>
 <translation id="1376836354785490390">Азырақ</translation>
 <translation id="1377321085342047638">Карта нөмірі</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">Ауа райы</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Жоғары сапалы мазмұн жасау үшін компьютердегі қаріптерді пайдаланыңыз.</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Сол жақ</translation>
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> сайтында жұмысты жалғастыру үшін <ph name="EMBEDDED_ORIGIN" /> арналған <ph name="ONE_TIME_CODE" /> кодын пайдаланыңыз.</translation>
 <translation id="1472675084647422956">Толық көрсету</translation>
@@ -674,7 +671,6 @@
 <translation id="2677696497921480781">Туған күн және есім күні</translation>
 <translation id="2677748264148917807">Шығу</translation>
 <translation id="2679714844901977852">Қауіпсіз әрі жылдамырақ төлеу үшін карта мен төлем туралы ақпаратты Google аккаунтыңызға (<ph name="USER_EMAIL" />) сақтаңыз.</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Ең оңтайлы</translation>
 <translation id="2688969097326701645">Иә, жалғастырамын</translation>
 <translation id="2691924980723297736">Қауіпсіздік туралы ескерту</translation>
@@ -708,7 +704,6 @@
 <translation id="2775884851269838147">Бірінші басып шығарылатын бет</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Байланыс қалпына келтірілді.</translation>
-<translation id="2786469568759673015">Chinese #3 хатқалтасы</translation>
 <translation id="2791176355335562114">Келесі жолы жылдамырақ төлеңіз</translation>
 <translation id="2792012897584536778">Бұл құрылғының әкімшілері қауіпсіздік сертификаттарын орнатты, енді олар сіз кірген веб-сайттардың мазмұнын көруі мүмкін.</translation>
 <translation id="2799020568854403057">Сайтта зиянды қолданбалар бар</translation>
@@ -1017,7 +1012,6 @@
 <translation id="3634530185120165534">5-науа</translation>
 <translation id="3634567936866541746">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chrome сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
 <translation id="3637662659967048211">Google аккаунтына сақтау</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Қолданба:</translation>
 <translation id="3647286794400715637">Әрбір URL жолы жазбасында 1–2 URL болуы керек.</translation>
 <translation id="3650584904733503804">Тексеру сәтті аяқталды</translation>
@@ -1148,7 +1142,6 @@
 <translation id="4010758435855888356">Жадты пайдалануға рұқсат берілсін бе?</translation>
 <translation id="401170183602135785">C6 хатқалтасы</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} беттік PDF құжаты}other{{COUNT} беттік PDF құжаты}}</translation>
-<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Бұл үлгі қорғалмаған байланыс арқылы жіберілгендіктен, ақпаратыңыз басқаларға көрінетін болады.</translation>
 <translation id="4024923292610332139">құпия сөздерді толтыру үшін Touch ID технологиясын өшіру</translation>
 <translation id="4025913568718019429">"Google құпиялылық параметрлерін басқару" түймесі. Google аккаунтының құпиялылық параметрлеріне кіру үшін Enter пернесін басыңыз.</translation>
@@ -1366,7 +1359,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Кеңейтімдерді ажыратып көріңіз.</translation>
 <translation id="4559134504959026834">Бұл сайт әрекетіңізді көре алатын <ph name="SET_OWNER" /> белгілеген топқа кіреді.</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Ашық ауадағы демалыс</translation>
 <translation id="4567686777917670400">Браузер параметрін әкімші қашықтан өзгерте алады. Құрылғыдағы әрекеттерді Chromium браузерінен тыс та басқаруға болады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Жеткізу</translation>
@@ -1410,7 +1402,6 @@
 <translation id="4682496302933121474">Бет аударылсын ба?</translation>
 <translation id="468314109939257734">Виртуалдық карта нөмірін көру</translation>
 <translation id="4692623383562244444">Іздеу жүйелері</translation>
-<translation id="4693246800345263879">254 x 356 мм хатқалта</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бүйірлік</translation>
 <translation id="4702656508969495934">Live Caption көрінеді, ерекшелеу үшін терезе ауыстырғышты пайдаланыңыз.</translation>
@@ -1628,7 +1619,6 @@
 <translation id="5205222826937269299">Аты қажет</translation>
 <translation id="5209518306177824490">SHA-1 саусақ ізі</translation>
 <translation id="5209670883520018268">20-науа</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">13-науа</translation>
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>
 <translation id="5217759126664161410">Протокол форматы жарамсыз.</translation>
@@ -1637,7 +1627,6 @@
 <translation id="5229588705416009823">Көп ойыншыға арналған ойындар</translation>
 <translation id="5230733896359313003">Жеткізу мекенжайы</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5239623327352565343">Локацияны пайдалануға рұқсат берілді.</translation>
 <translation id="5242889659037569123">Багаж және саяхат керек-жарақтары</translation>
@@ -1876,7 +1865,6 @@
 <translation id="5884465125445718607">Chinese #6 хатқалтасы</translation>
 <translation id="5887400589839399685">Карта сақталды</translation>
 <translation id="5887687176710214216">Соңғы кіру: кеше</translation>
-<translation id="5891155897634819292">Chinese #5 хатқалтасы</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5895187275912066135">Шығарылған күні</translation>
 <translation id="5901630391730855834">Сары</translation>
@@ -1909,7 +1897,6 @@
 <translation id="5974052231147553524">Алтыншы орам</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Камераның ылғалдылығы</translation>
 <translation id="5984712050237025014">Кеңейтілген және виртуалдық шындық</translation>
 <translation id="598637245381783098">Төлем қолданбасы ашылмайды</translation>
@@ -2398,7 +2385,6 @@
 <translation id="7337706099755338005">Сіздің платформаңызда қолжетімді емес.</translation>
 <translation id="733923710415886693">Сервер сертификаты Сертификат айқындығы саясатымен ашылмады.</translation>
 <translation id="7341357280245177602">Жүрілген көліктер</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">үлестес пайдаланушы:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Осы қойындыны жапқанға дейін, рұқсат берілген.</translation>
@@ -2441,7 +2427,6 @@
       &lt;li&gt;&lt;strong&gt;Қолдану&lt;/strong&gt; түймесін, содан кейін &lt;strong&gt;OK&lt;/strong&gt; түймесін басыңыз
       &lt;li&gt;&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome анықтамалық орталығына&lt;/a&gt; кіріп, компьютерден бағдарламалық құралды қалай біржола өшіруге болатынын көріңіз
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Сүйкімді</translation>
 <translation id="741204030948306876">Жарайды</translation>
 <translation id="7416351320495623771">Құпия сөздерді басқару...</translation>
@@ -2487,7 +2472,6 @@
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7517414872996418597">C10 хатқалтасы</translation>
 <translation id="7518003948725431193">Веб-мекенжай үшін веб-бет табылмады: <ph name="URL" /></translation>
-<translation id="7518098469289408841">254 x 330 мм хатқалта</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">"<ph name="SECTION" />" бөлімі жасырылды.</translation>
 <translation id="7523408071729642236">Өндіріс</translation>
@@ -2778,7 +2762,6 @@
 <translation id="8277900682056760511">Төлем өңдегіш парағы ашық.</translation>
 <translation id="8279611986089885641">Chrome хабарландырулары қосулы болуы керек. Оларды <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлімінен қосуға болады.</translation>
 <translation id="8280630997017109758">11-науа</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Өткізіп жіберу</translation>
 <translation id="8282947398454257691">Бірегей құрылғы идентификаторыңызды білу</translation>
 <translation id="8284769179630993263">Chrome параметрлері арқылы Safe Browsing қорғанысын және т.б. басқару</translation>
@@ -2794,7 +2777,6 @@
 <translation id="8299269255470343364">жапон</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" бөлімі көрсетілді.</translation>
 <translation id="830498451218851433">Жартылай бүктеу</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Орнатылған қолданбалар және олардың пайдаланылу жиілігі</translation>
 <translation id="831997045666694187">Кеш</translation>
 <translation id="8321476692217554900">хабарландырулар</translation>
@@ -2876,7 +2858,6 @@
 <translation id="8557066899867184262">CVC коды картаңыздың артқы жағында орналасқан.</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменімен жеке байланыс орнату мүмкін емес, себебі құрылғыңыздың күні мен уақыты (<ph name="DATE_AND_TIME" />) дұрыс емес.</translation>
 <translation id="8564182942834072828">Бөлек құжаттар/реттелмеген көшірмелер</translation>
-<translation id="8564453110650229930">Chinese #10 хатқалтасы</translation>
 <translation id="8564985650692024650">Chromium басқа сайттарда пайдаланылған <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> құпия сөзін қайта орнатуды ұсынады.</translation>
 <translation id="8576310925653847813">Үй кинотеатры жүйелері</translation>
 <translation id="8577348305244205642">Виртуалдық карта қолжетімсіз</translation>
@@ -2905,7 +2886,6 @@
 <translation id="8687429322371626002">Құрылғы мен аккаунтты <ph name="MANAGER" /> басқарады.</translation>
 <translation id="8688672835843460752">Қолжетімді</translation>
 <translation id="868922510921656628">Әр жиынтықтағы беттер саны</translation>
-<translation id="8694278303623679191">Postfix хатқалтасы</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8699041776323235191">HID құрылғысы</translation>
 <translation id="8699899385443889493">"Chrome Dino ойынын ойнау" түймесі, Chrome-да Dino Run ойынын ойнау үшін Enter пернесін басыңыз.</translation>
@@ -2983,7 +2963,6 @@
 <translation id="8874824191258364635">Дұрыс карта нөмірін енгізіңіз</translation>
 <translation id="8876033571432926051">Қарапайым ойындар</translation>
 <translation id="8877780815363510165">Балық аулау</translation>
-<translation id="8879882034055059721">254 x 381 мм хатқалта</translation>
 <translation id="8884537526797090108">Құпия мазмұнды жазу мүмкін емес</translation>
 <translation id="8891727572606052622">Жарамсыз прокси режимі.</translation>
 <translation id="8894794286471754040">Алдымен ұзын шеті</translation>

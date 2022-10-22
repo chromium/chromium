@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Del med Parallels Desktop</translation>
 <translation id="4902546322522096650">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, opret forbindelse</translation>
 <translation id="4906580650526544301">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" />%, info</translation>
-<translation id="4929673617759421391">Administratorpolitikken tillader ikke, at du indsætter denne fil</translation>
 <translation id="4935975195727477204">Blomst</translation>
 <translation id="4943368462779413526">Amerikansk fodbold</translation>
 <translation id="4961158930123534723">1 mappe blev delt med Parallels Desktop</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kasakhisk</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementer er pakket ud.</translation>
-<translation id="9210751050717126865">Administratorpolitikken tillader ikke, at du indsætter <ph name="COUNT" /> filer</translation>
 <translation id="9213073329713032541">Installationen er startet.</translation>
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="9219908252191632183">Måne</translation>

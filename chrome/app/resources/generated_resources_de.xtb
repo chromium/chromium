@@ -2408,6 +2408,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3201422919974259695">Verfügbare USB-Geräte werden hier angezeigt.</translation>
 <translation id="3202131003361292969">Pfad</translation>
 <translation id="3202173864863109533">Der Ton dieses Tabs ist stummgeschaltet.</translation>
+<translation id="3202578601642193415">Neueste</translation>
 <translation id="3204648577100496185">Daten, die dieser App zugewiesen sind, werden möglicherweise von diesem Gerät entfernt</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Jetzt prüfen</translation>
@@ -3686,6 +3687,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen deines Chrome-Geräts aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Prüfe zuerst, ob dein USB- oder Bluetooth-Schalter mit deinem Chromebook verbunden ist. Du kannst auch die Tastatur verwenden.</translation>
+<translation id="4426508677408162512">Alle Lesezeichen</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4427365070557649936">Bestätigungscode wird geprüft…</translation>
 <translation id="4429163740524851942">Belegung der physischen Tastatur</translation>
@@ -3825,6 +3827,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4556194354084985730">Du kannst dich mit deinen gespeicherten Passwörtern ganz einfach auf Websites und in Apps anmelden. Wenn diese Option deaktiviert ist, musst du dein Passwort bei der Anmeldung selbst eingeben.</translation>
 <translation id="4558426062282641716">Berechtigung zum automatischen Start angefordert</translation>
 <translation id="4559617833001311418">Diese Website greift auf meine Bewegungs- oder Lichtsensoren zu.</translation>
+<translation id="4561098487691395071">Oder PPD für den Drucker angeben</translation>
 <translation id="4561893854334016293">Keine vor Kurzem geänderten Berechtigungen</translation>
 <translation id="4562155214028662640">Fingerabdruck hinzufügen</translation>
 <translation id="4563210852471260509">Anfängliche Eingabesprache ist Chinesisch.</translation>
@@ -4322,7 +4325,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5040823038948176460">Zusätzliche Inhaltseinstellungen</translation>
 <translation id="5041509233170835229">Chrome-App</translation>
 <translation id="5043440033854483429">Der Name darf aus Buchstaben, Ziffern und Bindestrichen (-) bestehen und muss zwischen 1 und 15 Zeichen (insgesamt) umfassen.</translation>
-<translation id="5043913660911154449">Oder wähle die PPD für den Drucker <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="504561833207953641">Wird in einer aktuellen Browsersitzung geöffnet.</translation>
 <translation id="5049614114599109018">Eingabeverlauf verwenden</translation>
@@ -4713,6 +4715,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5427278936122846523">Immer übersetzen</translation>
 <translation id="5427459444770871191">Im &amp;Uhrzeigersinn drehen</translation>
 <translation id="542750953150239272">Wenn du fortfährst, stimmst du zu, dass auf diesem Gerät auch automatisch Updates und Apps von Google, von deinem Mobilfunkanbieter und vom Hersteller deines Geräts heruntergeladen und installiert werden dürfen, möglicherweise über eine mobile Datenverbindung. Bei einigen dieser Apps werden eventuell In-App-Käufe angeboten.</translation>
+<translation id="5427936139162668357">PPD ansehen</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update verfügbar)</translation>
 <translation id="542948651837270806">Für das Trusted Platform Module muss ein Firmwareupdate installiert werden. Weitere Informationen: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Volle Breite</translation>
@@ -8104,6 +8107,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8645354835496065562">Zugriff auf Sensor weiterhin zulassen</translation>
 <translation id="8645920082661222035">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor sie eintreten</translation>
 <translation id="8646209145740351125">Synchronisierung deaktivieren</translation>
+<translation id="8646340610303779673">Die PPD kann nicht abgerufen werden.</translation>
 <translation id="864637694230589560">Websites senden normalerweise Benachrichtigungen, um dich über Eilmeldungen oder Chatnachrichten zu informieren</translation>
 <translation id="8647385344110255847">Mit deiner Erlaubnis kann dein Kind Apps von Google Play installieren</translation>
 <translation id="8647834505253004544">Keine gültige Webadresse</translation>
@@ -8164,6 +8168,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="869884720829132584">Apps-Menü</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
+<translation id="8699188901396699995">PPD für „<ph name="PRINTER_NAME" />“</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> wurde gesperrt.</translation>
 <translation id="8703346390800944767">Werbung überspringen</translation>
 <translation id="8705331520020532516">Seriennummer</translation>

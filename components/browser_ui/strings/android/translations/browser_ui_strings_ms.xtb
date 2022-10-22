@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Disyorkan untuk pengalaman terbaik</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Daripada <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Laman berkaitan boleh melihat aktiviti anda dalam kumpulan</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1919345977826869612">Iklan</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Sertakan semua laman di bawah domain ini</translation>
 <translation id="4883854917563148705">Tetapan yang diurus tidak dapat ditetapkan semula</translation>
 <translation id="4887024562049524730">Tanya sebelum membenarkan tapak menggunakan peranti dan data realiti maya anda (disyorkan)</translation>
+<translation id="4955223779495905865">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Mana-mana laman ini boleh menyimpan kuki dan data lain untuk memperibadikan pengalaman anda.</translation>
 <translation id="4962975101802056554">Batalkan semua kebenaran untuk peranti</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
 <translation id="4976702386844183910">Terakhir dilawati <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Benarkan tapak mengakses penderia gerakan (disyorkan)</translation>
 <translation id="5050380848339752099">Laman ini akan berkongsi maklumat dengan apl di luar mod Inkognito.</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
+<translation id="5082281938627763039">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="FPS_MEMBER" /> dan untuk laman dalam kumpulan laman <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Laman mudah alih</translation>
 <translation id="509133520954049755">Minta paparan desktop</translation>
 <translation id="5100237604440890931">Diruntuhkan - klik untuk mengembangkan.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Disekat</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="5690795753582697420">Kamera dimatikan dalam tetapan Android</translation>
+<translation id="5706552988683188916">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Tindakan ini akan mengosongkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" /> atau oleh aplnya pada Skrin utama anda.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
 <translation id="789180354981963912">Sekat kuki pihak ketiga dalam Inkognito:</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="FPS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}other{<ph name="FPS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="FPS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}}</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7999064672810608036">Anda pasti ingin mengosongkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk laman web ini?</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Nyahredamkan mikrofon</translation>
 <translation id="851751545965956758">Sekat tapak daripada menyambung ke peranti</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Kuki dibenarkan untuk <ph name="FPS_MEMBERS_COUNT" /> laman <ph name="FPS_OWNER" />}other{Kuki dibenarkan untuk <ph name="FPS_MEMBERS_COUNT" /> laman <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dibenarkan (disyorkan)</translation>
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Lupa</translation>
 <translation id="9019902583201351841">Diurus oleh ibu bapa anda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Laman ini berada dalam kumpulan yang boleh melihat aktiviti anda. Kumpulan tersebut ditakrifkan oleh <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Padamkan kuki?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}}</translation>
 <translation id="913657688200966289">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>

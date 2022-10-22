@@ -64,6 +64,7 @@
 <translation id="2560420686485554789">‏Chromium کو فائلیں ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی درکار ہے</translation>
 <translation id="2572494885440352020">‏Chromium ہیلپر</translation>
 <translation id="2583187216237139145">‏دفتری پروفائل کا منتظم اس پروفائل کے استعمال کے دوران جنریٹ ہونے والے کسی بھی Chromium ڈیٹا (جیسے، بُک مارکس کی تخلیق، سرگزشت، پاس ورڈز اور دیگر ترتیبات) کو ہٹا سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">‏Chromium کا استعمال جاری رکھیں</translation>
 <translation id="2648074677641340862">‏انسٹالیشن کے دوران آپریٹنگ سسٹم کی ایک خرابی پیش آ گئی۔ براہ کرم Chromium دوبارہ ڈاؤن لوڈ کریں۔</translation>
 <translation id="2661879430930417727">‏اگر آپ کسی آلے کا اشتراک کرتے ہیں تو دوست اور اہل خانہ الگ الگ براؤز کر سکتے ہیں اور Chromium کو اپنی مرضی کے مطابق سیٹ اپ کر سکتے ہیں</translation>
 <translation id="2669853942967761236">‏Chromium نے اس آرکائیو فائل کو مسدود کر دیا کیونکہ یہ میلوئیر کو پوشیدہ رکھ سکتی ہے</translation>
@@ -105,6 +106,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏موجودہ Chromium پروفائل پر سوئچ کریں؟</translation>
 <translation id="3412460710772753638">اس آلہ پر پاس ورڈ مینیجر میں</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{‏اگر یہ 1 منٹ سے زيادہ تک غیر فعال ہے تو آپ کے منتظم نے بند کرنے کے لیے Chromium کو کنفیگر کیا ہے۔}other{‏اگر یہ # منٹ سے زيادہ تک غیر فعال ہے تو آپ کے منتظم نے بند کرنے کے لیے Chromium کو کنفیگر کیا ہے۔}}</translation>
 <translation id="3430503420100763906">‏Chromium کی پروفائلز کے ساتھ آپ اپنے تمام Chromium مواد کو الگ کر سکتے ہیں۔ دوستوں اور فیملی کیلئے پروفائلز تخلیق کریں یا کام اور تفریح کے درمیان تقسیم کریں۔</translation>
 <translation id="347328004046849135">‏جب آپ کسی متاثرہ پاس ورڈ سے سائن ان کریں گے تو Chromium آپ کو مطلع کرے گا</translation>
 <translation id="3474745554856756813">‏یہ اس آلہ سے <ph name="ITEMS_COUNT" /> آئٹمز کو حذف کر دے گا۔ بعد میں اپنے ڈیٹا کی بازیافت کرنے کیلئے، Chromium میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
@@ -186,6 +188,7 @@
 <translation id="538767207339317086">‏Chromium میں سائن ان کی اجازت دیں</translation>
 <translation id="5398878173008909840">‏Chromium کا ایک نیا ورژن دستیاب ہے۔</translation>
 <translation id="5405650547142096840">‏Chromium سے ہٹائیں</translation>
+<translation id="5421879995290576427">{0,plural, =0{‏Chromium اب بند ہو جائے گا۔}=1{‏Chromium ‏1 سیکنڈ میں بند ہو جائے گا۔}other{‏Chromium # سیکنڈ میں بند ہو جائے گا۔}}</translation>
 <translation id="5427571867875391349">‏Chromium کو اپنے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium بی ٹا</translation>
 <translation id="5473971139929175403">‏ممکن ہے کہ Chromium ٹھیک طریقے سے کام نہ کرے کیونکہ یہ اس Linux ڈسٹری بیوشن پر مزید تعاون یافتہ نہیں ہے</translation>
@@ -273,6 +276,7 @@
 <translation id="6940431691900807093">‏بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے کے لیے Chromium سے آپ کی دلچسپیوں کو دیکھنے کا مطالبہ کر سکتی ہے۔ Chromium‏ 3 دلچسپیوں تک کا اشتراک کر سکتا ہے۔</translation>
 <translation id="6964305034639999644">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="6978145336957848883">‏کمزور پاس ورڈز کا اندازہ لگانا آسان ہوتا ہے۔ Chromium کو <ph name="BEGIN_LINK" />آپ کے لیے مضبوط پاس ورڈز تخلیق کرنے اور یاد رکھنے دیں<ph name="END_LINK" />۔</translation>
+<translation id="6984667024406244807">‏Chromium غیر فعال ہے</translation>
 <translation id="6985329841647292029">‏ChromiumOS کی شرائط</translation>
 <translation id="6990124437352146030">‏Chromium کو اس سائٹ کیلئے آپ کے مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
 <translation id="7025789849649390912">انسٹالیشن رک گئی۔</translation>

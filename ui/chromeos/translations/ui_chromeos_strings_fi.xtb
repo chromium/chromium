@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Juusto</translation>
 <translation id="2781645665747935084">belgialainen</translation>
 <translation id="2782104745158847185">Virhe Linux-sovelluksen asennuksessa</translation>
+<translation id="2802583107108007218">Lue lisää näistä rajoituksista</translation>
 <translation id="2803375539583399270">Lisää PIN-koodi</translation>
 <translation id="2820957248982571256">Etsitään…</translation>
 <translation id="2830077785865012357">kiina (zhuyin)</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Jaa Parallels Desktopille</translation>
 <translation id="4902546322522096650">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, yhdistä</translation>
 <translation id="4906580650526544301">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akku <ph name="BATTERY_STATUS" /> %, lisätietoja</translation>
-<translation id="4929673617759421391">Järjestelmänvalvojakäytäntö on estänyt tämän tiedoston liittämisen</translation>
 <translation id="4935975195727477204">Kukka</translation>
 <translation id="4943368462779413526">Jalkapallo</translation>
 <translation id="4961158930123534723">1 kansio jaettu Parallels Desktopille</translation>
@@ -921,6 +921,7 @@
 <translation id="8656768832129462377">Älä tarkista</translation>
 <translation id="8688591111840995413">Virheellinen salasana</translation>
 <translation id="8698464937041809063">Google-piirros</translation>
+<translation id="8698877009525468705">Tiedosto on luottamuksellinen, ja siihen sovelletaan järjestelmänvalvojakäytännön rajoituksia.</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8713112442029511308">malta</translation>
 <translation id="8714406895390098252">Polkupyörä</translation>
@@ -975,7 +976,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">kazakki</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> kohdetta noudettu</translation>
-<translation id="9210751050717126865">Järjestelmänvalvojan käytäntö estää <ph name="COUNT" /> tiedoston liittämisen</translation>
 <translation id="9213073329713032541">Asennus käynnistyi.</translation>
 <translation id="9219103736887031265">Kuvat</translation>
 <translation id="9219908252191632183">Kuu</translation>

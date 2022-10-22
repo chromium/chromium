@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{לפני יום אחד}two{לפני יומיים}many{לפני # ימים}other{לפני # ימים}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{לפני דקה אחת}two{לפני # דקות}many{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{דקה}two{# דק}many{# דק}other{# דק}}</translation>
+<translation id="1181037720776840403">הסרה</translation>
 <translation id="1243314992276662751">העלאה</translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

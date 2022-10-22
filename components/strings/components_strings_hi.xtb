@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">कृषि और वन विज्ञान</translation>
 <translation id="1080116354587839789">चौड़ाई में फ़िट करें</translation>
 <translation id="1081061862829655580">ट्रे 19</translation>
-<translation id="1086953900555227778">इंडेक्स-5x8</translation>
 <translation id="1088860948719068836">कार्ड पर नाम जोड़ें</translation>
 <translation id="1089439967362294234">पासवर्ड बदलें</translation>
 <translation id="1096545575934602868">इस फ़ाइल में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा एंट्री नहीं हो सकती. इसके बाद की सभी एंट्री खारिज हो जाएंगी.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">यह नीति ब्लॉक की हुई है. इसका मान नज़रअंदाज कर दिया जाएगा.</translation>
 <translation id="1368318639262510626">डायनो गेम. पिक्सलेट किया हुआ डायनासोर, जो कटीले पौधों और उड़ने वाले जीवों से बचते हुए, ज़मीन पर भागता है. जब आप ऑडियो क्यू सुनते हैं, तो बाधाएं आने पर कूदने के लिए, स्पेस दबाएं.</translation>
 <translation id="1374468813861204354">सुझाव</translation>
-<translation id="1374692235857187091">इंडेक्स-4x6 (पोस्टकार्ड)</translation>
 <translation id="1375198122581997741">वर्शन के बारे में</translation>
 <translation id="1376836354785490390">कम दिखाएं</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">अपने कंप्यूटर पर मौजूद फ़ॉन्ट इस्तेमाल करें, ताकि आप हाई फ़िडेलिटी कॉन्टेंट बना सकें</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> पर जारी रखने के लिए, <ph name="EMBEDDED_ORIGIN" /> के लिए आपका कोड <ph name="ONE_TIME_CODE" /> है.</translation>
 <translation id="1472675084647422956">और दिखाएं</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">जन्मदिन और नामकरण का दिन</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
 <translation id="2679714844901977852">झटपट और सुरक्षित तरीके से चेकआउट करने के लिए, अपने कार्ड और बिलिंग से जुड़ी जानकारी को अपने Google खाते <ph name="USER_EMAIL" /> में सेव करें</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">सबसे बढ़िया फ़िटिंग</translation>
 <translation id="2688969097326701645">हां, जारी रखें</translation>
 <translation id="2691924980723297736">सुरक्षा की चेतावनी</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">पहला प्रिंट पेज</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">कनेक्‍शन रीसेट किया गया था.</translation>
-<translation id="2786469568759673015">चाइनीज़ #3 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="2791176355335562114">अगली बार झटपट पैसे चुकाएं</translation>
 <translation id="2792012897584536778">इस डिवाइस के एडमिन ने कुछ सुरक्षा प्रमाणपत्र सेट अप किए हैं. इनसे उन्हें ऐसी वेबसाइटों की सामग्री दिख सकती है जिन पर आप जाते हैं.</translation>
 <translation id="2799020568854403057">आगे आने वाली साइट में नुकसान पहुंचाने वाले ऐप्लिकेशन हैं</translation>
@@ -1018,7 +1013,6 @@
 <translation id="3634530185120165534">ट्रे 5</translation>
 <translation id="3634567936866541746">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. खातों को सुरक्षित करने के लिए, Chrome का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="3637662659967048211">Google खाते में सेव करें</translation>
-<translation id="3640766068866876100">इंडेक्स-4x6-एक्स्ट्रा</translation>
 <translation id="3642638418806704195">ऐप्लिकेशन:</translation>
 <translation id="3647286794400715637">हर यूआरएल स्ट्रिंग में, यूआरएल की संख्या एक से दो के बीच होनी चाहिए.</translation>
 <translation id="3650584904733503804">मान्यकरण सफल</translation>
@@ -1149,7 +1143,6 @@
 <translation id="4010758435855888356">क्या आप Chromium को डिवाइस का स्टोरेज ऐक्सेस करने की अनुमति देना चाहते हैं?</translation>
 <translation id="401170183602135785">C6 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{पीडीएफ़ दस्तावेज़ में {COUNT}पेज है}one{पीडीएफ़ दस्तावेज़ में {COUNT}पेज है}other{पीडीएफ़ दस्तावेज़ में {COUNT}पेज हैं}}</translation>
-<translation id="4022639246993848966">3.5x5 इंच</translation>
 <translation id="4023431997072828269">यह फ़ॉर्म किसी ऐसे इंटरनेट कनेक्शन की मदद से सबमिट किया जा रहा है जो सुरक्षित नहीं है, इसलिए आपकी जानकारी दूसरे लोग भी देख सकेंगे.</translation>
 <translation id="4024923292610332139">TouchID बंद करें, ताकि पासवर्ड डाला जा सके</translation>
 <translation id="4025913568718019429">Google की निजता सेटिंग वाले बटन को मैनेज करें, Google खाते की निजता सेटिंग पर जाने के लिए, Enter दबाएं</translation>
@@ -1367,7 +1360,6 @@
 <translation id="455113658016510503">ए9</translation>
 <translation id="4558551763791394412">अपने एक्सटेंशन अक्षम करके देखें.</translation>
 <translation id="4559134504959026834">यह साइट, <ph name="SET_OWNER" />  के तय किए गए ग्रुप में है. यह आपकी गतिविधि देख सकती है</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">आउटडोर गतिविधियां</translation>
 <translation id="4567686777917670400">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chromium के बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">वितरण</translation>
@@ -1411,7 +1403,6 @@
 <translation id="4682496302933121474">पेज का अनुवाद पाना है?</translation>
 <translation id="468314109939257734">अपना वर्चुअल कार्ड नंबर देखें</translation>
 <translation id="4692623383562244444">खोज इंजन</translation>
-<translation id="4693246800345263879">10 x 14 इंच का लिफ़ाफ़ा</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>
 <translation id="4702656508969495934">लाइव कैप्शन दिख रहा है, इस पर फ़ोकस ले जाने के लिए, विंडो बदलने का बटन इस्तेमाल करें</translation>
@@ -1629,7 +1620,6 @@
 <translation id="5205222826937269299">नाम ज़रूरी है</translation>
 <translation id="5209518306177824490">SHA-1 फ़िंगरप्रिंट</translation>
 <translation id="5209670883520018268">ट्रे 20</translation>
-<translation id="5215363486134917902">फ़ोलियो-एसपी</translation>
 <translation id="521659676233207110">ट्रे 13</translation>
 <translation id="5216942107514965959">साइट पर पिछली बार आज गए</translation>
 <translation id="5217759126664161410">प्रोटोकॉल का फ़ॉर्मैट अमान्य है.</translation>
@@ -1638,7 +1628,6 @@
 <translation id="5229588705416009823">बड़ी संख्या में खेले जाने वाले मल्टीप्लेयर गेम</translation>
 <translation id="5230733896359313003">शिपिंग पता</translation>
 <translation id="5230815978613972521">बी8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
 <translation id="5239623327352565343">जगह की जानकारी ऐक्सेस करने की अनुमति है</translation>
 <translation id="5242889659037569123">बैग और यात्रा से जुड़ी ऐक्सेसरी</translation>
@@ -1877,7 +1866,6 @@
 <translation id="5884465125445718607">चाइनीज़ #6 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5887400589839399685">कार्ड सेव किया गया</translation>
 <translation id="5887687176710214216">साइट पर पिछली बार कल गए</translation>
-<translation id="5891155897634819292">चाइनीज़ #5 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5895187275912066135">जारी करने की तारीख</translation>
 <translation id="5901630391730855834">पीला</translation>
@@ -1886,7 +1874,7 @@
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक किया गया)</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5919090499915321845">बी10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 उपयोग में है}one{# उपयोग में हैं}other{# उपयोग में हैं}}</translation>
+<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 इस्तेमाल में है}one{# इस्तेमाल में है}other{# इस्तेमाल में हैं}}</translation>
 <translation id="592031860219554105">आइस स्केटिंग</translation>
 <translation id="5921185718311485855">चालू है</translation>
 <translation id="5921639886840618607">कार्ड को Google खाते में सेव करें?</translation>
@@ -1904,13 +1892,12 @@
 <translation id="5955063559762970069">होटल और ठहरने की जगह</translation>
 <translation id="5963413905009737549">अनुभाग</translation>
 <translation id="5967592137238574583">संपर्क जानकारी में बदलाव करें</translation>
-<translation id="5967867314010545767">इतिहास से निकालें</translation>
+<translation id="5967867314010545767">इतिहास से हटाएं</translation>
 <translation id="5968022600320704045">खोज का कोई नतीजा नहीं मिला</translation>
 <translation id="5968793460449681917">वेबसाइट पर किसी के भी आने पर</translation>
 <translation id="5974052231147553524">छठा रोल</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
-<translation id="5980920751713728343">इंडेक्स-3x5</translation>
 <translation id="5984570616552610254">चेंबर में नमी की मात्रा</translation>
 <translation id="5984712050237025014">ऑगमेंटेड और वर्चुअल रिएलिटी</translation>
 <translation id="598637245381783098">भुगतान ऐप्लिकेशन नहीं खुल सका</translation>
@@ -2399,7 +2386,6 @@
 <translation id="7337706099755338005">आपके प्लेटफ़ॉर्म पर उपलब्ध नहीं है.</translation>
 <translation id="733923710415886693">प्रमाणपत्र पारदर्शिता के माध्यम से सर्वर के प्रमाणपत्र को प्रकट नहीं किया गया.</translation>
 <translation id="7341357280245177602">पुराने वाहन</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">जुड़ा हुआ है या नहीं:</translation>
 <translation id="7349430561505560861">ए4-एक्स्ट्रा</translation>
 <translation id="7349921148288539306">तब तक अनुमति है, जब तक आप इस टैब को बंद नहीं कर देते</translation>
@@ -2442,7 +2428,6 @@
       &lt;li&gt;&lt;strong&gt;लागू करें&lt;/strong&gt; पर क्लिक करें, फिर &lt;strong&gt;ठीक है&lt;/strong&gt; पर क्लिक करें
       &lt;li&gt;&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome सहायता केंद्र&lt;/a&gt; पर जाकर अपने कंप्यूटर से सॉफ़्टवेयर को हमेशा के लिए हटाने का तरीका जानें
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">चौड़े पेज वाला फ़ॉर्मैट</translation>
 <translation id="7410471291937727359">प्यारा</translation>
 <translation id="741204030948306876">हां, मैं सहमत हूं</translation>
 <translation id="7416351320495623771">पासवर्ड प्रबंधित करें…</translation>
@@ -2488,7 +2473,6 @@
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7517414872996418597">C10 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="7518003948725431193">इस वेब पते के लिए कोई वेब पेज नहीं मिला था: <ph name="URL" /></translation>
-<translation id="7518098469289408841">10 x 13 इंच का लिफ़ाफ़ा</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">"<ph name="SECTION" />" सेक्शन छिपाया गया</translation>
 <translation id="7523408071729642236">मैन्युफ़ैक्चरिंग</translation>
@@ -2779,7 +2763,6 @@
 <translation id="8277900682056760511">पैसे चुकाने की हैंडलर शीट खुली है</translation>
 <translation id="8279611986089885641">Chrome पर सूचनाएं पाने की सुविधा चालू होनी चाहिए. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> में जाकर, इसे चालू किया जा सकता है.</translation>
 <translation id="8280630997017109758">ट्रे 11</translation>
-<translation id="8281084378435768645">बड़े आकार वाली फ़ोटो</translation>
 <translation id="8281886186245836920">अभी नहीं</translation>
 <translation id="8282947398454257691">आपका अद्वितीय डिवाइस पहचानकर्ता पता करना</translation>
 <translation id="8284769179630993263">Chrome की सेटिंग में Safe Browsing वगैरह को मैनेज करें</translation>
@@ -2795,7 +2778,6 @@
 <translation id="8299269255470343364">जापानी</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" वाला सेक्शन दिखाया गया</translation>
 <translation id="830498451218851433">फ़ोल्ड हाल्फ़</translation>
-<translation id="8307358339886459768">छोटे आकार वाली फ़ोटो</translation>
 <translation id="8307888238279532626">इंस्टॉल किए गए ऐप्लिकेशन और उनका कितनी बार इस्तेमाल किया जाता है</translation>
 <translation id="831997045666694187">शाम</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
@@ -2877,7 +2859,6 @@
 <translation id="8557066899867184262">कार्ड वेरीफ़िकेशन कोड (सीवीसी) आपके कार्ड के पीछे मौजूद होता है.</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से एक निजी कनेक्‍शन स्‍थापित नहीं किया जा सकता क्‍योंकि आपके डिवाइस का तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.</translation>
 <translation id="8564182942834072828">अलग-अलग दस्तावेज़/बिना क्रम के लगाई गई कॉपी</translation>
-<translation id="8564453110650229930">चाइनीज़ #10 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8564985650692024650">अगर आपने अपने <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> पासवर्ड का दूसरी साइटों पर दोबारा इस्तेमाल किया है, तो क्रोमियम आपको उसे रीसेट करने का सुझाव देता है.</translation>
 <translation id="8576310925653847813">होम थिएटर सिस्टम</translation>
 <translation id="8577348305244205642">वर्चुअल कार्ड उपलब्ध नहीं है</translation>
@@ -2907,7 +2888,6 @@
 <translation id="8687429322371626002">आपके डिवाइस और खाते को <ph name="MANAGER" /> प्रबंधित करता है.</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">हर सेट पर मौजूद पेजों की संख्या</translation>
-<translation id="8694278303623679191">पोस्टफ़िक्स साइज़ का लिफ़ाफ़ा</translation>
 <translation id="869891660844655955">खत्म होने की तारीख</translation>
 <translation id="8699041776323235191">एचआईडी डिवाइस</translation>
 <translation id="8699899385443889493">Chrome Dino गेम का बटन चालू करें, Dino Run गेम को Chrome में चलाने के लिए, Enter दबाएं</translation>
@@ -2985,7 +2965,6 @@
 <translation id="8874824191258364635">मान्य कार्ड संख्या डालें</translation>
 <translation id="8876033571432926051">सिंपल गेम</translation>
 <translation id="8877780815363510165">मछली पकड़ना</translation>
-<translation id="8879882034055059721">10 x 15 इंच का लिफ़ाफ़ा</translation>
 <translation id="8884537526797090108">गोपनीय कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
 <translation id="8891727572606052622">अमान्य प्रॉक्सी मोड.</translation>
 <translation id="8894794286471754040">लॉन्ग एज फ़र्स्ट</translation>

@@ -2403,6 +2403,7 @@
 <translation id="3201422919974259695">可用的 USB 设备会显示在此处。</translation>
 <translation id="3202131003361292969">路径</translation>
 <translation id="3202173864863109533">此标签页已静音。</translation>
+<translation id="3202578601642193415">最后</translation>
 <translation id="3204648577100496185">系统可能会从此设备上移除与该应用相关的数据</translation>
 <translation id="3208321278970793882">应用</translation>
 <translation id="3208584281581115441">立即检查</translation>
@@ -3679,6 +3680,7 @@
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">首先，请确保您的 USB 或蓝牙开关已连接到您的 Chromebook。您还可以使用键盘按键。</translation>
+<translation id="4426508677408162512">所有书签</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4427365070557649936">正在验证确认码…</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
@@ -3818,6 +3820,7 @@
 <translation id="4556194354084985730">使用您已保存的密码轻松登录网站和应用。该功能处于关闭状态时，系统会在您登录到相应网站或应用之前询问您。</translation>
 <translation id="4558426062282641716">已请求获取自动启动权限</translation>
 <translation id="4559617833001311418">此网站正在使用您的动态传感器或光传感器。</translation>
+<translation id="4561098487691395071">或指定您的打印机 PPD</translation>
 <translation id="4561893854334016293">近期未更改过任何权限</translation>
 <translation id="4562155214028662640">添加指纹</translation>
 <translation id="4563210852471260509">初始输入语言是中文</translation>
@@ -4315,7 +4318,6 @@
 <translation id="5040823038948176460">更多内容设置</translation>
 <translation id="5041509233170835229">Chrome 应用</translation>
 <translation id="5043440033854483429">名称可以使用字母、数字和连字符 (-)，长度必须介于 1-15（含端点值）个字符之间。</translation>
-<translation id="5043913660911154449">或指定您的打印机 PPD <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="504561833207953641">正在现有的浏览器会话中打开。</translation>
 <translation id="5049614114599109018">使用输入历史记录</translation>
@@ -4706,6 +4708,7 @@
 <translation id="5427278936122846523">一律翻译</translation>
 <translation id="5427459444770871191">顺时针旋转(&amp;C)</translation>
 <translation id="542750953150239272">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
+<translation id="5427936139162668357">查看 PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（可进行更新）</translation>
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全角</translation>
@@ -8097,6 +8100,7 @@
 <translation id="8645354835496065562">继续允许使用传感器</translation>
 <translation id="8645920082661222035">预测危险事件并在此类事件发生前向您发出警告</translation>
 <translation id="8646209145740351125">停用同步</translation>
+<translation id="8646340610303779673">无法检索 PPD。</translation>
 <translation id="864637694230589560">网站通常会发送通知，以便您知悉重大新闻或聊天消息</translation>
 <translation id="8647385344110255847">经您授权后，您的孩子便可使用 Google Play 安装应用</translation>
 <translation id="8647834505253004544">网址无效</translation>
@@ -8157,6 +8161,7 @@
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
+<translation id="8699188901396699995">“<ph name="PRINTER_NAME" />”的 PPD</translation>
 <translation id="8702825062053163569">您的 <ph name="DEVICE_TYPE" /> 已锁定。</translation>
 <translation id="8703346390800944767">跳过广告</translation>
 <translation id="8705331520020532516">序列号</translation>

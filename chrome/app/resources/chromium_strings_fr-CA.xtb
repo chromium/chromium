@@ -64,6 +64,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="2560420686485554789">Chromium a besoin d'accéder au stockage pour télécharger des fichiers</translation>
 <translation id="2572494885440352020">Aide de Chromium</translation>
 <translation id="2583187216237139145">L'administrateur du profil professionnel peut retirer toutes les données Chromium générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="2648074677641340862">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Chromium.</translation>
 <translation id="2661879430930417727">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chromium comme bon leur semble et naviguer sur le Web de façon autonome.</translation>
 <translation id="2669853942967761236">Chromium a bloqué ce fichier d'archive, car il peut masquer des logiciels malveillants</translation>
@@ -105,6 +106,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Passer au profil Chromium existant?</translation>
 <translation id="3412460710772753638">Dans le gestionnaire de mots de passe sur cet appareil</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Votre administrateur a configuré Chromium pour qu'il se ferme s'il est inactif pendant plus de 1 minute.}one{Votre administrateur a configuré Chromium pour qu'il se ferme s'il est inactif pendant plus de # minute.}other{Votre administrateur a configuré Chromium pour qu'il se ferme s'il est inactif pendant plus de # minutes.}}</translation>
 <translation id="3430503420100763906">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Créez des profils pour vos amis et votre famille, ou créez un profil pour le travail et un autre pour les divertissements.</translation>
 <translation id="347328004046849135">Chromium vous avisera lorsque vous utilisez un mot de passe compromis pour vous connecter</translation>
 <translation id="3474745554856756813">Cette action entraînera la suppression de <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
@@ -186,6 +188,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="538767207339317086">Autoriser la connexion à Chromium</translation>
 <translation id="5398878173008909840">Une nouvelle version de Chromium est maintenant offerte.</translation>
 <translation id="5405650547142096840">Supprimer de Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium va se fermer maintenant.}=1{Chromium se fermera dans 1 seconde.}one{Chromium se fermera dans # seconde.}other{Chromium se fermera dans # secondes.}}</translation>
 <translation id="5427571867875391349">Faire de Chromium le navigateur par défaut</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium bêta</translation>
 <translation id="5473971139929175403">Chromium peut ne pas fonctionner correctement parce qu'il n'est plus pris en charge sur cette distribution Linux</translation>
@@ -273,6 +276,7 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="6940431691900807093">Ultérieurement, un site que vous visitez peut demander à Chromium de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez. Chromium peut partager jusqu'à trois centres d'intérêt.</translation>
 <translation id="6964305034639999644">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="6978145336957848883">Les mots de passe faibles sont faciles à deviner. Vous pouvez laisser Chromium <ph name="BEGIN_LINK" />créer et mémoriser des mots de passe forts pour vous<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium est inactif</translation>
 <translation id="6985329841647292029">Conditions d'utilisation de Chromium OS</translation>
 <translation id="6990124437352146030">Chromium a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
 <translation id="7025789849649390912">L'installation s'est arrêtée.</translation>

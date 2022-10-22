@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Agricultura e silvicultura</translation>
 <translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
-<translation id="1086953900555227778">Ficha</translation>
 <translation id="1088860948719068836">Adicionar Nome como consta no Cartão</translation>
 <translation id="1089439967362294234">Alterar senha</translation>
 <translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
@@ -170,7 +169,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1364822246244961190">Esta política está bloqueada. O valor dela será ignorado.</translation>
 <translation id="1368318639262510626">Jogo do dinossauro. Um dinossauro pixelado corre por uma paisagem desolada desviando de cactos e pterodátilos. Quando você ouvir o sinal, pressione a barra de espaço para pular os obstáculos.</translation>
 <translation id="1374468813861204354">sugestões</translation>
-<translation id="1374692235857187091">10 mm x 15 mm (Postal)</translation>
 <translation id="1375198122581997741">Sobre a versão</translation>
 <translation id="1376836354785490390">Mostrar menos</translation>
 <translation id="1377321085342047638">Número do cartão</translation>
@@ -210,7 +208,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1459693405370120464">Clima</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar as fontes do seu computador para criar conteúdo de alta fidelidade</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">À esquerda</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> é o código de <ph name="EMBEDDED_ORIGIN" /> para continuar para <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
@@ -359,6 +356,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1803351196216024260">Pode pedir para usar o microfone</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Página inicial</translation>
+<translation id="181000283860817563">Monitorar preços em vários sites</translation>
 <translation id="1812527064848182527">paisagem</translation>
 <translation id="1813414402673211292">Remover dados de navegação</translation>
 <translation id="182139138257690338">downloads automáticos</translation>
@@ -674,7 +672,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2677696497921480781">Aniversários e datas comemorativas</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2679714844901977852">Salve seu cartão e as informações de faturamento na Conta do Google <ph name="USER_EMAIL" /> para fazer compras mais rápidas e seguras</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Melhor ajuste</translation>
 <translation id="2688969097326701645">Sim, continuar</translation>
 <translation id="2691924980723297736">Alerta de segurança</translation>
@@ -708,7 +705,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2775884851269838147">Primeira página de impressão</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">A conexão foi redefinida.</translation>
-<translation id="2786469568759673015">Envelope chinês 3</translation>
 <translation id="2791176355335562114">Pague mais rápido na próxima vez</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que podem permitir que eles vejam o conteúdo dos sites que você visita.</translation>
 <translation id="2799020568854403057">O site a seguir contém apps prejudiciais</translation>
@@ -1018,7 +1014,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chrome recomenda conferir as senhas salvas.</translation>
 <translation id="3637662659967048211">Salvar na Conta do Google</translation>
-<translation id="3640766068866876100">102 mm × 152 mm</translation>
 <translation id="3642638418806704195">Aplicativo:</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL precisa conter entre um e dois URLs.</translation>
 <translation id="3650584904733503804">Validação bem-sucedida</translation>
@@ -1149,7 +1144,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4010758435855888356">Permitir acesso ao armazenamento?</translation>
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
-<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Como o formulário é enviado por uma conexão que não é segura, suas informações ficarão visíveis para outras pessoas.</translation>
 <translation id="4024923292610332139">desativar o Touch ID para preencher senhas</translation>
 <translation id="4025913568718019429">Botão "Gerenciar configurações de privacidade do Google". Pressione Enter para acessar as configurações de privacidade da Conta do Google</translation>
@@ -1367,7 +1361,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Tente desativar suas extensões.</translation>
 <translation id="4559134504959026834">Este site está em um grupo, definido por <ph name="SET_OWNER" />, que pode ver sua atividade</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Ao ar livre</translation>
 <translation id="4567686777917670400">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Entrega</translation>
@@ -1411,7 +1404,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4682496302933121474">Traduzir página?</translation>
 <translation id="468314109939257734">Ver o número do seu cartão virtual</translation>
 <translation id="4692623383562244444">Mecanismos de pesquisa</translation>
-<translation id="4693246800345263879">Envelope de 25 cm x 35 cm</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
 <translation id="4702656508969495934">Legenda instantânea visível. Use o seletor de janelas para definir o foco</translation>
@@ -1629,7 +1621,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5205222826937269299">Nome obrigatório</translation>
 <translation id="5209518306177824490">Assinatura digital SHA-1</translation>
 <translation id="5209670883520018268">Bandeja 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Bandeja 13</translation>
 <translation id="5216942107514965959">Última visita: hoje</translation>
 <translation id="5217759126664161410">Formato do protocolo inválido.</translation>
@@ -1638,7 +1629,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5229588705416009823">Jogos multiplayer massivos</translation>
 <translation id="5230733896359313003">Endereço de entrega</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5239623327352565343">Acesso à localização permitido</translation>
 <translation id="5242889659037569123">Acessórios de viagem e bagagem</translation>
@@ -1877,7 +1867,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5884465125445718607">Envelope chinês 6</translation>
 <translation id="5887400589839399685">Cartão salvo</translation>
 <translation id="5887687176710214216">Última visita: ontem</translation>
-<translation id="5891155897634819292">Envelope chinês 5</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido em</translation>
 <translation id="5901630391730855834">Amarelo</translation>
@@ -1910,7 +1899,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5974052231147553524">Sexto rolo</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
-<translation id="5980920751713728343">76 mm x 127 mm</translation>
 <translation id="5984570616552610254">Umidade da câmara</translation>
 <translation id="5984712050237025014">Realidade aumentada e virtual</translation>
 <translation id="598637245381783098">Não foi possível abrir app de pagamento</translation>
@@ -2399,7 +2387,6 @@ Mais detalhes:
 <translation id="7337706099755338005">Não está disponível na sua plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor não foi divulgado por meio da Transparência dos certificados.</translation>
 <translation id="7341357280245177602">Veículos usados</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">O usuário é afiliado:</translation>
 <translation id="7349430561505560861">A4 Extra</translation>
 <translation id="7349921148288539306">Com permissão enquanto esta guia estiver aberta</translation>
@@ -2442,7 +2429,6 @@ Mais detalhes:
     &lt;li&gt;Clique em &lt;strong&gt;Aplicar&lt;/strong&gt; e depois em &lt;strong&gt;OK&lt;/strong&gt;
     &lt;li&gt;Visite a &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Central de Ajuda do Chrome&lt;/a&gt; para saber como remover permanentemente o software do seu computador
     &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Formato largo</translation>
 <translation id="7410471291937727359">Adorável</translation>
 <translation id="741204030948306876">Sim</translation>
 <translation id="7416351320495623771">Gerenciar senhas…</translation>
@@ -2488,7 +2474,6 @@ Mais detalhes:
 <translation id="7514365320538308">Fazer o download</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Nenhuma página da web foi encontrada para o endereço da Web:<ph name="URL" /></translation>
-<translation id="7518098469289408841">Envelope de 25 cm x 33 cm</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Seção "<ph name="SECTION" />" oculta</translation>
 <translation id="7523408071729642236">Indústria</translation>
@@ -2779,7 +2764,6 @@ Mais detalhes:
 <translation id="8277900682056760511">A página do gerenciador de pagamento está aberta</translation>
 <translation id="8279611986089885641">As notificações do Chrome precisam estar ativadas. Faça isso nas <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Bandeja 11</translation>
-<translation id="8281084378435768645">Large photo</translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8282947398454257691">Saber seu identificador de dispositivo exclusivo</translation>
 <translation id="8284769179630993263">Gerencie o Navegação segura e muito mais nas configurações do Chrome</translation>
@@ -2795,7 +2779,6 @@ Mais detalhes:
 <translation id="8299269255470343364">Japonês</translation>
 <translation id="8303854710873047864">Seção "<ph name="SECTION" />" exibida</translation>
 <translation id="830498451218851433">Dobra simples</translation>
-<translation id="8307358339886459768">Small photo</translation>
 <translation id="8307888238279532626">Os apps instalados e a frequência de uso deles</translation>
 <translation id="831997045666694187">Noite</translation>
 <translation id="8321476692217554900">notificações</translation>
@@ -2877,7 +2860,6 @@ Mais detalhes:
 <translation id="8557066899867184262">O CVC está localizado atrás do seu cartão.</translation>
 <translation id="8559762987265718583">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="8564182942834072828">Documentos separados/Cópias não reunidas</translation>
-<translation id="8564453110650229930">Envelope chinês 10</translation>
 <translation id="8564985650692024650">O Chromium recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
 <translation id="8576310925653847813">Sistemas de home theater</translation>
 <translation id="8577348305244205642">Cartão virtual indisponível</translation>
@@ -2907,7 +2889,6 @@ Mais detalhes:
 <translation id="8687429322371626002">Seu dispositivo e sua conta são gerenciados por <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por grupo</translation>
-<translation id="8694278303623679191">Envelope do Postfix</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699899385443889493">Botão "Iniciar o jogo do Dinossauro do Chrome". Pressione Enter para jogar no navegador</translation>
@@ -2985,7 +2966,6 @@ Mais detalhes:
 <translation id="8874824191258364635">Informe um número de cartão válido</translation>
 <translation id="8876033571432926051">Jogos casuais</translation>
 <translation id="8877780815363510165">Pesca</translation>
-<translation id="8879882034055059721">Envelope de 25 cm x 38 cm</translation>
 <translation id="8884537526797090108">Não é possível gravar conteúdo confidencial</translation>
 <translation id="8891727572606052622">Modo de proxy inválido.</translation>
 <translation id="8894794286471754040">Borda grande primeiro</translation>

@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Пољопривреда и шумарство</translation>
 <translation id="1080116354587839789">Уклопите по ширини</translation>
 <translation id="1081061862829655580">19. фиока</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Додајте име са картице</translation>
 <translation id="1089439967362294234">Промена лозинке</translation>
 <translation id="1096545575934602868">Ово поље не сме да има више од <ph name="MAX_ITEMS_LIMIT" /> уноса. Сви додатни уноси ће бити одбачени.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">Ове смернице су блокиране. Њихова вредност ће бити занемарена.</translation>
 <translation id="1368318639262510626">Игра са диносаурусом. Пикселизовани диносаурус избегава кактусе и птеродактиле док трчи пустим пејзажем. Када чујете звучни сигнал додирните тастер за размак да бисте прескакали препреке.</translation>
 <translation id="1374468813861204354">предлози</translation>
-<translation id="1374692235857187091">Index-4x6 (разгледница)</translation>
 <translation id="1375198122581997741">О верзији</translation>
 <translation id="1376836354785490390">Прикажи мање</translation>
 <translation id="1377321085342047638">Број картице</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">Време</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Користи фонтове на рачунару да бисте могли да правите садржај високе верности</translation>
-<translation id="1463543813647160932">5×7</translation>
 <translation id="1467432559032391204">Улево</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> је ваш кôд за <ph name="EMBEDDED_ORIGIN" /> помоћу ког можете да наставите на сајту <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Прикажи више</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">Рођендани и имендани</translation>
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2679714844901977852">Сачувајте информације о картици и обрачуну на Google налогу <ph name="USER_EMAIL" /> ради безбедних и бржих плаћања</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Најбоља величина</translation>
 <translation id="2688969097326701645">Да, настави</translation>
 <translation id="2691924980723297736">Безбедносно упозорење</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">Прва страница за штампање</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Веза је враћена на почетне вредности.</translation>
-<translation id="2786469568759673015">Кинеска коверта бр. 3</translation>
 <translation id="2791176355335562114">Платите брже следећи пут</translation>
 <translation id="2792012897584536778">Администратори овог уређаја су подесили безбедносне сертификате који могу да им омогуће да виде садржај веб-сајтова које посећујете.</translation>
 <translation id="2799020568854403057">Сајт који ћете посетити садржи штетне апликације</translation>
@@ -1019,7 +1014,6 @@
 <translation id="3634530185120165534">5. фиока</translation>
 <translation id="3634567936866541746">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chrome препоручује да проверите сачуване лозинке.</translation>
 <translation id="3637662659967048211">Сачувајте на Google налогу</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3647286794400715637">Унос сваког стринга URL-а мора да садржи између 1 и 2 URL-а.</translation>
 <translation id="3650584904733503804">Потврда ваљаности је успела</translation>
@@ -1150,7 +1144,6 @@
 <translation id="4010758435855888356">Желите ли да дозволите приступ меморијском простору?</translation>
 <translation id="401170183602135785">Коверта C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ који садржи {COUNT} страницу}one{PDF документ који садржи {COUNT} страницу}few{PDF документ који садржи {COUNT} странице}other{PDF документ који садржи {COUNT} страница}}</translation>
-<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
 <translation id="4024923292610332139">искључи TouchID за попуњавање лозинки</translation>
 <translation id="4025913568718019429">Дугме Управљајте Google подешавањима приватности, притисните Enter да бисте посетили подешавања приватности Google налога</translation>
@@ -1368,7 +1361,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Покушајте да онемогућите додатке.</translation>
 <translation id="4559134504959026834">Овај сајт је у групи, коју дефинише <ph name="SET_OWNER" />, који може да види ваше активности</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Рекреација на отвореном</translation>
 <translation id="4567686777917670400">Администратор може даљински да промени подешавање прегледача. Активностима на овом уређају може да се управља и ван Chromium-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Испорука</translation>
@@ -1412,7 +1404,6 @@
 <translation id="4682496302933121474">Желите да преведете страницу?</translation>
 <translation id="468314109939257734">Прегледајте број своје виртуелне картице</translation>
 <translation id="4692623383562244444">Претраживачи</translation>
-<translation id="4693246800345263879">Коверта 25×35 cm</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
 <translation id="4702656508969495934">Види се титл уживо. Користите дугме за промену прозора да бисте фокусирали</translation>
@@ -1630,7 +1621,6 @@
 <translation id="5205222826937269299">Име је обавезно</translation>
 <translation id="5209518306177824490">SHA-1 Fingerprint</translation>
 <translation id="5209670883520018268">20. фиока</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">13. фиока</translation>
 <translation id="5216942107514965959">Последњи посећен данас</translation>
 <translation id="5217759126664161410">Неважећи формат протокола.</translation>
@@ -1639,7 +1629,6 @@
 <translation id="5229588705416009823">Масовне игре за више играча</translation>
 <translation id="5230733896359313003">Адреса за испоруку</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="5239623327352565343">Локација је дозвољена</translation>
 <translation id="5242889659037569123">Пртљаг и прибор за путовања</translation>
@@ -1878,7 +1867,6 @@
 <translation id="5884465125445718607">Кинеска коверта бр. 6</translation>
 <translation id="5887400589839399685">Картица је сачувана</translation>
 <translation id="5887687176710214216">Последња посета: јуче</translation>
-<translation id="5891155897634819292">Кинеска коверта бр. 5</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
 <translation id="5895187275912066135">Издато</translation>
 <translation id="5901630391730855834">Жута</translation>
@@ -1911,7 +1899,6 @@
 <translation id="5974052231147553524">Шести котур</translation>
 <translation id="5975083100439434680">Умањивање</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Влажност коморе</translation>
 <translation id="5984712050237025014">Проширена и виртуелна реалност</translation>
 <translation id="598637245381783098">Отварање апликације за плаћање није успело</translation>
@@ -2399,7 +2386,6 @@
 <translation id="7337706099755338005">Није доступно на вашој платформи.</translation>
 <translation id="733923710415886693">Сертификат сервера није откривен помоћу Транспарентности сертификата.</translation>
 <translation id="7341357280245177602">Половна возила</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Повезан је:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Дозвољено док не затворите ову картицу</translation>
@@ -2442,7 +2428,6 @@
     &lt;li&gt;Прво кликните на &lt;strong&gt;Apply&lt;/strong&gt; (Примени), па на &lt;strong&gt;OK&lt;/strong&gt; (У реду)
     &lt;li&gt;Посетите &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome центар за помоћ&lt;/a&gt; да бисте сазнали како да трајно уклоните софтвер са рачунара
     &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Дивно</translation>
 <translation id="741204030948306876">Да, омогући</translation>
 <translation id="7416351320495623771">Управљај лозинкама...</translation>
@@ -2488,7 +2473,6 @@
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7517414872996418597">Коверта C10</translation>
 <translation id="7518003948725431193">Ниједна веб-страница није пронађена за веб адресу: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Коверта 25×33 cm</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Одељак „<ph name="SECTION" />“ је сакривен</translation>
 <translation id="7523408071729642236">Производња</translation>
@@ -2779,7 +2763,6 @@
 <translation id="8277900682056760511">Страница обрађивача плаћања је отворена</translation>
 <translation id="8279611986089885641">Chrome обавештења морају да буду укључена. Можете да их укључите у одељку <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">11. фиока</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Прескочи</translation>
 <translation id="8282947398454257691">зна јединствени идентификатор уређаја</translation>
 <translation id="8284769179630993263">Управљајте Безбедним прегледањем и другим садржајем у подешавањима Chrome-а</translation>
@@ -2795,7 +2778,6 @@
 <translation id="8299269255470343364">јапански</translation>
 <translation id="8303854710873047864">Приказује се одељак „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Пресавијање напола</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Инсталиране апликације и колико често се користе</translation>
 <translation id="831997045666694187">Увече</translation>
 <translation id="8321476692217554900">обавештења</translation>
@@ -2877,7 +2859,6 @@
 <translation id="8557066899867184262">CVC је на полеђини картице.</translation>
 <translation id="8559762987265718583">Није могуће успоставити приватну везу са доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> јер датум и време на уређају (<ph name="DATE_AND_TIME" />) нису тачни.</translation>
 <translation id="8564182942834072828">Одвојени документи/несређене копије</translation>
-<translation id="8564453110650229930">Кинеска коверта бр. 10</translation>
 <translation id="8564985650692024650">Chromium вам препоручује да ресетујете лозинку за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако сте је користили на другим сајтовима.</translation>
 <translation id="8576310925653847813">Кућни биоскопи</translation>
 <translation id="8577348305244205642">Виртуелна картица није доступна</translation>
@@ -2907,7 +2888,6 @@
 <translation id="8687429322371626002">Уређајем и налогом управља <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Странице по скупу</translation>
-<translation id="8694278303623679191">Коверта Postfix</translation>
 <translation id="869891660844655955">Датум истека</translation>
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>
 <translation id="8699899385443889493">Дугме Играј игру Chrome диносаурус, притисните Enter да бисте играли игру Диносаурус у Chrome-у</translation>
@@ -2985,7 +2965,6 @@
 <translation id="8874824191258364635">Унесите важећи број картице</translation>
 <translation id="8876033571432926051">Игре за опуштање</translation>
 <translation id="8877780815363510165">Пецање</translation>
-<translation id="8879882034055059721">Коверта 25×38 cm</translation>
 <translation id="8884537526797090108">Снимање поверљивог садржаја није успело</translation>
 <translation id="8891727572606052622">Неважећи режим проксија.</translation>
 <translation id="8894794286471754040">Прво дугачка ивица</translation>

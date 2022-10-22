@@ -2404,6 +2404,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3201422919974259695">Tutaj będą widoczne dostępne urządzenia USB.</translation>
 <translation id="3202131003361292969">Ścieżka</translation>
 <translation id="3202173864863109533">Dźwięk z karty został wyciszony.</translation>
+<translation id="3202578601642193415">Najnowsze</translation>
 <translation id="3204648577100496185">Dane powiązane z tą aplikacją mogą zostać usunięte z urządzenia</translation>
 <translation id="3208321278970793882">Aplikacja</translation>
 <translation id="3208584281581115441">Sprawdź teraz</translation>
@@ -3686,6 +3687,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z ChromeOS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o czasie wystąpienia awarii ChromeOS, używanych funkcjach i typowym wykorzystaniu pamięci.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub wstrzymać w dowolnym momencie w ustawieniach urządzenia z Chrome. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Aby rozpocząć, sprawdź, czy do Chromebooka został podłączony przełącznik USB lub Bluetooth. Możesz też użyć klawiatury.</translation>
+<translation id="4426508677408162512">Wszystkie zakładki</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4427365070557649936">Sprawdzam kod potwierdzenia...</translation>
 <translation id="4429163740524851942">Układ klawiatury fizycznej</translation>
@@ -3825,6 +3827,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4556194354084985730">Łatwo loguj się na stronach i w aplikacjach przy użyciu zapisanych haseł. Jeśli wyłączysz tę funkcję, przed zalogowaniem się zobaczysz prośbę o podanie hasła.</translation>
 <translation id="4558426062282641716">Przesłano prośbę o pozwolenie na automatyczne uruchamianie</translation>
 <translation id="4559617833001311418">Ta witryna ma dostęp do czujników ruchu lub oświetlenia.</translation>
+<translation id="4561098487691395071">Możesz też wybrać plik PPD dla drukarki</translation>
 <translation id="4561893854334016293">Brak zmienianych ostatnio ustawień</translation>
 <translation id="4562155214028662640">Dodaj odcisk palca</translation>
 <translation id="4563210852471260509">Początkowy język wprowadzania: chiński</translation>
@@ -4323,7 +4326,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5040823038948176460">Dodatkowe ustawienia treści</translation>
 <translation id="5041509233170835229">Aplikacja Chrome</translation>
 <translation id="5043440033854483429">Nazwa musi zawierać od 1 do 15 znaków. Mogą to być litery, cyfry i łączniki (-).</translation>
-<translation id="5043913660911154449">Lub wskaż plik PPD drukarki <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
 <translation id="504561833207953641">Otwieram w istniejącej sesji przeglądarki.</translation>
 <translation id="5049614114599109018">Użyj historii wprowadzania</translation>
@@ -4713,6 +4715,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5427278936122846523">Zawsze tłumacz</translation>
 <translation id="5427459444770871191">Obróć w &amp;prawo</translation>
 <translation id="542750953150239272">Kontynuując, zgadzasz się na to, żeby to urządzenie mogło automatycznie pobierać oraz instalować aktualizacje i aplikacje od Google, operatora sieci komórkowej i producenta urządzenia, oraz żeby mogło używać w tym celu komórkowej transmisji danych. Niektóre z aplikacji umożliwiają robienie zakupów.</translation>
+<translation id="5427936139162668357">Wyświetl plik PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (dostępna aktualizacja)</translation>
 <translation id="542948651837270806">Trzeba zainstalować aktualizację oprogramowania Trusted Platform Module. Zobacz: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Pełna szerokość</translation>
@@ -8120,6 +8123,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8645354835496065562">Nadal zezwalaj na dostęp do czujników</translation>
 <translation id="8645920082661222035">Przewiduje niebezpieczne zdarzenia i ostrzega Cię przed nimi, zanim nastąpią</translation>
 <translation id="8646209145740351125">Wyłączanie synchronizacji</translation>
+<translation id="8646340610303779673">Nie można pobrać pliku PPD.</translation>
 <translation id="864637694230589560">Strony zazwyczaj wysyłają powiadomienia o aktualnościach lub wiadomości czatu</translation>
 <translation id="8647385344110255847">Za Twoją zgodą dziecko może używać Google Play do instalowania aplikacji</translation>
 <translation id="8647834505253004544">Nieprawidłowy adres internetowy</translation>
@@ -8180,6 +8184,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="869884720829132584">Menu aplikacji</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
+<translation id="8699188901396699995">Plik PPD na potrzeby drukarki <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Urządzenie <ph name="DEVICE_TYPE" /> zostało zablokowane.</translation>
 <translation id="8703346390800944767">Pomiń reklamę</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>

@@ -122,6 +122,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1870148520156231997">Reveal password</translation>
 <translation id="1872096359983322073">Torch</translation>
+<translation id="1891796056033961979">Your saved bookmarks, passwords, settings and more are available from this screen.</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1923342640370224680">Last Hour</translation>
@@ -332,6 +333,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3533202363250687977">Close all incognito tabs</translation>
 <translation id="3533436815740441613">New Tab</translation>
 <translation id="3551320343578183772">Close Tab</translation>
+<translation id="3575234738189584619">Search with Lens</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
 <translation id="3595252146048399851">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />. Google may personalise Search and other services based on your history.</translation>
@@ -500,6 +502,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4904877109095351937">Mark Read</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4916679969857390442">Lens</translation>
+<translation id="4922154083994158612">More security?</translation>
 <translation id="4930714375720679147">Turn On</translation>
 <translation id="4941089862236492464">Sorry, there was a problem sharing your item.</translation>
 <translation id="4944543191714094452">Find in page…</translation>
@@ -840,6 +843,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="7454057999980797137">State / County</translation>
 <translation id="7456847797759667638">Open Location...</translation>
+<translation id="7459628154744868585">Enhanced protection is on</translation>
 <translation id="7464701184726199289">This clears synced data from all devices. Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Select Chrome</translation>
 <translation id="7472734401283673885">Company Name</translation>
@@ -1032,6 +1036,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9037965129289936994">Show Original</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9055772144595778347">Cannot Sign In</translation>
+<translation id="9055960261314198756">Enhanced protection is off</translation>
 <translation id="9057972802061533987">Can't follow. Something went wrong.</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9068336935206019333">Open in Chrome Incognito</translation>

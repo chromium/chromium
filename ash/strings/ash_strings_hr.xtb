@@ -365,7 +365,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="301282384882049174">Dijeli vaš administrator</translation>
-<translation id="3023826154041300060">Zaustavljanje govora</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3033912566804961911">Kombiniranje s radnom površinom <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otvori datoteke</translation>
@@ -437,6 +436,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3413817803639110246">Još nema ničega</translation>
 <translation id="3428447136709161042">Želite li prekinuti vezu s mrežom <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Prijeđite prstom zdesna da biste se vratili</translation>
+<translation id="3431517721463707585">Radna površina 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Uređivanje podsjetnika</translation>
 <translation id="3435967511775410570">Otisak prsta je prepoznat</translation>
@@ -676,6 +676,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (preostalo)</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
+<translation id="4735944890391795473">Radna površina 12</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4740516757091333363">Želite li izbrisati spremljenu radnu površinu?</translation>
 <translation id="4752784485658729358">Dopušteno je samo 6 spremljenih radnih površina. Uklonite jednu radnu površinu da biste spremili novu.</translation>
@@ -696,6 +697,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4860284199500934869">Provjerite mrežnu vezu da biste preuzeli datoteku <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Kasnije ćemo pokušati preuzimanje. Govor će se poslati Googleu na obradu dok se ne dovrši preuzimanje.</translation>
 <translation id="4864369630010738180">Prijavljivanje...</translation>
+<translation id="4864648187878336334">Radna površina 15</translation>
 <translation id="4868492592575313542">aktivirano</translation>
 <translation id="4872237917498892622">Alt + Pretraživanje ili Shift</translation>
 <translation id="4881695831933465202">Otvori</translation>
@@ -723,6 +725,7 @@ Priključite uređaj na napajanje.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Radna površina 16</translation>
 <translation id="5003993274120026347">Sljedeća rečenica</translation>
 <translation id="5016558321564993266">Prebacite marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Vrijeme je isteklo</translation>
@@ -739,6 +742,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5098537242461068432">Radna površina i prozori ponovno su otvoreni</translation>
 <translation id="5104236669533825617">Izrada zaslonske prezentacije nije uspjela</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Prikaži sljedeći mjesec</translation>
 <translation id="5136175204352732067">Povezana je neka druga tipkovnica</translation>
 <translation id="5147567197700016471">Otključano</translation>
@@ -829,6 +833,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Utičnica mikrofona</translation>
 <translation id="5652575806481723716">Aplikacija <ph name="FOCUSED_APP_NAME" /> zahtijeva vašu pažnju.</translation>
+<translation id="5662075790140998213">Radna površina 10</translation>
 <translation id="5662709761327382534">Snimanje mikrofona <ph name="CURRENT_STATE" />, pritisnite enter da biste snimanje mikrofona postavili na <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktivacija</translation>
 <translation id="5673434351075758678">"<ph name="FROM_LOCALE" />" je promijenjen u "<ph name="TO_LOCALE" />" nakon sinkronizacije postavki.</translation>
@@ -862,7 +867,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5804651031882187592">Isključivanje postavke Zaključaj SIM</translation>
 <translation id="5805809050170488595">Kliknite da biste aktivirali mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
-<translation id="5826319843084741655">Kliknite i povucite za odabir teksta</translation>
 <translation id="5837036133683224804">Zaustavite <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Zadržite da biste maksimizirali</translation>
 <translation id="5856638668464565213">Mreža <ph name="NETWORK_NAME" /> nije aktivirana.</translation>
@@ -1031,6 +1035,8 @@ Novo instaliranje</translation>
 <translation id="6753390234084146956">kartice</translation>
 <translation id="6757237461819837179">Nema reprodukcije medija</translation>
 <translation id="6777216307882431711">Napaja povezane USB-C uređaje</translation>
+<translation id="6781002679438061620">Radna površina 9</translation>
+<translation id="6782182743534150858">Radna površina 13</translation>
 <translation id="6786750046913594791">Zatvori mapu</translation>
 <translation id="6787595647772650851">Vrati posljednju sesiju</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
@@ -1092,6 +1098,7 @@ Novo instaliranje</translation>
 <translation id="7098053464892629930">Preuzmite aplikaciju za <ph name="NAME" /> na Google Playu za pregled svih dostupnih značajki</translation>
 <translation id="7098389117866926363">USB-C uređaj (lijevi priključak sa stražnje strane)</translation>
 <translation id="7106330611027933926">Prikazivanje deskbara</translation>
+<translation id="7116969082764510092">Radna površina 11</translation>
 <translation id="7118268675952955085">snimka zaslona</translation>
 <translation id="7126996685418858413">Otvoreno prošli tjedan</translation>
 <translation id="7130207228079676353">NAJVJEROJATNIJE</translation>
@@ -1190,6 +1197,7 @@ Novo instaliranje</translation>
 <translation id="7662283695561029522">Dodirnite da biste konfigurirali</translation>
 <translation id="7670953955701272011">Otvorite ovaj datum u Google kalendaru</translation>
 <translation id="7671610481353807627">Aplikacije su poredane po boji</translation>
+<translation id="7672095158465655885">Povezano s: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Unos kamerom postavljen je na kameru <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Dodajte novu mobilnu mrežu</translation>
@@ -1474,5 +1482,6 @@ Novo instaliranje</translation>
 <translation id="974545358917229949">Prikazuju se rezultati za upit <ph name="QUERY" /> (njih <ph name="RESULT_COUNT" />)</translation>
 <translation id="98515147261107953">Pejzaž</translation>
 <translation id="990277280839877440">Zatvoren je prozor <ph name="WINDOW_TITILE" />.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Preuzmite najnovije značajke i sigurnosna poboljšanja. Ažuriranja se odvijaju u pozadini.</translation>
 </translationbundle>

@@ -455,7 +455,6 @@
 <translation id="4900532980794411603">በParallels ዴስክቶፕ አጋራ</translation>
 <translation id="4902546322522096650">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ ሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ አገናኝ</translation>
 <translation id="4906580650526544301">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />፣ <ph name="PROVIDER_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ ዝርዝሮች</translation>
-<translation id="4929673617759421391">ይህን ፋይል መለጠፍ በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="4935975195727477204">የጋንዛኒያ አበባ</translation>
 <translation id="4943368462779413526">የአሜሪካ እግር ኳስ</translation>
 <translation id="4961158930123534723">1 አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
@@ -975,7 +974,6 @@
 <translation id="9183302530794969518">Google ሰነድ</translation>
 <translation id="9189836632794948435">ካዛክኛ</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ከማህደር ወጥተዋል።</translation>
-<translation id="9210751050717126865"><ph name="COUNT" /> ፋይሎችን መለጠፍ በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="9213073329713032541">ጭነት በተሳካ ሁኔታ ጀምሯል።</translation>
 <translation id="9219103736887031265">ምስሎች</translation>
 <translation id="9219908252191632183">ጨረቃዊ</translation>

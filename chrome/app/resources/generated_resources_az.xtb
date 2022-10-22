@@ -2416,6 +2416,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3201422919974259695">Əlçatan USB cihazları burada görünəcək.</translation>
 <translation id="3202131003361292969">Yol</translation>
 <translation id="3202173864863109533">Bu vərəqənin audiosu susdurulur.</translation>
+<translation id="3202578601642193415">Ən yeni</translation>
 <translation id="3204648577100496185">Bu tətbiqlə bağlı data bu cihazdan silinəcək</translation>
 <translation id="3208321278970793882">Tətbiq</translation>
 <translation id="3208584281581115441">İndi yoxlayın</translation>
@@ -3696,6 +3697,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarına avtomatik hesabatlar göndərmək icazəsi vermək bizə ChromeOS'da nəyi düzəldəcıyimizi və təkmilləşdirəcəyimizi prioritetləşdirməyə kömək edir. Bu hesabatlara ChromeOS'un nə vaxt çökməsi, hansı funksiyaların istifadə edilməsi və adətən nə qədər yaddaş istifadə edildiyi kimi məlumatlar daxil ola bilər.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt Chrome cihaz ayarlarınızda bu hesabatlara icazə verməyə başlaya və ya dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Başlamaq üçün USB və ya Bluetooth keçiricinizin Chromebook'unuza qoşulduğuna əmin olun. Klaviatura düymələrindən də istifadə edə bilərsiniz.</translation>
+<translation id="4426508677408162512">Bütün Əlfəcinlər</translation>
 <translation id="4427306783828095590">Təkmil qoruma ilə fişinq və zərərli proqramların bloklanması üçün daha çox iş görülür</translation>
 <translation id="4427365070557649936">Təsdiq kodu doğrulanır...</translation>
 <translation id="4429163740524851942">Fiziki klaviatura düzəni</translation>
@@ -3835,6 +3837,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4556194354084985730">Saxlanmış parollarınızla saytlara və tətbiqlərə asanlıqla daxil olun. Deaktiv olduqda, daxil olmamışdan əvvəl sizə soruşulacaq.</translation>
 <translation id="4558426062282641716">Avto başlatma icazəsi sorğusu göndərildi</translation>
 <translation id="4559617833001311418">Sayt hərəkət və ya zəif sensorlarınıza daxil olur.</translation>
+<translation id="4561098487691395071">Yaxud printer PPD-sini göstərin</translation>
 <translation id="4561893854334016293">Son vaxtlarda dəyişən icazə yoxdur</translation>
 <translation id="4562155214028662640">Barmaq İzi əlavə edin</translation>
 <translation id="4563210852471260509">İlkin daxiletmə dili Çin dilidir</translation>
@@ -4333,7 +4336,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5040823038948176460">Əlavə məzmun ayarları</translation>
 <translation id="5041509233170835229">Chrome Tətbiqi</translation>
 <translation id="5043440033854483429">Adda hərflər, rəqəmlər və tire (-) istifadə edilə bilər və 1-15 simvol arasında olmalıdır.</translation>
-<translation id="5043913660911154449">Və ya printer PPD faylını təyin edin <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Yanlış parol</translation>
 <translation id="504561833207953641">Mövcud brauzer sessiyasında açılır.</translation>
 <translation id="5049614114599109018">Daxiletmə Tarixçəsini istifadə edin</translation>
@@ -4724,6 +4726,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5427278936122846523">Həmişə Tərcümə Edin</translation>
 <translation id="5427459444770871191">Saat istiqamətində fırladın</translation>
 <translation id="542750953150239272">Davam edərək razılaşırsınız ki, bu cihaz Google, operatorunuz və cihaz istehsalçınızdan avtomatik olaraq yeniləmələri və tətbiqləri endirə və quraşdıra bilər, bu zaman mobil datadan istifadə edilə bilər. Bu tətbiqlərin bəzilərində tətbiqdaxili satınalmalar təklif edilə bilər.</translation>
+<translation id="5427936139162668357">PPD'yə baxın</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Güncəllənmə var)</translation>
 <translation id="542948651837270806">Etibarlı Platforma Modulu üzrə təhlükəsizlik divarı üçün yeniləmə quraşdırılmalıdır. Baxın: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Tam enli</translation>
@@ -8126,6 +8129,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8645354835496065562">Sensor girişinə icazə verməyə davam edin</translation>
 <translation id="8645920082661222035">Təhlükəli hadisələr baş vermədən əvvəl onları proqnozlaşdırır və sizə xəbərdarlıq edir</translation>
 <translation id="8646209145740351125">Sinxronlaşdırmanı deaktiv edin</translation>
+<translation id="8646340610303779673">PPD'ni əldə etmək olmur.</translation>
 <translation id="864637694230589560">Saytlar adətən önəmli xəbərlər və ya söhbət mesajları barədə sizə bildirmək bildirişlər göndərir</translation>
 <translation id="8647385344110255847">Övladınız sizin icazənizlə tətbiqləri quraşdırmaq üçün Google Play'dən istifadə edə bilər</translation>
 <translation id="8647834505253004544">Etibarlı veb ünvanı deyil</translation>
@@ -8186,6 +8190,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="869884720829132584">Tətbiqlər menyusu</translation>
 <translation id="869891660844655955">Bitmə tarixi</translation>
 <translation id="8699120352855309748">Bu dillərin tərcümə edilməsini təklif etməyin</translation>
+<translation id="8699188901396699995"><ph name="PRINTER_NAME" /> üçün PPD</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> cihazınız kilidlənib.</translation>
 <translation id="8703346390800944767">Reklamı Keçin</translation>
 <translation id="8705331520020532516">Seriya Nömrəsi</translation>

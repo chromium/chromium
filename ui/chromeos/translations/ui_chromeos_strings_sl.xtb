@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Deljenje s programom Parallels Desktop</translation>
 <translation id="4902546322522096650">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, vzpostavitev povezave</translation>
 <translation id="4906580650526544301">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
-<translation id="4929673617759421391">Lepljenje te datoteke blokira skrbniški pravilnik</translation>
 <translation id="4935975195727477204">Roža</translation>
 <translation id="4943368462779413526">Žoga</translation>
 <translation id="4961158930123534723">1 mapa je deljena s programom Parallels Desktop</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Google Dokumenti</translation>
 <translation id="9189836632794948435">kazaščina</translation>
 <translation id="9200427192836333033">Št. razširjenih elementov: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9210751050717126865">Lepljenje <ph name="COUNT" /> datotek(-e) blokira skrbniški pravilnik</translation>
 <translation id="9213073329713032541">Namestitev je bila uspešno začeta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Mesečeva pokrajina</translation>

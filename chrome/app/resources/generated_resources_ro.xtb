@@ -2423,6 +2423,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3201422919974259695">Dispozitivele USB disponibile vor apărea aici.</translation>
 <translation id="3202131003361292969">Cale</translation>
 <translation id="3202173864863109533">Sunetul acestei file este dezactivat.</translation>
+<translation id="3202578601642193415">Cele mai noi</translation>
 <translation id="3204648577100496185">Datele asociate acestei aplicații pot fi eliminate de pe dispozitiv</translation>
 <translation id="3208321278970793882">Aplicație</translation>
 <translation id="3208584281581115441">Verifică acum</translation>
@@ -3706,6 +3707,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum situațiile în care se blochează dispozitivul de operare Chrome, ce funcții au fost folosite, câtă memorie a fost folosită în mod obișnuit.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului Chrome. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Pentru început, asigură-te că USB-ul sau Bluetooth-ul este conectat la Chromebook. Poți folosi și tastele de pe tastatură.</translation>
+<translation id="4426508677408162512">Toate marcajele</translation>
 <translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
 <translation id="4427365070557649936">Este verificat codul de confirmare...</translation>
 <translation id="4429163740524851942">Aspectul tastaturii fizice</translation>
@@ -3845,6 +3847,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4556194354084985730">Conectează-te cu ușurință la site-uri și aplicații cu parolele salvate. Dacă opțiunea este dezactivată, ți se va solicita confirmarea înainte să te conectezi.</translation>
 <translation id="4558426062282641716">S-a solicitat permisiunea de lansare automată</translation>
 <translation id="4559617833001311418">Acest site îți accesează senzorii de mișcare sau de lumină.</translation>
+<translation id="4561098487691395071">Sau specifică fișierul PPD al imprimantei</translation>
 <translation id="4561893854334016293">Nu există permisiuni modificate recent</translation>
 <translation id="4562155214028662640">Adaugă o amprentă</translation>
 <translation id="4563210852471260509">Limba inițială de introducere este chineza</translation>
@@ -4343,7 +4346,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5040823038948176460">Setări suplimentare privind conținutul</translation>
 <translation id="5041509233170835229">Aplicație Chrome</translation>
 <translation id="5043440033854483429">Numele poate conține litere, cifre și cratime (-) și trebuie să aibă între 1 și 15 caractere.</translation>
-<translation id="5043913660911154449">Sau indică PPD-ul imprimantei <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="504561833207953641">Se deschide în sesiunea de browser existentă.</translation>
 <translation id="5049614114599109018">Folosește istoricul de introducere a textului</translation>
@@ -4734,6 +4736,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5427278936122846523">Tradu întotdeauna</translation>
 <translation id="5427459444770871191">Rotiți în sensul acelor de &amp;ceasornic</translation>
 <translation id="542750953150239272">Dacă alegi să continui, accepți ca acest dispozitiv să descarce și să instaleze automat actualizări și aplicații de la Google, de la operatorul tău și de la producătorul dispozitivului, posibil folosind datele mobile. Unele dintre aceste aplicații pot oferi achiziții în aplicație.</translation>
+<translation id="5427936139162668357">Afișează PPD-ul</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (este disponibilă o actualizare)</translation>
 <translation id="542948651837270806">Este necesară instalarea unei actualizări pentru firmware-ul Trusted Platform Module. Vezi <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Cu lățime întreagă</translation>
@@ -8144,6 +8147,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8645354835496065562">Permite în continuare accesul la senzori</translation>
 <translation id="8645920082661222035">Anticipează și te avertizează cu privire la evenimente periculoase înainte să aibă loc</translation>
 <translation id="8646209145740351125">Dezactivează sincronizarea</translation>
+<translation id="8646340610303779673">Nu se poate prelua PPD-ul.</translation>
 <translation id="864637694230589560">De obicei, site-urile trimit notificări ca să te informeze cu privire la știri de ultimă oră sau mesaje de chat</translation>
 <translation id="8647385344110255847">Cu permisiunea ta, copilul poate acum să folosească Google Play pentru a instala aplicații</translation>
 <translation id="8647834505253004544">Nu este o adresă web validă</translation>
@@ -8204,6 +8208,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="869884720829132584">Meniul aplicațiilor</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
+<translation id="8699188901396699995">PPD-ul pentru <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Dispozitivul <ph name="DEVICE_TYPE" /> a fost blocat.</translation>
 <translation id="8703346390800944767">Închide anunțul</translation>
 <translation id="8705331520020532516">Număr de serie</translation>

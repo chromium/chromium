@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Djathë</translation>
 <translation id="2781645665747935084">belge</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
+<translation id="2802583107108007218">Mëso më shumë rreth këtyre kufizimeve</translation>
 <translation id="2803375539583399270">Fut kodin PIN</translation>
 <translation id="2820957248982571256">Po skanon...</translation>
 <translation id="2830077785865012357">Kinezisht Zhuyin</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Ndaj me Parallels Desktop</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="4906580650526544301">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
-<translation id="4929673617759421391">Ngjitja e këtij skedari është bllokuar nga politika e administratorit</translation>
 <translation id="4935975195727477204">Lule Gazania</translation>
 <translation id="4943368462779413526">Futboll</translation>
 <translation id="4961158930123534723">1 dosje e ndarë me Parallels Desktop</translation>
@@ -920,6 +920,7 @@
 <translation id="8656768832129462377">Mos e kontrollo</translation>
 <translation id="8688591111840995413">Fjalëkalim i gabuar</translation>
 <translation id="8698464937041809063">Vizatimi Google</translation>
+<translation id="8698877009525468705">Ky skedar është konfidencial dhe objekt i kufizimeve nga politika e administratorit.</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8713112442029511308">Maltisht</translation>
 <translation id="8714406895390098252">Biçikleta</translation>
@@ -974,7 +975,6 @@
 <translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="9189836632794948435">Kazakisht</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> artikuj të nxjerrë.</translation>
-<translation id="9210751050717126865">Ngjitja e <ph name="COUNT" /> skedarëve është bllokuar nga politika e administratorit</translation>
 <translation id="9213073329713032541">Instalimi filloi me sukses.</translation>
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="9219908252191632183">Hënor</translation>

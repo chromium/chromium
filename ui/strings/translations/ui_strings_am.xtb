@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ቀን በፊት}one{# ቀኖች በፊት}other{# ቀኖች በፊት}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{ከ1 ደቂቃ በፊት}one{ከ# ደቂቃዎች በፊት}other{ከ# ደቂቃዎች በፊት}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1ደ}one{#ደ}other{#ደ}}</translation>
+<translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1243314992276662751">ስቀል</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ን ማጋራት አልተቻለም።</translation>
 <translation id="1269641567813814718">ማሸነፍ</translation>

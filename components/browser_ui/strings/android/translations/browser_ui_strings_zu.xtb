@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Kunconyiwe ukuze ube nokuzizwisa okungcono kakhulu</translation>
 <translation id="1818308510395330587">Ukuze uvumele i-<ph name="APP_NAME" /> isebenzise i-AR, vula nekhamera <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Kusuka ku-<ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Amasayithi ahlobene angabona umsebenzi wakho eqenjini</translation>
 <translation id="1887786770086287077">Ukufinyelela kwendawo kuvalelwe le divayisi. Kuvule <ph name="BEGIN_LINK" />kuzilungiselelo ze-Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Vala ikholi</translation>
 <translation id="1919345977826869612">Izikhangiso</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Faka wonke amasayithi angaphansi kwalesi sizinda</translation>
 <translation id="4883854917563148705">Izilungiselelo eziphethwe azikwazi ukusethwa kabusha</translation>
 <translation id="4887024562049524730">Buza ngaphambi kokuvumela amasayithi ukuthi asebenzise idivayisi yakho yento engekho ngokoqobo nedatha (kunconyiwe)</translation>
+<translation id="4955223779495905865">Isayithi olivakashelayo lingashumeka okuqukethwe okuvela kwamanye amasayithi, ngokwesibonelo, imifanekiso, izikhangiso, nombhalo. Noma yimaphi yalamasayithi angalondoloza amakhukhi kanye nenye idatha ukuze kuqondanise nomuntu siqu ukuzizwisa kwakho.</translation>
 <translation id="4962975101802056554">Buyisa zonke izimvume zedivayisi</translation>
 <translation id="497421865427891073">Iya phambili</translation>
 <translation id="4976702386844183910">Ugcine ukuvakashela ngo-<ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Vumela amasayithi ukuthi afinyelele kuzinzwa zokunyakaza (kunconyiwe)</translation>
 <translation id="5050380848339752099">Le sayithi limayelana nokwabelana ulwazi ne-app ngaphandle kwemodi ye-incognito.</translation>
 <translation id="5063480226653192405">Ukusetshenziswa</translation>
+<translation id="5082281938627763039">Lokhu kusula amakhukhi kanye nenye idatha yesayithi ye-<ph name="FPS_MEMBER" /> neyamasayithi aseqenjini lamasayithi ka-<ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Isayithi leselula</translation>
 <translation id="509133520954049755">Cela ukubuka kwedeskithophu</translation>
 <translation id="5100237604440890931">Igoqiwe - chofoza ukuze unwebe.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Kuvinjelwe</translation>
 <translation id="5689516760719285838">Indawo</translation>
 <translation id="5690795753582697420">Ikhamera ivaliwe kuzilungiselelo ze-Android</translation>
+<translation id="5706552988683188916">Lokhu kusula amakhukhi nenye idatha yesayithi le-<ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Lokhu kuzosula yonke idatha namakhukhi agcinwe yi-<ph name="ORIGIN" /> noma uhlelo lwayo lokusebenza Kusikrini sakho sasekhaya.</translation>
 <translation id="5771720122942595109">I-<ph name="PERMISSION_1" /> ivinjiwe</translation>
 <translation id="5804241973901381774">Izimvume</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Vumela umsindo wesayithi elithile.</translation>
 <translation id="789180354981963912">Vimba amakhukhi angahlangene ngqo ku-Incognito:</translation>
 <translation id="7940722705963108451">Ngikhumbuze</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{Isayithi elingu-<ph name="FPS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="FPS_OWNER" /> lingabona umsebenzi wakho eqenjini}one{Amasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="FPS_OWNER" /> angabona umsebenzi wakho eqenjini}other{Amasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="FPS_OWNER" /> angabona umsebenzi wakho eqenjini}}</translation>
 <translation id="7986741934819883144">Khetha oxhumana naye</translation>
 <translation id="7999064672810608036">Ingabe uqinisekile ukuthi ufuna ukususa yonke idatha yasendaweni, efaka amakhukhi, uphinde usethe kabusha zonke izimvume zale webhusayithi?</translation>
 <translation id="8007176423574883786">Kuvaliwe kule divayisi</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Vula imakrofoni</translation>
 <translation id="851751545965956758">Vimbela amasayithi kusukela ekuxhumekeni kumadivayisi</translation>
 <translation id="8525306231823319788">Isikrini esigcwele</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Amakhukhi avunyelwe kusayithi eli-<ph name="FPS_MEMBERS_COUNT" /> lika-<ph name="FPS_OWNER" />}one{Amakhukhi avunyelwe kumasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> ka-<ph name="FPS_OWNER" />}other{Amakhukhi avunyelwe kumasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> ka-<ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Kuvunyelwe (kunconyiwe)</translation>
 <translation id="8609465669617005112">Hambisa phezulu</translation>
 <translation id="8676374126336081632">Sula okokufaka</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Khohlwa</translation>
 <translation id="9019902583201351841">Kuphethwa abazali bakho</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
+<translation id="9090268041676521955">Leli sayithi liseqenjini elingakwazi ukubona umsebenzi wakho. Iqembu lichazwa ngu-<ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Sula amakhukhi?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}}</translation>
 <translation id="913657688200966289">Vula izimvume ze-<ph name="APP_NAME" /> <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Leli khasi liyingozi</translation>

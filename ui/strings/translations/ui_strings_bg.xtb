@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Преди 1 ден}other{Преди # дни}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Преди 1 минута}other{Преди # минути}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
+<translation id="1181037720776840403">Премахване</translation>
 <translation id="1243314992276662751">Качване</translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
 <translation id="1269641567813814718">Win</translation>

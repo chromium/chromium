@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">चिज</translation>
 <translation id="2781645665747935084">बेल्गियम</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
+<translation id="2802583107108007218">यी प्रतिबन्धहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="2803375539583399270">PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2820957248982571256">स्क्यान गर्दै...</translation>
 <translation id="2830077785865012357">चिनियाँ झुयिन</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Parallels Desktop सँग सेयर गर्नुहोस्</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्रीको स्तर <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
-<translation id="4929673617759421391">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल पेस्ट गर्न पाइँदैन</translation>
 <translation id="4935975195727477204">गाजानिया फुल</translation>
 <translation id="4943368462779413526">फुटबल</translation>
 <translation id="4961158930123534723">Parallels Desktop सँग एउटा फोल्डर सेयर गरियो</translation>
@@ -920,6 +920,7 @@
 <translation id="8656768832129462377">जाँच नगर्नुहोस्</translation>
 <translation id="8688591111840995413">खराब पासवर्ड</translation>
 <translation id="8698464937041809063">Google ड्रइङ</translation>
+<translation id="8698877009525468705">यो गोप्य फाइल हो र एड्मिनले तोकेको नीतिअनुसार यसमाथि प्रतिबन्ध लगाइन सक्छ।</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8713112442029511308">माल्टिज</translation>
 <translation id="8714406895390098252">साइकल</translation>
@@ -974,7 +975,6 @@
 <translation id="9183302530794969518">Google कागजात</translation>
 <translation id="9189836632794948435">काजाख</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु एक्स्ट्रयाक्ट गरिए।</translation>
-<translation id="9210751050717126865">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल पेस्ट गर्न पाइँदैन</translation>
 <translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="9219908252191632183">लुनर</translation>

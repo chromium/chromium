@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 день назад}one{# день назад}few{# дня назад}many{# дней назад}other{# дня назад}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{минуту назад}one{# минуту назад}few{# минуты назад}many{# минут назад}other{# минуты назад}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 мин.}one{# мин.}few{# мин.}many{# мин.}other{# мин.}}</translation>
+<translation id="1181037720776840403">Удалить</translation>
 <translation id="1243314992276662751">Загрузить</translation>
 <translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

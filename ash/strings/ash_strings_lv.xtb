@@ -436,6 +436,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3413817803639110246">Vēl nekas netiek rādīts</translation>
 <translation id="3428447136709161042">Pārtraukt savienojumu ar tīklu <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Lai atgrieztos, velciet no labās malas</translation>
+<translation id="3431517721463707585">14. darbvieta</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Rediģēt atgādinājumu</translation>
 <translation id="3435967511775410570">Pirksta nospiedums tika atpazīts.</translation>
@@ -676,6 +677,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (kreisā)</translation>
 <translation id="4734965478015604180">Horizontāli</translation>
+<translation id="4735944890391795473">12. darbvieta</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4740516757091333363">Vai dzēst saglabāto darbvietu?</translation>
 <translation id="4752784485658729358">Var saglabāt ne vairāk kā sešas darbvietas. Lai saglabātu jaunu darbvietu, noņemiet kādu no pašreizējām.</translation>
@@ -696,6 +698,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4860284199500934869">Pārbaudiet tīkla savienojumu, lai lejupielādētu failu “<ph name="FILENAME" />”.</translation>
 <translation id="486056901304535126">Tiks mēģināts veikt lejupielādi vēlāk. Uzņēmumam Google tiks nosūtīta runa apstrādei, līdz lejupielāde tiks pabeigta.</translation>
 <translation id="4864369630010738180">Pierakstīšanās...</translation>
+<translation id="4864648187878336334">15. darbvieta</translation>
 <translation id="4868492592575313542">aktivizēts</translation>
 <translation id="4872237917498892622">Alt+Meklēt vai Shift</translation>
 <translation id="4881695831933465202">Atvērt</translation>
@@ -723,6 +726,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">16. darbvieta</translation>
 <translation id="5003993274120026347">Nākamais teikums</translation>
 <translation id="5016558321564993266">Pārslēdziet marķieri. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Izmantošanas laiks beidzies</translation>
@@ -739,6 +743,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5098537242461068432">Darbvieta un logi atkārtoti atvērti</translation>
 <translation id="5104236669533825617">Nevar izveidot ekrānierakstu</translation>
 <translation id="5107522548814527560">Tīmeklis</translation>
+<translation id="5111318697104479778"><ph name="DESC" />. <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
 <translation id="5147567197700016471">Atbloķēts</translation>
@@ -829,6 +834,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
 <translation id="5652575806481723716">Lietotne <ph name="FOCUSED_APP_NAME" /> aicina pievērst tai uzmanību.</translation>
+<translation id="5662075790140998213">10. darbvieta</translation>
 <translation id="5662709761327382534">Ierakstīt mikrofona skaņu <ph name="CURRENT_STATE" /> Lai mikrofona ierakstīšanai ieslēgtu statusu <ph name="NEW_STATE" />, nospiediet taustiņu Enter</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5673434351075758678">Pēc iestatījumu sinhronizēšanas valoda tika mainīta no “<ph name="FROM_LOCALE" />” uz “<ph name="TO_LOCALE" />”.</translation>
@@ -1030,6 +1036,8 @@ Jauna instalācija</translation>
 <translation id="6753390234084146956">cilnes</translation>
 <translation id="6757237461819837179">Netiek atskaņots nekāds multivides saturs</translation>
 <translation id="6777216307882431711">Ar USB-C savienojumu notiek vairāku ierīču darbināšana</translation>
+<translation id="6781002679438061620">9. darbvieta</translation>
+<translation id="6782182743534150858">13. darbvieta</translation>
 <translation id="6786750046913594791">Aizvērt mapi</translation>
 <translation id="6787595647772650851">Atjaunot pēdējo sesiju</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
@@ -1091,6 +1099,7 @@ Jauna instalācija</translation>
 <translation id="7098053464892629930">Lai skatītu visas pieejamās funkcijas, pakalpojumā Google Play lejupielādējiet lietotni <ph name="NAME" />.</translation>
 <translation id="7098389117866926363">USB-C ierīce (pieslēgvieta aizmugurē pa kreisi)</translation>
 <translation id="7106330611027933926">Rādīt uzdevumjoslā iegulto rīkjoslu</translation>
+<translation id="7116969082764510092">11. darbvieta</translation>
 <translation id="7118268675952955085">ekrānuzņēmums</translation>
 <translation id="7126996685418858413">Atvērts pagājušajā nedēļā</translation>
 <translation id="7130207228079676353">VISTICAMĀK</translation>
@@ -1189,6 +1198,7 @@ Jauna instalācija</translation>
 <translation id="7662283695561029522">Pieskarieties, lai konfigurētu.</translation>
 <translation id="7670953955701272011">Atvērt šo datumu Google kalendārā</translation>
 <translation id="7671610481353807627">Lietotnes ir kārtotas pēc krāsas</translation>
+<translation id="7672095158465655885">Izveidots savienojums ar tīklu <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kameras ievadei iestatīta kamera <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pievienot jaunu mobilo tīklu</translation>
@@ -1473,5 +1483,6 @@ Jauna instalācija</translation>
 <translation id="974545358917229949">Tiek rādīti <ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="QUERY" />”</translation>
 <translation id="98515147261107953">Ainava</translation>
 <translation id="990277280839877440">Logs “<ph name="WINDOW_TITILE" />” ir aizvērts.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Iegūstiet jaunākās funkcijas un drošības uzlabojumus. Atjauninājumi tiek veikti fonā.</translation>
 </translationbundle>

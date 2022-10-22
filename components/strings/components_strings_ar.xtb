@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">زراعة وحراجة</translation>
 <translation id="1080116354587839789">ملاءمة مع العرض</translation>
 <translation id="1081061862829655580">الدُرج 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">إضافة الاسم الوارد في البطاقة</translation>
 <translation id="1089439967362294234">تغيير كلمة المرور</translation>
 <translation id="1096545575934602868">يجب ألا يحتوي هذا الحقل على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال. سيتم تجاهل جميع الإدخالات الأخرى.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">يتم حظر هذه السياسة وسيتم تجاهل قيمتها.</translation>
 <translation id="1368318639262510626">لعبة الديناصور. ديناصور في صورة متقطعة يتفادى عوائق نباتات الصبار عن طريق الزحف والقفز أثناء المرور في صحراء قاحلة. عند سماع صوت التنبيه، اضغط على مفتاح المسافة للقفز فوق العوائق.</translation>
 <translation id="1374468813861204354">اقتراحات</translation>
-<translation id="1374692235857187091">‏Index-4x6 (بطاقة بريدية)</translation>
 <translation id="1375198122581997741">معلومات عن الإصدار</translation>
 <translation id="1376836354785490390">إظهار أقسام أقل</translation>
 <translation id="1377321085342047638">رقم البطاقة</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">الطقس</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">استخدام الخطوط المثبَّتة على جهاز الكمبيوتر حتى تتمكّن من إنشاء محتوى عالي الدقة</translation>
-<translation id="1463543813647160932">7x5</translation>
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> هو رمزك على <ph name="EMBEDDED_ORIGIN" /> للمتابعة في <ph name="TOP_ORIGIN" />.</translation>
 <translation id="1472675084647422956">عرض المزيد</translation>
@@ -359,6 +356,7 @@
 <translation id="1803351196216024260">السماح للموقع الإلكتروني بطلب استخدام الميكروفون</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1807528111851433570">ورقة البداية</translation>
+<translation id="181000283860817563">تتبُّع الأسعار في عدة مواقع إلكترونية</translation>
 <translation id="1812527064848182527">معالم</translation>
 <translation id="1813414402673211292">محو بيانات التصفّح</translation>
 <translation id="182139138257690338">عمليات التنزيل التلقائية</translation>
@@ -675,7 +673,6 @@
 <translation id="2677696497921480781">أعياد الميلاد وأعياد القديسين</translation>
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2679714844901977852">‏يمكنك حفظ بيانات البطاقات ومعلومات الفوترة في حسابك على Google <ph name="USER_EMAIL" /> لإتمام عمليات الدفع بسرعة أكبر وبشكل آمن.</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">أفضل حجم</translation>
 <translation id="2688969097326701645">نعم، متابعة</translation>
 <translation id="2691924980723297736">تحذير متعلق بالأمان</translation>
@@ -709,7 +706,6 @@
 <translation id="2775884851269838147">طباعة الصفحة الأولى</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">تمت إعادة ضبط الاتصال.</translation>
-<translation id="2786469568759673015">ظرف صيني رقم 3</translation>
 <translation id="2791176355335562114">إتمام الدفع بسرعة أكبر في المرة المقبلة</translation>
 <translation id="2792012897584536778">أعدّ مشرفو هذا الجهاز شهادات الأمان التي قد تسمح لهم بالاطّلاع على محتوى المواقع الإلكترونية التي تزورها.</translation>
 <translation id="2799020568854403057">يحتوي الموقع الإلكتروني المقصود على تطبيقات ضارة</translation>
@@ -1019,7 +1015,6 @@
 <translation id="3634530185120165534">الدُرج 5</translation>
 <translation id="3634567936866541746">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. لحماية حساباتك، يقترح متصفِّح Chrome التحقّق من كلمات المرور المحفوظة.</translation>
 <translation id="3637662659967048211">‏حفظ المعلومات في حساب Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">التطبيق:</translation>
 <translation id="3647286794400715637">‏يجب أن يحتوي كل إدخال في سلسلة عناوين URL على عنوان URL واحد (كحد أدني) أو اثنين (كحد أقصى).</translation>
 <translation id="3650584904733503804">تم التحقق بنجاح</translation>
@@ -1151,7 +1146,6 @@
 <translation id="4010758435855888356">هل تريد السماح بالوصول إلى مساحة التخزين؟</translation>
 <translation id="401170183602135785">‏ظرف C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏مستند PDF يتألف من صفحة واحدة ({COUNT})}zero{‏مستند PDF يتألف من {COUNT} صفحة}two{‏مستند PDF يتألف من صفحتين ({COUNT})}few{‏مستند PDF يتألف من {COUNT} صفحات}many{‏مستند PDF يتألف من {COUNT} صفحة}other{‏مستند PDF يتألف من {COUNT} صفحة}}</translation>
-<translation id="4022639246993848966">‎3.5×5</translation>
 <translation id="4023431997072828269">ستظهر معلوماتك للآخرين لأن هذا النموذج يستخدم اتصالاً غير آمن.</translation>
 <translation id="4024923292610332139">‏إيقاف ميزة Touch ID لملء كلمات المرور</translation>
 <translation id="4025913568718019429">‏زر إدارة إعدادات الخصوصية في Google: اضغط على مفتاح Enter للانتقال إلى إعدادات خصوصية حسابك على Google.</translation>
@@ -1370,7 +1364,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">جرّب إيقاف الإضافات.</translation>
 <translation id="4559134504959026834">يندرج هذا الموقع الإلكتروني ضمن مجموعة حدّدها <ph name="SET_OWNER" /> ويمكنها الاطّلاع على نشاطك.</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">أنشطة في أماكن مفتوحة</translation>
 <translation id="4567686777917670400">‏يمكن لمشرفك تغيير إعدادات المتصفِّح عن بُعد. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">التسليم</translation>
@@ -1414,7 +1407,6 @@
 <translation id="4682496302933121474">هل تريد ترجمة الصفحة؟</translation>
 <translation id="468314109939257734">عرض رقم بطاقتك الافتراضية</translation>
 <translation id="4692623383562244444">محرّكات البحث</translation>
-<translation id="4693246800345263879">ظرف مقاس 25 × 35 سم</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" />‏ <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">الجانب</translation>
 <translation id="4702656508969495934">ميزة "النسخ النصي التلقائي" مرئية، يُرجى استخدام مبدِّل النوافذ للتركيز.</translation>
@@ -1632,7 +1624,6 @@
 <translation id="5205222826937269299">الاسم مطلوب</translation>
 <translation id="5209518306177824490">‏بصمة أصبع SHA-1</translation>
 <translation id="5209670883520018268">الدُرج 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">الدُرج 13</translation>
 <translation id="5216942107514965959">تمّت زيارة الموقع الإلكتروني آخر مرّة اليوم.</translation>
 <translation id="5217759126664161410">تنسيق البروتوكول غير صالح.</translation>
@@ -1641,7 +1632,6 @@
 <translation id="5229588705416009823">ألعاب بأعداد هائلة من اللاعبين</translation>
 <translation id="5230733896359313003">عنوان الشحن</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5239623327352565343">تمت الموافقة على طلب الوصول إلى الموقع الجغرافي.</translation>
 <translation id="5242889659037569123">أمتعة ولوازم السفر</translation>
@@ -1880,7 +1870,6 @@
 <translation id="5884465125445718607">ظرف صيني رقم 6</translation>
 <translation id="5887400589839399685">تم حفظ البطاقة</translation>
 <translation id="5887687176710214216">تمّت زيارة الموقع الإلكتروني آخر مرة أمس.</translation>
-<translation id="5891155897634819292">ظرف صيني رقم 5</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5895187275912066135">تاريخ الإصدار</translation>
 <translation id="5901630391730855834">أصفر</translation>
@@ -1913,7 +1902,6 @@
 <translation id="5974052231147553524">اللفافة السادسة</translation>
 <translation id="5975083100439434680">تصغير</translation>
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">رطوبة الغرفة</translation>
 <translation id="5984712050237025014">الواقع الافتراضي والمعزّز</translation>
 <translation id="598637245381783098">لا يمكن فتح تطبيق الدفع</translation>
@@ -2402,7 +2390,6 @@
 <translation id="7337706099755338005">غير متاحة على نظامك الأساسي.</translation>
 <translation id="733923710415886693">لم يتم الكشف عن شهادة الخادم عن طريق شهادة الشفافية.</translation>
 <translation id="7341357280245177602">مركبات مستعملة</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">تابع إلى:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">مسموح به إلى أن يتم إغلاق علامة التبويب هذه</translation>
@@ -2445,7 +2432,6 @@
     &lt;li&gt;انقر على &lt;strong&gt;"تطبيق"&lt;/strong&gt;، ثم على &lt;strong&gt;"حسنًا"&lt;/strong&gt;
     &lt;li&gt;انتقِل إلى &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;مركز مساعدة Chrome&lt;/a&gt; لمعرفة كيفية إزالة البرنامج من جهاز الكمبيوتر نهائيًا
     &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">رائع</translation>
 <translation id="741204030948306876">نعم، موافق</translation>
 <translation id="7416351320495623771">إدارة كلمات المرور…</translation>
@@ -2491,7 +2477,6 @@
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7517414872996418597">‏ظرف C10</translation>
 <translation id="7518003948725431193">لم يتم العثور على أي صفحة ويب لعنوان الويب:<ph name="URL" /></translation>
-<translation id="7518098469289408841">ظرف مقاس 25 × 33 سم</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">تم إخفاء قسم "<ph name="SECTION" />"</translation>
 <translation id="7523408071729642236">تصنيع</translation>
@@ -2783,7 +2768,6 @@
 <translation id="8277900682056760511">جدول بيانات معالج الدفع مفتوح</translation>
 <translation id="8279611986089885641">‏يجب تفعيل ميزة إشعارات Chrome. يمكنك تفعيلها من خلال <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">الدُرج 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">التخطّي</translation>
 <translation id="8282947398454257691">معرفة معرّف جهازك الفريد</translation>
 <translation id="8284769179630993263">‏إدارة إعدادات التصفّح الآمن وغيرها في إعدادات متصفّح Chrome</translation>
@@ -2799,7 +2783,6 @@
 <translation id="8299269255470343364">اليابانية</translation>
 <translation id="8303854710873047864">تم عرض قسم "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">الطي إلى نصفَين</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">التطبيقات المثبَّتة وعدد مرات استخدامها</translation>
 <translation id="831997045666694187">مساءً</translation>
 <translation id="8321476692217554900">الإشعارات</translation>
@@ -2882,7 +2865,6 @@
 <translation id="8557066899867184262">‏رمز التحقق من البطاقة (CVC) موجود خلف بطاقتك.</translation>
 <translation id="8559762987265718583">تعذر إنشاء اتصال خاص بـ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> نظرًا لأن التاريخ والوقت للجهاز (<ph name="DATE_AND_TIME" />) غير صحيحين.</translation>
 <translation id="8564182942834072828">مستندات مفصولة/نُسخ مفصولة</translation>
-<translation id="8564453110650229930">ظرف صيني رقم 10</translation>
 <translation id="8564985650692024650">‏يُوصي Chromium بإعادة تحديد كلمة المرور <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
 <translation id="8576310925653847813">أنظمة مسرح منزلي</translation>
 <translation id="8577348305244205642">البطاقة الافتراضية غير متوفّرة</translation>
@@ -2912,7 +2894,6 @@
 <translation id="8687429322371626002">يدير <ph name="MANAGER" /> جهازك وحسابك.</translation>
 <translation id="8688672835843460752">متوفِّر</translation>
 <translation id="868922510921656628">عدد الصفحات في كل مجموعة</translation>
-<translation id="8694278303623679191">‏ظرف Postfix</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699041776323235191">‏جهاز HID</translation>
 <translation id="8699899385443889493">‏زرّ تشغيل لعبة الديناصور في Chrome: اضغط على مفتاح Enter لتشغيل لعبة الديناصور في Chrome.</translation>
@@ -2990,7 +2971,6 @@
 <translation id="8874824191258364635">أدخِل رقم بطاقة صحيحًا</translation>
 <translation id="8876033571432926051">ألعاب بسيطة</translation>
 <translation id="8877780815363510165">صيد أسماك</translation>
-<translation id="8879882034055059721">ظرف مقاس 25 × 38 سم</translation>
 <translation id="8884537526797090108">لا يمكن تسجيل الشاشة بسبب المحتوى السري</translation>
 <translation id="8891727572606052622">وضع الخادم الوكيل غير صالح.</translation>
 <translation id="8894794286471754040">الحافة الطويلة أولًا</translation>

@@ -276,6 +276,7 @@
 <translation id="1244303850296295656">एक्स्टेंशन एरर</translation>
 <translation id="1245628370644070008">स्थानिक डेटा रिकव्हरी</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल करता आली नाही: इमेज URL ने <ph name="HTTP_ERROR" /> हा एरर कोड दाखवला. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{एका साइटसाठी सूचनांना अनुमती नाही}other{{NUM_SITES} साइटसाठी सूचनांना अनुमती नाही}}</translation>
 <translation id="1251366534849411931">अपेक्षित खुला महिरपी कंस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">हे साइट आणि इंस्टॉल केलेल्या ॲप्सनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ करेल</translation>
 <translation id="1251578593170406502">मोबाइल डेटा नेटवर्क स्कॅन करत आहे...</translation>
@@ -1657,6 +1658,7 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइंस्टॉल करण्यासाठी Windows बंद करा.</translation>
 <translation id="2477065602824695373">तुम्ही एकाहून अधिक स्विच सेट केल्यामुळे ऑटो-स्कॅन बंद करण्यात आले आहे.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" साठी मीडिया-फाईल परवानग्या</translation>
+<translation id="24786041351753425">डेटा रिकव्‍हरी सेवा सुरू करा.</translation>
 <translation id="2480868415629598489">तुम्ही कॉपी आणि पेस्ट करता तो डेटा सुधारित करा</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2482895651873876648">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामध्ये हलवला आहे</translation>
@@ -2272,6 +2274,7 @@
 <translation id="3024374909719388945">24-तासांचे घड्याळ वापरा</translation>
 <translation id="3027296729579831126">Nearby सह शेअरिंग सुरू करा</translation>
 <translation id="3029466929721441205">शेल्फमध्ये स्टायलस टूल दाखवा</translation>
+<translation id="3029808567601324798">लॉक करण्याची वेळ</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही आजच अपडेट डाउनलोड करणे आवश्यक आहे. तुम्ही इंटरनेटशी कनेक्ट केल्यावर अपडेट आपोआप डाउनलोड होईल.}other{<ph name="MANAGER" /> नुसार, तुम्ही डेडलाइनच्‍या आधी अपडेट डाउनलोड करणे आवश्यक आहे. तुम्ही इंटरनेटशी कनेक्ट केल्यावर अपडेट आपोआप डाउनलोड होईल.}}</translation>
 <translation id="3030967311408872958">सूर्यास्त ते सूर्योदय</translation>
 <translation id="3031417829280473749">एजंट X</translation>
@@ -2428,6 +2431,7 @@
 <translation id="3201422919974259695">उपलब्ध असलेली USB डिव्हाइस येथे दिसतील.</translation>
 <translation id="3202131003361292969">पथ</translation>
 <translation id="3202173864863109533">या टॅबचा ऑडिओ निःशब्द करण्यात येत आहे.</translation>
+<translation id="3202578601642193415">नवीन‍तम</translation>
 <translation id="3204648577100496185">या अ‍ॅपशी संबंधित डेटा या डिव्हाइसवरून कदाचित काढून टाकला जाईल.</translation>
 <translation id="3208321278970793882">ॲप</translation>
 <translation id="3208584281581115441">आता तपासा</translation>
@@ -3708,6 +3712,7 @@
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS डिव्‍हाइसना आपोआप अहवाल पाठवण्‍याची अनुमती देण्‍याने आम्‍हाला ChromeOS मध्‍ये कोणती सुधारणा करायची आणि कशाचे निराकरण करायचे याला प्राधान्य देण्‍यात मदत होते. या अहवालांमध्ये ChromeOS कधी क्रॅश होते, कोणती वैशिष्ट्ये वापरली गेली आणि सामान्यतः किती मेमरी वापरली गेली यांसारख्या गोष्टींचा समावेश असू शकतो.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही तुमच्या Chrome डिव्‍हाइस सेटिंग्‍जमध्‍ये कधीही या अहवालांना अनुमती देणे सुरू करू शकता किंवा थांबवू शकता. तुम्ही डोमेन अ‍ॅडमिनिस्ट्रेटर असल्यास, तुम्ही हे सेटिंग ॲडमिन कन्सोलमध्ये बदलू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">सुरुवात करण्यासाठी, कृपया तुमचे USB किंवा ब्लूटूथ स्विच तुमच्या Chromebook शी कनेक्ट केले असल्याची खात्री करा. आपण कीबोर्ड कीदेखील वापरू शकता.</translation>
+<translation id="4426508677408162512">सर्व बुकमार्क</translation>
 <translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
 <translation id="4427365070557649936">कंफर्मेशन कोडची पडताळणी करत आहे…</translation>
 <translation id="4429163740524851942">वास्तविक कीबोर्ड लेआउट</translation>
@@ -3848,6 +3853,7 @@
 <translation id="4556194354084985730">तुमच्या सेव्ह केलेल्या पासवर्डच्या मदतीने साइट आणि अ‍ॅप्सवर सहजपणे साइन इन करा. बंद केली असेल, तेव्हा साइन इन करण्यापूर्वी तुम्हाला विचारले जाईल.</translation>
 <translation id="4558426062282641716">स्वयं-लाँच परवानगीची विनंती केली</translation>
 <translation id="4559617833001311418">ही साइट तुमचे गती किंवा प्रकाश सेन्सर ॲक्सेस करत आहे.</translation>
+<translation id="4561098487691395071">किंवा तुमच्या प्रिंटरचा PPD नमूद करा</translation>
 <translation id="4561893854334016293">नुकत्याच बदललेल्या परवानग्या नाहीत</translation>
 <translation id="4562155214028662640">फिंगरप्रिंट जोडा</translation>
 <translation id="4563210852471260509">चीनी आरंभिक इनपुट भाषा आहे</translation>
@@ -4220,6 +4226,7 @@
 <translation id="4901154724271753917">अलीकडे बंद केलेले याचा विस्तार करा</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> प्रयोगासाठी प्रयोगाची स्थिती निवडा.</translation>
 <translation id="49027928311173603">सर्व्हरवरून डाउनलोड केलेले धोरण चुकीचे आहे: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">हे बॅकग्राउंड अ‍ॅक्टिव्हिटी आणि सहजपणे होणारे स्क्रोलिंग यांसारखे व्हिज्युअल इफेक्ट मर्यादित ठेवून बॅटरीची पॉवर वाढवते.</translation>
 <translation id="4906490889887219338">नेटवर्क फाइल शेअर सेट किंवा व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">हे एक्स्टेंशन तुमचा साइट डेटा केव्हा वाचू आणि बदलू शकेल ते निवडा</translation>
 <translation id="4907161631261076876">ही फाईल सामान्यपणे डाउनलोड केली नाही आणि कदाचित धोकादायक असू शकते.</translation>
@@ -4345,7 +4352,6 @@
 <translation id="5040823038948176460">अतिरिक्त आशय सेटिंग्ज</translation>
 <translation id="5041509233170835229">Chrome अ‍ॅप</translation>
 <translation id="5043440033854483429">नावामध्ये अक्षरे, अंक आणि हायफन (-) असू शकतात व ते १ ते १५ वर्णांदरम्यान असणे आवश्यक आहे.</translation>
-<translation id="5043913660911154449">किंवा तुमची PPD नमूद करा <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="504561833207953641">अस्तित्वात असलेल्या ब्राउझर सेशनमध्ये उघडत आहे.</translation>
 <translation id="5049614114599109018">इनपुट इतिहास वापरा</translation>
@@ -4736,6 +4742,7 @@
 <translation id="5427278936122846523">नेहमी भाषांतर करा</translation>
 <translation id="5427459444770871191">&amp;घड्याळाच्या दिशेने फिरवा</translation>
 <translation id="542750953150239272">पुढे सुरू ठेवून, तुम्ही सहमती दर्शवता, की हे डिव्हाइस कदाचित मोबाइल डेटा वापरून Google, तुमचा वाहक आणि तुमच्या डिव्हाइसच्या उत्पादकाकडूनदेखील अपडेट व अ‍ॅप्स आपोआप डाउनलोड आणि इंस्टॉल करू शकते. यांपैकी काही अ‍ॅप्स अ‍ॅप्समधील खरेदीचा पर्याय देऊ करू शकतात.</translation>
+<translation id="5427936139162668357">PPD पहा</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (अपडेट उपलब्ध आहे)</translation>
 <translation id="542948651837270806">विश्वासू प्लॅटफॉर्म मॉड्युल फर्मवेयरचा एखादा अपडेट इंस्टॉल करणे आवश्यक आहे. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> पहा</translation>
 <translation id="5429818411180678468">पूर्णरुंदी</translation>
@@ -5327,6 +5334,7 @@
 <translation id="5971037678316050792">ब्लूटूथ अडाप्टर स्थिती आणि पेअरिंग नियंत्रित करा</translation>
 <translation id="597235323114979258">आणखी गंतव्यस्थाने पहा</translation>
 <translation id="5972543790327947908">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> किंवा <ph name="APP_NAME_3" /> मध्ये उघडतील.</translation>
+<translation id="5972559880616357748"><ph name="SITE_GROUP" /> साठी आणखी कृती</translation>
 <translation id="5972666587303800813">नो-ऑप सेवा</translation>
 <translation id="5972708806901999743">शीर्षस्थानी हलवा</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> सुरू करा</translation>
@@ -8139,6 +8147,7 @@
 <translation id="8645354835496065562">सेन्सर ॲक्सेस देणे सुरू ठेवा</translation>
 <translation id="8645920082661222035">धोकादायक घटना घडण्याआधी त्यांचे पूर्वानुमान करते आणि त्यांबद्दल तुम्हाला चेतावणी देते</translation>
 <translation id="8646209145740351125">सिंक बंद करा</translation>
+<translation id="8646340610303779673">PPD मिळवू शकत नाही.</translation>
 <translation id="864637694230589560">तुम्हाला ठळक बातम्या किंवा चॅट मेसेजविषयी कळवण्यासाठी साइट सहसा सूचना पाठवते</translation>
 <translation id="8647385344110255847">तुमचे लहान मूल ॲप्स इंस्टॉल करण्यासाठी तुमच्या परवानगीने Google Play वापरू शकते</translation>
 <translation id="8647834505253004544">वैध वेब पत्ता नाही</translation>
@@ -8199,6 +8208,7 @@
 <translation id="869884720829132584">ॲप्लिकेशन मेनू</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
+<translation id="8699188901396699995"><ph name="PRINTER_NAME" /> साठी PPD</translation>
 <translation id="8702825062053163569">तुमचे <ph name="DEVICE_TYPE" /> लॉक केले होते.</translation>
 <translation id="8703346390800944767">जाहिरात वगळा</translation>
 <translation id="8705331520020532516">सिरीअल नंबर</translation>
@@ -8512,6 +8522,7 @@
 <translation id="8987927404178983737">महिना</translation>
 <translation id="8989359959810288806">टेदरिंग स्टेटस रिफ्रेश करा</translation>
 <translation id="8991520179165052608">साइट तुमचा मायक्रोफोन वापरू शकते</translation>
+<translation id="8993059306046735527">तुम्ही तुमच्या <ph name="DEVICE_TYPE" /> चा पासवर्ड विसरल्यास, तुम्ही तरीही तुमचा स्थानिक डेटा रिस्टोअर करू शकता. तुम्ही तुमच्या Google खाते मध्ये साइन इन करणे किंवा खाते रिकव्हरी वापरणे आवश्यक आहे.</translation>
 <translation id="899384117894244799">प्रतिबंधित वापरकर्ता काढा</translation>
 <translation id="899403249577094719">Netscape सर्टिफिकेट मूळ URL</translation>
 <translation id="899657321862108550">तुमचे Chrome, सर्वत्र</translation>
@@ -8611,6 +8622,7 @@
 <translation id="9078316009970372699">इंस्टंट टेदरिंग बंद करा</translation>
 <translation id="9078842827190780028">साइड पॅनलमध्ये आणखी शोध परिणाम पहा</translation>
 <translation id="9079267182985899251">लवकरच पर्यायाला यापुढे सपोर्ट असणार नाही. टॅब सादर करण्यासाठी <ph name="GOOGLE_MEET" /> वापरा.</translation>
+<translation id="9080175821499742274">मेमरी सेव्हर निष्क्रिय टॅबमधील मेमरी मोकळी करते, जेणेकरून ती अ‍ॅक्टिव्ह टॅब आणि इतर अ‍ॅप्सद्वारे वापरली जाईल.</translation>
 <translation id="9080971985541434310">तुमच्या स्वारस्यांचा अंदाज लावा - Chrome तुमच्या स्वारस्यांचा अंदाज लावू शकते</translation>
 <translation id="9081543426177426948">गुप्त मोडमध्ये तुम्ही भेट देता त्या साइट सेव्ह केल्या जात नाहीत</translation>
 <translation id="9084064520949870008">विंडो म्हणून उघडा</translation>
@@ -8800,6 +8812,7 @@
 <translation id="964790508619473209">स्क्रीन व्यवस्था</translation>
 <translation id="965211523698323809">तुमच्या <ph name="DEVICE_TYPE" /> वरून एसएमएस पाठवा आणि मिळवा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast शी संबंधित समस्येची तक्रार करा</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{अलीकडे खूप सूचना पाठवलेल्या एका साइटचे पुनरावलोकन करा}other{अलीकडे खूप सूचना पाठवलेल्या {NUM_SITES} साइटचे पुनरावलोकन करा}}</translation>
 <translation id="967398046773905967">कोणत्याही साइटना HID डिव्हाइस ॲक्सेस करू देऊ नका</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 <translation id="96774243435178359">व्यवस्थापित केलेले प्रिंटर</translation>

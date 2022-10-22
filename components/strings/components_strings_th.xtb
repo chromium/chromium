@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">การเกษตรและป่าไม้</translation>
 <translation id="1080116354587839789">พอดีกับความกว้าง</translation>
 <translation id="1081061862829655580">ถาด 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">เพิ่มชื่อบนบัตร</translation>
 <translation id="1089439967362294234">เปลี่ยนรหัสผ่าน</translation>
 <translation id="1096545575934602868">ช่องนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ ระบบจะทิ้งรายการอื่นๆ ทั้งหมด</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">นโยบายนี้ถูกล็อกอยู่ ระบบจะไม่สนใจค่าของนโยบายนี้</translation>
 <translation id="1368318639262510626">เกมไดโนเสาร์ ไดโนเสาร์ที่มีรูปร่างเป็นพิกเซลต้องคอยหลบหลีกต้นกระบองเพชรและนกยักษ์ดึกดำบรรพ์ขณะวิ่งผ่านภูมิประเทศที่รกร้าง เมื่อคุณได้ยินเสียงสัญญาณ ให้กดแป้น Space เพื่อกระโดดข้ามสิ่งกีดขวาง</translation>
 <translation id="1374468813861204354">คำแนะนำ</translation>
-<translation id="1374692235857187091">Index-4x6 (โปสการ์ด)</translation>
 <translation id="1375198122581997741">เกี่ยวกับรุ่น</translation>
 <translation id="1376836354785490390">แสดงน้อยลง</translation>
 <translation id="1377321085342047638">หมายเลขบัตร</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">สภาพอากาศ</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ใช้แบบอักษรที่มีอยู่ในคอมพิวเตอร์เพื่อให้สร้างเนื้อหาความแม่นยำสูงได้</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> คือรหัสสำหรับ <ph name="EMBEDDED_ORIGIN" /> เพื่อดำเนินการต่อใน <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">แสดงเพิ่มเติม</translation>
@@ -359,6 +356,7 @@
 <translation id="1803351196216024260">สามารถขอใช้ไมโครโฟนของคุณได้</translation>
 <translation id="1807246157184219062">สว่าง</translation>
 <translation id="1807528111851433570">แผ่นงานเริ่มต้น</translation>
+<translation id="181000283860817563">ติดตามราคาจากหลายเว็บไซต์</translation>
 <translation id="1812527064848182527">แนวนอน</translation>
 <translation id="1813414402673211292">นำออกข้อมูลที่เรียกดู</translation>
 <translation id="182139138257690338">การดาวน์โหลดอัตโนมัติ</translation>
@@ -674,7 +672,6 @@
 <translation id="2677696497921480781">วันเกิดและวันตั้งชื่อ</translation>
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2679714844901977852">บันทึกบัตรและข้อมูลการเรียกเก็บเงินไว้ในบัญชี Google <ph name="USER_EMAIL" /> เพื่อให้ชำระเงินได้อย่างปลอดภัยและรวดเร็วยิ่งขึ้น</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">ปรับพอดี</translation>
 <translation id="2688969097326701645">ใช่ ดำเนินการต่อ</translation>
 <translation id="2691924980723297736">คำเตือนด้านความปลอดภัย</translation>
@@ -708,7 +705,6 @@
 <translation id="2775884851269838147">หน้าที่พิมพ์หน้าแรก</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">การเชื่อมต่อได้รับการรีเซ็ตแล้ว</translation>
-<translation id="2786469568759673015">Envelope Chinese #3</translation>
 <translation id="2791176355335562114">ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="2792012897584536778">ผู้ดูแลระบบของอุปกรณ์นี้ได้ตั้งค่าใบรับรองความปลอดภัยที่อาจอนุญาตให้ตนดูเนื้อหาของเว็บไซต์ที่คุณเข้าชมได้</translation>
 <translation id="2799020568854403057">เว็บไซต์ที่จะเปิดมีแอปอันตราย</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3634530185120165534">ถาด 5</translation>
 <translation id="3634567936866541746">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
 <translation id="3637662659967048211">บันทึกลงในบัญชี Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">แอปพลิเคชัน:</translation>
 <translation id="3647286794400715637">แต่ละรายการในสตริง URL ต้องมี URL 1-2 รายการ</translation>
 <translation id="3650584904733503804">การตรวจสอบสำเร็จ</translation>
@@ -1148,7 +1143,6 @@
 <translation id="4010758435855888356">อนุญาตให้เข้าถึงพื้นที่เก็บข้อมูลไหม</translation>
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{เอกสาร PDF ที่มี {COUNT} หน้า}other{เอกสาร PDF ที่มี {COUNT} หน้า}}</translation>
-<translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">เนื่องจากแบบฟอร์มนี้ส่งผ่านการเชื่อมต่อที่ไม่ปลอดภัย ผู้อื่นอาจมองเห็นข้อมูลของคุณ</translation>
 <translation id="4024923292610332139">ปิด TouchID เพื่อกรอกรหัสผ่าน</translation>
 <translation id="4025913568718019429">ปุ่มจัดการการตั้งค่าความเป็นส่วนตัวของ Google กด Enter เพื่อไปที่การตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>
@@ -1366,7 +1360,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ลองปิดใช้ส่วนขยาย</translation>
 <translation id="4559134504959026834">เว็บไซต์นี้อยู่ในกลุ่มที่ <ph name="SET_OWNER" /> กำหนดไว้และสามารถดูกิจกรรมของคุณได้</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">กลางแจ้ง</translation>
 <translation id="4567686777917670400">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">การจัดส่ง</translation>
@@ -1410,7 +1403,6 @@
 <translation id="4682496302933121474">แปลหน้าเว็บไหม</translation>
 <translation id="468314109939257734">ดูหมายเลขบัตรเสมือนของคุณ</translation>
 <translation id="4692623383562244444">เครื่องมือค้นหา</translation>
-<translation id="4693246800345263879">Envelope 10 x 14 นิ้ว</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ด้านข้าง</translation>
 <translation id="4702656508969495934">มองเห็นคำบรรยายสดอยู่ ใช้ปุ่มสลับหน้าต่างเพื่อโฟกัส</translation>
@@ -1628,7 +1620,6 @@
 <translation id="5205222826937269299">ต้องระบุชื่อ</translation>
 <translation id="5209518306177824490">ลายนิ้วมือ SHA-1</translation>
 <translation id="5209670883520018268">ถาด 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">ถาด 13</translation>
 <translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>
 <translation id="5217759126664161410">รูปแบบโปรโตคอลไม่ถูกต้อง</translation>
@@ -1637,7 +1628,6 @@
 <translation id="5229588705416009823">เกมแบบผู้เล่นจำนวนมาก</translation>
 <translation id="5230733896359313003">ที่อยู่ในการจัดส่ง</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5239623327352565343">อนุญาตให้เข้าถึงตําแหน่ง</translation>
 <translation id="5242889659037569123">กระเป๋าและอุปกรณ์สำหรับการเดินทาง</translation>
@@ -1876,7 +1866,6 @@
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">บันทึกการ์ดแล้ว</translation>
 <translation id="5887687176710214216">เข้าชมล่าสุดเมื่อวาน</translation>
-<translation id="5891155897634819292">Envelope Chinese #5</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5895187275912066135">ออกเมื่อ</translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
@@ -1909,7 +1898,6 @@
 <translation id="5974052231147553524">ม้วนกระดาษ 6</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">ความชื้นของตู้</translation>
 <translation id="5984712050237025014">Augmented และ Virtual Reality</translation>
 <translation id="598637245381783098">ไม่สามารถเปิดแอปการชำระเงิน</translation>
@@ -2398,7 +2386,6 @@
 <translation id="7337706099755338005">ยังไม่พร้อมให้ใช้งานในแพลตฟอร์มของคุณ</translation>
 <translation id="733923710415886693">ไม่มีการเปิดเผยใบรับรองของเซิร์ฟเวอร์ผ่านความโปร่งใสของใบรับรอง</translation>
 <translation id="7341357280245177602">ยานพาหนะมือสอง</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">เป็นพาร์ทเนอร์:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">อนุญาตจนกว่าคุณจะปิดแท็บนี้</translation>
@@ -2441,7 +2428,6 @@
       &lt;li&gt;คลิก&lt;strong&gt;ใช้&lt;/strong&gt; แล้วคลิก&lt;strong&gt;ตกลง&lt;/strong&gt;
       &lt;li&gt;ไปที่&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;ศูนย์ช่วยเหลือของ Chrome&lt;/a&gt; เพื่อดูวิธีนำซอฟต์แวร์ดังกล่าวออกจากคอมพิวเตอร์อย่างถาวร
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">น่ารัก</translation>
 <translation id="741204030948306876">ได้สิ ตกลง</translation>
 <translation id="7416351320495623771">จัดการรหัสผ่าน…</translation>
@@ -2487,7 +2473,6 @@
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">ไม่พบหน้าเว็บสำหรับที่อยู่เว็บ: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Envelope 10 x 13 นิ้ว</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">ส่วน "<ph name="SECTION" />" ซ่อนอยู่</translation>
 <translation id="7523408071729642236">การผลิต</translation>
@@ -2778,7 +2763,6 @@
 <translation id="8277900682056760511">แผ่นงานของเครื่องจัดการการชำระเงินเปิดอยู่</translation>
 <translation id="8279611986089885641">ต้องเปิดการแจ้งเตือนของ Chrome ซึ่งทำได้ใน<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
 <translation id="8280630997017109758">ถาด 11</translation>
-<translation id="8281084378435768645">รูปภาพขนาดใหญ่</translation>
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8282947398454257691">ทราบตัวระบุอุปกรณ์ที่ไม่ซ้ำกัน</translation>
 <translation id="8284769179630993263">จัดการ Google Safe Browsing และอื่นๆ ในการตั้งค่า Chrome</translation>
@@ -2794,7 +2778,6 @@
 <translation id="8299269255470343364">ญี่ปุ่น</translation>
 <translation id="8303854710873047864">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
-<translation id="8307358339886459768">รูปภาพขนาดเล็ก</translation>
 <translation id="8307888238279532626">แอปที่ติดตั้งและความถี่ในการใช้</translation>
 <translation id="831997045666694187">ตอนเย็น</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
@@ -2876,7 +2859,6 @@
 <translation id="8557066899867184262">CVC จะอยู่ที่ด้านหลังบัตร</translation>
 <translation id="8559762987265718583">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของอุปกรณ์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
 <translation id="8564182942834072828">เอกสารแยกกัน/ไม่จัดชุดสำเนา</translation>
-<translation id="8564453110650229930">Envelope Chinese #10</translation>
 <translation id="8564985650692024650">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="8576310925653847813">ระบบโฮมเธียเตอร์</translation>
 <translation id="8577348305244205642">บัตรเสมือนไม่พร้อมใช้งาน</translation>
@@ -2906,7 +2888,6 @@
 <translation id="8687429322371626002">อุปกรณ์และบัญชีของคุณจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="8688672835843460752">มีอยู่</translation>
 <translation id="868922510921656628">จำนวนหน้าต่อชุด</translation>
-<translation id="8694278303623679191">Envelope Postfix</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699041776323235191">อุปกรณ์ HID</translation>
 <translation id="8699899385443889493">ปุ่มเล่นเกมไดโนเสาร์ Chrome กด Enter เพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
@@ -2984,7 +2965,6 @@
 <translation id="8874824191258364635">ป้อนหมายเลขบัตรที่ถูกต้อง</translation>
 <translation id="8876033571432926051">เกมเล่นฆ่าเวลา</translation>
 <translation id="8877780815363510165">การตกปลา</translation>
-<translation id="8879882034055059721">Envelope 10 x 15 นิ้ว</translation>
 <translation id="8884537526797090108">บันทึกเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="8891727572606052622">โหมดพร็อกซีไม่ถูกต้อง</translation>
 <translation id="8894794286471754040">ด้านขอบยาวก่อน</translation>

@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Megosztás a Parallels Desktoppal</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, csatlakozás</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, telefon akkumulátora: <ph name="BATTERY_STATUS" />%, részletek</translation>
-<translation id="4929673617759421391">Egy rendszergazdai házirend tiltja a fájl beillesztését</translation>
 <translation id="4935975195727477204">Záporvirág</translation>
 <translation id="4943368462779413526">Focilabda</translation>
 <translation id="4961158930123534723">1 mappa megosztva a Parallels Desktoppal</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="9189836632794948435">kazah</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elem kinyerve.</translation>
-<translation id="9210751050717126865"><ph name="COUNT" /> fájl beillesztését letiltotta egy rendszergazdai házirend</translation>
 <translation id="9213073329713032541">Telepítés sikeresen megkezdve.</translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="9219908252191632183">Hold</translation>

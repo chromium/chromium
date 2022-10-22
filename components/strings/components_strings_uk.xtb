@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Сільське господарство й лісництво</translation>
 <translation id="1080116354587839789">За шириною сторінки</translation>
 <translation id="1081061862829655580">Лоток 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Додайте ім’я на картці</translation>
 <translation id="1089439967362294234">Змінити пароль</translation>
 <translation id="1096545575934602868">Максимальна кількість записів у цьому полі: <ph name="MAX_ITEMS_LIMIT" />. Усі подальші записи буде відхилено.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">Це правило заблоковано. Його значення ігноруватиметься.</translation>
 <translation id="1368318639262510626">Гра Dino. Піксельний динозавр біжить пустелею й ухиляється від кактусів і птеродактилів. Натискайте пробіл і перестрибуйте перешкоди, коли почуєте звуковий сигнал.</translation>
 <translation id="1374468813861204354">пропозиції</translation>
-<translation id="1374692235857187091">Index-4x6 (листівка)</translation>
 <translation id="1375198122581997741">Про версію</translation>
 <translation id="1376836354785490390">Показати менше</translation>
 <translation id="1377321085342047638">Номер картки</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Використовувати встановлені на вашому комп'ютері шрифти, щоб ви могли створювати контент високої якості</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Ліворуч</translation>
 <translation id="1468653229182955856">Щоб продовжити роботу на сайті <ph name="TOP_ORIGIN" />, введіть код <ph name="ONE_TIME_CODE" /> для фрейму <ph name="EMBEDDED_ORIGIN" /></translation>
 <translation id="1472675084647422956">Показати більше</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">Дні народження й іменини</translation>
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2679714844901977852">Збережіть свою картку та платіжну інформацію в обліковому записі Google <ph name="USER_EMAIL" />, щоб сплачувати безпечно й швидко</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Оптимальний розмір</translation>
 <translation id="2688969097326701645">Так, продовжити</translation>
 <translation id="2691924980723297736">Попередження щодо безпеки</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">Перша сторінка для друку</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">З’єднання було скинуто.</translation>
-<translation id="2786469568759673015">Конверт Chinese № 3</translation>
 <translation id="2791176355335562114">Сплачуйте швидше наступного разу</translation>
 <translation id="2792012897584536778">Адміністратори цього пристрою налаштували сертифікати безпеки, які дають їм змогу бачити вміст відкритих вами веб-сайтів.</translation>
 <translation id="2799020568854403057">Сайт містить шкідливі додатки</translation>
@@ -1019,7 +1014,6 @@
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chrome радить перевірити збережені паролі.</translation>
 <translation id="3637662659967048211">Зберегти в обліковий запис Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Додаток:</translation>
 <translation id="3647286794400715637">Кожен рядок URL-адреси має містити від 1 до 2 URL-адрес.</translation>
 <translation id="3650584904733503804">Перевірку закінчено</translation>
@@ -1150,7 +1144,6 @@
 <translation id="4010758435855888356">Дозволити доступ до пам’яті?</translation>
 <translation id="401170183602135785">Конверт C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Документ PDF містить {COUNT} сторінку}one{Документ PDF містить {COUNT} сторінку}few{Документ PDF містить {COUNT} сторінки}many{Документ PDF містить {COUNT} сторінок}other{Документ PDF містить {COUNT} сторінки}}</translation>
-<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Вашу інформацію бачитимуть інші користувачі, оскільки форма надсилається через незахищене з'єднання.</translation>
 <translation id="4024923292610332139">вимкнути TouchID для заповнення паролів</translation>
 <translation id="4025913568718019429">Кнопка "Керувати налаштуваннями конфіденційності Google"; натисніть Enter, щоб перейти в налаштування конфіденційності облікового запису Google.</translation>
@@ -1368,7 +1361,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Спробуйте вимкнути розширення.</translation>
 <translation id="4559134504959026834">Цей сайт належить до групи, визначеної сайтом-власником <ph name="SET_OWNER" />, і інші сайти-учасники можуть бачити ваші дії</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Дозвілля на природі</translation>
 <translation id="4567686777917670400">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Доставка</translation>
@@ -1412,7 +1404,6 @@
 <translation id="4682496302933121474">Перекласти сторінку?</translation>
 <translation id="468314109939257734">Переглянути номер віртуальної картки</translation>
 <translation id="4692623383562244444">Пошукові системи</translation>
-<translation id="4693246800345263879">Конверт 10 x 14 дюймів</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Сторона</translation>
 <translation id="4702656508969495934">Відображаються живі субтитри. Щоб сфокусуватися на них, скористайтеся перемикачем вікон.</translation>
@@ -1630,7 +1621,6 @@
 <translation id="5205222826937269299">Укажіть ім’я</translation>
 <translation id="5209518306177824490">Відбиток SHA-1</translation>
 <translation id="5209670883520018268">Лоток 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Лоток 13</translation>
 <translation id="5216942107514965959">Останнє відвідування: сьогодні</translation>
 <translation id="5217759126664161410">Недійсний формат протоколу.</translation>
@@ -1639,7 +1629,6 @@
 <translation id="5229588705416009823">Ігри для дуже великої кількості гравців</translation>
 <translation id="5230733896359313003">Адреса доставки</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5239623327352565343">Доступ до геоданих дозволено</translation>
 <translation id="5242889659037569123">Багаж і аксесуари для подорожей</translation>
@@ -1878,7 +1867,6 @@
 <translation id="5884465125445718607">Конверт Chinese № 6</translation>
 <translation id="5887400589839399685">Картку збережено</translation>
 <translation id="5887687176710214216">Останнє відвідування: вчора</translation>
-<translation id="5891155897634819292">Конверт Chinese № 5</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5895187275912066135">Дата видачі</translation>
 <translation id="5901630391730855834">Жовтий</translation>
@@ -1911,7 +1899,6 @@
 <translation id="5974052231147553524">Шостий рулон</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5979084224081478209">Перевірити паролі</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Вологість камери</translation>
 <translation id="5984712050237025014">Доповнена та віртуальна реальність</translation>
 <translation id="598637245381783098">Неможливо відкрити додаток для платежів</translation>
@@ -2400,7 +2387,6 @@
 <translation id="7337706099755338005">Недоступний на вашій платформі.</translation>
 <translation id="733923710415886693">Сертифікат сервера не надав інформацію про перевірку.</translation>
 <translation id="7341357280245177602">Уживані автомобілі</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Зв'язано:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Дозволено, доки ви не закриєте цю вкладку</translation>
@@ -2443,7 +2429,6 @@
       &lt;li&gt;Натисніть &lt;strong&gt;Застосувати&lt;/strong&gt;, а потім – кнопку &lt;strong&gt;OK&lt;/strong&gt;
       &lt;li&gt;Відвідайте &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Довідковий центр Chrome&lt;/a&gt;, щоб дізнатися, як повністю видалити програмне забезпечення з комп’ютера
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Широкий формат</translation>
 <translation id="7410471291937727359">Милий</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7416351320495623771">Керувати паролями…</translation>
@@ -2489,7 +2474,6 @@
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не знайдено веб-сторінок для веб-адреси <ph name="URL" /></translation>
-<translation id="7518098469289408841">Конверт 10 x 13 дюймів</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Розділ "<ph name="SECTION" />" приховано</translation>
 <translation id="7523408071729642236">Обробна промисловість</translation>
@@ -2780,7 +2764,6 @@
 <translation id="8277900682056760511">Аркуш обробника платежу відкрито</translation>
 <translation id="8279611986089885641">Потрібно ввімкнути сповіщення Chrome. Для цього перейдіть у <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Лоток 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Пропустити</translation>
 <translation id="8282947398454257691">Бачити ваш унікальний ідентифікатор пристрою</translation>
 <translation id="8284769179630993263">Керуйте Безпечним переглядом і виконуйте інші дії в налаштуваннях Chrome</translation>
@@ -2796,7 +2779,6 @@
 <translation id="8299269255470343364">Японська</translation>
 <translation id="8303854710873047864">Відображається розділ "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Зігнути посередині</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Установлені додатки та як часто ними користуються</translation>
 <translation id="831997045666694187">Увечері</translation>
 <translation id="8321476692217554900">сповіщення</translation>
@@ -2878,7 +2860,6 @@
 <translation id="8557066899867184262">Код CVC розташований на зворотному боці картки.</translation>
 <translation id="8559762987265718583">Не вдається встановити конфіденційне з’єднання з <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на пристрої встановлено неправильні дату й час (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Окремі документи/непідібрані копії</translation>
-<translation id="8564453110650229930">Конверт Chinese № 10</translation>
 <translation id="8564985650692024650">Chromium радить скинути пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="8576310925653847813">Системи домашнього кінотеатру</translation>
 <translation id="8577348305244205642">Віртуальна картка недоступна</translation>
@@ -2908,7 +2889,6 @@
 <translation id="8687429322371626002">Вашим пристроєм і обліковим записом керує <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Кількість сторінок у наборі</translation>
-<translation id="8694278303623679191">Конверт Postfix</translation>
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8699041776323235191">Пристрій HID</translation>
 <translation id="8699899385443889493">Кнопка "Грати в Chrome Dino"; натисніть Enter, щоб грати в гру Dino Run у Chrome.</translation>
@@ -2986,7 +2966,6 @@
 <translation id="8874824191258364635">Введіть дійсний номер картки</translation>
 <translation id="8876033571432926051">Казуальні ігри</translation>
 <translation id="8877780815363510165">Рибальство</translation>
-<translation id="8879882034055059721">Конверт 10 x 15 дюймів</translation>
 <translation id="8884537526797090108">Не вдається записати конфіденційний контент</translation>
 <translation id="8891727572606052622">Недійсний режим проксі-сервера.</translation>
 <translation id="8894794286471754040">Спершу по довжині</translation>

@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Rhannu gyda Parallels Desktop</translation>
 <translation id="4902546322522096650">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Cysylltu</translation>
 <translation id="4906580650526544301">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Batri'r Ffôn <ph name="BATTERY_STATUS" />%, Manylion</translation>
-<translation id="4929673617759421391">Mae gludo'r ffeil hon wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="4935975195727477204">Blodyn Gasania</translation>
 <translation id="4943368462779413526">Pêl-droed</translation>
 <translation id="4961158930123534723">Rhennir 1 ffolder â Parallels Desktop</translation>
@@ -976,7 +975,6 @@
 <translation id="9183302530794969518">Dogfennau Google</translation>
 <translation id="9189836632794948435">Kazaceg</translation>
 <translation id="9200427192836333033">Echdynnwyd <ph name="NUMBER_OF_ITEMS" /> eitem.</translation>
-<translation id="9210751050717126865">Mae gludo <ph name="COUNT" /> ffeil wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="9213073329713032541">Wedi dechrau gosod yn llwyddiannus.</translation>
 <translation id="9219103736887031265">Lluniau</translation>
 <translation id="9219908252191632183">Lleuadol</translation>

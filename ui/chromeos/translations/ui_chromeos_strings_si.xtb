@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Parallels Desktop සමග බෙදා ගන්න</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, සබඳින්න</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, විස්තර</translation>
-<translation id="4929673617759421391">මෙම ගොනුව ඇලවීම පරිපාලක ප්‍රතිපත්තිය මගින් අවහිර කර ඇත</translation>
 <translation id="4935975195727477204">ගැන්සානියා මල</translation>
 <translation id="4943368462779413526">පාපන්දු</translation>
 <translation id="4961158930123534723">Parallels Desktop සමග එක ෆෝල්ඩරයක් බෙදා ගන්නා ලදි</translation>
@@ -976,7 +975,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">කසක්</translation>
 <translation id="9200427192836333033">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් උපුටා ගන්නා ලදි.</translation>
-<translation id="9210751050717126865">පරිපාලක ප්‍රතිපත්තිය මගින් ගොනු <ph name="COUNT" />ක් ඇලවීම අවහිර කර ඇත</translation>
 <translation id="9213073329713032541">ස්ථාපනය සාර්ථකව ආරම්භ විය.</translation>
 <translation id="9219103736887031265">රූප</translation>
 <translation id="9219908252191632183">චන්ද්‍රයා</translation>

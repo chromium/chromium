@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 diwrnod yn ôl}zero{# diwrnod yn ôl}two{# ddiwrnod yn ôl}few{# diwrnod yn ôl}many{# diwrnod yn ôl}other{# diwrnod yn ôl}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1m}zero{#m}two{#f}few{#m}many{#m}other{#m}}</translation>
+<translation id="1181037720776840403">Dileu</translation>
 <translation id="1243314992276662751">Uwchlwytho</translation>
 <translation id="1266864766717917324">Ni ellid rhannu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Ennill</translation>

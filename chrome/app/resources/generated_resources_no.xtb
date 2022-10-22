@@ -2431,6 +2431,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3201422919974259695">Tilgjengelige USB-enheter vises her.</translation>
 <translation id="3202131003361292969">Bane</translation>
 <translation id="3202173864863109533">Lyden er slått av for denne fanen.</translation>
+<translation id="3202578601642193415">Nyeste</translation>
 <translation id="3204648577100496185">Data som er tilknyttet denne appen, kan bli fjernet fra denne enheten</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Sjekk nå</translation>
@@ -3712,6 +3713,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Disse rapportene kan blant annet inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner som var i bruk, og hvor mye minne som vanligvis var i bruk.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for Chrome-enheten. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">For å komme i gang, sørg for at USB- eller Bluetooth-bryteren er koblet til Chromebooken. Du kan også bruke tastaturtaster.</translation>
+<translation id="4426508677408162512">Alle bokmerker</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="4427365070557649936">Verifiserer bekreftelseskoden …</translation>
 <translation id="4429163740524851942">Fysisk tastaturoppsett</translation>
@@ -3851,6 +3853,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4556194354084985730">Du kan enkelt logge på nettsteder og apper med de lagrede passordene dine. Når dette er slått av, blir du spurt før pålogging.</translation>
 <translation id="4558426062282641716">Tillatelse om autostart er forespurt</translation>
 <translation id="4559617833001311418">Dette nettstedet bruker bevegelses- eller lyssensorene dine.</translation>
+<translation id="4561098487691395071">Eller spesifiser skriverens PPD-fil</translation>
 <translation id="4561893854334016293">Ingen nylig endrede tillatelser</translation>
 <translation id="4562155214028662640">Legg til fingeravtrykk</translation>
 <translation id="4563210852471260509">Det opprinnelige inndataspråket er kinesisk</translation>
@@ -4349,7 +4352,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5040823038948176460">Flere innholdsinnstillinger</translation>
 <translation id="5041509233170835229">Chrome-app</translation>
 <translation id="5043440033854483429">Navnet kan inneholde bokstaver, tall og bindestreker (-) og må være 1–15 tegn langt.</translation>
-<translation id="5043913660911154449">Eller angi PPD-fil for skriveren <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="504561833207953641">Åpner i den eksisterende nettleserøkten.</translation>
 <translation id="5049614114599109018">Bruk inndatalogg</translation>
@@ -4739,6 +4741,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5427278936122846523">Oversett alltid</translation>
 <translation id="5427459444770871191">Rotér &amp;med klokken</translation>
 <translation id="542750953150239272">Ved å fortsette godtar du at denne enheten også kan laste ned og installere oppdateringer automatisk fra Google, operatøren din og enhetens produsent. Dette bruker muligens mobildata. Noen av disse appene kan tilby kjøp i appen.</translation>
+<translation id="5427936139162668357">Se PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (oppdatering er tilgjengelig)</translation>
 <translation id="542948651837270806">En oppdatering for Trusted Platform Module-fastvaren må installeres. Se <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Full bredde</translation>
@@ -8147,6 +8150,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8645354835496065562">Fortsett å tillate sensortilgang</translation>
 <translation id="8645920082661222035">Forutsier og advarer deg om farlige hendelser før de inntreffer</translation>
 <translation id="8646209145740351125">Deaktiver synkronisering</translation>
+<translation id="8646340610303779673">Kunne ikke hente PPD.</translation>
 <translation id="864637694230589560">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger</translation>
 <translation id="8647385344110255847">Med tillatelse fra deg kan barnet ditt bruke Google Play til å installere apper</translation>
 <translation id="8647834505253004544">Ikke en gyldig nettadresse</translation>
@@ -8207,6 +8211,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="869884720829132584">Programmeny</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
+<translation id="8699188901396699995">PPD for <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> er nå låst.</translation>
 <translation id="8703346390800944767">Hopp over annonsen</translation>
 <translation id="8705331520020532516">Serienummer</translation>

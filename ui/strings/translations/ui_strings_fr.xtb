@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Il y a 1 jour}one{Il y a # jour}other{Il y a # jours}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Il y a une minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}one{# m}other{# m}}</translation>
+<translation id="1181037720776840403">Supprimer</translation>
 <translation id="1243314992276662751">Importer</translation>
 <translation id="1266864766717917324">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Windows</translation>

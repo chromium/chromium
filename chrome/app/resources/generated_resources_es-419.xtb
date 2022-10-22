@@ -274,6 +274,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1244303850296295656">Error de extensión</translation>
 <translation id="1245628370644070008">Recuperación de datos locales</translation>
 <translation id="1246863218384630739">No se pudo instalar <ph name="VM_NAME" />: la URL de la imagen devolvió el código de error <ph name="HTTP_ERROR" />. Comunícate con tu administrador.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{No se permiten notificaciones para 1 sitio}other{No se permiten notificaciones para {NUM_SITES} sitios}}</translation>
 <translation id="1251366534849411931">Llave de apertura esperada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por sitios y apps instaladas</translation>
 <translation id="1251578593170406502">Buscando redes de datos móviles…</translation>
@@ -1640,6 +1641,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, debes cerrar Windows.</translation>
 <translation id="2477065602824695373">Dado que configuraste varios interruptores, se desactivó el escaneo automático.</translation>
 <translation id="2478176599153288112">Permisos de archivo de medios para "<ph name="EXTENSION" />"</translation>
+<translation id="24786041351753425">Habilita el servicio de recuperación de datos</translation>
 <translation id="2480868415629598489">Modificar los datos copiados y pegados</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2482895651873876648">Se movió la pestaña al grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -2255,6 +2257,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3024374909719388945">Utilizar reloj de 24 horas</translation>
 <translation id="3027296729579831126">Activar Compartir con Nearby</translation>
 <translation id="3029466929721441205">Mostrar herramientas de la pluma stylus en la biblioteca</translation>
+<translation id="3029808567601324798">Hora de bloquear</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que descargues una actualización hoy. Cuando te conectes a Internet, se descargará automáticamente.}other{<ph name="MANAGER" /> requiere que descargues una actualización antes de la fecha límite. Cuando te conectes a Internet, se descargará automáticamente.}}</translation>
 <translation id="3030967311408872958">Del atardecer al amanecer</translation>
 <translation id="3031417829280473749">Agente X</translation>
@@ -2411,6 +2414,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3201422919974259695">Los dispositivos USB disponibles aparecerán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
 <translation id="3202173864863109533">El audio de esta pestaña está silenciado.</translation>
+<translation id="3202578601642193415">Más reciente</translation>
 <translation id="3204648577100496185">Es posible que los datos asociados a esta app se quiten de este dispositivo</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Verificar ahora</translation>
@@ -3693,6 +3697,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones se estaban usando y la cantidad de memoria que se usaba en general.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Para comenzar, asegúrate de que tu interruptor USB o Bluetooth esté conectado a tu Chromebook. También puedes usar las teclas del teclado.</translation>
+<translation id="4426508677408162512">Todos los favoritos</translation>
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor la suplantación de identidad (phishing) y el software malicioso.</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación…</translation>
 <translation id="4429163740524851942">Diseño del teclado físico</translation>
@@ -3832,6 +3837,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4556194354084985730">Accede fácilmente a sitios y apps con tus contraseñas guardadas. Si desactivas esta función, se te solicitará confirmación antes de acceder.</translation>
 <translation id="4558426062282641716">Solicitud de permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio puede acceder a los sensores de movimiento o luz.</translation>
+<translation id="4561098487691395071">O especificar el PPD de tu impresora</translation>
 <translation id="4561893854334016293">No se cambió ningún permiso recientemente</translation>
 <translation id="4562155214028662640">Agregar huella dactilar</translation>
 <translation id="4563210852471260509">El idioma inicial de entrada es chino</translation>
@@ -4204,6 +4210,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4901154724271753917">Expandir las pestañas cerradas recientemente</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política descargada del servidor no es válida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Esta función limita la actividad en segundo plano y los efectos visuales, como el desplazamiento suave, para extender la duración de la batería.</translation>
 <translation id="4906490889887219338">Configura o administra archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Elige cuándo esta extensión puede leer y cambiar los datos de sitios.</translation>
 <translation id="4907161631261076876">Este archivo no se descarga con frecuencia y podría ser peligroso.</translation>
@@ -4329,7 +4336,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5040823038948176460">Configuración adicional de contenido</translation>
 <translation id="5041509233170835229">App para Chrome</translation>
 <translation id="5043440033854483429">El nombre puede incluir letras, números y guiones (-), y debe tener entre 1 y 15 caracteres (inclusive).</translation>
-<translation id="5043913660911154449">O especifica el PPD de tu impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="504561833207953641">Abriendo en una sesión existente del navegador</translation>
 <translation id="5049614114599109018">Utilizar el historial de entrada</translation>
@@ -4720,6 +4726,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5427278936122846523">Traducir siempre</translation>
 <translation id="5427459444770871191">Girar &amp;a la derecha</translation>
 <translation id="542750953150239272">Si continúas, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu operador y el fabricante del dispositivo usando datos móviles. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación.</translation>
+<translation id="5427936139162668357">Ver PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (actualización disponible)</translation>
 <translation id="542948651837270806">Debe instalarse una actualización del firmware del Módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5429818411180678468">Ancho completo</translation>
@@ -5310,6 +5317,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5971037678316050792">Controlar el estado y la sincronización del adaptador Bluetooth</translation>
 <translation id="597235323114979258">Ver más destinos</translation>
 <translation id="5972543790327947908">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> o <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">Más acciones para <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Servicio sin funcionamiento</translation>
 <translation id="5972708806901999743">Mover al principio</translation>
 <translation id="5972826969634861500">Comienzo <ph name="PRODUCT_NAME" /></translation>
@@ -8124,6 +8132,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8645354835496065562">Seguir permitiendo el acceso a los sensores</translation>
 <translation id="8645920082661222035">Predice y te advierte sobre eventos peligrosos antes de que ocurran.</translation>
 <translation id="8646209145740351125">Inhabilitar sincronización</translation>
+<translation id="8646340610303779673">No se puede recuperar el PPD.</translation>
 <translation id="864637694230589560">Los sitios por lo general envían notificaciones sobre noticias de último momento o mensajes de chat.</translation>
 <translation id="8647385344110255847">Con tu permiso, tu hijo puede usar Google Play para instalar apps.</translation>
 <translation id="8647834505253004544">No es una dirección web válida</translation>
@@ -8184,6 +8193,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="869884720829132584">Menú Aplicaciones</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699120352855309748">No ofrecer la traducción de estos idiomas</translation>
+<translation id="8699188901396699995">PPD de <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Se bloqueó tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8703346390800944767">Omitir anuncio</translation>
 <translation id="8705331520020532516">Número de serie</translation>
@@ -8496,6 +8506,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8989359959810288806">Actualizar el estado de la conexión mediante dispositivo móvil</translation>
 <translation id="8991520179165052608">El sitio puede usar el micrófono</translation>
+<translation id="8993059306046735527">Si olvidas tu contraseña de <ph name="DEVICE_TYPE" />, puedes restablecer los datos locales. Tendrás que acceder a tu Cuenta de Google o usar la recuperación de la cuenta.</translation>
 <translation id="899384117894244799">¿Quieres quitar un usuario restringido?</translation>
 <translation id="899403249577094719">URL base del certificado Netscape</translation>
 <translation id="899657321862108550">Tu navegador Chrome, en todos lados</translation>
@@ -8595,6 +8606,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9078316009970372699">Inhabilitar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="9078842827190780028">Visualiza más resultados de la búsqueda en el panel lateral.</translation>
 <translation id="9079267182985899251">Pronto esta opción dejará de ser compatible. Para presentar una pestaña, utiliza <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">El Ahorro de memoria libera memoria de las pestañas inactivas para que las pestañas activas y otras apps puedan usarla.</translation>
 <translation id="9080971985541434310">estima tus intereses: Chrome puede estimar tus intereses</translation>
 <translation id="9081543426177426948">Los sitios que visitas no se guardan en el modo Incógnito</translation>
 <translation id="9084064520949870008">Abrir como ventana</translation>
@@ -8784,6 +8796,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="964790508619473209">Disposición de la pantalla</translation>
 <translation id="965211523698323809">Usa tu <ph name="DEVICE_TYPE" /> para enviar o recibir mensajes de texto. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar un problema con Google Cast</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Revisa 1 sitio que envió muchas notificaciones recientemente}other{Revisa {NUM_SITES} sitios que enviaron muchas notificaciones recientemente}}</translation>
 <translation id="967398046773905967">No permitir que ningún sitio acceda a dispositivos HID</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras administradas</translation>

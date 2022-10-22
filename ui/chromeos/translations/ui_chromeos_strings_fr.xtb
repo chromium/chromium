@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Fromage</translation>
 <translation id="2781645665747935084">Belge</translation>
 <translation id="2782104745158847185">Erreur pendant l'installation de l'application Linux</translation>
+<translation id="2802583107108007218">En savoir plus sur ces restrictions</translation>
 <translation id="2803375539583399270">Saisir le code</translation>
 <translation id="2820957248982571256">Recherche…</translation>
 <translation id="2830077785865012357">Chinois (Zhuyin)</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Partager avec Parallels Desktop</translation>
 <translation id="4902546322522096650">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="4906580650526544301">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, détails</translation>
-<translation id="4929673617759421391">Une règle de l'administrateur a bloqué le collage de ce fichier</translation>
 <translation id="4935975195727477204">Fleur de gazania</translation>
 <translation id="4943368462779413526">Football américain</translation>
 <translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
@@ -921,6 +921,7 @@
 <translation id="8656768832129462377">Ne pas vérifier</translation>
 <translation id="8688591111840995413">Mot de passe incorrect.</translation>
 <translation id="8698464937041809063">Dessin Google</translation>
+<translation id="8698877009525468705">Ce fichier confidentiel est sujet à des restrictions selon les règles définies par l'administrateur.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Maltais</translation>
 <translation id="8714406895390098252">Vélo</translation>
@@ -975,7 +976,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> éléments extraits.</translation>
-<translation id="9210751050717126865">Une règle de l'administrateur a bloqué le collage de <ph name="COUNT" /> fichiers</translation>
 <translation id="9213073329713032541">Installation démarrée avec succès.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Paysage lunaire</translation>

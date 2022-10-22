@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">ಚೀಸ್</translation>
 <translation id="2781645665747935084">ಬೆಲ್ಜಿಯನ್</translation>
 <translation id="2782104745158847185">Linux ಅಪ್ಲಿಕೇಶನ್‌ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ</translation>
+<translation id="2802583107108007218">ಈ ನಿರ್ಬಂಧಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="2803375539583399270">ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="2820957248982571256">ಸ್ಕ್ಯಾನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="2830077785865012357">ಚೈನೀಸ್ ಜುಯೆನ್</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Parallels Desktop ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ವಿವರಗಳು</translation>
-<translation id="4929673617759421391">ಈ ಫೈಲ್ ಅನ್ನು ಪೇಸ್ಟ್ ಮಾಡುವುದನ್ನು ನಿರ್ವಾಹಕ ನೀತಿಯಿಂದ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="4935975195727477204">ಗಜಾನಿಯಾ ಹೂ</translation>
 <translation id="4943368462779413526">ಫುಟ್‌ಬಾಲ್</translation>
 <translation id="4961158930123534723">Parallels Desktop ಮೂಲಕ 1 ಫೋಲ್ಡರ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -921,6 +921,7 @@
 <translation id="8656768832129462377">ಪರಿಶೀಲಿಸಬೇಡ</translation>
 <translation id="8688591111840995413">ತಪ್ಪಾದ ಪಾಸ್‍ವರ್ಡ್</translation>
 <translation id="8698464937041809063">Google ರೇಖಾಚಿತ್ರ</translation>
+<translation id="8698877009525468705">ಈ ಫೈಲ್ ಅನ್ನು ಗೌಪ್ಯವಾಗಿರಿಸಲಾಗಿದೆ ಮತ್ತು ನಿರ್ವಾಹಕರ ನೀತಿಯ ನಿರ್ಬಂಧಗಳಿಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ.</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8713112442029511308">ಮಾಲ್ಟೇಸ್</translation>
 <translation id="8714406895390098252">ಬೈಸಿಕಲ್</translation>
@@ -975,7 +976,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ಕಝಕ್</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಬೇರ್ಪಡಿಸಲಾಗಿದೆ.</translation>
-<translation id="9210751050717126865">ನಿರ್ವಾಹಕ ನೀತಿಯಿಂದ <ph name="COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಪೇಸ್ಟ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="9213073329713032541">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಯಶಸ್ವಿಯಾಗಿ ಆರಂಭಗೊಂಡಿದೆ.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">ಚಂದ್ರ</translation>

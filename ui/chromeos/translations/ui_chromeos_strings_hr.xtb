@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>
 <translation id="2782104745158847185">Pogreška pri instaliranju Linux aplikacije</translation>
+<translation id="2802583107108007218">Saznajte više o tim ograničenjima</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
 <translation id="2820957248982571256">Traženje...</translation>
 <translation id="2830077785865012357">kineski zhuyin</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Dijeli s Parallels Desktopom</translation>
 <translation id="4902546322522096650">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, povežite</translation>
 <translation id="4906580650526544301">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, pojedinosti</translation>
-<translation id="4929673617759421391">Administratorska pravila blokiraju lijepljenje te datoteke</translation>
 <translation id="4935975195727477204">Cvijet gazanije</translation>
 <translation id="4943368462779413526">Američki nogomet</translation>
 <translation id="4961158930123534723">S Parallels Desktopom dijeli se jedna mapa</translation>
@@ -921,6 +921,7 @@
 <translation id="8656768832129462377">Nemoj provjeravati</translation>
 <translation id="8688591111840995413">Pogrešna zaporka</translation>
 <translation id="8698464937041809063">Googleov crtež</translation>
+<translation id="8698877009525468705">Datoteka je povjerljiva i na nju se primjenjuju ograničenja na temelju administratorskih pravila.</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8713112442029511308">malteški</translation>
 <translation id="8714406895390098252">Bicikl</translation>
@@ -975,7 +976,6 @@
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">kazaški</translation>
 <translation id="9200427192836333033">Izdvojeno stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9210751050717126865">Administratorska pravila blokiraju lijepljenje <ph name="COUNT" /> datoteka</translation>
 <translation id="9213073329713032541">Instalacija je uspješno pokrenuta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Površina Mjeseca</translation>

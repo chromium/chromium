@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">与 Parallels Desktop 共享</translation>
 <translation id="4902546322522096650">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，连接</translation>
 <translation id="4906580650526544301">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，详细信息</translation>
-<translation id="4929673617759421391">管理员政策禁止粘贴此文件</translation>
 <translation id="4935975195727477204">杂色菊</translation>
 <translation id="4943368462779413526">美式足球</translation>
 <translation id="4961158930123534723">已与 Parallels Desktop 共享 1 个文件夹</translation>
@@ -972,7 +971,6 @@
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="9189836632794948435">哈萨克语</translation>
 <translation id="9200427192836333033">已提取 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
-<translation id="9210751050717126865">管理员政策禁止粘贴 <ph name="COUNT" /> 个文件</translation>
 <translation id="9213073329713032541">安装已成功启动。</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="9219908252191632183">月球表面</translation>

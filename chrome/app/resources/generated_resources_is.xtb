@@ -2433,6 +2433,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3201422919974259695">USB-tæki í boði birtast hér.</translation>
 <translation id="3202131003361292969">Slóð</translation>
 <translation id="3202173864863109533">Slökkt er á hljóði þessa flipa.</translation>
+<translation id="3202578601642193415">Nýjast</translation>
 <translation id="3204648577100496185">Gögn sem tengjast þessu forriti verða hugsanlega fjarlægð úr tækinu</translation>
 <translation id="3208321278970793882">Forrit</translation>
 <translation id="3208584281581115441">Athuga núna</translation>
@@ -3715,6 +3716,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar voru notaðir og hversu mikið minni var yfirleitt notað.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum Chrome-tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Til að hefjast handa skaltu vera viss um að USB- eða Bluetooth-rofinn sé tengdur við Chromebook. Þú getur einnig notað lykla á lyklaborðinu.</translation>
+<translation id="4426508677408162512">Öll bókamerki</translation>
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4427365070557649936">Staðfestir staðfestingarkóða...</translation>
 <translation id="4429163740524851942">Uppsetning vélbúnaðarlyklaborðs</translation>
@@ -3855,6 +3857,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4556194354084985730">Skráðu þig inn á vefsvæði og forrit á auðveldan hátt með vistuðum aðgangsorðum. Ef slökkt er á þessu er beðið um staðfestingu þegar þú skráir þig inn.</translation>
 <translation id="4558426062282641716">Beðið um heimild til sjálfvirkrar ræsingar</translation>
 <translation id="4559617833001311418">Þetta vefsvæði er að nota hreyfi- eða birtuskynjarana þína.</translation>
+<translation id="4561098487691395071">Eða tilgreindu PPD prentarans</translation>
 <translation id="4561893854334016293">Engum heimildum hefur verið breytt nýlega</translation>
 <translation id="4562155214028662640">Bæta fingrafari við</translation>
 <translation id="4563210852471260509">Inntakstungumál er í upphafi kínverska</translation>
@@ -4353,7 +4356,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5040823038948176460">Fleiri efnisstillingar</translation>
 <translation id="5041509233170835229">Chrome forrit</translation>
 <translation id="5043440033854483429">Heitið má innihalda bókstafi, tölustafi og bandstrik (-) og verður að vera 1 til 15 stafir á lengd.</translation>
-<translation id="5043913660911154449">Eða tilgreindu PPD prentarans <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
 <translation id="504561833207953641">Opnast í núverandi vafralotu.</translation>
 <translation id="5049614114599109018">Nota innsláttarferil</translation>
@@ -4744,6 +4746,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5427278936122846523">Þýða alltaf</translation>
 <translation id="5427459444770871191">Snúa réttsælis</translation>
 <translation id="542750953150239272">Með því að halda áfram samþykkirðu að þetta tæki megi einnig hlaða sjálfkrafa niður og setja upp uppfærslur og forrit frá Google, símafyrirtækinu þínu og framleiðanda tækisins, hugsanlega með því að nota farsímagögn. Einhver þessara forrita gætu boðið upp á innkaup í forriti.</translation>
+<translation id="5427936139162668357">Skoða PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (uppfærsla er í boði)</translation>
 <translation id="542948651837270806">Setja þarf upp uppfærslu fyrir TPM-fastbúnaðinn (Trusted Platform Module). Sjá <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Full breidd</translation>
@@ -8150,6 +8153,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8645354835496065562">Halda áfram að leyfa aðgang að skynjurum</translation>
 <translation id="8645920082661222035">Spáir fyrir um og varar þig við hættulegum atvikum áður en þau eiga sér stað</translation>
 <translation id="8646209145740351125">Slökkva á samstillingu</translation>
+<translation id="8646340610303779673">Ekki tekst að sækja PPD.</translation>
 <translation id="864637694230589560">Vefsvæði senda yfirleitt tilkynningar til að láta þig vita af nýjustu fréttum eða spjallskilaboðum</translation>
 <translation id="8647385344110255847">Barnið þitt má nota Google Play til að setja upp forrit með leyfi þínu</translation>
 <translation id="8647834505253004544">Ógild vefslóð</translation>
@@ -8210,6 +8214,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="869884720829132584">Forritavalmynd</translation>
 <translation id="869891660844655955">Lokadagsetning</translation>
 <translation id="8699120352855309748">Ekki bjóða upp á að þýða þessi tungumál</translation>
+<translation id="8699188901396699995">PPD fyrir <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> var læst.</translation>
 <translation id="8703346390800944767">Sleppa auglýsingu</translation>
 <translation id="8705331520020532516">Raðnúmer</translation>

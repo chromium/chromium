@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Delen met Parallels Desktop</translation>
 <translation id="4902546322522096650">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
 <translation id="4906580650526544301">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, details</translation>
-<translation id="4929673617759421391">Plakken is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="4935975195727477204">Bloem</translation>
 <translation id="4943368462779413526">Amerikaanse voetbal</translation>
 <translation id="4961158930123534723">1 map gedeeld met Parallels Desktop</translation>
@@ -978,7 +977,6 @@
 <translation id="9183302530794969518">Google Documenten</translation>
 <translation id="9189836632794948435">Kazaks</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> items geëxtraheerd.</translation>
-<translation id="9210751050717126865"><ph name="COUNT" /> bestanden plakken is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="9213073329713032541">De installatie is gestart.</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="9219908252191632183">Lunair</translation>

@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">ชีส</translation>
 <translation id="2781645665747935084">เบลเยียม</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
+<translation id="2802583107108007218">ดูข้อมูลเพิ่มเติมเกี่ยวกับข้อจำกัดเหล่านี้</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
 <translation id="2830077785865012357">จีน (Zhuyin)</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">แชร์กับ Parallels Desktop</translation>
 <translation id="4902546322522096650">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
 <translation id="4906580650526544301">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, รายละเอียด</translation>
-<translation id="4929673617759421391">นโยบายของผู้ดูแลระบบบล็อกการวางไฟล์นี้</translation>
 <translation id="4935975195727477204">ดอกทานตะวัน</translation>
 <translation id="4943368462779413526">ฟุตบอล</translation>
 <translation id="4961158930123534723">แชร์กับ Parallels Desktop แล้ว 1 โฟลเดอร์</translation>
@@ -921,6 +921,7 @@
 <translation id="8656768832129462377">ไม่ต้องตรวจสอบ</translation>
 <translation id="8688591111840995413">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="8698464937041809063">ภาพวาดของ Google</translation>
+<translation id="8698877009525468705">ไฟล์นี้เป็นความลับและอยู่ภายใต้ข้อจำกัดตามนโยบายของผู้ดูแลระบบ</translation>
 <translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="8713112442029511308">มอลตา</translation>
 <translation id="8714406895390098252">จักรยาน</translation>
@@ -975,7 +976,6 @@
 <translation id="9183302530794969518">Google เอกสาร</translation>
 <translation id="9189836632794948435">คาซัค</translation>
 <translation id="9200427192836333033">แตกไฟล์แล้ว <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
-<translation id="9210751050717126865">นโยบายของผู้ดูแลระบบบล็อกการวางไฟล์ <ph name="COUNT" /> รายการ</translation>
 <translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219908252191632183">ดวงจันทร์</translation>

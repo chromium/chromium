@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Земеделие и гори</translation>
 <translation id="1080116354587839789">Побиране на ширина</translation>
 <translation id="1081061862829655580">Тава 19</translation>
-<translation id="1086953900555227778">Index-5 x 8</translation>
 <translation id="1088860948719068836">Добавяне на името на картодържателя</translation>
 <translation id="1089439967362294234">Промяна на паролата</translation>
 <translation id="1096545575934602868">Това поле не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа. Всички допълнителни записи ще бъдат отхвърлени.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">Това правило е блокирано, стойността му ще бъде пренебрегната.</translation>
 <translation id="1368318639262510626">Играта с динозавъра. Пикселизиран динозавър избягва кактуси и птеродактили, докато тича през пустошта. Когато чуете аудиосигнал, натиснете интервал, за да прескачате препятствията.</translation>
 <translation id="1374468813861204354">предложения</translation>
-<translation id="1374692235857187091">Index-4 x 6 (пощенска картичка)</translation>
 <translation id="1375198122581997741">Всичко за версията</translation>
 <translation id="1376836354785490390">Показване на по-малко</translation>
 <translation id="1377321085342047638">№ на картата</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">Времето</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Използва шрифтовете на компютъра ви, за да можете да създавате съдържание с висока прецизност</translation>
-<translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Наляво</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> е кодът ви за <ph name="EMBEDDED_ORIGIN" />, за да продължите към <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Показване на още</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">Рождени и имени дни</translation>
 <translation id="2677748264148917807">Излизане</translation>
 <translation id="2679714844901977852">Запазете картата и данните си за таксуване в профила си в Google <ph name="USER_EMAIL" />, за да плащате по-бързо и сигурно</translation>
-<translation id="2684561033061424857">11 x 12</translation>
 <translation id="2687555958734450033">Напасване</translation>
 <translation id="2688969097326701645">Да, продължаване</translation>
 <translation id="2691924980723297736">Предупреждение за безопасност</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">Първа страница за отпечатване</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Връзката бе възстановена.</translation>
-<translation id="2786469568759673015">Плик, китайски №3</translation>
 <translation id="2791176355335562114">Платете по-бързо следващия път</translation>
 <translation id="2792012897584536778">Администраторите на това устройство са настроили сертификати за сигурност, които може да им дадат възможност да виждат съдържанието на посещаваните от вас уебсайтове.</translation>
 <translation id="2799020568854403057">На хоризонта се задава сайт с опасни приложения</translation>
@@ -1019,7 +1014,6 @@
 <translation id="3634530185120165534">Тава 5</translation>
 <translation id="3634567936866541746">Току-що въведохте паролата си в измамнически сайт. За да защитите профилите си, Chrome препоръчва да проверите запазените си пароли.</translation>
 <translation id="3637662659967048211">Запазване в профила в Google</translation>
-<translation id="3640766068866876100">Index-4 x 6-Ext</translation>
 <translation id="3642638418806704195">Приложение:</translation>
 <translation id="3647286794400715637">Всеки въведен низ за URL адреси трябва да съдържа 1 или 2 URL адреса.</translation>
 <translation id="3650584904733503804">Потвърждаването е успешно</translation>
@@ -1150,7 +1144,6 @@
 <translation id="4010758435855888356">Да се разреши ли достъпът до хранилището?</translation>
 <translation id="401170183602135785">Плик C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ, съдържащ {COUNT} страница}other{PDF документ, съдържащ {COUNT} страници}}</translation>
-<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Тъй като този формуляр се изпраща посредством незащитена връзка, информацията ви ще е видима за други хора.</translation>
 <translation id="4024923292610332139">изключи TouchID за попълване на паролите</translation>
 <translation id="4025913568718019429">Бутон за управление на настройките за поверителност в Google. Натиснете Enter, за да отворите настройките за поверителност за профила си в Google.</translation>
@@ -1368,7 +1361,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Опитайте да деактивирате разширенията.</translation>
 <translation id="4559134504959026834">Този сайт е в група, дефинирана от <ph name="SET_OWNER" />, която може да вижда активността ви</translation>
-<translation id="4559332380232738994">10 x 11</translation>
 <translation id="4566017918361049074">Занимания на открито</translation>
 <translation id="4567686777917670400">Администраторът ви може отдалечено да променя настройките на браузъра. Възможно е активността на това устройство да се управлява и извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Бърза доставка</translation>
@@ -1412,7 +1404,6 @@
 <translation id="4682496302933121474">Да се преведе ли страницата?</translation>
 <translation id="468314109939257734">Преглед на номера на виртуалната ви карта</translation>
 <translation id="4692623383562244444">Търсещи машини</translation>
-<translation id="4693246800345263879">Плик 10 x 14 инча</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
 <translation id="4702656508969495934">Показват се надписи на живо. Използвайте превключвателя на прозорци, за да преместите фокуса</translation>
@@ -1630,7 +1621,6 @@
 <translation id="5205222826937269299">Името е задължително</translation>
 <translation id="5209518306177824490">Пръстов отпечатък SHA-1</translation>
 <translation id="5209670883520018268">Тава 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Тава 13</translation>
 <translation id="5216942107514965959">Последно посещение: днес</translation>
 <translation id="5217759126664161410">Форматът на протокола е невалиден.</translation>
@@ -1639,7 +1629,6 @@
 <translation id="5229588705416009823">Игри с много участници</translation>
 <translation id="5230733896359313003">Адрес за доставка</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12 x 19</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5239623327352565343">Достъпът до местоположението е разрешен</translation>
 <translation id="5242889659037569123">Багаж и пътнически принадлежности</translation>
@@ -1878,7 +1867,6 @@
 <translation id="5884465125445718607">Плик, китайски №6</translation>
 <translation id="5887400589839399685">Картата бе запазена</translation>
 <translation id="5887687176710214216">Последно посещение: вчера</translation>
-<translation id="5891155897634819292">Плик, китайски №5</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5895187275912066135">Издаден на</translation>
 <translation id="5901630391730855834">жълто</translation>
@@ -1911,7 +1899,6 @@
 <translation id="5974052231147553524">Шеста ролка</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
-<translation id="5980920751713728343">Index-3 x 5</translation>
 <translation id="5984570616552610254">Влажност на камерата</translation>
 <translation id="5984712050237025014">Обогатена и виртуална реалност</translation>
 <translation id="598637245381783098">Приложението за плащане не може да се отвори</translation>
@@ -2400,7 +2387,6 @@
 <translation id="7337706099755338005">Не е налице за платформата ви.</translation>
 <translation id="733923710415886693">Сертификатът на сървъра не е разкрит чрез Прозрачност на сертификатите.</translation>
 <translation id="7341357280245177602">Употребявани превозни средства</translation>
-<translation id="734600844861828519">11 x 15</translation>
 <translation id="7346048084945669753">Потребителят е вътрешен:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Разрешено, докато не затворите раздела</translation>
@@ -2443,7 +2429,6 @@
 &lt;li&gt;Кликнете върху &lt;strong&gt;Приложи&lt;/strong&gt; и след това – върху &lt;strong&gt;OK&lt;/strong&gt;.
 &lt;li&gt;Посетете &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Помощния център на Chrome&lt;/a&gt;, за да научите как да премахнете за постоянно софтуера от компютъра си.
 &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Очарователно</translation>
 <translation id="741204030948306876">Да, ще участвам</translation>
 <translation id="7416351320495623771">Управление на паролите…</translation>
@@ -2489,7 +2474,6 @@
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7517414872996418597">Плик C10</translation>
 <translation id="7518003948725431193">Не е намерена уеб страница за уеб адреса: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Плик 10 x 13 инча</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Секцията „<ph name="SECTION" />“ бе скрита</translation>
 <translation id="7523408071729642236">Производство</translation>
@@ -2780,7 +2764,6 @@
 <translation id="8277900682056760511">Листът на инструмента за обработване на плащания е отворен</translation>
 <translation id="8279611986089885641">Известията за Chrome трябва да са включени. Можете да ги включите от <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Тава 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8282947398454257691">Достъп до уникалния идентификатор на устройството ви</translation>
 <translation id="8284769179630993263">Управление на Безопасно сърфиране и други функции от настройките на Chrome</translation>
@@ -2796,7 +2779,6 @@
 <translation id="8299269255470343364">японски</translation>
 <translation id="8303854710873047864">Секцията „<ph name="SECTION" />“ бе показана</translation>
 <translation id="830498451218851433">Сгъване в средата</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Инсталираните приложения и колко често са използвани</translation>
 <translation id="831997045666694187">Вечерта</translation>
 <translation id="8321476692217554900">известия</translation>
@@ -2878,7 +2860,6 @@
 <translation id="8557066899867184262">Кодът за проверка се намира на гърба на картата ви.</translation>
 <translation id="8559762987265718583">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на устройството ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
 <translation id="8564182942834072828">Отделни документи/неподредени копия</translation>
-<translation id="8564453110650229930">Плик, китайски №10</translation>
 <translation id="8564985650692024650">Chromium препоръчва да зададете повторно паролата си за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, ако сте я използвали и на други сайтове.</translation>
 <translation id="8576310925653847813">Системи за домашно кино</translation>
 <translation id="8577348305244205642">Няма достъп до виртуалната карта</translation>
@@ -2907,7 +2888,6 @@
 <translation id="8687429322371626002">Устройството и профилът ви се управляват от <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Свободно място</translation>
 <translation id="868922510921656628">Страници на набор</translation>
-<translation id="8694278303623679191">Плик Postfix</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699041776323235191">HID устройство</translation>
 <translation id="8699899385443889493">Бутон за стартиране на играта с динозавъра в Chrome. Натиснете Enter, за да играете</translation>
@@ -2985,7 +2965,6 @@
 <translation id="8874824191258364635">Въведете валиден номер на карта</translation>
 <translation id="8876033571432926051">Казуални игри</translation>
 <translation id="8877780815363510165">Риболов</translation>
-<translation id="8879882034055059721">Плик 10 x 15 инча</translation>
 <translation id="8884537526797090108">Не е възможно записване на поверително съдържание</translation>
 <translation id="8891727572606052622">Невалиден режим на прокси сървъра.</translation>
 <translation id="8894794286471754040">Дългата страна напред</translation>

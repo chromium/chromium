@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Хөдөө аж ахуй, ойн аж ахуй</translation>
 <translation id="1080116354587839789">Өргөний хэмжээнд тааруулах</translation>
 <translation id="1081061862829655580">Тавиур 19</translation>
-<translation id="1086953900555227778">Индекс-5x8</translation>
 <translation id="1088860948719068836">Картанд нэр нэмэх</translation>
 <translation id="1089439967362294234">Нууц үг солих</translation>
 <translation id="1096545575934602868">Энэ талбар нь <ph name="MAX_ITEMS_LIMIT" />-с илүү оролттой байж болохгүй. Цаашдын бүх оролтыг устгах болно.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">Энэ удирдамжийг хориглосон тул үүний утгыг үл хэрэгсэнэ.</translation>
 <translation id="1368318639262510626">Дино тоглоом. Пикселжүүлсэн үлэг гүрвэл зэлүүд газраар гүйх зуураа кактус болон птеродактилиас бултана. Та аудио дохио сонсох үедээ саадыг даван үсрэхийн тулд зай авах товчийг дарна уу.</translation>
 <translation id="1374468813861204354">Зөвлөмж</translation>
-<translation id="1374692235857187091">Индекс-4x6 (Ил захидал)</translation>
 <translation id="1375198122581997741">Хувилбарын тухай</translation>
 <translation id="1376836354785490390">Товч харуулах</translation>
 <translation id="1377321085342047638">Картын дугаар</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">Цаг агаар</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Компьютер дээрээ фонтыг ашигласнаар та дуу авиаг яг таг шилжүүлэх контент үүсгэх боломжтой болно</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Зүүн</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> нь <ph name="TOP_ORIGIN" /> дээр үргэлжлүүлэх таны <ph name="EMBEDDED_ORIGIN" />-н код юм</translation>
 <translation id="1472675084647422956">Дэлгэрэнгүй харуулах</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">Төрсөн өдөр, нэрийн өдөр</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2679714844901977852">Аюулгүй бөгөөд илүү хурдан тооцоо хийх бол карт болон төлбөр тооцооны мэдээллээ <ph name="USER_EMAIL" /> Google Бүртгэлдээ хадгална уу</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Хамгийн оновтой тохирол</translation>
 <translation id="2688969097326701645">Тийм, үргэлжлүүлье</translation>
 <translation id="2691924980723297736">Аюулгүй байдлын анхааруулга</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">Эхний хуудсыг хэвлэх</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Холболтыг дахин сэргээлээ.</translation>
-<translation id="2786469568759673015">Хятад дугтуй #3</translation>
 <translation id="2791176355335562114">Дараагийн удаа илүү хурдан төлөөрэй</translation>
 <translation id="2792012897584536778">Энэ төхөөрөмжийн админууд таны зочилдог веб сайтын контентыг харах боломжтой аюулгүй байдлын сертификат тохируулсан байна.</translation>
 <translation id="2799020568854403057">Энэ сайт аюултай апп агуулсан байна</translation>
@@ -1020,7 +1015,6 @@
 <translation id="3634530185120165534">Гарах цаасны тавиур 5</translation>
 <translation id="3634567936866541746">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Бүртгэлүүдээ хамгаалахын тулд Chrome хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
 <translation id="3637662659967048211">Google Бүртгэлд хадгалах</translation>
-<translation id="3640766068866876100">Индекс-4x6-Ext</translation>
 <translation id="3642638418806704195">Аппликэйшн:</translation>
 <translation id="3647286794400715637">URL-н мөрийн оролт бүр 1-ээс 2-ын хооронд URL агуулсан байх ёстой.</translation>
 <translation id="3650584904733503804">Баталгаажуулалтын амжилттай боллоо</translation>
@@ -1151,7 +1145,6 @@
 <translation id="4010758435855888356">Хадгалах санд хандахыг зөвшөөрөх үү?</translation>
 <translation id="401170183602135785">Дугтуй C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} хуудастай PDF форматтай документ}other{{COUNT} хуудастай PDF форматтай документ}}</translation>
-<translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">Энэ маягтыг аюулгүй байдлыг хангаагүй холболт ашиглан илгээж байгаа тул таны мэдээлэл бусдад харагдана.</translation>
 <translation id="4024923292610332139">нууц үг бөглөхөд TouchID-г унтраана уу</translation>
 <translation id="4025913568718019429">Google-н нууцлалын тохиргоог удирдах товчлуур, Google Бүртгэлийнхээ нууцлалын тохиргоонд зочлохын тулд Enter дээр дарна уу</translation>
@@ -1369,7 +1362,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Өргөтгөлүүдээ идэвхгүй болгоно уу.</translation>
 <translation id="4559134504959026834">Энэ сайт <ph name="SET_OWNER" />-с тодорхойлсон бүлэгт байгаа бөгөөд таны үйл ажиллагааг харах боломжтой</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Гадаа</translation>
 <translation id="4567686777917670400">Таны администратор хөтчийн тань тохируулгыг алсаас өөрчилж болно. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chromium-с гадуур удирддаг байж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Хүргэлт</translation>
@@ -1413,7 +1405,6 @@
 <translation id="4682496302933121474">Хуудсыг орчуулах уу?</translation>
 <translation id="468314109939257734">Таны виртуал картын дугаар</translation>
 <translation id="4692623383562244444">Хайлтын систем</translation>
-<translation id="4693246800345263879">Дугтуй 10 x 14 инч</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Хажуугийн</translation>
 <translation id="4702656508969495934">Шууд тайлбар харагдаж байна. Сонгохын тулд цонх шилжүүлэгчийг ашиглана уу</translation>
@@ -1631,7 +1622,6 @@
 <translation id="5205222826937269299">Нэр шаардлагатай</translation>
 <translation id="5209518306177824490">SHA-1 Хурууны хээ</translation>
 <translation id="5209670883520018268">Тавиур 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Тавиур 13</translation>
 <translation id="5216942107514965959">Хамгийн сүүлд өнөөдөр зочилсон</translation>
 <translation id="5217759126664161410">Протоколын формат буруу байна.</translation>
@@ -1640,7 +1630,6 @@
 <translation id="5229588705416009823">Маш олон тоглогчтой тоглоом</translation>
 <translation id="5230733896359313003">Хүргэлтийн хаяг</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5239623327352565343">Байршлыг зөвшөөрсөн</translation>
 <translation id="5242889659037569123">Ачаа тээш, аяллын хэрэгсэл</translation>
@@ -1879,7 +1868,6 @@
 <translation id="5884465125445718607">Хятад дугтуй #6</translation>
 <translation id="5887400589839399685">Картыг хадгалсан</translation>
 <translation id="5887687176710214216">Хамгийн сүүлд өчигдөр зочилсон</translation>
-<translation id="5891155897634819292">Хятад дугтуй #5</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5895187275912066135">Гаргасан огноо</translation>
 <translation id="5901630391730855834">Шар</translation>
@@ -1912,7 +1900,6 @@
 <translation id="5974052231147553524">Зургаа дахь хуйлмал</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
-<translation id="5980920751713728343">Индекс-3x5</translation>
 <translation id="5984570616552610254">Танхимын чийгшил</translation>
 <translation id="5984712050237025014">Өргөтгөсөн, виртуал бодит байдал</translation>
 <translation id="598637245381783098">Төлбөрийн аппыг нээх боломжгүй байна</translation>
@@ -2400,7 +2387,6 @@
 <translation id="7337706099755338005">Таны платформд боломжгүй.</translation>
 <translation id="733923710415886693">Серверийн сертификатыг Сертификатын ил тод байдлаар ил тод болгоогүй.</translation>
 <translation id="7341357280245177602">Хуучин тээврийн хэрэгсэл</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Холбоотой:</translation>
 <translation id="7349430561505560861">A4-Нэмэлт</translation>
 <translation id="7349921148288539306">Таныг энэ табыг хаах хүртэл зөвшөөрсөн</translation>
@@ -2443,7 +2429,6 @@
       &lt;li&gt;&lt;strong&gt;Хэрэгжүүлэх&lt;/strong&gt; гэснийг товшоод дараа нь &lt;strong&gt;OK&lt;/strong&gt; гэснийг дарна уу
       &lt;li&gt;Тус программ хангамжийг компьютерээсээ хэрхэн бүрмөсөн устгах талаар мэдэж авахын тулд &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome-н тусламжийн төвд&lt;/a&gt;-д зочилно уу
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Өргөн-Формат</translation>
 <translation id="7410471291937727359">Хайр татам</translation>
 <translation id="741204030948306876">Тийм, би зөвшөөрч байна</translation>
 <translation id="7416351320495623771">Нууц үгийг удирдах...</translation>
@@ -2489,7 +2474,6 @@
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7517414872996418597">Дугтуй C10</translation>
 <translation id="7518003948725431193">Энэ веб хаягаар хайхад тохирох хуудас олдсонгүй: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Дугтуй 10 x 13 инч</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">"<ph name="SECTION" />" хэсгийг нуусан</translation>
 <translation id="7523408071729642236">Үйлдвэрлэл</translation>
@@ -2780,7 +2764,6 @@
 <translation id="8277900682056760511">Төлбөр хариуцагчийн хүснэгт нээлттэй байна</translation>
 <translation id="8279611986089885641">Chrome-н мэдэгдэл асаалттай байх ёстой. Та тэдгээрийг <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />-д асаах боломжтой.</translation>
 <translation id="8280630997017109758">Тавиур 11</translation>
-<translation id="8281084378435768645">Том-Зураг</translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8282947398454257691">Төхөөрөмжийнхөө тусгай дугаарыг мэдэж аваарай</translation>
 <translation id="8284769179630993263">Chrome-н тохиргоонд Аюулгүй үзэх болон бусад тохиргоогоо удирдана уу</translation>
@@ -2796,7 +2779,6 @@
 <translation id="8299269255470343364">Япон</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" хэсгийг харуулсан</translation>
 <translation id="830498451218851433">Хагас нугалаа</translation>
-<translation id="8307358339886459768">Жижиг-Зураг</translation>
 <translation id="8307888238279532626">Суулгасан аппууд болон тэдгээрийг ашигладаг давтамж</translation>
 <translation id="831997045666694187">Үдэш</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
@@ -2878,7 +2860,6 @@
 <translation id="8557066899867184262">Карт баталгаажуулалтын код таны картын ард байрладаг.</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> руу таны төхөөрөмжийн он сар өдөр, цаг <ph name="DATE_AND_TIME" /> ) буруу байгаа учраас хувийн холболт үүсгэж болохгүй байна.</translation>
 <translation id="8564182942834072828">Тусдаа документ/Зэрэгцүүлээгүй хувь</translation>
-<translation id="8564453110650229930">Хятад дугтуй #10</translation>
 <translation id="8564985650692024650">Хэрэв та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-н нууц үгийг бусад сайтад дахин ашигласан бол Chromium-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="8576310925653847813">Гэрийн театрын систем</translation>
 <translation id="8577348305244205642">Виртуал карт боломжгүй байна</translation>
@@ -2907,7 +2888,6 @@
 <translation id="8687429322371626002">Таны төхөөрөмж болон бүртгэлийг <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="8688672835843460752">Боломжтой</translation>
 <translation id="868922510921656628">Багц бүрийн хуудас</translation>
-<translation id="8694278303623679191">Postfix дугтуй</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699041776323235191">HID төхөөрөмж</translation>
 <translation id="8699899385443889493">Chrome Dino тоглоомыг тоглох товчлуур, Chrome-д Dino Run тоглоомыг тоглохын тулд Enter дээр дарна уу</translation>
@@ -2985,7 +2965,6 @@
 <translation id="8874824191258364635">Зөв картны дугаар оруулна уу</translation>
 <translation id="8876033571432926051">Энгийн тоглоом</translation>
 <translation id="8877780815363510165">Загасчлал</translation>
-<translation id="8879882034055059721">Дугтуй 10 x 15 инч</translation>
 <translation id="8884537526797090108">Нууцлалтай контентыг бичих боломжгүй</translation>
 <translation id="8891727572606052622">Орлон ашиглах горим хүчингүй байна</translation>
 <translation id="8894794286471754040">Эхлээд урт зах</translation>

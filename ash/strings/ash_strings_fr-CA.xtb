@@ -436,6 +436,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3413817803639110246">Rien à voir pour le moment</translation>
 <translation id="3428447136709161042">Se déconnecter de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Balayez l'écran de droite à gauche pour revenir en arrière</translation>
+<translation id="3431517721463707585">Bureau 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Modifier le rappel</translation>
 <translation id="3435967511775410570">Empreinte digitale reconnue</translation>
@@ -676,6 +677,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735944890391795473">Bureau 12</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4740516757091333363">Supprimer le bureau enregistré?</translation>
 <translation id="4752784485658729358">Vous pouvez utiliser jusqu'à six bureaux. Retirez un bureau pour en enregistrer un nouveau.</translation>
@@ -696,6 +698,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4860284199500934869">Vérifiez votre connexion réseau pour télécharger <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Une tentative de téléchargement aura lieu ultérieurement. Le fichier vocal sera envoyé à Google aux fins de traitement jusqu'à la fin du téléchargement.</translation>
 <translation id="4864369630010738180">Connexion en cours…</translation>
+<translation id="4864648187878336334">Bureau 15</translation>
 <translation id="4868492592575313542">activée</translation>
 <translation id="4872237917498892622">Alt + Recherche ou Maj.</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
@@ -723,6 +726,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Bureau 16</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
 <translation id="5016558321564993266">Basculez le marqueur. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Le temps est écoulé</translation>
@@ -739,6 +743,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5098537242461068432">Bureau et fenêtres rouvertes</translation>
 <translation id="5104236669533825617">Impossible de créer une vidéocapture d'écran</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
@@ -829,6 +834,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> demande votre attention.</translation>
+<translation id="5662075790140998213">Bureau 10</translation>
 <translation id="5662709761327382534">Enregistrement avec le microphone <ph name="CURRENT_STATE" />; appuyez sur Entrée pour <ph name="NEW_STATE" /> l'enregistrement avec le microphone</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5673434351075758678">De « <ph name="FROM_LOCALE" />  à « <ph name="TO_LOCALE" /> » après la synchronisation de vos paramètres.</translation>
@@ -1030,6 +1036,8 @@ Nouvelle installation</translation>
 <translation id="6753390234084146956">onglets</translation>
 <translation id="6757237461819837179">Aucun élément multimédia en cours de lecture</translation>
 <translation id="6777216307882431711">Alimente des appareils connectés par USB-C</translation>
+<translation id="6781002679438061620">Bureau 9</translation>
+<translation id="6782182743534150858">Bureau 13</translation>
 <translation id="6786750046913594791">Fermer le dossier</translation>
 <translation id="6787595647772650851">Restaurer la dernière session</translation>
 <translation id="6790428901817661496">Jouer</translation>
@@ -1091,6 +1099,7 @@ Nouvelle installation</translation>
 <translation id="7098053464892629930">Téléchargez l'application pour <ph name="NAME" /> sur Google Play pour voir toutes les fonctionnalités offertes</translation>
 <translation id="7098389117866926363">Appareil USB-C (port arrière-gauche)</translation>
 <translation id="7106330611027933926">Afficher deskbar</translation>
+<translation id="7116969082764510092">Bureau 11</translation>
 <translation id="7118268675952955085">Capture d'écran</translation>
 <translation id="7126996685418858413">Ouvert au cours de la semaine dernière</translation>
 <translation id="7130207228079676353">PLUS PROBABLES</translation>
@@ -1189,6 +1198,7 @@ Nouvelle installation</translation>
 <translation id="7662283695561029522">Touchez pour configurer</translation>
 <translation id="7670953955701272011">Ouvrir cette date dans Google Agenda</translation>
 <translation id="7671610481353807627">Les applications sont triées par couleur</translation>
+<translation id="7672095158465655885">Connecté à <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Caméra <ph name="CAMERA_NAME" /> activée.</translation>
 <translation id="7705524343798198388">RPV</translation>
 <translation id="7714767791242455379">Ajouter un nouveau réseau cellulaire</translation>
@@ -1472,5 +1482,6 @@ Nouvelle installation</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Paysage</translation>
 <translation id="990277280839877440">La fenêtre <ph name="WINDOW_TITILE" /> a été fermée.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Bénéficiez des dernières fonctionnalités et améliorations de la sécurité. Les mises à jour s'effectuent en arrière-plan.</translation>
 </translationbundle>

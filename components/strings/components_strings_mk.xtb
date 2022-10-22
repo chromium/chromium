@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Земјоделство и шумарство</translation>
 <translation id="1080116354587839789">Приспособете на ширината</translation>
 <translation id="1081061862829655580">Фиока 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Додајте име на картичката</translation>
 <translation id="1089439967362294234">Смени лозинка</translation>
 <translation id="1096545575934602868">Полево не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> записи. Сите идни записи ќе се отфрлат.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">Правилово е блокирано, неговата вредност ќе се игнорира.</translation>
 <translation id="1368318639262510626">Игра со диносаурус. Пикселиран диносаурус избегнува кактуси и птеродактили додека трча низ пуст пејзаж. Кога ќе слушнете аудиосигнал, притиснете на копчето за празно место за да ги прескокнете препреките.</translation>
 <translation id="1374468813861204354">предлози</translation>
-<translation id="1374692235857187091">Index-4x6 (разгледница)</translation>
 <translation id="1375198122581997741">За верзијата</translation>
 <translation id="1376836354785490390">Прикажи помалку</translation>
 <translation id="1377321085342047638">Број на картичка</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">Време</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Користете ги фонтовите на компјутерот за да создавате содржини со висока верност</translation>
-<translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Лево</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> е вашиот код за да продолжи <ph name="EMBEDDED_ORIGIN" /> на <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Прикажи повеќе</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">Родендени и имендени</translation>
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2679714844901977852">Зачувајте ги податоците за картичката и наплата на вашата сметка на Google <ph name="USER_EMAIL" /> за побезбедно и побрзо плаќање</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Најдобро вклопување</translation>
 <translation id="2688969097326701645">Да, продолжи</translation>
 <translation id="2691924980723297736">Безбедносно предупредување</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">Прво испечати ја страницата</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Врската е ресетирана.</translation>
-<translation id="2786469568759673015">Плик Chinese #3</translation>
 <translation id="2791176355335562114">Играјте побрзо следниот пат</translation>
 <translation id="2792012897584536778">Администраторите на уредов поставиле безбедносни сертификати што може да им дозволат да ги гледаат содржините на веб-сајтовите што ги посетувате.</translation>
 <translation id="2799020568854403057">Сајтот пред вас содржи штетни апликации</translation>
@@ -1019,7 +1014,6 @@
 <translation id="3634530185120165534">Фиока 5</translation>
 <translation id="3634567936866541746">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chrome ви препорачува да ги проверите зачуваните лозинки.</translation>
 <translation id="3637662659967048211">Зачувајте во сметката на Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3647286794400715637">Секој запис во низата со URL-адреси мора да содржи помеѓу 1 и 2 URL-адреси.</translation>
 <translation id="3650584904733503804">Потврдувањето е успешно</translation>
@@ -1150,7 +1144,6 @@
 <translation id="4010758435855888356">Да се дозволи пристап до капацитетот?</translation>
 <translation id="401170183602135785">Плик C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-документ со {COUNT} страница}one{PDF-документ со {COUNT} страница}other{PDF-документ со {COUNT} страници}}</translation>
-<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Бидејќи формуларов се испраќа преку врска што не е безбедна, вашите податоци ќе бидат видливи за другите.</translation>
 <translation id="4024923292610332139">го исклучи Touch ID за пополнување лозинки</translation>
 <translation id="4025913568718019429">Копче „Управувајте со поставките за приватност на Google“, притиснете Enter за да отидете во поставките за приватност за сметката на Google</translation>
@@ -1368,7 +1361,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Обидете се со оневозможување на екстензиите.</translation>
 <translation id="4559134504959026834">Сајтов е во група, дефинирана од сопственикот <ph name="SET_OWNER" />, којшто може да ја види вашата активност</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">На отворено</translation>
 <translation id="4567686777917670400">Администраторот може далечински да го менува поставувањето на прелистувачот. Со активноста на уредов може да се управува и надвор од Chromium. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Испорака</translation>
@@ -1412,7 +1404,6 @@
 <translation id="4682496302933121474">Да се преведе страницата?</translation>
 <translation id="468314109939257734">Прикажи го бројот на виртуелната картичка</translation>
 <translation id="4692623383562244444">Пребарувачи</translation>
-<translation id="4693246800345263879">Плик 10 x 14 in</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Странична</translation>
 <translation id="4702656508969495934">„Автоматски титлови“ е видлива, користете префрлач на прозорци за да фокусирате</translation>
@@ -1630,7 +1621,6 @@
 <translation id="5205222826937269299">Потребно е име</translation>
 <translation id="5209518306177824490">SHA-1 отпечаток од прст</translation>
 <translation id="5209670883520018268">Фиока 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Фиока 13</translation>
 <translation id="5216942107514965959">Последно посетено денес</translation>
 <translation id="5217759126664161410">Неважечки формат на протокол.</translation>
@@ -1639,7 +1629,6 @@
 <translation id="5229588705416009823">Масивни мултиплеер игри</translation>
 <translation id="5230733896359313003">Адреса за испорака</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="5239623327352565343">Локацијата е дозволена</translation>
 <translation id="5242889659037569123">Додатоци за багаж и патување</translation>
@@ -1878,7 +1867,6 @@
 <translation id="5884465125445718607">Плик Chinese #6</translation>
 <translation id="5887400589839399685">Картичката е зачувана</translation>
 <translation id="5887687176710214216">Последно посетено вчера</translation>
-<translation id="5891155897634819292">Плик Chinese #5</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5895187275912066135">Издадено на</translation>
 <translation id="5901630391730855834">Жолта боја</translation>
@@ -1911,7 +1899,6 @@
 <translation id="5974052231147553524">Шеста ролна</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Влажност на комората</translation>
 <translation id="5984712050237025014">Зголемена и виртуелна реалност</translation>
 <translation id="598637245381783098">Не може да се отвори апликацијата за плаќање</translation>
@@ -2400,7 +2387,6 @@
 <translation id="7337706099755338005">Не е достапен на вашата платформа.</translation>
 <translation id="733923710415886693">Сертификатот на серверот не е откриен преку Транспарентност на сертификати.</translation>
 <translation id="7341357280245177602">Користени возила</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Е поврзан:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Дозволено додека да ја затворите картичкава</translation>
@@ -2443,7 +2429,6 @@
       &lt;li&gt;Кликнете &lt;strong&gt;Примени&lt;/strong&gt;, а потоа кликнете &lt;strong&gt;Во ред&lt;/strong&gt;
       &lt;li&gt;Посетете го &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Центарот за помош на Chrome&lt;/a&gt; за да дознаете како трајно да го отстраните софтверот од компјутерот
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Убав</translation>
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7416351320495623771">Управувајте со лозинките…</translation>
@@ -2489,7 +2474,6 @@
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7517414872996418597">Плик C10</translation>
 <translation id="7518003948725431193">Не е пронајдена веб-страница за веб-адресата: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Плик 10 x 13 in</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Делот „<ph name="SECTION" />“ е сокриен</translation>
 <translation id="7523408071729642236">Производство</translation>
@@ -2780,7 +2764,6 @@
 <translation id="8277900682056760511">Листот на ракувачот со плаќања е отворен</translation>
 <translation id="8279611986089885641">Известувањата на Chrome мора да бидат вклучени. Може да ги вклучите во <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Фиока 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8282947398454257691">Знајте го својот уникатен идентификатор на уредот</translation>
 <translation id="8284769179630993263">Управувајте со безбедното прелистување и друго во поставките за Chrome</translation>
@@ -2796,7 +2779,6 @@
 <translation id="8299269255470343364">јапонски</translation>
 <translation id="8303854710873047864">Прикажан е делот „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Превиткување на половина</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Инсталирани апликации и колку често се користат</translation>
 <translation id="831997045666694187">Приквечер</translation>
 <translation id="8321476692217554900">известувања</translation>
@@ -2878,7 +2860,6 @@
 <translation id="8557066899867184262">CVC-бројот се наоѓа на задната страна на картичката.</translation>
 <translation id="8559762987265718583">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот уред (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
 <translation id="8564182942834072828">Одделни документи/неподредени примероци</translation>
-<translation id="8564453110650229930">Плик Chinese #10</translation>
 <translation id="8564985650692024650">Chromium препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="8576310925653847813">Системи за домашно кино</translation>
 <translation id="8577348305244205642">Виртуелната картичка не е достапна</translation>
@@ -2907,7 +2888,6 @@
 <translation id="8687429322371626002"><ph name="MANAGER" /> управува со уредот и сметката.</translation>
 <translation id="8688672835843460752">Достапно</translation>
 <translation id="868922510921656628">Страници по група</translation>
-<translation id="8694278303623679191">Плик Postfix</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699041776323235191">HID-уред</translation>
 <translation id="8699899385443889493">Копче за играта „Диносаурус на Chrome“, притиснете го копчето Enter за да ја играте играта „Трчање на диносаурусот“</translation>
@@ -2985,7 +2965,6 @@
 <translation id="8874824191258364635">Внесете важечки број на картичка</translation>
 <translation id="8876033571432926051">Секојдневни игри</translation>
 <translation id="8877780815363510165">Риболов</translation>
-<translation id="8879882034055059721">Плик 10 x 15 in</translation>
 <translation id="8884537526797090108">Не може да се снимаат доверливи содржини</translation>
 <translation id="8891727572606052622">Неважечки режим на прокси.</translation>
 <translation id="8894794286471754040">Прво долгиот раб</translation>

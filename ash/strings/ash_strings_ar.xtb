@@ -349,7 +349,7 @@
 <translation id="2894949423239620203">قد يؤثّر استخدام الكابل في أداء الجهاز</translation>
 <translation id="2914580577416829331">لقطات الشاشة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
-<translation id="2942350706960889382">تفعيل المكبّر</translation>
+<translation id="2942350706960889382">مكبّر جزء من الشاشة</translation>
 <translation id="2942516765047364088">وضع الرف</translation>
 <translation id="2946119680249604491">إضافة اتصال</translation>
 <translation id="2960314608273155470">‏وضع الالتقاط، الإعداد التلقائي هو <ph name="SOURCE" /> <ph name="TYPE" />. اضغط على مفتاح Tab للتنقّل على لوحة المفاتيح.</translation>
@@ -437,6 +437,7 @@
 <translation id="3413817803639110246">ليس لديك شيء للمشاهدة حتى الآن</translation>
 <translation id="3428447136709161042">تم قطع الاتصال بالشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">يُرجى التمرير السريع من اليمين للرجوع.</translation>
+<translation id="3431517721463707585">سطح المكتب 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">تعديل التذكير</translation>
 <translation id="3435967511775410570">تمّ التعرّف على البصمة.</translation>
@@ -678,6 +679,7 @@
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليسرى)</translation>
 <translation id="4734965478015604180">أفقي</translation>
+<translation id="4735944890391795473">سطح المكتب 12</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4740516757091333363">هل تريد حذف سطح المكتب المحفوظ؟</translation>
 <translation id="4752784485658729358">لا يمكن حفظ أكثر من 6 أسطح مكتب. يُرجى إزالة أحدها لحفظ سطح مكتب جديد.</translation>
@@ -698,6 +700,7 @@
 <translation id="4860284199500934869">يُرجى التحقّق من الاتصال بالشبكة لتنزيل الملف <ph name="FILENAME" />.</translation>
 <translation id="486056901304535126">‏ستتم إعادة محاولة التنزيل لاحقًا. وسيتم إرسال ملفات التعرّف على الكلام إلى Google لمعالجتها إلى حين اكتمال عملية التنزيل.</translation>
 <translation id="4864369630010738180">جارٍ تسجيل الدخول...</translation>
+<translation id="4864648187878336334">سطح المكتب 15</translation>
 <translation id="4868492592575313542">مفعّلة</translation>
 <translation id="4872237917498892622">‏Alt+مفتاح البحث أو Shift</translation>
 <translation id="4881695831933465202">فتح</translation>
@@ -725,6 +728,7 @@
         <ph name="NOTIFICATION_1" />،
         <ph name="NOTIFICATION_2" />،
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">سطح المكتب 16</translation>
 <translation id="5003993274120026347">الجملة التالية</translation>
 <translation id="5016558321564993266">حالة إيقاف/تفعيل أداة التحديد: <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">انتهى الوقت</translation>
@@ -741,6 +745,7 @@
 <translation id="5098537242461068432">تمت إعادة فتح سطح المكتب والنوافذ.</translation>
 <translation id="5104236669533825617">تعذُّر إنشاء تسجيل رقمي للشاشة</translation>
 <translation id="5107522548814527560">الويب</translation>
+<translation id="5111318697104479778"><ph name="DESC" />، <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">عرض الشهر التالي</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
 <translation id="5147567197700016471">تم فتح القفل.</translation>
@@ -831,6 +836,7 @@
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5648021990716966815">مقبس الميكروفون</translation>
 <translation id="5652575806481723716">لديك إشعار من <ph name="FOCUSED_APP_NAME" />.</translation>
+<translation id="5662075790140998213">سطح المكتب 10</translation>
 <translation id="5662709761327382534">‏التسجيل من الميكروفون <ph name="CURRENT_STATE" />. يمكنك الضغط على مفتاح Enter لضبط إعداد التسجيل من الميكروفون على <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">تفعيل</translation>
 <translation id="5673434351075758678">من "<ph name="FROM_LOCALE" />" إلى "<ph name="TO_LOCALE" />" بعد مزامنة الإعدادات.</translation>
@@ -1032,6 +1038,8 @@
 <translation id="6753390234084146956">علامات التبويب</translation>
 <translation id="6757237461819837179">لا يتم تشغيل أي وسائط حاليًا</translation>
 <translation id="6777216307882431711">‏شحن أجهزة USB-C المتصلة</translation>
+<translation id="6781002679438061620">سطح المكتب 9</translation>
+<translation id="6782182743534150858">سطح المكتب 13</translation>
 <translation id="6786750046913594791">إغلاق المجلد</translation>
 <translation id="6787595647772650851">استعادة الجلسة السابقة</translation>
 <translation id="6790428901817661496">التشغيل</translation>
@@ -1093,6 +1101,7 @@
 <translation id="7098053464892629930">‏يمكنك تنزيل التطبيق لـ <ph name="NAME" /> من Google Play للاطّلاع على جميع الميزات المتاحة.</translation>
 <translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
 <translation id="7106330611027933926">إظهار شريط سطح المكتب</translation>
+<translation id="7116969082764510092">سطح المكتب 11</translation>
 <translation id="7118268675952955085">لقطة شاشة</translation>
 <translation id="7126996685418858413">تم فتحه في الأسبوع الماضي.</translation>
 <translation id="7130207228079676353">التطبيقات التي يرجح النقر عليها</translation>
@@ -1191,6 +1200,7 @@
 <translation id="7662283695561029522">النقر للإعداد</translation>
 <translation id="7670953955701272011">‏فتح هذا التاريخ في "تقويم Google"</translation>
 <translation id="7671610481353807627">تم ترتيب التطبيقات حسب اللون.</translation>
+<translation id="7672095158465655885">تم الاتصال بـ "<ph name="NAME" />"، <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">تم ضبط إعدادات الكاميرا على <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">إضافة شبكة جوّال جديدة</translation>
@@ -1475,5 +1485,6 @@
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
 <translation id="98515147261107953">أفقي</translation>
 <translation id="990277280839877440">تم إغلاق النافذة <ph name="WINDOW_TITILE" />.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />، <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">يُرجى الحصول على أحدث الميزات وتحسينات الأمان. يتم تنزيل التحديثات في الخلفية.</translation>
 </translationbundle>

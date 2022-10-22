@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">إجراء مُقترَح للحصول على أفضل تجربة</translation>
 <translation id="1818308510395330587">‏للسماح لتطبيق <ph name="APP_NAME" /> باستخدام ميزة الواقع المعزَّز، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">من <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">يمكن للمواقع الإلكترونية ذات الصلة الاطّلاع على نشاطك في المجموعة.</translation>
 <translation id="1887786770086287077">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1919345977826869612">الإعلانات</translation>
@@ -177,6 +178,7 @@
 <translation id="483914009762354899">تضمين جميع المواقع الإلكترونية ضمن هذا النطاق</translation>
 <translation id="4883854917563148705">يتعذّر إعادة ضبط الإعدادات التي تمت إدارتها</translation>
 <translation id="4887024562049524730">طلب الإذن قبل السماح للمواقع الإلكترونية باستخدام جهاز الواقع الافتراضي وبياناته (إعداد مقترَح)</translation>
+<translation id="4955223779495905865">يمكن للموقع الإلكتروني الذي تنتقل إليه أن يتضمّن محتوى من مواقع إلكترونية أخرى، مثل الصور والإعلانات والنصوص. ويمكن لأي من هذه المواقع الإلكترونية حفظ ملفات تعريف الارتباط وبيانات أخرى لتخصيص تجربتك.</translation>
 <translation id="4962975101802056554">إبطال جميع الأذونات للجهاز</translation>
 <translation id="497421865427891073">انتقال للأمام</translation>
 <translation id="4976702386844183910">تاريخ آخر زيارة للموقع الإلكتروني: <ph name="DATE" /></translation>
@@ -186,6 +188,7 @@
 <translation id="5048398596102334565">السماح للمواقع الإلكترونية بالوصول إلى مستشعرات الحركة (مُقترَح)</translation>
 <translation id="5050380848339752099">هذا الموقع الإلكتروني على وشك مشاركة معلومات مع أحد التطبيقات خارج وضع التصفُّح المتخفي.</translation>
 <translation id="5063480226653192405">الاستخدام</translation>
+<translation id="5082281938627763039">يؤدي هذا الإجراء إلى حذف ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لـ "<ph name="FPS_MEMBER" />" ولمواقع إلكترونية مدرَجة في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية.</translation>
 <translation id="5091013926750941408">موقع إلكتروني متوافق مع الأجهزة الجوّالة</translation>
 <translation id="509133520954049755">طلب العرض المخصَّص للكمبيوتر المكتبي</translation>
 <translation id="5100237604440890931">تم التصغير - انقر للتوسيع.</translation>
@@ -222,6 +225,7 @@
 <translation id="5677928146339483299">الحظر</translation>
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
 <translation id="5690795753582697420">‏تم إيقاف الكاميرا في إعدادات Android.</translation>
+<translation id="5706552988683188916">يؤدي هذا الإجراء إلى حذف ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لـ "<ph name="WEBSITE" />".</translation>
 <translation id="5719847187258001597">سيؤدي هذا الإجراء إلى محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="ORIGIN" /> أو من خلال التطبيق على الشاشة الرئيسية.</translation>
 <translation id="5771720122942595109">تم حظر <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">الأذونات</translation>
@@ -322,6 +326,7 @@
 <translation id="7882806643839505685">السماح بتشغيل الصوت لموقع معين.</translation>
 <translation id="789180354981963912">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي:</translation>
 <translation id="7940722705963108451">تذكير</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="FPS_MEMBERS_COUNT" />) مدرَج في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}zero{<ph name="FPS_MEMBERS_COUNT" /> موقع إلكتروني مدرَج في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}two{موقعان إلكترونيان (<ph name="FPS_MEMBERS_COUNT" />) مدرَجان في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}few{<ph name="FPS_MEMBERS_COUNT" /> مواقع إلكترونية مدرَجة في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}many{<ph name="FPS_MEMBERS_COUNT" /> موقعًا إلكترونيًّا مدرَجًا في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}other{<ph name="FPS_MEMBERS_COUNT" /> موقع إلكتروني مدرَج في مجموعة مواقع "<ph name="FPS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}}</translation>
 <translation id="7986741934819883144">اختيار جهة اتصال</translation>
 <translation id="7999064672810608036">هل أنت متأكّد أنك تريد محو كل البيانات المحلية، بما في ذلك ملفات تعريف الارتباط، وإعادة ضبط كافة الأذونات لهذا الموقع الإلكتروني؟</translation>
 <translation id="8007176423574883786">تم إيقافه لهذا الجهاز</translation>
@@ -361,6 +366,7 @@
 <translation id="8499083585497694743">إعادة صوت الميكروفون</translation>
 <translation id="851751545965956758">حظر المواقع الإلكترونية من الاتصال بأجهزة</translation>
 <translation id="8525306231823319788">ملء الشاشة</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{تم السماح بملفات تعريف الارتباط لموقع إلكتروني واحد (<ph name="FPS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="FPS_OWNER" />".}zero{تم السماح بملفات تعريف الارتباط لـ <ph name="FPS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="FPS_OWNER" />".}two{تم السماح بملفات تعريف الارتباط لموقعَين إلكترونيَّين (<ph name="FPS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="FPS_OWNER" />".}few{تم السماح بملفات تعريف الارتباط لـ <ph name="FPS_MEMBERS_COUNT" /> مواقع إلكترونية ضمن مجموعة "<ph name="FPS_OWNER" />".}many{تم السماح بملفات تعريف الارتباط لـ <ph name="FPS_MEMBERS_COUNT" /> موقعًا إلكترونيًّا ضمن مجموعة "<ph name="FPS_OWNER" />".}other{تم السماح بملفات تعريف الارتباط لـ <ph name="FPS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="FPS_OWNER" />".}}</translation>
 <translation id="857943718398505171">مسموح بها (موصى بها)</translation>
 <translation id="8609465669617005112">الانتقال إلى الأعلى</translation>
 <translation id="8676374126336081632">محو الإرسال</translation>
@@ -386,6 +392,8 @@
 <translation id="8986362086234534611">حذف</translation>
 <translation id="9019902583201351841">يديره والداك</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
+<translation id="9090268041676521955">يندرج هذا الموقع الإلكتروني ضمن مجموعة يمكنها الاطّلاع على نشاطك. وهذه المجموعة تم تحديدها بواسطة "<ph name="FPS_OWNER" />".</translation>
+<translation id="9106233582039520022">هل تريد حذف ملفات تعريف الارتباط؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>
 <translation id="913657688200966289">‏فعِّل الأذونات لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">هذه الصفحة غير آمنة.</translation>

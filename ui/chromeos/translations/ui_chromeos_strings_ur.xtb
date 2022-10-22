@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کریں</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، منسلک کریں</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، فون کی بیٹری %<ph name="BATTERY_STATUS" />، تفصیلات</translation>
-<translation id="4929673617759421391">منتظم کی پالیسی کے تحت اس فائل کو پیسٹ کرنا مسدود ہے</translation>
 <translation id="4935975195727477204">گزانیہ پھول</translation>
 <translation id="4943368462779413526">فٹبال</translation>
 <translation id="4961158930123534723">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ 1 فولڈر</translation>
@@ -976,7 +975,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">قزاخ</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو ایکسٹریکٹ کیا گیا۔</translation>
-<translation id="9210751050717126865">منتظم کی پالیسی کے تحت، <ph name="COUNT" /> فائلز کو پیسٹ کرنا مسدود ہے</translation>
 <translation id="9213073329713032541">انسٹالیشن کامیابی کے ساتھ شروع ہو گئی۔</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">قمری</translation>

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{ഒരു ദിവസം മുമ്പ്}other{# ദിവസം മുമ്പ്}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{ഒരു മിനിറ്റിന് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{ 1 മീറ്റര്‍}other{# മീറ്റർ}}</translation>
+<translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1243314992276662751">അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> പങ്കിടാനായില്ല</translation>
 <translation id="1269641567813814718">Win</translation>

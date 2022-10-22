@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ថ្ងៃមុន}other{# ថ្ងៃមុន}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 នាទី​មុន}other{# នាទី​មុន}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 ន}other{# ន}}</translation>
+<translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="1243314992276662751">ទាញឡើង</translation>
 <translation id="1266864766717917324">មិនអាចចែករំលែក <ph name="CONTENT_TYPE" /> បានទេ</translation>
 <translation id="1269641567813814718">Win</translation>

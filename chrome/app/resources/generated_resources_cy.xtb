@@ -3857,6 +3857,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4556194354084985730">Mewngofnodi i wefannau ac apiau yn haws gyda'ch cyfrineiriau sydd wedi'u cadw. Pan fydd wedi'i ddiffodd, gofynnir i chi gadarnhau cyn mewngofnodi.</translation>
 <translation id="4558426062282641716">Gofynnwyd am y caniatâd i awto-lansio</translation>
 <translation id="4559617833001311418">Mae'r wefan hon yn cyrchu eich synwyryddion symudiad neu olau.</translation>
+<translation id="4561098487691395071">Neu nodi PPD eich argraffydd</translation>
 <translation id="4561893854334016293">Dim caniatadau sydd wedi newid yn ddiweddar</translation>
 <translation id="4562155214028662640">Ychwanegu Olion Bysedd</translation>
 <translation id="4563210852471260509">Yr iaith mewnbwn gychwynnol yw Tsieinëeg</translation>
@@ -4355,7 +4356,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5040823038948176460">Gosodiadau cynnwys ychwanegol</translation>
 <translation id="5041509233170835229">Ap Chrome</translation>
 <translation id="5043440033854483429">Gall yr enw ddefnyddio llythrennau, rhifau, a chysylltnodau (-) a rhaid iddo fod rhwng 1 a 15 nod yn gymhwysol.</translation>
-<translation id="5043913660911154449">Neu rhowch PPD eich argraffydd <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="504561833207953641">Wrthi'n agor yn y sesiwn porwr bresennol.</translation>
 <translation id="5049614114599109018">Defnyddio Hanes Mewnbwn</translation>
@@ -4746,6 +4746,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5427278936122846523">Cyfieithu Bob Amser</translation>
 <translation id="5427459444770871191">Cylchdroi yn &amp;Glocwedd</translation>
 <translation id="542750953150239272">Drwy barhau, rydych yn cytuno y gall y ddyfais hon hefyd lawrlwytho a gosod diweddariadau ac apiau yn awtomatig gan Google, eich cludwr, a gwneuthurwr eich dyfais, gan ddefnyddio data symudol o bosib. Mae'n bosib y bydd rhai o'r apiau hyn yn cynnig pryniannau o fewn yr ap.</translation>
+<translation id="5427936139162668357">Gweld PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Mae diweddariad ar gael)</translation>
 <translation id="542948651837270806">Mae angen gosod diweddariad ar gyfer cadarnwedd y Modiwl Platfform Cymeradwy. Gweler <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Lled llawn</translation>
@@ -8158,6 +8159,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8645354835496065562">Parhau i ganiatáu mynediad at synhwyrydd</translation>
 <translation id="8645920082661222035">Yn rhagweld ac yn eich rhybuddio am ddigwyddiadau peryglus cyn iddynt ddigwydd</translation>
 <translation id="8646209145740351125">Analluogi cysoni</translation>
+<translation id="8646340610303779673">Methu ag adfer PPD.</translation>
 <translation id="864637694230589560">Mae gwefannau fel arfer yn anfon hysbysiadau i roi gwybod i chi am newyddion yn torri neu negeseuon sgwrsio</translation>
 <translation id="8647385344110255847">Gyda'ch caniatâd, gall eich plentyn ddefnyddio Google Play i osod apiau</translation>
 <translation id="8647834505253004544">Nid yw'n gyfeiriad gwe dilys</translation>
@@ -8218,6 +8220,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="869884720829132584">Dewislen apiau</translation>
 <translation id="869891660844655955">Dyddiad darfod</translation>
 <translation id="8699120352855309748">Peidiwch â chynnig cyfieithu'r ieithoedd hyn</translation>
+<translation id="8699188901396699995">PPD ar gyfer <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Cafodd eich <ph name="DEVICE_TYPE" /> ei gloi.</translation>
 <translation id="8703346390800944767">Neidio'r hysbyseb</translation>
 <translation id="8705331520020532516">Rhif Cyfresol</translation>

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 分鐘前}other{# 分鐘前}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 分鐘}other{# 分鐘}}</translation>
+<translation id="1181037720776840403">移除</translation>
 <translation id="1243314992276662751">上傳</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Windows 鍵</translation>

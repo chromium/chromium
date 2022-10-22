@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">农业与林业</translation>
 <translation id="1080116354587839789">适合窗口宽度</translation>
 <translation id="1081061862829655580">纸匣 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">添加持卡人姓名</translation>
 <translation id="1089439967362294234">更改密码</translation>
 <translation id="1096545575934602868">此字段最多仅能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，超出的条目会被舍弃。</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">此政策已被禁用，其值也会被忽略。</translation>
 <translation id="1368318639262510626">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时按一下空格键，即可让恐龙跃过障碍物。</translation>
 <translation id="1374468813861204354">建议</translation>
-<translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
 <translation id="1375198122581997741">关于版本</translation>
 <translation id="1376836354785490390">收起</translation>
 <translation id="1377321085342047638">卡号</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">天气</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用您计算机上的字体，以便您能够创作高保真内容</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1468653229182955856">您的 <ph name="EMBEDDED_ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" />，您需要输入此验证码，才能继续访问 <ph name="TOP_ORIGIN" />。</translation>
 <translation id="1472675084647422956">展开</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">生日与命名日</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2679714844901977852">将您的付款卡信息和结算信息保存到您的 Google 帐号 <ph name="USER_EMAIL" />，以便您安全快捷地结账</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">最适合</translation>
 <translation id="2688969097326701645">是的，继续</translation>
 <translation id="2691924980723297736">安全警告</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">最先打印的页面</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">连接已重置。</translation>
-<translation id="2786469568759673015">中式 #3 信封</translation>
 <translation id="2791176355335562114">下次付款更快捷</translation>
 <translation id="2792012897584536778">此设备的管理员设置了安全证书，这些证书可能会允许管理员查看您所访问的网站的内容。</translation>
 <translation id="2799020568854403057">您要访问的网站包含有害应用</translation>
@@ -1015,7 +1010,6 @@
 <translation id="3634530185120165534">纸匣 5</translation>
 <translation id="3634567936866541746">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chrome 建议检查您已保存的密码。</translation>
 <translation id="3637662659967048211">保存到 Google 帐号</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">应用：</translation>
 <translation id="3647286794400715637">每个网址字符串条目都必须包含 1-2 个网址。</translation>
 <translation id="3650584904733503804">验证成功</translation>
@@ -1146,7 +1140,6 @@
 <translation id="4010758435855888356">允许使用存储空间？</translation>
 <translation id="401170183602135785">C6 信封</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{包含 {COUNT} 页内容的 PDF 文档}other{包含 {COUNT} 页内容的 PDF 文档}}</translation>
-<translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">由于系统正在使用不安全的连接提交此表单，他人将能看到您的信息。</translation>
 <translation id="4024923292610332139">关闭触控 ID，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="4025913568718019429">“管理 Google 隐私设置”按钮，按 Enter 键即可访问您的 Google 帐号隐私设置</translation>
@@ -1364,7 +1357,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">尝试停用扩展程序。</translation>
 <translation id="4559134504959026834">此网站属于由 <ph name="SET_OWNER" /> 定义的群组，该群组可查看您的活动记录</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">户外活动</translation>
 <translation id="4567686777917670400">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">递送</translation>
@@ -1408,7 +1400,6 @@
 <translation id="4682496302933121474">翻译网页？</translation>
 <translation id="468314109939257734">查看您的虚拟卡号</translation>
 <translation id="4692623383562244444">搜索引擎</translation>
-<translation id="4693246800345263879">10 x 14 英寸信封</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /><ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">侧边</translation>
 <translation id="4702656508969495934">能看到“实时字幕”气泡了，使用窗口切换器可切换焦点</translation>
@@ -1626,7 +1617,6 @@
 <translation id="5205222826937269299">需要提供名称</translation>
 <translation id="5209518306177824490">SHA-1 指纹</translation>
 <translation id="5209670883520018268">纸匣 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">纸匣 13</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
 <translation id="5217759126664161410">协议格式无效。</translation>
@@ -1635,7 +1625,6 @@
 <translation id="5229588705416009823">大型多人游戏</translation>
 <translation id="5230733896359313003">送货地址</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5239623327352565343">已授予位置信息使用权限</translation>
 <translation id="5242889659037569123">行李与旅行用品</translation>
@@ -1874,7 +1863,6 @@
 <translation id="5884465125445718607">中式 #6 信封</translation>
 <translation id="5887400589839399685">已保存卡片</translation>
 <translation id="5887687176710214216">上次访问时间：昨天</translation>
-<translation id="5891155897634819292">中式 #5 信封</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5895187275912066135">颁发日期</translation>
 <translation id="5901630391730855834">黄色</translation>
@@ -1907,7 +1895,6 @@
 <translation id="5974052231147553524">第 6 卷</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5979084224081478209">检查密码</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">室内湿度</translation>
 <translation id="5984712050237025014">增强现实与虚拟现实</translation>
 <translation id="598637245381783098">无法打开付款应用</translation>
@@ -2395,7 +2382,6 @@
 <translation id="7337706099755338005">在您的平台上不可用。</translation>
 <translation id="733923710415886693">该服务器的证书未通过证书透明度政策进行披露。</translation>
 <translation id="7341357280245177602">二手车</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">有无关联：</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">可以使用，直到您关闭此标签页</translation>
@@ -2438,7 +2424,6 @@
       &lt;li&gt;依次点击&lt;strong&gt;应用&lt;/strong&gt;和&lt;strong&gt;确定&lt;/strong&gt;
       &lt;li&gt;访问 &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome 帮助中心&lt;/a&gt;，了解如何从您的计算机中永久移除该软件
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">可爱</translation>
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7416351320495623771">管理密码…</translation>
@@ -2484,7 +2469,6 @@
 <translation id="7514365320538308">下载</translation>
 <translation id="7517414872996418597">C10 信封</translation>
 <translation id="7518003948725431193">找不到与以下网址对应的网页：<ph name="URL" /></translation>
-<translation id="7518098469289408841">10 x 13 英寸信封</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">已隐藏“<ph name="SECTION" />”部分</translation>
 <translation id="7523408071729642236">制造</translation>
@@ -2775,7 +2759,6 @@
 <translation id="8277900682056760511">付款处理程序工作表已打开</translation>
 <translation id="8279611986089885641">Chrome 通知必须处于开启状态。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />中开启此类通知。</translation>
 <translation id="8280630997017109758">纸匣 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282947398454257691">获取您的唯一设备标识符</translation>
 <translation id="8284769179630993263">在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
@@ -2791,7 +2774,6 @@
 <translation id="8299269255470343364">日语</translation>
 <translation id="8303854710873047864">已显示“<ph name="SECTION" />”部分</translation>
 <translation id="830498451218851433">对折</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">已安装的应用及其使用频率</translation>
 <translation id="831997045666694187">晚上</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -2873,7 +2855,6 @@
 <translation id="8557066899867184262">银行卡验证码 (CVC) 位于银行卡背面。</translation>
 <translation id="8559762987265718583">您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="8564182942834072828">单独的文档/非逐份打印的副本</translation>
-<translation id="8564453110650229930">中式 #10 信封</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
 <translation id="8576310925653847813">家庭影院系统</translation>
 <translation id="8577348305244205642">无法使用虚拟卡</translation>
@@ -2903,7 +2884,6 @@
 <translation id="8687429322371626002">您的设备和帐号由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="868922510921656628">每组页数</translation>
-<translation id="8694278303623679191">Postfix 信封</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699041776323235191">HID 设备</translation>
 <translation id="8699899385443889493">“玩 Chrome 恐龙游戏”按钮，按 Enter 键即可在 Chrome 中玩《Dino Run》游戏</translation>
@@ -2981,7 +2961,6 @@
 <translation id="8874824191258364635">请输入有效的信用卡号</translation>
 <translation id="8876033571432926051">休闲游戏</translation>
 <translation id="8877780815363510165">钓鱼</translation>
-<translation id="8879882034055059721">10 x 15 英寸信封</translation>
 <translation id="8884537526797090108">无法录制机密内容</translation>
 <translation id="8891727572606052622">代理模式无效。</translation>
 <translation id="8894794286471754040">长边先入</translation>

@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Agricultură și silvicultură</translation>
 <translation id="1080116354587839789">Încadrează pe lățime</translation>
 <translation id="1081061862829655580">Tava 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Adaugă numele de pe card</translation>
 <translation id="1089439967362294234">Schimbă parola</translation>
 <translation id="1096545575934602868">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Toate intrările suplimentare vor fi șterse.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">Politica este blocată, iar valoarea sa va fi ignorată.</translation>
 <translation id="1368318639262510626">Joc cu dinozauri. Un dinozaur pixelat se ferește de cactuși și pterodactili într-un peisaj dezolant. Când auzi semnalul sonor, apasă pe tasta de spațiu pentru a sări peste obstacole.</translation>
 <translation id="1374468813861204354">sugestii</translation>
-<translation id="1374692235857187091">Index-4x6 (Carte poștală)</translation>
 <translation id="1375198122581997741">Despre versiune</translation>
 <translation id="1376836354785490390">Afișează mai puține</translation>
 <translation id="1377321085342047638">Număr card</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">să folosească fonturile de pe computer ca să poți crea conținut de înaltă fidelitate.</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> este codul tău pentru ca <ph name="EMBEDDED_ORIGIN" /> să continue pe <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Afișați mai multe</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">Aniversări și onomastici</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2679714844901977852">Salvează-ți cardul și informațiile de facturare în Contul Google <ph name="USER_EMAIL" /> ca să finalizezi achizițiile mai rapid și în siguranță</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Potrivire optimă</translation>
 <translation id="2688969097326701645">Da, continuă</translation>
 <translation id="2691924980723297736">Avertisment de siguranță</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">Prima pagină printată</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Conexiunea a fost resetată.</translation>
-<translation id="2786469568759673015">Plic chinezesc 3</translation>
 <translation id="2791176355335562114">Plătești mai repede data viitoare</translation>
 <translation id="2792012897584536778">Administratorii acestui dispozitiv au configurat certificate de securitate cu care pot vedea conținutul site-urilor pe care le accesezi.</translation>
 <translation id="2799020568854403057">Site-ul pe care urmează să îl accesezi conține aplicații dăunătoare</translation>
@@ -1019,7 +1014,6 @@
 <translation id="3634530185120165534">Tava 5</translation>
 <translation id="3634567936866541746">Ai introdus parola pe un site înșelător. Pentru a-ți proteja conturile, Chrome recomandă să verifici parolele salvate.</translation>
 <translation id="3637662659967048211">Salvează în Contul Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Aplicație:</translation>
 <translation id="3647286794400715637">Fiecare intrare de șir de adrese URL trebuie să conțină una sau două adrese URL.</translation>
 <translation id="3650584904733503804">Validarea a reușit</translation>
@@ -1150,7 +1144,6 @@
 <translation id="4010758435855888356">Permiți accesul la spațiul de stocare?</translation>
 <translation id="401170183602135785">Plic C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF cu {COUNT} pagină}few{Document PDF cu {COUNT} pagini}other{Document PDF cu {COUNT} de pagini}}</translation>
-<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Întrucât formularul este trimis printr-o conexiune care nu este securizată, informațiile tale vor vizibile pentru alte persoane.</translation>
 <translation id="4024923292610332139">dezactiveze Touch ID pentru completarea parolelor</translation>
 <translation id="4025913568718019429">Butonul Gestionează setările de confidențialitate Google, apasă pe Enter pentru a accesa setările de confidențialitate ale Contului Google</translation>
@@ -1368,7 +1361,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Dezactivează extensiile.</translation>
 <translation id="4559134504959026834">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">În aer liber</translation>
 <translation id="4567686777917670400">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Livrare</translation>
@@ -1412,7 +1404,6 @@
 <translation id="4682496302933121474">Traduci pagina?</translation>
 <translation id="468314109939257734">Vezi numărul de card virtual</translation>
 <translation id="4692623383562244444">Motoare de căutare</translation>
-<translation id="4693246800345263879">Plic de 10 x 14 inchi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lateral</translation>
 <translation id="4702656508969495934">Subtitrări live vizibile, folosește comutatorul de ferestre pentru a focaliza</translation>
@@ -1630,7 +1621,6 @@
 <translation id="5205222826937269299">Numele este obligatoriu</translation>
 <translation id="5209518306177824490">Amprentă digitală SHA-1</translation>
 <translation id="5209670883520018268">Tava 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Tava 13</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
 <translation id="5217759126664161410">Format de protocol nevalid.</translation>
@@ -1639,7 +1629,6 @@
 <translation id="5229588705416009823">Jocuri cu foarte mulți jucători</translation>
 <translation id="5230733896359313003">Adresă de expediere</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5239623327352565343">Folosirea locației este permisă</translation>
 <translation id="5242889659037569123">Bagaje și accesorii pentru călătorii</translation>
@@ -1878,7 +1867,6 @@
 <translation id="5884465125445718607">Plic chinezesc 6</translation>
 <translation id="5887400589839399685">Cardul a fost salvat</translation>
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
-<translation id="5891155897634819292">Plic chinezesc 5</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5895187275912066135">Emis la</translation>
 <translation id="5901630391730855834">Galben</translation>
@@ -1911,7 +1899,6 @@
 <translation id="5974052231147553524">A șasea rolă</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5979084224081478209">Verifică parolele</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Umiditatea camerei</translation>
 <translation id="5984712050237025014">Realitate virtuală și augmentată</translation>
 <translation id="598637245381783098">Nu se poate deschide aplicația de plată</translation>
@@ -2400,7 +2387,6 @@ Detalii suplimentare:
 <translation id="7337706099755338005">Nu este disponibil pe platforma ta.</translation>
 <translation id="733923710415886693">Certificatul serverului nu a fost dezvăluit folosind Transparența certificatului.</translation>
 <translation id="7341357280245177602">Vehicule second-hand</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Este afiliat:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Permisă până când închizi această filă</translation>
@@ -2443,7 +2429,6 @@ Detalii suplimentare:
       &lt;&lt;li&gt;Dă clic pe &lt;strong&gt;Apply&lt;/strong&gt; (Aplică), apoi dă clic pe &lt;strong&gt;OK&lt;/strong&gt;
       &lt;li&gt;Accesează &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centrul de ajutor Chrome&lt;/a&gt; pentru a afla cum poți să elimini definitiv software-ul de pe computer
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Format-Larg</translation>
 <translation id="7410471291937727359">Adorabil</translation>
 <translation id="741204030948306876">Da, accept</translation>
 <translation id="7416351320495623771">Gestionează parolele…</translation>
@@ -2489,7 +2474,6 @@ Detalii suplimentare:
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7517414872996418597">Plic C10</translation>
 <translation id="7518003948725431193">Nu a fost găsită nicio pagină web pentru adresa: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Plic de 10 x 13 inchi</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Secțiunea „<ph name="SECTION" />” a fost ascunsă</translation>
 <translation id="7523408071729642236">Producție</translation>
@@ -2780,7 +2764,6 @@ Detalii suplimentare:
 <translation id="8277900682056760511">Foaia handlerului pentru plăți este deschisă</translation>
 <translation id="8279611986089885641">Notificările Chrome trebuie să fie activate. Le poți activa în <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Tava 11</translation>
-<translation id="8281084378435768645">Fotografie-Mare</translation>
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8282947398454257691">Află identificatorul unic de dispozitiv</translation>
 <translation id="8284769179630993263">Gestionează Navigarea sigură și alte opțiuni din setările Chrome</translation>
@@ -2796,7 +2779,6 @@ Detalii suplimentare:
 <translation id="8299269255470343364">Japoneză</translation>
 <translation id="8303854710873047864">Secțiunea „<ph name="SECTION" />” s-a afișat</translation>
 <translation id="830498451218851433">Îndoire la jumătate</translation>
-<translation id="8307358339886459768">Fotografie-Mic</translation>
 <translation id="8307888238279532626">Aplicațiile instalate și frecvența de folosire a acestora</translation>
 <translation id="831997045666694187">Seara</translation>
 <translation id="8321476692217554900">Notificări</translation>
@@ -2878,7 +2860,6 @@ Detalii suplimentare:
 <translation id="8557066899867184262">Codul CVC se află pe spatele cardului.</translation>
 <translation id="8559762987265718583">O conexiune privată la <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nu poate fi stabilită, deoarece data și ora dispozitivului (<ph name="DATE_AND_TIME" />) sunt incorecte.</translation>
 <translation id="8564182942834072828">Documente separate/Copii necolaționate</translation>
-<translation id="8564453110650229930">Plic chinezesc 10</translation>
 <translation id="8564985650692024650">Chromium îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="8576310925653847813">Sisteme Home Theater</translation>
 <translation id="8577348305244205642">Cardul virtual nu este disponibil</translation>
@@ -2908,7 +2889,6 @@ Detalii suplimentare:
 <translation id="8687429322371626002">Dispozitivul și contul sunt gestionate de <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponibilă</translation>
 <translation id="868922510921656628">Pagini per set</translation>
-<translation id="8694278303623679191">Postfix pentru plic</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699041776323235191">Dispozitiv HID</translation>
 <translation id="8699899385443889493">Butonul Joacă jocul Chrome Dino, apasă pe Enter pentru a juca jocul Dino Run în Chrome</translation>
@@ -2986,7 +2966,6 @@ Detalii suplimentare:
 <translation id="8874824191258364635">Introdu un număr de card valid</translation>
 <translation id="8876033571432926051">Jocuri ocazionale</translation>
 <translation id="8877780815363510165">Pescuit</translation>
-<translation id="8879882034055059721">Plic de 10 x 15 inchi</translation>
 <translation id="8884537526797090108">Conținutul confidențial nu se poate înregistra</translation>
 <translation id="8891727572606052622">Mod proxy nevalid.</translation>
 <translation id="8894794286471754040">Cu latura lungă înainte</translation>

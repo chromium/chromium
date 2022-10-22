@@ -2416,6 +2416,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3201422919974259695">Os dispositivos USB dispoñibles aparecerán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
 <translation id="3202173864863109533">Estase silenciando o audio desta pestana.</translation>
+<translation id="3202578601642193415">Máis recente</translation>
 <translation id="3204648577100496185">Os datos asociados a esta aplicación pódense quitar deste dispositivo</translation>
 <translation id="3208321278970793882">Aplicación</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
@@ -3698,6 +3699,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos ChromeOS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes poden incluírse datos sobre cando falla ChromeOS, as funcións que se utilizaron e o espazo de memoria que adoita empregarse, entre outros.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do teu dispositivo Chrome. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Para comezar, comproba que o interruptor USB ou Bluetooth estea conectado ao Chromebook. Tamén podes utilizar o teclado.</translation>
+<translation id="4426508677408162512">Todos os marcadores</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="4427365070557649936">Verificando código de confirmación…</translation>
 <translation id="4429163740524851942">Deseño do teclado físico</translation>
@@ -3837,6 +3839,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4556194354084985730">Inicia sesión de forma sinxela en sitios e aplicacións cos contrasinais que tes gardados. Se desactivas esta opción, pediráseche que metas o contrasinal antes de iniciar sesión.</translation>
 <translation id="4558426062282641716">Solicitouse permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio está accedendo aos teus sensores de movemento ou luz.</translation>
+<translation id="4561098487691395071">Ou especifica o PPD da impresora</translation>
 <translation id="4561893854334016293">Non cambiaches ningún permiso recentemente</translation>
 <translation id="4562155214028662640">Engadir impresión dixital</translation>
 <translation id="4563210852471260509">O idioma inicial de introdución de texto é o chinés</translation>
@@ -4335,7 +4338,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5040823038948176460">Configuración de contido adicional</translation>
 <translation id="5041509233170835229">Aplicación de Chrome</translation>
 <translation id="5043440033854483429">O nome pode conter letras, números e guións (-), e debe ter unha lonxitude de 1-15 caracteres.</translation>
-<translation id="5043913660911154449">Tamén podes especificar o PPD da túa impresora <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="504561833207953641">Abrindo nunha sesión xa aberta do navegador.</translation>
 <translation id="5049614114599109018">Utilizar historial de introdución de texto</translation>
@@ -4726,6 +4728,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5427278936122846523">Traducir sempre</translation>
 <translation id="5427459444770871191">Xirar á &amp;dereita</translation>
 <translation id="542750953150239272">Ao continuar, aceptas que este dispositivo tamén poida descargar e instalar automaticamente actualizacións e aplicacións de Google, do teu operador e do fabricante do teu dispositivo; posiblemente usando datos móbiles. Algunhas destas aplicacións poden ofrecer compras integradas.</translation>
+<translation id="5427936139162668357">Ver PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (hai unha actualización dispoñible)</translation>
 <translation id="542948651837270806">É necesario instalar unha actualización do firmware de Trusted Platform Module (Módulo de plataforma fiable). Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Largura completa</translation>
@@ -8127,6 +8130,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8645354835496065562">Continuar permitindo o acceso aos sensores</translation>
 <translation id="8645920082661222035">Predí eventos perigosos antes de que se produzan e móstrache unha advertencia</translation>
 <translation id="8646209145740351125">Desactivar sincronización</translation>
+<translation id="8646340610303779673">Non se puido obter o PPD.</translation>
 <translation id="864637694230589560">Os sitios adoitan enviar notificacións con noticias de última hora ou mensaxes de chat</translation>
 <translation id="8647385344110255847">Co teu permiso, o teu fillo ou filla pode usar Google Play para instalar aplicacións</translation>
 <translation id="8647834505253004544">Non é un enderezo web válido</translation>
@@ -8187,6 +8191,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="869884720829132584">Menú de aplicacións</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
+<translation id="8699188901396699995">PPD para <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Bloqueouse o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8703346390800944767">Omitir anuncio</translation>
 <translation id="8705331520020532516">Número de serie</translation>

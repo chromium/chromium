@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">ແບ່ງປັນກັບ Parallels Desktop</translation>
 <translation id="4902546322522096650">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4906580650526544301">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
-<translation id="4929673617759421391">ການວາງໄຟລ໌ນີ້ຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="4935975195727477204">ດອກ​ກາ​ຊາ​ເນຍ</translation>
 <translation id="4943368462779413526">ບານເຕະ</translation>
 <translation id="4961158930123534723">ແບ່ງປັນ 1 ໂຟນເດີກັບ Parallels Desktop ແລ້ວ</translation>
@@ -976,7 +975,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ພາສາຄາຊັກ</translation>
 <translation id="9200427192836333033">ແຕກໄຟລ໌ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
-<translation id="9210751050717126865">ການວາງໄຟລ໌ <ph name="COUNT" /> ລາຍການຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="9213073329713032541">ເລີ່ມການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="9219908252191632183">ພາບພື້ນຜິວດວງເດືອນ</translation>

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Пре 1 дан}one{Пре # дан}few{Пре # дана}other{Пре # дана}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Пре 1 минут}one{Пре # минут}few{Пре # минута}other{Пре # минута}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 м}one{# м}few{# м}other{# м}}</translation>
+<translation id="1181037720776840403">Уклони</translation>
 <translation id="1243314992276662751">Отпреми</translation>
 <translation id="1266864766717917324">Није успело дељење: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

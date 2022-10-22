@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Prieš 1 dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min.}one{# min.}few{# min.}many{# min.}other{# min.}}</translation>
+<translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1243314992276662751">Įkelti</translation>
 <translation id="1266864766717917324">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

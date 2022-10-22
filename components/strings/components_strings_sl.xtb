@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Kmetijstvo in gozdarstvo</translation>
 <translation id="1080116354587839789">Prilagoditev prikaza širini</translation>
 <translation id="1081061862829655580">Pladenj 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Dodajanje imena na kartico</translation>
 <translation id="1089439967362294234">Spremeni geslo</translation>
 <translation id="1096545575934602868">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo zavrženi.</translation>
@@ -170,7 +169,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1364822246244961190">Ta pravilnik je blokiran in njegova vrednost bo prezrta.</translation>
 <translation id="1368318639262510626">Igra Dino. Kvadrirani dinozaver se med dirkanjem po neobljudeni pokrajini izogiba kaktusom in pterodaktilom. Ko zaslišite zvok, pritisnite preslednico, da začnete preskakovati ovire.</translation>
 <translation id="1374468813861204354">predlogi</translation>
-<translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
 <translation id="1375198122581997741">O različici</translation>
 <translation id="1376836354785490390">Pokaži manj</translation>
 <translation id="1377321085342047638">Card Number</translation>
@@ -210,7 +208,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1459693405370120464">Vreme</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">uporabiti pisave v računalniku, da boste lahko ustvarjali vsebino visoke kakovosti.</translation>
-<translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">V levo</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> je koda za <ph name="EMBEDDED_ORIGIN" />, če želite nadaljevati na <ph name="TOP_ORIGIN" />.</translation>
 <translation id="1472675084647422956">Pokaži več</translation>
@@ -675,7 +672,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2677696497921480781">Rojstni dnevi in godovi</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2679714844901977852">Podatke o kartici in podatke za obračunavanje shranite v račun Google <ph name="USER_EMAIL" /> za varno in hitrejše dokončanje nakupov.</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Najustreznejše</translation>
 <translation id="2688969097326701645">Da, nadaljuj</translation>
 <translation id="2691924980723297736">Varnostno opozorilo</translation>
@@ -709,7 +705,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2775884851269838147">Prva stran za tiskanje</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Povezava je bila obnovljena.</translation>
-<translation id="2786469568759673015">Kitajska kuverta št. 3</translation>
 <translation id="2791176355335562114">Naslednjič hitreje plačajte</translation>
 <translation id="2792012897584536778">Skrbniki te naprave so nastavili varnostna potrdila, ki jim morda omogočajo ogled vsebine spletnih mest, ki jih obiščete.</translation>
 <translation id="2799020568854403057">Spletno mesto vsebuje škodljive aplikacije</translation>
@@ -1019,7 +1014,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3634530185120165534">Pladenj 5</translation>
 <translation id="3634567936866541746">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome zaradi zaščite računov priporoča, da preverite shranjena gesla.</translation>
 <translation id="3637662659967048211">Shranjevanje v račun Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3647286794400715637">Vsak vnos z nizom URL-jev mora vsebovati od 1 do 2 URL-ja.</translation>
 <translation id="3650584904733503804">Preverjanje veljavnosti uspešno</translation>
@@ -1150,7 +1144,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4010758435855888356">Želite odobriti dostop do shrambe?</translation>
 <translation id="401170183602135785">Kuverta C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF, ki vsebuje {COUNT} stran}one{Dokument PDF, ki vsebuje {COUNT} stran}two{Dokument PDF, ki vsebuje {COUNT} strani}few{Dokument PDF, ki vsebuje {COUNT} strani}other{Dokument PDF, ki vsebuje {COUNT} strani}}</translation>
-<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Ta obrazec pošiljate prek povezave, ki ni varna, zato bodo drugi uporabniki lahko videli vaše podatke.</translation>
 <translation id="4024923292610332139">izklopiti funkcijo TouchID za izpolnjevanje gesel.</translation>
 <translation id="4025913568718019429">Gumb za upravljanje nastavitev zasebnosti v Googlu, pritisnite Enter, če želite odpreti nastavitve zasebnosti v računu Google.</translation>
@@ -1368,7 +1361,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Poskusite onemogočiti razširitve.</translation>
 <translation id="4559134504959026834">To spletno mesto je v skupini, ki jo definiral(-a) <ph name="SET_OWNER" />, ki si lahko ogleda vašo dejavnost</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Na prostem</translation>
 <translation id="4567686777917670400">Skrbnik lahko spremeni nastavitev brskalnika na daljavo. Dejavnost v tej napravi morda tudi upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Dostava</translation>
@@ -1412,7 +1404,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4682496302933121474">Želite prevod strani?</translation>
 <translation id="468314109939257734">Ogled številke navidezne kartice</translation>
 <translation id="4692623383562244444">Iskalniki</translation>
-<translation id="4693246800345263879">Kuverta 10 x 14 palcev</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Stran</translation>
 <translation id="4702656508969495934">Samodejni podnapisi so vidni, za preklapljanje uporabite izbirnik oken</translation>
@@ -1630,7 +1621,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5205222826937269299">Ime je obvezno</translation>
 <translation id="5209518306177824490">SHA-1 Fingerprint</translation>
 <translation id="5209670883520018268">Pladenj 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Pladenj 13</translation>
 <translation id="5216942107514965959">Nazadnje obiskano danes</translation>
 <translation id="5217759126664161410">Neveljavna oblika protokola.</translation>
@@ -1639,7 +1629,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5229588705416009823">Spletne igre za veliko število igralcev</translation>
 <translation id="5230733896359313003">Naslov za pošiljanje</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Opusti</translation>
 <translation id="5239623327352565343">Lokacija je dovoljena</translation>
 <translation id="5242889659037569123">Potovalni kovčki in dodatna oprema</translation>
@@ -1878,7 +1867,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5884465125445718607">Kitajska kuverta št. 6</translation>
 <translation id="5887400589839399685">Kartica je shranjena</translation>
 <translation id="5887687176710214216">Nazadnje obiskano včeraj</translation>
-<translation id="5891155897634819292">Kitajska kuverta št. 5</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5895187275912066135">Izdano dne</translation>
 <translation id="5901630391730855834">Rumena</translation>
@@ -1911,7 +1899,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5974052231147553524">Kolut 6</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Vlažnost komore</translation>
 <translation id="5984712050237025014">Obogatena in navidezna resničnost</translation>
 <translation id="598637245381783098">Plačilne aplikacije ni mogoče odpreti</translation>
@@ -2400,7 +2387,6 @@ Dodatne podrobnosti:
 <translation id="7337706099755338005">Ni na voljo v vašem okolju.</translation>
 <translation id="733923710415886693">Potrdilo strežnika ni bilo razkrito na podlagi pravilnika o preglednosti potrdila.</translation>
 <translation id="7341357280245177602">Rabljena vozila</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Je povezan:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Dovoljeno, dokler ne zaprete tega zavihka.</translation>
@@ -2443,7 +2429,6 @@ Dodatne podrobnosti:
       &lt;li&gt;Kliknite &lt;strong&gt;Uporabi&lt;/strong&gt; in nato &lt;strong&gt;V redu&lt;/strong&gt;.
       &lt;li&gt;Obiščite &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;center za pomoč za Chrome&lt;/a&gt; če želite izvedeti, kako programsko opremo trajno odstranite iz računalnika.
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Ljubko</translation>
 <translation id="741204030948306876">Da, sem za</translation>
 <translation id="7416351320495623771">Upravljaj gesla …</translation>
@@ -2489,7 +2474,6 @@ Dodatne podrobnosti:
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7517414872996418597">Kuverta C10</translation>
 <translation id="7518003948725431193">Za ta spletni naslov in bilo mogoče najti nobene spletne strani:<ph name="URL" /></translation>
-<translation id="7518098469289408841">Kuverta 10 x 13 palcev</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Razdelek »<ph name="SECTION" />« je skrit</translation>
 <translation id="7523408071729642236">Proizvodnja</translation>
@@ -2780,7 +2764,6 @@ Dodatne podrobnosti:
 <translation id="8277900682056760511">List rutine za obravnavo plačil je odprt</translation>
 <translation id="8279611986089885641">Obvestila v Chromu morajo biti vklopljena. Vklopite jih lahko tukaj: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Pladenj 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282947398454257691">podatke o edinstvenem identifikatorju naprave</translation>
 <translation id="8284769179630993263">Upravljajte Varno brskanje in drugo v Chromovih nastavitvah.</translation>
@@ -2796,7 +2779,6 @@ Dodatne podrobnosti:
 <translation id="8299269255470343364">japonščina</translation>
 <translation id="8303854710873047864">Razdelek »<ph name="SECTION" />« je prikazan</translation>
 <translation id="830498451218851433">Prepogibanje na pol</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Nameščene aplikacije in pogostost njihove uporabe</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obvestila</translation>
@@ -2878,7 +2860,6 @@ Dodatne podrobnosti:
 <translation id="8557066899867184262">CVC je na zadnji strani kartice.</translation>
 <translation id="8559762987265718583">Zasebne povezave z domeno <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ni mogoče vzpostaviti, ker sta datum in ura (<ph name="DATE_AND_TIME" />) v napravi nepravilna.</translation>
 <translation id="8564182942834072828">Ločeni dokumenti/nezbrane kopije</translation>
-<translation id="8564453110650229930">Kitajska kuverta št. 10</translation>
 <translation id="8564985650692024650">Chromium priporoča, da ponastavite geslo za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
 <translation id="8576310925653847813">Sistemi za domači kino</translation>
 <translation id="8577348305244205642">Virtualna kartica ni na voljo</translation>
@@ -2907,7 +2888,6 @@ Dodatne podrobnosti:
 <translation id="8687429322371626002">Vašo napravo in račun upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Na voljo</translation>
 <translation id="868922510921656628">Strani na niz</translation>
-<translation id="8694278303623679191">Kuverta Postfix</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699041776323235191">Naprava HID</translation>
 <translation id="8699899385443889493">Gumb za igranje igre Dino za Chrome, pritisnite Enter, če želite igrati igro Dino Run v Chromu.</translation>
@@ -2985,7 +2965,6 @@ Dodatne podrobnosti:
 <translation id="8874824191258364635">Vnesite veljavno številko kartice</translation>
 <translation id="8876033571432926051">Priložnostne igre</translation>
 <translation id="8877780815363510165">Ribarjenje</translation>
-<translation id="8879882034055059721">Kuverta 10 x 15 palcev</translation>
 <translation id="8884537526797090108">Zaupne vsebine ni mogoče posneti</translation>
 <translation id="8891727572606052622">Neveljaven način strežnika proxy.</translation>
 <translation id="8894794286471754040">Najprej dolgi rob</translation>

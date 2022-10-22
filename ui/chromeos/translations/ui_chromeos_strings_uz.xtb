@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Parallels Desktopga ulashish</translation>
 <translation id="4902546322522096650">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Ulanish</translation>
 <translation id="4906580650526544301">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Batafsil</translation>
-<translation id="4929673617759421391">Bu fayllarni joylashni administrator taqiqlagan</translation>
 <translation id="4935975195727477204">Gatsaniya guli</translation>
 <translation id="4943368462779413526">Futbol</translation>
 <translation id="4961158930123534723">1 ta jild Parallels Desktopga ulashilgan</translation>
@@ -976,7 +975,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Qozoq</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ta fayl arxivdan chiqarildi.</translation>
-<translation id="9210751050717126865"><ph name="COUNT" /> ta faylni joylashni administrator taqiqlagan</translation>
 <translation id="9213073329713032541">O‘rnatish muvaffaqiyatli boshlandi.</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="9219908252191632183">Oy</translation>

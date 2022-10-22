@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Hace 1 día.}other{Hace # días.}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Hace 1 minuto}other{Hace # minutos}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}other{# min}}</translation>
+<translation id="1181037720776840403">Quitar</translation>
 <translation id="1243314992276662751">Cargar</translation>
 <translation id="1266864766717917324">No se pudo compartir <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

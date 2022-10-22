@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 ր}one{# ր}other{# ր}}</translation>
+<translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1243314992276662751">Վերբեռնել</translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1269641567813814718">Win</translation>

@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
 <translation id="1511320244449497906">You are signed in and syncing your data with an account managed by <ph name="DOMAIN" /> where its administrator can now set user policies specific to that account that can change the behaviour of Chrome.</translation>
+<translation id="1554731936187952550">You have Chrome's strongest security against harmful websites</translation>
 <translation id="1682483655351012182">Sync your Chrome data</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">This account and any unsaved data will be removed from Chrome and other Google apps on this device.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
+<translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
 <translation id="3641179212828090796">Use the password that you saved in Chrome to sign in faster</translation>
@@ -137,6 +139,7 @@ Things to consider:
   • If Chrome crashes, details about the crash may include some personal info.
 
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">You're getting standard security protection for this Chrome profile</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 <translation id="9122931302567044771">This means that Chrome will request the desktop site every time.</translation>
 </translationbundle>

@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Siers</translation>
 <translation id="2781645665747935084">Beļģu</translation>
 <translation id="2782104745158847185">Instalējot Linux lietojumprogrammu, radās kļūda</translation>
+<translation id="2802583107108007218">Uzzināt vairāk par šiem ierobežojumiem</translation>
 <translation id="2803375539583399270">Ievadiet PIN</translation>
 <translation id="2820957248982571256">Notiek meklēšana...</translation>
 <translation id="2830077785865012357">Ķīniešu, Zhuyin</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Kopīgot ar Parallels Desktop</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />, tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, savienojums</translation>
 <translation id="4906580650526544301">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss procentos: <ph name="BATTERY_STATUS" />, informācija</translation>
-<translation id="4929673617759421391">Administratora politika bloķē šī faila ielīmēšanu</translation>
 <translation id="4935975195727477204">Gazānijas zieds</translation>
 <translation id="4943368462779413526">Futbols</translation>
 <translation id="4961158930123534723">Viena mape tika kopīgota ar Parallels Desktop</translation>
@@ -921,6 +921,7 @@
 <translation id="8656768832129462377">Nepārbaudīt</translation>
 <translation id="8688591111840995413">Nepareiza parole</translation>
 <translation id="8698464937041809063">Google zīmējums</translation>
+<translation id="8698877009525468705">Šis fails ir konfidenciāls, un uz to attiecas administratora politikā noteikti ierobežojumi.</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8713112442029511308">Maltiešu</translation>
 <translation id="8714406895390098252">Velosipēds</translation>
@@ -975,7 +976,6 @@
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">Kazahu</translation>
 <translation id="9200427192836333033">Izvilkto vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9210751050717126865">Administratora politika bloķē vairāku failu ielīmēšanu (skaits: <ph name="COUNT" />)</translation>
 <translation id="9213073329713032541">Instalēšana sekmīgi sākta.</translation>
 <translation id="9219103736887031265">Attēli</translation>
 <translation id="9219908252191632183">Mēness</translation>

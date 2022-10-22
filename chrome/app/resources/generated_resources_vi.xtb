@@ -2437,6 +2437,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3201422919974259695">Các thiết bị USB có sẵn sẽ xuất hiện ở đây.</translation>
 <translation id="3202131003361292969">Đường dẫn</translation>
 <translation id="3202173864863109533">Âm thanh của thẻ này hiện bị tắt.</translation>
+<translation id="3202578601642193415">Mới nhất</translation>
 <translation id="3204648577100496185">Dữ liệu liên kết với ứng dụng này có thể bị xoá khỏi thiết bị này</translation>
 <translation id="3208321278970793882">Ứng dụng</translation>
 <translation id="3208584281581115441">Kiểm tra ngay</translation>
@@ -3720,6 +3721,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách các tính năng bạn đã sử dụng và mức bộ nhớ thường được sử dụng.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome. Nếu là quản trị viên miền, bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Để bắt đầu, hãy nhớ kết nối công tắc USB hoặc Bluetooth với Chromebook. Bạn cũng có thể dùng các phím trên bàn phím.</translation>
+<translation id="4426508677408162512">Tất cả dấu trang</translation>
 <translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
 <translation id="4427365070557649936">Đang xác minh mã xác nhận...</translation>
 <translation id="4429163740524851942">Bố cục của bàn phím thực</translation>
@@ -3860,6 +3862,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4556194354084985730">Dễ dàng đăng nhập vào các trang web và ứng dụng bằng mật khẩu bạn đã lưu. Khi tắt tính năng này, bạn sẽ được yêu cầu xác nhận trước khi đăng nhập.</translation>
 <translation id="4558426062282641716">Đã yêu cầu quyền tự động chạy</translation>
 <translation id="4559617833001311418">Trang web này đang sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
+<translation id="4561098487691395071">Hoặc chỉ định tệp PPD cho máy in của bạn</translation>
 <translation id="4561893854334016293">Bạn chưa thay đổi quyền nào gần đây</translation>
 <translation id="4562155214028662640">Thêm vân tay</translation>
 <translation id="4563210852471260509">Ngôn ngữ nhập vào ban đầu là tiếng Trung</translation>
@@ -4358,7 +4361,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5040823038948176460">Các chế độ cài đặt nội dung khác</translation>
 <translation id="5041509233170835229">Ứng dụng Chrome</translation>
 <translation id="5043440033854483429">Tên có thể chứa chữ cái, số và dấu gạch nối (-), đồng thời phải dài từ 1 đến 15 ký tự.</translation>
-<translation id="5043913660911154449">Hoặc chỉ định tệp PPD cho máy in của bạn <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Mật khẩu sai</translation>
 <translation id="504561833207953641">Mở trong phiên trình duyệt hiện tại.</translation>
 <translation id="5049614114599109018">Sử dụng nhật ký nhập</translation>
@@ -4749,6 +4751,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5427278936122846523">Luôn dịch</translation>
 <translation id="5427459444770871191">Xoay &amp;theo chiều kim đồng hồ</translation>
 <translation id="542750953150239272">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp lựa chọn mua hàng trong ứng dụng.</translation>
+<translation id="5427936139162668357">Xem tệp PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Có bản cập nhật)</translation>
 <translation id="542948651837270806">Bạn cần cài đặt bản cập nhật của chương trình cơ sở Mô-đun nền tảng đáng tin cậy. Hãy truy cập vào <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Độ rộng tối đa</translation>
@@ -8157,6 +8160,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8645354835496065562">Tiếp tục cho phép sử dụng cảm biến</translation>
 <translation id="8645920082661222035">Dự đoán và cảnh báo cho bạn các sự kiện nguy hiểm trước khi các sự kiện đó xảy ra</translation>
 <translation id="8646209145740351125">Tắt tính năng đồng bộ hóa</translation>
+<translation id="8646340610303779673">Không thể truy xuất tệp PPD.</translation>
 <translation id="864637694230589560">Các trang web thường gửi thông báo để cho bạn biết về tin nổi bật hoặc tin nhắn trò chuyện</translation>
 <translation id="8647385344110255847">Khi bạn cho phép, con bạn có thể dùng Google Play để cài đặt ứng dụng</translation>
 <translation id="8647834505253004544">Không phải địa chỉ web hợp lệ</translation>
@@ -8217,6 +8221,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="869884720829132584">Menu ứng dụng</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
+<translation id="8699188901396699995">Tệp PPD cho <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> của bạn đã bị khóa.</translation>
 <translation id="8703346390800944767">Bỏ qua quảng cáo</translation>
 <translation id="8705331520020532516">Số Sê-ri</translation>

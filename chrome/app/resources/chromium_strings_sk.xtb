@@ -64,6 +64,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2560420686485554789">Chromium potrebuje na sťahovanie súborov prístup k úložisku</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">Všetky údaje prehliadača Chromium vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
 <translation id="2648074677641340862">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="2661879430930417727">Ak zdieľate zariadenie s rodinou a priateľmi, môžu v prehliadači Chromium prehliadať samostatne a tiež si ho nastaviť podľa vlastných požiadaviek</translation>
 <translation id="2669853942967761236">Chromium tento súbor archívu zablokoval, pretože môže skrývať malvér</translation>
@@ -105,6 +106,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Chcete prepnúť na existujúci profil prehliadača Chromium?</translation>
 <translation id="3412460710772753638">V Správcovi hesiel v tomto zariadení</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Správca nakonfiguroval prehliadač Chromium, aby sa zavrel, keď bude nečinný viac ako minútu.}few{Správca nakonfiguroval prehliadač Chromium, aby sa zavrel, keď bude nečinný viac ako # minúty.}many{Správca nakonfiguroval prehliadač Chromium, aby sa zavrel, keď bude nečinný viac ako # minúty.}other{Správca nakonfiguroval prehliadač Chromium, aby sa zavrel, keď bude nečinný viac ako # minút.}}</translation>
 <translation id="3430503420100763906">Profilmi prehliadača Chromium môžete oddeliť všetok svoj obsah v prehliadači Chromium. Vytvorte profily pre rodinu aj priateľov alebo si rozdeľte obsah na prácu a zábavu.</translation>
 <translation id="347328004046849135">Chromium vás upozorní, keď sa prihlásite pomocou prelomeného hesla</translation>
 <translation id="3474745554856756813">Táto akcia odstráni zo zariadenia niekoľko položiek (počet: <ph name="ITEMS_COUNT" />). Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
@@ -186,6 +188,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="538767207339317086">Povoliť prihlásenie do prehliadača Chromium</translation>
 <translation id="5398878173008909840">K dispozícii je nová verzia prehliadača Chromium.</translation>
 <translation id="5405650547142096840">Odstrániť z prehliadača Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium sa teraz zavrie.}=1{Chromium sa zavrie o 1 sekundu.}few{Chromium sa zavrie o # sekundy.}many{Chromium sa zavrie o # sekundy.}other{Chromium sa zavrie o # sekúnd.}}</translation>
 <translation id="5427571867875391349">Nastaviť Chromium ako predvolený prehliadač</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium nemusí fungovať správne, pretože v tejto verzii systému Linux už nie je podporovaný</translation>
@@ -274,6 +277,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6940431691900807093">Neskôr môže web, ktorý navštívite, o ne Chromium požiadať, aby mohol prispôsobiť zobrazované reklamy. Chromium môže zdieľať až tri záujmy.</translation>
 <translation id="6964305034639999644">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>
 <translation id="6978145336957848883">Slabé heslá sa dajú ľahko uhádnuť. Povoľte prehliadaču Chromium, <ph name="BEGIN_LINK" />aby vám vytváral silné heslá a pamätal si ich<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Prehliadač Chromium je neaktívny</translation>
 <translation id="6985329841647292029">Zmluvné podmienky systému Chromium OS</translation>
 <translation id="6990124437352146030">Chromium potrebuje povolenie pre tento web na prístup k mikrofónu</translation>
 <translation id="7025789849649390912">Inštalácia bola zastavená.</translation>

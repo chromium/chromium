@@ -273,6 +273,7 @@
 <translation id="1244303850296295656">擴充功能錯誤</translation>
 <translation id="1245628370644070008">本機資料復原</translation>
 <translation id="1246863218384630739">無法安裝 <ph name="VM_NAME" />：映像檔網址傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請與管理員聯絡。</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{已禁止 1 個網站傳送通知}other{已禁止 {NUM_SITES} 個網站傳送通知}}</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">這會清除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
 <translation id="1251578593170406502">正在掃描行動數據網路…</translation>
@@ -1639,6 +1640,7 @@
 <translation id="2476974672882258506">請關閉 Windows 以解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">你已設定多個外接切換裝置，因此自動掃描功能已關閉。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
+<translation id="24786041351753425">啟用資料復原服務。</translation>
 <translation id="2480868415629598489">修改你複製和貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁已移至包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組</translation>
@@ -2253,6 +2255,7 @@
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
 <translation id="3027296729579831126">開啟鄰近分享功能</translation>
 <translation id="3029466929721441205">在檔案櫃中顯示觸控筆工具</translation>
+<translation id="3029808567601324798">鎖定時間</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內下載更新。當你連上網際網路時，系統會自動下載更新。}other{<ph name="MANAGER" /> 要求你在期限內下載更新。當你連上網際網路時，系統會自動下載更新。}}</translation>
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">特務 X</translation>
@@ -2408,6 +2411,7 @@
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">分頁音訊已關閉。</translation>
+<translation id="3202578601642193415">最新記錄</translation>
 <translation id="3204648577100496185">系統可能會從這部裝置中移除與這個應用程式相關聯的資料</translation>
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
@@ -3686,6 +3690,7 @@
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在 Chrome 裝置的設定中允許或禁止傳送這類報告。如果你是網域管理員，可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">首先，請確認 USB 或藍牙開關已連接至 Chromebook。你也可以使用鍵盤按鍵。</translation>
+<translation id="4426508677408162512">所有書籤</translation>
 <translation id="4427306783828095590">強化防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
@@ -3825,6 +3830,7 @@
 <translation id="4556194354084985730">使用已儲存的密碼輕鬆登入網站和應用程式。如果關閉這項設定，系統會在你登入前要求你開啟。</translation>
 <translation id="4558426062282641716">已要求自動啟動權限</translation>
 <translation id="4559617833001311418">這個網站正在存取你的動作感應器或光源感應器。</translation>
+<translation id="4561098487691395071">或指定印表機 PPD</translation>
 <translation id="4561893854334016293">最近未變更任何權限</translation>
 <translation id="4562155214028662640">新增指紋</translation>
 <translation id="4563210852471260509">初始輸入語言為中文</translation>
@@ -4196,6 +4202,7 @@
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="4903967893652864401">在這個模式下，系統會限制背景活動和順暢捲動等視覺效果，以延長電池續航力。</translation>
 <translation id="4906490889887219338">設定或管理網路檔案共用。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">選擇這項擴充功能何時可讀取及變更你的網站資料</translation>
 <translation id="4907161631261076876">一般使用者不常下載這個檔案，代表這個檔案可能不安全。</translation>
@@ -4321,7 +4328,6 @@
 <translation id="5040823038948176460">其他內容設定</translation>
 <translation id="5041509233170835229">Chrome 應用程式</translation>
 <translation id="5043440033854483429">名稱可以包含字母、數字和連字號 (-)，且必須介於 1 到 15 個 (含上下限) 字元之間。</translation>
-<translation id="5043913660911154449">或指定印表機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正於現有瀏覽器工作階段中開啟。</translation>
 <translation id="5049614114599109018">使用輸入歷史記錄</translation>
@@ -4712,6 +4718,7 @@
 <translation id="5427278936122846523">一律翻譯</translation>
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>
 <translation id="542750953150239272">如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
+<translation id="5427936139162668357">查看 PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
 <translation id="542948651837270806">必須安裝可信任平台模組韌體的更新項目。詳情請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全形</translation>
@@ -5297,6 +5304,7 @@
 <translation id="5971037678316050792">控制藍牙介面卡狀態與連線配對功能</translation>
 <translation id="597235323114979258">顯示更多列印端點</translation>
 <translation id="5972543790327947908">某些支援連結仍會在「<ph name="APP_NAME" />」、「<ph name="APP_NAME_2" />」或「<ph name="APP_NAME_3" />」中開啟。</translation>
+<translation id="5972559880616357748">可對 <ph name="SITE_GROUP" /> 執行的其他動作</translation>
 <translation id="5972666587303800813">無作業服務</translation>
 <translation id="5972708806901999743">移至頂端</translation>
 <translation id="5972826969634861500">啟動 <ph name="PRODUCT_NAME" /></translation>
@@ -8102,6 +8110,7 @@
 <translation id="8645354835496065562">繼續允許存取感應器</translation>
 <translation id="8645920082661222035">可預測不安全事件，並在這類事件發生前顯示警告訊息</translation>
 <translation id="8646209145740351125">停用同步功能</translation>
+<translation id="8646340610303779673">無法擷取 PPD。</translation>
 <translation id="864637694230589560">網站通常會傳送通知，讓你掌握最新消息或留意即時通訊訊息</translation>
 <translation id="8647385344110255847">只要你同意，孩子就可以透過 Google Play 安裝應用程式</translation>
 <translation id="8647834505253004544">網址無效</translation>
@@ -8162,6 +8171,7 @@
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
+<translation id="8699188901396699995">「<ph name="PRINTER_NAME" />」的 PPD</translation>
 <translation id="8702825062053163569">系統已鎖定你的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8703346390800944767">略過廣告</translation>
 <translation id="8705331520020532516">序號</translation>
@@ -8474,6 +8484,7 @@
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">重新整理網路共用狀態</translation>
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>
+<translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，還是可以還原本機資料。你必須登入 Google 帳戶或使用帳戶救援功能。</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
 <translation id="899657321862108550">隨時隨地享有個人化的 Chrome 體驗</translation>
@@ -8573,6 +8584,7 @@
 <translation id="9078316009970372699">停用即時網路共用</translation>
 <translation id="9078842827190780028">在側邊面板中查看更多搜尋結果</translation>
 <translation id="9079267182985899251">系統即將停止支援這個選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="9080175821499742274">記憶體節省模式會將閒置分頁占用的記憶體釋出給使用中的分頁和其他應用程式。</translation>
 <translation id="9080971985541434310">推測你的興趣喜好 - Chrome 可以推測你感興趣的主題</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
@@ -8761,6 +8773,7 @@
 <translation id="964790508619473209">螢幕排列位置</translation>
 <translation id="965211523698323809">透過你的 <ph name="DEVICE_TYPE" /> 收發簡訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">回報 Google Cast 的問題</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近傳送大量通知的網站 (1 個)}other{查看最近傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
 <translation id="967398046773905967">不允許任何網站存取 HID 裝置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的印表機</translation>

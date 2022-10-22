@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Rolnictwo i leśnictwo</translation>
 <translation id="1080116354587839789">Dopasuj do szerokości</translation>
 <translation id="1081061862829655580">Taca 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Dodaj imię i nazwisko z karty</translation>
 <translation id="1089439967362294234">Zmień hasło</translation>
 <translation id="1096545575934602868">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Kolejne wpisy zostaną odrzucone.</translation>
@@ -170,7 +169,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1364822246244961190">Ta zasada jest zablokowana. Jej wartość będzie ignorowana.</translation>
 <translation id="1368318639262510626">Gra z dinozaurem. Pikselowy dinozaur biegnie przez pustynię, unikając kaktusów i pterodaktyli. Gdy usłyszysz dźwięk, naciśnij spację, aby przeskoczyć przeszkodę.</translation>
 <translation id="1374468813861204354">sugestie</translation>
-<translation id="1374692235857187091">Index-4x6 (pocztówka)</translation>
 <translation id="1375198122581997741">Informacje o wersji</translation>
 <translation id="1376836354785490390">Pokaż mniej</translation>
 <translation id="1377321085342047638">Numer karty</translation>
@@ -210,7 +208,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1459693405370120464">Pogoda</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">korzystać z czcionek zainstalowanych na komputerze w celu tworzenia treści wysokiej jakości</translation>
-<translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> to Twój kod, który umożliwi dalsze korzystanie z <ph name="EMBEDDED_ORIGIN" /> w witrynie <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Pokaż więcej</translation>
@@ -675,7 +672,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2677696497921480781">Urodziny i imieniny</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2679714844901977852">Aby szybciej dokonywać bezpiecznych płatności, zapisz dane karty i informacje rozliczeniowe na koncie Google <ph name="USER_EMAIL" /></translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Najlepsze dopasowanie</translation>
 <translation id="2688969097326701645">Tak, kontynuuj</translation>
 <translation id="2691924980723297736">Ostrzeżenie zabezpieczeń</translation>
@@ -709,7 +705,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2775884851269838147">Pierwsza strona wydruku</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Połączenie zostało zresetowane.</translation>
-<translation id="2786469568759673015">Koperta chińska nr 3</translation>
 <translation id="2791176355335562114">Następnym razem zapłać szybciej</translation>
 <translation id="2792012897584536778">Administratorzy tego urządzenia skonfigurowali certyfikaty zabezpieczeń, dzięki którym mogą zobaczyć zawartość stron internetowych, które odwiedzasz.</translation>
 <translation id="2799020568854403057">Strona, którą chcesz otworzyć, zawiera szkodliwe aplikacje</translation>
@@ -1019,7 +1014,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3634530185120165534">Taca 5</translation>
 <translation id="3634567936866541746">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Dla bezpieczeństwa Twoich kont Chrome zaleca sprawdzenie zapisanych haseł.</translation>
 <translation id="3637662659967048211">Zapisz na koncie Google</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Aplikacja:</translation>
 <translation id="3647286794400715637">Każda pozycja z adresami URL musi zawierać od 1 do 2 takich adresów.</translation>
 <translation id="3650584904733503804">Weryfikacja powiodła się</translation>
@@ -1150,7 +1144,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4010758435855888356">Zezwolić na dostęp do pamięci?</translation>
 <translation id="401170183602135785">Koperta C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF zawierający {COUNT} stronę}few{Dokument PDF zawierający {COUNT} strony}many{Dokument PDF zawierający {COUNT} stron}other{Dokument PDF zawierający {COUNT} strony}}</translation>
-<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Twoje dane będą widoczne dla innych, ponieważ połączenie używane do przesłania formularza nie jest bezpieczne.</translation>
 <translation id="4024923292610332139">wyłączyć używanie TouchID do wypełniania haseł</translation>
 <translation id="4025913568718019429">Przycisk zarządzania prywatnością w Google; aby otworzyć ustawienia prywatności konta Google, naciśnij Enter</translation>
@@ -1368,7 +1361,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Spróbuj wyłączyć rozszerzenia.</translation>
 <translation id="4559134504959026834">Ta witryna należy do zdefiniowanej przez firmę <ph name="SET_OWNER" /> grupy, która ma dostęp do danych o Twojej aktywności</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Rekreacja w plenerze</translation>
 <translation id="4567686777917670400">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Dostawa</translation>
@@ -1412,7 +1404,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4682496302933121474">Przetłumaczyć stronę?</translation>
 <translation id="468314109939257734">Wyświetl numer karty wirtualnej</translation>
 <translation id="4692623383562244444">Wyszukiwarki</translation>
-<translation id="4693246800345263879">Koperta 10 x 14 cali</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Strona</translation>
 <translation id="4702656508969495934">Napisy na żywo są widoczne. Użyj przełącznika okien, aby zaznaczyć.</translation>
@@ -1630,7 +1621,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5205222826937269299">Nazwa jest wymagana</translation>
 <translation id="5209518306177824490">Odcisk cyfrowy SHA-1</translation>
 <translation id="5209670883520018268">Taca 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Taca 13</translation>
 <translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
 <translation id="5217759126664161410">Nieprawidłowy format protokołu.</translation>
@@ -1639,7 +1629,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5229588705416009823">Gry MMO</translation>
 <translation id="5230733896359313003">Adres wysyłki</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5239623327352565343">Lokalizacja jest dozwolona</translation>
 <translation id="5242889659037569123">Bagaże i akcesoria turystyczne</translation>
@@ -1878,7 +1867,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5884465125445718607">Koperta chińska nr 6</translation>
 <translation id="5887400589839399685">Zapisano kartę</translation>
 <translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
-<translation id="5891155897634819292">Koperta chińska nr 5</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5895187275912066135">Wystawiony dnia</translation>
 <translation id="5901630391730855834">Żółty</translation>
@@ -1911,7 +1899,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5974052231147553524">Rolka 6</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Wilgotność w komorze</translation>
 <translation id="5984712050237025014">Rzeczywistość rozszerzona i wirtualna</translation>
 <translation id="598637245381783098">Nie można otworzyć aplikacji do płatności</translation>
@@ -2400,7 +2387,6 @@ Dodatkowe informacje:
 <translation id="7337706099755338005">Niedostępny na Twojej platformie.</translation>
 <translation id="733923710415886693">Certyfikat serwera nie został ujawniony przez protokół Certificate Transparency.</translation>
 <translation id="7341357280245177602">Pojazdy używane</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Jest w tej samej domenie:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Zezwolono, dopóki nie zamkniesz tej karty</translation>
@@ -2443,7 +2429,6 @@ Dodatkowe informacje:
       &lt;li&gt;Kliknij &lt;strong&gt;Zastosuj&lt;/strong&gt;, a potem kliknij &lt;strong&gt;OK&lt;/strong&gt;.
       &lt;li&gt;W &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centrum pomocy Chrome&lt;/a&gt; dowiesz się, jak trwale usunąć to oprogramowanie z komputera.
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Romantyczny</translation>
 <translation id="741204030948306876">Tak</translation>
 <translation id="7416351320495623771">Zarządzaj hasłami…</translation>
@@ -2489,7 +2474,6 @@ Dodatkowe informacje:
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7517414872996418597">Koperta C10</translation>
 <translation id="7518003948725431193">Nie znaleziono strony internetowej pod adresem <ph name="URL" /></translation>
-<translation id="7518098469289408841">Koperta 10 x 13 cali</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Sekcja „<ph name="SECTION" />” została ukryta</translation>
 <translation id="7523408071729642236">Produkcja</translation>
@@ -2780,7 +2764,6 @@ Dodatkowe informacje:
 <translation id="8277900682056760511">Arkusz modułu do obsługi płatności jest otwarty</translation>
 <translation id="8279611986089885641">Powiadomienia w Chrome muszą być włączone. Aby je włączyć, otwórz <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Taca 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8282947398454257691">Odczytywanie unikalnego identyfikatora Twojego urządzenia</translation>
 <translation id="8284769179630993263">Zarządzaj Bezpiecznym przeglądaniem i innymi opcjami w ustawieniach Chrome</translation>
@@ -2796,7 +2779,6 @@ Dodatkowe informacje:
 <translation id="8299269255470343364">Japoński</translation>
 <translation id="8303854710873047864">Wyświetlam sekcję „<ph name="SECTION" />”</translation>
 <translation id="830498451218851433">Składanie w połowie</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Zainstalowane aplikacje i częstotliwość ich użycia</translation>
 <translation id="831997045666694187">Wieczorem</translation>
 <translation id="8321476692217554900">powiadomienia</translation>
@@ -2878,7 +2860,6 @@ Dodatkowe informacje:
 <translation id="8557066899867184262">Kod CVC znajduje się na odwrocie karty.</translation>
 <translation id="8559762987265718583">Nie można nawiązać prywatnego połączenia z <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ data i godzina (<ph name="DATE_AND_TIME" />) ustawione na urządzeniu są nieprawidłowe.</translation>
 <translation id="8564182942834072828">Oddzielne dokumenty / Kopie niesortowane</translation>
-<translation id="8564453110650229930">Koperta chińska nr 10</translation>
 <translation id="8564985650692024650">Chromium zaleca zresetowanie hasła, którego używasz w: <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, jeśli zostało użyte na innej stronie.</translation>
 <translation id="8576310925653847813">Systemy kina domowego</translation>
 <translation id="8577348305244205642">Karta wirtualna jest niedostępna</translation>
@@ -2907,7 +2888,6 @@ Dodatkowe informacje:
 <translation id="8687429322371626002">Twoim urządzeniem i kontem zarządza <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostępne</translation>
 <translation id="868922510921656628">Strony na zestaw</translation>
-<translation id="8694278303623679191">Koperta Postfix</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699041776323235191">Urządzenie HID</translation>
 <translation id="8699899385443889493">Przycisk Zagraj w grę z dinozaurem w Chrome; aby zagrać w grę Dino Run w Chrome, naciśnij Enter</translation>
@@ -2985,7 +2965,6 @@ Dodatkowe informacje:
 <translation id="8874824191258364635">Wpisz prawidłowy numer karty</translation>
 <translation id="8876033571432926051">Gry rekreacyjne</translation>
 <translation id="8877780815363510165">Wędkarstwo</translation>
-<translation id="8879882034055059721">Koperta 10 x 15 cali</translation>
 <translation id="8884537526797090108">Nie można nagrywać treści poufnych</translation>
 <translation id="8891727572606052622">Nieprawidłowy tryb proxy</translation>
 <translation id="8894794286471754040">Najpierw dłuższa krawędź</translation>

@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">農林業</translation>
 <translation id="1080116354587839789">縮放至符合畫面寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">新增持卡人姓名</translation>
 <translation id="1089439967362294234">變更密碼</translation>
 <translation id="1096545575934602868">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘所有項目將會捨棄。</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">此政策被封鎖，系統會忽略其設定值。</translation>
 <translation id="1368318639262510626">喺呢款恐龍遊戲入面，你要協助喺荒野入面奔馳嘅像素化恐龍避開仙人掌同翼手龍。當您聽到音效提示嘅時候，㩒空格鍵就可以跳過障礙物。</translation>
 <translation id="1374468813861204354">建議</translation>
-<translation id="1374692235857187091">Index-4x6 (明信片)</translation>
 <translation id="1375198122581997741">關於版本</translation>
 <translation id="1376836354785490390">顯示較少</translation>
 <translation id="1377321085342047638">卡號</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">天氣</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用電腦上的字型，以便製作高傳真度內容</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1468653229182955856">您的 <ph name="EMBEDDED_ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" />。您需要輸入此驗證碼，才能繼續瀏覽 <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">顯示更多</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">生日和命名日</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2679714844901977852">將信用卡和帳單資料儲存至 Google 帳戶 <ph name="USER_EMAIL" />，享受更安全快速的結帳程序</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">最適合</translation>
 <translation id="2688969097326701645">是，請繼續</translation>
 <translation id="2691924980723297736">安全警告</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">第一列印頁</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">連線已重設。</translation>
-<translation id="2786469568759673015">Chinese #3 信封</translation>
 <translation id="2791176355335562114">加快下次結帳速度</translation>
 <translation id="2792012897584536778">此裝置的管理員已設定安全性憑證，這些憑證可允許管理員查看您瀏覽的網站內容。</translation>
 <translation id="2799020568854403057">您要前往的網站包含有害的應用程式</translation>
@@ -1018,7 +1013,6 @@
 <translation id="3634530185120165534">紙匣 5</translation>
 <translation id="3634567936866541746">您剛才在欺詐網站上輸入了密碼。為確保帳戶安全，Chrome 建議您檢查已儲存的密碼。</translation>
 <translation id="3637662659967048211">儲存至 Google 帳戶</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">應用程式：</translation>
 <translation id="3647286794400715637">每個網址字串都必須包含 1 至 2 個網址。</translation>
 <translation id="3650584904733503804">驗證成功</translation>
@@ -1149,7 +1143,6 @@
 <translation id="4010758435855888356">要授予儲存空間存取權嗎？</translation>
 <translation id="401170183602135785">C6 信封</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
-<translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
 <translation id="4024923292610332139">關閉 Touch ID 以填入密碼</translation>
 <translation id="4025913568718019429">管理 Google 私隱設定按鈕，㩒一下 Enter 鍵就可以去 Google 帳戶私隱設定</translation>
@@ -1367,7 +1360,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">嘗試停用擴充程式。</translation>
 <translation id="4559134504959026834">此網站屬於由 <ph name="SET_OWNER" /> 定義的群組，因此可查看您的活動</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">戶外活動</translation>
 <translation id="4567686777917670400">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">送貨</translation>
@@ -1411,7 +1403,6 @@
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="468314109939257734">查看虛擬卡號</translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
-<translation id="4693246800345263879">10 x 14 吋信封</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側邊</translation>
 <translation id="4702656508969495934">顯示咗即時字幕，用視窗切換選項將焦點移去即時字幕</translation>
@@ -1629,7 +1620,6 @@
 <translation id="5205222826937269299">需要提供名稱</translation>
 <translation id="5209518306177824490">SHA-1 指紋</translation>
 <translation id="5209670883520018268">紙匣 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">紙匣 13</translation>
 <translation id="5216942107514965959">上次瀏覽時間：今天</translation>
 <translation id="5217759126664161410">通訊協定格式無效。</translation>
@@ -1638,7 +1628,6 @@
 <translation id="5229588705416009823">大型多人網上遊戲</translation>
 <translation id="5230733896359313003">付運地址</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5239623327352565343">批准存取位置資料</translation>
 <translation id="5242889659037569123">行李箱和旅遊裝備</translation>
@@ -1877,7 +1866,6 @@
 <translation id="5884465125445718607">Chinese #6 信封</translation>
 <translation id="5887400589839399685">已儲存的付款卡</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
-<translation id="5891155897634819292">Chinese #5 信封</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895187275912066135">發行日期</translation>
 <translation id="5901630391730855834">黃色</translation>
@@ -1910,7 +1898,6 @@
 <translation id="5974052231147553524">第六卷</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">室內濕度</translation>
 <translation id="5984712050237025014">擴張和虛擬實境</translation>
 <translation id="598637245381783098">無法開啟付款應用程式</translation>
@@ -2399,7 +2386,6 @@
 <translation id="7337706099755338005">無法在您的平台上使用。</translation>
 <translation id="733923710415886693">伺服器憑證並未透過憑證透明度政策披露。</translation>
 <translation id="7341357280245177602">二手車</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">是否已建立關聯：</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">權限於此分頁關閉時到期</translation>
@@ -2442,7 +2428,6 @@
       &lt;li&gt;按一下 [套用]&lt;strong&gt;&lt;/strong&gt;，然後按一下 [確定]&lt;strong&gt;&lt;/strong&gt;
       &lt;li&gt;前往 &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome 說明中心&lt;/a&gt;，瞭解如何從您的電腦中永久移除有關軟件
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">可愛</translation>
 <translation id="741204030948306876">確認</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
@@ -2488,7 +2473,6 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7517414872996418597">C10 信封</translation>
 <translation id="7518003948725431193">找不到這個網址的網頁：<ph name="URL" /></translation>
-<translation id="7518098469289408841">10 x 13 吋信封</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">隱藏咗「<ph name="SECTION" />」部分</translation>
 <translation id="7523408071729642236">製造業</translation>
@@ -2779,7 +2763,6 @@
 <translation id="8277900682056760511">付款處理常式工作表開咗</translation>
 <translation id="8279611986089885641">必須開啟 Chrome 通知。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />開啟</translation>
 <translation id="8280630997017109758">紙匣 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282947398454257691">掌握您的專屬裝置識別碼</translation>
 <translation id="8284769179630993263">在 Chrome 設定中管理安全瀏覽等功能</translation>
@@ -2795,7 +2778,6 @@
 <translation id="8299269255470343364">日文</translation>
 <translation id="8303854710873047864">顯示咗「<ph name="SECTION" />」部分</translation>
 <translation id="830498451218851433">對摺</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">已安裝的應用程式及使用頻率</translation>
 <translation id="831997045666694187">傍晚</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -2877,7 +2859,6 @@
 <translation id="8557066899867184262">信用卡驗證碼 (CVC) 位於信用卡背面。</translation>
 <translation id="8559762987265718583">您裝置的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>
 <translation id="8564182942834072828">個別文件/未自動分頁的副本</translation>
-<translation id="8564453110650229930">Chinese #10 信封</translation>
 <translation id="8564985650692024650">如果您已在其他網站上重用 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chromium 建議您重設密碼。</translation>
 <translation id="8576310925653847813">家庭影院系統</translation>
 <translation id="8577348305244205642">虛擬卡無法使用</translation>
@@ -2906,7 +2887,6 @@
 <translation id="8687429322371626002">您的裝置和帳戶由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="868922510921656628">每組頁數</translation>
-<translation id="8694278303623679191">Postfix 信封</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699041776323235191">HID 裝置</translation>
 <translation id="8699899385443889493">玩 Chrome Dino 遊戲按鈕，㩒一下 Enter 鍵就可以喺 Chrome 玩恐龍遊戲</translation>
@@ -2984,7 +2964,6 @@
 <translation id="8874824191258364635">請輸入有效的信用卡號碼</translation>
 <translation id="8876033571432926051">休閒遊戲</translation>
 <translation id="8877780815363510165">釣魚</translation>
-<translation id="8879882034055059721">10 x 15 吋信封</translation>
 <translation id="8884537526797090108">無法錄影機密內容</translation>
 <translation id="8891727572606052622">Proxy 模式無效。</translation>
 <translation id="8894794286471754040">先從長邊開始</translation>

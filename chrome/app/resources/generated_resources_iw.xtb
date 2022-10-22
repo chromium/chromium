@@ -2411,6 +2411,7 @@
 <translation id="3201422919974259695">‏התקני USB זמינים יופיעו כאן.</translation>
 <translation id="3202131003361292969">נתיב</translation>
 <translation id="3202173864863109533">האודיו בכרטיסייה זו מושתק.</translation>
+<translation id="3202578601642193415">החדש ביותר</translation>
 <translation id="3204648577100496185">יכול להיות שיוסרו מהמכשיר נתונים המשויכים לאפליקציה הזו</translation>
 <translation id="3208321278970793882">אפליקציה</translation>
 <translation id="3208584281581115441">בדיקה עכשיו</translation>
@@ -3680,6 +3681,7 @@
 <translation id="4423376891418188461">שחזור הגדרות</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, מנהל המערכת מבקש ממך לשנות את הסיסמה שלך.</translation>
 <translation id="4426464032773610160">‏כדי להתחיל, עליך לוודא שהמתג ב-USB או ב-Bluetooth מחובר ל-Chromebook. ניתן גם להשתמש במקשי המקלדת.</translation>
+<translation id="4426508677408162512">כל הסימניות</translation>
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4427365070557649936">בתהליך אימות של קוד האישור...</translation>
 <translation id="4429163740524851942">פריסת מקלדת פיזית</translation>
@@ -3820,6 +3822,7 @@
 <translation id="4556194354084985730">קל להיכנס לאתרים ולאפליקציות באמצעות הסיסמאות השמורות. כשההגדרה מושבתת, תוצג לך בקשה לבחור סיסמה לפני הכניסה לחשבון.</translation>
 <translation id="4558426062282641716">התבקשה הרשאה להפעלה אוטומטית</translation>
 <translation id="4559617833001311418">האתר הזה ניגש לחיישני התנועה או התאורה שלך.</translation>
+<translation id="4561098487691395071">‏או ציון ה-PPD של המדפסת</translation>
 <translation id="4561893854334016293">אין הרשאות שהשתנו לאחרונה</translation>
 <translation id="4562155214028662640">הוספת טביעת אצבע</translation>
 <translation id="4563210852471260509">שפת הקלט הראשונית היא סינית</translation>
@@ -4314,7 +4317,6 @@
 <translation id="5040823038948176460">הגדרות תוכן נוספות</translation>
 <translation id="5041509233170835229">‏אפליקציית Chrome</translation>
 <translation id="5043440033854483429">שם יכול לכתות אותיות, מספרים ומקפים (-), והוא חייב להיות באורך של 1 עד 15 תווים.</translation>
-<translation id="5043913660911154449">‏לחלופין, אפשר לציין את ה-PPD של המדפסת <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
 <translation id="504561833207953641">פתיחה בסשן קיים של הדפדפן.</translation>
 <translation id="5049614114599109018">שימוש בהיסטוריית קלט</translation>

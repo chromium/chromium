@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 วันที่ผ่านมา}other{# วันที่ผ่านมา}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 นาที}other{# นาที}}</translation>
+<translation id="1181037720776840403">นำออก</translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
 <translation id="1266864766717917324">แชร์<ph name="CONTENT_TYPE" />ไม่ได้</translation>
 <translation id="1269641567813814718">Win</translation>

@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Parallels Desktop மூலம் பகிர்</translation>
 <translation id="4902546322522096650">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, இணை</translation>
 <translation id="4906580650526544301">நெட்வொர்க்: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி <ph name="BATTERY_STATUS" />%, விவரங்கள்</translation>
-<translation id="4929673617759421391">இந்த ஃபைலை ஒட்டுவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="4935975195727477204">கஸானியா பூ</translation>
 <translation id="4943368462779413526">கால்பந்து</translation>
 <translation id="4961158930123534723">1 ஃபோல்டர் Parallels Desktop உடன் பகிரப்பட்டது</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">கஸக்</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள்/டைரக்டரிகள் பிரிக்கப்பட்டன.</translation>
-<translation id="9210751050717126865"><ph name="COUNT" /> ஃபைல்களை ஒட்டுவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="9213073329713032541">நிறுவல் தொடங்கியது.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">லூனார்</translation>

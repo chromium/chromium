@@ -84,6 +84,7 @@
 <translation id="753732157349120914">分頁切換工具</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 個來自 Google 的評論}other{<ph name="REVIEWS_COUNT_MANY" /> 個來自 Google 的評論}}</translation>
 <translation id="7559245342362162951">用全螢幕網格顯示群組嘅分頁</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁}other{分享 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁}}</translation>
 <translation id="7792771145871471484">睇下建議。</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁分組}other{將 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁分組}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_ONE" /> 則評論}other{<ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_MANY" /> 則評論}}</translation>

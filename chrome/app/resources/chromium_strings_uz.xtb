@@ -62,6 +62,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2560420686485554789">Yuklab olish uchun Chromium brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>
 <translation id="2572494885440352020">Chromium yordamchisi</translation>
 <translation id="2583187216237139145">Bu profil ishlatilganda yaratilgan har qanday Chromium maʼlumotlari (bukmarklar, tarix, parollar va boshqa sozlamalar kabi) ish profili administratori tomonidan tozalanishi mumkin. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Chromium yopilmasin</translation>
 <translation id="2648074677641340862">O‘rnatish vaqtida operatsion tizim xatoligi yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="2661879430930417727">Agar qurilmangizdan yaqinlaringiz va doʻstlaringiz ham foydalansa, ular Chromium brauzerini oʻzlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="2669853942967761236">Tarkibida zararli kod borligi sababli bu arxiv fayli Chromium tomonidan bloklandi.</translation>
@@ -101,6 +102,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mavjud Chromium profiliga almashilsinmi?</translation>
 <translation id="3412460710772753638">Bu qurilmada Parollar menejeriga</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Chromium kamida 1 daqiqa nofaol boʻlganda avtomatik yopilishi administrator tomonidan sozlangan.}other{Chromium kamida # daqiqa nofaol boʻlganda avtomatik yopilishi administrator tomonidan sozlangan.}}</translation>
 <translation id="3430503420100763906">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Doʻstlar va oila uchun profillar yarating yoki ish va hordiqni ajrating</translation>
 <translation id="347328004046849135">Google hisobingizga kirsangiz, Chromium oshkor qilingan parollar haqida xabar qiladi</translation>
 <translation id="3474745554856756813">Ushbu qurilmadagi <ph name="ITEMS_COUNT" /> ta element butunlay o‘chiriladi. Ma’lumotlaringizni keyinroq olish uchun Chromium brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
@@ -182,6 +184,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="538767207339317086">Chromium hisobiga kirishga ruxsat berish</translation>
 <translation id="5398878173008909840">Chromium brauzerining yangi versiyasi chiqdi.</translation>
 <translation id="5405650547142096840">Chromiumdan oʻchirish</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium hozir yopiladi.}=1{Chromium 1 soniyadan keyin yopiladi.}other{Chromium # soniyadan keyin yopiladi.}}</translation>
 <translation id="5427571867875391349">Chromium‘ni standart brauzer sifatida tayinlash.</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium brauzeri endi ishlamay qolishi mumkin, chunki uning yangi versiyalarida ushbu Linux distributivi taʼminoti toʻxtatiladi.</translation>
@@ -270,6 +273,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6940431691900807093">Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromiumdan qiziqishlaringiz haqida soʻrashi mumkin. Chromium 3 tagacha qiziqishingizni ulasha oladi.</translation>
 <translation id="6964305034639999644">Havolani Chromium &amp;inkognito oynasida ochish</translation>
 <translation id="6978145336957848883">Kuchsiz parollar oson topiladi. Chromium <ph name="BEGIN_LINK" />siz uchun ishonchli parol yaratsin va eslab qolsin<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium faol emas</translation>
 <translation id="6985329841647292029">ChromiumOS shartlari</translation>
 <translation id="6990124437352146030">Bu sayt mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="7025789849649390912">Oʻrnatish toʻxtatildi.</translation>

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Pred 1 dnevom}one{Pred # dnevom}two{Pred # dnevoma}few{Pred # dnevi}other{Pred # dnevi}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Pred 1 minuto}one{Pred # minuto}two{Pred # minutama}few{Pred # minutami}other{Pred # minutami}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}one{# m}two{# m}few{# m}other{# m}}</translation>
+<translation id="1181037720776840403">Odstrani</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1266864766717917324">Ni bilo mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

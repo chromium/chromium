@@ -2433,6 +2433,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3201422919974259695">Tilgængelige USB-enheder vises her.</translation>
 <translation id="3202131003361292969">Sti</translation>
 <translation id="3202173864863109533">Denne fanes lyd er slået fra.</translation>
+<translation id="3202578601642193415">Nyeste</translation>
 <translation id="3204648577100496185">Data, der er knyttet til denne app, fjernes muligvis fra enheden</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
@@ -3715,6 +3716,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ved at give ChromeOS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i ChromeOS. Disse rapporter kan f.eks. indeholde oplysninger om, hvornår ChromeOS oplever nedbrud, hvilke funktioner der blev brugt, og hvor meget hukommelse der normalt bruges.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for afsendelse af disse rapporter i indstillingerne for din Chrome-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Kom godt i gang ved at tjekke, at din USB- eller Bluetooth-kontakt har forbindelse til din Chromebook. Du kan også bruge tasterne på et tastatur.</translation>
+<translation id="4426508677408162512">Alle bogmærker</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4427365070557649936">Godkender bekræftelseskode...</translation>
 <translation id="4429163740524851942">Fysisk tastaturlayout</translation>
@@ -3855,6 +3857,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4556194354084985730">Log nemt ind på websites og i apps med dine gemte adgangskoder. Når funktionen er slået fra, bliver du spurgt, før du logger ind.</translation>
 <translation id="4558426062282641716">Der er anmodet om tilladelse til automatisk start</translation>
 <translation id="4559617833001311418">Dette website har adgang til dine bevægelses- og lyssensorer.</translation>
+<translation id="4561098487691395071">Du kan også angive PPD-filen for printeren</translation>
 <translation id="4561893854334016293">Ingen tilladelser blev ændret for nylig</translation>
 <translation id="4562155214028662640">Tilføj fingeraftryk</translation>
 <translation id="4563210852471260509">Det oprindelige indtastningssprog er kinesisk</translation>
@@ -4353,7 +4356,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5040823038948176460">Yderligere indstillinger for indhold</translation>
 <translation id="5041509233170835229">Chrome-app</translation>
 <translation id="5043440033854483429">Navne må indeholde bogstaver, tal og bindestreger (-), og de skal være på 1-15 tegn.</translation>
-<translation id="5043913660911154449">Du kan også angive PPD-filen for printeren <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="504561833207953641">Åbner i eksisterende browsersession.</translation>
 <translation id="5049614114599109018">Brug indtastningshistorik</translation>
@@ -4744,6 +4746,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5427278936122846523">Oversæt altid</translation>
 <translation id="5427459444770871191">Roter med &amp;uret</translation>
 <translation id="542750953150239272">Ved at fortsætte accepterer du, at denne enhed også automatisk kan downloade og installere opdateringer og apps fra Google, dit mobilselskab og enhedsproducenten, muligvis ved hjælp af mobildata. Nogle af disse apps tilbyder muligvis køb i appen.</translation>
+<translation id="5427936139162668357">Se PPD-fil</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (tilgængelig opdatering)</translation>
 <translation id="542948651837270806">Der skal installeres en opdatering til Trusted Platform Module-firmwaren. Se <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Fuld bredde</translation>
@@ -8150,6 +8153,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8645354835496065562">Fortsæt med at tillade adgang til sensorer</translation>
 <translation id="8645920082661222035">Forudser og advarer dig om skadelige hændelser, før de opstår</translation>
 <translation id="8646209145740351125">Deaktiver synkronisering</translation>
+<translation id="8646340610303779673">PPD-filen kunne ikke vises.</translation>
 <translation id="864637694230589560">Websites sender som regel notifikationer for at informere dig om breaking news eller chatbeskeder</translation>
 <translation id="8647385344110255847">Med din tilladelse kan dit barn bruge Google Play til at installere apps</translation>
 <translation id="8647834505253004544">Ikke en gyldig webadresse</translation>
@@ -8210,6 +8214,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="869884720829132584">Programmenu</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
+<translation id="8699188901396699995">PPD for <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Din <ph name="DEVICE_TYPE" /> er blevet låst.</translation>
 <translation id="8703346390800944767">Spring annonce over</translation>
 <translation id="8705331520020532516">Serienummer</translation>

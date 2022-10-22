@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Parallels Desktop과 공유</translation>
 <translation id="4902546322522096650">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="4906580650526544301">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 세부정보</translation>
-<translation id="4929673617759421391">관리자 정책에 의해 이 파일의 붙여넣기가 차단되었습니다.</translation>
 <translation id="4935975195727477204">꽃</translation>
 <translation id="4943368462779413526">풋볼</translation>
 <translation id="4961158930123534723">폴더 1개가 Parallels Desktop과 공유되었습니다.</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">카자흐어</translation>
 <translation id="9200427192836333033">항목 <ph name="NUMBER_OF_ITEMS" />개가 추출되었습니다.</translation>
-<translation id="9210751050717126865">관리자 정책에 의해 파일 <ph name="COUNT" />개의 붙여넣기가 차단되었습니다.</translation>
 <translation id="9213073329713032541">설치가 시작되었습니다.</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="9219908252191632183">달</translation>

@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Дели са Parallels Desktop-ом</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, повежи</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, детаљи</translation>
-<translation id="4929673617759421391">Смернице администратора блокирају налепљивање овог фајла</translation>
 <translation id="4935975195727477204">Цвет газаније</translation>
 <translation id="4943368462779413526">Фудбалска лопта</translation>
 <translation id="4961158930123534723">1 директоријум се дели са Parallels Desktop-ом</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Google документи</translation>
 <translation id="9189836632794948435">казашки</translation>
 <translation id="9200427192836333033">Број изведених ставки је <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="9210751050717126865">Смернице администратора блокирају налепљивање фајлова (<ph name="COUNT" />)</translation>
 <translation id="9213073329713032541">Инсталација је започета.</translation>
 <translation id="9219103736887031265">Слике</translation>
 <translation id="9219908252191632183">Месечева површина</translation>

@@ -2422,6 +2422,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3201422919974259695">Hier zie je beschikbare USB-apparaten.</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3202173864863109533">De audio van dit tabblad wordt uitgezet.</translation>
+<translation id="3202578601642193415">Nieuwste</translation>
 <translation id="3204648577100496185">Gegevens die aan deze app zijn gekoppeld, kunnen van dit apparaat worden verwijderd</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Nu checken</translation>
@@ -3704,6 +3705,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Als je ChromeOS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in ChromeOS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals wanneer ChromeOS crasht, welke functies er zijn gebruikt en hoeveel geheugen er gewoonlijk wordt gebruikt.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Als je aan de slag wilt gaan, zorg je dat je USB- of bluetooth-schakelaar is verbonden met je Chromebook. Je kunt ook de toetsen van het toetsenbord gebruiken.</translation>
+<translation id="4426508677408162512">Alle bookmarks</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
 <translation id="4427365070557649936">Bevestigingscode verifiëren...</translation>
 <translation id="4429163740524851942">Indeling van fysiek toetsenbord</translation>
@@ -3843,6 +3845,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4556194354084985730">Log makkelijk in bij sites en apps met je opgeslagen wachtwoorden. Als dit uitstaat, wordt eerst gevraagd of je wilt inloggen.</translation>
 <translation id="4558426062282641716">Rechten voor automatisch starten gevraagd</translation>
 <translation id="4559617833001311418">Deze site heeft toegang tot je bewegings- of lichtsensoren.</translation>
+<translation id="4561098487691395071">Of geef de PPD van je printer op</translation>
 <translation id="4561893854334016293">Geen onlangs gewijzigde rechten</translation>
 <translation id="4562155214028662640">Vingerafdruk toevoegen</translation>
 <translation id="4563210852471260509">Standaard invoertaal is Chinees</translation>
@@ -4340,7 +4343,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5040823038948176460">Aanvullende contentinstellingen</translation>
 <translation id="5041509233170835229">Chrome-app</translation>
 <translation id="5043440033854483429">De naam mag letters, cijfers en koppeltekens (-) bevatten en moet tussen 1 en 15 tekens lang zijn (inclusief spaties).</translation>
-<translation id="5043913660911154449">Of geef de PPD van je printer op. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="504561833207953641">Wordt geopend in een bestaande browsersessie.</translation>
 <translation id="5049614114599109018">Invoergeschiedenis gebruiken</translation>
@@ -4731,6 +4733,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5427278936122846523">Altijd vertalen</translation>
 <translation id="5427459444770871191">Rechtsom &amp;draaien</translation>
 <translation id="542750953150239272">Als je doorgaat, ga je ermee akkoord dat dit apparaat ook automatisch updates of apps van Google, je provider of de fabrikant van je apparaat kan downloaden en installeren, en dat hiervoor mogelijk mobiele data worden gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden.</translation>
+<translation id="5427936139162668357">PPD bekijken</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is beschikbaar)</translation>
 <translation id="542948651837270806">Er moet een update voor de Trusted Platform Module-firmware worden geïnstalleerd. Zie <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Volledige breedte</translation>
@@ -8132,6 +8135,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8645354835496065562">Toegang tot sensoren blijven toestaan</translation>
 <translation id="8645920082661222035">Voorspelt en waarschuwt je over gevaarlijke gebeurtenissen voordat deze plaatsvinden</translation>
 <translation id="8646209145740351125">Synchronisatie uitzetten</translation>
+<translation id="8646340610303779673">Kan PPD niet ophalen.</translation>
 <translation id="864637694230589560">Sites sturen meestal meldingen om je op de hoogte te houden van actueel nieuws of nieuwe chatberichten</translation>
 <translation id="8647385344110255847">Als je toestemming geeft, kan je kind Google Play gebruiken om apps te installeren</translation>
 <translation id="8647834505253004544">Geen geldig webadres</translation>
@@ -8192,6 +8196,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="869884720829132584">Menu 'Applicaties'</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
+<translation id="8699188901396699995">PPD voor <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Je <ph name="DEVICE_TYPE" /> is vergrendeld.</translation>
 <translation id="8703346390800944767">Advertentie overslaan</translation>
 <translation id="8705331520020532516">Serienummer</translation>

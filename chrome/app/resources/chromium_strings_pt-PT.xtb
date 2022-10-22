@@ -62,6 +62,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2560420686485554789">O Chromium necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="2572494885440352020">Ajuda do Chromium</translation>
 <translation id="2583187216237139145">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Continuar a usar o Chromium</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>
 <translation id="2661879430930417727">Se partilhar um dispositivo, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
 <translation id="2669853942967761236">O Chromium bloqueou este ficheiro de arquivo porque pode ocultar software malicioso</translation>
@@ -103,6 +104,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mudar para o perfil do Chromium existente?</translation>
 <translation id="3412460710772753638">No Gestor de Palavras-passe neste dispositivo</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{A pessoa com a função de administração configurou o Chromium para fechar se estiver inativo durante mais de 1 minuto.}other{A pessoa com a função de administração configurou o Chromium para fechar se estiver inativo durante mais de # minutos.}}</translation>
 <translation id="3430503420100763906">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
 <translation id="347328004046849135">O Chromium envia-lhe uma notificação quando iniciar sessão com uma palavra-passe comprometida.</translation>
 <translation id="3474745554856756813">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -184,6 +186,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="538767207339317086">Permitir o início de sessão no Chromium</translation>
 <translation id="5398878173008909840">Está disponível uma nova versão do Chromium.</translation>
 <translation id="5405650547142096840">Remover do Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{O Chromium vai fechar agora.}=1{O Chromium vai fechar dentro de 1 segundo.}other{O Chromium vai fechar dentro de # segundos.}}</translation>
 <translation id="5427571867875391349">Definir o Chromium como o seu navegador predefinido</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">O Chromium pode não funcionar corretamente, uma vez que já não é suportado nesta distribuição do Linux</translation>
@@ -272,6 +275,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6940431691900807093">Posteriormente, um site que visitar pode pedir ao Chromium para ver os seus interesses para personalizar os anúncios que vê. O Chromium pode partilhar até 3 interesses.</translation>
 <translation id="6964305034639999644">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
 <translation id="6978145336957848883">As palavras-passe fracas são fáceis de adivinhar. Permita que o Chromium <ph name="BEGIN_LINK" />crie e memorize palavra-passes fortes<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">O Chromium está inativo</translation>
 <translation id="6985329841647292029">Termos do ChromiumOS</translation>
 <translation id="6990124437352146030">O Chromium necessita de autorização de acesso ao microfone para este site.</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>

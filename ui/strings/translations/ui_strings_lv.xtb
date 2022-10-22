@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Pirms 1 dienas}zero{Pirms # dienām}one{Pirms # dienas}other{Pirms # dienām}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Pirms 1 minūtes}zero{Pirms # minūtēm}one{Pirms # minūtes}other{Pirms # minūtēm}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}zero{# min}one{# min}other{# min}}</translation>
+<translation id="1181037720776840403">Noņemt</translation>
 <translation id="1243314992276662751">Augšupielādēt</translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Windows</translation>

@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Խորհուրդ է տրվում</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-ին AR ռեժիմն օգտագործելու թույլտվություն տալու համար միացրեք նաև տեսախցիկը <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="1864927262126810325">Աղբյուրը՝ <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Առնչվող կայքերը կարող են տեսնել ձեր գործողությունները խմբում</translation>
 <translation id="1887786770086287077">Սարքի տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1919345977826869612">Գովազդ</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Ներառել այս տիրույթի բոլոր կայքերը</translation>
 <translation id="4883854917563148705">Կառավարվող կարգավորումները հնարավոր չէ վերակայել</translation>
 <translation id="4887024562049524730">Կայքերի համար թույլտվություն խնդրել՝ օգտագործելու վիրտուալ իրականության ձեր սարքերն ու տվյալները (խորհուրդ է տրվում)</translation>
+<translation id="4955223779495905865">Կայքը, որն այցելել եք, կարող է այլ կայքերից զետեղել բովանդակություն, օրինակ՝ պատկերներ, գովազդ և տեքստ։ Այս կայքերից յուրաքանչյուրը կարող է քուքիներ և այլ տվյալներ պահել անհատականացման նպատակով։</translation>
 <translation id="4962975101802056554">Չեղարկել սարքի բոլոր թույլտվությունները</translation>
 <translation id="497421865427891073">Առաջ գնալ</translation>
 <translation id="4976702386844183910">Վերջին այցելությունը՝ <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Թույլ տալ կայքերին օգտագործել ձեր տվիչները (խորհուրդ է տրվում)</translation>
 <translation id="5050380848339752099">Այս կայքը պատրաստվում է ուղարկել տվյալները մի հավելվածի, որն ինկոգնիտո ռեժիմից դուրս է գտնվում։</translation>
 <translation id="5063480226653192405">Վիճակագրություն</translation>
+<translation id="5082281938627763039">Կջնջվեն քուքիները և <ph name="FPS_MEMBER" /> տիրույթի կայքերի այլ տվյալները, ինչպես նաև <ph name="FPS_OWNER" /> տիրույթի կայքերի խմբի տվյալները</translation>
 <translation id="5091013926750941408">Կայքի բջջային տարբերակ</translation>
 <translation id="509133520954049755">Համակարգչային տարբերակի հարցում</translation>
 <translation id="5100237604440890931">Կոծկված - ընդլայնելու համար սեղմեք</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Արգելափակված է</translation>
 <translation id="5689516760719285838">Տեղորոշում</translation>
 <translation id="5690795753582697420">Տեսախցիկն անջատված է Android-ի կարգավորումներում</translation>
+<translation id="5706552988683188916">Քուքիները և <ph name="WEBSITE" /> կայքի այլ տվյալները կջնջվեն</translation>
 <translation id="5719847187258001597">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքի և դրա հավելվածի կողմից։</translation>
 <translation id="5771720122942595109">Արգելափակված է՝ «<ph name="PERMISSION_1" />»</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Թույլատրել ձայնը առանձին կայքերում</translation>
 <translation id="789180354981963912">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում․</translation>
 <translation id="7940722705963108451">Հիշեցնել ինձ</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> տիրույթի կայքերի խմբի <ph name="FPS_MEMBERS_COUNT" /> կայք կարող է տեսնել ձեր գործողությունները խմբում}one{<ph name="FPS_OWNER" /> տիրույթի կայքերի խմբի <ph name="FPS_MEMBERS_COUNT" /> կայք կարող է տեսնել ձեր գործողությունները խմբում}other{<ph name="FPS_OWNER" /> տիրույթի կայքերի խմբի <ph name="FPS_MEMBERS_COUNT" /> կայք կարող է տեսնել ձեր գործողությունները խմբում}}</translation>
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
 <translation id="7999064672810608036">Համոզվա՞ծ եք, որ ուզում եք մաքրել բոլոր տեղային տվյալները, այդ թվում նաև քուքիները, և զրոյացնել այս կայքի թույլտվությունները:</translation>
 <translation id="8007176423574883786">Անջատված է այս սարքի համար</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Միացնել խոսափողը</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}one{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}other{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}}</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>
 <translation id="8609465669617005112">Տեղափոխել վեր</translation>
 <translation id="8676374126336081632">Մաքրել ներածումը</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="9019902583201351841">Կառավարվում է ձեր ծնողների կողմից</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Այս կայքը խմբում է, որը կարող է տեսնել ձեր գործողությունները։ Խումբը սահմանված է <ph name="FPS_OWNER" /> տիրույթի կողմից։</translation>
+<translation id="9106233582039520022">Ջնջե՞լ քուքիները</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="913657688200966289">Միացնել <ph name="APP_NAME" />-ի թույլտվությունները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="9162462602695099906">Այս էջը վտանգավոր է</translation>

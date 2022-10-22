@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 दिवसापूर्वी}other{# दिवसांपूर्वी}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1मि}other{#मि}}</translation>
+<translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
 <translation id="1269641567813814718">Win</translation>

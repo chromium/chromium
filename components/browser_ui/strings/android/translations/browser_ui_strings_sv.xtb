@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Rekommenderas för bästa upplevelse</translation>
 <translation id="1818308510395330587">Om du vill att <ph name="APP_NAME" /> ska använda AR måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Från <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Relaterade webbplatser kan se din aktivitet i gruppen</translation>
 <translation id="1887786770086287077">Platsåtkomst har inaktiverats på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1919345977826869612">Annonser</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">Inkludera alla webbplatser på den här domänen</translation>
 <translation id="4883854917563148705">Hanterade inställningar kan inte återställas</translation>
 <translation id="4887024562049524730">Fråga innan webbplatser tillåts att använda VR-enheter och VR-data (rekommenderas)</translation>
+<translation id="4955223779495905865">En webbplats som du besöker kan bädda in innehåll från andra webbplatser, till exempel bilder, annonser och text. Dessa webbplatser kan spara cookies och annan data för att anpassa upplevelsen för dig.</translation>
 <translation id="4962975101802056554">Återkalla alla behörigheter för enheten</translation>
 <translation id="497421865427891073">Fortsätt</translation>
 <translation id="4976702386844183910">Besöktes senast <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">Tillåt webbplatser att använda enhetens rörelsesensorer (rekommenderas)</translation>
 <translation id="5050380848339752099">Data på den här webbplatsen delas med en app utanför inkognitoläget.</translation>
 <translation id="5063480226653192405">Användning</translation>
+<translation id="5082281938627763039">Cookies och annan webbplatsdata för <ph name="FPS_MEMBER" /> och webbplatser i gruppen med webbplatser som tillhör <ph name="FPS_OWNER" /> raderas</translation>
 <translation id="5091013926750941408">Mobil webbplats</translation>
 <translation id="509133520954049755">Begär datorvy</translation>
 <translation id="5100237604440890931">Vyn har komprimerats. Expandera den genom att klicka.</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">Blockerat</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
+<translation id="5706552988683188916">Cookies och annan webbplatsdata för <ph name="WEBSITE" /> raderas</translation>
 <translation id="5719847187258001597">All data och alla cookies som har sparats av <ph name="ORIGIN" /> eller motsvarande app på startskärmen rensas.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockeras</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">Tillåt ljud för en webbplats.</translation>
 <translation id="789180354981963912">Blockera cookies från tredje part i inkognitoläge:</translation>
 <translation id="7940722705963108451">Påminn mig</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> webbplats i gruppen med webbplatser som tillhör <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}other{<ph name="FPS_MEMBERS_COUNT" /> webbplatser i gruppen med webbplatser som tillhör <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="7986741934819883144">Välj en kontakt</translation>
 <translation id="7999064672810608036">Vill du ta bort all lokal data för webbplatsen, inklusive cookies, och återställa alla behörigheter för den?</translation>
 <translation id="8007176423574883786">Inaktiverad för den här enheten</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">Slå på mikrofonen</translation>
 <translation id="851751545965956758">Förhindra att webbplatser ansluter till enheter</translation>
 <translation id="8525306231823319788">Helskärm</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookies tillåts för webbplatsen <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-webbplats}other{Cookies tillåts för <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-webbplatser}}</translation>
 <translation id="857943718398505171">Tillåten (rekommenderas)</translation>
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">Glöm</translation>
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Den här webbplatsen ingår i en grupp som kan se din aktivitet. Gruppen har definierats av <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Vill du radera cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}}</translation>
 <translation id="913657688200966289">Aktivera behörigheter för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Den här sidan är farlig</translation>

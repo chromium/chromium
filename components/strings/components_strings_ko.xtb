@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">농업 및 임업</translation>
 <translation id="1080116354587839789">너비에 맞춤</translation>
 <translation id="1081061862829655580">트레이 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">카드 명의 추가</translation>
 <translation id="1089439967362294234">비밀번호 변경</translation>
 <translation id="1096545575934602868">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 추가되는 모든 항목은 삭제됩니다.</translation>
@@ -170,7 +169,6 @@
 <translation id="1364822246244961190">차단된 정책이므로 값이 무시됩니다.</translation>
 <translation id="1368318639262510626">공룡 게임입니다. 픽셀 스타일의 공룡이 선인장과 프테로사우루스를 피하며 황무지를 달려갑니다. 오디오 신호음이 들리면 Space 키를 눌러 장애물을 뛰어넘으세요.</translation>
 <translation id="1374468813861204354">제안사항</translation>
-<translation id="1374692235857187091">Index-4x6(엽서)</translation>
 <translation id="1375198122581997741">버전 정보</translation>
 <translation id="1376836354785490390">간략히 보기</translation>
 <translation id="1377321085342047638">카드 번호</translation>
@@ -210,7 +208,6 @@
 <translation id="1459693405370120464">날씨</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">고품질 콘텐츠를 만들기 위해 컴퓨터에 설치된 글꼴을 사용합니다.</translation>
-<translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1468653229182955856"><ph name="EMBEDDED_ORIGIN" /> 코드는 <ph name="ONE_TIME_CODE" />입니다. <ph name="TOP_ORIGIN" />에서 작업을 계속하세요.</translation>
 <translation id="1472675084647422956">자세히 보기</translation>
@@ -675,7 +672,6 @@
 <translation id="2677696497921480781">생일 및 영명 축일</translation>
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2679714844901977852">카드 및 결제 정보를 Google 계정(<ph name="USER_EMAIL" />)에 저장하여 더 빠르고 안전하게 결제하세요.</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">자동 맞춤</translation>
 <translation id="2688969097326701645">예, 계속 진행합니다</translation>
 <translation id="2691924980723297736">안전 경고</translation>
@@ -709,7 +705,6 @@
 <translation id="2775884851269838147">첫 인쇄 페이지</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">연결이 재설정되었습니다.</translation>
-<translation id="2786469568759673015">봉투 Chinese #3</translation>
 <translation id="2791176355335562114">다음에는 더 빨리 결제하세요</translation>
 <translation id="2792012897584536778">이 기기의 관리자가 보안 인증서를 설정했으며, 이를 통해 관리자가 내가 방문하는 웹사이트의 콘텐츠를 확인할 수 있습니다.</translation>
 <translation id="2799020568854403057">방문하려는 사이트에 유해한 앱이 있습니다.</translation>
@@ -1019,7 +1014,6 @@
 <translation id="3634530185120165534">트레이 5</translation>
 <translation id="3634567936866541746">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="3637662659967048211">Google 계정에 저장</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">애플리케이션:</translation>
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
 <translation id="3650584904733503804">유효성 검사 성공</translation>
@@ -1150,7 +1144,6 @@
 <translation id="4010758435855888356">저장소 액세스 권한을 허용하시겠습니까?</translation>
 <translation id="401170183602135785">봉투 C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}페이지로 이루어진 PDF 문서}other{{COUNT}페이지로 이루어진 PDF 문서}}</translation>
-<translation id="4022639246993848966">8.9x12.7cm</translation>
 <translation id="4023431997072828269">안전하지 않은 연결을 통해 이 양식이 제출되므로 내 정보가 다른 사용자에게 표시됩니다.</translation>
 <translation id="4024923292610332139">비밀번호 입력 시 TouchID 사용 중지</translation>
 <translation id="4025913568718019429">Google 개인 정보 보호 설정 관리 버튼, Google 계정 개인 정보 보호 설정 페이지를 방문하려면 Enter를 누르세요</translation>
@@ -1368,7 +1361,6 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">확장 프로그램 사용 중지해 보기</translation>
 <translation id="4559134504959026834"><ph name="SET_OWNER" />에서 정의한 그룹(내 활동을 볼 수 있음)에 속하는 사이트입니다</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">야외 활동</translation>
 <translation id="4567686777917670400">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chromium 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">배송</translation>
@@ -1412,7 +1404,6 @@
 <translation id="4682496302933121474">페이지를 번역하시겠습니까?</translation>
 <translation id="468314109939257734">가상 카드 번호 보기</translation>
 <translation id="4692623383562244444">검색엔진</translation>
-<translation id="4693246800345263879">봉투 10 x 14 in</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">사이드</translation>
 <translation id="4702656508969495934">실시간 자막 표시, 창 전환 도구를 사용하여 포커스 설정</translation>
@@ -1630,7 +1621,6 @@
 <translation id="5205222826937269299">이름은 필수입니다.</translation>
 <translation id="5209518306177824490">SHA-1 지문</translation>
 <translation id="5209670883520018268">트레이 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">트레이 13</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
 <translation id="5217759126664161410">프로토콜 형식이 잘못되었습니다.</translation>
@@ -1639,7 +1629,6 @@
 <translation id="5229588705416009823">대규모 멀티플레이어 게임</translation>
 <translation id="5230733896359313003">배송지 주소</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5239623327352565343">위치 허용됨</translation>
 <translation id="5242889659037569123">여행 가방 및 여행용품</translation>
@@ -1878,7 +1867,6 @@
 <translation id="5884465125445718607">봉투 Chinese #6</translation>
 <translation id="5887400589839399685">저장된 카드</translation>
 <translation id="5887687176710214216">최근 방문: 어제</translation>
-<translation id="5891155897634819292">봉투 Chinese #5</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895187275912066135">발급일:</translation>
 <translation id="5901630391730855834">노란색</translation>
@@ -1911,7 +1899,6 @@
 <translation id="5974052231147553524">6번째 롤</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">챔버 습도</translation>
 <translation id="5984712050237025014">증강 및 가상 현실</translation>
 <translation id="598637245381783098">결제 앱을 열 수 없습니다.</translation>
@@ -2400,7 +2387,6 @@
 <translation id="7337706099755338005">사용 중인 플랫폼에서는 제공되지 않습니다.</translation>
 <translation id="733923710415886693">서버 인증서가 인증서 투명성 정책을 사용하여 공개되지 않았습니다.</translation>
 <translation id="7341357280245177602">중고차</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">연결됨:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">이 탭을 닫을 때까지 허용</translation>
@@ -2442,7 +2428,6 @@
       &lt;li&gt;&lt;strong&gt;서비스 상태&lt;/strong&gt;에서 &lt;strong&gt;중지&lt;/strong&gt;를 클릭합니다.
       &lt;li&gt;&lt;strong&gt;적용&lt;/strong&gt;을 클릭한 다음 &lt;strong&gt;확인&lt;/strong&gt;을 클릭합니다.
       &lt;li&gt;&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome 고객센터&lt;/a&gt;를 방문하여 컴퓨터에서 소프트웨어를 영구적으로 삭제하는 방법을 알아보세요.      &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">사랑스러움</translation>
 <translation id="741204030948306876">사용</translation>
 <translation id="7416351320495623771">비밀번호 관리...</translation>
@@ -2488,7 +2473,6 @@
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7517414872996418597">봉투 C10</translation>
 <translation id="7518003948725431193">다음 웹 주소(<ph name="URL" />)에 대해 발견된 웹페이지가 없습니다.</translation>
-<translation id="7518098469289408841">봉투 10 x 13 in</translation>
 <translation id="7521387064766892559">자바스크립트</translation>
 <translation id="7521825010239864438">‘<ph name="SECTION" />’ 섹션 숨겨짐</translation>
 <translation id="7523408071729642236">제조업</translation>
@@ -2779,7 +2763,6 @@
 <translation id="8277900682056760511">결제 핸들러 시트가 열림</translation>
 <translation id="8279611986089885641">Chrome 알림이 사용 설정되어 있어야 합니다. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />에서 사용 설정할 수 있습니다.</translation>
 <translation id="8280630997017109758">트레이 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8282947398454257691">고유 기기 식별자 조회</translation>
 <translation id="8284769179630993263">Chrome 설정에서 세이프 브라우징 등 관리</translation>
@@ -2795,7 +2778,6 @@
 <translation id="8299269255470343364">일본어</translation>
 <translation id="8303854710873047864">‘<ph name="SECTION" />’ 섹션 표시됨</translation>
 <translation id="830498451218851433">폴드 하프</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">설치된 앱 및 앱의 사용 빈도</translation>
 <translation id="831997045666694187">저녁</translation>
 <translation id="8321476692217554900">알림</translation>
@@ -2877,7 +2859,6 @@
 <translation id="8557066899867184262">CVC는 카드 뒷면에 있습니다.</translation>
 <translation id="8559762987265718583">기기의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="8564182942834072828">별도 문서/모으지 않은 사본</translation>
-<translation id="8564453110650229930">봉투 Chinese #10</translation>
 <translation id="8564985650692024650">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="8576310925653847813">홈시어터 시스템</translation>
 <translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
@@ -2906,7 +2887,6 @@
 <translation id="8687429322371626002">내 기기와 계정은 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="8688672835843460752">사용 가능</translation>
 <translation id="868922510921656628">세트당 페이지 수</translation>
-<translation id="8694278303623679191">봉투 Postfix</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699041776323235191">HID 기기</translation>
 <translation id="8699899385443889493">Chrome 공룡 게임 플레이 버튼, Chrome 공룡 게임을 플레이하려면 Enter를 누르세요</translation>
@@ -2984,7 +2964,6 @@
 <translation id="8874824191258364635">올바른 카드 번호를 입력하세요.</translation>
 <translation id="8876033571432926051">캐주얼 게임</translation>
 <translation id="8877780815363510165">낚시</translation>
-<translation id="8879882034055059721">봉투 10 x 15 in</translation>
 <translation id="8884537526797090108">기밀 콘텐츠는 녹화할 수 없음</translation>
 <translation id="8891727572606052622">프록시 모드가 잘못되었습니다.</translation>
 <translation id="8894794286471754040">긴쪽 먼저</translation>

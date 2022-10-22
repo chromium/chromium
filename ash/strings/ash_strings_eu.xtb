@@ -436,6 +436,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3413817803639110246">Hutsik dago, momentuz</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> saretik deskonektatu nahi duzu?</translation>
 <translation id="3430396595145920809">Atzera egiteko, pasatu hatza eskuinetik ezkerrera</translation>
+<translation id="3431517721463707585">Lan-eremua 14</translation>
 <translation id="3434107140712555581">% <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="343571671045587506">Editatu abisua</translation>
 <translation id="3435967511775410570">Ezagutu da hatz-marka</translation>
@@ -677,6 +678,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
 <translation id="4733161265940833579">% <ph name="BATTERY_PERCENTAGE" /> (ezkerrekoa)</translation>
 <translation id="4734965478015604180">Horizontala</translation>
+<translation id="4735944890391795473">Lan-eremua 12</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4740516757091333363">Gordetako lan-eremua ezabatu?</translation>
 <translation id="4752784485658729358">Gordetako sei lan-eremu soilik eduki daitezke. Beste bat gordetzeko, kendu lehendik dagoen bat.</translation>
@@ -697,6 +699,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4860284199500934869"><ph name="FILENAME" /> deskargatzeko, egiaztatu sarera konektatuta zaudela</translation>
 <translation id="486056901304535126">Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaliko da prozesatzeko, deskarga amaitu arte.</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
+<translation id="4864648187878336334">Lan-eremua 15</translation>
 <translation id="4868492592575313542">aktibatuta</translation>
 <translation id="4872237917498892622">Alt + Bilaketa edo Maius</translation>
 <translation id="4881695831933465202">Ireki</translation>
@@ -724,6 +727,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Lan-eremua 16</translation>
 <translation id="5003993274120026347">Hurrengo esaldia</translation>
 <translation id="5016558321564993266">Aktibatu edo desaktibatu markatzailea. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Amaitu egin da denbora</translation>
@@ -740,6 +744,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5098537242461068432">Ireki dira berriro lan-eremua eta leihoak</translation>
 <translation id="5104236669533825617">Ezin da sortu pantaila-bideoa</translation>
 <translation id="5107522548814527560">Sarea</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Erakutsi hurrengo hilabetea</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
 <translation id="5147567197700016471">Desblokeatuta</translation>
@@ -830,6 +835,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonoaren konektorea</translation>
 <translation id="5652575806481723716">Zure arreta behar du <ph name="FOCUSED_APP_NAME" /> aplikazioak.</translation>
+<translation id="5662075790140998213">Lan-eremua 10</translation>
 <translation id="5662709761327382534">Mikrofono bidezko grabaketa <ph name="CURRENT_STATE" /> dago. Mikrofono bidezko grabaketa <ph name="NEW_STATE" /> egon dadin, sakatu Sartu.</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5673434351075758678">Ezarpenak sinkronizatu ondoren, "<ph name="FROM_LOCALE" />" ordez, "<ph name="TO_LOCALE" />" ezarri da hizkuntza gisa.</translation>
@@ -1031,6 +1037,8 @@ Berriki instalatu da</translation>
 <translation id="6753390234084146956">fitxak</translation>
 <translation id="6757237461819837179">Ez da ari ezer erreproduzitzen</translation>
 <translation id="6777216307882431711">Konektatutako USB-C gailuei energia ematen</translation>
+<translation id="6781002679438061620">Lan-eremua 9</translation>
+<translation id="6782182743534150858">Lan-eremua 13</translation>
 <translation id="6786750046913594791">Itxi karpeta</translation>
 <translation id="6787595647772650851">Leheneratu azken saioa</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
@@ -1092,6 +1100,7 @@ Berriki instalatu da</translation>
 <translation id="7098053464892629930">Deskargatu <ph name="NAME" /> aplikazioa Google Play-tik erabilgarri dauzkan eginbideak ikusteko</translation>
 <translation id="7098389117866926363">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
 <translation id="7106330611027933926">Erakutsi lan-eremuen barra</translation>
+<translation id="7116969082764510092">Lan-eremua 11</translation>
 <translation id="7118268675952955085">pantaila-argazkia</translation>
 <translation id="7126996685418858413">Azken astean ireki da</translation>
 <translation id="7130207228079676353">ZIURRENIK ERABILIKO DIREN APLIKAZIOAK</translation>
@@ -1189,6 +1198,7 @@ Berriki instalatu da</translation>
 <translation id="7662283695561029522">Sakatu konfiguratzeko</translation>
 <translation id="7670953955701272011">Ireki data hau Google Calendar-en</translation>
 <translation id="7671610481353807627">Kolorearen arabera daude ordenatuta aplikazioak</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> sarera konektatuta, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">"<ph name="CAMERA_NAME" />" dago ezarrita kameraren sarrera gisa.</translation>
 <translation id="7705524343798198388">VPNa</translation>
 <translation id="7714767791242455379">Gehitu beste sare mugikor bat</translation>
@@ -1473,5 +1483,6 @@ Berriki instalatu da</translation>
 <translation id="974545358917229949">"<ph name="QUERY" />" bilaketaren <ph name="RESULT_COUNT" /> emaitza daude ikusgai</translation>
 <translation id="98515147261107953">Horizontala</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> leihoa itxi da.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Lortu azken eginbideak eta segurtasun-hobekuntzak. Eguneratzeak atzeko planoan gertatzen dira.</translation>
 </translationbundle>

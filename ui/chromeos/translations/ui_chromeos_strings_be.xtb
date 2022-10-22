@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгійская</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
+<translation id="2802583107108007218">Даведацца больш пра гэтыя абмежаванні</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
 <translation id="2820957248982571256">Ідзе пошук...</translation>
 <translation id="2830077785865012357">Кітайская (чжуінь)</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Абагуліць з Parallels Desktop</translation>
 <translation id="4902546322522096650">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4906580650526544301">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
-<translation id="4929673617759421391">Зададзеная адміністратарам палітыка блакіруе магчымасць устаўляць гэты файл</translation>
 <translation id="4935975195727477204">Кветка гацаніі</translation>
 <translation id="4943368462779413526">Мяч для амерыканскага футбола</translation>
 <translation id="4961158930123534723">1 папка абагулена з Parallels Desktop</translation>
@@ -920,6 +920,7 @@
 <translation id="8656768832129462377">Не правяраць</translation>
 <translation id="8688591111840995413">Няправільны пароль</translation>
 <translation id="8698464937041809063">Рысунак Google</translation>
+<translation id="8698877009525468705">Гэты файл з'яўляецца канфідэнцыяльным, і на яго распаўсюджваюцца абмежаванні зададзенай адміністратарам палітыкі.</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8713112442029511308">Мальтыйская</translation>
 <translation id="8714406895390098252">Веласіпед</translation>
@@ -974,7 +975,6 @@
 <translation id="9183302530794969518">Дакументы Google</translation>
 <translation id="9189836632794948435">Казахская</translation>
 <translation id="9200427192836333033">Вынята элементаў: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9210751050717126865">Зададзеная адміністратарам палітыка блакіруе магчымасць устаўляць файлы (<ph name="COUNT" />)</translation>
 <translation id="9213073329713032541">Пачалося ўсталяванне.</translation>
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="9219908252191632183">Месячны ландшафт</translation>

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 dag gelede}other{# dae gelede}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minuut gelede}other{# minute gelede}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m.}other{# m.}}</translation>
+<translation id="1181037720776840403">Verwyder</translation>
 <translation id="1243314992276662751">Laai op</translation>
 <translation id="1266864766717917324">Kon nie <ph name="CONTENT_TYPE" /> deel nie.</translation>
 <translation id="1269641567813814718">Windows</translation>

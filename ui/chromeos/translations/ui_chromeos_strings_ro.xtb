@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Permite accesul Parallels Desktop</translation>
 <translation id="4902546322522096650">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="4906580650526544301">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
-<translation id="4929673617759421391">Inserarea acestui fișier este blocată de politica implementată de administrator</translation>
 <translation id="4935975195727477204">Floare</translation>
 <translation id="4943368462779413526">Minge de fotbal</translation>
 <translation id="4961158930123534723">Un dosar cu acces permis pentru Parallels Desktop</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Documente Google</translation>
 <translation id="9189836632794948435">Kazahă</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elemente extrase.</translation>
-<translation id="9210751050717126865">Inserarea a <ph name="COUNT" /> fișiere este blocată de politica implementată de administrator</translation>
 <translation id="9213073329713032541">Instalarea a început.</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="9219908252191632183">Peisaj lunar</translation>

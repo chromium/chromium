@@ -2433,6 +2433,7 @@
 <translation id="3201422919974259695">사용 가능한 USB 기기가 여기에 표시됩니다.</translation>
 <translation id="3202131003361292969">경로</translation>
 <translation id="3202173864863109533">이 탭의 오디오가 음소거됩니다.</translation>
+<translation id="3202578601642193415">최근</translation>
 <translation id="3204648577100496185">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
 <translation id="3208321278970793882">앱</translation>
 <translation id="3208584281581115441">지금 확인</translation>
@@ -3713,6 +3714,7 @@
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상적으로 종료되는지, 어떤 기능이 사용되었는지, 일반적으로 메모리가 얼마나 많이 사용되는지 등의 정보가 포함됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">시작하려면 USB 또는 블루투스 스위치가 Chromebook에 연결되어 있는지 확인하세요. 키보드 키를 사용할 수도 있습니다.</translation>
+<translation id="4426508677408162512">모든 북마크</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4427365070557649936">확인 코드 확인 중…</translation>
 <translation id="4429163740524851942">실제 키보드 레이아웃</translation>
@@ -3853,6 +3855,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4556194354084985730">저장된 비밀번호로 사이트와 앱에 간편하게 로그인하세요. 사용 중지된 경우 로그인 전에 메시지가 표시됩니다.</translation>
 <translation id="4558426062282641716">자동 실행 권한 요청됨</translation>
 <translation id="4559617833001311418">사이트가 모션 센서 또는 조도 센서에 액세스 중입니다.</translation>
+<translation id="4561098487691395071">또는 프린터 PPD 지정</translation>
 <translation id="4561893854334016293">최근 변경된 권한 없음</translation>
 <translation id="4562155214028662640">지문 추가</translation>
 <translation id="4563210852471260509">중국어를 초기 입력 언어로 설정</translation>
@@ -4351,7 +4354,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5040823038948176460">추가 콘텐츠 설정</translation>
 <translation id="5041509233170835229">Chrome 앱</translation>
 <translation id="5043440033854483429">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있으며 1~15자여야 합니다.</translation>
-<translation id="5043913660911154449">또는 프린터 PPD 지정 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
 <translation id="5049614114599109018">입력 기록 사용</translation>
@@ -4742,6 +4744,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5427278936122846523">항상 번역</translation>
 <translation id="5427459444770871191">시계 방향으로 회전(&amp;C)</translation>
 <translation id="542750953150239272">계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치할 수 있으며 모바일 데이터를 사용할 수도 있음에 동의하는 것으로 간주됩니다. 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
+<translation id="5427936139162668357">PPD 보기</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />(업데이트 사용 가능)</translation>
 <translation id="542948651837270806">신뢰할 수 있는 플랫폼 모듈 펌웨어 업데이트를 설치해야 합니다. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> 보기</translation>
 <translation id="5429818411180678468">전각</translation>
@@ -8148,6 +8151,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8645354835496065562">계속해서 센서 액세스 허용</translation>
 <translation id="8645920082661222035">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>
 <translation id="8646209145740351125">동기화 사용 안함</translation>
+<translation id="8646340610303779673">PPD를 가져올 수 없습니다.</translation>
 <translation id="864637694230589560">사이트에서는 보통 속보 또는 채팅 메시지에 관한 알림을 전송합니다.</translation>
 <translation id="8647385344110255847">부모가 권한을 부여하면 자녀가 Google Play를 사용해 앱을 설치할 수 있습니다.</translation>
 <translation id="8647834505253004544">올바른 웹 주소가 아닙니다.</translation>
@@ -8208,6 +8212,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="869884720829132584">애플리케이션 메뉴</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
+<translation id="8699188901396699995"><ph name="PRINTER_NAME" />의 PPD</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> 잠김</translation>
 <translation id="8703346390800944767">광고 건너뛰기</translation>
 <translation id="8705331520020532516">일련번호</translation>

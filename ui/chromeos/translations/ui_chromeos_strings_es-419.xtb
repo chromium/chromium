@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Queso</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
+<translation id="2802583107108007218">Más información sobre estas restricciones</translation>
 <translation id="2803375539583399270">Ingresar PIN</translation>
 <translation id="2820957248982571256">Buscando…</translation>
 <translation id="2830077785865012357">Chino (Zhuyin)</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Compartir con Parallels Desktop</translation>
 <translation id="4902546322522096650">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
 <translation id="4906580650526544301">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, nivel de la batería del teléfono: <ph name="BATTERY_STATUS" />%, detalles</translation>
-<translation id="4929673617759421391">La política del administrador no permite pegar este archivo</translation>
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Fútbol americano</translation>
 <translation id="4961158930123534723">Se compartió 1 carpeta con Parallels Desktop</translation>
@@ -921,6 +921,7 @@
 <translation id="8656768832129462377">No revisar</translation>
 <translation id="8688591111840995413">Contraseña incorrecta</translation>
 <translation id="8698464937041809063">Dibujo de Google</translation>
+<translation id="8698877009525468705">Este archivo es confidencial y está sujeto a las restricciones de la política del administrador.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8713112442029511308">Maltés</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
@@ -975,7 +976,6 @@
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazajo</translation>
 <translation id="9200427192836333033">Elementos extraídos: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9210751050717126865">La política del administrador no permite pegar <ph name="COUNT" /> archivos</translation>
 <translation id="9213073329713032541">La instalación se inició de forma correcta.</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219908252191632183">Superficie lunar</translation>

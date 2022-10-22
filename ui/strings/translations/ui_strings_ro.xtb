@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Acum o zi}few{Acum # zile}other{Acum # de zile}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Acum 1 minut}few{Acum # minute}other{Acum # de minute}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min.}few{# min.}other{# min.}}</translation>
+<translation id="1181037720776840403">Elimină</translation>
 <translation id="1243314992276662751">Încărcați</translation>
 <translation id="1266864766717917324">Nu s-a trimis <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

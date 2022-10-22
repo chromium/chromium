@@ -2435,6 +2435,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3201422919974259695">Čia bus rodomi pasiekiami USB įrenginiai.</translation>
 <translation id="3202131003361292969">Kelias</translation>
 <translation id="3202173864863109533">Šio skirtuko garsas nutildytas.</translation>
+<translation id="3202578601642193415">Naujausia</translation>
 <translation id="3204648577100496185">Su šia programa susieti duomenys gali būti pašalinti iš šio įrenginio</translation>
 <translation id="3208321278970793882">Programa</translation>
 <translation id="3208584281581115441">Tikrinti dabar</translation>
@@ -3717,6 +3718,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Leisdami „ChromeOS“ įrenginiams siųsti automatines ataskaitas padėsite mums nustatyti, ką pirmiausia reikia sutvarkyti ir patobulinti „ChromeOS“. Į šias ataskaitas gali būti įtraukta, pvz., informacija, kada „ChromeOS“ užstringa, kurios funkcijos buvo naudojamos ir kiek įprastai atminties naudojama.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Galite bet kada įjungti arba išjungti šias ataskaitas „Chrome“ įrenginio nustatymuose. Jei esate domeno administratorius, šį nustatymą galite pakeisti administratoriaus pulte.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Jei norite pradėti, įsitikinkite, kad USB arba „Bluetooth“ jungiklis prijungtas prie „Chromebook“. Taip pat galite naudoti klaviatūros klavišus.</translation>
+<translation id="4426508677408162512">Visos žymės</translation>
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
 <translation id="4427365070557649936">Patvirtinamas patvirtinimo kodas...</translation>
 <translation id="4429163740524851942">Fizinės klaviatūros išdėstymas</translation>
@@ -3857,6 +3859,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4556194354084985730">Lengvai prisijunkite prie svetainių ir programų naudodami išsaugotus slaptažodžius. Kai tai bus išjungta, prieš prisijungiant slaptažodžių bus prašoma.</translation>
 <translation id="4558426062282641716">Pateikta užklausa dėl leidimo automatiškai paleisti</translation>
 <translation id="4559617833001311418">Ši svetainė pasiekia judesio ir šviesos jutiklius.</translation>
+<translation id="4561098487691395071">Arba nurodykite spausdintuvo PPD</translation>
 <translation id="4561893854334016293">Nėra jokių neseniai pakeistų leidimų</translation>
 <translation id="4562155214028662640">Pridėti piršto antspaudą</translation>
 <translation id="4563210852471260509">Pagrindinė įvesties kalba – kinų k.</translation>
@@ -4355,7 +4358,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5040823038948176460">Papildomi turinio nustatymai</translation>
 <translation id="5041509233170835229">„Chrome“ programa</translation>
 <translation id="5043440033854483429">Pavadinimą gali sudaryti raidės, skaitmenys ir brūkšneliai (-), jame turi būti 1–15 simbolių.</translation>
-<translation id="5043913660911154449">Arba nurodykite spausdintuvo PPD. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
 <translation id="504561833207953641">Atidaroma esamoje naršyklės sesijoje.</translation>
 <translation id="5049614114599109018">Naudoti įvesties istoriją</translation>
@@ -4746,6 +4748,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5427278936122846523">Visada versti</translation>
 <translation id="5427459444770871191">Sukti pagal &amp;laikrodžio rodyklę</translation>
 <translation id="542750953150239272">Tęsdami sutinkate, kad šis įrenginys taip pat gali automatiškai atsisiųsti ir įdiegti naujinius bei programas iš „Google“, operatoriaus ir šio įrenginio gamintojo (gali būti naudojami mobiliojo ryšio duomenys). Kai kurios programos gali siūlyti įsigyti pirkinių programoje.</translation>
+<translation id="5427936139162668357">Žr. PPD</translation>
 <translation id="5428850089342283580">„<ph name="ACCNAME_APP" />“ (pasiekiamas naujinys)</translation>
 <translation id="542948651837270806">Reikia įdiegti patikimo platformos modulio programinės aparatinės įrangos naujinį. Žr. <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Viso pločio</translation>
@@ -8158,6 +8161,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8645354835496065562">Toliau leisti prieigą prie jutiklio</translation>
 <translation id="8645920082661222035">Numato ir įspėja jus apie pavojingus įvykius, prieš jiems nutinkant</translation>
 <translation id="8646209145740351125">Sinchronizavimo išjungimas</translation>
+<translation id="8646340610303779673">Nepavyko nuskaityti PPD.</translation>
 <translation id="864637694230589560">Svetainės paprastai siunčia pranešimus informuodamos apie karščiausias naujienas ar pokalbių pranešimus</translation>
 <translation id="8647385344110255847">Jei suteiksite leidimą, vaikas galės diegti programas iš „Google Play“</translation>
 <translation id="8647834505253004544">Netinkamas žiniatinklio adresas</translation>
@@ -8218,6 +8222,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="869884720829132584">Programų meniu</translation>
 <translation id="869891660844655955">Galiojimo data</translation>
 <translation id="8699120352855309748">Nesiūlyti versti šių kalbų</translation>
+<translation id="8699188901396699995">„<ph name="PRINTER_NAME" />“ PPD</translation>
 <translation id="8702825062053163569">Jūsų „<ph name="DEVICE_TYPE" />“ buvo užrakintas.</translation>
 <translation id="8703346390800944767">Praleisti skelbimą</translation>
 <translation id="8705331520020532516">Serijos numeris</translation>

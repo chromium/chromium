@@ -2429,6 +2429,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3201422919974259695">Vifaa vya USB vinavyopatikana vitaonekana hapa.</translation>
 <translation id="3202131003361292969">Njia</translation>
 <translation id="3202173864863109533">Sauti ya kichupo hiki inazimwa.</translation>
+<translation id="3202578601642193415">Mpya kuliko zote</translation>
 <translation id="3204648577100496185">Data inayohusiana na programu hii inaweza kuondolewa kwenye kifaa hiki</translation>
 <translation id="3208321278970793882">Programu</translation>
 <translation id="3208584281581115441">Angalia sasa</translation>
@@ -3709,6 +3710,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vinavyotumia mfumo wa uendeshaji wa Chrome vitume ripoti za kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha kwenye mfumo wa uendeshaji wa Chrome. Ripoti hizi zinaweza kujumuisha vitu kama vile ChromeOS inapoacha kufanya kazi, vipengele vilivyotumika na kadirio la kiasi cha hifadhi kilichotumika.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa chako cha Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Ili uanze, tafadhali hakikisha kwamba swichi yako ya USB au Bluetooth imeunganishwa kwenye Chromebook yako. Unaweza pia kutumia vitufe vya kibodi.</translation>
+<translation id="4426508677408162512">Alamisho Zote</translation>
 <translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
 <translation id="4427365070557649936">Inahakikisha nambari ya kuthibitisha...</translation>
 <translation id="4429163740524851942">Mpangilio wa kibodi halisi</translation>
@@ -3849,6 +3851,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4556194354084985730">Ingia katika akaunti za tovuti na programu kwa urahisi ukitumia manenosiri uliyohifadhi. Ukizima kipengele hiki, utaombwa uweke nenosiri kabla ya kuingia katika akaunti.</translation>
 <translation id="4558426062282641716">Ombi la ruhusa ya kuzindua kiotomatiki</translation>
 <translation id="4559617833001311418">Tovuti hii inafikia vitambuzi vyako vya mwangaza au mwendo.</translation>
+<translation id="4561098487691395071">Au bainisha PPD ya printa yako</translation>
 <translation id="4561893854334016293">Hamna ruhusa ambazo zimebadilishwa hivi majuzi</translation>
 <translation id="4562155214028662640">Ongeza Alama ya Kidole</translation>
 <translation id="4563210852471260509">Lugha ingizo ya kwanza ni Kichina</translation>
@@ -4347,7 +4350,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5040823038948176460">Mipangilio ya ziada ya maudhui</translation>
 <translation id="5041509233170835229">Programu ya Chrome</translation>
 <translation id="5043440033854483429">Jina linaweza kuwa na herufi, nambari na vistariungio (-) na ni lazima liwe na kati na herufi 1 na 15 kwa jumla.</translation>
-<translation id="5043913660911154449">Au ubainishe PPD ya printa yako <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
 <translation id="504561833207953641">Inafungua katika kipindi cha kuvinjari kilichopo.</translation>
 <translation id="5049614114599109018">Tumia Historia ya Kuingiza data</translation>
@@ -4738,6 +4740,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5427278936122846523">Tafsiri Kila Wakati</translation>
 <translation id="5427459444770871191">Zungusha Kisaa</translation>
 <translation id="542750953150239272">Kwa kuendelea, unakubali kwamba kifaa hiki pia kinaweza kupakua na kusakinisha masasisho na programu kiotomatiki kutoka Google, mtoa huduma wako wa simu na mtengenezaji wa kifaa chako, labda kwa kutumia data ya mtandao wa simu. Baadhi ya programu hizi zinaweza kuwa na ununuzi wa ndani ya programu.</translation>
+<translation id="5427936139162668357">Angalia PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Usasishaji inapatikana)</translation>
 <translation id="542948651837270806">Unahitaji kusakinisha sasisho la programu dhibiti ya Trusted Platform Module. Angalia <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Upana kamili</translation>
@@ -8144,6 +8147,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8645354835496065562">Endelea kuruhusu ufikiaji wa vitambuzi</translation>
 <translation id="8645920082661222035">Hutabiri na kukuonya kuhusu matukio hatari kabla yatendeke</translation>
 <translation id="8646209145740351125">Zima usawazishaji</translation>
+<translation id="8646340610303779673">Imeshindwa kurejesha PPD.</translation>
 <translation id="864637694230589560">Tovuti hutuma arifa kukujulisha kuhusu habari zinazojiri au ujumbe wa gumzo</translation>
 <translation id="8647385344110255847">Kwa ruhusa yako, mtoto wako anaweza kutumia Google Play kusakinisha programu</translation>
 <translation id="8647834505253004544">Anwani ya wavuti si sahihi</translation>
@@ -8204,6 +8208,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="869884720829132584">Menyu ya programu</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8699120352855309748">Usionyeshe chaguo la kutafsiri lugha hizi</translation>
+<translation id="8699188901396699995">PPD ya <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> yako imefungwa.</translation>
 <translation id="8703346390800944767">Ruka Tangazo</translation>
 <translation id="8705331520020532516">Nambari ya Ufuatiliaji</translation>

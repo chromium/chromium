@@ -45,7 +45,6 @@
 <translation id="1075079914415273530">Landbrug og skovbrug</translation>
 <translation id="1080116354587839789">Tilpas til bredden</translation>
 <translation id="1081061862829655580">Bakke 19</translation>
-<translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Tilføj navn på kort</translation>
 <translation id="1089439967362294234">Skift adgangskode</translation>
 <translation id="1096545575934602868">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster kasseres.</translation>
@@ -170,7 +169,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1364822246244961190">Denne politik er blokeret, og dens værdi ignoreres.</translation>
 <translation id="1368318639262510626">Dino-spillet. En pixeleret dinosaur suser gennem et øde landskab, hvor den hopper over kaktusser og undviger flyveøgler. Når du hører en lyd, skal du trykke på mellemrumstasten for at hoppe over forhindringer.</translation>
 <translation id="1374468813861204354">forslag</translation>
-<translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
 <translation id="1375198122581997741">Om version</translation>
 <translation id="1376836354785490390">Se færre</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
@@ -210,7 +208,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1459693405370120464">Vejr</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Brug skrifttyperne på din computer, så du kan oprette indhold i høj kvalitet</translation>
-<translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="EMBEDDED_ORIGIN" />, som giver tilladelse til at fortsætte på <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Vis mere</translation>
@@ -675,7 +672,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2677696497921480781">Fødselsdage og navnedage</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2679714844901977852">Gem dit kort og dine faktureringsoplysninger på din Google-konto (<ph name="USER_EMAIL" />) for at betale hurtigere og mere sikkert</translation>
-<translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">Bedste format</translation>
 <translation id="2688969097326701645">Ja, fortsæt</translation>
 <translation id="2691924980723297736">Sikkerhedsadvarsel</translation>
@@ -709,7 +705,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2775884851269838147">Første udskriftsside</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Forbindelsen blev nulstillet.</translation>
-<translation id="2786469568759673015">Konvolut Kinesisk nr. 3</translation>
 <translation id="2791176355335562114">Betal hurtigere næste gang</translation>
 <translation id="2792012897584536778">Administratorer for denne enhed har konfigureret sikkerhedscertifikater, som muligvis giver dem mulighed for at se indholdet af de websites, du besøger.</translation>
 <translation id="2799020568854403057">Det website, du er på vej til, indeholder skadelige apps</translation>
@@ -1019,7 +1014,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3634530185120165534">Bakke 5</translation>
 <translation id="3634567936866541746">Du har lige angivet din adgangskode på et vildledende website. Chrome anbefaler, at du tjekker dine gemte adgangskoder for at sikre dine konti.</translation>
 <translation id="3637662659967048211">Gem på Google-konto</translation>
-<translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3647286794400715637">Hver webadressestreng skal indeholde mellem 1 og 2 webadresser.</translation>
 <translation id="3650584904733503804">Valideringen er fuldført</translation>
@@ -1150,7 +1144,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4010758435855888356">Vil du give adgang til lagerpladsen?</translation>
 <translation id="401170183602135785">Konvolut C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument, der indeholder {COUNT} side}one{PDF-dokument, der indeholder {COUNT} side}other{PDF-dokument, der indeholder {COUNT} sider}}</translation>
-<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Da denne formular indsendes via en forbindelse, som ikke er sikker, bliver dine oplysninger synlige for andre.</translation>
 <translation id="4024923292610332139">deaktivere udfyldning af adgangskoder via TouchID</translation>
 <translation id="4025913568718019429">Knappen Administrer Google-privatlivsindstillinger – tryk på Enter for at gå til privatlivsindstillingerne for din Google-konto</translation>
@@ -1368,7 +1361,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Prøv at deaktivere dine udvidelser.</translation>
 <translation id="4559134504959026834">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
-<translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Udendørsaktiviteter</translation>
 <translation id="4567686777917670400">Din administrator kan ændre konfigurationen af din browser via fjernadgang. Aktivitet på denne enhed administreres muligvis også uden for Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Levering</translation>
@@ -1412,7 +1404,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4682496302933121474">Vil du oversætte siden?</translation>
 <translation id="468314109939257734">Se dit virtuelle kortnummer</translation>
 <translation id="4692623383562244444">Søgemaskiner</translation>
-<translation id="4693246800345263879">Konvolut 10 x 14 tommer</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
 <translation id="4702656508969495934">Livetekstning er synlig, brug vindueskifteren for at fokusere</translation>
@@ -1630,7 +1621,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5205222826937269299">Navn påkrævet</translation>
 <translation id="5209518306177824490">SHA-1-fingeraftryk</translation>
 <translation id="5209670883520018268">Bakke 20</translation>
-<translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Bakke 13</translation>
 <translation id="5216942107514965959">Senest besøgt i dag</translation>
 <translation id="5217759126664161410">Ugyldigt protokolformat.</translation>
@@ -1639,7 +1629,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5229588705416009823">Spil med mange spillere</translation>
 <translation id="5230733896359313003">Leveringsadresse</translation>
 <translation id="5230815978613972521">B8</translation>
-<translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5239623327352565343">Adgang til lokation er tilladt</translation>
 <translation id="5242889659037569123">Bagagetasker og rejsetilbehør</translation>
@@ -1878,7 +1867,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5884465125445718607">Konvolut Kinesisk nr. 6</translation>
 <translation id="5887400589839399685">Kortet er gemt</translation>
 <translation id="5887687176710214216">Senest besøgt i går</translation>
-<translation id="5891155897634819292">Konvolut Kinesisk nr. 5</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5895187275912066135">Udstedt den</translation>
 <translation id="5901630391730855834">Gul</translation>
@@ -1911,7 +1899,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5974052231147553524">Sjette papirrulle</translation>
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
-<translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Fugtighed i kabinet</translation>
 <translation id="5984712050237025014">Augmented og virtual reality</translation>
 <translation id="598637245381783098">Betalingsappen kan ikke åbnes</translation>
@@ -2400,7 +2387,6 @@ Yderligere oplysninger:
 <translation id="7337706099755338005">Ikke tilgængelig på din platform.</translation>
 <translation id="733923710415886693">Servercertifikatet blev ikke fremvist via Certifikatsgennemsigtighed.</translation>
 <translation id="7341357280245177602">Brugte biler</translation>
-<translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Er tilknyttet:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Tilladt, indtil du har lukket denne fane</translation>
@@ -2443,7 +2429,6 @@ Yderligere oplysninger:
       &lt;li&gt;Klik på &lt;strong&gt;Anvend&lt;/strong&gt;, og klik derefter på &lt;strong&gt;OK&lt;/strong&gt;
       &lt;li&gt;Gå til &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Hjælp til Chrome&lt;/a&gt; for at se, hvordan du permanent fjerner softwaren fra din computer
       &lt;/ol&gt;</translation>
-<translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Sød</translation>
 <translation id="741204030948306876">Ja tak</translation>
 <translation id="7416351320495623771">Administrer adgangskoder…</translation>
@@ -2489,7 +2474,6 @@ Yderligere oplysninger:
 <translation id="7514365320538308">Download</translation>
 <translation id="7517414872996418597">Konvolut C10</translation>
 <translation id="7518003948725431193">Ingen webside fundet på webadressen: <ph name="URL" /></translation>
-<translation id="7518098469289408841">Konvolut 10 x 13 tommer</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Sektionen "<ph name="SECTION" />" er skjult</translation>
 <translation id="7523408071729642236">Produktion</translation>
@@ -2780,7 +2764,6 @@ Yderligere oplysninger:
 <translation id="8277900682056760511">Regnearket for betalinghandler er åbnet</translation>
 <translation id="8279611986089885641">Chrome-notifikationer skal være aktiveret. Du kan aktivere dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Bakke 11</translation>
-<translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Spring over</translation>
 <translation id="8282947398454257691">Kende dit unikke enheds-id</translation>
 <translation id="8284769179630993263">Administrer Beskyttet browsing m.m. i Chrome-indstillingerne</translation>
@@ -2796,7 +2779,6 @@ Yderligere oplysninger:
 <translation id="8299269255470343364">Japansk</translation>
 <translation id="8303854710873047864">Sektionen "<ph name="SECTION" />" vises</translation>
 <translation id="830498451218851433">Fals halvt</translation>
-<translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Installerede apps, og hvor ofte de bruges</translation>
 <translation id="831997045666694187">Aften</translation>
 <translation id="8321476692217554900">notifikationer</translation>
@@ -2878,7 +2860,6 @@ Yderligere oplysninger:
 <translation id="8557066899867184262">Kontrolkoden findes på bagsiden af kortet.</translation>
 <translation id="8559762987265718583">Der kan ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da tid og dato (<ph name="DATE_AND_TIME" />) på din enhed er forkerte.</translation>
 <translation id="8564182942834072828">Individuelle dokumenter/ikke-samlede kopier</translation>
-<translation id="8564453110650229930">Konvolut Kinesisk nr. 10</translation>
 <translation id="8564985650692024650">Chromium anbefaler, at du nulstiller din adgangskode til <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, hvis du har brugt den på andre websites.</translation>
 <translation id="8576310925653847813">Hjemmebiografsystemer</translation>
 <translation id="8577348305244205642">Virtuelt kort er ikke tilgængeligt</translation>
@@ -2908,7 +2889,6 @@ Yderligere oplysninger:
 <translation id="8687429322371626002">Din enhed og konto administreres af <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Tilgængelig</translation>
 <translation id="868922510921656628">Sider pr. sæt</translation>
-<translation id="8694278303623679191">Konvolut Postfix</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699041776323235191">HID-enhed</translation>
 <translation id="8699899385443889493">Knappen Spil Chrome Dino, tryk på Enter for at spille Dino Run-spillet i Chrome</translation>
@@ -2986,7 +2966,6 @@ Yderligere oplysninger:
 <translation id="8874824191258364635">Angiv et gyldigt kortnummer</translation>
 <translation id="8876033571432926051">Hyggespil</translation>
 <translation id="8877780815363510165">Fiskeri</translation>
-<translation id="8879882034055059721">Konvolut 10 x 15 tommer</translation>
 <translation id="8884537526797090108">Der kan ikke optages fortroligt indhold</translation>
 <translation id="8891727572606052622">Ugyldig proxytilstand.</translation>
 <translation id="8894794286471754040">Lang kant først</translation>

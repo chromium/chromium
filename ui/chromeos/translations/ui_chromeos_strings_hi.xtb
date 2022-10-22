@@ -455,7 +455,6 @@
 <translation id="4900532980794411603">Parallels Desktop से शेयर करें</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, जानकारी</translation>
-<translation id="4929673617759421391">एडमिन नीति के तहत, इस फ़ाइल को पेस्ट करने की अनुमति नहीं है</translation>
 <translation id="4935975195727477204">जीनिया का फूल</translation>
 <translation id="4943368462779413526">फ़ुटबॉल</translation>
 <translation id="4961158930123534723">Parallels Desktop से एक फ़ोल्डर शेयर किया गया</translation>
@@ -975,7 +974,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">कज़ाक़</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> आइटम मिले.</translation>
-<translation id="9210751050717126865">एडमिन नीति के तहत, <ph name="COUNT" /> फ़ाइलों को पेस्ट करने की अनुमति नहीं है</translation>
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लूनर</translation>

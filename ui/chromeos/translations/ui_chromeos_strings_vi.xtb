@@ -456,7 +456,6 @@
 <translation id="4900532980794411603">Chia sẻ với ứng dụng Parallels Desktop</translation>
 <translation id="4902546322522096650">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
 <translation id="4906580650526544301">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Thông tin chi tiết</translation>
-<translation id="4929673617759421391">Chính sách của quản trị viên không cho phép dán tệp này</translation>
 <translation id="4935975195727477204">Hoa Gazania</translation>
 <translation id="4943368462779413526">Bóng đá</translation>
 <translation id="4961158930123534723">Đã chia sẻ 1 thư mục với ứng dụng Parallels Desktop</translation>
@@ -977,7 +976,6 @@
 <translation id="9183302530794969518">Google Tài liệu</translation>
 <translation id="9189836632794948435">Tiếng Kazakh</translation>
 <translation id="9200427192836333033">Đã giải nén <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
-<translation id="9210751050717126865">Chính sách của quản trị viên không cho phép dán <ph name="COUNT" /> tệp</translation>
 <translation id="9213073329713032541">Đã bắt đầu thành công quá trình cài đặt.</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="9219908252191632183">Hình lưỡi liềm</translation>

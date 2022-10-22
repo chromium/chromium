@@ -2416,6 +2416,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3201422919974259695">Dostupni USB uređaji će se prikazivati ovde.</translation>
 <translation id="3202131003361292969">Putanja</translation>
 <translation id="3202173864863109533">Zvuk ove kartice je isključen.</translation>
+<translation id="3202578601642193415">Najnovije</translation>
 <translation id="3204648577100496185">Podaci povezani sa ovom aplikacijom će se možda ukloniti sa ovog uređaja</translation>
 <translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3208584281581115441">Proveri</translation>
@@ -3698,6 +3699,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite da nam Chrome OS uređaji šalju automatske izveštaje, pomažete nam da odredimo prioritet za stvari koje treba da popravimo i poboljšamo u Chrome OS-u. Ti izveštaji mogu da obuhvataju stvari poput trenutaka Chrome OS otkazivanja, funkcija koje se koriste i količine memorije koja se obično troši.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ove izveštaje možete da pokrenete ili zaustavite u svakom trenutku u podešavanjima Chrome uređaja. Ako ste administrator domena, možete da promenite ovo podešavanje na administratorskoj konzoli.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">Da biste započeli, proverite da li je USB ili Bluetooth prekidač povezan na Chromebook. Možete da koristite i tastere na tastaturi.</translation>
+<translation id="4426508677408162512">Svi obeleživači</translation>
 <translation id="4427306783828095590">Poboljšana zaštita nudi više mogućnosti za blokiranje „pecanja“ i malvera</translation>
 <translation id="4427365070557649936">Verifikuje se kôd za potvrdu…</translation>
 <translation id="4429163740524851942">Raspored tastera na fizičkoj tastaturi</translation>
@@ -3837,6 +3839,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4556194354084985730">Lako se prijavljujte na sajtove i u aplikacije pomoću sačuvanih lozinki. Kada je ovo isključeno, prikazivaće vam se upit pre prijavljivanja.</translation>
 <translation id="4558426062282641716">Traži se dozvola za automatsko pokretanje</translation>
 <translation id="4559617833001311418">Ovaj sajt pristupa senzorima za pokret ili svetlo.</translation>
+<translation id="4561098487691395071">Ili navedite PPD štampača</translation>
 <translation id="4561893854334016293">Nema nedavno promenjenih dozvola</translation>
 <translation id="4562155214028662640">Dodaj digitalni otisak</translation>
 <translation id="4563210852471260509">Početni jezik za unos je kineski</translation>
@@ -4335,7 +4338,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5040823038948176460">Dodatna podešavanja sadržaja</translation>
 <translation id="5041509233170835229">Chrome aplikacija</translation>
 <translation id="5043440033854483429">Naziv može da sadrži slova, brojeve i crtice (-) i mora da ima između 1 i 15 znakova.</translation>
-<translation id="5043913660911154449">Ili navedite PPD štampača <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
 <translation id="504561833207953641">Otvara se u postojećoj sesiji pregledača.</translation>
 <translation id="5049614114599109018">Koristi istoriju unosa</translation>
@@ -4725,6 +4727,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5427278936122846523">Uvek prevodi</translation>
 <translation id="5427459444770871191">Okreći &amp;u smeru kretanja kazaljke na satu</translation>
 <translation id="542750953150239272">Ako nastavite, slažete se da ovaj uređaj može i da automatski preuzima i instalira ažuriranja i aplikacije od Google-a, mobilnog operatera i proizvođača uređaja, uz moguće korišćenje mobilnih podataka. Neke od ovih aplikacija mogu da nude kupovine u aplikacijama.</translation>
+<translation id="5427936139162668357">Prikaži PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Dostupno je ažuriranje)</translation>
 <translation id="542948651837270806">Treba da instalirate ažuriranje firmvera za Modul pouzdane platforme. Posetite <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Cela širina</translation>
@@ -8135,6 +8138,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8645354835496065562">Nastavi da dozvoljavaš pristup senzorima</translation>
 <translation id="8645920082661222035">Otkriva opasne događaje pre nego što se dogode i upozorava vas na njih</translation>
 <translation id="8646209145740351125">Onemogućite sinhronizaciju</translation>
+<translation id="8646340610303779673">Preuzimanje PPD-a nije uspelo.</translation>
 <translation id="864637694230589560">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja</translation>
 <translation id="8647385344110255847">Uz vašu dozvolu, dete može da koristi Google Play za instaliranje aplikacija</translation>
 <translation id="8647834505253004544">Veb-adresa nije važeća</translation>
@@ -8195,6 +8199,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="869884720829132584">Meni aplikacija</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
+<translation id="8699188901396699995">PPD za štampač <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> je zaključan.</translation>
 <translation id="8703346390800944767">Preskoči oglas</translation>
 <translation id="8705331520020532516">Serijski broj</translation>

@@ -458,6 +458,7 @@
            • کوکیز اور دیگر عارضی سائٹ کے ڈیٹا کو حذف کیا جائے گا
             <ph name="LINE_BREAKS" />
            بک مارکس، سرگزشت اور محفوظ کردہ پاس ورڈز متاثر نہیں ہوں گے۔</translation>
+<translation id="1425040197660226913">‏اپ لوڈ نہیں کر سکتے۔ 20MB سے چھوٹی تصویر استعمال کریں۔</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> مسدود ہے</translation>
 <translation id="1426870617281699524">'دوبارہ کوشش کریں' پر کلک کریں، اور اپنے کمپیوٹر پر پرامپٹ قبول کریں</translation>
@@ -584,6 +585,7 @@
 <translation id="1545177026077493356">خودکار کیوسک وضع</translation>
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
 <translation id="1545775234664667895">انسٹال کردہ تھیم "<ph name="THEME_NAME" />"</translation>
+<translation id="1546031833947068368">{COUNT,plural, =1{آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="1546280085599573572">آپ کی جانب سے ہوم بٹن کلک کرنے پر دکھائی دینے والے صفحہ کو اس ایکسٹینشن نے تبدیل کر دیا ہے۔</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ایک <ph name="EXTENSION_TYPE" /> انسٹال کرنا چاہتا ہے جو درجہ ذیل چیزیں کر سکتی ہے:</translation>
 <translation id="1547808936554660006">‏میں سمجھتا ہوں کہ انسٹال کردہ eSIM پروفائلز کو Powerwash کے ذریعے ہٹایا نہیں جائے گا</translation>
@@ -1005,6 +1007,7 @@
 <translation id="1908591798274282246">بند گروپ دوبارہ کھولیں</translation>
 <translation id="1909880997794698664">کیا آپ واقعی مستقل طور پر اس آلے کو کیوسک وضع میں رکھنا چاہتے ہیں؟</translation>
 <translation id="1910721550319506122">خوش آمدید!</translation>
+<translation id="1910736334623230603">متعدد تصاویر کو تلاش نہیں کیا جا سکتا۔ ایک وقت میں ایک تصویر شامل کریں۔</translation>
 <translation id="1915073950770830761">کینری</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1916502483199172559">ڈیفالٹ سرخ اوتار</translation>
@@ -1520,6 +1523,7 @@
 <translation id="2352810082280059586">مقفل اسکرین کے نوٹس خودکار طور پر <ph name="LOCK_SCREEN_APP_NAME" /> میں محفوظ ہوتے ہیں۔ آپ کا حالیہ ترین نوٹ مقفل اسکرین پر باقی رہے گا۔</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="2355314311311231464">فراہمی ناکام ہو گئی کیوں کہ آپ کے اکاؤنٹ کی تفصیلات بازیافت نہیں کی جا سکیں۔ براہ کرم دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
+<translation id="2355477091455974894">توانائی بچانے کے اختیارات</translation>
 <translation id="2355604387869345912">فوری ٹیدرنگ آن کریں</translation>
 <translation id="2356070529366658676">پوچھیں</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ہٹائیں</translation>
@@ -1768,6 +1772,7 @@
 <translation id="2591895621127187078">ایک نیا پاس ورڈ منتخب کرنے کیلئے اپنی ای میل چیک کریں</translation>
 <translation id="2593499352046705383">‏شروع کرنے سے پہلے ، یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا بیک اپ ہے۔ <ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو اوور رائٹ ہو جائے گی۔ g.co/flex/InstallGuide پر مزید جانیں۔</translation>
 <translation id="2594999711683503743">‏Google پر تلاش کریں یا URL ٹائپ کریں</translation>
+<translation id="25957578727513093">‏یہاں تیزی سے پہنچنے کے لئے، Google پاس ورڈ مینیجر میں ایک شارٹ کٹ شامل کریں</translation>
 <translation id="2599048253926156421">صارف کا نام کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="2602501489742255173">شروع کرنے کیلئے اوپر سوائپ کریں</translation>
 <translation id="2603115962224169880">کمپیوٹر صاف کریں</translation>
@@ -2419,6 +2424,7 @@
 <translation id="3201422919974259695">‏دستیاب USB آلات یہاں ظاہر ہوں گے۔</translation>
 <translation id="3202131003361292969">راستہ</translation>
 <translation id="3202173864863109533">اس ٹیب کی آڈیو خاموش کو کیا جا رہا ہے۔</translation>
+<translation id="3202578601642193415">جدید ترین</translation>
 <translation id="3204648577100496185">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹایا جا سکتا ہے۔</translation>
 <translation id="3208321278970793882">ایپ</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
@@ -2871,6 +2877,7 @@
 <translation id="3642699533549879077">جب کوئی آپ کی اسکرین پر دیکھتا ہے تو آپ کو ایک الرٹ ملے گا اور اطلاع کا مواد چھپ جائے گا۔</translation>
 <translation id="3643962751030964445">یہ آلہ <ph name="DEVICE_MANAGER" /> کے زیر انتظام ہے۔ <ph name="DEVICE_MANAGER" /> کو اکاؤنٹ <ph name="USER_EMAIL_ADDRESS" /> کے لیے ایک نئی پروفائل درکار ہے</translation>
 <translation id="3645372836428131288">فنگر پرنٹ کے مختلف حصے کو کیپچر کرنے کیلئے تھوڑی سی حرکت دیں</translation>
+<translation id="3647654707956482440">اس لنک کا استعمال نہیں کر سکتے۔ ٹائپنگ کی غلطیاں چیک کریں یا دوبارہ کوشش کرنے کیلئے دوسرا لنک استعمال کریں۔</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> سے <ph name="ATTACHMENTS" /> موصول ہوئیں}other{<ph name="DEVICE_NAME" /> سے <ph name="ATTACHMENTS" /> موصول ہوئیں}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> کا پتا چلا</translation>
 <translation id="3650753875413052677">اندراج میں خرابی</translation>
@@ -3701,6 +3708,7 @@
 <translation id="4424867131226116718">‏<ph name="BEGIN_PARAGRAPH1" />ChromeOS آلات کو خودکار رپورٹس بھیجنے کی اجازت دینے سے ہمیں یہ ترجیح دینے میں مدد ملتی ہے کہ ChromeOS میں کیا درست اور بہتر کرنا ہے۔ ان رپورٹس میں ChromeOS کب کریش ہوتا ہے، کون سی خصوصیات استعمال کی گئیں اور عام طور کتنی میموری استعمال کی گئی جیسی چیزیں شامل ہو سکتی ہیں۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے Chrome آلے کی ترتیبات میں کسی بھی وقت ان رپورٹس کی اجازت کو شروع یا بند کر سکتے ہیں۔ اگر آپ ڈومین کے منتظم ہیں تو آپ منتظم کونسول میں اس ترتیب کو تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">‏شروع کرنے کے لیے، براہ کرم یقینی بنائیں کہ آپ کا USB یا بلوٹوتھ سوئچ آپ کی Chromebook سے منسلک ہے۔ آپ کی بورڈ کلیدوں کا بھی استعمال کر سکتے ہیں۔</translation>
+<translation id="4426508677408162512">سبھی بُک مارکس</translation>
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
 <translation id="4427365070557649936">توثیقی کوڈ کی توثیق کی جا رہی ہے...</translation>
 <translation id="4429163740524851942">جسمانی کی بورڈ لے آؤٹ</translation>
@@ -3840,6 +3848,7 @@
 <translation id="4556194354084985730">اپنے محفوظ کردہ پاس ورڈز کے ساتھ آسانی سے سائٹس اور ایپس میں سائن ان کریں۔ آف ہونے پر، سائن ان کرنے سے پہلے آپ سے تصدیق کے لیے کہا جائے گا۔</translation>
 <translation id="4558426062282641716">خودکار شروع کرنے کی اجازت طلب کی گئی</translation>
 <translation id="4559617833001311418">یہ سائٹ آپ کے موشن اور لائٹ سینسرز تک رسائی حاصل کر رہی ہے۔</translation>
+<translation id="4561098487691395071">‏یا اپنے پرنٹر PPD کا تعین کریں</translation>
 <translation id="4561893854334016293">حال میں کسی اجازت کو تبدیل نہیں کیا گیا</translation>
 <translation id="4562155214028662640">فنگر پرنٹ شامل کریں</translation>
 <translation id="4563210852471260509">ان پٹ کی ابتدائی زبان چینی ہے</translation>
@@ -4338,7 +4347,6 @@
 <translation id="5040823038948176460">اضافی مواد کی ترتیبات</translation>
 <translation id="5041509233170835229">Chrome App</translation>
 <translation id="5043440033854483429">نام حروف، اعداد اور ہائفنز (-) کا استعمال کر سکتا ہے اور اس میں ضروری طور پر 1 اور 15 حروف کی شمولیت ہونی چاہیے۔</translation>
-<translation id="5043913660911154449">‏یا اپنے پرنٹر PPD کی وضاحت کریں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="504561833207953641">موجودہ براؤزر کے سیشن میں کھل رہا ہے۔</translation>
 <translation id="5049614114599109018">ان پٹ کی سرگزشت استعمال کریں</translation>
@@ -4728,6 +4736,7 @@
 <translation id="5427278936122846523">ہمیشہ ترجمہ کریں</translation>
 <translation id="5427459444770871191">&amp;گھڑی وار گھمائیں</translation>
 <translation id="542750953150239272">‏جاری رکھ کر، آپ اتفاق کرتے ہیں کہ یہ آلہ ممکنہ طور پر سیلولر ڈیٹا استعمال کر کے Google، آپ کے کیریئر، اور آپ کے آلہ کے مینوفیکچرر سے اپ ڈیٹس اور ایپس خودکار طور پر ڈاؤن لوڈ اور انسٹال کر سکتا ہے۔ ان میں سے کچھ ایپس درون ایپ خریداریوں کی پیشکش کر سکتی ہیں۔</translation>
+<translation id="5427936139162668357">‏PPD دیکھیں</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (اپ ڈیٹ دستیاب ہے)</translation>
 <translation id="542948651837270806">بھروسہ مند پلیٹ فارم ماڈیول فرم ویئر کے لیے اپ ڈیٹ انسٹال کرنے کی ضرورت ہے۔ <ph name="TPM_FIRMWARE_UPDATE_LINK" /> دیکھیں</translation>
 <translation id="5429818411180678468">پوری چوڑائی</translation>
@@ -6766,6 +6775,7 @@
 <translation id="7371490947952970241">‏آپ اس آلے پر مقام کی بنیادی ترتیب آف کر کے مقام آف کر سکتے ہیں۔ آپ مقام کی ترتیبات میں مقام کے لیے Wi‑Fi، موبائل نیٹ ورکس اور سینسرز کے استعمال کو بھی آف کر سکتے ہیں۔</translation>
 <translation id="7371917887111892735">ٹیبز کی چوڑائی پن کردہ ٹیب جتنی ہو جاتی ہے</translation>
 <translation id="7374376573160927383">‏USB آلات کا نظم کریں</translation>
+<translation id="7376124766545122644">‏اس لنک کا استعمال نہیں کر سکتے۔ دوبارہ کوشش کرنے کیلئے چیک کریں کہ آپ کا لنک '//:http' یا 'https://' سے شروع ہوتا ہے۔</translation>
 <translation id="7376553024552204454">ماؤس کا کرسر حرکت میں ہونے پر اسے ہائی لائٹ کریں</translation>
 <translation id="737728204345822099">آپ کی سیکیورٹی کلید پر آپ کے اس سائٹ کو ملاحظہ کرنے کا ریکارڈ رکھا جا سکتا ہے۔</translation>
 <translation id="7377451353532943397">سینسر تک رسائی کو مسدود کرنا جاری رکھیں</translation>
@@ -6776,6 +6786,7 @@
 <translation id="7380622428988553498">آلے کے نام میں غلط حروف شامل ہیں</translation>
 <translation id="7380768571499464492">اپ ڈیٹ کردہ <ph name="PRINTER_NAME" /></translation>
 <translation id="7382085868019811559">‏پرانے براؤزر کیلئے سپورٹ (LBS) مخصوص URLs پیٹرن کو متبادل براؤزر میں کھولنے کی اجازت دیتا ہے جو ان سائٹس کو صحیح طریقے سے چلانے کے لیے درکار پرانی خصوصیات کی سپورٹ کرتا ہے۔</translation>
+<translation id="738322632977123193">‏اپ لوڈ نہیں کر سکتے۔ تصویر کا استعمال ان میں سے کسی ایک فارمیٹ میں کریں: jpg, .gif, .png, .bmp, .tif. یا webp.</translation>
 <translation id="73843634555824551">ان پٹس اور کی بورڈز</translation>
 <translation id="7384687527486377545">کی بورڈ کا خودکار اعادہ</translation>
 <translation id="7385490373498027129">اس <ph name="DEVICE_TYPE" /> پر موجود سبھی صارفین کے لیے تمام فائلز اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔</translation>
@@ -6904,6 +6915,7 @@
 <translation id="7495778526395737099">اپنا پرانا پاس ورڈ بھول گئے؟</translation>
 <translation id="7497981768003291373">‏آپ کے پاس حالیہ کیپچر کردہ کوئی WebRTC ٹیکسٹ لاگ نہیں ہے۔</translation>
 <translation id="7501957181231305652">یا</translation>
+<translation id="7502220299952823578">"ان سائٹس کو ہمیشہ فعال رکھیں" کی فہرست میں شامل کریں</translation>
 <translation id="7503191893372251637">‏Netscape سرٹیفیکیٹ کی قسم</translation>
 <translation id="7503985202154027481">آپ کی سیکیورٹی کلید پر آپ کے اس سائٹ کو ملاحظہ کرنے کا ریکارڈ رکھا جائے گا۔</translation>
 <translation id="750509436279396091">ڈاؤن لوڈز کا فولڈر کھولیں</translation>
@@ -8132,6 +8144,7 @@
 <translation id="8645354835496065562">سینسر تک رسائی کی اجازت جاری رکھیں</translation>
 <translation id="8645920082661222035">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتی ہے اور آپ کو ان کے بارے میں متنبہ کرتی ہے</translation>
 <translation id="8646209145740351125">سِنک غیر فعال کریں</translation>
+<translation id="8646340610303779673">‏PPD بازیافت کرنے سے قاصر۔</translation>
 <translation id="864637694230589560">سائٹس عام طور پر اہم خبروں یا چیٹ پیغامات کے بارے میں آپ کو مطلع کرنے کے لیے اطلاعات بھیجتی ہیں</translation>
 <translation id="8647385344110255847">‏آپ کی اجازت سے، آپ کا بچہ ایپس انسٹال کرنے کے لیے Google Play کا استعمال کر سکتا ہے</translation>
 <translation id="8647834505253004544">ویب پتہ درست نہیں ہے</translation>
@@ -8192,6 +8205,7 @@
 <translation id="869884720829132584">ایپلیکیشنز مینو</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
+<translation id="8699188901396699995">‏<ph name="PRINTER_NAME" /> کیلئے PPD</translation>
 <translation id="8702825062053163569">آپ کا <ph name="DEVICE_TYPE" /> مقفل تھا۔</translation>
 <translation id="8703346390800944767">اشتہار کو نظر انداز کریں</translation>
 <translation id="8705331520020532516">نمبر شمار</translation>

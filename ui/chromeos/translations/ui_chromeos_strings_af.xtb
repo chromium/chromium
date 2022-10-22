@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgiese</translation>
 <translation id="2782104745158847185">Kon nie Linux-program installeer nie</translation>
+<translation id="2802583107108007218">Kom meer te wete oor hierdie beperkings</translation>
 <translation id="2803375539583399270">Voer PIN in</translation>
 <translation id="2820957248982571256">Skandeer tans …</translation>
 <translation id="2830077785865012357">Chinees-Zhujin</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Deel met Parallels Desktop</translation>
 <translation id="4902546322522096650">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, koppel</translation>
 <translation id="4906580650526544301">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, besonderhede</translation>
-<translation id="4929673617759421391">Administrateursbeleid verhoed dat hierdie lêer geplak kan word</translation>
 <translation id="4935975195727477204">Botterblom</translation>
 <translation id="4943368462779413526">Voetbal</translation>
 <translation id="4961158930123534723">1 vouer is met Parallels Desktop gedeel</translation>
@@ -920,6 +920,7 @@
 <translation id="8656768832129462377">Moenie nagaan nie</translation>
 <translation id="8688591111840995413">Swak wagwoord</translation>
 <translation id="8698464937041809063">Google-tekening</translation>
+<translation id="8698877009525468705">Hierdie lêer is vertroulik en onderworpe aan beperkings op grond van adminbeleid.</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8713112442029511308">Maltees</translation>
 <translation id="8714406895390098252">Fiets</translation>
@@ -974,7 +975,6 @@
 <translation id="9183302530794969518">Google Dokumente</translation>
 <translation id="9189836632794948435">Kasaks</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> items is onttrek.</translation>
-<translation id="9210751050717126865">Administrateursbeleid verhoed dat <ph name="COUNT" /> lêers geplak kan word</translation>
 <translation id="9213073329713032541">Installering is suksesvol begin.</translation>
 <translation id="9219103736887031265">Prente</translation>
 <translation id="9219908252191632183">Maanlandskap</translation>

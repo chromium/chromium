@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">แนะนำเพื่อประสบการณ์การใช้งานที่ดีที่สุด</translation>
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="1864927262126810325">จาก <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">เว็บไซต์ที่เกี่ยวข้องสามารถดูกิจกรรมของคุณในกลุ่มได้</translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1919345977826869612">โฆษณา</translation>
@@ -176,6 +177,7 @@
 <translation id="483914009762354899">รวมเว็บไซต์ทั้งหมดไว้ภายใต้โดเมนนี้</translation>
 <translation id="4883854917563148705">รีเซ็ตการตั้งค่าที่มีการจัดการไม่ได้</translation>
 <translation id="4887024562049524730">ถามก่อนที่จะอนุญาตให้เว็บไซต์ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ (แนะนำ)</translation>
+<translation id="4955223779495905865">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เว็บไซต์เหล่านี้อาจบันทึกคุกกี้และข้อมูลอื่นๆ เพื่อปรับประสบการณ์การใช้งานให้เหมาะกับคุณ</translation>
 <translation id="4962975101802056554">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
@@ -185,6 +187,7 @@
 <translation id="5048398596102334565">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ตรวจจับความเคลื่อนไหว (แนะนำ)</translation>
 <translation id="5050380848339752099">เว็บไซต์นี้กำลังจะแชร์ข้อมูลกับแอปนอกโหมดไม่ระบุตัวตน</translation>
 <translation id="5063480226653192405">การใช้</translation>
+<translation id="5082281938627763039">การดำเนินการนี้จะลบคุกกี้และข้อมูลเว็บไซต์อื่นๆ ของ <ph name="FPS_MEMBER" /> และเว็บไซต์ในกลุ่มเว็บไซต์ <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">เว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
 <translation id="509133520954049755">ขอมุมมองบนเดสก์ท็อป</translation>
 <translation id="5100237604440890931">ยุบ - คลิกเพื่อขยาย</translation>
@@ -221,6 +224,7 @@
 <translation id="5677928146339483299">ถูกบล็อก</translation>
 <translation id="5689516760719285838">ตำแหน่ง</translation>
 <translation id="5690795753582697420">กล้องปิดอยู่ในการตั้งค่า Android</translation>
+<translation id="5706552988683188916">การดำเนินการนี้จะลบคุกกี้และข้อมูลเว็บไซต์อื่นๆ ของ <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> หรือแอปที่อยู่ในหน้าจอหลักจัดเก็บไว้</translation>
 <translation id="5771720122942595109">บล็อก<ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
@@ -321,6 +325,7 @@
 <translation id="7882806643839505685">อนุญาตให้เว็บไซต์ที่ต้องการเล่นเสียงได้</translation>
 <translation id="789180354981963912">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน:</translation>
 <translation id="7940722705963108451">เตือนฉัน</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}other{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}}</translation>
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7999064672810608036">คุณแน่ใจไหมว่าต้องการล้างข้อมูลในเครื่องทั้งหมด รวมถึงคุกกี้ และรีเซ็ตสิทธิ์ทั้งหมดสำหรับเว็บไซต์นี้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
@@ -359,6 +364,7 @@
 <translation id="8499083585497694743">เปิดเสียงไมโครโฟน</translation>
 <translation id="851751545965956758">บล็อกเว็บไซต์ไม่ให้เชื่อมต่อกับอุปกรณ์</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}}</translation>
 <translation id="857943718398505171">อนุญาตแล้ว (แนะนำ)</translation>
 <translation id="8609465669617005112">เลื่อนขึ้น</translation>
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
@@ -384,6 +390,8 @@
 <translation id="8986362086234534611">เลิกจำ</translation>
 <translation id="9019902583201351841">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
+<translation id="9090268041676521955">เว็บไซต์นี้อยู่ในกลุ่มที่สามารถดูกิจกรรมของคุณได้ กลุ่มที่ <ph name="FPS_OWNER" /> กำหนดไว้</translation>
+<translation id="9106233582039520022">ลบคุกกี้ไหม</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
 <translation id="913657688200966289">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="9162462602695099906">หน้านี้อันตราย</translation>

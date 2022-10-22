@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 päivä sitten}other{# päivää sitten}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minuutti sitten}other{# minuuttia sitten}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}other{# min}}</translation>
+<translation id="1181037720776840403">Poista</translation>
 <translation id="1243314992276662751">Lähetä</translation>
 <translation id="1266864766717917324">Jakaminen epäonnistui: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>

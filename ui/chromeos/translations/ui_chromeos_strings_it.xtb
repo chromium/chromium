@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Formaggio</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
+<translation id="2802583107108007218">Scopri di più su queste limitazioni</translation>
 <translation id="2803375539583399270">Inserisci PIN</translation>
 <translation id="2820957248982571256">Scansione…</translation>
 <translation id="2830077785865012357">Cinese Zhuyin</translation>
@@ -455,7 +456,6 @@
 <translation id="4900532980794411603">Condividi con Parallels Desktop</translation>
 <translation id="4902546322522096650">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, connetti</translation>
 <translation id="4906580650526544301">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, dettagli</translation>
-<translation id="4929673617759421391">Non puoi incollare questo file in base al criterio dell'amministratore</translation>
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Calcio</translation>
 <translation id="4961158930123534723">1 cartella condivisa con Parallels Desktop</translation>
@@ -920,6 +920,7 @@
 <translation id="8656768832129462377">Non verificare</translation>
 <translation id="8688591111840995413">Password non valida</translation>
 <translation id="8698464937041809063">Disegno Google</translation>
+<translation id="8698877009525468705">Questo file è riservato e soggetto a limitazioni stabilite dal criterio dell'amministratore.</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8713112442029511308">Maltese</translation>
 <translation id="8714406895390098252">Bicicletta</translation>
@@ -974,7 +975,6 @@
 <translation id="9183302530794969518">Documenti Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementi estratti.</translation>
-<translation id="9210751050717126865">La possibilità di incollare <ph name="COUNT" /> file è bloccata dal criterio dell'amministratore</translation>
 <translation id="9213073329713032541">Installazione eseguita correttamente.</translation>
 <translation id="9219103736887031265">Immagini</translation>
 <translation id="9219908252191632183">Lunare</translation>
