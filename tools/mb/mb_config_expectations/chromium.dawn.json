@@ -58,7 +58,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_allocator": "none",
       "use_dawn": true,
       "use_partition_alloc_as_malloc": false,
       "use_remoteexec": true
@@ -71,7 +70,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_allocator": "none",
       "use_dawn": true,
       "use_partition_alloc_as_malloc": false,
       "use_remoteexec": true

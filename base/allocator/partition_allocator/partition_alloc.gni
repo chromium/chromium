@@ -13,27 +13,8 @@ if (use_partition_alloc_as_malloc_default) {
 
 declare_args() {
   # PartitionAlloc-Everywhere (PA-E).
-  #
-  # Temporarily move |use_allocator| to partition_alloc.gni, because
-  # some bots use |use_allocator|="none" with
-  # |use_partition_alloc_as_malloc_default|=true. This causes PA_CHECK()
-  # failure at PartitionAllocator::init().
-  # TODO(1151236): Replace |use_allocator|="none" and |use_allocator|=
-  # "partition" with |use_partition_alloc_as_malloc|=false and
-  # |use_partition_alloc_as_malloc|=true, and remove |use_allocator| from
-  # args.gn of all trybots. //base/allocator will look at
-  # |use_partition_alloc_as_malloc| and will generate buildflags.
-  # Memory allocator to use. Set to "none" to use default allocator.
-  use_allocator = _default_allocator
   use_partition_alloc_as_malloc = use_partition_alloc_as_malloc_default
 }
-
-assert(use_allocator == "partition" || use_allocator == "none",
-       "use_allocator can either be 'partition' or 'none'")
-
-assert(
-    use_partition_alloc_as_malloc == (use_allocator == "partition"),
-    "use_partition_alloc_as_malloc must be true iff use_allocator=='partition'")
 
 declare_args() {
   use_freeslot_bitmap = false

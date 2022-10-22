@@ -50,7 +50,6 @@ template("nacl_toolchain") {
       is_component_build = false
 
       # We do not replace the allocator when using NaCl toolchains.
-      use_allocator = "none"
       use_allocator_shim = false
       use_partition_alloc_as_malloc = false
 

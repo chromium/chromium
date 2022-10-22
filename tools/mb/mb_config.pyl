@@ -3826,7 +3826,7 @@
     },
 
     'backuprefptr': {
-      'gn_args': 'use_allocator="partition" use_partition_alloc_as_malloc=true enable_backup_ref_ptr_support=true put_ref_count_in_previous_slot=true enable_backup_ref_ptr_slow_checks=true',
+      'gn_args': 'use_partition_alloc_as_malloc=true enable_backup_ref_ptr_support=true put_ref_count_in_previous_slot=true enable_backup_ref_ptr_slow_checks=true',
     },
 
     'betty-arc-r': {
@@ -4487,7 +4487,7 @@
     # https://crbug.com/dawn/1200: Used to disable partition alloc while we
     # investigate a crash in the mac AMD shader compiler.
     'padisabled': {
-      'gn_args': 'use_allocator="none" use_partition_alloc_as_malloc=false',
+      'gn_args': 'use_partition_alloc_as_malloc=false',
     },
 
     # Used to pass the list of files to instrument for coverage to the compile
