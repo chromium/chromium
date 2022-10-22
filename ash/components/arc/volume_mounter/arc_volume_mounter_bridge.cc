@@ -176,9 +176,10 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
 
   // Conditionally set MyFiles to be visible for P and invisible for R. In R, we
   // use IsVisibleRead so this is not needed.
+  const bool is_p = arc::GetArcAndroidSdkVersionAsInt() == arc::kArcVersionP;
   volume_mounter_instance->OnMountEvent(mojom::MountPointInfo::New(
       DiskMountManager::MOUNTING, kMyFilesPath, kMyFilesPath, kMyFilesUuid,
-      device_label, device_type, !IsArcVmEnabled()));
+      device_label, device_type, is_p));
 }
 
 bool ArcVolumeMounterBridge::IsVisibleToAndroidApps(
