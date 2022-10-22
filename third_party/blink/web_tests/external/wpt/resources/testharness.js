@@ -3822,7 +3822,9 @@
             return;
         }
 
-        this.pending_remotes.push(this.create_remote_window(remote));
+        var remoteContext = this.create_remote_window(remote);
+        this.pending_remotes.push(remoteContext);
+        return remoteContext.done;
     };
 
     /**
@@ -3837,7 +3839,7 @@
      * @param {Window} window - The window to fetch tests from.
      */
     function fetch_tests_from_window(window) {
-        tests.fetch_tests_from_window(window);
+        return tests.fetch_tests_from_window(window);
     }
     expose(fetch_tests_from_window, 'fetch_tests_from_window');
 

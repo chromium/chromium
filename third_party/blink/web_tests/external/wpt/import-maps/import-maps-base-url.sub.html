@@ -17,17 +17,22 @@ const importMap = `
 }
 `;
 
-window.addEventListener("load", () => {
-  testStaticImport(importMap, baseURL, "bare/bare", "log:bare");
-  testDynamicImport(importMap, baseURL, "bare/bare", "log:bare", "module");
-  testDynamicImport(importMap, baseURL, "bare/bare", "log:bare",
-      "text/javascript");
+promise_setup(function () {
+  return new Promise((resolve) => {
+    window.addEventListener("load", async () => {
+      await testStaticImport(importMap, baseURL, "bare/bare", "log:bare");
+      await testDynamicImport(importMap, baseURL, "bare/bare", "log:bare", "module");
+      await testDynamicImport(importMap, baseURL, "bare/bare", "log:bare", "text/javascript");
 
-  testStaticImportInjectBase(importMap, baseURL, "bare/bare", "log:bare");
-  testDynamicImportInjectBase(importMap, baseURL, "bare/bare", "log:bare", "module");
-  testDynamicImportInjectBase(importMap, baseURL, "bare/bare", "log:bare",
-      "text/javascript");
-});
+      await testStaticImportInjectBase(importMap, baseURL, "bare/bare", "log:bare");
+      await testDynamicImportInjectBase(importMap, baseURL, "bare/bare", "log:bare", "module");
+      await testDynamicImportInjectBase(importMap, baseURL, "bare/bare", "log:bare", "text/javascript");
+      done();
+      resolve();
+    });
+  });
+}, { explicit_done: true });
+
 
 </script>
 <body>

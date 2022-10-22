@@ -333015,7 +333015,7 @@
       []
      ],
      "test-helper.js": [
-      "f6a6a30cc516f44f4c55813706eae87e73a3288c",
+      "f12e84c685d548a52e99453377ce3064a5341e18",
       []
      ]
     },
@@ -342430,7 +342430,7 @@
      []
     ],
     "testharness.js": [
-     "423108e736aeca752f3b3999d4d5e27b5d0a1ad1",
+     "7ac363217bdce48d173b6b07482efce6731e6494",
      []
     ],
     "testharness.js.headers": [
@@ -350289,6 +350289,14 @@
       ],
       "seamlessly-updating-the-playback-rate-of-an-animation-expected.txt": [
        "08094375acff8c4a6c4c9f63bf5b2928ae329909",
+       []
+      ],
+      "setting-the-current-time-of-an-animation-expected.txt": [
+       "2057abc2b8191dce7b03a358fd11bc9a013ced37",
+       []
+      ],
+      "setting-the-start-time-of-an-animation-expected.txt": [
+       "438f9f3ad51123df9f489fd74929ccfa6a4d65b9",
        []
       ],
       "sync-start-times-ref.html": [
@@ -511233,7 +511241,7 @@
      ]
     ],
     "import-maps-base-url.sub.html": [
-     "0a5f9c0beee76b7950b97809f4ec0e91780d6547",
+     "5d44eae4b28f1161c93cf4aceee75dc73d8b466b",
      [
       null,
       {
@@ -572503,7 +572511,7 @@
        ]
       ],
       "setting-the-current-time-of-an-animation.html": [
-       "b4a4890775e5265ee5644638b8aa941daa2ded04",
+       "809877345f7f6c6d4b94cdfe090ea6b8e9848f8e",
        [
         null,
         {}
@@ -572517,7 +572525,7 @@
        ]
       ],
       "setting-the-start-time-of-an-animation.html": [
-       "15e75251533fb10ce03c21ac61a3ca1e7ac15479",
+       "fee3f1e0de7940beeb46178080c2638454a4af29",
        [
         null,
         {}
