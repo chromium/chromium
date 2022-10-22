@@ -79,8 +79,6 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   void UnsetGeneratedEventCallbackForTesting();
 
   // AXTreeManager implementation.
-  ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
-                              const ui::AXNodeID node_id) const override;
   ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
   ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetParentNodeFromParentTreeAsAXNode() const override;

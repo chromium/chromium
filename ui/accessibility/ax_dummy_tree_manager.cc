@@ -60,12 +60,6 @@ void AXDummyTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
     GetMap().AddTreeManager(GetTreeID(), this);
 }
 
-AXNode* AXDummyTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
-                                            const AXNodeID node_id) const {
-  return (ax_tree_ && GetTreeID() == tree_id) ? ax_tree_->GetFromId(node_id)
-                                              : nullptr;
-}
-
 AXNode* AXDummyTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
   AXTreeID parent_tree_id = GetParentTreeID();
   AXDummyTreeManager* parent_manager =

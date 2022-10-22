@@ -55,7 +55,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
   // TODO(kschmi): Remove |tree_id| parameter, as it's unnecessary.
   virtual AXNode* GetNodeFromTree(const AXTreeID& tree_id,
-                                  const AXNodeID node_id) const = 0;
+                                  const AXNodeID node_id) const;
 
   // Returns the AXNode in the current tree that has the given |node_id|.
   // Returns nullptr if |node_id| is not found.

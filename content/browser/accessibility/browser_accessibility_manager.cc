@@ -1640,14 +1640,6 @@ void BrowserAccessibilityManager::OnAtomicUpdateFinished(
   }
 }
 
-ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
-    const ui::AXTreeID& tree_id,
-    const ui::AXNodeID node_id) const {
-  auto* manager = BrowserAccessibilityManager::FromID(tree_id);
-  CHECK(manager);
-  return manager->GetNode(node_id);
-}
-
 ui::AXNode* BrowserAccessibilityManager::GetNode(
     const ui::AXNodeID node_id) const {
   // This does not use ax_tree()->FromID(), because that uses a different map

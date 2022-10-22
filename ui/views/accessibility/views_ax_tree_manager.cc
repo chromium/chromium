@@ -57,16 +57,6 @@ void ViewsAXTreeManager::UnsetGeneratedEventCallbackForTesting() {
   generated_event_callback_for_testing_.Reset();
 }
 
-ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
-    const ui::AXTreeID& tree_id,
-    const ui::AXNodeID node_id) const {
-  if (!widget_ || !widget_->GetRootView())
-    return nullptr;
-
-  const ui::AXTreeManager* manager = ui::AXTreeManager::FromID(tree_id);
-  return manager ? manager->GetNode(node_id) : nullptr;
-}
-
 ui::AXNode* ViewsAXTreeManager::GetNode(
     const ui::AXNodeID node_id) const {
   if (!widget_ || !widget_->GetRootView() || !ax_tree_)

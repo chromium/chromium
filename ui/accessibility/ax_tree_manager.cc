@@ -120,6 +120,12 @@ bool AXTreeManager::CanFireEvents() const {
   return true;
 }
 
+AXNode* AXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
+                                       const AXNodeID node_id) const {
+  auto* manager = AXTreeManager::FromID(tree_id);
+  return manager ? manager->GetNode(node_id) : nullptr;
+}
+
 void AXTreeManager::Initialize(const ui::AXTreeUpdate& initial_tree) {
   if (!ax_tree()->Unserialize(initial_tree)) {
     LOG(FATAL) << "No recovery is possible if the initial tree is broken: "
