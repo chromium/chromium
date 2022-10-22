@@ -20,7 +20,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
 #import "chrome/updater/app/server/mac/app_server.h"
 #import "chrome/updater/app/server/mac/server.h"
@@ -599,7 +599,7 @@
   if (self = [super init]) {
     _service = service;
     _appServer = appServer;
-    _callbackRunner = base::SequencedTaskRunnerHandle::Get();
+    _callbackRunner = base::SequencedTaskRunner::GetCurrentDefault();
   }
   return self;
 }
@@ -641,7 +641,7 @@
   if (self = [super init]) {
     _service = service;
     _appServer = appServer;
-    _callbackRunner = base::SequencedTaskRunnerHandle::Get();
+    _callbackRunner = base::SequencedTaskRunner::GetCurrentDefault();
   }
   return self;
 }

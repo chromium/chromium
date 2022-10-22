@@ -12,9 +12,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #import "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_scope.h"
@@ -81,7 +81,8 @@ void PollLaunchctlList(UpdaterScope scope,
                 runner->PostTask(FROM_HERE,
                                  base::BindOnce(std::move(callback), result));
               },
-              base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              std::move(callback))));
 }
 
 }  // namespace updater

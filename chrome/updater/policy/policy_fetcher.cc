@@ -15,8 +15,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_client.h"
@@ -57,7 +57,7 @@ void PolicyFetcher::FetchPolicies(
       FROM_HERE,
       base::BindOnce(
           &PolicyFetcher::RegisterDevice, this,
-          base::SequencedTaskRunnerHandle::Get(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&PolicyFetcher::OnRegisterDeviceRequestComplete, this,
                          std::move(callback))));
 }
@@ -90,10 +90,10 @@ void PolicyFetcher::OnRegisterDeviceRequestComplete(
         FROM_HERE,
         base::BindOnce(
             &PolicyFetcher::FetchPolicy, this,
-            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                                base::BindOnce(std::move(callback), kErrorOk))));
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
@@ -124,7 +124,7 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
     return CreateDMPolicyManager();
 
   for (const auto& validation_result : validation_results) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &DMClient::ReportPolicyValidationErrors,

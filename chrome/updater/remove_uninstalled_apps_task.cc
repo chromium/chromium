@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"

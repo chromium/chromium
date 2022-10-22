@@ -35,13 +35,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -611,7 +611,7 @@ void StressUpdateService(UpdaterScope scope) {
       }
     };
 
-    Local::GetVersion(scope, base::SequencedTaskRunnerHandle::Get(),
+    Local::GetVersion(scope, base::SequencedTaskRunner::GetCurrentDefault(),
                       loop_closure);
   };
 

@@ -31,7 +31,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/privileged_helper/server.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
@@ -213,7 +212,7 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
 }
 
 PrivilegedHelperService::PrivilegedHelperService()
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 PrivilegedHelperService::~PrivilegedHelperService() = default;
 

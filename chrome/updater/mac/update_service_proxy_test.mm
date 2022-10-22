@@ -19,10 +19,10 @@
 #include "base/memory/scoped_policy.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
@@ -170,7 +170,7 @@ void StateChangeTestEngine::Next() {
     return;
   }
   // Asynchronously issue the update state change.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](base::scoped_nsprotocol<id<CRUUpdateStateObserving>> observer,
@@ -179,7 +179,7 @@ void StateChangeTestEngine::Next() {
           },
           observer_, state_seq_[next_observation_].first.get()));
   // Prepare to time out.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&StateChangeTestEngine::MaybeTimeOut,
                      base::Unretained(this), next_observation_),
@@ -210,8 +210,8 @@ void StateChangeTestEngine::Finish() {
   ASSERT_FALSE(done_cb_.is_null())
       << "TEST ISSUE: StateChangeTestEngine doesn't have a valid done_cb_ when "
          "Finish()ing.";
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(done_cb_));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(done_cb_));
 }
 
 void StateChangeTestEngine::GotState(const UpdateService::UpdateState& state) {
@@ -291,7 +291,7 @@ class MacUpdateServiceProxyTest : public ::testing::Test {
 
 void MacUpdateServiceProxyTest::SetUp() {
   run_loop_ = std::make_unique<base::RunLoop>();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         service_ = base::MakeRefCounted<UpdateServiceProxy>(
             UpdaterScope::kUser, base::TimeDelta::Max());
@@ -464,7 +464,7 @@ TEST_F(MacUpdateServiceProxyTest, DISABLED_NoProductsUpdateAll) {
             UpdateService::Result::kAppNotFound);
       });
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         service_->UpdateAll(
             base::BindRepeating(
@@ -538,7 +538,7 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
                            UpdateService::Result::kSuccess));
       });
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &state_change_engine]() {
         service_->Update("test_app_id", "test_install_data_index",
                          UpdateService::Priority::kForeground,

@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/updater/action_handler.h"
 #include "components/update_client/update_client.h"
@@ -56,7 +56,7 @@ void ActionHandler::Handle(const base::FilePath& action,
       base::BindOnce(
           [](Callback callback, const Result& result) {
             auto [succeeded, error_code, extra_code] = result;
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), succeeded,
                                           error_code, extra_code));
           },

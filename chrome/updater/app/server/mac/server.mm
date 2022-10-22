@@ -14,7 +14,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
@@ -32,7 +32,7 @@
 namespace updater {
 
 AppServerMac::AppServerMac()
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 AppServerMac::~AppServerMac() = default;
 
 void AppServerMac::Uninitialize() {

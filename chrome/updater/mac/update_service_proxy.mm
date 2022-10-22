@@ -17,7 +17,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
@@ -265,7 +265,7 @@ UpdateServiceProxy::UpdateServiceProxy(
     const base::TimeDelta& get_version_timeout)
     : scope_(scope), get_version_timeout_(get_version_timeout) {
   client_.reset([[CRUUpdateServiceProxyImpl alloc] initWithScope:scope]);
-  callback_runner_ = base::SequencedTaskRunnerHandle::Get();
+  callback_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 void UpdateServiceProxy::GetVersion(
@@ -275,7 +275,7 @@ void UpdateServiceProxy::GetVersion(
   VLOG(1) << __func__ << " with timeout " << get_version_timeout_;
   auto timeout_callback = std::make_unique<base::CancelableOnceClosure>(
       base::BindOnce(&UpdateServiceProxy::Reset, base::Unretained(this)));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_callback->callback(), get_version_timeout_);
 
   __block base::OnceCallback<void(const base::Version&)> block_callback =

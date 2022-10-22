@@ -17,9 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -48,8 +48,8 @@ class SplashScreenImpl : public SplashScreen {
   // Overrides for SplashScreen.
   void Show() override {}
   void Dismiss(base::OnceClosure callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 };
 
@@ -61,14 +61,14 @@ class AppInstallControllerImpl : public AppInstallController {
   void InstallApp(const std::string& /*app_id*/,
                   const std::string& /*app_name*/,
                   base::OnceCallback<void(int)> callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
   }
 
   void InstallAppOffline(const std::string& app_id,
                          const std::string& app_name,
                          base::OnceCallback<void(int)> callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
   }
 

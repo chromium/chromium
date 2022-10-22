@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/updater_scope.h"
@@ -100,7 +100,7 @@ scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
 }
 
 UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
-    : callback_runner_(base::SequencedTaskRunnerHandle::Get()) {
+    : callback_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   client_.reset(
       [[CRUUpdateServiceInternalProxyImpl alloc] initWithScope:scope]);
 }

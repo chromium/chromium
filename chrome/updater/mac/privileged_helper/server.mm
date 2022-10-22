@@ -13,7 +13,7 @@
 #include "base/process/launch.h"
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/updater/mac/privileged_helper/helper_branding.h"
 #include "chrome/updater/updater_branding.h"
@@ -25,7 +25,7 @@ int kServerKeepAliveSeconds = 1;
 }
 
 PrivilegedHelperServer::PrivilegedHelperServer()
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       service_(base::MakeRefCounted<PrivilegedHelperService>()) {}
 PrivilegedHelperServer::~PrivilegedHelperServer() = default;
 

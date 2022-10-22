@@ -18,7 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/net/network.h"
 #include "chrome/updater/policy/service.h"
@@ -55,7 +55,7 @@ using DownloadToFileCompleteCallback =
   if (self = [super init]) {
     _responseStartedCallback = std::move(responseStartedCallback);
     _progressCallback = progressCallback;
-    _callbackRunner = base::SequencedTaskRunnerHandle::Get();
+    _callbackRunner = base::SequencedTaskRunner::GetCurrentDefault();
   }
   return self;
 }
