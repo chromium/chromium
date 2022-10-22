@@ -5156,7 +5156,7 @@
 <translation id="5860494867054883682">आपका डिवाइस <ph name="CHANNEL_NAME" /> चैनल में अपडेट हो रहा है (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">शेल्फ़ में स्टाइस टूल दिखाएं</translation>
 <translation id="5862319196656206789">कनेक्ट किए गए डिवाइस सेट अप करें</translation>
-<translation id="5862731021271217234">अपने दूसरे डिवाइस से अपने टैब पाने के लिए, 'सिंक करें' को चालू करें</translation>
+<translation id="5862731021271217234">अपने दूसरे डिवाइसों से टैब पाने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="5863445608433396414">डीबग करने वाली सुविधाएं चालू करें</translation>
 <translation id="5864195618110239517">सीमित डेटा वाला कनेक्शन इस्तेमाल करें</translation>
 <translation id="5864754048328252126">चार्ज करते समय डिवाइस पर काम नहीं हो रहा है</translation>
@@ -6253,7 +6253,7 @@
 <translation id="6902837902700739466">डिवाइस को डोमेन से जोड़ें</translation>
 <translation id="6903022061658753260">आपका डेटा, उन सभी Chrome ब्राउज़र पर सिंक हो जाएगा जहां आपने इस खाते से जुड़े डेटा को सिंक करने की सुविधा चालू की है. ChromeOS पर उपलब्ध, डेटा सिंक करने के विकल्पों के बारे में जानने के लिए <ph name="LINK_BEGIN" />ChromeOS की सेटिंग<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="6903590427234129279">सभी यूआरएल (<ph name="URL_COUNT" />) खोलें</translation>
-<translation id="6903907808598579934">समन्वयन चालू करें</translation>
+<translation id="6903907808598579934">सिंक करना चालू करें</translation>
 <translation id="6904344821472985372">फ़ाइल एक्सेस रद्द करें</translation>
 <translation id="6904655473976120856">बाहर निकलने के लिए ऐप्लिकेशन बटन दबाएं</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{1 मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}one{{NUM_MINS} मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}other{{NUM_MINS} मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}}</translation>
@@ -6375,7 +6375,7 @@
 <translation id="7005812687360380971">विफलता</translation>
 <translation id="7005848115657603926">अमान्य पेज श्रेणी, <ph name="EXAMPLE_PAGE_RANGE" /> का उपयोग करें</translation>
 <translation id="7006438259896942210">इस खाते (<ph name="USER_EMAIL_ADDRESS" />) को <ph name="PROFILE_NAME" /> मैनेज करता है</translation>
-<translation id="700651317925502808">क्या आप सेटिंग रीसेट करना चाहते हैं?</translation>
+<translation id="700651317925502808">क्या आपको सेटिंग रीसेट करनी है?</translation>
 <translation id="7006634003215061422">निचला हाशिया</translation>
 <translation id="7007648447224463482">सभी को नई विंडो में खोलें</translation>
 <translation id="7008815993384338777">अभी रोमिंग में नहीं है</translation>
@@ -7131,7 +7131,7 @@
 <translation id="7751619076382363711">आपने किसी साइट को नहीं हटाया है</translation>
 <translation id="7753735457098489144">स्टोरेज के लिए बची जगह कम होने की वजह से इंस्टॉल नहीं किया जा सका. जगह खाली करने के लिए, डिवाइस की मेमोरी से फ़ाइलें मिटाएं.</translation>
 <translation id="7754347746598978109">JavaScript इस्तेमाल करने की अनुमति नहीं है</translation>
-<translation id="7754704193130578113">डाउनलोड करने से पहले, हर फ़ाइल को सेव करने की जगह के बारें में पूछें</translation>
+<translation id="7754704193130578113">डाउनलोड करने से पहले, हर फ़ाइल को सेव करने की जगह के बारे में पूछें</translation>
 <translation id="7755134875397410803">टास्क पूरे करने में आपकी मदद करने के लिए, Google उन साइटों के यूआरएल और कॉन्टेंट का इस्तेमाल करेगा जिन पर आपने Assistant का इस्तेमाल किया है. साथ ही, वह उस जानकारी का भी इस्तेमाल करेगा जिसे आपने Assistant के ज़रिए सबमिट किया है. यह जानकारी शायद आपके Google खाते में सेव की जाए. आपके पास Chrome की सेटिंग में जाकर, Assistant की सुविधा बंद करने का विकल्प होता है. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
 <translation id="7757592200364144203">डिवाइस का नाम बदलें</translation>

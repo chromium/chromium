@@ -1854,7 +1854,7 @@
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक किया गया)</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5919090499915321845">बी10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 उपयोग में है}one{# उपयोग में हैं}other{# उपयोग में हैं}}</translation>
+<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 इस्तेमाल में है}one{# इस्तेमाल में है}other{# इस्तेमाल में हैं}}</translation>
 <translation id="592031860219554105">आइस स्केटिंग</translation>
 <translation id="5921185718311485855">चालू है</translation>
 <translation id="5921639886840618607">कार्ड को Google खाते में सेव करें?</translation>
@@ -1872,7 +1872,7 @@
 <translation id="5955063559762970069">होटल और ठहरने की जगह</translation>
 <translation id="5963413905009737549">अनुभाग</translation>
 <translation id="5967592137238574583">संपर्क जानकारी में बदलाव करें</translation>
-<translation id="5967867314010545767">इतिहास से निकालें</translation>
+<translation id="5967867314010545767">इतिहास से हटाएं</translation>
 <translation id="5968022600320704045">खोज का कोई नतीजा नहीं मिला</translation>
 <translation id="5968793460449681917">वेबसाइट पर किसी के भी आने पर</translation>
 <translation id="5974052231147553524">छठा रोल</translation>
