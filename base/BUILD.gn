@@ -2543,6 +2543,7 @@ buildflag_header("cfi_buildflags") {
   flags = [
     # TODO(pcc): remove CFI_CAST_CHECK, see https://crbug.com/626794.
     "CFI_CAST_CHECK=$is_cfi && $use_cfi_cast",
+    "CFI_DIAG=$is_cfi && $use_cfi_diag",
     "CFI_ICALL_CHECK=$is_cfi && $use_cfi_icall",
     "CFI_ENFORCEMENT_TRAP=$is_cfi && !$use_cfi_diag",
     "CFI_ENFORCEMENT_DIAGNOSTIC=$is_cfi && $use_cfi_diag && !$use_cfi_recover",

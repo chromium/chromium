@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/cfi_buildflags.h"
 #include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
@@ -53,6 +54,8 @@ void InitializeTimeout(const char* switch_name,
 #else
   constexpr int kTimeoutMultiplier = 6;
 #endif
+#elif BUILDFLAG(CFI_DIAG)
+  constexpr int kTimeoutMultiplier = 3;
 #elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
   // ASan/Win has not been optimized yet, give it a higher
   // timeout multiplier. See http://crbug.com/412471
