@@ -8,8 +8,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -51,11 +49,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest,
   std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util =
       ExtensionActionTestHelper::Create(browser());
   extensions::ResultCatcher catcher;
-  content::WindowedNotificationObserver popup_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
   browser_action_test_util->Press(extension->id());
-  popup_observer.Wait();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
