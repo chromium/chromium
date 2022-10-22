@@ -124,28 +124,9 @@ void Location::WriteIntoTrace(perfetto::TracedValue context) const {
 #define RETURN_ADDRESS() nullptr
 #endif
 
-#if !BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS)
-#if !BUILDFLAG(ENABLE_LOCATION_SOURCE)
+#if SUPPORTS_LOCATION_BUILTINS
 
-// static
-NOINLINE Location Location::CreateFromHere(const char* file_name) {
-  return Location(file_name + kStrippedPrefixLength, RETURN_ADDRESS());
-}
-
-#else
-
-// static
-NOINLINE Location Location::CreateFromHere(const char* function_name,
-                                           const char* file_name,
-                                           int line_number) {
-  return Location(function_name, file_name + kStrippedPrefixLength, line_number,
-                  RETURN_ADDRESS());
-}
-
-#endif
-#endif
-
-#if SUPPORTS_LOCATION_BUILTINS && BUILDFLAG(ENABLE_LOCATION_SOURCE)
+#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
 // static
 NOINLINE Location Location::Current(const char* function_name,
                                     const char* file_name,
@@ -153,16 +134,34 @@ NOINLINE Location Location::Current(const char* function_name,
   return Location(function_name, file_name + kStrippedPrefixLength, line_number,
                   RETURN_ADDRESS());
 }
-#elif SUPPORTS_LOCATION_BUILTINS
+#else
 // static
 NOINLINE Location Location::Current(const char* file_name) {
   return Location(file_name + kStrippedPrefixLength, RETURN_ADDRESS());
 }
+#endif
+
 #else
-// static
+
 NOINLINE Location Location::Current() {
   return Location(nullptr, RETURN_ADDRESS());
 }
+
+#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
+// static
+NOINLINE Location Location::CreateFromHere(const char* function_name,
+                                           const char* file_name,
+                                           int line_number) {
+  return Location(function_name, file_name + kStrippedPrefixLength, line_number,
+                  RETURN_ADDRESS());
+}
+#else
+// static
+NOINLINE Location Location::CreateFromHere(const char* file_name) {
+  return Location(file_name + kStrippedPrefixLength, RETURN_ADDRESS());
+}
+#endif
+
 #endif
 
 //------------------------------------------------------------------------------

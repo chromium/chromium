@@ -38,8 +38,6 @@ TEST(LocationTest, CurrentYieldsCorrectValue) {
 #endif
 #elif defined(OFFICIAL_BUILD)
 #error Location builtins must be supported in official builds.
-#elif BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS)
-#error FROM_HERE requires location builtins to be supported.
 #endif
 }
 

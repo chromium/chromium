@@ -91,24 +91,28 @@ class BASE_EXPORT Location {
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-#if !BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS)
-#if !BUILDFLAG(ENABLE_LOCATION_SOURCE)
-  static Location CreateFromHere(const char* file_name);
-#else
-  static Location CreateFromHere(const char* function_name,
-                                 const char* file_name,
-                                 int line_number);
-#endif
-#endif
+#if SUPPORTS_LOCATION_BUILTINS
 
-#if SUPPORTS_LOCATION_BUILTINS && BUILDFLAG(ENABLE_LOCATION_SOURCE)
+#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
   static Location Current(const char* function_name = __builtin_FUNCTION(),
                           const char* file_name = __builtin_FILE(),
                           int line_number = __builtin_LINE());
-#elif SUPPORTS_LOCATION_BUILTINS
-  static Location Current(const char* file_name = __builtin_FILE());
 #else
+  static Location Current(const char* file_name = __builtin_FILE());
+#endif
+
+#else
+
   static Location Current();
+
+#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
+  static Location CreateFromHere(const char* function_name,
+                                 const char* file_name,
+                                 int line_number);
+#else
+  static Location CreateFromHere(const char* file_name);
+#endif
+
 #endif
 
  private:
@@ -123,7 +127,7 @@ class BASE_EXPORT Location {
 
 BASE_EXPORT const void* GetProgramCounter();
 
-#if BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS)
+#if SUPPORTS_LOCATION_BUILTINS
 
 #define FROM_HERE ::base::Location::Current()
 
