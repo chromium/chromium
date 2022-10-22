@@ -436,6 +436,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "touch_indicator.icon",
     "trash_can.icon",
     "tray_action_new_lock_screen_note.icon",
+    "tuck_handle_chevron.icon",
+    "tuck_handle_container.icon",
     "two_files.icon",
     "undo.icon",
     "unified_menu_accessibility.icon",

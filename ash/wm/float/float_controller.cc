@@ -33,29 +33,27 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
 
-constexpr float kTuckHandleCornerRadius = 12;
-constexpr int kTuckHandleIconSize = 16;
-constexpr int kTuckHandleWidth = 24;
-constexpr int kTuckHandleHeight = 100;
+constexpr int kTuckHandleWidth = 20;
+constexpr int kTuckHandleHeight = 92;
 
 // The distance from the edge of the tucked window to the edge of the screen
 // during the bounce.
@@ -115,12 +113,10 @@ void ShowFloatedWindow(aura::Window* floated_window) {
 // FloatController::TuckHandle:
 
 // Represents a tuck handle that untucks floated windows from offscreen.
-class FloatController::TuckHandle : public views::ImageButton {
+class FloatController::TuckHandle : public views::Button {
  public:
-  TuckHandle(base::RepeatingClosure callback, const gfx::VectorIcon* icon)
-      : views::ImageButton(callback), icon_(icon) {
-    SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-    SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  TuckHandle(base::RepeatingClosure callback, bool left)
+      : views::Button(callback), left_(left) {
     SetFlipCanvasOnPaintForRTLUI(false);
     SetFocusBehavior(FocusBehavior::NEVER);
   }
@@ -128,20 +124,38 @@ class FloatController::TuckHandle : public views::ImageButton {
   TuckHandle& operator=(const TuckHandle&) = delete;
   ~TuckHandle() override = default;
 
-  // views::ImageButton:
+  // views::Button:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    SetBackground(views::CreateSolidBackground(ColorUtil::GetSecondToneColor(
+    SchedulePaint();
+  }
+
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    // Flip the canvas horizontally for `left` tuck handle.
+    if (left_) {
+      canvas->Translate(gfx::Vector2d(width(), 0));
+      canvas->Scale(-1, 1);
+    }
+
+    // We draw two icons on top of each other because we need separate themeing
+    // on different parts which is not supported by `VectorIcon`.
+    const SkColor container_color = ColorUtil::GetSecondToneColor(
         DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
             ? SK_ColorWHITE
-            : SK_ColorBLACK)));
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(*icon_, kTuckHandleIconSize, SK_ColorWHITE));
+            : SK_ColorBLACK);
+    const gfx::ImageSkia& tuck_container = gfx::CreateVectorIcon(
+        kTuckHandleContainerIcon, kTuckHandleWidth, container_color);
+    canvas->DrawImageInt(tuck_container, 0, 0);
+
+    const gfx::ImageSkia& tuck_icon = gfx::CreateVectorIcon(
+        kTuckHandleChevronIcon, kTuckHandleWidth, SK_ColorWHITE);
+    canvas->DrawImageInt(tuck_icon, 0, 0);
   }
 
  private:
-  // The untuck icon.
-  const gfx::VectorIcon* const icon_;
+  // Whether the tuck handle is on the left or right edge of the screen. A left
+  // tuck handle will have the chevron arrow pointing right and vice versa.
+  const bool left_;
 };
 
 // Scoped class which makes modifications while a window is tucked. It owns a
@@ -150,8 +164,6 @@ class FloatController::ScopedWindowTucker {
  public:
   // Creates an instance for `window` where `left` is the side of the screen
   // that the tuck handle is on.
-  // TODO(sophiewen): Remove `left` from constructor after tuck handle UI is
-  // updated.
   ScopedWindowTucker(aura::Window* window, bool left) : window_(window) {
     DCHECK(window_);
 
@@ -169,17 +181,7 @@ class FloatController::ScopedWindowTucker {
     tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(
         base::BindRepeating(&ScopedWindowTucker::OnButtonPressed,
                             base::Unretained(this)),
-        left ? &kKsvArrowRightIcon : &kKsvArrowLeftIcon));
-    ui::Layer* layer = tuck_handle_widget_->GetLayer();
-    layer->SetFillsBoundsOpaquely(false);
-    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    if (left) {
-      layer->SetRoundedCornerRadius(
-          {0, kTuckHandleCornerRadius, kTuckHandleCornerRadius, 0});
-    } else {
-      layer->SetRoundedCornerRadius(
-          {kTuckHandleCornerRadius, 0, 0, kTuckHandleCornerRadius});
-    }
+        left));
     tuck_handle_widget_->Show();
   }
   ScopedWindowTucker(const ScopedWindowTucker&) = delete;
