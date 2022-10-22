@@ -4,7 +4,7 @@
 {% macro decl_public_methods(field) %}
 {{base.decl_getter_method(field)}}
 {{base.decl_setter_method(field)}}
-{% if 'setter' not in field.computed_style_custom_functions %}
+{% if 'setter' not in field.computed_style_custom_functions and not field.readonly %}
 void {{field.setter_method_name}}({{field.type_name}}&& v) {
   {% if field.group.parent %}
   if (!({{getter_expression(field)}} == v))
@@ -22,7 +22,7 @@ void {{field.setter_method_name}}({{field.type_name}}&& v) {
 {% if not field.wrapper_pointer_name %}
 {{base.decl_internal_setter_method(field)}}
 {% endif %}
-{% if not field.is_bit_field %}
+{% if not field.is_bit_field and not field.readonly %}
 void {{field.internal_setter_method_name}}({{field.type_name}}&& v) {
 {% if field.group.parent %}
   if (!({{getter_expression(field)}} == v))

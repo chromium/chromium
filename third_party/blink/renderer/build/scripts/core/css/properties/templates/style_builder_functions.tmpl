@@ -32,11 +32,19 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value
   {% endif %}
 {% endmacro %}
 
+{% macro style_access(property) %}
+  {%- if property.readonly %}
+state.StyleBuilder().
+  {%- else %}
+state.Style()->
+  {%- endif %}
+{% endmacro %}
+
 {% macro set_value(property) %}
   {%- if property.font %}
 state.GetFontBuilder().{{property.setter}}
   {%- else %}
-state.Style()->{{property.setter}}
+{{style_access(property)}}{{property.setter}}
   {%- endif %}
 {% endmacro %}
 

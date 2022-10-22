@@ -48,6 +48,16 @@
       ],
     },
 
+    // Properties which are read-only do not have setters on ComputedStyle.
+    // In other words, ComputedStyleBuilder is the only option for setting
+    // values of read-only properties.
+    //
+    // TODO(crbug.com/1377295): Eventually everything should become read-only.
+    readonly: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // Affects how the style building functions are generated.
     //
     // Several property groups (e.g. color properties) deviate from the default
@@ -4213,6 +4223,7 @@
       keywords: ["block", "inline", "vertical", "horizontal"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSScrollTimeline",
+      readonly: true,
     },
     {
       name: "scroll-timeline-name",
@@ -4223,6 +4234,7 @@
       type_name: "AtomicString",
       converter: "ConvertNoneOrCustomIdent",
       runtime_flag: "CSSScrollTimeline",
+      readonly: true,
     },
     {
       name: "shape-image-threshold",
@@ -4946,6 +4958,7 @@
       converter: "ConvertViewTimelineAxis",
       separator: ",",
       runtime_flag: "CSSViewTimeline",
+      readonly: true,
     },
     {
       name: "view-timeline-inset",
@@ -4958,6 +4971,7 @@
       converter: "ConvertViewTimelineInset",
       separator: ",",
       runtime_flag: "CSSViewTimeline",
+      readonly: true,
     },
     {
       name: "view-timeline-name",
@@ -4969,6 +4983,7 @@
       converter: "ConvertViewTimelineName",
       separator: ",",
       runtime_flag: "CSSViewTimeline",
+      readonly: true,
     },
     {
       name: "visibility",

@@ -169,19 +169,20 @@ def _create_groups(properties):
     return _dict_to_group(None, root_group_dict)
 
 
-def _mark_builder_flag(group):
-    """Set the builder flag for all fields within the specified group."""
+def _mark_builder_flags(group):
+    """Mark all fields as builder fields, and unset readonly."""
     for field in group.fields:
         field.builder = True
+        field.readonly = False
     for subgroup in group.subgroups:
-        _mark_builder_flag(subgroup)
+        _mark_builder_flags(subgroup)
 
 
 def _create_builder_groups(properties):
     """Like _create_groups, but all fields returned by this function has
        the builder flag set to True."""
     groups = _create_groups(properties)
-    _mark_builder_flag(groups)
+    _mark_builder_flags(groups)
     return groups
 
 
@@ -318,6 +319,7 @@ def _create_property_field(property_):
         'property',
         name_for_methods,
         property_name=property_['name'].original,
+        readonly=property_['readonly'],
         inherited=property_['inherited'],
         independent=property_['independent'],
         semi_independent_variable=property_['semi_independent_variable'],
@@ -350,6 +352,7 @@ def _create_inherited_flag_field(property_):
         'inherited_flag',
         name_for_methods,
         property_name=property_['name'].original,
+        readonly=False,  # TODO(crbug.com/1377295): Propagate from json5.
         type_name='bool',
         wrapper_pointer_name=None,
         field_template='primitive',

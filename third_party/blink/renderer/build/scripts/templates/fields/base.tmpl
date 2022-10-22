@@ -9,7 +9,7 @@
 {%- endmacro %}
 
 {% macro decl_setter_method(field) -%}
-{% if 'setter' not in field.computed_style_custom_functions %}
+{% if 'setter' not in field.computed_style_custom_functions and not field.readonly %}
 void {{field.setter_method_name}}({{const_ref(field)}} v) {
   {{set_if_changed(field, encode(field, "v"))|indent(2)}}
 }
@@ -17,7 +17,7 @@ void {{field.setter_method_name}}({{const_ref(field)}} v) {
 {%- endmacro %}
 
 {% macro decl_resetter_method(field) -%}
-{% if 'resetter' not in field.computed_style_custom_functions %}
+{% if 'resetter' not in field.computed_style_custom_functions and not field.readonly %}
 inline void {{field.resetter_method_name}}() {
   {{setter_expression(field)}} = {{encode(field, field.default_value)}};
 }
@@ -25,7 +25,7 @@ inline void {{field.resetter_method_name}}() {
 {%- endmacro %}
 
 {% macro decl_mutable_method(field) -%}
-{% if 'mutable' not in field.computed_style_custom_functions %}
+{% if 'mutable' not in field.computed_style_custom_functions and not field.readonly %}
 {{nonconst_ref(field)}} {{field.internal_mutable_method_name}}() {
   return {{decode(field, setter_expression(field))}};
 }
@@ -41,7 +41,7 @@ inline void {{field.resetter_method_name}}() {
 {%- endmacro %}
 
 {% macro decl_internal_setter_method(field) -%}
-{% if 'setter' in field.computed_style_custom_functions %}
+{% if 'setter' in field.computed_style_custom_functions and not field.readonly %}
 void {{field.internal_setter_method_name}}({{const_ref(field)}} v) {
   {{set_if_changed(field, encode(field, "v"))|indent(2)}}
 }
