@@ -614,14 +614,13 @@ WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      'win')
 
 # Android
-ANDROID_GO = PerfPlatform(
-    'android-go-perf', 'Android O (gobo)', _ANDROID_GO_BENCHMARK_CONFIGS,
-    19, 'android')
+ANDROID_GO = PerfPlatform('android-go-perf', 'Android O (gobo)',
+                          _ANDROID_GO_BENCHMARK_CONFIGS, 13, 'android')
 ANDROID_GO_PGO = PerfPlatform('android-go-perf-pgo', 'Android O (gobo)',
-                              _ANDROID_GO_BENCHMARK_CONFIGS, 19, 'android')
+                              _ANDROID_GO_BENCHMARK_CONFIGS, 13, 'android')
 ANDROID_GO_WEBVIEW = PerfPlatform('android-go_webview-perf',
                                   'Android OPM1.171019.021 (gobo)',
-                                  _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 13,
+                                  _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 10,
                                   'android')
 ANDROID_PIXEL2 = PerfPlatform('android-pixel2-perf',
                               'Android OPM1.171019.021',

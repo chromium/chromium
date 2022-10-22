@@ -268,7 +268,7 @@
           "hard_timeout": 21600,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 19
+          "shards": 13
         },
         "trigger_script": {
           "args": [
@@ -316,7 +316,7 @@
           "hard_timeout": 21600,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 19
+          "shards": 13
         },
         "trigger_script": {
           "args": [
@@ -372,7 +372,7 @@
           "hard_timeout": 21600,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 13
+          "shards": 10
         },
         "trigger_script": {
           "args": [
