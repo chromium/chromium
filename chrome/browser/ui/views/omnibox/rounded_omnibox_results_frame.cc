@@ -9,6 +9,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -52,8 +53,24 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
   if (!parent_widget)
     return {nullptr, std::move(event)};
 
+// On macOS if the parent widget is the overlay widget we are in immersive
+// fullscreen. Don't walk any higher up the tree. The overlay widget will handle
+// the event.
+#if BUILDFLAG(IS_MAC)
+  views::Widget* top_level = nullptr;
+  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      parent_widget->GetNativeWindow());
+  if (browser_view->overlay_widget() == parent_widget) {
+    top_level = parent_widget;
+  } else {
+    top_level = parent_widget->GetTopLevelWidgetForNativeView(
+        parent_widget->GetNativeView());
+  }
+#else
   views::Widget* top_level = parent_widget->GetTopLevelWidgetForNativeView(
       parent_widget->GetNativeView());
+#endif
+
   DCHECK_NE(this_widget, top_level);
   if (!top_level)
     return {nullptr, std::move(event)};
