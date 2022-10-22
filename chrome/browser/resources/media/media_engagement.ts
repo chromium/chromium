@@ -57,9 +57,8 @@ function createRow(rowInfo: MediaEngagementScoreDetails): DocumentFragment {
  */
 function clearTable() {
   assert(engagementTableBody);
-  engagementTableBody.innerHTML = window.trustedTypes ?
-      window.trustedTypes.emptyHTML as unknown as string :
-      '';
+  engagementTableBody.innerHTML =
+      window.trustedTypes ? window.trustedTypes.emptyHTML : '';
 }
 
 /**
@@ -123,9 +122,8 @@ function createConfigRow(name: string, value: number|string): DocumentFragment {
 
 function renderConfigTable(config: MediaEngagementConfig) {
   assert(configTableBody);
-  configTableBody.innerHTML = window.trustedTypes ?
-      (window.trustedTypes.emptyHTML as unknown as string) :
-      '';
+  configTableBody.innerHTML =
+      window.trustedTypes ? (window.trustedTypes.emptyHTML) : '';
 
   configTableBody.appendChild(
       createConfigRow('Min Sessions', config.scoreMinVisits));

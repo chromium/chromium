@@ -36,8 +36,8 @@ class UsbInternalsAppElement extends HTMLElement {
 
     this.attachShadow({mode: 'open'});
     const template = document.createElement('template');
-    template.innerHTML = (UsbInternalsAppElement.template ||
-                          window.trustedTypes!.emptyHTML) as unknown as string;
+    template.innerHTML =
+        UsbInternalsAppElement.template || window.trustedTypes!.emptyHTML;
     this.shadowRoot!.appendChild(template.content.cloneNode(true));
   }
 
@@ -81,7 +81,7 @@ class UsbInternalsAppElement extends HTMLElement {
     const response = await this.usbManagerTest_.getTestDevices();
 
     const tableBody = this.$<HTMLElement>('#test-device-list');
-    tableBody.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
+    tableBody.innerHTML = window.trustedTypes!.emptyHTML;
 
     const rowTemplate = this.$<HTMLTemplateElement>('#test-device-row');
     const td = rowTemplate.content.querySelectorAll('td');

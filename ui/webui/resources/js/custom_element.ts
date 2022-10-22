@@ -23,11 +23,8 @@ export class CustomElement extends HTMLElement {
 
     this.attachShadow({mode: 'open'});
     const template = document.createElement('template');
-    const html =
+    template.innerHTML =
         (this.constructor as typeof CustomElement).template || emptyHTML();
-    // This is a workaround for the fact that the innerHTML setter only accepts
-    // a string and not TrustedHTML.
-    template.innerHTML = html as unknown as string;
     this.shadowRoot!.appendChild(template.content.cloneNode(true));
   }
 

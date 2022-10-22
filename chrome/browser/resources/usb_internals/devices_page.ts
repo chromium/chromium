@@ -42,7 +42,7 @@ export class DevicesPage {
 
     const tableBody = this.root_.querySelector<HTMLElement>('#device-list');
     assert(tableBody);
-    tableBody.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
+    tableBody.innerHTML = window.trustedTypes!.emptyHTML;
 
     const rowTemplate =
         this.root_.querySelector<HTMLTemplateElement>('#device-row');

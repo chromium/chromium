@@ -73,8 +73,7 @@ function enableMonitoring() {
   inMonitoringMode = true;
   $('accumulating_section').style.display = 'none';
   $('monitoring_section').style.display = 'block';
-  $('histograms').innerHTML =
-      window.trustedTypes!.emptyHTML as unknown as string;
+  $('histograms').innerHTML = window.trustedTypes!.emptyHTML;
   expandedEntries.clear();
   ($('stop') as HTMLButtonElement).disabled = false;
   $('stop').textContent = 'Stop';
@@ -92,8 +91,7 @@ function disableMonitoring() {
   }
   $('accumulating_section').style.display = 'block';
   $('monitoring_section').style.display = 'none';
-  $('histograms').innerHTML =
-      window.trustedTypes!.emptyHTML as unknown as string;
+  $('histograms').innerHTML = window.trustedTypes!.emptyHTML;
   expandedEntries.clear();
   requestHistograms();
 }
@@ -158,8 +156,7 @@ interface Histogram {
  *     histograms.
  */
 function addHistograms(histograms: Histogram[]) {
-  $('histograms').innerHTML =
-      window.trustedTypes!.emptyHTML as unknown as string;
+  $('histograms').innerHTML = window.trustedTypes!.emptyHTML;
   // TBD(jar) Write a nice HTML bar chart, with divs an mouse-overs etc.
   for (const histogram of histograms) {
     const {name, header, body} = histogram;

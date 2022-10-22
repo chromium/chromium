@@ -128,8 +128,7 @@ function initialize() {
    * Remove all rows from the engagement table.
    */
   function clearTable() {
-    engagementTableBody.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    engagementTableBody.innerHTML = window.trustedTypes!.emptyHTML;
   }
 
   /**

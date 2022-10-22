@@ -105,9 +105,8 @@ export class SyncSearchManager {
   private drawResultsList_() {
     this.selected_ = null;
     this.selectedIndex_ = -1;
-    this.resultsControl_.innerHTML = window.trustedTypes ?
-        window.trustedTypes.emptyHTML as unknown as string :
-        '';
+    this.resultsControl_.innerHTML =
+        window.trustedTypes ? window.trustedTypes.emptyHTML : '';
     this.resultsData_.forEach((item: object, index: number) => {
       const li = document.createElement('li');
       li.setAttribute('role', 'listitem');

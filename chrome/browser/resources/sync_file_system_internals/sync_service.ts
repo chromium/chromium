@@ -66,7 +66,7 @@ function clearLogs() {
   const logEntries = document.querySelector<HTMLElement>('#log-entries');
   assert(logEntries);
   assert(window.trustedTypes);
-  logEntries.innerHTML = window.trustedTypes.emptyHTML as unknown as string;
+  logEntries.innerHTML = window.trustedTypes.emptyHTML;
 }
 
 /**
