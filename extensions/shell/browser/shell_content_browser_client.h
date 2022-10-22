@@ -154,7 +154,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   const Extension* GetExtension(content::SiteInstance* site_instance);
 
   // Owned by content::BrowserMainLoop.
-  raw_ptr<ShellBrowserMainParts> browser_main_parts_;
+  raw_ptr<ShellBrowserMainParts, DanglingUntriaged> browser_main_parts_;
 
   // Owned by ShellBrowserMainParts.
   raw_ptr<ShellBrowserMainDelegate> browser_main_delegate_;

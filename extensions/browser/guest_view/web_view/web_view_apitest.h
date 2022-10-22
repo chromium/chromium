@@ -53,7 +53,7 @@ class WebViewAPITest : public AppShellTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  raw_ptr<content::WebContents> embedder_web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
   guest_view::TestGuestViewManagerFactory factory_;
   base::DictionaryValue test_config_;
 
