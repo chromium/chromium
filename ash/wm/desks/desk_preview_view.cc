@@ -466,7 +466,8 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
       [[fallthrough]];
     case ui::ET_GESTURE_SCROLL_UPDATE:
       owner_bar->HandleDragEvent(mini_view_, *event);
-      event->SetHandled();
+      if (owner_bar->IsDraggingDesk())
+        event->SetHandled();
       break;
     case ui::ET_GESTURE_END:
       if (owner_bar->HandleReleaseEvent(mini_view_, *event))
