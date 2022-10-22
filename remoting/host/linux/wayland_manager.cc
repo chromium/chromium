@@ -39,7 +39,7 @@ void WaylandManager::AddCapturerMetadataCallback(
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  capturer_metadata_callbacks_.AddUnsafe(std::move(callback));
+  capturer_metadata_callback_ = std::move(callback);
 }
 
 void WaylandManager::OnDesktopCapturerMetadata(
@@ -51,7 +51,11 @@ void WaylandManager::OnDesktopCapturerMetadata(
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  capturer_metadata_callbacks_.Notify(std::move(metadata));
+  if (capturer_metadata_callback_)
+    capturer_metadata_callback_.Run(std::move(metadata));
+  else
+    LOG(ERROR) << "Expected the capturer metadata observer to have register "
+               << "a callback by now";
 }
 
 void WaylandManager::AddUpdateScreenResolutionCallback(
@@ -66,7 +70,7 @@ void WaylandManager::AddUpdateScreenResolutionCallback(
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  screen_resolution_callbacks_.AddUnsafe(std::move(callback));
+  screen_resolution_callback_ = std::move(callback);
 }
 
 void WaylandManager::OnUpdateScreenResolution(ScreenResolution resolution,
@@ -79,7 +83,11 @@ void WaylandManager::OnUpdateScreenResolution(ScreenResolution resolution,
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  screen_resolution_callbacks_.Notify(std::move(resolution), screen_id);
+  if (screen_resolution_callback_)
+    screen_resolution_callback_.Run(std::move(resolution), screen_id);
+  else
+    LOG(WARNING) << "Expected the screen resolution observer to have register "
+                 << "a callback by now";
 }
 
 void WaylandManager::SetKeyboardLayoutCallback(
@@ -95,6 +103,8 @@ void WaylandManager::SetKeyboardLayoutCallback(
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   keyboard_layout_callback_ = std::move(callback);
+  if (keymap_)
+    keyboard_layout_callback_.Run(std::move(keymap_));
 }
 
 void WaylandManager::OnKeyboardLayout(XkbKeyMapUniquePtr keymap) {
@@ -105,7 +115,10 @@ void WaylandManager::OnKeyboardLayout(XkbKeyMapUniquePtr keymap) {
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  keyboard_layout_callback_.Run(std::move(keymap));
+  if (keyboard_layout_callback_)
+    keyboard_layout_callback_.Run(std::move(keymap));
+  else
+    keymap_ = std::move(keymap);
 }
 
 void WaylandManager::AddKeyboardModifiersCallback(

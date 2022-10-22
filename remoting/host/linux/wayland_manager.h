@@ -87,14 +87,18 @@ class WaylandManager {
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   std::unique_ptr<WaylandConnection> wayland_connection_;
-  base::RepeatingCallbackList<DesktopMetadataCallbackSignature>
-      capturer_metadata_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::RepeatingCallbackList<UpdateScreenResolutionSignature>
-      screen_resolution_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  DesktopMetadataCallback capturer_metadata_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  UpdateScreenResolutionCallback screen_resolution_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   KeyboardLayoutCallback keyboard_layout_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingCallbackList<KeyboardModifiersCallbackSignature>
       keyboard_modifier_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Keeps track of the latest keymap for the case where the keyboard layout
+  // monitor has not yet registered a callback.
+  XkbKeyMapUniquePtr keymap_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 };
 
 }  // namespace remoting
