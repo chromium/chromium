@@ -14,16 +14,11 @@ absl_source_set("memory") {
 
 absl_source_set("memory_test") {
   testonly = true
-
-  # TODO(https://crbug.com/1116473): memory_test.cc fails to build in
-  # standalone ANGLE on Windows
-  if (!build_with_chromium && !is_win) {
-    sources = [ "memory_test.cc" ]
-    deps = [
-      ":memory",
-      "//third_party/abseil-cpp/absl/base:core_headers",
-      "//third_party/googletest:gmock",
-      "//third_party/googletest:gtest",
-    ]
-  }
+  sources = [ "memory_test.cc" ]
+  deps = [
+    ":memory",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
 }
