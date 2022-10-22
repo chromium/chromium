@@ -40,18 +40,6 @@ namespace {
 constexpr size_t kMinRecommendedApps = 4;
 constexpr size_t kMaxRecommendedApps = 5;
 
-// Sorts increasing by display index, then decreasing by position priority.
-struct CompareByDisplayIndexAndPositionPriority {
-  bool operator()(const SearchResult* result1,
-                  const SearchResult* result2) const {
-    SearchResultDisplayIndex index1 = result1->display_index();
-    SearchResultDisplayIndex index2 = result2->display_index();
-    if (index1 != index2)
-      return index1 < index2;
-    return result1->position_priority() > result2->position_priority();
-  }
-};
-
 // Converts a search result app ID to an app list item ID.
 std::string ItemIdFromAppId(const std::string& app_id) {
   // Convert chrome-extension://<id> to just <id>.
@@ -62,33 +50,45 @@ std::string ItemIdFromAppId(const std::string& app_id) {
   return app_id;
 }
 
+struct RecentAppInfo {
+  RecentAppInfo(AppListItem* item, SearchResult* result)
+      : item(item), result(result) {}
+  RecentAppInfo(const RecentAppInfo&) = default;
+  RecentAppInfo& operator=(RecentAppInfo&) = default;
+  ~RecentAppInfo() = default;
+
+  AppListItem* item;
+  SearchResult* result;
+};
+
 // Returns a list of recent apps by filtering zero-state suggestion data.
-std::vector<SearchResult*> GetRecentApps(
+std::vector<RecentAppInfo> GetRecentApps(
+    AppListModel* model,
     SearchModel* search_model,
     const std::vector<std::string>& ids_to_ignore) {
+  std::vector<RecentAppInfo> recent_apps;
+
   SearchModel::SearchResults* results = search_model->results();
-  auto filter_function = base::BindRepeating(
-      [](const std::vector<std::string>& ids_to_ignore,
-         const SearchResult& r) -> bool {
-        if (r.display_type() != SearchResultDisplayType::kRecentApps)
-          return false;
+  for (size_t i = 0; i < results->item_count(); ++i) {
+    SearchResult* result = results->GetItemAt(i);
+    if (result->display_type() != SearchResultDisplayType::kRecentApps)
+      continue;
 
-        for (std::string id : ids_to_ignore) {
-          if (base::EndsWith(r.id(), id))
-            return false;
-        }
+    std::string item_id = ItemIdFromAppId(result->id());
+    if (base::Contains(ids_to_ignore, item_id))
+      continue;
 
-        return true;
-      },
-      ids_to_ignore);
-  std::vector<SearchResult*> app_suggestion_results =
-      SearchModel::FilterSearchResultsByFunction(
-          results, filter_function,
-          /*max_results=*/kMaxRecommendedApps);
+    AppListItem* item = model->FindItem(item_id);
+    if (!item)
+      continue;
 
-  std::sort(app_suggestion_results.begin(), app_suggestion_results.end(),
-            CompareByDisplayIndexAndPositionPriority());
-  return app_suggestion_results;
+    recent_apps.emplace_back(item, result);
+
+    if (recent_apps.size() == kMaxRecommendedApps)
+      break;
+  }
+
+  return recent_apps;
 }
 
 }  // namespace
@@ -203,17 +203,9 @@ void RecentAppsView::UpdateResults(
   item_views_.clear();
   RemoveAllChildViews();
 
-  std::vector<SearchResult*> apps = GetRecentApps(search_model_, ids_to_ignore);
-  std::vector<AppListItem*> items;
-
-  for (SearchResult* app : apps) {
-    std::string item_id = ItemIdFromAppId(app->id());
-    AppListItem* item = model_->FindItem(item_id);
-    if (item)
-      items.push_back(item);
-  }
-
-  if (items.size() < kMinRecommendedApps) {
+  std::vector<RecentAppInfo> apps =
+      GetRecentApps(model_, search_model_, ids_to_ignore);
+  if (apps.size() < kMinRecommendedApps) {
     if (auto* notifier = view_delegate_->GetNotifier()) {
       notifier->NotifyResultsUpdated(SearchResultDisplayType::kRecentApps, {});
     }
@@ -222,15 +214,16 @@ void RecentAppsView::UpdateResults(
 
   if (auto* notifier = view_delegate_->GetNotifier()) {
     std::vector<AppListNotifier::Result> notifier_results;
-    for (const SearchResult* app : apps)
-      notifier_results.emplace_back(app->id(), app->metrics_type());
+    for (const RecentAppInfo& app : apps)
+      notifier_results.emplace_back(app.result->id(),
+                                    app.result->metrics_type());
     notifier->NotifyResultsUpdated(SearchResultDisplayType::kRecentApps,
                                    notifier_results);
   }
 
-  for (AppListItem* item : items) {
+  for (const RecentAppInfo& app : apps) {
     auto* item_view = AddChildView(std::make_unique<AppListItemView>(
-        app_list_config_, grid_delegate_.get(), item, view_delegate_,
+        app_list_config_, grid_delegate_.get(), app.item, view_delegate_,
         AppListItemView::Context::kRecentAppsView));
     item_view->UpdateAppListConfig(app_list_config_);
     item_views_.push_back(item_view);

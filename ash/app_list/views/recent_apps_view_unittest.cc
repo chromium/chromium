@@ -157,6 +157,29 @@ TEST_P(RecentAppsViewTest, CreatesIconsForApps) {
   EXPECT_EQ(GetAppListItemViews().size(), 4u);
 }
 
+TEST_P(RecentAppsViewTest, IgnoreResultsNotInAppListModel) {
+  // Result without an associated app list item.
+  AddSearchResult("id1", AppListSearchResultType::kInstalledApp);
+
+  AddAppListItem("id2");
+  AddSearchResult("id2", AppListSearchResultType::kPlayStoreApp);
+  AddAppListItem("id3");
+  AddSearchResult("id3", AppListSearchResultType::kInstantApp);
+  AddAppListItem("id4");
+  AddSearchResult("id4", AppListSearchResultType::kInternalApp);
+  AddAppListItem("id5");
+  AddSearchResult("id5", AppListSearchResultType::kInternalApp);
+  AddAppListItem("id6");
+  AddSearchResult("id6", AppListSearchResultType::kInternalApp);
+
+  // Verify that recent apps UI does not leave an empty space for results that
+  // are not present in app list model.
+  ShowAppList();
+
+  EXPECT_EQ(std::vector<std::string>({"id2", "id3", "id4", "id5", "id6"}),
+            GetRecentAppsIds());
+}
+
 TEST_P(RecentAppsViewTest, ItemsMatchGridWith5Items) {
   AddAppResults(5);
   ShowAppList();
