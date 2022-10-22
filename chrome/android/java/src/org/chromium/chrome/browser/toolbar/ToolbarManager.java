@@ -1138,7 +1138,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 PartnerBrowserCustomizations.getInstance()::isHomepageProviderAvailableAndEnabled,
                 DownloadUtils::downloadOfflinePage, initializeWithIncognitoColors,
                 logoClickedCallback, mIsStartSurfaceRefactorEnabled, constraintsSupplier,
+                mCompositorViewHolder.getInMotionSupplier(), mControlsVisibilityDelegate,
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity));
+
         // clang-format on
         mHomepageStateListener = () -> {
             mHomepageEnabledSupplier.set(HomepageManager.isHomepageEnabled());

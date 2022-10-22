@@ -112,7 +112,13 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      */
     public void releasePersistentShowingToken(int token) {
         if (mTokenHolder.containsOnly(token)) {
-            ensureControlsVisibleForMinDuration();
+            // Suppression relies on short duration controls locking. Don't ensure min duration.
+            // Long term this can probably be removed for all.
+            boolean useSuppression = (FeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
+            if (!useSuppression) {
+                ensureControlsVisibleForMinDuration();
+            }
         }
         mTokenHolder.releaseToken(token);
     }
