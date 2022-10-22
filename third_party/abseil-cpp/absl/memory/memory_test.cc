@@ -600,7 +600,7 @@ TEST(AllocatorTraits, FunctionsFull) {
   EXPECT_CALL(mock, allocate(13, &hint)).WillRepeatedly(Return(&y));
   EXPECT_CALL(mock, construct(&x, &trace));
   EXPECT_CALL(mock, destroy(&x));
-  EXPECT_CALL(mock, max_size()).WillRepeatedly(Return(17));
+  EXPECT_CALL(mock, max_size()).WillRepeatedly(Return(17u));
   EXPECT_CALL(mock, select_on_container_copy_construction())
       .WillRepeatedly(Return(FullMockAllocator(23)));
 
@@ -613,7 +613,7 @@ TEST(AllocatorTraits, FunctionsFull) {
   Traits::destroy(mock, &x);
   EXPECT_EQ(1, trace);
 
-  EXPECT_EQ(17, Traits::max_size(mock));
+  EXPECT_EQ(17u, Traits::max_size(mock));
 
   EXPECT_EQ(0, mock.value);
   EXPECT_EQ(23, Traits::select_on_container_copy_construction(mock).value);
