@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.resources.StaticResourcePreloads;
+import org.chromium.chrome.browser.compositor.resources.SystemResourcePreloads;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -637,6 +638,9 @@ public class CompositorView
             mResourceManager.preloadResources(AndroidResourceType.STATIC,
                     StaticResourcePreloads.getSynchronousResources(getContext()),
                     StaticResourcePreloads.getAsynchronousResources(getContext()));
+            mResourceManager.preloadResources(AndroidResourceType.SYSTEM,
+                    SystemResourcePreloads.getSynchronousResources(),
+                    SystemResourcePreloads.getAsynchronousResources());
             mPreloadedResources = true;
         }
 
