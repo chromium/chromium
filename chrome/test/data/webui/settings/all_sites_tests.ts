@@ -60,8 +60,7 @@ suite('AllSites_DisableFirstPartySets', function() {
 
   // Initialize a site-list before each test.
   setup(async function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     prefsVarious = createSiteSettingsPrefs([], [
       createContentSettingTypeToValuePair(
@@ -462,8 +461,7 @@ suite('AllSites_DisableFirstPartySets', function() {
     // The default sorting (most visited) will have the ascending storage
     // values. With the URL param, we expect the sites to be sorted by usage in
     // descending order.
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setUpAllSites(prefsVarious, SortMethod.STORAGE);
     testElement = document.createElement('all-sites');
     document.body.appendChild(testElement);
@@ -515,8 +513,7 @@ suite('AllSites_DisableFirstPartySets', function() {
   });
 
   test('can sort by name by passing URL param', async function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setUpAllSites(prefsVarious, SortMethod.NAME);
     testElement = document.createElement('all-sites');
     document.body.appendChild(testElement);
@@ -1060,8 +1057,7 @@ suite('AllSites_EnableFirstPartySets', function() {
 
   // Initialize a site-list before each test.
   setup(async function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);

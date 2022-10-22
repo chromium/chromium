@@ -220,8 +220,7 @@ suite('ChromeCleanupHandler', function() {
     chromeCleanupProxy = new TestChromeCleanupProxy();
     ChromeCleanupProxyImpl.setInstance(chromeCleanupProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     chromeCleanupPage = document.createElement('settings-chrome-cleanup-page');
     chromeCleanupPage.prefs = {

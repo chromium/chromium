@@ -60,8 +60,7 @@ suite(`SigninSyncConfirmationTest`, function() {
   setup(async function() {
     browserProxy = new TestSyncConfirmationBrowserProxy();
     SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('sync-confirmation-app');
     document.body.append(app);
     // Check that the account image is requested when the app element is
@@ -116,8 +115,7 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
     browserProxy = new TestSyncConfirmationBrowserProxy();
     SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('sync-confirmation-app');
     document.body.append(app);
     // Wait for the app element to get attached to the document (which is

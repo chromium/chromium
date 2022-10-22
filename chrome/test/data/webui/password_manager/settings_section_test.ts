@@ -18,8 +18,7 @@ suite('SettingsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     prefsProxy = new TestPrefsBrowserProxy();
     PrefsBrowserProxyImpl.setInstance(prefsProxy);
     prefsProxy.prefs = makePasswordManagerPrefs();

@@ -140,8 +140,7 @@ suite('PasskeysSubpage', function() {
   setup(async function() {
     browserProxy = new TestPasskeysBrowserProxy();
     PasskeysBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-passkeys-subpage');
   });
 

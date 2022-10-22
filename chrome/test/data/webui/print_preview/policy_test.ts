@@ -65,8 +65,7 @@ suite(policy_tests.suiteName, function() {
    */
   function loadInitialSettings(initialSettings: NativeInitialSettings):
       Promise<void> {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const nativeLayer = new NativeLayerStub();
     nativeLayer.setInitialSettings(initialSettings);
     nativeLayer.setLocalDestinations(

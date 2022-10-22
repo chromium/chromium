@@ -214,8 +214,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     testProxy = new TestHelpBubbleProxy();
     HelpBubbleProxyImpl.setInstance(testProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     container = document.createElement('help-bubble-mixin-test-element');
     document.body.appendChild(container);
     return waitForVisibilityEvents();

@@ -77,8 +77,7 @@ suite('StartupUrlDialog', function() {
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('settings-startup-url-dialog');
   });
 
@@ -201,8 +200,7 @@ suite('StartupUrlsPage', function() {
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-startup-urls-page');
     page.prefs = {
       session: {
@@ -329,8 +327,7 @@ suite('StartupUrlEntry', function() {
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('settings-startup-url-entry');
     element.model = createSampleUrlEntry();
     document.body.appendChild(element);

@@ -13,8 +13,7 @@ suite('PasscodeInputElementTest', () => {
   let c2cInput: PasscodeInputElement;
 
   setup(async () => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     c2cInput = document.createElement('c2c-passcode-input');
     c2cInput.length = 6;

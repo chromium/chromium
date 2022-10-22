@@ -20,8 +20,7 @@ suite('LocalProfileCustomizationTest', function() {
   const defaultAvatarIndex: number = 26;
 
   async function resetCustomizeProfileElement() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     customizeProfileElement =
         document.createElement('local-profile-customization');
     customizeProfileElement.profileThemeInfo = browserProxy.profileThemeInfo;

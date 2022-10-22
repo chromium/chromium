@@ -17,8 +17,7 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
   let page: SettingsSafetyCheckUnusedSitePermissionsElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page =
         document.createElement('settings-safety-check-unused-site-permissions');
     document.body.appendChild(page);
@@ -61,8 +60,7 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   function createPage(data: NotificationPermission[]) {

@@ -14,8 +14,7 @@ suite('SidePanelAppElementTest', () => {
   let sidePanelApp: SidePanelAppElement;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     sidePanelApp = document.createElement('side-panel-app');
     document.body.appendChild(sidePanelApp);
   });

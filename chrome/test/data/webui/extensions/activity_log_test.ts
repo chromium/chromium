@@ -43,8 +43,7 @@ suite('ExtensionsActivityLogTest', function() {
 
   // Initialize an extension activity log before each test.
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Give this a large enough height that the tabs will be visible.
     document.body.style.height = '300px';
 

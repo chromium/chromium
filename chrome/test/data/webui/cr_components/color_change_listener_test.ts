@@ -60,8 +60,7 @@ suite('ColorChangeListenerTest', () => {
     assertFalse(refreshColorCss());
 
     // Handles the case where the link element does not exist.
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     assertFalse(refreshColorCss());
   });
 });

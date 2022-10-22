@@ -49,8 +49,7 @@ suite('SitePermissionsEditPermissionsDialog', function() {
     delegate = new TestService();
     delegate.matchingExtensionsInfo = matchingExtensionsInfo;
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element =
         document.createElement('site-permissions-edit-permissions-dialog');
     element.delegate = delegate;

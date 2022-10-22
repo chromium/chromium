@@ -14,8 +14,7 @@ suite('cr-button', function() {
   let button: CrButtonElement;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     button =
         /** @type {!CrButtonElement} */ (document.createElement('cr-button'));
     document.body.appendChild(button);

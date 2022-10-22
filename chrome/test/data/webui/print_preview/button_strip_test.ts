@@ -22,8 +22,7 @@ suite(button_strip_test.suiteName, function() {
   let buttonStrip: PrintPreviewButtonStripElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     buttonStrip = document.createElement('print-preview-button-strip');
 
     buttonStrip.destination = new Destination(

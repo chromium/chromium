@@ -22,8 +22,7 @@ suite('AppManagementFileHandlingItemTest', function() {
   let app: App;
 
   setup(async function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = createTestApp();
     testProxy = new TestAppManagementBrowserProxy();
     BrowserProxy.setInstance(testProxy);

@@ -14,8 +14,7 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
   let moduleHeader: ModuleHeaderElement;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     moduleHeader = new ModuleHeaderElement();
     document.body.appendChild(moduleHeader);
     render(moduleHeader);

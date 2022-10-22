@@ -62,7 +62,7 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   setUserProviderForTesting(userProvider);
   const personalizationStore = new TestPersonalizationStore(initialState);
   personalizationStore.replaceSingleton();
-  document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
   return {
     ambientProvider,
     keyboardBacklightProvider,

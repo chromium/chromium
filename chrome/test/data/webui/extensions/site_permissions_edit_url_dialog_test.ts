@@ -18,8 +18,7 @@ suite('SitePermissionsEditUrlDialog', function() {
   setup(function() {
     delegate = new TestService();
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('site-permissions-edit-url-dialog');
     element.delegate = delegate;
     element.siteSet = chrome.developerPrivate.SiteSet.USER_PERMITTED;

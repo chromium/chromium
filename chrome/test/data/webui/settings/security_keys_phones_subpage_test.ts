@@ -137,8 +137,7 @@ suite('SecurityKeysPhonesSubpage', function() {
   setup(async function() {
     browserProxy = new TestSecurityKeysPhonesBrowserProxy();
     SecurityKeysPhonesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('security-keys-phones-subpage');
 
     browserProxy.setNextPhonesList(initialSynced, initialLinked);

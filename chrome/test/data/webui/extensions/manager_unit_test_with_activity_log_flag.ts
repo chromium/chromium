@@ -33,8 +33,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
   const testActivities = {activities: []};
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     service = new TestService();
     Service.setInstance(service);

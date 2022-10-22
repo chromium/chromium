@@ -21,8 +21,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
   let metrics: MetricsTracker;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     handler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);
     metrics = fakeMetricsPrivate();

@@ -40,8 +40,7 @@ suite('translate page settings', function() {
     loadTimeData.overrideValues({
       enableDesktopDetailedLanguageSettings: true,
     });
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrSettingsPrefs.deferInitialization = true;
   });
 
@@ -87,8 +86,7 @@ suite('translate page settings', function() {
   });
 
   teardown(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   suite(translate_page_tests.TestNames.TranslateSettings, function() {

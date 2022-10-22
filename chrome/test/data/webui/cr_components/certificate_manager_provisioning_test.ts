@@ -198,8 +198,7 @@ suite('DetailsDialogTests', function() {
   let dialog: CertificateProvisioningDetailsDialogElement;
 
   setup(async function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     browserProxy = new TestCertificateProvisioningBrowserProxy();
     CertificateProvisioningBrowserProxyImpl.setInstance(browserProxy);

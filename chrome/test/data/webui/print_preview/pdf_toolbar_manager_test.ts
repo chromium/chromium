@@ -126,8 +126,7 @@ suite(pdf_toolbar_manager_test.suiteName, function() {
   let callCount: number = 0;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     mockWindow = new MockWindow(1920, 1080);
     zoomToolbar = document.createElement('viewer-zoom-toolbar');

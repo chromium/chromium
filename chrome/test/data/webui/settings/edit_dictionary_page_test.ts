@@ -50,8 +50,7 @@ suite('settings-edit-dictionary-page', function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakePrefs()) as
         unknown as typeof chrome.settingsPrivate;

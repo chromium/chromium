@@ -33,8 +33,7 @@ import {navigateTo} from './test_util.js';
 
     setup(function() {
       window.history.replaceState({}, '', '/');
-      document.body.innerHTML =
-          window.trustedTypes!.emptyHTML as unknown as string;
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
       BrowserServiceImpl.setInstance(new TestBrowserService());
       testBrowserProxy = new TestBrowserProxy();
       BrowserProxyImpl.setInstance(testBrowserProxy);

@@ -32,8 +32,7 @@ suite('NewTabPageAppTest', () => {
   const url: URL = new URL(location.href);
 
   setup(async () => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     windowProxy = installMock(WindowProxy);
     handler = installMock(

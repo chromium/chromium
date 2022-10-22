@@ -25,8 +25,7 @@ suite('WelcomeWelcomeAppTest', function() {
   let testSetAsDefaultProxy: TestNuxSetAsDefaultProxy;
 
   function resetTestElement() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     navigateTo(Routes.LANDING, 0);
     testElement = document.createElement('welcome-app');
     document.body.appendChild(testElement);

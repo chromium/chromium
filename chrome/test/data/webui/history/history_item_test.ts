@@ -31,8 +31,7 @@ suite('<history-item> unit test', function() {
   let item: HistoryItemElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserServiceImpl.setInstance(new TestBrowserService());
 
     item = document.createElement('history-item');
@@ -75,8 +74,7 @@ suite('<history-item> integration test', function() {
   let element: HistoryListElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 

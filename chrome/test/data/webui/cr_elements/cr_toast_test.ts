@@ -15,8 +15,7 @@ suite('cr-toast', function() {
   let mockTimer: MockTimer;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toast = document.createElement('cr-toast');
     document.body.appendChild(toast);
     mockTimer = new MockTimer();

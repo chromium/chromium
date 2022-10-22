@@ -36,8 +36,7 @@ suite(advanced_dialog_test.suiteName, function() {
     // Create destination
     destination =
         new Destination(printerId, DestinationOrigin.EXTENSION, printerName);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const model: PrintPreviewModelElement =
         document.createElement('print-preview-model');
     document.body.appendChild(model);

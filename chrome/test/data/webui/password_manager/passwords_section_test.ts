@@ -38,8 +38,7 @@ suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     return flushTasks();

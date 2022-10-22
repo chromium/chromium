@@ -36,8 +36,7 @@ suite(extension_load_error_tests.suiteName, function() {
   };
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     mockDelegate = new TestService();
     loadError = document.createElement('extensions-load-error');
     loadError.delegate = mockDelegate;

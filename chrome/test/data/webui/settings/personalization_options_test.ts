@@ -38,8 +38,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   });
 
   function buildTestElement() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-personalization-options');
     testElement.prefs = {
       autofill_assistant: {enabled: {value: false}},
@@ -329,8 +328,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-personalization-options');
     document.body.appendChild(testElement);
   });

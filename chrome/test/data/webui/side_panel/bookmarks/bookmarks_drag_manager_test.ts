@@ -81,8 +81,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
   }
 
   setup(async () => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
       bookmarksDragAndDropEnabled: true,

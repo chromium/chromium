@@ -12,8 +12,7 @@ suite('<history-searched-label> unit test', function() {
   let label: HistorySearchedLabelElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     label = document.createElement('history-searched-label');
     document.body.appendChild(label);
   });

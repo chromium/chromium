@@ -56,8 +56,7 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
           },
           '', '/account-selection-lacros');
 
-      document.body.innerHTML =
-          window.trustedTypes!.emptyHTML as unknown as string;
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
       testElement = document.createElement('account-selection-lacros');
       testElement.profileThemeInfo = browserProxy.profileThemeInfo;
       document.body.append(testElement);

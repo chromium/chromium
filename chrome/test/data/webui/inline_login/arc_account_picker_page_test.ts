@@ -44,8 +44,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
   async function testSetup(
       dialogArgs: AccountAdditionOptions|null,
       accountsNotAvailableInArc: Account[], authExtensionData: object) {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestInlineLoginBrowserProxy();
     testBrowserProxy.setDialogArguments(dialogArgs);

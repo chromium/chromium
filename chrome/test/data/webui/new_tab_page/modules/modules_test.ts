@@ -21,8 +21,7 @@ suite('NewTabPageModulesModulesTest', () => {
   let moduleRegistry: TestBrowserProxy;
 
   setup(async () => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = fakeMetricsPrivate();
     handler = installMock(
         PageHandlerRemote,

@@ -40,8 +40,7 @@ suite('SyncSettingsTests', function() {
   let encryptWithPassphrase: CrRadioButtonElement;
 
   function setupSyncPage() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     syncPage = document.createElement('settings-sync-page');
     const router = Router.getInstance();
     router.navigateTo((router.getRoutes() as SyncRoutes).SYNC);

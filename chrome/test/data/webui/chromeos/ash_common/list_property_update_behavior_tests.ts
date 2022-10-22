@@ -137,8 +137,7 @@ suite('ListPropertyUpdateBehavior', function() {
 
   // Initialize a list-property-update-behavior-test-element before each test.
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement =
         document.createElement('list-property-update-behavior-test-element');
     document.body.appendChild(testElement);

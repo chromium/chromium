@@ -33,8 +33,7 @@ suite('SettingsDropdownMenu', function() {
   }
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dropdown = document.createElement('settings-dropdown-menu');
     document.body.appendChild(dropdown);
     selectElement = dropdown.shadowRoot!.querySelector('select')!;

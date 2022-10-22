@@ -18,8 +18,7 @@ suite('DiceAppTest', function() {
     testBrowserProxy = new TestIntroBrowserProxy();
     IntroBrowserProxyImpl.setInstance(testBrowserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('intro-app');
     document.body.appendChild(testElement);
   });

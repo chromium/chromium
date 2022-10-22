@@ -45,8 +45,7 @@ suite(print_button_test.suiteName, function() {
     // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
     // </if>
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     nativeLayer.setInitialSettings(initialSettings);
     const localDestinationInfos = [
       {printerName: 'FooName', deviceName: 'FooDevice'},

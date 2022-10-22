@@ -20,8 +20,7 @@ suite('SigninReauthTest', function() {
   setup(function() {
     browserProxy = new TestSigninReauthBrowserProxy();
     SigninReauthBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('signin-reauth-app');
     document.body.append(app);
   });

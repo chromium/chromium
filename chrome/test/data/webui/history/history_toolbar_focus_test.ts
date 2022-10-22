@@ -16,8 +16,7 @@ suite('<history-toolbar>', function() {
   let app: HistoryAppElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', '/');
     BrowserServiceImpl.setInstance(new TestBrowserService());
 

@@ -29,8 +29,7 @@ suite(extension_manager_tests.suiteName, function() {
   }
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState(
         {}, '', '/?id=ldnnhddmnhbkjipkidpdiheffobcpfmf');
 

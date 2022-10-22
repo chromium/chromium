@@ -53,8 +53,7 @@ suite('SettingsSubpage', function() {
 
     setupPopstateListener();
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   function createSettingsSubpageWithPreserveSearchTerm() {
@@ -221,8 +220,7 @@ suite('SettingsSubpage', function() {
 
 suite('SettingsSubpageSearch', function() {
   test('host autofocus propagates to <cr-input>', function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const element = document.createElement('cr-search-field');
     element.toggleAttribute('autofocus', true);
     document.body.appendChild(element);

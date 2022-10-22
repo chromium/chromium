@@ -36,8 +36,7 @@ suite(extension_toolbar_tests.suiteName, function() {
   let toolbar: ExtensionsToolbarElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toolbar = document.createElement('extensions-toolbar');
     document.body.appendChild(toolbar);
     toolbar.inDevMode = false;

@@ -28,8 +28,7 @@ suite('NewTabPageDiscountConsentCartTest', () => {
 
   let discountConsentCard: DiscountConsentCard;
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     discountConsentCard = document.createElement('discount-consent-card');
     document.body.appendChild(discountConsentCard);
 

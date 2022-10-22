@@ -41,8 +41,7 @@ suite('controlled button', function() {
   }
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     controlledButton = document.createElement('controlled-button');
     controlledButton.pref = uncontrolledPref;
     document.body.appendChild(controlledButton);

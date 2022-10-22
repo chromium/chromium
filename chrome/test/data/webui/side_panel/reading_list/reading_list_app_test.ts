@@ -82,8 +82,7 @@ suite('ReadingListAppTest', () => {
     testProxy = new TestReadingListApiProxy();
     ReadingListApiProxyImpl.setInstance(testProxy);
     testProxy.setEntries(getSampleData());
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     readingListApp = document.createElement('reading-list-app');
     document.body.appendChild(readingListApp);

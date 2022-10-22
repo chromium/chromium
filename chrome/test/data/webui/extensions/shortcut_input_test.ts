@@ -32,8 +32,7 @@ suite(extension_shortcut_input_tests.suiteName, function() {
   let testService: TestService;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     input = document.createElement('extensions-shortcut-input');
     testService = new TestService();
     input.delegate = testService;

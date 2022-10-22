@@ -15,8 +15,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('cr-drawer', function() {
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   function createDrawer(align: string): CrDrawerElement {

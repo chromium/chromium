@@ -15,8 +15,7 @@ suite('SettingsTextarea', function() {
   let textarea: HTMLTextAreaElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsTextarea = document.createElement('settings-textarea');
     document.body.appendChild(settingsTextarea);
     textarea = settingsTextarea.$.input;

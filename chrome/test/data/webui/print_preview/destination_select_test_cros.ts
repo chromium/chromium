@@ -158,8 +158,7 @@ suite(printer_status_test_cros.suiteName, function() {
   }
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     configureMatchMediaMock();
 
     // Stub out native layer.

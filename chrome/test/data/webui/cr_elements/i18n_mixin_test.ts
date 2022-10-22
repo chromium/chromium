@@ -32,8 +32,7 @@ suite('I18nMixinTest', function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('test-element') as TestElement;
     document.body.appendChild(testElement);
   });

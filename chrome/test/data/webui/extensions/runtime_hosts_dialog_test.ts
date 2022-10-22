@@ -28,8 +28,7 @@ suite('RuntimeHostsDialog', function() {
   };
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('extensions-runtime-hosts-dialog');
     dialog.enableEnhancedSiteControls = true;
 

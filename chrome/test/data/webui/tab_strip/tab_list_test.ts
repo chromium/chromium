@@ -92,8 +92,7 @@ suite('TabList', () => {
 
   setup(async () => {
     document.documentElement.dir = 'ltr';
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.style.margin = '0';
 
     testTabsApiProxy = new TestTabsApiProxy();

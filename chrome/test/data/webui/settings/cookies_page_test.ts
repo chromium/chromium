@@ -38,8 +38,7 @@ suite('CrSettingsCookiesPageTest', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     page.set('prefs.generated.cookie_session_only', {
@@ -296,8 +295,7 @@ suite('CrSettingsCookiesPageTest_lacrosSecondaryProfile', function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -329,8 +327,7 @@ suite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled', function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);

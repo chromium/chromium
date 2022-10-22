@@ -32,8 +32,7 @@ suite('CrAutoImgElementTest', () => {
   let img: CrAutoImgElement;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     img = new CrAutoImgElement();
     document.body.appendChild(img);
   });

@@ -45,8 +45,7 @@ suite('spell check page', function() {
   let browserProxy: TestLanguagesBrowserProxy;
 
   suiteSetup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrSettingsPrefs.deferInitialization = true;
   });
 
@@ -92,8 +91,7 @@ suite('spell check page', function() {
   });
 
   teardown(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   suite(spell_check_page_tests.TestNames.Spellcheck, function() {

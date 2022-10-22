@@ -20,8 +20,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
   let windowProxy: TestBrowserProxy;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       navigationStartTime: 0.0,
     });

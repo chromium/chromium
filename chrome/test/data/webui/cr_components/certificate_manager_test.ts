@@ -200,8 +200,7 @@ suite('CaTrustEditDialogTests', function() {
     browserProxy.setCaCertificateTrust(caTrustInfo);
 
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('ca-trust-edit-dialog');
   });
 
@@ -287,8 +286,7 @@ suite('CertificateDeleteConfirmationDialogTests', function() {
   setup(function() {
     browserProxy = new TestCertificatesBrowserProxy();
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('certificate-delete-confirmation-dialog');
     dialog.model = model;
     dialog.certificateType = CertificateType.PERSONAL;
@@ -337,8 +335,7 @@ suite('CertificatePasswordEncryptionDialogTests', function() {
   setup(function() {
     browserProxy = new TestCertificatesBrowserProxy();
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('certificate-password-encryption-dialog');
     document.body.appendChild(dialog);
   });
@@ -410,8 +407,7 @@ suite('CertificatePasswordDecryptionDialogTests', function() {
   setup(function() {
     browserProxy = new TestCertificatesBrowserProxy();
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('certificate-password-decryption-dialog');
     document.body.appendChild(dialog);
   });
@@ -472,8 +468,7 @@ suite('CertificateSubentryTests', function() {
   setup(function() {
     browserProxy = new TestCertificatesBrowserProxy();
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subentry = document.createElement('certificate-subentry');
     subentry.model = createSampleCertificateSubnode();
     subentry.certificateType = CertificateType.PERSONAL;
@@ -605,8 +600,7 @@ suite('CertificateManagerTests', function() {
   setup(function() {
     browserProxy = new TestCertificatesBrowserProxy();
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('certificate-manager');
     document.body.appendChild(page);
   });
@@ -869,8 +863,7 @@ suite('CertificateListTests', function() {
   setup(function() {
     browserProxy = new TestCertificatesBrowserProxy();
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('certificate-list');
     document.body.appendChild(element);
   });

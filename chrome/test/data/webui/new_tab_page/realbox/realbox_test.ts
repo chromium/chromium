@@ -134,8 +134,7 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   setup(async () => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testProxy = new TestRealboxBrowserProxy();
     RealboxBrowserProxy.setInstance(testProxy);
@@ -194,8 +193,7 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       realboxDefaultIcon: 'search.svg',
     });
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);
 
@@ -208,8 +206,7 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       realboxDefaultIcon: 'realbox/icons/google_g.svg',
     });
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);
 
@@ -2585,8 +2582,7 @@ suite('NewTabPageRealboxTest', () => {
       loadTimeData.overrideValues({
         realboxLensSearch: true,
       });
-      document.body.innerHTML =
-          window.trustedTypes!.emptyHTML as unknown as string;
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
       realbox = document.createElement('ntp-realbox');
       document.body.appendChild(realbox);
       await testProxy.callbackRouterRemote.$.flushForTesting();
@@ -2602,8 +2598,7 @@ suite('NewTabPageRealboxTest', () => {
       loadTimeData.overrideValues({
         realboxLensSearch: true,
       });
-      document.body.innerHTML =
-          window.trustedTypes!.emptyHTML as unknown as string;
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
       realbox = document.createElement('ntp-realbox');
       document.body.appendChild(realbox);
 

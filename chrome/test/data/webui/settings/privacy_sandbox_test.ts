@@ -69,8 +69,7 @@ suite('PrivacySandboxSettings', function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = /** @type {!PrivacySandboxAppElement} */
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);

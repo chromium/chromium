@@ -48,8 +48,7 @@ suite(destination_search_test.suiteName, function() {
 
     dialog = document.createElement('print-preview-destination-dialog');
     dialog.destinationStore = destinationStore;
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(dialog);
     return nativeLayer.whenCalled('getPrinterCapabilities').then(function() {
       dialog.show();

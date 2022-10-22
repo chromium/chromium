@@ -56,8 +56,7 @@ suite('cr-scrollable-behavior', function() {
   let ironList: IronListElement;
 
   setup(function(done) {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testElement = document.createElement('test-element') as TestElement;
     document.body.appendChild(testElement);

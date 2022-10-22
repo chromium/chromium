@@ -21,8 +21,7 @@ suite('cr-tree', function() {
   let baz: CrTreeItemElement;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     tree = document.createElement('cr-tree');
     document.body.appendChild(tree);
 

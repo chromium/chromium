@@ -16,8 +16,7 @@ import {getPage, getSection} from './settings_page_test_util.js';
 // Register mocha tests.
 suite('SettingsHelpPage', function() {
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // The ChromeContentBrowserClient will rewrite chrome://help to
     // chrome://settings/help.
     window.history.pushState('', 'Test', 'chrome://settings/help');

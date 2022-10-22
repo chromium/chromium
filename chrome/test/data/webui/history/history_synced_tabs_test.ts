@@ -37,8 +37,7 @@ suite('<history-synced-device-manager>', function() {
   }
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', '/');
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);

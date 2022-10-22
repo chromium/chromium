@@ -16,8 +16,7 @@ suite('LayoutSettingsTest', function() {
 
   /** @override */
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 

@@ -38,8 +38,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
     browserProxy =
         new TestEnterpriseProfileWelcomeBrowserProxy(testEnterpriseInfo);
     EnterpriseProfileWelcomeBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('enterprise-profile-welcome-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
@@ -77,8 +76,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
 
     loadTimeData.overrideValues({'showLinkDataCheckbox': true});
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('enterprise-profile-welcome-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);
@@ -109,8 +107,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
 
     loadTimeData.overrideValues({'showLinkDataCheckbox': true});
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('enterprise-profile-welcome-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);

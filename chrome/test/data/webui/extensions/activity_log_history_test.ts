@@ -145,8 +145,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
   let boundTestVisible: (selector: string, expectedVisible: boolean) => void;
 
   function setupActivityLogHistory() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     activityLogHistory = document.createElement('activity-log-history');
     boundTestVisible = testVisible.bind(null, activityLogHistory);

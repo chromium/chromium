@@ -73,8 +73,7 @@ suite('PasswordsDeviceSection', function() {
   let elementFactory: PasswordDeviceSectionElementFactory;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     syncBrowserProxy = new TestSyncBrowserProxy();

@@ -27,8 +27,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-recent-site-permissions');
     document.body.appendChild(testElement);
     flush();

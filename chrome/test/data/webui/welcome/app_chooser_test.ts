@@ -66,8 +66,7 @@ suite('AppChooserTest', function() {
 
     testAppBrowserProxy.setAppList(apps);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testElement = document.createElement('nux-google-apps');
     document.body.appendChild(testElement);

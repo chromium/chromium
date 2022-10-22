@@ -19,8 +19,7 @@ suite('manager tests', function() {
   let toastManager: CrToastManagerElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestDownloadsProxy();
     callbackRouterRemote = testBrowserProxy.callbackRouterRemote;

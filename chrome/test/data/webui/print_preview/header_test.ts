@@ -26,8 +26,7 @@ suite(header_test.suiteName, function() {
   let pluralString: TestPluralStringProxy;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     pluralString = new TestPluralStringProxy();
     PrintPreviewPluralStringProxyImpl.setInstance(pluralString);

@@ -83,8 +83,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
   }
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     dropdown =
         document.createElement('print-preview-destination-dropdown-cros');

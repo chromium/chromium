@@ -53,8 +53,7 @@ suite('PrivacySandboxDialogConsent', function() {
     browserProxy = new TestPrivacySandboxDialogBrowserProxy();
     PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('privacy-sandbox-dialog-app');
     document.body.appendChild(page);
 
@@ -156,8 +155,7 @@ suite('PrivacySandboxDialogNotice', function() {
     browserProxy = new TestPrivacySandboxDialogBrowserProxy();
     PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('privacy-sandbox-dialog-app');
     document.body.appendChild(page);
 

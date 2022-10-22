@@ -30,8 +30,7 @@ suite('TabSearchAppFocusTest', () => {
 
     tabSearchApp = document.createElement('tab-search-app');
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabSearchApp);
     await flushTasks();
   }

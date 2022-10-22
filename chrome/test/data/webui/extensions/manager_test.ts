@@ -39,8 +39,7 @@ suite(extension_manager_tests.suiteName, function() {
   }
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     manager = document.createElement('extensions-manager');
     document.body.appendChild(manager);
 

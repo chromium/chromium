@@ -26,8 +26,7 @@ suite('CrPolicyIndicatorMixin', function() {
   let indicator: TestIndicatorElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     indicator =
         document.createElement('test-indicator') as TestIndicatorElement;
     document.body.appendChild(indicator);

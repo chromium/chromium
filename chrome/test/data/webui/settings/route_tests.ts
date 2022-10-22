@@ -25,8 +25,7 @@ suite('route', function() {
   }
 
   teardown(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   /**
@@ -313,8 +312,7 @@ suite('route', function() {
 
 suite('DynamicParameters', function() {
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', 'search?guid=a%2Fb&foo=42');
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
@@ -348,8 +346,7 @@ suite('DynamicParameters', function() {
 
 suite('NonExistentRoute', function() {
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', 'non/existent/route');
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);

@@ -13,8 +13,7 @@ suite('cr-radio-button', function() {
   let radioButton: CrRadioButtonElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     radioButton = document.createElement('cr-radio-button');
     document.body.appendChild(radioButton);
   });

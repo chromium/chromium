@@ -97,8 +97,7 @@ suite(extension_item_tests.suiteName, function() {
 
   // Initialize an extension item before each test.
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     mockDelegate = new MockItemDelegate();
     item = document.createElement('extensions-item');
     item.data = createExtensionInfo();

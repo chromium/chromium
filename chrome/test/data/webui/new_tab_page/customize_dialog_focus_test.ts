@@ -15,8 +15,7 @@ suite('NewTabPageCustomizeDialogFocusTest', () => {
   let customizeDialog: CustomizeDialogElement;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     customizeDialog = document.createElement('ntp-customize-dialog');
     document.body.appendChild(customizeDialog);

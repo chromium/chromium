@@ -110,13 +110,11 @@ suite('find-shortcut', () => {
   customElements.define('find-shortcut-element', FindShortcutElement);
 
   suiteSetup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     assertEquals(0, FindShortcutManager.listeners.length);
   });
 

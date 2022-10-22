@@ -27,8 +27,7 @@ suite(destination_item_test.suiteName, function() {
   const printerName: string = 'FooName';
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     item = document.createElement('print-preview-destination-list-item');
 
     // Create destination

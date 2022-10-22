@@ -29,8 +29,7 @@ suite('ProfileCardMenuTest', function() {
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     profileCardMenuElement = document.createElement('profile-card-menu');
     document.body.appendChild(profileCardMenuElement);
     const testProfileState: ProfileState = {
@@ -201,8 +200,7 @@ suite('ProfileCardMenuLacrosTest', function() {
   setup(async function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     primaryProfileCardMenuElement = document.createElement('profile-card-menu');
     document.body.appendChild(primaryProfileCardMenuElement);
     const testPrimaryProfileState: ProfileState = {

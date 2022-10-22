@@ -41,8 +41,7 @@ suite(system_dialog_browsertest.suiteName, function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     const initialSettings = getDefaultInitialSettings();
     nativeLayer.setInitialSettings(initialSettings);

@@ -24,8 +24,7 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
   // Initialize an activity log stream item before each test.
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testStreamItem = {
       name: 'testAPI.testMethod',
       timestamp: 1550101623113,

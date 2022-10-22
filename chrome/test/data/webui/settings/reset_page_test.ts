@@ -32,8 +32,7 @@ suite('DialogTests', function() {
     resetPageBrowserProxy = new TestResetBrowserProxy();
     ResetBrowserProxyImpl.setInstance(resetPageBrowserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     resetPage = document.createElement('settings-reset-page');
     document.body.appendChild(resetPage);
   });

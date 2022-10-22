@@ -37,8 +37,7 @@ suite('settings system page', function() {
   let systemPage: SettingsSystemPageElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
     systemBrowserProxy = new TestSystemPageBrowserProxy();

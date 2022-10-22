@@ -17,8 +17,7 @@ suite('cr-expand-button', function() {
   const collapseTitle = 'collapse title';
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     button = document.createElement('cr-expand-button');
     document.body.appendChild(button);
     icon = button.shadowRoot!.querySelector<CrIconButtonElement>('#icon')!;

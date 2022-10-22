@@ -44,8 +44,7 @@ suite('Tab', function() {
   setup(() => {
     loadTimeData.overrideValues(strings);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Set CSS variable for animations
     document.body.style.setProperty('--tabstrip-tab-height', '100px');

@@ -19,8 +19,7 @@ suite('AppManagementWindowModeItemTest', function() {
   let testProxy: TestAppManagementBrowserProxy;
 
   setup(async function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestAppManagementBrowserProxy();
     BrowserProxy.setInstance(testProxy);
   });

@@ -25,8 +25,7 @@ suite('AccessCodeCastAppTest', () => {
     );
     BrowserProxy.setInstance(mockProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('access-code-cast-app');
     document.body.appendChild(app);
     await waitAfterNextRender(app);

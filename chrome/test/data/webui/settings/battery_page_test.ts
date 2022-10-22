@@ -29,8 +29,7 @@ suite('BatteryPage', function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     batteryPage = document.createElement('settings-battery-page');
     batteryPage.set('prefs', {
       performance_tuning: {

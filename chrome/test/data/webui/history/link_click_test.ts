@@ -10,8 +10,7 @@ import {TestBrowserService} from './test_browser_service.js';
 
 suite('listenForPrivilegedLinkClicks unit test', function() {
   test('click handler', async () => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 

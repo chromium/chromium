@@ -19,8 +19,7 @@ suite('LocalProfileCustomizationFocusTest', function() {
   let browserProxy: TestManageProfilesBrowserProxy;
 
   async function resetTestElement(route: Routes) {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     navigateTo(route);
     testElement = document.createElement('profile-picker-app');
     document.body.appendChild(testElement);

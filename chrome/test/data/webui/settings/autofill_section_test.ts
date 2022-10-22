@@ -96,7 +96,7 @@ function createRemoveAddressDialog(autofillManager: TestAutofillManager):
   autofillManager.data.addresses = [address];
   AutofillManagerImpl.setInstance(autofillManager);
 
-  document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
   const section = document.createElement('settings-autofill-section');
   document.body.appendChild(section);
   flush();
@@ -143,8 +143,7 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   test('verifyNoAddresses', function() {
@@ -505,8 +504,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   // US address has 3 fields on the same line.

@@ -50,8 +50,7 @@ suite('AddSearchEngineDialogTests', function() {
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('settings-search-engine-edit-dialog');
     document.body.appendChild(dialog);
   });
@@ -154,8 +153,7 @@ suite('SearchEngineEntryTests', function() {
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     entry = document.createElement('settings-search-engine-entry');
     entry.set('engine', searchEngine);
     entry.set('isActiveSearchEnginesFlagEnabled', false);
@@ -432,8 +430,7 @@ suite('SearchEnginePageTests', function() {
     });
     loadTimeData.overrideValues({'isActiveSearchEnginesFlagEnabled': false});
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-search-engines-page');
     page.set('prefs.omnibox.keyword_space_triggering_enabled', {
       key: 'prefs.omnibox.keyword_space_triggering_enabled',
@@ -750,8 +747,7 @@ suite('OmniboxExtensionEntryTests', function() {
   setup(function() {
     browserProxy = new TestExtensionControlBrowserProxy();
     ExtensionControlBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     entry = document.createElement('settings-omnibox-extension-entry');
     entry.set('engine', createSampleOmniboxExtension());
     document.body.appendChild(entry);

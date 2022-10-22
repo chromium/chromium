@@ -52,8 +52,7 @@ suite(select_mixin_test.suiteName, function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testSelect = document.createElement('test-select') as (
                      HTMLElement & SelectMixinInterface);
     document.body.appendChild(testSelect);

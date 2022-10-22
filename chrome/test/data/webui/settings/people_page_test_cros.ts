@@ -76,8 +76,7 @@ suite('Chrome OS', function() {
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
     AccountManagerBrowserProxyImpl.setInstance(accountManagerBrowserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.prefs = DEFAULT_PREFS;
     peoplePage.pageVisibility = pageVisibility;
@@ -136,8 +135,7 @@ suite('Chrome OS with account manager disabled', function() {
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.prefs = DEFAULT_PREFS;
     peoplePage.pageVisibility = pageVisibility;

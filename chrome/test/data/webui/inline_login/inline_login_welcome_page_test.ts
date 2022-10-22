@@ -42,13 +42,11 @@ suite(inline_login_welcome_page_test.suiteName, () => {
   }
 
   function testSetup(dialogArgs: AccountAdditionOptions|null) {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testBrowserProxy = new TestInlineLoginBrowserProxy();
     testBrowserProxy.setDialogArguments(dialogArgs);
     InlineLoginBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     inlineLoginComponent = document.createElement('inline-login-app');
     document.body.appendChild(inlineLoginComponent);
     testAuthenticator = new TestAuthenticator();

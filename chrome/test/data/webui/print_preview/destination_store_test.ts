@@ -61,8 +61,7 @@ suite(destination_store_test.suiteName, function() {
 
   setup(function() {
     // Clear the UI.
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     setupTestListenerElement();
 

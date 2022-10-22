@@ -236,8 +236,7 @@ suite('PasswordsSection', function() {
   let testHatsBrowserProxy: TestHatsBrowserProxy;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     pluralString = new TestPluralStringProxy();

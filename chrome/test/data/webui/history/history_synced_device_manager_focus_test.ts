@@ -16,8 +16,7 @@ suite('<history-synced-device-manager>', function() {
   let element: HistorySyncedDeviceManagerElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     return ensureLazyLoaded().then(() => {
       element = document.createElement('history-synced-device-manager');

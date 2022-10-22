@@ -24,8 +24,7 @@ suite(extension_options_dialog_tests.suiteName, function() {
   let data: chrome.developerPrivate.ExtensionInfo;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     optionsDialog = document.createElement('extensions-options-dialog');
     document.body.appendChild(optionsDialog);
 

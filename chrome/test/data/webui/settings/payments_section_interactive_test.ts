@@ -24,8 +24,7 @@ function typeInNickname(nicknameInput: CrInputElement, nickname: string) {
 
 suite('PaymentsSectionCreditCardEditDialogTest', function() {
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   /**

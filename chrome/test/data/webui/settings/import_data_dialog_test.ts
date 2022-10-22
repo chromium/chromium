@@ -100,8 +100,7 @@ suite('ImportDataDialog', function() {
     browserProxy = new TestImportDataBrowserProxy();
     browserProxy.setBrowserProfiles(browserProfiles);
     ImportDataBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('settings-import-data-dialog');
     dialog.set('prefs', prefs);
     document.body.appendChild(dialog);

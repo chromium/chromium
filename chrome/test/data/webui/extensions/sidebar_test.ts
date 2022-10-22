@@ -25,8 +25,7 @@ suite(extension_sidebar_tests.suiteName, function() {
   let sidebar: ExtensionsSidebarElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     sidebar = document.createElement('extensions-sidebar');
     sidebar.enableEnhancedSiteControls = false;
     document.body.appendChild(sidebar);
@@ -37,8 +36,7 @@ suite(extension_sidebar_tests.suiteName, function() {
     assertFalse(!!sidebar.shadowRoot!.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     sidebar = document.createElement('extensions-sidebar');
     document.body.appendChild(sidebar);
     const whenSelected = eventToPromise('iron-select', sidebar.$.sectionMenu);
@@ -50,8 +48,7 @@ suite(extension_sidebar_tests.suiteName, function() {
               'sectionsShortcuts');
 
           window.history.replaceState(undefined, '', '/');
-          document.body.innerHTML =
-              window.trustedTypes!.emptyHTML as unknown as string;
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
           sidebar = document.createElement('extensions-sidebar');
           document.body.appendChild(sidebar);
           const whenSelected =

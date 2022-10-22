@@ -19,8 +19,7 @@ suite('toolbar tests', function() {
       }
     }
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toolbar = document.createElement('downloads-toolbar');
     SearchService.setInstance(new TestSearchService());
     document.body.appendChild(toolbar);

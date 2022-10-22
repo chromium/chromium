@@ -14,8 +14,7 @@ suite('cr-card-radio-button', function() {
   let radioButton: CrCardRadioButtonElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     radioButton = document.createElement('cr-card-radio-button');
     document.body.appendChild(radioButton);
   });

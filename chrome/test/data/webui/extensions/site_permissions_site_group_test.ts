@@ -18,8 +18,7 @@ suite('SitePermissionsSiteGroupElement', function() {
   let element: SitePermissionsSiteGroupElement;
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('site-permissions-site-group');
     document.body.appendChild(element);
   });

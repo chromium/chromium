@@ -57,8 +57,7 @@ suite(key_event_test.suiteName, function() {
     const pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
 

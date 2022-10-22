@@ -36,8 +36,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
   });
 
   setup(function() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Create destinations.
     nativeLayer = new NativeLayerStub();

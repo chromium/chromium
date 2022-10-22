@@ -23,8 +23,7 @@ suite('TabGroup', () => {
     testTabsApiProxy = new TestTabsApiProxy();
     TabsApiProxyImpl.setInstance(testTabsApiProxy);
 
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     tabGroupElement = document.createElement('tabstrip-tab-group');
     tabGroupElement.dataset['groupId'] = groupId;
     tabGroupElement.appendChild(document.createElement('tabstrip-tab'));

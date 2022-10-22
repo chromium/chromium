@@ -11,8 +11,7 @@ suite('NewTabPageModulesInfoDialogTest', () => {
   let infoDialog: InfoDialogElement;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     infoDialog = new InfoDialogElement();
     document.body.appendChild(infoDialog);
   });

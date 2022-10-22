@@ -25,8 +25,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
   let metrics: MetricsTracker;
 
   setup(() => {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     newTabPageHandler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));

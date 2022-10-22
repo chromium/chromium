@@ -51,8 +51,7 @@ suite('ProfilePickerMainViewTest', function() {
   let navigationElement: NavigationElement;
 
   function resetTest() {
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     navigationElement = document.createElement('navigation-element');
     document.body.appendChild(navigationElement);
     mainViewElement = document.createElement('profile-picker-main-view');
