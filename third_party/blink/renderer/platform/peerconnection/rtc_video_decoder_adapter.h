@@ -131,12 +131,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   void InitializeOnMediaThread(const media::VideoDecoderConfig& config,
                                CrossThreadOnceFunction<void(bool)> init_cb,
                                base::TimeTicks start_time,
-                               std::string* decoder_name);
+                               media::VideoDecoderType* decoder_type);
   absl::optional<RTCVideoDecoderFallbackReason>
   FallbackOrRegisterConcurrentInstanceOnce(media::VideoCodec codec);
-  absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
-      media::VideoCodec codec,
-      const media::DecoderBuffer& buffer) const;
   absl::variant<DecodeResult, RTCVideoDecoderFallbackReason> EnqueueBuffer(
       scoped_refptr<media::DecoderBuffer> buffer);
   void DecodeOnMediaThread();
@@ -167,6 +164,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   int32_t outstanding_decode_requests_ = 0;
   absl::optional<base::TimeTicks> start_time_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
+
+  media::VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(
+      decoding_sequence_checker_){media::VideoDecoderType::kUnknown};
 
   // Shared members.
   base::Lock lock_;

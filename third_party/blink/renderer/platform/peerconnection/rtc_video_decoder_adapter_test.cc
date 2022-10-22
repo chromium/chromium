@@ -577,9 +577,9 @@ TEST_F(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
+  video_decoder_->SetDecoderType(media::VideoDecoderType::kD3D11);
   ASSERT_TRUE(BasicSetup());
   SetSpatialIndex(2);
-  video_decoder_->SetDecoderType(media::VideoDecoderType::kD3D11);
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
       .WillOnce(
           base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
