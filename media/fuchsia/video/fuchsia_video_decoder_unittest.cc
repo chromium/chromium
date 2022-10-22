@@ -179,18 +179,22 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     EXPECT_FALSE(collection);
     collection = std::make_unique<TestBufferCollection>(std::move(token));
   }
+
   void ReleaseSysmemBufferCollection(
       gfx::SysmemBufferCollectionId id) override {
     EXPECT_EQ(sysmem_buffer_collections_.erase(id), 1U);
   }
 
   gpu::SyncToken GenVerifiedSyncToken() override {
+    gpu::SyncToken token(gpu::CommandBufferNamespace::GPU_IO,
+                         gpu::CommandBufferId(33), 1);
+    token.SetVerifyFlush();
+    return token;
+  }
+
+  gpu::SyncToken GenUnverifiedSyncToken() override {
     ADD_FAILURE();
     return gpu::SyncToken();
-  }
-  gpu::SyncToken GenUnverifiedSyncToken() override {
-    return gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                          gpu::CommandBufferId(33), 1);
   }
 
   void WaitSyncToken(const gpu::SyncToken& sync_token) override {

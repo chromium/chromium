@@ -123,6 +123,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
         raster_context_provider_->SharedImageInterface()->CreateSharedImage(
             gmb.get(), nullptr, color_space, kTopLeft_GrSurfaceOrigin,
             kPremul_SkAlphaType, usage);
+    create_sync_token_ = raster_context_provider_->SharedImageInterface()
+                             ->GenVerifiedSyncToken();
   }
 
   OutputMailbox(const OutputMailbox&) = delete;
@@ -130,7 +132,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
   ~OutputMailbox() {
     raster_context_provider_->SharedImageInterface()->DestroySharedImage(
-        sync_token_, mailbox_);
+        release_sync_token_, mailbox_);
   }
 
   const gpu::Mailbox& mailbox() { return mailbox_; }
@@ -151,8 +153,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
     gpu::MailboxHolder mailboxes[VideoFrame::kMaxPlanes];
     mailboxes[0].mailbox = mailbox_;
-    mailboxes[0].sync_token = raster_context_provider_->SharedImageInterface()
-                                  ->GenUnverifiedSyncToken();
+
+    if (create_sync_token_.HasData()) {
+      mailboxes[0].sync_token = create_sync_token_;
+      create_sync_token_.Clear();
+    }
 
     auto frame = VideoFrame::WrapNativeTextures(
         pixel_format, mailboxes,
@@ -182,7 +187,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
   void OnFrameDestroyed(const gpu::SyncToken& sync_token) {
     DCHECK(is_used_);
     is_used_ = false;
-    sync_token_ = sync_token;
+    release_sync_token_ = sync_token;
 
     if (!reuse_callback_) {
       // If the mailbox cannot be reused then we can just delete it.
@@ -191,13 +196,13 @@ class FuchsiaVideoDecoder::OutputMailbox {
     }
 
     raster_context_provider_->ContextSupport()->SignalSyncToken(
-        sync_token_,
+        release_sync_token_,
         BindToCurrentLoop(base::BindOnce(&OutputMailbox::OnSyncTokenSignaled,
                                          weak_factory_.GetWeakPtr())));
   }
 
   void OnSyncTokenSignaled() {
-    sync_token_.Clear();
+    release_sync_token_.Clear();
     std::move(reuse_callback_).Run();
   }
 
@@ -206,7 +211,9 @@ class FuchsiaVideoDecoder::OutputMailbox {
   gfx::Size size_;
 
   gpu::Mailbox mailbox_;
-  gpu::SyncToken sync_token_;
+
+  gpu::SyncToken create_sync_token_;
+  gpu::SyncToken release_sync_token_;
 
   // Set to true when the mailbox is referenced by a video frame.
   bool is_used_ = false;
