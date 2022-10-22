@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+PASS Fetching [GET] URL.createObjectURL(blob) is OK
+PASS Fetching [GET] blob:http://www.web-platform.test:8001/ is KO
+PASS Fetching [POST] URL.createObjectURL(blob) is KO
+PASS Fetching [OPTIONS] URL.createObjectURL(blob) is KO
+PASS Fetching [HEAD] URL.createObjectURL(blob) is KO
+PASS Fetching [PUT] URL.createObjectURL(blob) is KO
+PASS Fetching [DELETE] URL.createObjectURL(blob) is KO
+PASS Fetching [INVALID] URL.createObjectURL(blob) is KO
+PASS Fetching [GET] blob:not-backed-by-a-blob/ is KO
+PASS Fetching URL.createObjectURL(empty_blob) is OK
+PASS Fetching URL.createObjectURL(empty_type_blob) is OK
+PASS Fetching URL.createObjectURL(empty_data_blob) is OK
+PASS Blob content is not sniffed for a content type [image/png]
+PASS Blob content is not sniffed for a content type [text/xml]
+PASS Set content type to the empty string for slice with invalid content type
+PASS Set content type to the empty string for slice with no content type 
+PASS Blob.slice should not sniff the content for a content type
+Harness: the test ran to completion.
+

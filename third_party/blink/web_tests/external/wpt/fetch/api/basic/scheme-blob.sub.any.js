@@ -75,31 +75,32 @@ let xml_blob_no_type = new Blob([simple_xml_string]);
 checkFetchResponse(URL.createObjectURL(xml_blob_no_type), simple_xml_string, "", 45,
                    "Blob content is not sniffed for a content type [text/xml]");
 
+let simple_text_string = 'Hello, World!';
 promise_test(function(test) {
-  let blob = new Blob([], {"type": "text/plain"});
-  let slice = blob.slice(8, 25, "\0");
+  let blob = new Blob([simple_text_string], {"type": "text/plain"});
+  let slice = blob.slice(7, simple_text_string.length, "\0");
   return fetch(URL.createObjectURL(slice)).then(function (resp) {
     assert_equals(resp.status, 200, "HTTP status is 200");
     assert_equals(resp.type, "basic", "response type is basic");
     assert_equals(resp.headers.get("Content-Type"), "");
-    assert_equals(resp.headers.get("Content-Length"), "17");
+    assert_equals(resp.headers.get("Content-Length"), "6");
     return resp.text();
   }).then(function(bodyAsText) {
-    assert_equals(bodyAsText, "type with invalid");
+    assert_equals(bodyAsText, "World!");
   });
 }, "Set content type to the empty string for slice with invalid content type");
 
 promise_test(function(test) {
-  let blob = new Blob([], {"type": "text/plain"});
-  let slice = blob.slice(8, 20);
+  let blob = new Blob([simple_text_string], {"type": "text/plain"});
+  let slice = blob.slice(7, simple_text_string.length, "\0");
   return fetch(URL.createObjectURL(slice)).then(function (resp) {
     assert_equals(resp.status, 200, "HTTP status is 200");
     assert_equals(resp.type, "basic", "response type is basic");
     assert_equals(resp.headers.get("Content-Type"), "");
-    assert_equals(resp.headers.get("Content-Length"), "12");
+    assert_equals(resp.headers.get("Content-Length"), "6");
     return resp.text();
   }).then(function(bodyAsText) {
-    assert_equals(bodyAsText, "type that is");
+    assert_equals(bodyAsText, "World!");
   });
 }, "Set content type to the empty string for slice with no content type ");
 

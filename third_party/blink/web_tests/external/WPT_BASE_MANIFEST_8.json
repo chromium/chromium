@@ -312602,14 +312602,6 @@
       "response-null-body.any.worker-expected.txt": [
        "fa818f443d303b3903069f46bc8824dd2bf8bb27",
        []
-      ],
-      "scheme-blob.sub.any-expected.txt": [
-       "70eef90dcabe8a254638e7ce24452af3299ef15b",
-       []
-      ],
-      "scheme-blob.sub.any.worker-expected.txt": [
-       "70eef90dcabe8a254638e7ce24452af3299ef15b",
-       []
       ]
      },
      "body": {
@@ -407262,7 +407254,7 @@
       ]
      },
      "scroll-margin-visibility-check.html": [
-      "93fb6f922402a2e6b30aa51876d12be4ff253b40",
+      "a072c142ad54e552dd84a900599f2df9cdf28651",
       [
        null,
        {}
@@ -447629,7 +447621,7 @@
        ]
       ],
       "scheme-blob.sub.any.js": [
-       "228574f25a3554a733524cf0483a8d5e1ab93f1c",
+       "a6059ea93d9a5a18235ffdc3a131b4098b9982c3",
        [
         "fetch/api/basic/scheme-blob.sub.any.html",
         {
@@ -595450,7 +595442,7 @@
      ]
     ],
     "datagrams.https.any.js": [
-     "401154e1878c32e8a0110c7834ab3817dc78631a",
+     "32da926db50652baababb76f01948bb07996bbbe",
      [
       "webtransport/datagrams.https.any.html",
       {
