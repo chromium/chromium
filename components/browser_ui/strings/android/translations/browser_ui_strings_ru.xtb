@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Рекомендуется для оптимальной работы функции</translation>
 <translation id="1818308510395330587">Чтобы браузер "<ph name="APP_NAME" />" мог использовать дополненную реальность, также предоставьте ему доступ к камере в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Источник: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Связанные сайты могут отслеживать действия в группе</translation>
 <translation id="1887786770086287077">Для устройства отключено определение местоположения. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1919345977826869612">Реклама</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Включить все сайты с этим доменом</translation>
 <translation id="4883854917563148705">Управляемые настройки сбросить нельзя</translation>
 <translation id="4887024562049524730">Запрашивать для сайтов разрешение на использование устройства и данных виртуальной реальности (рекомендуется)</translation>
+<translation id="4955223779495905865">На сайте, который вы просматриваете, может быть встроенный контент с других сайтов, например изображения, реклама и текст. Любые из этих сайтов могут сохранять файлы cookie и другие данные для персонализации.</translation>
 <translation id="4962975101802056554">Отозвать все разрешения для устройства</translation>
 <translation id="497421865427891073">Вперед</translation>
 <translation id="4976702386844183910">Последнее посещение: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Предоставить сайтам доступ к датчикам движения (рекомендуется)</translation>
 <translation id="5050380848339752099">Этот сайт передает информацию стороннему приложению, пока вы находитесь в режиме инкогнито.</translation>
 <translation id="5063480226653192405">Использование</translation>
+<translation id="5082281938627763039">Удаляются файлы cookie и другие данные сайтов в домене <ph name="FPS_MEMBER" />, а также сайтов в группе <ph name="FPS_OWNER" />.</translation>
 <translation id="5091013926750941408">Мобильный сайт</translation>
 <translation id="509133520954049755">Запрос версии для ПК</translation>
 <translation id="5100237604440890931">Свернуто. Нажмите, чтобы развернуть.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Заблокировано</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
+<translation id="5706552988683188916">Будут удалены файлы cookie и другие данные сайта <ph name="WEBSITE" />.</translation>
 <translation id="5719847187258001597">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" /> или его приложением, добавленным на главный экран.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />: заблокировано</translation>
 <translation id="5804241973901381774">Разрешения</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Включить звуки на определенном сайте</translation>
 <translation id="789180354981963912">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
 <translation id="7940722705963108451">Напомнить</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}one{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}few{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}many{<ph name="FPS_MEMBERS_COUNT" /> сайтов в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}other{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}}</translation>
 <translation id="7986741934819883144">Выберите контакт</translation>
 <translation id="7999064672810608036">Вы уверены, что хотите удалить все данные этого веб-сайта, включая файлы cookie, и сбросить заданные разрешения?</translation>
 <translation id="8007176423574883786">Отключено для этого устройства</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Включить микрофон</translation>
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}one{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}few{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}many{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}other{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
 <translation id="8676374126336081632">Очистить</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Удалить</translation>
 <translation id="9019902583201351841">Управляется вашими родителями</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Этот сайт может отслеживать ваши действия. Он входит в группу <ph name="FPS_OWNER" />.</translation>
+<translation id="9106233582039520022">Удалить файлы cookie</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Предоставьте приложению "<ph name="APP_NAME" />" разрешения в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Опасная страница</translation>

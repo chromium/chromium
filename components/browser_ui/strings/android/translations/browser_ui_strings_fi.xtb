@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Suositellaan parhaan kokemuksen saamiseksi</translation>
 <translation id="1818308510395330587">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi käyttää AR:ää.</translation>
 <translation id="1864927262126810325">Lähde: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Tähän liittyvät sivustot voivat nähdä toimintasi ryhmässä</translation>
 <translation id="1887786770086287077">Sijainti on pois päältä tällä laitteella. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1919345977826869612">Mainokset</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Lisää kaikki tämän verkkotunnuksen sivustot</translation>
 <translation id="4883854917563148705">Ylläpidettyjä asetuksia ei voi nollata</translation>
 <translation id="4887024562049524730">Kysy, saavatko sivustot käyttää virtuaalitodellisuuslaitteitasi ja ‑dataasi (suositus)</translation>
+<translation id="4955223779495905865">Avaamasi sivusto voi upottaa muiden sivustojen sisältöä, esim. kuvia, mainoksia ja tekstiä. Nämä sivustot voivat tallentaa evästeitä ja muuta dataa käyttökokemuksesi personoimiseksi.</translation>
 <translation id="4962975101802056554">Peru kaikki laitteen käyttöoikeudet</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
 <translation id="4976702386844183910">Viimeksi avattu <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Anna sivustojen käyttää liiketunnistimien lukemia (suositus)</translation>
 <translation id="5050380848339752099">Tämä sivusto aikoo jakaa tietoja sovellukselle incognito-tilan ulkopuolella.</translation>
 <translation id="5063480226653192405">Käyttö</translation>
+<translation id="5082281938627763039">Evästeet ja muu sivustodata poistetaan näissä: <ph name="FPS_MEMBER" /> ja osoitteen <ph name="FPS_OWNER" /> sivustoryhmiin kuuluvilla sivustoilla</translation>
 <translation id="5091013926750941408">Mobiilisivusto</translation>
 <translation id="509133520954049755">Pyydä tietokonenäkymää</translation>
 <translation id="5100237604440890931">Tiivistetty – laajenna klikkaamalla.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Estetty</translation>
 <translation id="5689516760719285838">Sijainti</translation>
 <translation id="5690795753582697420">Kamera laitettiin pois päältä Androidin asetuksista</translation>
+<translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Tämä tyhjentää kaiken datan ja kaikki evästeet, jotka <ph name="ORIGIN" /> tai sen aloitusnäytölläsi oleva sovellus on tallentanut.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Salli tietyn sivuston äänet.</translation>
 <translation id="789180354981963912">Estä kolmannen osapuolen evästeet incognito-tilassa:</translation>
 <translation id="7940722705963108451">Muistuta minua</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sivusto osoitteen <ph name="FPS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}other{<ph name="FPS_MEMBERS_COUNT" /> sivustoa osoitteen <ph name="FPS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}}</translation>
 <translation id="7986741934819883144">Valitse yhteystieto</translation>
 <translation id="7999064672810608036">Haluatko varmasti tyhjentää kaikki paikalliset tiedot, mukaan lukien evästeet, ja nollata kaikki tämän verkkosivuston käyttöluvat?</translation>
 <translation id="8007176423574883786">Ei käytössä tällä laitteella</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Poista mikrofonin mykistys</translation>
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}other{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}}</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8676374126336081632">Tyhjennä teksti</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Unohda</translation>
 <translation id="9019902583201351841">Vanhempiesi hallinnoima</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Tämä sivusto kuuluu ryhmään, joka voi nähdä toimintasi. <ph name="FPS_OWNER" /> on määrittänyt ryhmän</translation>
+<translation id="9106233582039520022">Poistetaanko evästeet?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}}</translation>
 <translation id="913657688200966289">Laita luvat (<ph name="APP_NAME" />) päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>

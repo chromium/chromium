@@ -433,6 +433,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3413817803639110246">Nog niks om te sien nie</translation>
 <translation id="3428447136709161042">Ontkoppel vanaf <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swiep van regs af om terug te gaan</translation>
+<translation id="3431517721463707585">Lessenaar 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Wysig herinnering</translation>
 <translation id="3435967511775410570">Vingerafdruk is herken</translation>
@@ -674,6 +675,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (links)</translation>
 <translation id="4734965478015604180">Horisontaal</translation>
+<translation id="4735944890391795473">Lessenaar 12</translation>
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4740516757091333363">Vee gestoorde lessenaar uit?</translation>
 <translation id="4752784485658729358">Net 6 gestoorde lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een te stoor.</translation>
@@ -694,6 +696,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4860284199500934869">Gaan jou netwerkverbinding na om <ph name="FILENAME" /> af te laai</translation>
 <translation id="486056901304535126">Sal later probeer aflaai. Spraak sal na Google toe gestuur word vir verwerking totdat aflaai voltooi is.</translation>
 <translation id="4864369630010738180">Meld tans aan …</translation>
+<translation id="4864648187878336334">Lessenaar 15</translation>
 <translation id="4868492592575313542">geaktiveer</translation>
 <translation id="4872237917498892622">Alt+Search of Shift</translation>
 <translation id="4881695831933465202">Maak oop</translation>
@@ -720,6 +723,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Lessenaar 16</translation>
 <translation id="5003993274120026347">Volgende sin</translation>
 <translation id="5016558321564993266">Wissel merker. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Die tyd is om</translation>
@@ -735,6 +739,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5098537242461068432">Lessenaar en vensters is heropen</translation>
 <translation id="5104236669533825617">Kan nie skermopname skep nie</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Wys volgende maand</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
 <translation id="5147567197700016471">Ontsluit</translation>
@@ -822,6 +827,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofoonsok</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vereis jou aandag.</translation>
+<translation id="5662075790140998213">Lessenaar 10</translation>
 <translation id="5662709761327382534">Neem mikrofoon <ph name="CURRENT_STATE" /> op; druk enter om mikrofoonopname <ph name="NEW_STATE" /> te begin</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
 <translation id="5673434351075758678">Van "<ph name="FROM_LOCALE" />" af na "<ph name="TO_LOCALE" />" toe nadat jou instellings gesinkroniseer is.</translation>
@@ -1021,6 +1027,8 @@ Nuwe installasie</translation>
 <translation id="6753390234084146956">oortjies</translation>
 <translation id="6757237461819837179">Geen media speel tans nie</translation>
 <translation id="6777216307882431711">Gee tans krag aan gekoppelde USB-C-toestelle</translation>
+<translation id="6781002679438061620">Lessenaar 9</translation>
+<translation id="6782182743534150858">Lessenaar 13</translation>
 <translation id="6786750046913594791">Maak vouer toe</translation>
 <translation id="6787595647772650851">Stel laaste sessie terug</translation>
 <translation id="6790428901817661496">Speel</translation>
@@ -1082,6 +1090,7 @@ Nuwe installasie</translation>
 <translation id="7098053464892629930">Laai die program vir <ph name="NAME" /> op Google Play af om alle beskikbare kenmerke te sien</translation>
 <translation id="7098389117866926363">USB C-toestel (linkerpoort aan agterkant)</translation>
 <translation id="7106330611027933926">Wys werkskermbalk</translation>
+<translation id="7116969082764510092">Lessenaar 11</translation>
 <translation id="7118268675952955085">skermkiekie</translation>
 <translation id="7126996685418858413">In die afgelope week oopgemaak</translation>
 <translation id="7130207228079676353">MEES WAARSKYNLIK</translation>
@@ -1180,6 +1189,7 @@ Nuwe installasie</translation>
 <translation id="7662283695561029522">Tik om op te stel</translation>
 <translation id="7670953955701272011">Maak hierdie datum in Google Kalender oop.</translation>
 <translation id="7671610481353807627">Programme word volgens kleur gerangskik</translation>
+<translation id="7672095158465655885">Gekoppel aan <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamera-invoer is gestel op <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Voeg nuwe selnetwerk by</translation>
@@ -1465,5 +1475,6 @@ Nuwe installasie</translation>
 <translation id="974545358917229949">Wys tans <ph name="RESULT_COUNT" /> resultate vir <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Landskap</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> is gesluit.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Kry die jongste kenmerke en veiligheidverbeterings. Opdaterings gebeur op die agtergrond.</translation>
 </translationbundle>

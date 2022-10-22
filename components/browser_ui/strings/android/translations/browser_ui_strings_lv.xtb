@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Ieteicams labākai pieredzei</translation>
 <translation id="1818308510395330587">Lai atļautu lietotnei <ph name="APP_NAME" /> izmantot papildināto realitāti, ieslēdziet arī kameru <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">No: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Saistīto vietņu īpašnieki var skatīt darbības, ko veicat jebkurā grupas vietnē</translation>
 <translation id="1887786770086287077">Piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
 <translation id="1919345977826869612">Reklāmas</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Iekļaut visas šī domēna vietnes</translation>
 <translation id="4883854917563148705">Pārvaldītos iestatījumus nevar atiestatīt</translation>
 <translation id="4887024562049524730">Vaicāt, pirms atļaut vietnēm piekļūt jūsu virtuālās realitātes ierīcei un datiem (ieteicams)</translation>
+<translation id="4955223779495905865">Jūsu apmeklētajā vietnē var būt iegults citu vietņu saturs, piemēram, attēli, reklāmas un teksts. Jebkura no šīm vietnēm var saglabāt sīkfailus un citus datus, lai personalizētu jūsu pieredzi.</translation>
 <translation id="4962975101802056554">Atsaukt visas atļaujas, kas piešķirtas ierīcei</translation>
 <translation id="497421865427891073">Doties uz priekšu</translation>
 <translation id="4976702386844183910">Pēdējoreiz apmeklēta: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Atļaut vietnēm piekļūt kustību sensoriem (ieteicams)</translation>
 <translation id="5050380848339752099">Šī vietne tūlīt kopīgos informāciju ar lietotni, kas nav inkognito režīmā.</translation>
 <translation id="5063480226653192405">Lietojums</translation>
+<translation id="5082281938627763039">Tiks dzēsti sīkfaili un citi vietnes dati no vietnes <ph name="FPS_MEMBER" /> un vietnēm domēna <ph name="FPS_OWNER" /> vietņu grupā</translation>
 <translation id="5091013926750941408">Vietne mobilajām ierīcēm</translation>
 <translation id="509133520954049755">Pieprasīt skatu datorā</translation>
 <translation id="5100237604440890931">Sakļauts — noklikšķiniet, lai izvērstu.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Bloķēts</translation>
 <translation id="5689516760719285838">Atrašanās vieta</translation>
 <translation id="5690795753582697420">Android iestatījumos ir izslēgta kameras atļauja</translation>
+<translation id="5706552988683188916">Tiks dzēsti sīkfaili un citi vietnes <ph name="WEBSITE" /> dati</translation>
 <translation id="5719847187258001597">Tiks dzēsti visi dati un sīkfaili, ko glabā vietne <ph name="ORIGIN" /> vai tās lietotne jūsu sākuma ekrānā.</translation>
 <translation id="5771720122942595109">Bloķēta: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Atļaujas</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Atļaut skaņu konkrētai vietnei</translation>
 <translation id="789180354981963912">Bloķēt trešo pušu sīkfailus inkognito režīmā:</translation>
 <translation id="7940722705963108451">Atgādināt</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> vietne domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}zero{<ph name="FPS_MEMBERS_COUNT" /> vietņu domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}one{<ph name="FPS_MEMBERS_COUNT" /> vietne domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}other{<ph name="FPS_MEMBERS_COUNT" /> vietnes domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}}</translation>
 <translation id="7986741934819883144">Kontaktpersonas atlase</translation>
 <translation id="7999064672810608036">Vai tiešām vēlaties notīrīt visus ar šo vietni saistītos lokālos datus, tostarp sīkfailus, un atiestatīt visas atļaujas?</translation>
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Ieslēgt mikrofonu</translation>
 <translation id="851751545965956758">Neļaut vietnēm izveidot savienojumu ar ierīci</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnē ir atļauti sīkfaili.}zero{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnēs ir atļauti sīkfaili.}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnē ir atļauti sīkfaili.}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnēs ir atļauti sīkfaili.}}</translation>
 <translation id="857943718398505171">Atļauta (ieteicams)</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8676374126336081632">Notīrīt ievadi</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Aizmirst</translation>
 <translation id="9019902583201351841">Pārvalda jūsu vecāki</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Šī vietne ir grupā, un visu grupas vietņu īpašnieki var skatīt jūsu darbības. Grupa ir definēta atbilstoši domēnam <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Vai dzēst sīkfailus?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļaujas lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="9162462602695099906">Šī lapa ir bīstama.</translation>

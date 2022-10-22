@@ -433,6 +433,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3413817803639110246">Tiada apa-apa untuk dilihat</translation>
 <translation id="3428447136709161042">Putuskan sambungan daripada <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Leret dari kanan untuk kembali</translation>
+<translation id="3431517721463707585">Meja 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Edit peringatan</translation>
 <translation id="3435967511775410570">Cap jari dikenali</translation>
@@ -674,6 +675,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4734965478015604180">Mendatar</translation>
+<translation id="4735944890391795473">Meja 12</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4740516757091333363">Padamkan meja yang disimpan?</translation>
 <translation id="4752784485658729358">6 meja sahaja dibenarkan. Alih keluar satu meja untuk menyimpan meja baharu.</translation>
@@ -694,6 +696,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4860284199500934869">Semak sambungan rangkaian anda untuk memuat turun <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Muat turun akan cuba dilakukan kemudian. Pertuturan akan dihantar kepada Google untuk diproses sehingga muat turun selesai.</translation>
 <translation id="4864369630010738180">Sedang log masuk...</translation>
+<translation id="4864648187878336334">Meja 15</translation>
 <translation id="4868492592575313542">diaktifkan</translation>
 <translation id="4872237917498892622">Alt+Search atau Shift</translation>
 <translation id="4881695831933465202">Buka</translation>
@@ -720,6 +723,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Meja 16</translation>
 <translation id="5003993274120026347">Ayat seterusnya</translation>
 <translation id="5016558321564993266">Togol penanda. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Masa sudah tamat</translation>
@@ -735,6 +739,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5098537242461068432">Meja dan tingkap dibuka semula</translation>
 <translation id="5104236669533825617">Tidak dapat membuat rakaman skrin</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Tunjukkan bulan seterusnya</translation>
 <translation id="5136175204352732067">Papan kekunci lain disambungkan</translation>
 <translation id="5147567197700016471">Tidak berkunci</translation>
@@ -822,6 +827,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> meminta perhatian anda.</translation>
+<translation id="5662075790140998213">Meja 10</translation>
 <translation id="5662709761327382534">Rakam mikrofon <ph name="CURRENT_STATE" />, Tekan Enter untuk menghidupkan rakaman mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5673434351075758678">Daripada "<ph name="FROM_LOCALE" />" kepada "<ph name="TO_LOCALE" />" selepas menyegerakkan tetapan anda.</translation>
@@ -1021,6 +1027,8 @@ Pemasangan baharu</translation>
 <translation id="6753390234084146956">tab</translation>
 <translation id="6757237461819837179">Tiada media sedang dimainkan</translation>
 <translation id="6777216307882431711">Membekalkan kuasa kepada peranti USB-C yang disambungkan</translation>
+<translation id="6781002679438061620">Meja 9</translation>
+<translation id="6782182743534150858">Meja 13</translation>
 <translation id="6786750046913594791">Tutup folder</translation>
 <translation id="6787595647772650851">Memulihkan sesi terakhir</translation>
 <translation id="6790428901817661496">Mainkan</translation>
@@ -1082,6 +1090,7 @@ Pemasangan baharu</translation>
 <translation id="7098053464892629930">Muat turun apl untuk <ph name="NAME" /> di Google play untuk melihat semua ciri yang tersedia</translation>
 <translation id="7098389117866926363">Peranti USB-C (port kiri di belakang)</translation>
 <translation id="7106330611027933926">Paparkan bar meja</translation>
+<translation id="7116969082764510092">Meja 11</translation>
 <translation id="7118268675952955085">tangkapan skrin</translation>
 <translation id="7126996685418858413">Dibuka pada minggu lalu</translation>
 <translation id="7130207228079676353">KEMUNGKINAN BESAR</translation>
@@ -1180,6 +1189,7 @@ Pemasangan baharu</translation>
 <translation id="7662283695561029522">Ketik untuk membuat konfigurasi</translation>
 <translation id="7670953955701272011">Buka tarikh ini dalam Google Calendar</translation>
 <translation id="7671610481353807627">Apl diisih mengikut warna</translation>
+<translation id="7672095158465655885">Disambungkan kepada <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Input kamera ditetapkan kepada <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tambah rangkaian selular baharu</translation>
@@ -1465,5 +1475,6 @@ Pemasangan baharu</translation>
 <translation id="974545358917229949">Memaparkan <ph name="RESULT_COUNT" /> hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Lanskap</translation>
 <translation id="990277280839877440">Tetingkap <ph name="WINDOW_TITILE" /> ditutup.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Dapatkan ciri terkini dan peningkatan keselamatan. Kemaskinian berlaku di latar belakang.</translation>
 </translationbundle>

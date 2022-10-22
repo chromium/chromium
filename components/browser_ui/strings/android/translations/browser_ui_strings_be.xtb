@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Рэкамендуем зрабіць гэта для аптымізацыі работы са старонкамі</translation>
 <translation id="1818308510395330587">Каб праграма "<ph name="APP_NAME" />" магла выкарыстоўваць дапоўненую рэальнасць, уключыце таксама камеру ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Крыніца: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Звязаныя сайты маюць доступ да звестак пра вашы дзеянні ў групе</translation>
 <translation id="1887786770086287077">Доступ да месцазнаходжання для гэтай прылады выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1919345977826869612">Рэклама</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Распаўсюдзіць дзеянне налады на ўсе сайты ў гэтым дамене</translation>
 <translation id="4883854917563148705">Налады, якія знаходзяцца пад кіраваннем, скінуць нельга</translation>
 <translation id="4887024562049524730">Пытацца, перш чым дазваляць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці (рэкамендуецца)</translation>
+<translation id="4955223779495905865">На сайце, які вы наведваеце, можа быць убудаванае змесціва з іншых сайтаў (напрыклад, відарысы, рэклама або тэкст). Любыя з гэтых сайтаў могуць захоўваць файлы cookie і іншыя даныя, каб персаналізаваць для вас сваё змесціва.</translation>
 <translation id="4962975101802056554">Адклікаць усе дазволы для прылады</translation>
 <translation id="497421865427891073">Наперад</translation>
 <translation id="4976702386844183910">Апошняе наведванне: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Дазваляць сайтам доступ да датчыкаў руху (рэкамендуецца)</translation>
 <translation id="5050380848339752099">Гэты сайт будзе абагульваць звесткі з праграмай па-за рэжымам інкогніта.</translation>
 <translation id="5063480226653192405">Выкарыстанне</translation>
+<translation id="5082281938627763039">Будуць выдалены файлы cookie і іншыя даныя сайта <ph name="FPS_MEMBER" /> і групы сайтаў у дамене <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Мабільны сайт</translation>
 <translation id="509133520954049755">Запытваць версію для камп'ютараў</translation>
 <translation id="5100237604440890931">Згорнута – каб разгарнуць, націсніце тут.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Заблакіравана</translation>
 <translation id="5689516760719285838">Месцазнаходжанне</translation>
 <translation id="5690795753582697420">Камера выключана ў наладах Android</translation>
+<translation id="5706552988683188916">Будуць выдалены файлы cookie і іншыя даныя сайта <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Будуць выдалены ўсе файлы cookie і даныя, захаваныя сайтам <ph name="ORIGIN" /> і яго праграмай, размешчанай на галоўным экране.</translation>
 <translation id="5771720122942595109">Заблакіравана: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Дазволы</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Дазвол гуку на канкрэтным сайце.</translation>
 <translation id="789180354981963912">Блакіраваць староннія файлы cookie у рэжыме інкогніта:</translation>
 <translation id="7940722705963108451">Нагадаць</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{Да групы сайтаў у дамене <ph name="FPS_OWNER" />, якія маюць доступ да звестак пра вашы дзеянні ў групе, належыць <ph name="FPS_MEMBERS_COUNT" /> сайт}one{Да групы сайтаў у дамене <ph name="FPS_OWNER" />, якія маюць доступ да звестак пра вашы дзеянні ў групе, належыць <ph name="FPS_MEMBERS_COUNT" /> сайт}few{Да групы сайтаў у дамене <ph name="FPS_OWNER" />, якія маюць доступ да звестак пра вашы дзеянні ў групе, належаць <ph name="FPS_MEMBERS_COUNT" /> сайты}many{Да групы сайтаў у дамене <ph name="FPS_OWNER" />, якія маюць доступ да звестак пра вашы дзеянні ў групе, належаць <ph name="FPS_MEMBERS_COUNT" /> сайтаў}other{Да групы сайтаў у дамене <ph name="FPS_OWNER" />, якія маюць доступ да звестак пра вашы дзеянні ў групе, належаць <ph name="FPS_MEMBERS_COUNT" /> сайта}}</translation>
 <translation id="7986741934819883144">Выберыце кантакт</translation>
 <translation id="7999064672810608036">Вы сапраўды хочаце ачысціць усе лакальныя даныя, у тым ліку файлы cookie, і скінуць усе дазволы для гэтага вэб-сайта?</translation>
 <translation id="8007176423574883786">Выключана для гэтай прылады</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Уключыць мікрафон</translation>
 <translation id="851751545965956758">Блакіраваць сайтам падключэнне да прылад</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}one{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}few{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}many{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}other{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дазволена (рэкамендуецца)</translation>
 <translation id="8609465669617005112">Перамясціць уверх</translation>
 <translation id="8676374126336081632">Ачысціць поле ўводу</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Забыць</translation>
 <translation id="9019902583201351841">Пад кіраваннем вашых бацькоў</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Гэты сайт належыць да групы, якая мае доступ да звестак пра вашы дзеянні. Група вызначана даменам <ph name="FPS_OWNER" />.</translation>
+<translation id="9106233582039520022">Выдаліць файлы cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Уключыце для праграмы "<ph name="APP_NAME" />" дазволы ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Гэта старонка небяспечная</translation>

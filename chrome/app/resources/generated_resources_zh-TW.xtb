@@ -273,6 +273,7 @@
 <translation id="1244303850296295656">擴充功能錯誤</translation>
 <translation id="1245628370644070008">本機資料復原</translation>
 <translation id="1246863218384630739">無法安裝 <ph name="VM_NAME" />：映像檔網址傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請與管理員聯絡。</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{已禁止 1 個網站傳送通知}other{已禁止 {NUM_SITES} 個網站傳送通知}}</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">這會清除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
 <translation id="1251578593170406502">正在掃描行動數據網路…</translation>
@@ -588,6 +589,7 @@
 <translation id="1552752544932680961">管理擴充功能</translation>
 <translation id="1553538517812678578">無限制</translation>
 <translation id="1555130319947370107">藍色</translation>
+<translation id="1556127816860282890">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="1558391695376153246">關閉無痕分頁</translation>
 <translation id="155865706765934889">觸控板</translation>
@@ -1637,6 +1639,7 @@
 <translation id="2476974672882258506">請關閉 Windows 以解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">你已設定多個外接切換裝置，因此自動掃描功能已關閉。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
+<translation id="24786041351753425">啟用資料復原服務。</translation>
 <translation id="2480868415629598489">修改你複製和貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁已移至包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組</translation>
@@ -4193,6 +4196,7 @@
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="4903967893652864401">在這個模式下，系統會限制背景活動和順暢捲動等視覺效果，以延長電池續航力。</translation>
 <translation id="4906490889887219338">設定或管理網路檔案共用。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">選擇這項擴充功能何時可讀取及變更你的網站資料</translation>
 <translation id="4907161631261076876">一般使用者不常下載這個檔案，代表這個檔案可能不安全。</translation>
@@ -5294,6 +5298,7 @@
 <translation id="5971037678316050792">控制藍牙介面卡狀態與連線配對功能</translation>
 <translation id="597235323114979258">顯示更多列印端點</translation>
 <translation id="5972543790327947908">某些支援連結仍會在「<ph name="APP_NAME" />」、「<ph name="APP_NAME_2" />」或「<ph name="APP_NAME_3" />」中開啟。</translation>
+<translation id="5972559880616357748">可對 <ph name="SITE_GROUP" /> 執行的其他動作</translation>
 <translation id="5972666587303800813">無作業服務</translation>
 <translation id="5972708806901999743">移至頂端</translation>
 <translation id="5972826969634861500">啟動 <ph name="PRODUCT_NAME" /></translation>
@@ -8470,6 +8475,7 @@
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">重新整理網路共用狀態</translation>
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>
+<translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，還是可以還原本機資料。你必須登入 Google 帳戶或使用帳戶救援功能。</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
 <translation id="899657321862108550">隨時隨地享有個人化的 Chrome 體驗</translation>
@@ -8569,6 +8575,7 @@
 <translation id="9078316009970372699">停用即時網路共用</translation>
 <translation id="9078842827190780028">在側邊面板中查看更多搜尋結果</translation>
 <translation id="9079267182985899251">系統即將停止支援這個選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="9080175821499742274">記憶體節省模式會將閒置分頁占用的記憶體釋出給使用中的分頁和其他應用程式。</translation>
 <translation id="9080971985541434310">推測你的興趣喜好 - Chrome 可以推測你感興趣的主題</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
@@ -8757,6 +8764,7 @@
 <translation id="964790508619473209">螢幕排列位置</translation>
 <translation id="965211523698323809">透過你的 <ph name="DEVICE_TYPE" /> 收發簡訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">回報 Google Cast 的問題</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近傳送大量通知的網站 (1 個)}other{查看最近傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
 <translation id="967398046773905967">不允許任何網站存取 HID 裝置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的印表機</translation>

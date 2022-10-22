@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">Пакуль што нічога няма</translation>
 <translation id="3428447136709161042">Адключыцца ад сеткі "<ph name="NETWORK_NAME" />"</translation>
 <translation id="3430396595145920809">Каб вярнуцца назад, правядзіце пальцам з правага краю</translation>
+<translation id="3431517721463707585">Працоўны стол 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Рэдагаваць напамін</translation>
 <translation id="3435967511775410570">Адбітак пальца распазнаны</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (левы)</translation>
 <translation id="4734965478015604180">Гарызантальна</translation>
+<translation id="4735944890391795473">Працоўны стол 12</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4740516757091333363">Выдаліць захаваны працоўны стол?</translation>
 <translation id="4752784485658729358">Можна захоўваць не больш за 6 працоўных сталоў. Каб можна было захаваць новы працоўны стол, выдаліце адзін са старых.</translation>
@@ -693,6 +695,7 @@
 <translation id="4860284199500934869">Каб спампаваць файл "<ph name="FILENAME" />", праверце падключэнне да сеткі.</translation>
 <translation id="486056901304535126">Спроба спампаваць будзе зроблена пазней. Да завяршэння спампоўвання аўдыяматэрыял будзе адпраўлены для апрацоўкі ў Google.</translation>
 <translation id="4864369630010738180">Уваход...</translation>
+<translation id="4864648187878336334">Працоўны стол 15</translation>
 <translation id="4868492592575313542">уключыла</translation>
 <translation id="4872237917498892622">Alt + Search або Shift</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
@@ -719,6 +722,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Працоўны стол 16</translation>
 <translation id="5003993274120026347">Наступны сказ</translation>
 <translation id="5016558321564993266">Уключыць або выключыць маркер. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Час выйшаў</translation>
@@ -734,6 +738,7 @@
 <translation id="5098537242461068432">Працоўны стол і вокны зноў адкрыты</translation>
 <translation id="5104236669533825617">Не ўдалося запусціць скрынкаст</translation>
 <translation id="5107522548814527560">Інтэрнэт</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Паказаць наступны месяц</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
 <translation id="5147567197700016471">Прылада разблакіравана</translation>
@@ -821,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Раздым для мікрафона</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> патрабуе вашай увагі.</translation>
+<translation id="5662075790140998213">Працоўны стол 10</translation>
 <translation id="5662709761327382534">Запіс з мікрафона <ph name="CURRENT_STATE" />. Калі вы націснеце Enter, ён будзе <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Ідзе актывацыя</translation>
 <translation id="5673434351075758678">З мовы "<ph name="FROM_LOCALE" />" на мову "<ph name="TO_LOCALE" />" пасля сінхранізацыі налад.</translation>
@@ -1020,6 +1026,8 @@
 <translation id="6753390234084146956">укладкі</translation>
 <translation id="6757237461819837179">Медыяфайлы не прайграюцца</translation>
 <translation id="6777216307882431711">Сілкуе падключаныя прылады USB-C</translation>
+<translation id="6781002679438061620">Працоўны стол 9</translation>
+<translation id="6782182743534150858">Працоўны стол 13</translation>
 <translation id="6786750046913594791">Закрыць папку</translation>
 <translation id="6787595647772650851">Аднавіць апошні сеанс</translation>
 <translation id="6790428901817661496">Прайграць</translation>
@@ -1081,6 +1089,7 @@
 <translation id="7098053464892629930">Спампуйце з Google Play праграму <ph name="NAME" />, каб азнаёміцца з усімі даступнымі функцыямі</translation>
 <translation id="7098389117866926363">Прылада USB-C (задні порт злева)</translation>
 <translation id="7106330611027933926">Паказаць панэль</translation>
+<translation id="7116969082764510092">Працоўны стол 11</translation>
 <translation id="7118268675952955085">здымак экрана</translation>
 <translation id="7126996685418858413">Адкрывалася на мінулым тыдні</translation>
 <translation id="7130207228079676353">НАЙБОЛЬШ ІМАВЕРНЫЯ</translation>
@@ -1179,6 +1188,7 @@
 <translation id="7662283695561029522">Дакраніцеся, каб сканфігураваць</translation>
 <translation id="7670953955701272011">Адкрыць гэту дату ў Google Календары</translation>
 <translation id="7671610481353807627">Праграмы адсартаваны па колеры</translation>
+<translation id="7672095158465655885">Устаноўлена падключэнне да сеткі "<ph name="NAME" />", <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Ажыццяўляецца ўвод з відэакамеры "<ph name="CAMERA_NAME" />".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Дадаць новую сотавую сетку</translation>
@@ -1464,5 +1474,6 @@
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Акно <ph name="WINDOW_TITILE" /> закрыта.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Усталюйце апошнія функцыі і паляпшэнні сістэмы бяспекі. Абнаўленні ўсталёўваюцца ў фонавым рэжыме.</translation>
 </translationbundle>

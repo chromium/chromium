@@ -433,6 +433,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3413817803639110246">Det finns inget att se här ännu</translation>
 <translation id="3428447136709161042">Koppla från <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Återgå genom att svepa från höger</translation>
+<translation id="3431517721463707585">Skrivbord 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Redigera påminnelse</translation>
 <translation id="3435967511775410570">Fingeravtrycket känns igen</translation>
@@ -673,6 +674,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vänster)</translation>
 <translation id="4734965478015604180">Horisontell</translation>
+<translation id="4735944890391795473">Skrivbord 12</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4740516757091333363">Vill du radera det sparade skrivbordet?</translation>
 <translation id="4752784485658729358">Högst sex sparade skrivbord tillåts. Du måste ta bort ett skrivbord innan du kan spara ett nytt.</translation>
@@ -693,6 +695,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4860284199500934869">Kontrollera nätverksanslutningen om du vill ladda ned <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Ett nytt nedladdningsförsök görs senare. Tal skickas till Google för bearbetning tills nedladdningen har slutförts.</translation>
 <translation id="4864369630010738180">Loggar in ...</translation>
+<translation id="4864648187878336334">Skrivbord 15</translation>
 <translation id="4868492592575313542">aktiverad</translation>
 <translation id="4872237917498892622">Alt + Sök eller Skift</translation>
 <translation id="4881695831933465202">Öppna</translation>
@@ -719,6 +722,7 @@ Anslut enheten till en strömkälla.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Skrivbord 16</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
 <translation id="5016558321564993266">Aktivera och inaktivera märkpennan. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Tiden är slut</translation>
@@ -734,6 +738,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5098537242461068432">Skrivbord och fönster öppnades igen</translation>
 <translation id="5104236669533825617">Det går inte att skapa en screencast</translation>
 <translation id="5107522548814527560">Webb</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Visa nästa månad</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
 <translation id="5147567197700016471">Olåst</translation>
@@ -821,6 +826,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> begär din uppmärksamhet.</translation>
+<translation id="5662075790140998213">Skrivbord 10</translation>
 <translation id="5662709761327382534">Inspelning med mikrofon <ph name="CURRENT_STATE" />, Tryck på Retur för att slå <ph name="NEW_STATE" /> mikrofoninspelning</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5673434351075758678">Från <ph name="FROM_LOCALE" /> till <ph name="TO_LOCALE" /> efter synkronisering av inställningarna.</translation>
@@ -1020,6 +1026,8 @@ Nyligen installerad</translation>
 <translation id="6753390234084146956">flikar</translation>
 <translation id="6757237461819837179">Ingen media spelas upp</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
+<translation id="6781002679438061620">Skrivbord 9</translation>
+<translation id="6782182743534150858">Skrivbord 13</translation>
 <translation id="6786750046913594791">Stäng mappen</translation>
 <translation id="6787595647772650851">Återställ den senaste sessionen</translation>
 <translation id="6790428901817661496">Spela</translation>
@@ -1081,6 +1089,7 @@ Nyligen installerad</translation>
 <translation id="7098053464892629930">Du hittar alla tillgängliga funktioner om du laddar ned appen för <ph name="NAME" /> på Google Play</translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
 <translation id="7106330611027933926">Visa skrivbordsfält</translation>
+<translation id="7116969082764510092">Skrivbord 11</translation>
 <translation id="7118268675952955085">skärmbild</translation>
 <translation id="7126996685418858413">Öppnades under den senaste veckan</translation>
 <translation id="7130207228079676353">MEST TROLIGA</translation>
@@ -1179,6 +1188,7 @@ Nyligen installerad</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7670953955701272011">Öppna det här datumet i Google Kalender</translation>
 <translation id="7671610481353807627">Apparna har sorterats efter färg</translation>
+<translation id="7672095158465655885">Ansluten till <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Indata från kameran har ställts in på <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lägg till nytt mobilnätverk</translation>
@@ -1464,5 +1474,6 @@ Nyligen installerad</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultat visas för <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Liggande</translation>
 <translation id="990277280839877440">Fönstret <ph name="WINDOW_TITILE" /> har stängts.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Få de senaste funktionerna och säkerhetsförbättringarna. Uppdateringar görs i bakgrunden.</translation>
 </translationbundle>

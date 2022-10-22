@@ -277,6 +277,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1244303850296295656">Erro na extensão</translation>
 <translation id="1245628370644070008">Recuperação de dados locais</translation>
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem retornou um código de erro <ph name="HTTP_ERROR" />. Entre em contato com o administrador.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{As notificações de 1 site foram bloqueadas}one{As notificações de {NUM_SITES} site foram bloqueadas}other{As notificações de {NUM_SITES} sites foram bloqueadas}}</translation>
 <translation id="1251366534849411931">Chave de abertura esperada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Essa ação vai apagar <ph name="TOTAL_USAGE" /> de dados de armazenados por sites e apps instalados</translation>
 <translation id="1251578593170406502">Procurando redes de dados móveis…</translation>
@@ -595,6 +596,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1552752544932680961">Gerenciar extensão</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1555130319947370107">Azul</translation>
+<translation id="1556127816860282890">A atividade em segundo plano e alguns efeitos visuais, como a rolagem suave, podem ser limitados</translation>
 <translation id="1556537182262721003">Não foi possível mover o diretório de extensões para o perfil.</translation>
 <translation id="1558391695376153246">Fechar guias anônimas</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -1657,6 +1659,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2476974672882258506">Desligue o Windows para desinstalar o <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">A leitura automática foi desativada porque você configurou vários interruptores.</translation>
 <translation id="2478176599153288112">Permissões de arquivos de mídia para "<ph name="EXTENSION" />"</translation>
+<translation id="24786041351753425">Ativar o serviço de recuperação de dados.</translation>
 <translation id="2480868415629598489">Modificar os dados que você copia e cola</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2482895651873876648">A guia foi movida para o grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
@@ -4222,6 +4225,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4901154724271753917">Mostrar guias fechadas recentemente</translation>
 <translation id="4901309472892185668">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política baixada do servidor é inválida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Esse modo aumenta a duração da bateria, limitando a atividade em segundo plano e os efeitos visuais, como a rolagem suave.</translation>
 <translation id="4906490889887219338">Configurar ou gerenciar compartilhamentos de arquivos em rede. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Escolha quando esta extensão pode ler e alterar os dados do site</translation>
 <translation id="4907161631261076876">Esse arquivo não é transferido com frequência e pode ser perigoso.</translation>
@@ -5329,6 +5333,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5971037678316050792">Controlar estado e pareamento do adaptador Bluetooth</translation>
 <translation id="597235323114979258">Ver mais destinos</translation>
 <translation id="5972543790327947908">Alguns links com suporte ainda serão abertos no app <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> ou <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">Mais ações para o site <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Serviço sem operação</translation>
 <translation id="5972708806901999743">Mover para a parte superior</translation>
 <translation id="5972826969634861500">Iniciar o <ph name="PRODUCT_NAME" /></translation>
@@ -8517,6 +8522,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989359959810288806">Atualizar status do tethering</translation>
 <translation id="8991520179165052608">O site pode usar seu microfone</translation>
+<translation id="8993059306046735527">Se você esquecer a senha do <ph name="DEVICE_TYPE" />, ainda poderá restaurar seus dados locais. Faça login na sua Conta do Google ou use a recuperação de conta.</translation>
 <translation id="899384117894244799">Remover usuário restrito</translation>
 <translation id="899403249577094719">URL base do certificado do Netscape</translation>
 <translation id="899657321862108550">Seu Google Chrome em qualquer lugar</translation>
@@ -8616,6 +8622,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9078316009970372699">Desativar tethering instantâneo</translation>
 <translation id="9078842827190780028">Ver mais resultados da pesquisa no painel lateral</translation>
 <translation id="9079267182985899251">Em breve, esta opção não estará mais disponível. Para fazer a apresentação de uma guia, use o <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">A Economia de memória libera memória de guias inativas para que ela possa ser usada por guias ativas e outros apps.</translation>
 <translation id="9080971985541434310">Faz uma estimativa dos seus interesses: o Chrome pode fazer uma estimativa dos seus interesses</translation>
 <translation id="9081543426177426948">Os sites que você acessa não são salvos no modo de navegação anônima</translation>
 <translation id="9084064520949870008">Abrir como janela</translation>
@@ -8805,6 +8812,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="964790508619473209">Disposição da tela</translation>
 <translation id="965211523698323809">Envie e receba mensagens de texto no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar um problema com o Google Cast</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Revise 1 site que enviou muitas notificações recentemente}one{Revise {NUM_SITES} site que enviou muitas notificações recentemente}other{Revise {NUM_SITES} sites que enviaram muitas notificações recentemente}}</translation>
 <translation id="967398046773905967">Não permitir que nenhum site acesse dispositivos HID</translation>
 <translation id="967624055006145463">Dados armazenados</translation>
 <translation id="96774243435178359">Impressoras gerenciadas</translation>

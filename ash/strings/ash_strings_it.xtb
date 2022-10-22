@@ -433,6 +433,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3413817803639110246">Niente da vedere in questo momento</translation>
 <translation id="3428447136709161042">Disconnettiti da <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Scorri da destra per tornare indietro</translation>
+<translation id="3431517721463707585">Scrivania 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Modifica promemoria</translation>
 <translation id="3435967511775410570">Impronta riconosciuta</translation>
@@ -674,6 +675,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (sinistro)</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
+<translation id="4735944890391795473">Scrivania 12</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4740516757091333363">Vuoi eliminare la scrivania salvata?</translation>
 <translation id="4752784485658729358">Sono consentite solo 6 scrivanie salvate. Rimuovi una scrivania per salvarne una nuova.</translation>
@@ -694,6 +696,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4860284199500934869">Controlla la tua connessione a Internet per scaricare il file <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Verrà effettuato un tentativo di download in un secondo tempo. Ciò che dici verrà inviato a Google per l'elaborazione fino al completamento del download.</translation>
 <translation id="4864369630010738180">Accesso in corso...</translation>
+<translation id="4864648187878336334">Scrivania 15</translation>
 <translation id="4868492592575313542">attivato</translation>
 <translation id="4872237917498892622">Alt+tasto per la ricerca o Maiusc</translation>
 <translation id="4881695831933465202">Apri</translation>
@@ -720,6 +723,7 @@ Collega il dispositivo all'alimentazione.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Scrivania 16</translation>
 <translation id="5003993274120026347">Frase successiva</translation>
 <translation id="5016558321564993266">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Tempo scaduto</translation>
@@ -735,6 +739,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5098537242461068432">Scrivania e finestre riaperte</translation>
 <translation id="5104236669533825617">Impossibile creare lo screencast</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Mostra mese successivo</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
@@ -822,6 +827,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> richiede la tua attenzione.</translation>
+<translation id="5662075790140998213">Scrivania 10</translation>
 <translation id="5662709761327382534">Registrazione con microfono <ph name="CURRENT_STATE" />, Premi Invio per attivare la registrazione del microfono <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5673434351075758678">Da "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" dopo la sincronizzazione delle impostazioni.</translation>
@@ -1021,6 +1027,8 @@ Nuova installazione</translation>
 <translation id="6753390234084146956">schede</translation>
 <translation id="6757237461819837179">Nessun contenuto multimediale in riproduzione</translation>
 <translation id="6777216307882431711">Alimentazione dei dispositivi USB-C collegati</translation>
+<translation id="6781002679438061620">Scrivania 9</translation>
+<translation id="6782182743534150858">Scrivania 13</translation>
 <translation id="6786750046913594791">Chiudi cartella</translation>
 <translation id="6787595647772650851">Ripristina l'ultima sessione</translation>
 <translation id="6790428901817661496">Riproduci</translation>
@@ -1082,6 +1090,7 @@ Nuova installazione</translation>
 <translation id="7098053464892629930">Scarica l'app per <ph name="NAME" /> su Google Play per vedere tutte le funzionalità disponibili</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta posteriore sinistra)</translation>
 <translation id="7106330611027933926">Mostra deskbar</translation>
+<translation id="7116969082764510092">Scrivania 11</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7126996685418858413">Aperto la settimana scorsa</translation>
 <translation id="7130207228079676353">PIÙ PROBABILI</translation>
@@ -1180,6 +1189,7 @@ Nuova installazione</translation>
 <translation id="7662283695561029522">Tocca per configurare</translation>
 <translation id="7670953955701272011">Apri questa data in Google Calendar</translation>
 <translation id="7671610481353807627">Le app sono ordinate per colore</translation>
+<translation id="7672095158465655885">Connessione a <ph name="NAME" /> stabilita, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Dati fotocamera impostati su <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
@@ -1464,5 +1474,6 @@ Nuova installazione</translation>
 <translation id="974545358917229949">Visualizzazione di <ph name="RESULT_COUNT" /> risultati per <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Orizzontale</translation>
 <translation id="990277280839877440">Finestra <ph name="WINDOW_TITILE" /> chiusa.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti. Gli aggiornamenti vengono eseguiti in background.</translation>
 </translationbundle>

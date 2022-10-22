@@ -565,6 +565,9 @@
 <translation id="1587585749332985896">ヘッドレス モードの使用を許可しない</translation>
 <translation id="1588240398285670601">ブラウザの設定</translation>
 <translation id="1592334921377856028">デバイスのハードウェア ステータスの報告を無効にする</translation>
+<translation id="1595013560176869154">このポリシーを有効に設定した場合、強度の低い PIN が許可されます。強度の低い PIN の特性としては、数字がすべて同じ（1111 など）、連続した数字（1234、4321 など）、一般によく使われる並びの PIN などが挙げられます。このポリシーを無効に設定した場合、ユーザーは強度が低く推測されやすい PIN を設定できません。
+
+      このポリシーを未設定のままにした場合、ユーザーが強度の低い PIN を設定すると、エラーではなく警告が表示されます。</translation>
 <translation id="1597684038583138808">クイック アンサーの定義を有効にする</translation>
 <translation id="1598258379228800626">ログイン画面でキーボード フォーカスによるハイライト表示を有効にする</translation>
 <translation id="1599424828227887013">Android デバイスで指定の発行元に対してサイト分離を有効にする</translation>
@@ -984,6 +987,16 @@
 <translation id="1988371335297483117"><ph name="PRODUCT_OS_NAME" /> での自動更新ペイロードは HTTPS ではなく HTTP でダウンロードされます。これにより、HTTP ダウンロードの透過 HTTP キャッシングが可能になります。
 
       このポリシーを true に設定すると、<ph name="PRODUCT_OS_NAME" /> は HTTP 経由で自動更新ペイロードをダウンロードしようとします。このポリシーを false に設定するか、設定しない場合は、自動更新ペイロードのダウンロードに HTTPS が使用されます。</translation>
+<translation id="1988875629491580731"><ph name="WEBVIEW_PRODUCT_NAME" /> で認証用 URL の設定を指定できます。
+
+      認証用 URL は <ph name="WEBVIEW_PRODUCT_NAME" /> によって特別に扱われます。具体的には、認証中に <ph name="WEBVIEW_PRODUCT_NAME" /> のウェブページが認証用 URL に移動すると、この認証用 URL を処理できる ID プロバイダの認証システムアプリが起動されます。
+
+      ID プロバイダは、ID プロバイダの認証システムアプリを起動するこのフローを使用して、アプリ間での SSO 提供などのユースケースを可能にしたり、ゼロトラストのデバイス シグナルを収集して認証中のデバイスの状態を把握することでセキュリティを強化したりします。
+
+      デバイスに認証用 URL を処理するための有効なアプリがインストールされていない場合、ナビゲーションは <ph name="WEBVIEW_PRODUCT_NAME" /> で続行されます。
+
+      認証 URL のパターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定する必要があります。
+      </translation>
 <translation id="199011295049694531">デバイスのタイムゾーンに関する情報を報告します。
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
@@ -1587,9 +1600,14 @@
       このポリシーを無効に設定した場合、危険性のあるコマンドライン フラグ付きで Chrome が起動したときにセキュリティ警告は表示されません。
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、Chrome ブラウザ クラウド管理に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、この機能は MDM を介して管理されるか MCX を介してドメインに追加されたインスタンスでのみ使用できます。</translation>
+<translation id="2621290137818374425">このポリシーを設定した場合、指定した URL 内のホスト名について、Certificate Transparency（証明書の透明性）の開示要件が無効になります。ホストに対して間違って発行された証明書は検出が難しくなりますが、適切に公開されていないことを理由に通常であれば信頼できないものとして扱われる証明書でも、引き続き使用できるようになります。ポリシーを未設定のままにした場合、Certificate Transparency（証明書の透明性）に基づき開示が必要な証明書が開示されていなければ、<ph name="PRODUCT_NAME" /> で信頼されません。
+
+      URL のパターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定します。ただし、スキーム、ポート、パスに関係なく特定のホスト名に対して証明書が有効になるため、<ph name="PRODUCT_NAME" /> で考慮されるのは URL のホスト名の部分のみです。ワイルドカードを使ったホストの指定はサポートされていません。</translation>
 <translation id="2623014935069176671">最初のユーザー操作を待機する</translation>
 <translation id="2625026032335150744">既存の閲覧データを保持するオプションをデフォルトでオンにする</translation>
 <translation id="2625398797484317969">クイック アンサーの設定を管理します。</translation>
+<translation id="2626748638108838507">現在の OS が対象バージョンより新しい場合は、デバイスを対象バージョンにロールバックします。デバイスは出荷時設定にリセットされますが、証明書以外のデバイス全体のネットワーク構成は保持され、自動的に再登録されます。
+          このポリシーは、<ph name="PRODUCT_OS_NAME" /> バージョン 106 以降へのロールバックでサポートされます。これより古いバージョンのクライアントでは、ネットワーク構成が保持されない可能性があり、デバイスは自動的に再登録されません。</translation>
 <translation id="262740370354162807"><ph name="CLOUD_PRINT_NAME" /> へのドキュメントの送信を有効にします。</translation>
 <translation id="2633084400146331575">音声フィードバックを有効にする</translation>
 <translation id="2633907568797306353">スマートフォン ハブの通知の有効化を許可する</translation>
@@ -1922,6 +1940,13 @@
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="REQUIRED_PLATFORM_VERSION" /> マニフェスト キーは無視され、自動更新は通常どおりに進められます。
 
       警告: デバイスがソフトウェアのアップデートと重要なセキュリティ修正を取得できなくなる可能性があるため、<ph name="PRODUCT_OS_NAME" /> バージョンの制御をキオスクアプリに委任することはやめてください。<ph name="PRODUCT_OS_NAME" /> バージョンの制御を委任すると、ユーザーが危険にさらされる恐れがあります。</translation>
+<translation id="299446489108785864"><ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> を適用する URL を指定した URL リストです。このポリシーは、自動的に開くかどうかについてユーザーが設定した値には影響しません。
+
+      このポリシーを設定した場合、URL がこの設定に含まれていて、ファイル形式が <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> のリストで指定されているファイルのみがこのポリシーにより自動的に開きます。どちらかの条件を満たさない場合は、ダウンロード ファイルがポリシーにより自動的に開くことはありません。
+
+      このポリシーを設定しない場合、<ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> で指定されているファイル形式のダウンロード ファイルはすべて自動的に開きます。
+
+      URL のパターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定する必要があります。</translation>
 <translation id="2999597974578784672">Cookie の設定を許可するサイトを指定する URL パターンのリストを設定できます。
 
           このポリシーが未設定のままの場合、すべてのサイトでグローバルなデフォルト値（<ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> ポリシーで値が設定されていればその値、設定されていなければユーザーの個人設定の値）が使用されます。
@@ -2187,6 +2212,15 @@
 <translation id="3219421230122020860">シークレット モードを利用可能にする</translation>
 <translation id="3220624000494482595">キオスクアプリが Android アプリの場合は、このポリシーを <ph name="TRUE" /> に設定しても、アプリによって <ph name="PRODUCT_OS_NAME" /> のバージョンを制御することはできません。</translation>
 <translation id="322359555555487980"><ph name="PRODUCT_OS_NAME" /> に適用可能なバリエーションを管理する</translation>
+<translation id="3224783535003963324">このポリシーはサポートが終了しています。代わりに <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
+
+      このポリシーでは、URL 拒否リストの例外としてアクセスを許可する URL のリストを指定できます。リストの指定形式については、このポリシーの説明をご覧ください。このポリシーは、たとえば <ph name="URL_BLOCKLIST_POLICY_NAME" /> で「*」と設定してすべてのリクエストをブロックし、限定された一部の URL のみアクセスを許可する場合に使用します。つまり、特定のスキームや、他のドメインのサブドメイン、ポート、具体的なパスについて例外を設定します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。許可リストは拒否リストより優先されます。このポリシーで指定できる URL は最大 1,000 件です。
+
+      また、このポリシーでは、リストで指定したプロトコル（「tel:」、「ssh:」など）のプロトコル ハンドラとして登録されている外部アプリケーションをブラウザから自動で呼び出すことも許可できます。
+
+      このポリシーを未設定のままにした場合、例外は設定されません。
+
+      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="3229163415739929305">ポリシーを有効に設定するか未設定のままにした場合、ブラウジングの利便性向上を目的としたページ読み込みメタデータと機械学習モデルの取得を許可します。
       このポリシーを無効に設定した場合、一部の機能が正常に動作しない可能性があります。</translation>
 <translation id="3231837273069128027">このポリシーでは、<ph name="TPM_FIRMWARE_UPDATE_TPM" /> ファームウェアの更新処理について設定します。
@@ -2492,6 +2526,37 @@
 <translation id="3524204464536655762">すべてのサイトに対して WebUSB API 経由での USB デバイスへのアクセスを許可しない</translation>
 <translation id="3526752951628474302">白黒印刷のみ</translation>
 <translation id="3528000905991875314">別のエラー ページを有効にする</translation>
+<translation id="3530249698314520116"><ph name="PRODUCT_OS_NAME" /> でデータ漏洩を防止するルールのリストを設定します。
+      データ漏洩は、データのコピーと貼り付け、ファイルの転送、印刷、画面の共有、スクリーンショットの撮影などで起こる可能性があります。
+
+      ルールは次の項目で構成されます。
+      - 参照元の URL のリスト。データを機密として扱い、制限を適用する参照元を指定します。
+      - 参照先の URL またはコンポーネントのリスト。機密データの共有を許可または禁止する参照先を指定します。
+      - 参照元のデータに適用する制限のリスト。
+
+      ルールでは次の項目を管理できます。
+      - 参照元と参照先の間で共有するクリップボード データ。
+      - 参照元のデータのスクリーンショット撮影。
+      - 参照元のデータの印刷。
+      - 参照元のデータが表示されるプライバシー画面。
+      - 参照元のデータの画面共有。
+      - 参照先に転送する際に参照元からダウンロードできるファイル。<ph name="PRODUCT_OS_NAME" /> バージョン 108 以降でサポートされます。
+
+      制限レベルは「BLOCK」、「ALLOW」、「REPORT」、「WARN」に設定できます。
+      - 制限レベルを「BLOCK」に設定した場合、該当の項目は許可されません。
+      <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> を True に設定した場合、ブロックされた項目操作は管理者に報告されます。
+      - 制限レベルを「ALLOW」に設定した場合、該当の項目が許可されます。
+
+      - 制限レベルを「REPORT」に設定し、<ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> を True に設定した場合、該当の項目は管理者に報告されます。
+      - 制限レベルを「WARN」に設定した場合、警告が表示され、項目によっては、実行するかキャンセルするか選択を求められます。<ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />を True に設定した場合、警告の表示が管理者に報告されます。該当の項目を実行した場合も報告されます。
+
+      注:
+      - 「PRIVACY_SCREEN」の制限を設定しても、プライバシー画面はオンにできますが、制限クラスを「BLOCK」に設定した場合はオンにできなくなります。
+      - 「CLIPBOARD」または「FILES」の制限を設定した場合、参照先を空白にすることはできませんが、他の制限については参照先を空白にできます。
+      - 「DRIVE」と「USB」の参照先は「CLIPBOARD」の制限では無視されます。
+      - URL のパターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定します。
+
+      ポリシーを未設定のままにした場合、制限は適用されません。</translation>
 <translation id="3531084733660068324">保護者向け管理ツールの設定</translation>
 <translation id="353611922042274900">ログイン画面に常にシステム情報を表示する</translation>
 <translation id="3536263244905016305">ウェブプロキシ自動検出（WAPD）の最適化を無効にする</translation>
@@ -2653,6 +2718,17 @@
       このポリシーを無効に設定すると、デバイスのロック解除時にパスワードの入力をユーザーに要求しません。
 
       このポリシーを未設定のままにすると、ユーザーはデバイスのロック解除時にパスワードの入力を要求するかどうかを選択できます。</translation>
+<translation id="3729689441404871493">ログイン画面とロック画面で <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> を有効にする URL のリストを指定します。
+
+      このポリシーでは、パソコンから一連のシグナルを受け取る認証フローに含める URL を指定できます。
+
+      このポリシーを未設定のままにするか空白にした場合は、どのエンドポイントも、認証フローを開始したり、パソコンからシグナルを受け取ったりできません。
+
+      注: ワイルドカード（<ph name="WILDCARD_VALUE" />）は使用可能です。
+
+      このポリシーは、ログイン画面とロック画面の認証フローにのみ影響します。セッション中の認証フローを変更するには、<ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。</translation>
 <translation id="3729937245044939404">このポリシーは M70 でサポート終了となりました。代わりに <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> と <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> を使用してください。
 
       <ph name="PRODUCT_NAME" /> の自動入力機能を有効にし、ユーザーが以前に保存した情報（住所やクレジット カード情報など）を使用してウェブフォームに自動入力できるようにします。
@@ -3199,6 +3275,13 @@
       このポリシーを未設定のままにした場合、ウェブサイトによるアクセス要求は許可されますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="4282243913059705499">ツールバーに <ph name="PRODUCT_NAME" /> アイコンを常に表示する</translation>
 <translation id="4285674129118156176">外部のユーザーに ARC の使用を許可する</translation>
+<translation id="4287344576768105337">このポリシーでは、禁止した URL のリストからのウェブページの読み込みを防止できます。このリストには、禁止する URL のパターンを指定します。このポリシーを未設定のままにした場合、ブラウザですべての URL が許可されます。URL のパターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定します。<ph name="URL_ALLOWLIST_POLICY_NAME" /> で最大 1,000 件の例外を定義できます。
+
+      <ph name="PRODUCT_NAME" /> バージョン 73 以降では、「javascript://*」の URL をブロックできます。ただし、ブロックされるのはアドレスバーに入力された（またはブックマークレットなどの）JavaScript のみです。ページ内の JavaScript URL に動的に読み込まれるデータが含まれる場合、このポリシーは適用されません。たとえば、「example.com/abc」をブロックした場合でも、「example.com」では XMLHTTPRequest を使用して「example.com/abc」を読み込むことができます。
+
+      <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
+
+      注: 「chrome://*」と「chrome-untrusted://*」の内部 URL をブロックすると、予期しないエラーが発生したり、特殊なケースでは回避されたりする可能性があります。内部 URL をブロックする代わりに、使用できる具体的なポリシーがないか確認してください。一般的なケース:「chrome://settings/certificates」をブロックする代わりに <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> を使用します。「chrome-untrusted://crosh」をブロックする代わりに <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> を使用します。</translation>
 <translation id="428948795004445932">ネットワーク データをサンプリングして収集する間隔です。指定できる最小値は 1 分です。
 
       設定しない場合は、デフォルトの 10 分が適用されます。</translation>
@@ -4145,6 +4228,15 @@
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" /> のライセンスキー</translation>
 <translation id="5423197884968724595">Android WebView の制限名:</translation>
 <translation id="5424147596523390018">すべてのカラー印刷モードを許可する</translation>
+<translation id="5426530943254798290">このポリシーでは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> の例外としてアクセスを許可する URL のリストを指定できます。リストの指定形式については、このポリシーの説明をご覧ください。このポリシーは、たとえば <ph name="URL_BLOCKLIST_POLICY_NAME" /> で「*」と設定してすべてのリクエストをブロックし、限定された一部の URL のみアクセスを許可する場合に使用します。つまり、特定のスキームや、他のドメインのサブドメイン、ポート、具体的なパスについて例外を設定します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。<ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> より優先されます。このポリシーで指定できる URL は最大 1,000 件です。
+
+      また、このポリシーでは、リストで指定したプロトコル（「tel:」、「ssh:」など）のプロトコル ハンドラとして登録されている外部アプリケーションをブラウザから自動で呼び出すことも許可できます。
+
+      このポリシーを未設定のままにした場合、<ph name="URL_BLOCKLIST_POLICY_NAME" /> に例外は設定されません。
+
+      <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
+
+      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="5427879482805712214">このポリシーでは、ログイン画面でユーザーを表すアバター画像を設定できます。このポリシーを設定するには、<ph name="PRODUCT_OS_NAME" /> によるアバター画像のダウンロード元の URL と、ダウンロードの整合性の確認に使用する暗号化ハッシュを指定します。画像は JPEG 形式、サイズは 512 KB 以下とし、URL には認証なしでアクセスできる必要があります。
 
       アバター画像はダウンロードされ、キャッシュに保存されます。URL またはハッシュが変更された場合は常に再ダウンロードされます。
@@ -4233,6 +4325,7 @@
       このポリシーを有効に設定した場合、自動選択ポリシーが複数の証明書と一致した場合に常にクライアント証明書を選択するよう求めるメッセージがユーザーに表示されます。
       このポリシーを無効に設定するか未設定のままにした場合、ログイン画面にクライアント証明書を選択するよう求めるメッセージはユーザーに表示されません。
       注: このポリシーは、プライバシーに危険が及ぶ可能性があり（デバイス全体のTPM 式証明書が使用されている場合）、ユーザー エクスペリエンスの低下につながるため、一般的には推奨されません。</translation>
+<translation id="5503933085302625442">OS を対象バージョンにロールバックしない。</translation>
 <translation id="55057839818162162"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索を許可する</translation>
 <translation id="55057971769693300">カーソルのハイライト表示を無効にする</translation>
 <translation id="5508307164752647432">Kerberos 機能を有効にする</translation>
@@ -4868,6 +4961,11 @@
 <translation id="6233173491898450179">ダウンロード ディレクトリを設定する</translation>
 <translation id="6234167788423986573">URL キーによる匿名化データの収集を常に無効にする</translation>
 <translation id="6234177445959386333">パスワード保護サービスでパスワードのソルトハッシュを取得する企業のログイン URL のリストを設定します。</translation>
+<translation id="6236880578835238059">デバイスがロック画面から復帰するとき、通知なしでの全画面モードの継続を許可する URL のリストを設定します。
+
+          通常、フィッシング攻撃のリスクを軽減するため、ロック画面から復帰する際、全画面モードはオフになります。このポリシーを使用すると、信頼できる提供元として、ロック解除時に全画面モードの継続を許可する URL を指定できます。URL パターンのリストは、https://support.google.com/chrome/a?p=url_blocklist_filter_format で定められている形式で指定します。たとえば、すべての URL に一致するワイルドカード文字「<ph name="WILDCARD_VALUE" />」を指定すると、ロック解除時に常に全画面モードを継続し、通知を一切無効にすることができます。
+
+          このポリシーを空のリストに設定するか未設定のままにした場合は、どの URL に対しても、通知なしでの全画面モードの継続を許可しません。</translation>
 <translation id="6242147107333796512">障害レポートに関する情報（リモート ID、取得日時、原因など）を報告します。
 
 
@@ -5087,6 +5185,13 @@
 <translation id="6446366416439249472">モバイル接続を介した Google ドライブの同期を無効にする</translation>
 <translation id="6447948611083700881">バックアップと復元が無効</translation>
 <translation id="6449476513004303784">証明書の管理をユーザーに許可しない</translation>
+<translation id="6449541189334851559"><ph name="GOOGLE_CALENDAR_NAME" /> 統合を有効にすると、<ph name="PRODUCT_OS_NAME" /> ユーザーは <ph name="GOOGLE_CALENDAR_NAME" /> から予定を取得して、システム ステータスバーの <ph name="PRODUCT_OS_NAME" /> カレンダー ウィジェットに表示できるようになります。
+
+          このポリシーを有効にした場合、<ph name="PRODUCT_OS_NAME" /> デバイスでは <ph name="GOOGLE_CALENDAR_NAME" /> の予定を取得し、ユーザーがログインしているときにシステム ステータスバーの <ph name="PRODUCT_OS_NAME" /> カレンダー ウィジェットに表示することができます。
+
+          このポリシーを無効にした場合、<ph name="PRODUCT_OS_NAME" /> デバイスでは <ph name="GOOGLE_CALENDAR_NAME" /> の予定を取得し、ユーザーがログインしているときにシステム ステータスバーの <ph name="PRODUCT_OS_NAME" /> カレンダー ウィジェットに表示することはできません。
+
+          このポリシーを未設定のままにした場合、<ph name="GOOGLE_CALENDAR_NAME" /> 機能は企業ユーザーに対してデフォルトで有効になります。</translation>
 <translation id="6452882999388592166">有効に設定すると、起動時に組み込みの CryptoToken コンポーネント拡張機能が読み込まれます。無効に設定するか未設定のままにした場合、ブラウザの起動時に CryptoToken は読み込まれません。このポリシーは、M106 での CryptoToken 削除の副作用である、「chrome.runtime」が定義されていないため動作しないサイトに一時的に対応するためのものです。ウェブサイトは、「chrome.runtime」が無条件に定義されている状態を前提としないよう設定する必要があります。</translation>
 <translation id="6453641799812499182">新しい <ph name="CORS" /> の実装で <ph name="CORS" /> チェックの緩和措置を有効にする</translation>
 <translation id="645425387487868471"><ph name="PRODUCT_NAME" /> への強制ログインを有効にする</translation>
@@ -5538,6 +5643,13 @@
 <translation id="68818134518270542">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のロック画面でメモアプリとして有効にできるアプリを指定できます。任意のメモアプリをロック画面に設定すると、そのアプリを起動するための UI 要素が画面に表示されます。アプリを起動すると、ロック画面の上部にウィンドウが表示され、このコンテキストにメモを作成できます。アプリを使用して、作成したメモをメインのユーザー セッションに読み込むことができます（セッションがロックされていない場合）。ロック画面でサポートされているのは <ph name="PRODUCT_NAME" /> のメモアプリのみです。このポリシーを設定すると、アプリの拡張機能 ID がポリシーのリスト値に含まれている場合に、ユーザーはロック画面でアプリを有効にできます。このため、このポリシーを空のリストに設定すると、メモアプリはロック画面で無効になります。ポリシーでアプリ ID を指定しても、ユーザーがロック画面でそのアプリをメモアプリとして有効にできるとは限りません。たとえば、<ph name="PRODUCT_NAME" /> 61 では、使用できる一連のアプリに関して、さらにプラットフォームによる制限が適用されます。このポリシーを未設定のままにした場合、ユーザーがロック画面で有効にできる一連のアプリに関して、ポリシーを通じて適用される制限はありません。</translation>
 <translation id="6882028194958060206">Flash コンテンツ設定をすべてのコンテンツに拡張する（サポート終了）</translation>
 <translation id="6889123056995503704">ユーザーがチャンネル ダウングレードの動作を決定する</translation>
+<translation id="6890430839784293048">このポリシーはサポートが終了しています。代わりに <ph name="URL_BLOCKLIST_POLICY_NAME" /> ポリシーを使用してください。
+
+      このポリシーでは、禁止した URL のリストからのウェブページの読み込みを防止できます。このリストには、禁止する URL のパターンを指定します。このポリシーを未設定のままにした場合、ブラウザですべての URL が許可されます。URL のパターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定します。<ph name="URL_ALLOWLIST_POLICY_NAME" /> で最大 1,000 件の例外を定義できます。
+
+      <ph name="PRODUCT_NAME" /> バージョン 73 以降では、「javascript://*」の URL をブロックできます。ただし、ブロックされるのはアドレスバーに入力された（またはブックマークレットなどの）JavaScript のみです。ページ内の JavaScript URL に動的に読み込まれるデータが含まれる場合、このポリシーは適用されません。たとえば、「example.com/abc」をブロックした場合でも、「example.com」では XMLHTTPRequest を使用して「example.com/abc」を読み込むことができます。
+
+      注: 「chrome://*」の内部 URL をブロックすると、予期しないエラーが発生する可能性があります。</translation>
 <translation id="6894178810167845842">新しいタブページ URL</translation>
 <translation id="6897730193187922386"><ph name="CLOUD_PRINT_NAME" /> のサポート終了メッセージの表示を管理する</translation>
 <translation id="6899705656741990703">プロキシ設定を自動検出する</translation>
@@ -5574,6 +5686,7 @@
 
       注: このポリシーを未設定のままにするか true に設定しても <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> が false に設定されている場合、ゲストモードのプロフィールで <ph name="LACROS_NAME" /> を使用することはできません。</translation>
 <translation id="6920640961852058581">Kerberos チケットのデフォルト構成を変更する</translation>
+<translation id="692096803256767290">OS を対象バージョンにロールバックする</translation>
 <translation id="6921544339867564740">Chrome OS 上で仮想マシンを実行することをデバイスに許可する</translation>
 <translation id="6922884955650325312"><ph name="FLASH_PLUGIN_NAME" /> プラグインをブロックする</translation>
 <translation id="6924223708804692571">言語のスペルチェックを自動的に無効にします。指定した言語のうち認識されないものは無視されます。
@@ -6230,6 +6343,11 @@
 <translation id="759957074386651883">セーフ ブラウジングの設定</translation>
 <translation id="7602621823177962064">デバイスのメモリ情報レポートを無効にする</translation>
 <translation id="7604169113182304895">このリストを使用するかどうかは Android アプリ側の選択となります。Android アプリにリストの使用を強制することはできません。</translation>
+<translation id="7608186022704392724">PIN の自動送信機能を使用すると、<ph name="PRODUCT_OS_NAME" /> での PIN の入力方法を変更できます。
+          パスワード入力に使用するのと同じテキスト欄を表示する代わりに、この機能では特別な UI を表示して、PIN に必要な桁数をユーザーに明示します。その結果、ユーザーの PIN の桁数は暗号化されたユーザーデータとは別に保存されます。6 桁～12 桁の PIN のみがサポートされます。このポリシーを true に設定した場合、ユーザーはロック画面とログイン画面で PIN を自動送信できます。
+          このポリシーを false に設定するか未設定のままにした場合、ユーザーはロック画面とログイン画面で PIN を自動送信できません。
+
+          このポリシーを設定した場合、ユーザーはこの機能を有効にできません。</translation>
 <translation id="7612157962821894603"><ph name="PRODUCT_NAME" /> 起動時にシステム全体のフラグを適用</translation>
 <translation id="7613115815080726221">ユーザー入力が行われなくなってからアイドル時のアクションを行うまでの時間（ミリ秒）</translation>
 <translation id="7614663184588396421">無効なプロトコル スキームのリスト</translation>
@@ -6811,6 +6929,17 @@
 <translation id="8274603902181597201">ユーザーの ecryptfs ホーム ディレクトリのデータをワイプして、ext4 で暗号化された新規のホーム ディレクトリから開始する。</translation>
 <translation id="8274926413890711289">詳細なレポート コントロールを有効にする</translation>
 <translation id="8278133379873210419">異なる生成元のサブフレームからトリガーされた JavaScript ダイアログを抑制します</translation>
+<translation id="8279037559659894049"><ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> を有効にする URL のリストを指定します。
+
+      このポリシーでは、パソコンから一連のシグナルを受け取る認証フローに含める URL を指定できます。
+
+      このポリシーを未設定のままにするか空白にした場合は、どのエンドポイントも、認証フローを開始したり、パソコンからシグナルを受け取ったりできません。
+
+      注: ワイルドカード（<ph name="WILDCARD_VALUE" />）は使用可能です。
+
+      ChromeOS では、このポリシーはリモート認証に関連付けられ、証明書が自動的に生成されてデバイス管理サーバーにアップロードされます。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。</translation>
 <translation id="8284296539558710573">クロスオリジンの HTTP 認証プロンプト</translation>
 <translation id="8284527236880877730"><ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> が無効になっている場合に、<ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> では、デバイスがプレゼンテーション モードのときに画面を暗くするまでの時間を調整する比率（%）を指定できます。時間が調整された場合は、画面オフまでの時間、画面ロックまでの時間、およびアイドル時間が調整され、画面を暗くするまでの時間との差が元の設定と同じに維持されます。
 

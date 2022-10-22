@@ -359,6 +359,7 @@
 <translation id="1803351196216024260">マイクの使用を要求できる</translation>
 <translation id="1807246157184219062">明</translation>
 <translation id="1807528111851433570">開始シート</translation>
+<translation id="181000283860817563">複数のサイトで価格をトラッキングする</translation>
 <translation id="1812527064848182527">横向き</translation>
 <translation id="1813414402673211292">閲覧履歴データを削除</translation>
 <translation id="182139138257690338">自動ダウンロード</translation>
@@ -2276,7 +2277,6 @@
 <translation id="7003335073762455340">この商品をトラッキングします。このページは <ph name="LAST_BOOKMARKS_FOLDER" /> に保存されます。</translation>
 <translation id="7004583254764674281">Windows Hello を使用してカードをすばやく確認する</translation>
 <translation id="7006930604109697472">このまま送信</translation>
-<translation id="7007006156138369007">複数のサイトで同時に価格を追跡する</translation>
 <translation id="7012363358306927923">中国銀聯</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>

@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">Уведомлений нет.</translation>
 <translation id="3428447136709161042">Отключиться от сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="3430396595145920809">Чтобы вернуться, проведите по экрану от правого края</translation>
+<translation id="3431517721463707585">Рабочий стол 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Изменить напоминание</translation>
 <translation id="3435967511775410570">Отпечаток распознан</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (левый)</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
+<translation id="4735944890391795473">Рабочий стол 12</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4740516757091333363">Удалить сохраненный рабочий стол?</translation>
 <translation id="4752784485658729358">Максимальное количество сохраненных рабочих столов – 6. Удалите один из них, чтобы сохранить новый.</translation>
@@ -693,6 +695,7 @@
 <translation id="4860284199500934869">Чтобы скачать файл <ph name="FILENAME" />, проверьте подключение к сети.</translation>
 <translation id="486056901304535126">Повторная попытка будет выполнена позже. Пока скачивание не завершится, записи с речью будут передаваться для обработки в Google.</translation>
 <translation id="4864369630010738180">Вход в систему...</translation>
+<translation id="4864648187878336334">Рабочий стол 15</translation>
 <translation id="4868492592575313542">включила</translation>
 <translation id="4872237917498892622">Alt + Search или Shift</translation>
 <translation id="4881695831933465202">Открыть</translation>
@@ -719,6 +722,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Рабочий стол 16</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
 <translation id="5016558321564993266">Статус фломастера: <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Время вышло</translation>
@@ -734,6 +738,7 @@
 <translation id="5098537242461068432">Рабочий стол и окна открыты повторно</translation>
 <translation id="5104236669533825617">Не удалось создать скринкаст</translation>
 <translation id="5107522548814527560">Интернет</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Показать следующий месяц</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5147567197700016471">Устройство разблокировано.</translation>
@@ -821,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5652575806481723716">Приложение "<ph name="FOCUSED_APP_NAME" />" требует вашего внимания.</translation>
+<translation id="5662075790140998213">Рабочий стол 10</translation>
 <translation id="5662709761327382534">Запись аудио с микрофона <ph name="CURRENT_STATE" />. Нажмите Ввод, чтобы она стала <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5673434351075758678">В результате синхронизации настроек язык изменен. Теперь используется <ph name="TO_LOCALE" />, а не <ph name="FROM_LOCALE" />.</translation>
@@ -1020,6 +1026,8 @@
 <translation id="6753390234084146956">вкладки</translation>
 <translation id="6757237461819837179">Контент не воспроизводится</translation>
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
+<translation id="6781002679438061620">Рабочий стол 9</translation>
+<translation id="6782182743534150858">Рабочий стол 13</translation>
 <translation id="6786750046913594791">Закрыть папку.</translation>
 <translation id="6787595647772650851">Восстановить последний сеанс</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
@@ -1081,6 +1089,7 @@
 <translation id="7098053464892629930">Скачайте приложение "<ph name="NAME" />" в Google Play, чтобы использовать все доступные функции</translation>
 <translation id="7098389117866926363">Устройство USB-C (порт слева на задней панели)</translation>
 <translation id="7106330611027933926">Показать панель</translation>
+<translation id="7116969082764510092">Рабочий стол 11</translation>
 <translation id="7118268675952955085">скриншот</translation>
 <translation id="7126996685418858413">Открыто на прошлой неделе</translation>
 <translation id="7130207228079676353">САМЫЕ ПОДХОДЯЩИЕ</translation>
@@ -1179,6 +1188,7 @@
 <translation id="7662283695561029522">Нажмите, чтобы настроить.</translation>
 <translation id="7670953955701272011">Посмотреть эту дату в Google Календаре</translation>
 <translation id="7671610481353807627">Приложения упорядочены по цвету.</translation>
+<translation id="7672095158465655885">Подключено к сети <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Используется камера "<ph name="CAMERA_NAME" />".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
@@ -1464,5 +1474,6 @@
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Получите доступ к новым функциям и улучшениям безопасности. Обновление выполняется в фоновом режиме.</translation>
 </translationbundle>

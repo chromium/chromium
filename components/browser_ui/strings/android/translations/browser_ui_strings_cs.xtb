@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Doporučeno pro nejlepší zážitek</translation>
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
 <translation id="1864927262126810325">Od <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Související weby mohou sledovat vaši aktivitu ve skupině</translation>
 <translation id="1887786770086287077">Přístup k poloze je v tomto zařízení vypnut. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
 <translation id="1919345977826869612">Reklamy</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Zahrnout všechny weby v této doméně</translation>
 <translation id="4883854917563148705">Spravovaná nastavení nelze resetovat</translation>
 <translation id="4887024562049524730">Předtím, než webům bude povoleno použít zařízení a data pro virtuální realitu, se zeptat (doporučeno)</translation>
+<translation id="4955223779495905865">Navštívený web může zahrnovat vložený obsah z jiných webů, například obrázky, reklamy a text. Kterýkoliv z těchto webů může ukládat soubory cookie a další data k personalizaci vašeho prostředí.</translation>
 <translation id="4962975101802056554">Zrušit všechna oprávnění pro zařízení</translation>
 <translation id="497421865427891073">Vpřed</translation>
 <translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Povolit webům přístup k senzorům pohybu (doporučeno)</translation>
 <translation id="5050380848339752099">Tento web chce sdílet informace s aplikací mimo anonymní režim.</translation>
 <translation id="5063480226653192405">Použití</translation>
+<translation id="5082281938627763039">Budou smazány soubory cookie a další data webu <ph name="FPS_MEMBER" /> a webů ve skupině vlastníka <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Mobilní web</translation>
 <translation id="509133520954049755">Vyžádat zobrazení na počítači</translation>
 <translation id="5100237604440890931">Sbaleno – kliknutím rozbalíte</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Zablokováno</translation>
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastavení zařízení Android</translation>
+<translation id="5706552988683188916">Touto akcí smažete soubory cookie a další data webu <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Tímto vymažete veškerá data a soubory cookie, které uložil web <ph name="ORIGIN" /> nebo jeho aplikace na ploše.</translation>
 <translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Zapne zvuk na konkrétním webu.</translation>
 <translation id="789180354981963912">V anonymním režimu blokovat soubory cookie třetích stran:</translation>
 <translation id="7940722705963108451">Připomenout</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="FPS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="FPS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="FPS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
 <translation id="7986741934819883144">Výběr kontaktu</translation>
 <translation id="7999064672810608036">Opravdu chcete vymazat všechna místní data tohoto webu, včetně souborů cookie, a resetovat všechna jeho oprávnění?</translation>
 <translation id="8007176423574883786">Vypnuto v tomto zařízení</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Zapnout mikrofon</translation>
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> web <ph name="FPS_OWNER" />}few{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> weby <ph name="FPS_OWNER" />}many{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webu <ph name="FPS_OWNER" />}other{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webů <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8676374126336081632">Vymazat vstup</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Odstranit</translation>
 <translation id="9019902583201351841">Spravováno vašimi rodiči</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Tento web je ve skupině, která může sledovat vaši aktivitu. Skupinu definoval vlastník <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Smazat soubory cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="913657688200966289">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>

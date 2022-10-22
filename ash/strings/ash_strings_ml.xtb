@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">ഇതുവരെ കാണാൻ ഒന്നുമില്ല</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-ൽ നിന്ന് വിച്ഛേദിക്കുക</translation>
 <translation id="3430396595145920809">തിരികെ പോകാൻ വലതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
+<translation id="3431517721463707585">ഡെസ്‌ക് 14</translation>
 <translation id="3434107140712555581">ബാറ്ററി: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">റിമൈൻഡർ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="3435967511775410570">ഫിംഗർപ്രിന്റ് തിരിച്ചറിഞ്ഞു</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ഇടത്)</translation>
 <translation id="4734965478015604180">സമാന്തരം</translation>
+<translation id="4735944890391795473">ഡെസ്‌ക് 12</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4740516757091333363">സംരക്ഷിച്ച ഡെസ്‌ക് ഇല്ലാതാക്കണോ?</translation>
 <translation id="4752784485658729358">സംരക്ഷിച്ച 6 ഡെസ്ക്കുകൾ മാത്രമേ അനുവദിക്കൂ. പുതിയൊരെണ്ണം സംരക്ഷിക്കാൻ ഒരു ഡെസ്‌ക് നീക്കം ചെയ്യുക.</translation>
@@ -693,6 +695,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യാൻ നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="486056901304535126">പിന്നീട് ഡൗൺലോഡ് ചെയ്യാൻ ശ്രമിക്കും. ഡൗൺലോഡ് പൂർത്തിയാകുന്നത് വരെ സംഭാഷണം പ്രോസസ് ചെയ്യുന്നതിനായി Google-ലേക്ക് അയയ്ക്കും.</translation>
 <translation id="4864369630010738180">സൈൻ ഇൻ ചെയ്യുന്നു...</translation>
+<translation id="4864648187878336334">ഡെസ്‌ക് 15</translation>
 <translation id="4868492592575313542">സജീവമാക്കി</translation>
 <translation id="4872237917498892622">Alt+തിരയൽ അല്ലെങ്കിൽ Shift</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
@@ -719,6 +722,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">ഡെസ്‌ക് 16</translation>
 <translation id="5003993274120026347">അടുത്ത വാചകം</translation>
 <translation id="5016558321564993266">മാർക്കർ ടോഗിൾ ചെയ്യുക. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">സമയം കഴിഞ്ഞു</translation>
@@ -734,6 +738,7 @@
 <translation id="5098537242461068432">ഡെസ്‌ക്കും വിൻഡോകളും വീണ്ടും തുറന്നു</translation>
 <translation id="5104236669533825617">സ്ക്രീൻകാസ്റ്റ് സൃഷ്ടിക്കാനാകുന്നില്ല</translation>
 <translation id="5107522548814527560">വെബ്</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">അടുത്ത മാസം കാണിക്കുക</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5147567197700016471">അൺലോക്ക് ചെയ്തു</translation>
@@ -821,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> നിങ്ങളുടെ ശ്രദ്ധ അഭ്യർത്ഥിക്കുന്നു.</translation>
+<translation id="5662075790140998213">ഡെസ്‌ക് 10</translation>
 <translation id="5662709761327382534">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക <ph name="CURRENT_STATE" />, മൈക്രോഫോൺ റെക്കോർഡിംഗ് <ph name="NEW_STATE" /> ആക്കാൻ Enter അമർത്തുക</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
 <translation id="5673434351075758678">നിങ്ങളുടെ ക്രമീകരണം സമന്വയിപ്പിച്ചതിന് ശേഷം, "<ph name="FROM_LOCALE" />" എന്നതിൽ നിന്ന്"<ph name="TO_LOCALE" />" എന്നതിലേക്ക്.</translation>
@@ -1020,6 +1026,8 @@
 <translation id="6753390234084146956">ടാബുകൾ</translation>
 <translation id="6757237461819837179">മീഡിയയൊന്നും പ്ലേ ചെയ്യുന്നില്ല</translation>
 <translation id="6777216307882431711">കണക്റ്റ് ചെയ്‍ത USB-C ഉപകരണങ്ങൾ ചാർജ് ചെയ്യുന്നു</translation>
+<translation id="6781002679438061620">ഡെസ്‌ക് 9</translation>
+<translation id="6782182743534150858">ഡെസ്‌ക് 13</translation>
 <translation id="6786750046913594791">ഫോൾഡർ അടയ്ക്കുക</translation>
 <translation id="6787595647772650851">അവസാന സെഷൻ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
@@ -1081,6 +1089,7 @@
 <translation id="7098053464892629930">ലഭ്യമായ എല്ലാ ഫീച്ചറുകളും കാണാൻ, Google play-യിൽ നിന്ന് <ph name="NAME" /> ആപ്പ് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7098389117866926363">USB-C ഉപകരണം (പുറകിൽ ഇടതുവശത്തെ പോർട്ട്)</translation>
 <translation id="7106330611027933926">ഡെസ്‌ക്ബാർ കാണിക്കുക</translation>
+<translation id="7116969082764510092">ഡെസ്‌ക് 11</translation>
 <translation id="7118268675952955085">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="7126996685418858413">കഴിഞ്ഞ ആഴ്‌ച തുറന്നത്</translation>
 <translation id="7130207228079676353">ഏറ്റവും കൂടുതൽ പേർ ലൈക്കുചെയ്‌‌തത്</translation>
@@ -1179,6 +1188,7 @@
 <translation id="7662283695561029522">കോൺഫിഗർ ചെയ്യുന്നതിന് ടാപ്പ് ചെയ്യുക</translation>
 <translation id="7670953955701272011">Google Calendar-ൽ ഈ തീയതി തുറക്കുക</translation>
 <translation id="7671610481353807627">നിറം അനുസരിച്ച് ആപ്പുകൾ അടുക്കിയിരിക്കുന്നു</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> എന്നതിലേക്ക് കണക്റ്റ് ചെയ്‌തു, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ക്യാമറാ ഇൻപുട്ട് ആയി <ph name="CAMERA_NAME" /> സജ്ജീകരിച്ചു.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">പുതിയ സെല്ലുലാർ നെറ്റ്‌വർക്ക് ചേർക്കുക</translation>
@@ -1464,5 +1474,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> എന്നതിനുള്ള <ph name="RESULT_COUNT" /> ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="98515147261107953">ലാന്‍ഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> വിൻഡോ അടച്ചു.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ഏറ്റവും പുതിയ ഫീച്ചറുകളും സുരക്ഷാ മെച്ചപ്പെടുത്തലുകളും നേടുക. അപ്‌ഡേറ്റുകൾ പശ്ചാത്തലത്തിൽ സംഭവിക്കുന്നു.</translation>
 </translationbundle>

@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">Դեռևս ոչինչ չկա</translation>
 <translation id="3428447136709161042">Անջատել «<ph name="NETWORK_NAME" />» ցանցից</translation>
 <translation id="3430396595145920809">Սահեցրեք մատը աջից՝ հետ գնալու համար</translation>
+<translation id="3431517721463707585">Աշխատասեղան 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Փոփոխել հիշեցումը</translation>
 <translation id="3435967511775410570">Մատնահետքը ճանաչվեց</translation>
@@ -672,6 +673,7 @@
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ձախ)</translation>
 <translation id="4734965478015604180">Հորիզոնական</translation>
+<translation id="4735944890391795473">Աշխատասեղան 12</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4740516757091333363">Ջնջե՞լ պահված աշխատասեղանը</translation>
 <translation id="4752784485658729358">Թույլատրվում է առավելագույնը 6 պահված աշխատասեղան։ Նոր աշխատասեղան պահելու համար հեռացրեք մեկ ուրիշը։</translation>
@@ -692,6 +694,7 @@
 <translation id="4860284199500934869">Ստուգեք կապը՝ <ph name="FILENAME" /> ֆայլը ներբեռնելու համար</translation>
 <translation id="486056901304535126">Ավելի ուշ մենք կփորձենք նորից ներբեռնել ֆայլերը։ Մինչև ներբեռնումը չավարտվի, խոսքի ձայնագրությունները կփոխանցվեն Google-ին՝ մշակման համար։</translation>
 <translation id="4864369630010738180">Մուտք...</translation>
+<translation id="4864648187878336334">Աշխատասեղան 15</translation>
 <translation id="4868492592575313542">ակտիվացված է</translation>
 <translation id="4872237917498892622">Alt+Search կամ Shift</translation>
 <translation id="4881695831933465202">Բացել</translation>
@@ -718,6 +721,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Աշխատասեղան 16</translation>
 <translation id="5003993274120026347">Հաջորդ նախադասությունը</translation>
 <translation id="5016558321564993266">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Ժամանակը սպառվեց</translation>
@@ -733,6 +737,7 @@
 <translation id="5098537242461068432">Աշխատասեղանն ու պատուհանները նորից բացվեցին</translation>
 <translation id="5104236669533825617">Չհաջողվեց ստեղծել սքրինքաստ</translation>
 <translation id="5107522548814527560">Վեբ</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Ցուցադրել հաջորդ ամիսը</translation>
 <translation id="5136175204352732067">Այլ ստեղնաշար է միացվել</translation>
 <translation id="5147567197700016471">Ապակողպվեց</translation>
@@ -820,6 +825,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Խոսափողի հարակցիչ</translation>
 <translation id="5652575806481723716">«<ph name="FOCUSED_APP_NAME" />» հավելվածը ձեզ ծանուցում է ցուցադրում։</translation>
+<translation id="5662075790140998213">Աշխատասեղան 10</translation>
 <translation id="5662709761327382534">Ձայնագրումը <ph name="CURRENT_STATE" />։ Սեղմեք «Enter» և կարգավիճակը դարձրեք «<ph name="NEW_STATE" />»։</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5673434351075758678">Կարգավորումների համաժամացման արդյունքում լեզուն փոխվել է: Ընթացիկ լեզուն՝ <ph name="TO_LOCALE" /> (նախկինում՝ <ph name="FROM_LOCALE" />):</translation>
@@ -1019,6 +1025,8 @@
 <translation id="6753390234084146956">ներդիրներ</translation>
 <translation id="6757237461819837179">Մեդիա բովանդակություն չի նվագարկվում</translation>
 <translation id="6777216307882431711">Լիցքավորում է միացված USB-C սարքերը</translation>
+<translation id="6781002679438061620">Աշխատասեղան 9</translation>
+<translation id="6782182743534150858">Աշխատասեղան 13</translation>
 <translation id="6786750046913594791">Փակել պանակը</translation>
 <translation id="6787595647772650851">Վերականգնել վերջին աշխատաշրջանը</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
@@ -1080,6 +1088,7 @@
 <translation id="7098053464892629930">Google Play-ում ներբեռնեք <ph name="NAME" />-ի համար հավելվածը՝ բոլոր հասանելի գործառույթները տեսնելու համար</translation>
 <translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
 <translation id="7106330611027933926">Ցուցադրել աշխատասեղանների տողը</translation>
+<translation id="7116969082764510092">Աշխատասեղան 11</translation>
 <translation id="7118268675952955085">սքրինշոթ</translation>
 <translation id="7126996685418858413">Անցած շաբաթ բացել եք</translation>
 <translation id="7130207228079676353">ԱՌԱՎԵԼ ՀԱՎԱՆԱԿԱՆ</translation>
@@ -1177,6 +1186,7 @@
 <translation id="7662283695561029522">Հպեք՝ կարգավորելու համար</translation>
 <translation id="7670953955701272011">Բացել այս ամսաթիվը Google Օրացույցում</translation>
 <translation id="7671610481353807627">Հավելվածները դասավորված են ըստ գույնի</translation>
+<translation id="7672095158465655885">Միացած է <ph name="NAME" /> ցանցին, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Օգտագործվում է «<ph name="CAMERA_NAME" />» տեսախցիկը։</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ավելացնել նոր բջջային ցանց</translation>
@@ -1462,5 +1472,6 @@
 <translation id="974545358917229949">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="98515147261107953">Հորիզոնական</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> պատուհանը փակվեց։</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Օգտվեք վերջին գործառույթներից և բարելավված անվտանգությունից։ Թարմացումներն արվում են ֆոնային ռեժիմում։</translation>
 </translationbundle>

@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">အကောင်းဆုံးအသုံးပြုမှုအတွက် အကြံပြုထားသည်</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> က AR အသုံးပြုနိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း ကင်မရာကို ဖွင့်ပါ။</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> မှ</translation>
+<translation id="187227595286001730">ဆက်စပ်ဝဘ်ဆိုက်များက အုပ်စုတွင်း သင့်လုပ်ဆောင်ချက်ကို သိနိုင်သည်</translation>
 <translation id="1887786770086287077">ဤစက်ပစ္စည်းအတွက် တည်နေရာ အသုံးပြုခွင့်ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို ဖွင့်ပါ။</translation>
 <translation id="1915307458270490472">ဖုန်းချရန်</translation>
 <translation id="1919345977826869612">ကြော်ငြာများ</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">ဤဒိုမိန်းအောက်ရှိ ဝဘ်ဆိုက်အားလုံး ပါဝင်သည်</translation>
 <translation id="4883854917563148705">စီမံထားသော ဆက်တင်များကို ပြင်ဆင်သတ်မှတ်၍ မရပါ</translation>
 <translation id="4887024562049524730">သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို ဝဘ်ဆိုက်များအား အသုံးပြုခွင့်မပေးမီ မေးမြန်းရန် (အကြံပြုထားသည်)</translation>
+<translation id="4955223779495905865">သင်ဝင်ကြည့်သောဝဘ်ဆိုက်တွင် ပုံ၊ ကြော်ငြာနှင့် စာတိုတို့ကဲ့သို့ အခြားဝဘ်ဆိုက်များမှ အကြောင်းအရာ မြှုပ်သွင်းနိုင်သည်။ အသုံးပြုမှု ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် အဆိုပါဝဘ်ဆိုက်များက ကွတ်ကီးနှင့် အခြားဒေတာကို သိမ်းနိုင်သည်။</translation>
 <translation id="4962975101802056554">စက်ပစ္စည်းအတွက် ခွင့်ပြုချက်အားလုံး ရုပ်သိမ်းသည်</translation>
 <translation id="497421865427891073">ရှေ့သို့သွား</translation>
 <translation id="4976702386844183910"><ph name="DATE" /> က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">အာရုံခံစနစ်များ အသုံးပြုရန် ဤဝဘ်ဆိုက်များကို ခွင့်ပြုသည် (အကြံပြုထားသည်)</translation>
 <translation id="5050380848339752099">ဤဝဘ်ဆိုက်သည် အချက်အလက်များကို ရုပ်ဖျက်မုဒ်ပြင်ပရှိ အက်ပ်တစ်ခုနှင့် မျှဝေပါတော့မည်။</translation>
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
+<translation id="5082281938627763039">၎င်းသည် <ph name="FPS_MEMBER" /> နှင့် <ph name="FPS_OWNER" /> ၏ အုပ်စုဝင် ဝဘ်ဆိုက်များအတွက် ကွတ်ကီးနှင့် အခြား ဝဘ်ဆိုက်ဒေတာတို့ကို ဖျက်မည်</translation>
 <translation id="5091013926750941408">မိုဘိုင်းဝဘ်ဆိုက်</translation>
 <translation id="509133520954049755">ဒက်စ်တော့ မြင်ကွင်း တောင်းဆိုမည်</translation>
 <translation id="5100237604440890931">ချုံ့ထား၏ - ချဲ့ရန် နှိပ်ပါ။</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>
 <translation id="5689516760719285838">တည်နေရာ</translation>
 <translation id="5690795753582697420">Android ဆက်တင်များတွင် 'ကင်မရာ' ပိတ်ထားသည်</translation>
+<translation id="5706552988683188916">၎င်းက <ph name="WEBSITE" /> အတွက် ကွတ်ကီးနှင့် အခြားဝဘ်ဆိုက်ဒေတာကို ဖျက်သည်</translation>
 <translation id="5719847187258001597">၎င်းက သင့် 'ပင်မစာမျက်နှာ' ပေါ်ရှိ <ph name="ORIGIN" /> သို့မဟုတ် ၎င်း၏အက်ပ်က သိမ်းထားသော ဒေတာနှင့် ကွတ်ကီးအားလုံးကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ပိတ်ထားသည်</translation>
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">ဝဘ်ဆိုက်တစ်ခုအတွက် အသံဖွင့်ခွင့်ပြုသည်။</translation>
 <translation id="789180354981963912">‘ရုပ်ဖျက်မုဒ်’ တွင် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားခြင်း-</translation>
 <translation id="7940722705963108451">သတိပေးရန်</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> ၏ ဝဘ်ဆိုက်အုပ်စုရှိ ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုက အုပ်စုတွင်း သင့်လုပ်ဆောင်ချက်ကို သိနိုင်သည်}other{<ph name="FPS_OWNER" /> ၏ ဝဘ်ဆိုက်အုပ်စုရှိ ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုက အုပ်စုတွင်း သင့်လုပ်ဆောင်ချက်ကို သိနိုင်သည်}}</translation>
 <translation id="7986741934819883144">အဆက်အသွယ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="7999064672810608036">ကွက်ကီးများအပါအဝင်၊ အတွင်းရှိ ဒေတာများအားလုံး ရှင်းလင်းကာ၊ ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုချက်များအားလုံးအား ပြန်လည်သတ်မှတ်လိုသည်မှာ သေချာပါသလား?</translation>
 <translation id="8007176423574883786">ဤစက်ပစ္စည်းအတွက် ပိတ်ထားသည်</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">မိုက်ခရိုဖုန်း ပြန်ဖွင့်ရန်</translation>
 <translation id="851751545965956758">စက်သို့ ဝဘ်ဆိုက်များ ချိတ်ဆက်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="8525306231823319788">မျက်နှာပြင် အပြည့်</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုအတွက် ကွတ်ကီးများ ခွင့်သည်}other{<ph name="FPS_OWNER" /> ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုအတွက် ကွတ်ကီးများ ခွင့်သည်}}</translation>
 <translation id="857943718398505171">ခွင့်ပြု၏ (အကြံပြုထား)</translation>
 <translation id="8609465669617005112">အပေါ်ရွှေ့ပါ</translation>
 <translation id="8676374126336081632">ထည့်သွင်းမှု ရှင်းရန်</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">မေ့ပစ်လိုက်ပါ</translation>
 <translation id="9019902583201351841">သင့်မိဘများမှ စီမံသည်</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
+<translation id="9090268041676521955">ယခုဝဘ်ဆိုက်သည် သင့်လုပ်ဆောင်ချက်ကိုမြင်နိုင်သည့် အုပ်စုဝင်ဖြစ်သည်။ <ph name="FPS_OWNER" /> က သတ်မှတ်သည့် အုပ်စုဖြစ်သည်</translation>
+<translation id="9106233582039520022">ကွတ်ကီးများ ဖျက်လိုသလား။</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်များကို ဖွင့်ပါ။</translation>
 <translation id="9162462602695099906">ဤစာမျက်နှာသည် အန္တရာယ်ရှိသည်</translation>
