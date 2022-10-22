@@ -469,10 +469,8 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     if (rtc_video_decoder_adapter->InitializeSync(config)) {
       return rtc_video_decoder_adapter;
     }
-    // Initialization failed - post delete task and try next supported
-    // implementation, if any.
-    gpu_factories->GetTaskRunner()->DeleteSoon(
-        FROM_HERE, std::move(rtc_video_decoder_adapter));
+
+    rtc_video_decoder_adapter.reset();
   }
 
   // To mirror what RTCVideoDecoderStreamAdapter does a little more closely,
@@ -489,7 +487,6 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
       gpu_factories_(gpu_factories),
       config_(config) {
   DVLOG(1) << __func__;
-  DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
   DETACH_FROM_SEQUENCE(media_sequence_checker_);
   decoder_info_.implementation_name = "ExternalDecoder (Unknown)";
   decoder_info_.is_hardware_accelerated = true;
@@ -499,11 +496,34 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
 
 RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
   DVLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                             base::WaitableEvent::InitialState::NOT_SIGNALED);
+  PostCrossThreadTask(
+      *media_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(
+          &RTCVideoDecoderAdapter::DecrementCounterOnMediaThread,
+          CrossThreadUnretained(this), CrossThreadUnretained(&waiter)));
+  waiter.Wait();
+}
+
+void RTCVideoDecoderAdapter::DecrementCounterOnMediaThread(
+    base::WaitableEvent* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
-  base::AutoLock auto_lock(lock_);
-  if (have_started_decoding_)
-    GetDecoderCounter()->DecrementCount();
+  weak_this_factory_.InvalidateWeakPtrs();
+  {
+    base::AutoLock auto_lock(lock_);
+    if (have_started_decoding_)
+      GetDecoderCounter()->DecrementCount();
+  }
+
+  video_decoder_.reset();
+  media_log_.reset();
+
+  event->Signal();
 }
 
 bool RTCVideoDecoderAdapter::InitializeSync(

@@ -159,8 +159,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     if (!rtc_video_decoder_adapter_)
       return;
 
-    media_thread_.task_runner()->DeleteSoon(
-        FROM_HERE, std::move(rtc_video_decoder_adapter_));
+    rtc_video_decoder_adapter_.reset();
     media_thread_.FlushForTesting();
   }
 
@@ -482,8 +481,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
 
   // Make sure that it goes back to zero.
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
-  media_thread_.task_runner()->DeleteSoon(
-      FROM_HERE, std::move(rtc_video_decoder_adapter_));
+  rtc_video_decoder_adapter_.reset();
   media_thread_.FlushForTesting();
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
 }
@@ -521,8 +519,7 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
     RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting();
 
   // Deleting the decoder should not decrement the count.
-  media_thread_.task_runner()->DeleteSoon(
-      FROM_HERE, std::move(rtc_video_decoder_adapter_));
+  rtc_video_decoder_adapter_.reset();
   media_thread_.FlushForTesting();
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
 }

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "media/base/decoder_factory.h"
@@ -337,9 +338,10 @@ RTCVideoDecoderFactory::CreateVideoDecoder(
   }
   // ScopedVideoDecoder uses the task runner to make sure the decoder is
   // destructed on the correct thread.
-  return decoder ? std::make_unique<ScopedVideoDecoder>(media_task_runner_,
-                                                        std::move(decoder))
-                 : nullptr;
+  return decoder
+             ? std::make_unique<ScopedVideoDecoder>(
+                   base::SequencedTaskRunnerHandle::Get(), std::move(decoder))
+             : nullptr;
 }
 
 }  // namespace blink
