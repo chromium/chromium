@@ -368,8 +368,8 @@ class CookieSetter {
   }
 
  private:
-  raw_ptr<HeadlessBrowserTest> browser_test_;  // Not owned.
-  raw_ptr<HeadlessWebContents> web_contents_;  // Not owned.
+  raw_ptr<HeadlessBrowserTest, DanglingUntriaged> browser_test_;  // Not owned.
+  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
 
   std::unique_ptr<network::SetCookieResult> result_;
@@ -475,8 +475,8 @@ class CrashReporterTest : public HeadlessBrowserTest,
   }
 
  protected:
-  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;
-  raw_ptr<HeadlessWebContents> web_contents_ = nullptr;
+  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> browser_context_ = nullptr;
+  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_ = nullptr;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
   base::FilePath crash_dumps_dir_;
 };
