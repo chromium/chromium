@@ -2339,7 +2339,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">الدُرج الخلفي</translation>
 <translation id="725866823122871198">تعذر إنشاء اتصال خاص بـ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> نظرًا لأن التاريخ والوقت لجهاز الكمبيوتر (<ph name="DATE_AND_TIME" />) غير صحيحين.</translation>
-<translation id="7260504762447901703">إبطال حق الدخول</translation>
+<translation id="7260504762447901703">إبطال إذن الوصول</translation>
 <translation id="7275334191706090484">الإشارات المرجعية المُدارة</translation>
 <translation id="7277998515889183784">ماكياج ومستحضرات تجميل</translation>
 <translation id="7285654172857511148">‏<ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لتغيير كلمة مرور حسابك على Google.</translation>
