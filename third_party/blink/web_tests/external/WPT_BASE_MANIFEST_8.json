@@ -227248,6 +227248,19 @@
        {}
       ]
      ],
+     "text-combine-upright-shadow.html": [
+      "6b72ea34aa669bb3d6b7c13df21b00db5cfc9dd4",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/text-combine-upright-shadow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-combine-upright-sideways-001.html": [
       "8fa22a7df8b1419546102ce214acf4d9774bd932",
       [
@@ -304794,6 +304807,10 @@
      ],
      "text-combine-upright-line-breaking-rules-001-ref.html": [
       "e1b7b34b562c8c125c5a6b2dfa885f679ebf812c",
+      []
+     ],
+     "text-combine-upright-shadow-ref.html": [
+      "c56fb9d034e325071b1f65c9c520e13c154974c6",
       []
      ],
      "text-combine-upright-value-all-001.html.ini": [
