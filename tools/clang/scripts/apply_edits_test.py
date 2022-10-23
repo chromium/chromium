@@ -43,16 +43,18 @@ def _ApplyEdit(old_contents_string,
   if last_edit is not None:
     assert (last_edit > edit)  # Test or prod caller should ensure.
   ba = bytearray()
-  ba.extend(old_contents_string.encode('ASCII'))
-  apply_edits._ApplySingleEdit(contents_filepath, ba, edit, last_edit)
-  return ba.decode('ASCII')
+  ba.extend(old_contents_string.encode('utf-8'))
+  return apply_edits._ApplySingleEdit(contents_filepath,
+                                      old_contents_string.encode("utf-8"), edit,
+                                      last_edit).decode("utf-8")
 
 
 def _InsertHeader(old_contents,
                   contents_filepath='foo/impl.cc',
                   new_header_path='new/header.h'):
-  edit = apply_edits.Edit('include-user-header', -1, -1, new_header_path)
-  return _ApplyEdit(old_contents, edit, contents_filepath=contents_filepath)
+  edit = apply_edits.Edit("include-user-header", -1, -1,
+                          new_header_path.encode("utf-8"))
+  return _ApplyEdit(old_contents, edit, contents_filepath)
 
 
 class InsertIncludeHeaderTest(unittest.TestCase):
@@ -696,15 +698,18 @@ void foo();
     self._assertEqualContents(list(actual[0:3]), utf8_bom)
     self._assertEqualContents(list(expected[0:3]), utf8_bom)
     # Actual test.
-    edit = apply_edits.Edit('include-user-header', -1, -1, "new/header.h")
-    apply_edits._ApplySingleEdit("foo/impl.cc", actual, edit, None)
+    edit = apply_edits.Edit('include-user-header', -1, -1, b"new/header.h")
+    actual = apply_edits._ApplySingleEdit("foo/impl.cc", actual, edit, None)
     self._assertEqualContents(expected, actual)
 
 
 def _CreateReplacement(content_string, old_substring, new_substring):
   """ Test helper for creating an Edit object with the right offset, etc. """
-  offset = content_string.find(old_substring)
-  return apply_edits.Edit('r', offset, len(old_substring), new_substring)
+  b_content_string = content_string.encode("utf-8")
+  b_old_string = old_substring.encode("utf-8")
+  b_new_string = new_substring.encode("utf-8")
+  offset = b_content_string.find(b_old_string)
+  return apply_edits.Edit('r', offset, len(b_old_string), b_new_string)
 
 
 class ApplyReplacementTest(unittest.TestCase):
@@ -733,7 +738,7 @@ class ApplyReplacementTest(unittest.TestCase):
     expected_msg_regex = 'Conflicting replacement text'
     expected_msg_regex += '.*some_file.cc at offset 4, length 3'
     expected_msg_regex += '.*"bar" != "foo"'
-    with self.assertRaisesRegexp(ValueError, expected_msg_regex):
+    with self.assertRaisesRegex(ValueError, expected_msg_regex):
       _ApplyEdit(old_text, edit, last_edit=last)
 
   def testUnrecognizedEditDirective(self):
@@ -741,7 +746,7 @@ class ApplyReplacementTest(unittest.TestCase):
     edit = apply_edits.Edit('unknown_directive', 123, 456, "foo")
     expected_msg_regex = 'Unrecognized edit directive "unknown_directive"'
     expected_msg_regex += '.*some_file.cc'
-    with self.assertRaisesRegexp(ValueError, expected_msg_regex):
+    with self.assertRaisesRegex(ValueError, expected_msg_regex):
       _ApplyEdit(old_text, edit)
 
   def testOverlappingReplacement(self):
@@ -752,7 +757,7 @@ class ApplyReplacementTest(unittest.TestCase):
     expected_msg_regex += '.*some_file.cc'
     expected_msg_regex += '.*offset 0, length 7.*"bar"'
     expected_msg_regex += '.*offset 4, length 7.*"foo"'
-    with self.assertRaisesRegexp(ValueError, expected_msg_regex):
+    with self.assertRaisesRegex(ValueError, expected_msg_regex):
       _ApplyEdit(old_text, edit, last_edit=last)
 
 

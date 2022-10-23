@@ -146,8 +146,9 @@ def _NormalizeSingleRawOutputLine(output_line, test_dir):
 
 
 def _NormalizeRawOutput(output_lines, test_dir):
-  return map(lambda line: _NormalizeSingleRawOutputLine(line, test_dir),
-             output_lines)
+  return list(
+      map(lambda line: _NormalizeSingleRawOutputLine(line, test_dir),
+          output_lines))
 
 
 def main(argv):

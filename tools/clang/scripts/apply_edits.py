@@ -64,7 +64,6 @@ def _ParseEditsFromStdin(build_directory):
   Args:
     build_directory: Directory that contains the compile database. Used to
       normalize the filenames.
-    stdout: The stdout from running the clang tool.
 
   Returns:
     A dictionary mapping filenames to the associated edits.
@@ -94,7 +93,9 @@ def _ParseEditsFromStdin(build_directory):
       replacement = replacement.replace('\0', '\n')
       path = _ResolvePath(path)
       if not path: continue
-      edits[path].append(Edit(edit_type, int(offset), int(length), replacement))
+      edits[path].append(
+          Edit(edit_type, int(offset), int(length),
+               replacement.encode("utf-8")))
     except ValueError:
       sys.stderr.write('Unable to parse edit: %s\n' % line)
   return edits
@@ -210,7 +211,7 @@ def _SkipOverPreviousComment(contents, index):
   # Is the previous line a non-comment?  If so, just return `index`.
   new_index = _FindStartOfPreviousLine(contents, index)
   prev_text = contents[new_index:index]
-  _COMMENT_START_REGEX = "^  \s*  (  //  |  \*  )"
+  _COMMENT_START_REGEX = b"^  \s*  (  //  |  \*  )"
   if not re.search(_COMMENT_START_REGEX, prev_text, re.VERBOSE):
     return index
 
@@ -226,7 +227,7 @@ def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
   replacement_text = header_line_to_add
   if replacement_text in contents:
     return contents
-  replacement_text += '\n'
+  replacement_text += b"\n"
 
   # Find the right insertion point.
   #
@@ -237,14 +238,15 @@ def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
   if primary_header_basename is None:
     primary_header_basename = ':this:should:never:match:'
   regex_text = _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE % primary_header_basename
-  match = re.search(regex_text, contents, re.MULTILINE | re.VERBOSE)
+  match = re.search(regex_text.encode("utf-8"), contents,
+                    re.MULTILINE | re.VERBOSE)
   assert (match is not None)
   insertion_point = _SkipOverPreviousComment(contents, match.start())
 
   # Extra empty line is required if the addition is not adjacent to other
   # includes.
-  if not contents[insertion_point:].startswith('#include'):
-    replacement_text += '\n'
+  if not contents[insertion_point:].startswith(b"#include"):
+    replacement_text += b"\n"
 
   # Make the edit.
   return contents[:insertion_point] + replacement_text + \
@@ -258,18 +260,20 @@ def _ApplyReplacement(filepath, contents, edit, last_edit):
   if last_edit is not None:
     if edit.offset == last_edit.offset and edit.length == last_edit.length:
       assert (edit.replacement != last_edit.replacement)
-      raise ValueError(('Conflicting replacement text: ' +
-                        '%s at offset %d, length %d: "%s" != "%s"\n') %
-                       (filepath, edit.offset, edit.length, edit.replacement,
-                        last_edit.replacement))
+      raise ValueError(
+          ('Conflicting replacement text: ' +
+           '%s at offset %d, length %d: "%s" != "%s"\n') %
+          (filepath, edit.offset, edit.length, edit.replacement.decode("utf-8"),
+           last_edit.replacement.decode("utf-8")))
 
     if edit.offset + edit.length > last_edit.offset:
       raise ValueError(
           ('Overlapping replacements: ' +
            '%s at offset %d, length %d: "%s" and ' +
            'offset %d, length %d: "%s"\n') %
-          (filepath, edit.offset, edit.length, edit.replacement,
-           last_edit.offset, last_edit.length, last_edit.replacement))
+          (filepath, edit.offset, edit.length, edit.replacement.decode("utf-8"),
+           last_edit.offset, last_edit.length,
+           last_edit.replacement.decode("utf-8")))
 
   start = edit.offset
   end = edit.offset + edit.length
@@ -280,8 +284,10 @@ def _ApplyReplacement(filepath, contents, edit, last_edit):
 
 
 def _ApplyIncludeHeader(filepath, contents, edit, last_edit):
-  header_line_to_add = '#include "%s"' % edit.replacement
-  return _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents)
+  header_line_to_add = '#include "%s"' % edit.replacement.decode("utf-8")
+  return _InsertNonSystemIncludeHeader(filepath,
+                                       header_line_to_add.encode("utf-8"),
+                                       contents)
 
 
 def _ApplySingleEdit(filepath, contents, edit, last_edit):
@@ -323,7 +329,7 @@ def _ApplyEditsToSingleFileContents(filepath, contents, edits):
 
 
 def _ApplyEditsToSingleFile(filepath, edits):
-  with open(filepath, 'r+') as f:
+  with open(filepath, 'rb+') as f:
     contents = f.read()
     (contents, edit_count,
      error_count) = _ApplyEditsToSingleFileContents(filepath, contents, edits)
