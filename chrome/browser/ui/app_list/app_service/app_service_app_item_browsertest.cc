@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -257,8 +258,12 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
                              /*sync_item=*/nullptr, app_update);
   app_item.SetChromePosition(app_item.CalculateDefaultPositionForTest());
 
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   app_item.PerformActivate(ui::EF_NONE);
+  browser_opened.Wait();
 
+  // Verify that a launch no longer occurs.
   web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [](apps::AppLaunchParams&& params) -> content::WebContents* {

@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -325,13 +324,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
   auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
   result->Open(ui::EF_NONE);
-
-  web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
-      base::BindLambdaForTesting(
-          [](apps::AppLaunchParams&& params) -> content::WebContents* {
-            NOTREACHED();
-            return nullptr;
-          }));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

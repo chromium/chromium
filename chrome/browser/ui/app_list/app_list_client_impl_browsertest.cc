@@ -61,6 +61,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
@@ -179,7 +180,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
   EXPECT_TRUE(wm::GetTransientChildren(client->GetAppListWindow()).empty());
 
   // Open the app info dialog.
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   client->DoShowAppInfoFlow(profile(), app->id());
+  browser_opened.Wait();
 
   Browser* settings_app =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
