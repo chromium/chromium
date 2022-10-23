@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/ime/constants.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,9 +34,9 @@ namespace input_method {
 
 namespace {
 
-using TextSuggestion = ime::TextSuggestion;
-using TextSuggestionMode = ime::TextSuggestionMode;
-using TextSuggestionType = ime::TextSuggestionType;
+using AssistiveSuggestion = ime::AssistiveSuggestion;
+using AssistiveSuggestionMode = ime::AssistiveSuggestionMode;
+using AssistiveSuggestionType = ime::AssistiveSuggestionType;
 
 constexpr char kEmojiSuggesterShowSettingCount[] =
     "emoji_suggester.show_setting_count";
@@ -87,9 +87,9 @@ std::string GetLastWord(const std::string& str) {
       base::TrimString(last_word, kTrimLeadingChars, base::TRIM_LEADING));
 }
 
-TextSuggestion MapToTextSuggestion(std::u16string candidate_string) {
-  return {.mode = TextSuggestionMode::kPrediction,
-          .type = TextSuggestionType::kAssistiveEmoji,
+AssistiveSuggestion MapToAssistiveSuggestion(std::u16string candidate_string) {
+  return {.mode = AssistiveSuggestionMode::kPrediction,
+          .type = AssistiveSuggestionType::kAssistiveEmoji,
           .text = base::UTF16ToUTF8(candidate_string)};
 }
 
@@ -164,7 +164,7 @@ void EmojiSuggester::OnBlur() {
 }
 
 void EmojiSuggester::OnExternalSuggestionsUpdated(
-    const std::vector<TextSuggestion>& suggestions) {
+    const std::vector<AssistiveSuggestion>& suggestions) {
   // EmojiSuggester doesn't utilize any suggestions produced externally, so
   // ignore this call.
 }
@@ -388,11 +388,11 @@ bool EmojiSuggester::HasSuggestions() {
   return suggestion_shown_;
 }
 
-std::vector<TextSuggestion> EmojiSuggester::GetSuggestions() {
-  std::vector<TextSuggestion> suggestions;
+std::vector<AssistiveSuggestion> EmojiSuggester::GetSuggestions() {
+  std::vector<AssistiveSuggestion> suggestions;
   if (HasSuggestions()) {
     for (const auto& candidate : candidates_) {
-      suggestions.emplace_back(MapToTextSuggestion(candidate));
+      suggestions.emplace_back(MapToAssistiveSuggestion(candidate));
     }
   }
   return suggestions;

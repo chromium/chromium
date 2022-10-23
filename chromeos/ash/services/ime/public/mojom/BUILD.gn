@@ -27,19 +27,19 @@ mojom("mojom") {
       types = [
         {
           mojom = "ash.ime.mojom.CompletionCandidate"
-          cpp = "::ash::ime::TextCompletionCandidate"
+          cpp = "::ash::ime::DecoderCompletionCandidate"
         },
         {
           mojom = "ash.ime.mojom.SuggestionMode"
-          cpp = "::ash::ime::TextSuggestionMode"
+          cpp = "::ash::ime::AssistiveSuggestionMode"
         },
         {
           mojom = "ash.ime.mojom.SuggestionType"
-          cpp = "::ash::ime::TextSuggestionType"
+          cpp = "::ash::ime::AssistiveSuggestionType"
         },
         {
           mojom = "ash.ime.mojom.SuggestionCandidate"
-          cpp = "::ash::ime::TextSuggestion"
+          cpp = "::ash::ime::AssistiveSuggestion"
         },
         {
           mojom = "ash.ime.mojom.TextRange"

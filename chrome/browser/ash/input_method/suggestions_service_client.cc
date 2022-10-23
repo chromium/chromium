@@ -22,9 +22,9 @@ using ::chromeos::machine_learning::mojom::TextSuggesterQuery;
 using ::chromeos::machine_learning::mojom::TextSuggesterResultPtr;
 using ::chromeos::machine_learning::mojom::TextSuggesterSpec;
 using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
-using ime::TextSuggestion;
-using ime::TextSuggestionMode;
-using ime::TextSuggestionType;
+using ime::AssistiveSuggestion;
+using ime::AssistiveSuggestionMode;
+using ime::AssistiveSuggestionType;
 
 constexpr size_t kMaxNumberCharsSent = 100;
 
@@ -41,26 +41,26 @@ MultiWordExperimentGroup GetExperimentGroup(const std::string& finch_trial) {
 }
 
 chromeos::machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
-    TextSuggestionMode suggestion_mode) {
+    AssistiveSuggestionMode suggestion_mode) {
   switch (suggestion_mode) {
-    case TextSuggestionMode::kCompletion:
+    case AssistiveSuggestionMode::kCompletion:
       return chromeos::machine_learning::mojom::TextSuggestionMode::kCompletion;
-    case TextSuggestionMode::kPrediction:
+    case AssistiveSuggestionMode::kPrediction:
       return chromeos::machine_learning::mojom::TextSuggestionMode::kPrediction;
   }
 }
 
-absl::optional<TextSuggestion> ToTextSuggestion(
+absl::optional<AssistiveSuggestion> ToAssistiveSuggestion(
     const TextSuggestionCandidatePtr& candidate,
-    const TextSuggestionMode& suggestion_mode) {
+    const AssistiveSuggestionMode& suggestion_mode) {
   if (!candidate->is_multi_word()) {
     // TODO(crbug/1146266): Handle emoji suggestions
     return absl::nullopt;
   }
 
-  return TextSuggestion{.mode = suggestion_mode,
-                        .type = TextSuggestionType::kMultiWord,
-                        .text = candidate->get_multi_word()->text};
+  return AssistiveSuggestion{.mode = suggestion_mode,
+                             .type = AssistiveSuggestionType::kMultiWord,
+                             .text = candidate->get_multi_word()->text};
 }
 
 std::string TrimText(const std::string& text) {
@@ -71,11 +71,11 @@ std::string TrimText(const std::string& text) {
 }
 
 MultiWordSuggestionType ToSuggestionType(
-    const ime::TextSuggestionMode& suggestion_mode) {
+    const ime::AssistiveSuggestionMode& suggestion_mode) {
   switch (suggestion_mode) {
-    case ime::TextSuggestionMode::kCompletion:
+    case ime::AssistiveSuggestionMode::kCompletion:
       return MultiWordSuggestionType::kCompletion;
-    case ime::TextSuggestionMode::kPrediction:
+    case ime::AssistiveSuggestionMode::kPrediction:
       return MultiWordSuggestionType::kPrediction;
     default:
       return MultiWordSuggestionType::kUnknown;
@@ -92,13 +92,14 @@ void RecordPrecedingTextLength(size_t text_length) {
       "InputMethod.Assistive.MultiWord.PrecedingTextLength", text_length);
 }
 
-void RecordRequestCandidates(const ime::TextSuggestionMode& suggestion_mode) {
+void RecordRequestCandidates(
+    const ime::AssistiveSuggestionMode& suggestion_mode) {
   base::UmaHistogramEnumeration(
       "InputMethod.Assistive.MultiWord.RequestCandidates",
       ToSuggestionType(suggestion_mode));
 }
 
-void RecordCandidatesGenerated(TextSuggestionMode suggestion_mode) {
+void RecordCandidatesGenerated(AssistiveSuggestionMode suggestion_mode) {
   base::UmaHistogramEnumeration(
       "InputMethod.Assistive.MultiWord.CandidatesGenerated",
       ToSuggestionType(suggestion_mode));
@@ -129,8 +130,8 @@ void SuggestionsServiceClient::OnTextSuggesterLoaded(
 
 void SuggestionsServiceClient::RequestSuggestions(
     const std::string& preceding_text,
-    const ime::TextSuggestionMode& suggestion_mode,
-    const std::vector<ime::TextCompletionCandidate>& completion_candidates,
+    const ime::AssistiveSuggestionMode& suggestion_mode,
+    const std::vector<ime::DecoderCompletionCandidate>& completion_candidates,
     RequestSuggestionsCallback callback) {
   if (!IsAvailable()) {
     std::move(callback).Run({});
@@ -161,16 +162,16 @@ void SuggestionsServiceClient::RequestSuggestions(
 void SuggestionsServiceClient::OnSuggestionsReturned(
     base::TimeTicks time_request_was_made,
     RequestSuggestionsCallback callback,
-    TextSuggestionMode suggestion_mode_requested,
+    AssistiveSuggestionMode suggestion_mode_requested,
     chromeos::machine_learning::mojom::TextSuggesterResultPtr result) {
-  std::vector<TextSuggestion> suggestions;
+  std::vector<AssistiveSuggestion> suggestions;
 
   if (result->candidates.size() > 0)
     RecordCandidatesGenerated(suggestion_mode_requested);
 
   for (const auto& candidate : result->candidates) {
     auto suggestion =
-        ToTextSuggestion(std::move(candidate), suggestion_mode_requested);
+        ToAssistiveSuggestion(std::move(candidate), suggestion_mode_requested);
     if (suggestion) {
       // Drop any unknown suggestions
       suggestions.push_back(suggestion.value());

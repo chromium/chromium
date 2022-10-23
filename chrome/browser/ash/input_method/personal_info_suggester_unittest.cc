@@ -29,9 +29,9 @@
 namespace ash {
 namespace input_method {
 
-using ime::TextSuggestion;
-using ime::TextSuggestionMode;
-using ime::TextSuggestionType;
+using ime::AssistiveSuggestion;
+using ime::AssistiveSuggestionMode;
+using ime::AssistiveSuggestionType;
 using ::testing::ElementsAre;
 
 class PersonalInfoSuggesterTest : public testing::Test {
@@ -860,9 +860,9 @@ TEST_F(PersonalInfoSuggesterTest,
   EXPECT_EQ(suggestion_handler_->GetConfirmedLength(), 0u);
   EXPECT_EQ(suggestion_handler_->GetContextId(), context_id_);
   EXPECT_EQ(suggester_->GetSuggestions(),
-            (std::vector<TextSuggestion>{TextSuggestion{
-                .mode = TextSuggestionMode::kPrediction,
-                .type = TextSuggestionType::kAssistivePersonalInfo,
+            (std::vector<AssistiveSuggestion>{AssistiveSuggestion{
+                .mode = AssistiveSuggestionMode::kPrediction,
+                .type = AssistiveSuggestionType::kAssistivePersonalInfo,
                 .text = base::UTF16ToUTF8(email_)}}));
 }
 

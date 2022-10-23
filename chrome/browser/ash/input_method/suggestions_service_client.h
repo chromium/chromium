@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,8 +28,8 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
   // AsyncSuggestionsSource overrides
   void RequestSuggestions(
       const std::string& preceding_text,
-      const ime::TextSuggestionMode& suggestion_mode,
-      const std::vector<ime::TextCompletionCandidate>& completion_candidates,
+      const ime::AssistiveSuggestionMode& suggestion_mode,
+      const std::vector<ime::DecoderCompletionCandidate>& completion_candidates,
       RequestSuggestionsCallback callback) override;
   bool IsAvailable() override;
 
@@ -43,7 +43,7 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
   void OnSuggestionsReturned(
       base::TimeTicks time_request_was_made,
       RequestSuggestionsCallback callback,
-      ime::TextSuggestionMode suggestion_mode_requested,
+      ime::AssistiveSuggestionMode suggestion_mode_requested,
       chromeos::machine_learning::mojom::TextSuggesterResultPtr result);
 
   mojo::Remote<chromeos::machine_learning::mojom::TextSuggester>

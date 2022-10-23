@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 
 namespace ash {
 namespace ime {

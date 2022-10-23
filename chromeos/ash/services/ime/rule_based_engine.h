@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
 #define CHROMEOS_ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
 
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "chromeos/ash/services/ime/public/cpp/rulebased/engine.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

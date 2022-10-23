@@ -112,7 +112,7 @@ void LongpressDiacriticsSuggester::OnBlur() {
 }
 
 void LongpressDiacriticsSuggester::OnExternalSuggestionsUpdated(
-    const std::vector<ime::TextSuggestion>& suggestions) {
+    const std::vector<ime::AssistiveSuggestion>& suggestions) {
   // Relevant since suggestions are not updated externally.
   return;
 }
@@ -266,7 +266,7 @@ bool LongpressDiacriticsSuggester::HasSuggestions() {
   return false;
 }
 
-std::vector<ime::TextSuggestion>
+std::vector<ime::AssistiveSuggestion>
 LongpressDiacriticsSuggester::GetSuggestions() {
   // Unused.
   return {};

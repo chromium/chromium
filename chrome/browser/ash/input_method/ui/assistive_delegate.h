@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 
 namespace ui::ime {

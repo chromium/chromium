@@ -152,7 +152,7 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
               (override));
   MOCK_METHOD(void,
               DisplaySuggestions,
-              (const std::vector<ime::TextSuggestion>& suggestions),
+              (const std::vector<ime::AssistiveSuggestion>& suggestions),
               (override));
   MOCK_METHOD(void,
               UpdateCandidatesWindow,
@@ -169,7 +169,7 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
               (override));
   MOCK_METHOD(void,
               ReportSuggestionOpportunity,
-              (TextSuggestionMode mode),
+              (AssistiveSuggestionMode mode),
               (override));
   MOCK_METHOD(void,
               UpdateQuickSettings,

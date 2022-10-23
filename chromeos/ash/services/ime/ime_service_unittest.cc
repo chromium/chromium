@@ -153,12 +153,12 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
-      const std::vector<TextSuggestion>& suggestions) override {}
+      const std::vector<AssistiveSuggestion>& suggestions) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void ReportKoreanAction(mojom::KoreanAction action) override {}
   void ReportKoreanSettings(mojom::KoreanSettingsPtr settings) override {}
-  void ReportSuggestionOpportunity(TextSuggestionMode mode) override {}
+  void ReportSuggestionOpportunity(AssistiveSuggestionMode mode) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 
@@ -206,12 +206,12 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}
   void DisplaySuggestions(
-      const std::vector<TextSuggestion>& suggestions) override {}
+      const std::vector<AssistiveSuggestion>& suggestions) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void ReportKoreanAction(mojom::KoreanAction action) override {}
   void ReportKoreanSettings(mojom::KoreanSettingsPtr settings) override {}
-  void ReportSuggestionOpportunity(TextSuggestionMode mode) override {}
+  void ReportSuggestionOpportunity(AssistiveSuggestionMode mode) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 

@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,9 +24,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ime::TextSuggestion;
-using ime::TextSuggestionMode;
-using ime::TextSuggestionType;
+using ime::AssistiveSuggestion;
+using ime::AssistiveSuggestionMode;
+using ime::AssistiveSuggestionType;
 
 constexpr int kFocusedContextId = 5;
 
@@ -69,10 +69,10 @@ class MultiWordSuggesterTest : public testing::Test {
 };
 
 TEST_F(MultiWordSuggesterTest, IgnoresIrrelevantExternalSuggestions) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kAssistivePersonalInfo,
-                     .text = "my name is John Wayne"}};
+  std::vector<AssistiveSuggestion> suggestions = {AssistiveSuggestion{
+      .mode = AssistiveSuggestionMode::kPrediction,
+      .type = AssistiveSuggestionType::kAssistivePersonalInfo,
+      .text = "my name is John Wayne"}};
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"", 0, 0);
@@ -94,10 +94,10 @@ TEST_F(MultiWordSuggesterTest, IgnoresEmpyExternalSuggestions) {
 }
 
 TEST_F(MultiWordSuggesterTest, DisplaysRelevantExternalSuggestions) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hello there!"}};
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hello there!"}};
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"", 0, 0);
@@ -110,10 +110,10 @@ TEST_F(MultiWordSuggesterTest, DisplaysRelevantExternalSuggestions) {
 
 TEST_F(MultiWordSuggesterTest,
        AfterBlurDoesNotDisplayRelevantExternalSuggestions) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hello there!"}};
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hello there!"}};
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"", 0, 0);
@@ -125,10 +125,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -143,10 +143,10 @@ TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionAfterBlur) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -159,10 +159,10 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionAfterBlur) {
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -176,10 +176,10 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnArrowDownKeypress) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -193,10 +193,10 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnArrowDownKeypress) {
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnEnterKeypress) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -210,10 +210,10 @@ TEST_F(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnEnterKeypress) {
 }
 
 TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnDownPlusEnterPress) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -229,10 +229,10 @@ TEST_F(MultiWordSuggesterTest, AcceptsSuggestionOnDownPlusEnterPress) {
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotHighlightAfterBlur) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -245,10 +245,10 @@ TEST_F(MultiWordSuggesterTest, DoesNotHighlightAfterBlur) {
 }
 
 TEST_F(MultiWordSuggesterTest, HighlightsSuggestionOnDownArrow) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -260,10 +260,10 @@ TEST_F(MultiWordSuggesterTest, HighlightsSuggestionOnDownArrow) {
 }
 
 TEST_F(MultiWordSuggesterTest, MaintainsHighlightOnMultipleDownArrow) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -277,10 +277,10 @@ TEST_F(MultiWordSuggesterTest, MaintainsHighlightOnMultipleDownArrow) {
 }
 
 TEST_F(MultiWordSuggesterTest, RemovesHighlightOnDownThenUpArrow) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -293,10 +293,10 @@ TEST_F(MultiWordSuggesterTest, RemovesHighlightOnDownThenUpArrow) {
 }
 
 TEST_F(MultiWordSuggesterTest, HighlightIsNotShownWithUpArrow) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -308,10 +308,10 @@ TEST_F(MultiWordSuggesterTest, HighlightIsNotShownWithUpArrow) {
 }
 
 TEST_F(MultiWordSuggesterTest, HighlightIsNotShownWithMultipleUpArrow) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -324,10 +324,10 @@ TEST_F(MultiWordSuggesterTest, HighlightIsNotShownWithMultipleUpArrow) {
 }
 
 TEST_F(MultiWordSuggesterTest, DisplaysTabGuideline) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -340,10 +340,10 @@ TEST_F(MultiWordSuggesterTest, DisplaysTabGuideline) {
 
 TEST_F(MultiWordSuggesterTest,
        DisplaysTabGuidelineWithinSevenDaysOfFirstAccept) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   SetFirstAcceptTimeTo(profile_.get(), /*days_ago=*/6);
@@ -358,10 +358,10 @@ TEST_F(MultiWordSuggesterTest,
 
 TEST_F(MultiWordSuggesterTest,
        DoesNotDisplayTabGuidelineSevenDaysAfterFirstAccept) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   SetFirstAcceptTimeTo(profile_.get(), /*days_ago=*/7);
@@ -375,10 +375,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, SetsAcceptTimeOnFirstSuggestionAcceptedOnly) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there!"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there!"},
   };
 
   auto pref_before_accept = GetFirstAcceptTime(profile_.get());
@@ -400,10 +400,10 @@ TEST_F(MultiWordSuggesterTest, SetsAcceptTimeOnFirstSuggestionAcceptedOnly) {
 }
 
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you going"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you going"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -417,10 +417,10 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
 }
 
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "where are you going"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -434,10 +434,10 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
 }
 
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthGreedily) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hohohohoho"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hohohohoho"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -452,10 +452,10 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthGreedily) {
 }
 
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForPredictions) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "is the next task"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "is the next task"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -469,10 +469,10 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForPredictions) {
 }
 
 TEST_F(MultiWordSuggesterTest, HandlesNewlinesWhenCalculatingConfirmedLength) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -486,10 +486,10 @@ TEST_F(MultiWordSuggesterTest, HandlesNewlinesWhenCalculatingConfirmedLength) {
 }
 
 TEST_F(MultiWordSuggesterTest, HandlesMultipleRepeatingCharsWhenTracking) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -506,10 +506,10 @@ TEST_F(MultiWordSuggesterTest, HandlesMultipleRepeatingCharsWhenTracking) {
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -531,10 +531,10 @@ TEST_F(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
 }
 
 TEST_F(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "where are you going"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -560,10 +560,10 @@ TEST_F(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
 
 TEST_F(MultiWordSuggesterTest,
        TracksLastSuggestionOnSurroundingTextChangeAtBeginningText) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -581,10 +581,10 @@ TEST_F(MultiWordSuggesterTest,
 
 TEST_F(MultiWordSuggesterTest,
        TracksLastSuggestionOnLargeSurroundingTextChange) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -602,10 +602,10 @@ TEST_F(MultiWordSuggesterTest,
 
 TEST_F(MultiWordSuggesterTest,
        DoesNotTrackLastSuggestionIfSurroundingTextChange) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -621,10 +621,10 @@ TEST_F(MultiWordSuggesterTest,
 
 TEST_F(MultiWordSuggesterTest,
        DoesNotTrackLastSuggestionIfCursorBeforeSuggestionStartPos) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = " for the example"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = " for the example"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -647,10 +647,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = " for the example"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = " for the example"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -671,10 +671,10 @@ TEST_F(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
 
 TEST_F(MultiWordSuggesterTest,
        DismissesSuggestionAfterCursorMoveFromEndOfText) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = " for the example"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = " for the example"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -689,10 +689,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, DismissesSuggestionOnUserTypingFullSuggestion) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = " are"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = " are"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -718,10 +718,10 @@ TEST_F(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
 
 TEST_F(MultiWordSuggesterTest,
        ReturnsCompletionActionIfCompletionSuggestionShown) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -734,10 +734,10 @@ TEST_F(MultiWordSuggesterTest,
 
 TEST_F(MultiWordSuggesterTest,
        ReturnsPredictionActionIfPredictionSuggestionShown) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -750,10 +750,10 @@ TEST_F(MultiWordSuggesterTest,
 
 TEST_F(MultiWordSuggesterTest,
        ReturnsCompletionActionAfterAcceptingCompletionSuggestion) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -768,10 +768,10 @@ TEST_F(MultiWordSuggesterTest,
 
 TEST_F(MultiWordSuggesterTest,
        ReturnsPredictionActionAfterAcceptingPredictionSuggestion) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -785,10 +785,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   base::HistogramTester histogram_tester;
@@ -806,10 +806,10 @@ TEST_F(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
 }
 
 TEST_F(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   base::HistogramTester histogram_tester;
@@ -826,10 +826,10 @@ TEST_F(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
 }
 
 TEST_F(MultiWordSuggesterTest, RecordsSuggestionLengthMetric) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   base::HistogramTester histogram_tester;
@@ -849,10 +849,10 @@ TEST_F(MultiWordSuggesterTest, RecordsSuggestionLengthMetric) {
 }
 
 TEST_F(MultiWordSuggesterTest, DoesntRecordIfSuggestionLengthIsBig) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = std::string(101, 'h')},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = std::string(101, 'h')},
   };
 
   base::HistogramTester histogram_tester;
@@ -976,10 +976,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 TEST_F(MultiWordSuggesterTest,
        DoesNotRecordCouldPossiblyShowSuggestionWhenSuggestionIsShowing) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "how are you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
   };
 
   base::HistogramTester histogram_tester;
@@ -1021,10 +1021,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -1040,10 +1040,10 @@ TEST_F(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
 
 TEST_F(MultiWordSuggesterTest,
        TrackingSuggestionsTriggersAnnouncementOnlyOnce) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -1064,10 +1064,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, AcceptingSuggestionTriggersAnnouncement) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -1083,10 +1083,10 @@ TEST_F(MultiWordSuggesterTest, AcceptingSuggestionTriggersAnnouncement) {
 
 TEST_F(MultiWordSuggesterTest,
        TransitionsFromAcceptSuggestionToNoSuggestionDoesNotTriggerAnnounce) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -1101,10 +1101,10 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest, DismissingSuggestionTriggersAnnouncement) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);
@@ -1120,10 +1120,10 @@ TEST_F(MultiWordSuggesterTest, DismissingSuggestionTriggersAnnouncement) {
 
 TEST_F(MultiWordSuggesterTest,
        TransitionsFromDismissSuggestionToNoSuggestionDoesNotTriggerAnnounce) {
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "aren\'t you"},
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "aren\'t you"},
   };
 
   suggester_->OnFocus(kFocusedContextId);

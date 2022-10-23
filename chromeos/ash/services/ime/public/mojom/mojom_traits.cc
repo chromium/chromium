@@ -15,30 +15,30 @@ using AssistiveWindowType = ash::ime::AssistiveWindowType;
 using AssistiveWindowTypeMojo = ash::ime::mojom::AssistiveWindowType;
 using CompletionCandidateDataView =
     ash::ime::mojom::CompletionCandidateDataView;
+using AssistiveSuggestionMode = ash::ime::AssistiveSuggestionMode;
 using SuggestionMode = ash::ime::mojom::SuggestionMode;
 using SuggestionType = ash::ime::mojom::SuggestionType;
 using SuggestionCandidateDataView =
     ash::ime::mojom::SuggestionCandidateDataView;
-using TextCompletionCandidate = ash::ime::TextCompletionCandidate;
-using TextSuggestionMode = ash::ime::TextSuggestionMode;
-using TextSuggestionType = ash::ime::TextSuggestionType;
-using TextSuggestion = ash::ime::TextSuggestion;
+using DecoderCompletionCandidate = ash::ime::DecoderCompletionCandidate;
+using AssistiveSuggestionType = ash::ime::AssistiveSuggestionType;
+using AssistiveSuggestion = ash::ime::AssistiveSuggestion;
 
 }  // namespace
 
-SuggestionMode EnumTraits<SuggestionMode, TextSuggestionMode>::ToMojom(
-    TextSuggestionMode mode) {
+SuggestionMode EnumTraits<SuggestionMode, AssistiveSuggestionMode>::ToMojom(
+    AssistiveSuggestionMode mode) {
   switch (mode) {
-    case TextSuggestionMode::kCompletion:
+    case AssistiveSuggestionMode::kCompletion:
       return SuggestionMode::kCompletion;
-    case TextSuggestionMode::kPrediction:
+    case AssistiveSuggestionMode::kPrediction:
       return SuggestionMode::kPrediction;
   }
 }
 
-bool EnumTraits<SuggestionMode, TextSuggestionMode>::FromMojom(
+bool EnumTraits<SuggestionMode, AssistiveSuggestionMode>::FromMojom(
     SuggestionMode input,
-    TextSuggestionMode* output) {
+    AssistiveSuggestionMode* output) {
   switch (input) {
     case SuggestionMode::kUnknown:
       // The browser process should never receive an unknown suggestion mode.
@@ -47,33 +47,33 @@ bool EnumTraits<SuggestionMode, TextSuggestionMode>::FromMojom(
       // new suggestion mode.
       return false;
     case SuggestionMode::kCompletion:
-      *output = TextSuggestionMode::kCompletion;
+      *output = AssistiveSuggestionMode::kCompletion;
       return true;
     case SuggestionMode::kPrediction:
-      *output = TextSuggestionMode::kPrediction;
+      *output = AssistiveSuggestionMode::kPrediction;
       return true;
   }
 }
 
-SuggestionType EnumTraits<SuggestionType, TextSuggestionType>::ToMojom(
-    TextSuggestionType type) {
+SuggestionType EnumTraits<SuggestionType, AssistiveSuggestionType>::ToMojom(
+    AssistiveSuggestionType type) {
   switch (type) {
-    case TextSuggestionType::kAssistivePersonalInfo:
+    case AssistiveSuggestionType::kAssistivePersonalInfo:
       return SuggestionType::kAssistivePersonalInfo;
-    case TextSuggestionType::kAssistiveEmoji:
+    case AssistiveSuggestionType::kAssistiveEmoji:
       return SuggestionType::kAssistiveEmoji;
-    case TextSuggestionType::kMultiWord:
+    case AssistiveSuggestionType::kMultiWord:
       return SuggestionType::kMultiWord;
-    case TextSuggestionType::kGrammar:
+    case AssistiveSuggestionType::kGrammar:
       return SuggestionType::kGrammar;
-    case TextSuggestionType::kLongpressDiacritic:
+    case AssistiveSuggestionType::kLongpressDiacritic:
       return SuggestionType::kLongpressDiacritic;
   }
 }
 
-bool EnumTraits<SuggestionType, TextSuggestionType>::FromMojom(
+bool EnumTraits<SuggestionType, AssistiveSuggestionType>::FromMojom(
     SuggestionType input,
-    TextSuggestionType* output) {
+    AssistiveSuggestionType* output) {
   switch (input) {
     case SuggestionType::kUnknown:
       // The browser process should never receive an unknown suggestion type.
@@ -82,26 +82,26 @@ bool EnumTraits<SuggestionType, TextSuggestionType>::FromMojom(
       // new suggestion type.
       return false;
     case SuggestionType::kAssistivePersonalInfo:
-      *output = TextSuggestionType::kAssistivePersonalInfo;
+      *output = AssistiveSuggestionType::kAssistivePersonalInfo;
       return true;
     case SuggestionType::kAssistiveEmoji:
-      *output = TextSuggestionType::kAssistiveEmoji;
+      *output = AssistiveSuggestionType::kAssistiveEmoji;
       return true;
     case SuggestionType::kMultiWord:
-      *output = TextSuggestionType::kMultiWord;
+      *output = AssistiveSuggestionType::kMultiWord;
       return true;
     case SuggestionType::kGrammar:
-      *output = TextSuggestionType::kGrammar;
+      *output = AssistiveSuggestionType::kGrammar;
       return true;
     case SuggestionType::kLongpressDiacritic:
-      *output = TextSuggestionType::kLongpressDiacritic;
+      *output = AssistiveSuggestionType::kLongpressDiacritic;
       return true;
   }
 }
 
-bool StructTraits<SuggestionCandidateDataView, TextSuggestion>::Read(
+bool StructTraits<SuggestionCandidateDataView, AssistiveSuggestion>::Read(
     SuggestionCandidateDataView input,
-    TextSuggestion* output) {
+    AssistiveSuggestion* output) {
   if (!input.ReadMode(&output->mode))
     return false;
   if (!input.ReadType(&output->type))
@@ -112,9 +112,9 @@ bool StructTraits<SuggestionCandidateDataView, TextSuggestion>::Read(
   return true;
 }
 
-bool StructTraits<CompletionCandidateDataView, TextCompletionCandidate>::Read(
-    CompletionCandidateDataView input,
-    TextCompletionCandidate* output) {
+bool StructTraits<CompletionCandidateDataView, DecoderCompletionCandidate>::
+    Read(CompletionCandidateDataView input,
+         DecoderCompletionCandidate* output) {
   if (!input.ReadText(&output->text))
     return false;
   output->score = input.normalized_score();

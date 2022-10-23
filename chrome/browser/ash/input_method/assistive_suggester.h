@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -57,7 +57,7 @@ class AssistiveSuggester : public SuggestionsSource {
       AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback);
 
   // SuggestionsSource overrides
-  std::vector<ime::TextSuggestion> GetSuggestions() override;
+  std::vector<ime::AssistiveSuggestion> GetSuggestions() override;
 
   // Called when a new input engine is activated by the system.
   void OnActivate(const std::string& engine_id);
@@ -81,7 +81,7 @@ class AssistiveSuggester : public SuggestionsSource {
 
   // Called when suggestions are generated outside of the assistive framework.
   void OnExternalSuggestionsUpdated(
-      const std::vector<ime::TextSuggestion>& suggestions);
+      const std::vector<ime::AssistiveSuggestion>& suggestions);
 
   // Accepts the suggestion at a given index if a suggester is currently
   // active.
@@ -164,7 +164,7 @@ class AssistiveSuggester : public SuggestionsSource {
   bool WithinGrammarFragment(int cursor_pos, int anchor_pos);
 
   void ProcessExternalSuggestions(
-      const std::vector<ime::TextSuggestion>& suggestions,
+      const std::vector<ime::AssistiveSuggestion>& suggestions,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   // This records any text input state metrics for each relevant assistive

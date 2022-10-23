@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/ash/input_method/input_method_engine_observer.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 
 namespace ash {
 namespace input_method {

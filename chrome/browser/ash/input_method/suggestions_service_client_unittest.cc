@@ -19,10 +19,10 @@ namespace {
 
 namespace machine_learning = ::chromeos::machine_learning;
 
-using ime::TextCompletionCandidate;
-using ime::TextSuggestion;
-using ime::TextSuggestionMode;
-using ime::TextSuggestionType;
+using ime::AssistiveSuggestion;
+using ime::AssistiveSuggestionMode;
+using ime::AssistiveSuggestionType;
+using ime::DecoderCompletionCandidate;
 
 machine_learning::mojom::TextSuggesterResultPtr NoCandidate() {
   auto result = machine_learning::mojom::TextSuggesterResult::New();
@@ -74,22 +74,22 @@ class SuggestionsServiceClientTest : public testing::Test {
 TEST_F(SuggestionsServiceClientTest, ReturnsCompletionResultsFromMojoService) {
   SetTextSuggesterResult(SingleCandidate("hi there completion", 0.5f));
 
-  std::vector<TextSuggestion> returned_results;
+  std::vector<AssistiveSuggestion> returned_results;
   client()->RequestSuggestions(
       /*preceding_text=*/"this is some text",
-      /*suggestion_mode=*/TextSuggestionMode::kCompletion,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kCompletion,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {
+          [&](const std::vector<AssistiveSuggestion>& results) {
             returned_results = results;
           }));
   WaitForResults();
 
-  std::vector<TextSuggestion> expected_results = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there completion"},
+  std::vector<AssistiveSuggestion> expected_results = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there completion"},
   };
 
   EXPECT_EQ(returned_results, expected_results);
@@ -98,22 +98,22 @@ TEST_F(SuggestionsServiceClientTest, ReturnsCompletionResultsFromMojoService) {
 TEST_F(SuggestionsServiceClientTest, ReturnsPredictionResultsFromMojoService) {
   SetTextSuggesterResult(SingleCandidate("hi there prediction", 0.5f));
 
-  std::vector<TextSuggestion> returned_results;
+  std::vector<AssistiveSuggestion> returned_results;
   client()->RequestSuggestions(
       /*preceding_text=*/"this is some text",
-      /*suggestion_mode=*/TextSuggestionMode::kPrediction,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kPrediction,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {
+          [&](const std::vector<AssistiveSuggestion>& results) {
             returned_results = results;
           }));
   WaitForResults();
 
-  std::vector<TextSuggestion> expected_results = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there prediction"},
+  std::vector<AssistiveSuggestion> expected_results = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "hi there prediction"},
   };
 
   EXPECT_EQ(returned_results, expected_results);
@@ -128,11 +128,11 @@ TEST_F(SuggestionsServiceClientTest, RecordsCandidateGenerationTimePerRequest) {
 
   client()->RequestSuggestions(
       /*preceding_text=*/"this is some text",
-      /*suggestion_mode=*/TextSuggestionMode::kPrediction,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kPrediction,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(
@@ -152,11 +152,11 @@ TEST_F(SuggestionsServiceClientTest, RecordsPrecedingTextLengthPerRequest) {
 
   client()->RequestSuggestions(
       /*preceding_text=*/preceding_text,
-      /*suggestion_mode=*/TextSuggestionMode::kPrediction,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kPrediction,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(
@@ -175,11 +175,11 @@ TEST_F(SuggestionsServiceClientTest, RecordsRequestCandidatesForCompletion) {
 
   client()->RequestSuggestions(
       /*preceding_text=*/"hello",
-      /*suggestion_mode=*/TextSuggestionMode::kCompletion,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kCompletion,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(
@@ -199,11 +199,11 @@ TEST_F(SuggestionsServiceClientTest, RecordsRequestCandidatesForPrediction) {
 
   client()->RequestSuggestions(
       /*preceding_text=*/"hello",
-      /*suggestion_mode=*/TextSuggestionMode::kPrediction,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kPrediction,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(
@@ -224,11 +224,11 @@ TEST_F(SuggestionsServiceClientTest,
 
   client()->RequestSuggestions(
       /*preceding_text=*/"hello",
-      /*suggestion_mode=*/TextSuggestionMode::kPrediction,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kPrediction,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(
@@ -245,11 +245,11 @@ TEST_F(SuggestionsServiceClientTest,
 
   client()->RequestSuggestions(
       /*preceding_text=*/"hello",
-      /*suggestion_mode=*/TextSuggestionMode::kCompletion,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kCompletion,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(
@@ -266,11 +266,11 @@ TEST_F(SuggestionsServiceClientTest,
 
   client()->RequestSuggestions(
       /*preceding_text=*/"hello",
-      /*suggestion_mode=*/TextSuggestionMode::kPrediction,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kPrediction,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(
@@ -291,11 +291,11 @@ TEST_F(SuggestionsServiceClientTest,
 
   client()->RequestSuggestions(
       /*preceding_text=*/"hello",
-      /*suggestion_mode=*/TextSuggestionMode::kCompletion,
-      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*suggestion_mode=*/AssistiveSuggestionMode::kCompletion,
+      /*completion_candidates=*/std::vector<DecoderCompletionCandidate>{},
       /*callback=*/
       base::BindLambdaForTesting(
-          [&](const std::vector<TextSuggestion>& results) {}));
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
   WaitForResults();
 
   histogram_tester.ExpectTotalCount(

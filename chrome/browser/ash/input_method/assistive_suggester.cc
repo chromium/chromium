@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
@@ -36,9 +36,9 @@ namespace input_method {
 
 namespace {
 
-using ime::TextSuggestion;
-using ime::TextSuggestionMode;
-using ime::TextSuggestionType;
+using ime::AssistiveSuggestion;
+using ime::AssistiveSuggestionMode;
+using ime::AssistiveSuggestionType;
 
 const char kMaxTextBeforeCursorLength = 50;
 
@@ -115,26 +115,27 @@ void RecordAssistiveSuccess(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
 }
 
-bool IsTopResultMultiWord(const std::vector<TextSuggestion>& suggestions) {
+bool IsTopResultMultiWord(const std::vector<AssistiveSuggestion>& suggestions) {
   if (suggestions.empty())
     return false;
   // There should only ever be one multi word suggestion given if any.
-  return suggestions[0].type == TextSuggestionType::kMultiWord;
+  return suggestions[0].type == AssistiveSuggestionType::kMultiWord;
 }
 
-void RecordSuggestionsMatch(const std::vector<TextSuggestion>& suggestions) {
+void RecordSuggestionsMatch(
+    const std::vector<AssistiveSuggestion>& suggestions) {
   if (suggestions.empty())
     return;
 
   auto top_result = suggestions[0];
-  if (top_result.type != TextSuggestionType::kMultiWord)
+  if (top_result.type != AssistiveSuggestionType::kMultiWord)
     return;
 
   switch (top_result.mode) {
-    case TextSuggestionMode::kCompletion:
+    case AssistiveSuggestionMode::kCompletion:
       RecordAssistiveMatch(AssistiveType::kMultiWordCompletion);
       return;
-    case TextSuggestionMode::kPrediction:
+    case AssistiveSuggestionMode::kPrediction:
       RecordAssistiveMatch(AssistiveType::kMultiWordPrediction);
       return;
   }
@@ -471,7 +472,7 @@ void AssistiveSuggester::OnLongpressDetected() {
 }
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
-    const std::vector<TextSuggestion>& suggestions) {
+    const std::vector<AssistiveSuggestion>& suggestions) {
   if (!IsMultiWordSuggestEnabled())
     return;
 
@@ -481,7 +482,7 @@ void AssistiveSuggester::OnExternalSuggestionsUpdated(
 }
 
 void AssistiveSuggester::ProcessExternalSuggestions(
-    const std::vector<TextSuggestion>& suggestions,
+    const std::vector<AssistiveSuggestion>& suggestions,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   RecordSuggestionsMatch(suggestions);
 
@@ -656,7 +657,7 @@ bool AssistiveSuggester::IsSuggestionShown() {
   return current_suggester_ != nullptr;
 }
 
-std::vector<ime::TextSuggestion> AssistiveSuggester::GetSuggestions() {
+std::vector<ime::AssistiveSuggestion> AssistiveSuggester::GetSuggestions() {
   if (IsSuggestionShown())
     return current_suggester_->GetSuggestions();
   return {};

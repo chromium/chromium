@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
-#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom.h"
 
 namespace ash {
@@ -38,8 +38,8 @@ class SuggestionsCollector {
   // SuggestionsRequestor.
   void OnSuggestionsGathered(
       GatherSuggestionsCallback callback,
-      const std::vector<ime::TextSuggestion>& assistive_suggestions,
-      const std::vector<ime::TextSuggestion>& system_suggestions);
+      const std::vector<ime::AssistiveSuggestion>& assistive_suggestions,
+      const std::vector<ime::AssistiveSuggestion>& system_suggestions);
 
   // Not owned by this class
   SuggestionsSource* assistive_suggester_;

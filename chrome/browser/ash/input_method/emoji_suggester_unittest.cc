@@ -18,9 +18,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using TextSuggestion = ime::TextSuggestion;
-using TextSuggestionMode = ime::TextSuggestionMode;
-using TextSuggestionType = ime::TextSuggestionType;
+using AssistiveSuggestion = ime::AssistiveSuggestion;
+using AssistiveSuggestionMode = ime::AssistiveSuggestionMode;
+using AssistiveSuggestionType = ime::AssistiveSuggestionType;
 
 }  // namespace
 
@@ -391,18 +391,19 @@ TEST_F(EmojiSuggesterTest, IsShowingSuggestionFalseWhenCandidatesUnavailable) {
 
 TEST_F(EmojiSuggesterTest, GetSuggestionReturnsCandidatesWhenAvailable) {
   EXPECT_TRUE(emoji_suggester_->TrySuggestWithSurroundingText(u"happy ", 6, 6));
-  EXPECT_EQ(emoji_suggester_->GetSuggestions(),
-            (std::vector<TextSuggestion>{
-                TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                               .type = TextSuggestionType::kAssistiveEmoji,
-                               .text = "😀"},
-                TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                               .type = TextSuggestionType::kAssistiveEmoji,
-                               .text = "😃"},
-                TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                               .type = TextSuggestionType::kAssistiveEmoji,
-                               .text = "😄"},
-            }));
+  EXPECT_EQ(
+      emoji_suggester_->GetSuggestions(),
+      (std::vector<AssistiveSuggestion>{
+          AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                              .type = AssistiveSuggestionType::kAssistiveEmoji,
+                              .text = "😀"},
+          AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                              .type = AssistiveSuggestionType::kAssistiveEmoji,
+                              .text = "😃"},
+          AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                              .type = AssistiveSuggestionType::kAssistiveEmoji,
+                              .text = "😄"},
+      }));
 }
 
 TEST_F(EmojiSuggesterTest,

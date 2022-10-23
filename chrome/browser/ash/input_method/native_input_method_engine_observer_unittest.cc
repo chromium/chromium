@@ -32,7 +32,8 @@ TEST_F(NativeInputMethodEngineObserverTest,
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.SuggestionOpportunity", 0);
 
-  observer_.ReportSuggestionOpportunity(ime::TextSuggestionMode::kCompletion);
+  observer_.ReportSuggestionOpportunity(
+      ime::AssistiveSuggestionMode::kCompletion);
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.SuggestionOpportunity", 1);
@@ -48,7 +49,8 @@ TEST_F(NativeInputMethodEngineObserverTest,
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.SuggestionOpportunity", 0);
 
-  observer_.ReportSuggestionOpportunity(ime::TextSuggestionMode::kPrediction);
+  observer_.ReportSuggestionOpportunity(
+      ime::AssistiveSuggestionMode::kPrediction);
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.SuggestionOpportunity", 1);

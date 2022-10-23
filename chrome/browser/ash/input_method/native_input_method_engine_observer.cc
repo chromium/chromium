@@ -423,11 +423,11 @@ ui::ImeTextSpan CompositionSpanToImeTextSpan(
 }
 
 MultiWordSuggestionType ToUmaSuggestionType(
-    const ime::TextSuggestionMode& mode) {
+    const ime::AssistiveSuggestionMode& mode) {
   switch (mode) {
-    case ime::TextSuggestionMode::kCompletion:
+    case ime::AssistiveSuggestionMode::kCompletion:
       return MultiWordSuggestionType::kCompletion;
-    case ime::TextSuggestionMode::kPrediction:
+    case ime::AssistiveSuggestionMode::kPrediction:
       return MultiWordSuggestionType::kPrediction;
     default:
       return MultiWordSuggestionType::kUnknown;
@@ -1168,7 +1168,7 @@ void NativeInputMethodEngineObserver::RequestSuggestions(
 }
 
 void NativeInputMethodEngineObserver::DisplaySuggestions(
-    const std::vector<ime::TextSuggestion>& suggestions) {
+    const std::vector<ime::AssistiveSuggestion>& suggestions) {
   if (!IsTextClientActive())
     return;
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -1206,7 +1206,7 @@ void NativeInputMethodEngineObserver::ReportKoreanSettings(
 }
 
 void NativeInputMethodEngineObserver::ReportSuggestionOpportunity(
-    ime::TextSuggestionMode mode) {
+    ime::AssistiveSuggestionMode mode) {
   base::UmaHistogramEnumeration(
       "InputMethod.Assistive.MultiWord.SuggestionOpportunity",
       ToUmaSuggestionType(mode));

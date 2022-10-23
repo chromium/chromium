@@ -11,8 +11,8 @@ assert(is_chromeos_ash)
 
 source_set("structs") {
   sources = [
-    "suggestions.cc",
-    "suggestions.h",
+    "assistive_suggestions.cc",
+    "assistive_suggestions.h",
   ]
 }
 
