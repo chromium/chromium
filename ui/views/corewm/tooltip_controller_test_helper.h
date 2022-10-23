@@ -55,7 +55,7 @@ class TooltipControllerTestHelper {
   void MockWindowActivated(aura::Window* window, bool active);
 
  private:
-  raw_ptr<TooltipController> controller_;
+  raw_ptr<TooltipController, DanglingUntriaged> controller_;
 };
 
 // Trivial View subclass that lets you set the tooltip text.

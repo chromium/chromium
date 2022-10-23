@@ -53,7 +53,7 @@ class AssistantOnboardingControllerImpl : public AssistantOnboardingController {
   Callback callback_;
 
   // The `WebContents` for which the dialog is supposed to show.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   // A weak pointer to the view implementing the `OnboardingPrompt`
   // interface.

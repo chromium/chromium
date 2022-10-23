@@ -249,7 +249,7 @@ class TabDragController : public views::WidgetObserver {
     int source_model_index;
 
     // If attached this is the view in |attached_context_|.
-    raw_ptr<TabSlotView> attached_view;
+    raw_ptr<TabSlotView, DanglingUntriaged> attached_view;
 
     // Is the tab pinned?
     bool pinned;

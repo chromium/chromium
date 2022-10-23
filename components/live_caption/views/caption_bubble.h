@@ -238,7 +238,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // A timer which causes the bubble to hide if there is no activity after a
   // specified interval.
   std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
-  raw_ptr<const base::TickClock> tick_clock_;
+  raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

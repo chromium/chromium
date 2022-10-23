@@ -179,8 +179,8 @@ class TooltipBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_ = nullptr;
-  raw_ptr<RenderWidgetHostView> rwhv_ = nullptr;
-  raw_ptr<WebContents> web_contents_ = nullptr;
+  raw_ptr<RenderWidgetHostView, DanglingUntriaged> rwhv_ = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
 
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<TooltipWidgetMonitor> tooltip_monitor_ = nullptr;

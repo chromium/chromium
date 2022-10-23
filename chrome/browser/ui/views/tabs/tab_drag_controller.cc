@@ -294,8 +294,8 @@ class TabDragController::SourceTabStripEmptinessTracker
     parent_->OnSourceTabStripEmpty();
   }
 
-  const raw_ptr<TabStripModel> tab_strip_;
-  const raw_ptr<TabDragController> parent_;
+  const raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_;
+  const raw_ptr<TabDragController, DanglingUntriaged> parent_;
 };
 
 class TabDragController::DraggedTabsClosedTracker
@@ -326,7 +326,7 @@ class TabDragController::DraggedTabsClosedTracker
   }
 
  private:
-  const raw_ptr<TabDragController> parent_;
+  const raw_ptr<TabDragController, DanglingUntriaged> parent_;
 };
 
 TabDragController::TabDragData::TabDragData()

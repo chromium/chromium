@@ -554,7 +554,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
-  raw_ptr<MenuDelegate> delegate_ = nullptr;
+  raw_ptr<MenuDelegate, DanglingUntriaged> delegate_ = nullptr;
 
   // The controller for the run operation, or NULL if the menu isn't showing.
   base::WeakPtr<MenuController> controller_;
@@ -563,7 +563,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool canceled_ = false;
 
   // Our parent.
-  raw_ptr<MenuItemView> parent_menu_item_ = nullptr;
+  raw_ptr<MenuItemView, DanglingUntriaged> parent_menu_item_ = nullptr;
 
   // Type of menu. NOTE: MenuItemView doesn't itself represent SEPARATOR,
   // that is handled by an entirely different view class.

@@ -104,7 +104,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<MenuItemView> first_item_ = nullptr;
+  raw_ptr<MenuItemView, DanglingUntriaged> first_item_ = nullptr;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Middle of first menu item.

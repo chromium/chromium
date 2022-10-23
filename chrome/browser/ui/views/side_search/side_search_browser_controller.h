@@ -101,11 +101,11 @@ class SideSearchBrowserController
 
   base::CallbackListSubscription web_view_visibility_subscription_;
 
-  raw_ptr<ToolbarButton> toolbar_button_ = nullptr;
-  raw_ptr<SidePanel> const side_panel_;
-  raw_ptr<BrowserView> const browser_view_;
-  raw_ptr<views::Label> title_label_;
-  raw_ptr<views::WebView> web_view_;
+  raw_ptr<ToolbarButton, DanglingUntriaged> toolbar_button_ = nullptr;
+  raw_ptr<SidePanel, DanglingUntriaged> const side_panel_;
+  raw_ptr<BrowserView, DanglingUntriaged> const browser_view_;
+  raw_ptr<views::Label, DanglingUntriaged> title_label_;
+  raw_ptr<views::WebView, DanglingUntriaged> web_view_;
 
   // Used to test whether or not the side panel was available the last time
   // `UpdateSidePanel()` was called. i.e. whether the ability for the user to

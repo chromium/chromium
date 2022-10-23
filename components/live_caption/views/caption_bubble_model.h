@@ -103,9 +103,9 @@ class CaptionBubbleModel {
   CaptionBubbleErrorType error_type_ = CaptionBubbleErrorType::kGeneric;
 
   // The CaptionBubble observing changes to this model.
-  raw_ptr<CaptionBubble> observer_ = nullptr;
+  raw_ptr<CaptionBubble, DanglingUntriaged> observer_ = nullptr;
 
-  const raw_ptr<CaptionBubbleContext> context_;
+  const raw_ptr<CaptionBubbleContext, DanglingUntriaged> context_;
 };
 
 }  // namespace captions

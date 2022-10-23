@@ -53,7 +53,7 @@ class InkDropHostTestApi {
 
  private:
   // The InkDropHost to provide internal access to.
-  raw_ptr<InkDropHost> ink_drop_host_;
+  raw_ptr<InkDropHost, DanglingUntriaged> ink_drop_host_;
 };
 
 }  // namespace test

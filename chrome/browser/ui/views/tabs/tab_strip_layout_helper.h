@@ -153,7 +153,7 @@ class TabStripLayoutHelper {
   bool SlotIsCollapsedTab(int i) const;
 
   // The owning TabContainer's controller.
-  const raw_ref<const TabContainerController> controller_;
+  const raw_ref<const TabContainerController, DanglingUntriaged> controller_;
 
   // Callback to get the necessary View objects from the owning tabstrip.
   GetTabsCallback get_tabs_callback_;

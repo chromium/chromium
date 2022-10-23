@@ -83,7 +83,7 @@ class SidePanelToolbarButton : public ToolbarButton,
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_model_scoped_observation_{this};
 
-  raw_ptr<views::View> side_panel_webview_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> side_panel_webview_ = nullptr;
 
   // Observes and listens to side panel alignment changes.
   PrefChangeRegistrar pref_change_registrar_;

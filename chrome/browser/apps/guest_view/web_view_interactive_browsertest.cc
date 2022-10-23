@@ -504,8 +504,8 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
  protected:
   TestGuestViewManagerFactory factory_;
   // Only set if `SetupTest` or `TestHelper` are called.
-  raw_ptr<guest_view::GuestViewBase> guest_view_;
-  raw_ptr<content::WebContents> embedder_web_contents_;
+  raw_ptr<guest_view::GuestViewBase, DanglingUntriaged> guest_view_;
+  raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
 
   gfx::Point corner_;
   bool mouse_click_result_;

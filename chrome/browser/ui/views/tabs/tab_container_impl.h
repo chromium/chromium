@@ -321,7 +321,7 @@ class TabContainerImpl : public TabContainer,
   // the remove animation completes.
   views::ViewModelT<Tab> tabs_view_model_;
 
-  const raw_ref<TabContainerController> controller_;
+  const raw_ref<TabContainerController, DanglingUntriaged> controller_;
 
   const raw_ptr<TabHoverCardController, DanglingUntriaged>
       hover_card_controller_;
