@@ -519,6 +519,8 @@ blink_core_sources_layout = [
   "ng/ng_absolute_utils.h",
   "ng/ng_anchor_query.cc",
   "ng/ng_anchor_query.h",
+  "ng/ng_anchor_query_map.cc",
+  "ng/ng_anchor_query_map.h",
   "ng/ng_baseline_utils.h",
   "ng/ng_block_break_token.cc",
   "ng/ng_block_break_token.h",

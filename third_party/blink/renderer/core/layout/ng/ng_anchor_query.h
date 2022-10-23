@@ -9,10 +9,8 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
 #include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -22,9 +20,9 @@
 
 namespace blink {
 
-class LayoutBox;
 class LayoutObject;
 class NGLogicalAnchorQuery;
+class NGLogicalAnchorQueryMap;
 class NGPhysicalFragment;
 struct NGLogicalAnchorReference;
 
@@ -145,47 +143,6 @@ class CORE_EXPORT NGLogicalAnchorQuery
 
   HeapHashMap<AtomicString, Member<NGLogicalAnchorReference>>
       anchor_references_;
-};
-
-// This computes anchor queries for each containing block by traversing
-// descendants.
-//
-// Normally anchor queries are propagated to the containing block chain during
-// the layout. However, there are somme exceptions.
-// 1. When the containing block is an inline box, all OOFs are added to their
-// inline formatting context.
-// 2. When the containing block is in block fragmentation context, all OOFs are
-// added to their fragmentainers.
-// In such cases, traversing descendants is needed to compute anchor queries.
-class CORE_EXPORT NGLogicalAnchorQueryMap {
-  STACK_ALLOCATED();
-
- public:
-  NGLogicalAnchorQueryMap(const LayoutBox& root_box,
-                          const NGLogicalLinkVector& children,
-                          WritingDirectionMode writing_direction);
-
-  bool IsEmpty() const { return !has_anchor_queries_; }
-
-  // Get |NGLogicalAnchorQuery| in the stitched coordinate system for the given
-  // containing block. If there is no anchor query for the containing block,
-  // returns an empty instance.
-  const NGLogicalAnchorQuery& AnchorQuery(
-      const LayoutObject& containing_block) const;
-
-  // Update |children| when their anchor queries are changed.
-  void SetChildren(const NGLogicalLinkVector& children);
-
- private:
-  void Update(const LayoutObject& layout_object) const;
-
-  mutable HeapHashMap<Member<const LayoutObject>, Member<NGLogicalAnchorQuery>>
-      queries_;
-  mutable const LayoutObject* computed_for_ = nullptr;
-  const LayoutBox& root_box_;
-  const NGLogicalLinkVector* children_ = nullptr;
-  WritingDirectionMode writing_direction_;
-  bool has_anchor_queries_ = false;
 };
 
 class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
