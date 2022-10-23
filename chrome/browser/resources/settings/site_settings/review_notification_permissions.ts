@@ -195,7 +195,7 @@ export class SettingsReviewNotificationPermissionsElement extends
     // The already rendered <cr-row>s are reused as the model is updated,
     // so we need to reset their CSS classes.
     const rows = this.shadowRoot!.querySelectorAll(
-        '.notification-permissions-list .cr-row');
+        '.notification-permissions-list .site-entry');
     for (const row of rows) {
       row.classList.remove('removed');
     }
@@ -308,7 +308,7 @@ export class SettingsReviewNotificationPermissionsElement extends
 
   private hideItem_(origin?: string) {
     const rows = this.shadowRoot!.querySelectorAll(
-        '.notification-permissions-list .cr-row');
+        '.notification-permissions-list .site-entry');
 
     // Remove the row that corresponds to |origin|. If no origin is specified,
     // remove all rows.
