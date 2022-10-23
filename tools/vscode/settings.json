@@ -57,6 +57,9 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
 
+  // Disable automatic task detection to speed up opening the task menu.
+  "task.autoDetect": "off",
+
   // Used by tasks.json for integration with Chrome tests and builds.
   "chrome.outputDir": "${workspaceFolder}/out/current_link",
 
