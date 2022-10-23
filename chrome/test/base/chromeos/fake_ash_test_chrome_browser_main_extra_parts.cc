@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/test/allow_check_is_test_to_be_called.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -28,7 +28,7 @@ constexpr char kAshReadyFilePathFlag[] = "ash-ready-file-path";
 
 FakeAshTestChromeBrowserMainExtraParts::FakeAshTestChromeBrowserMainExtraParts()
     : test_controller_ash_(std::make_unique<crosapi::TestControllerAsh>()) {
-  base::test::AllowCheckIsTestToBeCalled();
+  base::test::AllowCheckIsTestForTesting();
 }
 
 FakeAshTestChromeBrowserMainExtraParts::

@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Note: `base::AllowCheckIsTestToBeCalled` is being called in
+// Note: `base::AllowCheckIsTestForTesting` is being called in
 // `base/test/launcher/unit_test_launcher.cc` before this test is run.
 //
 // Thus, `CHECK_IS_TEST()` will succeed.

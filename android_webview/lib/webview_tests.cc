@@ -4,7 +4,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/test/allow_check_is_test_to_be_called.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_suite.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/embedder.h"
@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
                                   ",WebViewNewInvalidateHeuristic");
 
   gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
-  base::test::AllowCheckIsTestToBeCalled();
+  base::test::AllowCheckIsTestForTesting();
   base::TestSuite test_suite(argc, argv);
   mojo::core::Init();
   return test_suite.Run();
