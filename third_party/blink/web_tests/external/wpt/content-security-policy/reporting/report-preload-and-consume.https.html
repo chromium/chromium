@@ -15,7 +15,6 @@
         const uid = token();
         const win = window.open(`./support/preload-csp-report.https.sub.html?uid=${uid}`);
         t.add_cleanup(() => win.close());
-        await wait(3000);
         const reports = await pollReports(endpoint, uid);
         const failures = reports.filter(r => r['csp-report']['blocked-uri'].endsWith('fail.png'));
         assert_equals(failures.length, 2);

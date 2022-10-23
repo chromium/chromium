@@ -68,22 +68,22 @@
 
     test(function() {
       const circleAtOrigin = document.getElementById("circle-at-origin");
-      assert_true(circleAtOrigin.isPointInFill(adaptPoint({ x: 10, y: 0 })), "circle edge 3 o'clock");
-      assert_true(circleAtOrigin.isPointInFill(adaptPoint({ x: 0, y: 10 })), "circle edge 6 o'clock");
+      assert_true(circleAtOrigin.isPointInFill({ x: 10, y: 0 }), "circle edge 3 o'clock");
+      assert_true(circleAtOrigin.isPointInFill({ x: 0, y: 10 }), "circle edge 6 o'clock");
       const evenOdd = document.getElementById("rectangular-outline-evenodd");
-      assert_true(evenOdd.isPointInFill(adaptPoint({ x: 200, y: 250 })),
+      assert_true(evenOdd.isPointInFill({ x: 200, y: 250 }),
                   "rectangular path left outside edge");
-      assert_true(evenOdd.isPointInFill(adaptPoint({ x: 220, y: 250 })),
+      assert_true(evenOdd.isPointInFill({ x: 220, y: 250 }),
                   "rectangular path left inside edge");
-      assert_true(evenOdd.isPointInFill(adaptPoint({ x: 250, y: 300 })),
+      assert_true(evenOdd.isPointInFill({ x: 250, y: 300 }),
                   "rectangular path bottom outside edge");
-      assert_true(evenOdd.isPointInFill(adaptPoint({ x: 250, y: 280 })),
+      assert_true(evenOdd.isPointInFill({ x: 250, y: 280 }),
                   "rectangular path bottom inside edge");
       const rectangle = document.getElementById("basic-rectangle");
-      assert_true(rectangle.isPointInFill(adaptPoint({ x: 140, y: 200 })), "rect top edge");
-      assert_true(rectangle.isPointInFill(adaptPoint({ x: 190, y: 250 })), "rect right edge");
-      assert_true(rectangle.isPointInFill(adaptPoint({ x: 140, y: 300 })), "rect bottom edge");
-      assert_true(rectangle.isPointInFill(adaptPoint({ x: 90, y: 250 })), "rect left edge");
+      assert_true(rectangle.isPointInFill({ x: 140, y: 200 }), "rect top edge");
+      assert_true(rectangle.isPointInFill({ x: 190, y: 250 }), "rect right edge");
+      assert_true(rectangle.isPointInFill({ x: 140, y: 300 }), "rect bottom edge");
+      assert_true(rectangle.isPointInFill({ x: 90, y: 250 }), "rect left edge");
     }, document.title + ", points on the shape boundary are inside.");
 
     test(function() {
