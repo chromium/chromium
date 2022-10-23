@@ -64,6 +64,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2560420686485554789">Chromium het bergingtoegang nodig om lêers af te laai</translation>
 <translation id="2572494885440352020">Chromium-helper</translation>
 <translation id="2583187216237139145">Enige Chromium-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Hou aan om Chromium te gebruik</translation>
 <translation id="2648074677641340862">'n Bedryfstelselfout het voorgekom met installering. Laai Chromium asseblief weer af.</translation>
 <translation id="2661879430930417727">As jy 'n toestel deel, kan vriende en familie apart blaai en Chromium opstel net soos hulle dit wil hê</translation>
 <translation id="2669853942967761236">Chromium het hierdie argieflêer geblokkeer omdat dit dalk wanware versteek</translation>
@@ -105,6 +106,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3387527074123400161">Chromium-bedryfstelsel</translation>
 <translation id="3406848076815591792">Skakel oor na bestaande Chromium-profiel?</translation>
 <translation id="3412460710772753638">In Wagwoordbestuurder op hierdie toestel</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Jou admin het Chromium opgestel om toe te maak as dit meer as 1 minuut lank onaktief was.}other{Jou admin het Chromium opgestel om toe te maak as dit meer as # minute lank onaktief was.}}</translation>
 <translation id="3430503420100763906">Met Chromium-profiele kan jy al jou Chromium-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
 <translation id="347328004046849135">Chromium sal jou in kennis stel wanneer jy met 'n gekompromitteerde wagwoord aanmeld</translation>
 <translation id="3474745554856756813">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
@@ -186,6 +188,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="538767207339317086">Laat Chromium-aanmelding toe</translation>
 <translation id="5398878173008909840">Daar is 'n nuwe weergawe van Chromium beskikbaar.</translation>
 <translation id="5405650547142096840">Verwyder van Chromium af</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium gaan nou toemaak.}=1{Chromium gaan oor 1 sekonde toemaak.}other{Chromium gaan oor # sekondes toemaak.}}</translation>
 <translation id="5427571867875391349">Stel Chromium as jou verstekblaaier</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium sal dalk nie reg werk nie omdat dit nie meer in hierdie Linux-uitreiking gesteun word nie</translation>
@@ -274,6 +277,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6940431691900807093">Later kan ’n werf wat jy besoek Chromium vra om jou belangstellings te sien om die advertensies wat jy sien, te personaliseer. Chromium kan tot 3 belangstellings deel.</translation>
 <translation id="6964305034639999644">Maak skakel in 'n incognitovenster in Chromium oop</translation>
 <translation id="6978145336957848883">Swak wagwoorde is maklik om te raai. Laat Chromium <ph name="BEGIN_LINK" />sterk wagwoorde vir jou skep en onthou<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium is onaktief</translation>
 <translation id="6985329841647292029">Chromium-bedryfstel se bepalings</translation>
 <translation id="6990124437352146030">Chromium het toestemming nodig om toegang te kry tot jou mikrofoon vir hierdie werf</translation>
 <translation id="7025789849649390912">Installering is gestop.</translation>

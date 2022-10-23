@@ -62,6 +62,7 @@
 <translation id="2560420686485554789">‏Chromium برای بارگیری فایل‌ها باید به حافظه دسترسی داشته باشد</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">‏سرپرست نمایه کاری می‌تواند داده‌های Chromium را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">‏ادامه استفاده از Chromium</translation>
 <translation id="2648074677641340862">‏یک خطای سیستم‌عامل در طول نصب روی داد. لطفاً Chromium را دوباره نصب کنید.</translation>
 <translation id="2661879430930417727">‏اگر از دستگاهی به‌صورت مشترک استفاده می‌کنید، دوستان و اعضای خانواده می‌توانند جداگانه مرور کنند و Chromium را به‌شیوه خودشان تنظیم کنند</translation>
 <translation id="2669853942967761236">‏Chromium این فایل بایگانی را مسدود کرده است چون ممکن است بدافزار پنهان کرده باشد</translation>
@@ -102,6 +103,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏به نمایه Chromium موجود می‌روید؟</translation>
 <translation id="3412460710772753638">در «مدیر گذرواژه» در این دستگاه</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{‏سرپرست شما Chromium را طوری پیکربندی کرده است که اگر بیش‌از یک دقیقه بدون فعالیت باشد بسته شود.}one{‏سرپرست شما Chromium را طوری پیکربندی کرده است که اگر بیش‌از # دقیقه بدون فعالیت باشد بسته شود.}other{‏سرپرست شما Chromium را طوری پیکربندی کرده است که اگر بیش‌از # دقیقه بدون فعالیت باشد بسته شود.}}</translation>
 <translation id="3430503420100763906">‏با نمایه‌های Chromium می‌توانید همه چیزتان را در Chromium جدا کنید. برای دوستان و اعضای خانواده‌تان نمایه ایجاد کنید، یا کار و سرگرمی را ازهم جدا کنید.</translation>
 <translation id="347328004046849135">‏وقتی با گذرواژه‌ای لورفته به سیستم وارد می‌شوید، Chromium شما را مطلع می‌کند</translation>
 <translation id="3474745554856756813">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
@@ -183,6 +185,7 @@
 <translation id="538767207339317086">‏مجاز کردن ورود به سیستم Chromium</translation>
 <translation id="5398878173008909840">‏نسخه جدیدی از Chromium موجود است.</translation>
 <translation id="5405650547142096840">‏حذف از Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{‏Chromium اکنون بسته می‌شود.}=1{‏Chromium تا یک ثانیه دیگر بسته می‌شود.}one{‏Chromium تا # ثانیه دیگر بسته می‌شود.}other{‏Chromium تا # ثانیه دیگر بسته می‌شود.}}</translation>
 <translation id="5427571867875391349">‏تنظیم Chromium به عنوان مرورگر پیش‌فرضتان</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">‏Chromium ممکن است درست کار نکند زیرا این توزیع Linux دیگر از آن پشتیبانی نمی‌کند.</translation>
@@ -271,6 +274,7 @@
 <translation id="6940431691900807093">‏بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی کردن آگهی‌هایی که به شما نشان می‌دهد از Chromium بخواهد علایق شما را ببیند. Chromium می‌تواند حداکثر ۳ علاقه را هم‌رسانی کند.</translation>
 <translation id="6964305034639999644">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="6978145336957848883">‏گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. به Chromium اجازه دهید <ph name="BEGIN_LINK" />گذرواژه‌هایی قوی برایتان ایجاد کند و آن‌ها را به‌خاطر بسپارد<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">‏Chromium غیرفعال است</translation>
 <translation id="6985329841647292029">‏شرایط ChromiumOS</translation>
 <translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>
 <translation id="7025789849649390912">نصب متوقف شد.</translation>

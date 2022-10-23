@@ -64,6 +64,7 @@
 <translation id="2560420686485554789">ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ Chromium ਨੂੰ ਸਟੋਰੋਜ ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="2572494885440352020">Chromium ਸਹਾਇਕ</translation>
 <translation id="2583187216237139145">ਇਸ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਦੇ ਦੌਰਾਨ ਤਿਆਰ ਕੀਤਾ ਕੋਈ ਵੀ Chromium ਡਾਟਾ (ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਰਚਨਾ) ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਹਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Chromium ਨੂੰ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2648074677641340862">ਸਥਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ Chromium ਨੂੰ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="2661879430930417727">ਜੇ ਤੁਸੀਂ ਕੋਈ ਡੀਵਾਈਸ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਦੋਸਤ ਅਤੇ ਪਰਿਵਾਰ ਵੱਖਰੇ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹਨ ਅਤੇ ਆਪਣੇ ਤਰੀਕੇ ਨਾਲ Chromium ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹਨ</translation>
 <translation id="2669853942967761236">Chromium ਨੇ ਇਸ ਪੁਰਾਲੇਖ ਫ਼ਾਈਲ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ ਕਿਉਂਕਿ ਇਸ ਵਿੱਚ ਮਾਲਵੇਅਰ ਲੁਕਿਆ ਹੋ ਸਕਦਾ ਹੈ</translation>
@@ -105,6 +106,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ਕੀ ਮੌਜੂਦਾ Chromium ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਜਾਣਾ ਹੈ?</translation>
 <translation id="3412460710772753638">ਇਸ ਡੀਵਾਈਸ 'ਤੇ Password Manager ਵਿੱਚ</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{ਜੇ Chromium 1 ਮਿੰਟ ਤੋਂ ਵੱਧ ਸਮੇਂ ਤੱਕ ਅਕਿਰਿਆਸ਼ੀਲ ਰਹਿੰਦਾ ਹੈ, ਤਾਂ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸਦਾ ਬੰਦ ਕਰਨ 'ਤੇ ਸੰਰੂਪਣ ਕੀਤਾ ਹੋਇਆ ਹੈ।}one{ਜੇ Chromium # ਮਿੰਟ ਤੋਂ ਵੱਧ ਸਮੇਂ ਤੱਕ ਅਕਿਰਿਆਸ਼ੀਲ ਰਹਿੰਦਾ ਹੈ, ਤਾਂ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸਦਾ ਬੰਦ ਕਰਨ 'ਤੇ ਸੰਰੂਪਣ ਕੀਤਾ ਹੋਇਆ ਹੈ।}other{ਜੇ Chromium # ਮਿੰਟਾਂ ਤੋਂ ਵੱਧ ਸਮੇਂ ਤੱਕ ਅਕਿਰਿਆਸ਼ੀਲ ਰਹਿੰਦਾ ਹੈ, ਤਾਂ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸਦਾ ਬੰਦ ਕਰਨ 'ਤੇ ਸੰਰੂਪਣ ਕੀਤਾ ਹੋਇਆ ਹੈ।}}</translation>
 <translation id="3430503420100763906">Chromium ਪ੍ਰੋਫਾਈਲਾਂ ਨਾਲ ਤੁਸੀਂ ਆਪਣੀ ਸਾਰੀ Chromium ਸਮੱਗਰੀ ਨੂੰ ਵੱਖ ਕਰ ਸਕਦੇ ਹੋ। ਦੋਸਤਾਂ ਅਤੇ ਪਰਿਵਾਰ ਲਈ ਪ੍ਰੋਫਾਈਲਾਂ ਬਣਾਓ ਜਾਂ ਕਾਰਜ ਅਤੇ ਮੌਜ-ਮਸਤੀ ਵਿੱਚ ਵੰਡੋ।</translation>
 <translation id="347328004046849135">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਿਸੇ ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ Chromium ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰੇਗਾ</translation>
 <translation id="3474745554856756813">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ <ph name="ITEMS_COUNT" /> ਆਈਟਮਾਂ ਮਿਟਾ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chromium 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -186,6 +188,7 @@
 <translation id="538767207339317086">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
 <translation id="5398878173008909840">Chromium ਦਾ ਇੱਕ ਨਵਾਂ ਰੂਪ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="5405650547142096840">Chromium ਤੋਂ ਹਟਾਓ</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium ਹੁਣ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।}=1{Chromium 1 ਸਕਿੰਟ ਵਿੱਚ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।}other{Chromium # ਸਕਿੰਟਾਂ ਵਿੱਚ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।}}</translation>
 <translation id="5427571867875391349">Chromium ਨੂੰ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਦੇ ਤੌਰ 'ਤੇ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium ਬੀਟਾ</translation>
 <translation id="5473971139929175403">ਹੋ ਸਕਦਾ ਹੈ Chromium ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਨਾ ਕਰੇ ਕਿਉਂਕਿ ਇਹ ਹੁਣ ਇਸ Linux ਵੰਡ 'ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
@@ -274,6 +277,7 @@
 <translation id="6940431691900807093">ਬਾਅਦ ਵਿੱਚ, ਤੁਸੀਂ ਜਿਹੜੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ ਉਹ Chromium ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਨੂੰ ਦੇਖਣ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ। Chromium 3 ਦਿਲਚਸਪੀਆਂ ਤੱਕ ਸਾਂਝੀਆਂ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6964305034639999644">Chromium ਇਨ&amp;ਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="6978145336957848883">ਕਮਜ਼ੋਰ ਪਾਸਵਰਡਾਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣਾ ਆਸਾਨ ਹੁੰਦਾ ਹੈ। Chromium ਨੂੰ <ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਲਈ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾਉਣ ਅਤੇ ਯਾਦ ਰੱਖਣ<ph name="END_LINK" /> ਦਿਓ।</translation>
+<translation id="6984667024406244807">Chromium ਅਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="6985329841647292029">ChromiumOS ਦੇ ਨਿਯਮ</translation>
 <translation id="6990124437352146030">Chromium ਨੂੰ ਇਸ ਸਾਈਟ ਵਾਸਤੇ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7025789849649390912">ਸਥਾਪਨਾ ਨੂੰ ਰੋਕਿਆ ਗਿਆ।</translation>
