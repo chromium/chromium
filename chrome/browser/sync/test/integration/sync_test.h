@@ -419,7 +419,7 @@ class SyncTest : public PlatformBrowserTest {
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
-  raw_ptr<Profile> previous_profile_;
+  raw_ptr<Profile, DanglingUntriaged> previous_profile_;
 
   // Number of sync clients that will be created by a test.
   int num_clients_;
@@ -478,7 +478,7 @@ class SyncTest : public PlatformBrowserTest {
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
-  raw_ptr<Profile> verifier_;
+  raw_ptr<Profile, DanglingUntriaged> verifier_;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.

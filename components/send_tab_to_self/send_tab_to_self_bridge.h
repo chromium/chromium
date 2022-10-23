@@ -171,7 +171,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   // A pointer to the most recently used entry used for deduplication.
-  raw_ptr<const SendTabToSelfEntry> mru_entry_;
+  raw_ptr<const SendTabToSelfEntry, DanglingUntriaged> mru_entry_;
 
   // The list of target devices, deduplicated and sorted by most recently used.
   std::vector<TargetDeviceInfo> target_device_info_sorted_list_;

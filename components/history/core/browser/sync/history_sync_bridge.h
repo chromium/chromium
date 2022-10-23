@@ -116,7 +116,7 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the backend, which we're syncing local changes from
   // and sync changes to. Never null.
-  const raw_ptr<HistoryBackendForSync> history_backend_;
+  const raw_ptr<HistoryBackendForSync, DanglingUntriaged> history_backend_;
 
   // Whether we're currently processing changes from the syncer. While this is
   // true, we ignore any local url changes, since we triggered them.
@@ -124,7 +124,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the database, which is for storing sync metadata
   // and state. Can be null in case of unrecoverable database errors.
-  raw_ptr<HistorySyncMetadataDatabase> sync_metadata_database_;
+  raw_ptr<HistorySyncMetadataDatabase, DanglingUntriaged>
+      sync_metadata_database_;
 
   // HistoryBackend uses SequencedTaskRunner, so this makes sure
   // HistorySyncBridge is used on the correct sequence.

@@ -39,7 +39,7 @@ class MigrationWatcher : public syncer::MigrationObserver {
 
  private:
   // The SyncServiceImplHarness to watch.
-  const raw_ptr<SyncServiceImplHarness> harness_;
+  const raw_ptr<SyncServiceImplHarness, DanglingUntriaged> harness_;
 
   // The set of data types currently undergoing migration.
   syncer::ModelTypeSet pending_types_;
