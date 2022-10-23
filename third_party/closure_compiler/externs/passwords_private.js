@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -434,13 +434,13 @@ chrome.passwordsPrivate.addPassword = function(options, callback) {};
 chrome.passwordsPrivate.extendAuthValidity = function(callback) {};
 
 /**
- * Starts system authentication. If successful changes
- * `kBiometricAuthenticationBeforeFilling` value.
+ * Switches Biometric authentication before filling state after successful
+ * authentication.
  */
 chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState = function() {};
 
 /**
- * Shows a dialog for creating a shortcut for the PasswordManager page.
+ * Shows a dialog for creating a shortcut for the Password Manager page.
  */
 chrome.passwordsPrivate.showAddShortcutDialog = function() {};
 
