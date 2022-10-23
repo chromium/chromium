@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -170,12 +171,18 @@ std::unique_ptr<SearchController> CreateSearchController(
   size_t os_settings_search_group_id = controller->AddGroup(kGenericMaxResults);
   auto* os_settings_manager =
       ash::settings::OsSettingsManagerFactory::GetForProfile(profile);
-  controller->AddProvider(
-      os_settings_search_group_id,
-      std::make_unique<OsSettingsProvider>(
-          profile,
-          os_settings_manager ? os_settings_manager->search_handler() : nullptr,
-          os_settings_manager ? os_settings_manager->hierarchy() : nullptr));
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  if (os_settings_manager && app_service_proxy) {
+    controller->AddProvider(
+        os_settings_search_group_id,
+        std::make_unique<OsSettingsProvider>(
+            profile,
+            os_settings_manager ? os_settings_manager->search_handler()
+                                : nullptr,
+            os_settings_manager ? os_settings_manager->hierarchy() : nullptr,
+            app_service_proxy));
+  }
 
   if (ash::features::IsProductivityLauncherEnabled() &&
       base::GetFieldTrialParamByFeatureAsBool(

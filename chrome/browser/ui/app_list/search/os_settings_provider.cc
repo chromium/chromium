@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
@@ -162,10 +161,12 @@ void OsSettingsResult::Open(int event_flags) {
 OsSettingsProvider::OsSettingsProvider(
     Profile* profile,
     ash::settings::SearchHandler* search_handler,
-    const ash::settings::Hierarchy* hierarchy)
+    const ash::settings::Hierarchy* hierarchy,
+    apps::AppServiceProxy* app_service_proxy)
     : profile_(profile),
       search_handler_(search_handler),
-      hierarchy_(hierarchy) {
+      hierarchy_(hierarchy),
+      app_service_proxy_(app_service_proxy) {
   DCHECK(profile_);
 
   // |search_handler_| can be nullptr in the case that the new OS settings
@@ -183,19 +184,18 @@ OsSettingsProvider::OsSettingsProvider(
   search_handler_->Observe(
       search_results_observer_receiver_.BindNewPipeAndPassRemote());
 
-  app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  DCHECK(app_service_proxy_);
+  if (app_service_proxy_) {
+    Observe(&app_service_proxy_->AppRegistryCache());
 
-  Observe(&app_service_proxy_->AppRegistryCache());
-
-  app_service_proxy_->LoadIcon(
-      app_service_proxy_->AppRegistryCache().GetAppType(
-          web_app::kOsSettingsAppId),
-      web_app::kOsSettingsAppId, apps::IconType::kStandard,
-      GetAppIconDimension(),
-      /*allow_placeholder_icon=*/false,
-      base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                     weak_factory_.GetWeakPtr()));
+    app_service_proxy_->LoadIcon(
+        app_service_proxy_->AppRegistryCache().GetAppType(
+            web_app::kOsSettingsAppId),
+        web_app::kOsSettingsAppId, apps::IconType::kStandard,
+        GetAppIconDimension(),
+        /*allow_placeholder_icon=*/false,
+        base::BindOnce(&OsSettingsProvider::OnLoadIcon,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 OsSettingsProvider::~OsSettingsProvider() = default;
@@ -268,7 +268,8 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
 
   // Request the Settings app icon when either the readiness or the icon has
   // changed.
-  if (update.ReadinessChanged() || update.IconKeyChanged()) {
+  if (app_service_proxy_ &&
+      (update.ReadinessChanged() || update.IconKeyChanged())) {
     app_service_proxy_->LoadIcon(update.AppType(), web_app::kOsSettingsAppId,
                                  apps::IconType::kStandard,
                                  GetAppIconDimension(),

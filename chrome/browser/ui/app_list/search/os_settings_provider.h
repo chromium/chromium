@@ -60,7 +60,8 @@ class OsSettingsProvider : public SearchProvider,
  public:
   OsSettingsProvider(Profile* profile,
                      ash::settings::SearchHandler* search_handler,
-                     const ash::settings::Hierarchy* hierarchy);
+                     const ash::settings::Hierarchy* hierarchy,
+                     apps::AppServiceProxy* app_service_proxy);
   ~OsSettingsProvider() override;
 
   OsSettingsProvider(const OsSettingsProvider&) = delete;
