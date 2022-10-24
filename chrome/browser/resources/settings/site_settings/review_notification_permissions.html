@@ -40,6 +40,12 @@
     min-width: 0;
   }
 
+  /* TODO(crbug.com/1345920): Use a .list-item instead of .cr-row. */
+  .notification-permissions-list .cr-row {
+    border-top-width: 0;
+    padding-inline-end: 0;
+  }
+
   iron-icon[icon='settings:notifications-none'] {
     background-color: var(--google-blue-50);
     fill: var(--google-blue-600);
@@ -115,7 +121,7 @@
       opened="[[notificationPermissionReviewListExpanded_]]">
     <template id="notificationPermissionReviewList" is="dom-repeat"
         items="[[sites_]]">
-      <div class$="cr-row [[getClassForIndex_(index)]]">
+      <div class="cr-row">
         <site-favicon url="[[item.origin]]"></site-favicon>
         <div id="displayName_[[index]]" class="display-name cr-padded-text">
           <div class="site-representation">[[item.origin]]</div>

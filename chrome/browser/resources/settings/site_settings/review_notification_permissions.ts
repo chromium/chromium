@@ -121,14 +121,6 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.sitesLoaded_ = true;
   }
 
-  /**
-   * @return the correct CSS class to apply depending on this notification
-   *     permissions entry based on the index.
-   */
-  private getClassForIndex_(index: number): string {
-    return index === 0 ? 'first' : '';
-  }
-
   /* Show action menu when clicked to three dot menu. */
   private onShowActionMenuClick_(e: DomRepeatEvent<NotificationPermission>) {
     this.lastOrigin_ = e.model.item.origin;
