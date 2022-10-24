@@ -579,30 +579,26 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChip(
     case HIGHLIGHTED_ACTION:
     case DONE_ACTION:
       return Java_AssistantChip_createHighlightedAssistantChip(
-          env, chip.icon(),
+          env, static_cast<int>(chip.type()), chip.icon(),
           base::android::ConvertUTF8ToJavaString(env, chip.text()),
           /* disabled = */ false, chip.sticky(), /* visible = */ true,
           chip.has_content_description()
               ? base::android::ConvertUTF8ToJavaString(
                     env, chip.content_description())
-              : nullptr,
-          /* optionalIdentifier = */
-          base::android::ConvertUTF8ToJavaString(env, std::string()));
+              : nullptr);
 
     case NORMAL_ACTION:
     case CANCEL_ACTION:
     case CLOSE_ACTION:
     case FEEDBACK_ACTION:
       return Java_AssistantChip_createHairlineAssistantChip(
-          env, chip.icon(),
+          env, static_cast<int>(chip.type()), chip.icon(),
           base::android::ConvertUTF8ToJavaString(env, chip.text()),
           /* disabled = */ false, chip.sticky(), /* visible = */ true,
           chip.has_content_description()
               ? base::android::ConvertUTF8ToJavaString(
                     env, chip.content_description())
-              : nullptr,
-          /* optionalIdentifier= */
-          base::android::ConvertUTF8ToJavaString(env, std::string()));
+              : nullptr);
   }
 }
 

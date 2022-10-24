@@ -56,9 +56,35 @@ public class AssistantChip {
     }
 
     /**
+     * This is the java version of the ChipType enum in
+     * //components/autofill_assistant/browser/model.proto. DO NOT change this without adapting that
+     * proto enum.
+     */
+    @IntDef({NativeChipType.UNKNOWN_CHIP_TYPE, NativeChipType.HIGHLIGHTED_ACTION,
+            NativeChipType.NORMAL_ACTION, NativeChipType.CANCEL_ACTION, NativeChipType.CLOSE_ACTION,
+            NativeChipType.DONE_ACTION, NativeChipType.FEEDBACK_ACTION})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NativeChipType {
+        int UNKNOWN_CHIP_TYPE = 0;
+        int HIGHLIGHTED_ACTION = 1;
+        // 2 is no longer used.
+        int NORMAL_ACTION = 3;
+        int CANCEL_ACTION = 4;
+        int CLOSE_ACTION = 5;
+        int DONE_ACTION = 6;
+        int FEEDBACK_ACTION = 7;
+    }
+
+    /**
      * The type of the chip. This will impact the background, border and text colors of the chip.
      */
     private final @Type int mType;
+
+    /**
+     * The native type of the chip. This is used internally and does not affect the look or feel of
+     * the chip.
+     */
+    private final @NativeChipType int mNativeType;
 
     /** The icon, shown next to the text.*/
     private final @Icon int mIcon;
@@ -93,41 +119,33 @@ public class AssistantChip {
     /** The content description for the chip. */
     private final @Nullable String mContentDescription;
 
-    /**
-     * Optional identifier used to distinguish two otherwise equal buttons (like close and cancel).
-     * It's only necessary when a chip in a container needs to update its listener without changing
-     * any other property or removing it first.
-     */
-    private final String mOptionalIdentifier;
-
-    public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
-            boolean sticky, boolean visible, @Nullable String contentDescription,
-            String optionalIdentifier) {
+    public AssistantChip(@Type int type, @NativeChipType int nativeType, @Icon int icon,
+            String text, boolean disabled, boolean sticky, boolean visible,
+            @Nullable String contentDescription) {
         mType = type;
+        mNativeType = nativeType;
         mIcon = icon;
         mText = text;
         mDisabled = disabled;
         mSticky = sticky;
         mVisible = visible;
-        mOptionalIdentifier = optionalIdentifier;
         mContentDescription = contentDescription;
     }
 
-    public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
-            boolean sticky, boolean visible, @Nullable String contentDescription) {
-        this(type, icon, text, disabled, sticky, visible, contentDescription, "");
-    }
-
-    public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
-            boolean sticky, boolean visible, Runnable selectedListener,
-            @Nullable String contentDescription) {
-        this(type, icon, text, disabled, sticky, visible, contentDescription);
+    public AssistantChip(@Type int type, @NativeChipType int nativeType, @Icon int icon,
+            String text, boolean disabled, boolean sticky, boolean visible,
+            Runnable selectedListener, @Nullable String contentDescription) {
+        this(type, nativeType, icon, text, disabled, sticky, visible, contentDescription);
         assert selectedListener != null;
         mSelectedListener = selectedListener;
     }
 
     public int getType() {
         return mType;
+    }
+
+    public int getNativeType() {
+        return mNativeType;
     }
 
     public int getIcon() {
@@ -183,10 +201,6 @@ public class AssistantChip {
         return mOnPopupItemSelected;
     }
 
-    public String getOptionalIdentifier() {
-        return mOptionalIdentifier;
-    }
-
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof AssistantChip)) {
@@ -197,7 +211,7 @@ public class AssistantChip {
         return this.getType() == that.getType() && this.getText().equals(that.getText())
                 && this.getIcon() == that.getIcon() && this.isSticky() == that.isSticky()
                 && this.isDisabled() == that.isDisabled() && this.isVisible() == that.isVisible()
-                && this.getOptionalIdentifier().equals(that.getOptionalIdentifier());
+                && this.getNativeType() == that.getNativeType();
     }
 
     /**
@@ -205,11 +219,11 @@ public class AssistantChip {
      * before the view is inflated.
      */
     @CalledByNative
-    public static AssistantChip createHairlineAssistantChip(int icon, String text, boolean disabled,
-            boolean sticky, boolean visible, @Nullable String contentDescription,
-            String optionalIdentifier) {
-        return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                visible, contentDescription, optionalIdentifier);
+    public static AssistantChip createHairlineAssistantChip(@NativeChipType int nativeType,
+            int icon, String text, boolean disabled, boolean sticky, boolean visible,
+            @Nullable String contentDescription) {
+        return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, nativeType, icon, text,
+                disabled, sticky, visible, contentDescription);
     }
 
     /**
@@ -217,11 +231,11 @@ public class AssistantChip {
      * before the view is inflated.
      */
     @CalledByNative
-    public static AssistantChip createHighlightedAssistantChip(int icon, String text,
-            boolean disabled, boolean sticky, boolean visible, @Nullable String contentDescription,
-            String optionalIdentifier) {
-        return new AssistantChip(Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible,
-                contentDescription, optionalIdentifier);
+    public static AssistantChip createHighlightedAssistantChip(@NativeChipType int nativeType,
+            int icon, String text, boolean disabled, boolean sticky, boolean visible,
+            @Nullable String contentDescription) {
+        return new AssistantChip(Type.BUTTON_FILLED_BLUE, nativeType, icon, text, disabled, sticky,
+                visible, contentDescription);
     }
 
     @CalledByNative

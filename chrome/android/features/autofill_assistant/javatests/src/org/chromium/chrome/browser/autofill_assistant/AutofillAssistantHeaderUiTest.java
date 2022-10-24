@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -51,6 +52,7 @@ import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.carousel.AssistantChip;
 import org.chromium.components.autofill_assistant.carousel.AssistantChip.Icon;
+import org.chromium.components.autofill_assistant.carousel.AssistantChip.NativeChipType;
 import org.chromium.components.autofill_assistant.header.AssistantHeaderCoordinator;
 import org.chromium.components.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.components.autofill_assistant.header.AssistantTtsButtonState;
@@ -64,6 +66,7 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class AutofillAssistantHeaderUiTest {
     private static class ViewHolder {
         private final TextView mStatusMessage;
@@ -75,7 +78,7 @@ public class AutofillAssistantHeaderUiTest {
             mStatusMessage = rootView.findViewById(R.id.status_message);
             mStepProgressBar = rootView.findViewById(R.id.step_progress_bar);
             mProfileIcon = rootView.findViewById(R.id.profile_image);
-            mTtsButton = (ImageView) rootView.findViewById(R.id.tts_button);
+            mTtsButton = rootView.findViewById(R.id.tts_button);
         }
     }
 
@@ -185,10 +188,10 @@ public class AutofillAssistantHeaderUiTest {
 
         String chipText = "Hello World";
         String contentDescription = "Hello World description";
-        AssistantChip chip =
-                new AssistantChip(AssistantChip.Type.BUTTON_FILLED_BLUE, Icon.DONE, chipText,
-                        /* disabled= */ false, /* sticky= */ false, /* visible= */ true,
-                        contentDescription);
+        AssistantChip chip = new AssistantChip(AssistantChip.Type.BUTTON_FILLED_BLUE,
+                NativeChipType.NORMAL_ACTION, Icon.DONE, chipText,
+                /* disabled= */ false, /* sticky= */ false, /* visible= */ true,
+                contentDescription);
 
         // Set the header chip without displaying it.
         List<AssistantChip> chips = new ArrayList<>();

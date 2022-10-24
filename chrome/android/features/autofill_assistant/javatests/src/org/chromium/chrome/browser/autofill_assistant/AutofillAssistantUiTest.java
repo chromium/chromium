@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -51,6 +52,7 @@ import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
 import org.chromium.components.autofill_assistant.carousel.AssistantCarouselModel;
 import org.chromium.components.autofill_assistant.carousel.AssistantChip;
+import org.chromium.components.autofill_assistant.carousel.AssistantChip.NativeChipType;
 import org.chromium.components.autofill_assistant.details.AssistantDetails;
 import org.chromium.components.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBox;
@@ -66,6 +68,7 @@ import java.util.List;
 
 /** Instrumentation tests for autofill assistant UI. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class AutofillAssistantUiTest {
     private String mTestPage;
     private EmbeddedTestServer mTestServer;
@@ -235,16 +238,16 @@ public class AutofillAssistantUiTest {
 
     private void testChips(InOrder inOrder, AssistantCarouselModel carouselModel,
             AssistantActionsCarouselCoordinator carouselCoordinator) {
-        List<AssistantChip> chips =
-                Arrays.asList(new AssistantChip(AssistantChip.Type.CHIP_ASSISTIVE,
-                                      AssistantChip.Icon.NONE, "chip 0",
-                                      /* disabled= */ false, /* sticky= */ false,
-                                      /* visible= */ true,
-                                      () -> {/* do nothing */}, /* contentDescription= */ ""),
-                        new AssistantChip(AssistantChip.Type.CHIP_ASSISTIVE,
-                                AssistantChip.Icon.NONE, "chip 1",
-                                /* disabled= */ false, /* sticky= */ false, /* visible= */ true,
-                                mRunnableMock, /* contentDescription= */ ""));
+        List<AssistantChip> chips = Arrays.asList(
+                new AssistantChip(AssistantChip.Type.CHIP_ASSISTIVE, NativeChipType.NORMAL_ACTION,
+                        AssistantChip.Icon.NONE, "chip 0",
+                        /* disabled= */ false, /* sticky= */ false,
+                        /* visible= */ true,
+                        () -> {/* do nothing */}, /* contentDescription= */ ""),
+                new AssistantChip(AssistantChip.Type.CHIP_ASSISTIVE, NativeChipType.NORMAL_ACTION,
+                        AssistantChip.Icon.NONE, "chip 1",
+                        /* disabled= */ false, /* sticky= */ false, /* visible= */ true,
+                        mRunnableMock, /* contentDescription= */ ""));
         TestThreadUtils.runOnUiThreadBlocking(() -> carouselModel.setChips(chips));
         RecyclerView chipsViewContainer = carouselCoordinator.getView();
         Assert.assertEquals(2, chipsViewContainer.getAdapter().getItemCount());

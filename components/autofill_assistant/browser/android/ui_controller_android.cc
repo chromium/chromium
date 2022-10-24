@@ -817,7 +817,7 @@ void UiControllerAndroid::UpdateActions(
       case HIGHLIGHTED_ACTION:
         jchip =
             Java_AutofillAssistantUiController_createHighlightedActionButton(
-                env, java_object_, chip.icon,
+                env, java_object_, static_cast<int>(chip.type), chip.icon,
                 ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
                 chip.sticky, chip.visible,
                 chip.is_content_description_set
@@ -827,7 +827,7 @@ void UiControllerAndroid::UpdateActions(
 
       case NORMAL_ACTION:
         jchip = Java_AutofillAssistantUiController_createActionButton(
-            env, java_object_, chip.icon,
+            env, java_object_, static_cast<int>(chip.type), chip.icon,
             ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
             chip.sticky, chip.visible,
             chip.is_content_description_set
@@ -839,7 +839,7 @@ void UiControllerAndroid::UpdateActions(
         // A "Send feedback" button which will show the feedback form before
         // executing the action.
         jchip = Java_AutofillAssistantUiController_createFeedbackButton(
-            env, java_object_, chip.icon,
+            env, java_object_, static_cast<int>(chip.type), chip.icon,
             ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
             chip.sticky, chip.visible,
             chip.is_content_description_set
@@ -851,7 +851,7 @@ void UiControllerAndroid::UpdateActions(
         // A Cancel button sneaks in an UNDO snackbar before executing the
         // action, while a close button behaves like a normal button.
         jchip = Java_AutofillAssistantUiController_createCancelButton(
-            env, java_object_, chip.icon,
+            env, java_object_, static_cast<int>(chip.type), chip.icon,
             ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
             chip.sticky, chip.visible,
             chip.is_content_description_set
@@ -862,7 +862,7 @@ void UiControllerAndroid::UpdateActions(
 
       case CLOSE_ACTION:
         jchip = Java_AutofillAssistantUiController_createActionButton(
-            env, java_object_, chip.icon,
+            env, java_object_, static_cast<int>(chip.type), chip.icon,
             ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
             chip.sticky, chip.visible,
             chip.is_content_description_set
@@ -874,7 +874,7 @@ void UiControllerAndroid::UpdateActions(
       case DONE_ACTION:
         jchip =
             Java_AutofillAssistantUiController_createHighlightedActionButton(
-                env, java_object_, chip.icon,
+                env, java_object_, static_cast<int>(chip.type), chip.icon,
                 ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
                 chip.sticky, chip.visible,
                 chip.is_content_description_set
@@ -897,13 +897,15 @@ void UiControllerAndroid::UpdateActions(
     if (execution_delegate_->GetState() == AutofillAssistantState::STOPPED ||
         execution_delegate_->GetState() == AutofillAssistantState::TRACKING) {
       jcancel_chip = Java_AutofillAssistantUiController_createCloseButton(
-          env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""),
+          env, java_object_, static_cast<int>(CLOSE_ACTION), ICON_CLEAR,
+          ConvertUTF8ToJavaString(env, ""),
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
           /* contentDescription= */ nullptr);
     } else if (execution_delegate_->GetState() !=
                AutofillAssistantState::INACTIVE) {
       jcancel_chip = Java_AutofillAssistantUiController_createCancelButton(
-          env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""), -1,
+          env, java_object_, static_cast<int>(CANCEL_ACTION), ICON_CLEAR,
+          ConvertUTF8ToJavaString(env, ""), -1,
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
           /* contentDescription= */ nullptr);
     }
