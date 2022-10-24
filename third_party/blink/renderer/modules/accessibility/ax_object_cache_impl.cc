@@ -2465,13 +2465,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     return;
   }
 
-  // When tree updates are paused, IsDirty() will return false. In this
-  // situation we should still process deferred events, otherwise  we would
-  // never trigger the code that resumes the tree updates, inside
-  // ProcessCleanLayoutCallbacks.
-  // TODO(accessibility) Consider having IsDirty() be pure and have callers
-  // decide when to use a separate tree updates paused signal.
-  if (IsDirty() || tree_updates_paused_) {
+  if (IsDirty()) {
     if (GetPopupDocumentIfShowing()) {
       UpdateLifecycleIfNeeded(*GetPopupDocumentIfShowing());
       ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
@@ -2560,8 +2554,6 @@ bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
 }
 
 bool AXObjectCacheImpl::IsDirty() const {
-  if (tree_updates_paused_)
-    return false;
   return IsMainDocumentDirty() || IsPopupDocumentDirty() ||
          relation_cache_->IsDirty();
 }
