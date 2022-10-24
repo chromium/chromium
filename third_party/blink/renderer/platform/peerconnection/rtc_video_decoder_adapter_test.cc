@@ -111,6 +111,132 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
   base::RepeatingCallback<void(const webrtc::VideoFrame&)> callback_;
 };
 
+class RTCVideoDecoderAdapterWrapper : public webrtc::VideoDecoder {
+ public:
+  static std::unique_ptr<RTCVideoDecoderAdapterWrapper> Create(
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      const webrtc::SdpVideoFormat& format) {
+    auto wrapper = base::WrapUnique(new RTCVideoDecoderAdapterWrapper);
+    bool result = false;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    wrapper->task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::unique_ptr<RTCVideoDecoderAdapter>*
+                   rtc_video_decoder_adapter,
+               media::GpuVideoAcceleratorFactories* gpu_factories,
+               const webrtc::SdpVideoFormat& format,
+               base::WaitableEvent* waiter, bool* result) {
+              *rtc_video_decoder_adapter =
+                  RTCVideoDecoderAdapter::Create(gpu_factories, format);
+              *result = !!(*rtc_video_decoder_adapter);
+              waiter->Signal();
+            },
+            &wrapper->rtc_video_decoder_adapter_, gpu_factories, format,
+            &waiter, &result));
+    waiter.Wait();
+    return result ? std::move(wrapper) : nullptr;
+  }
+
+  bool Configure(const webrtc::VideoDecoder::Settings& settings) override {
+    int32_t result = false;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](RTCVideoDecoderAdapter* rtc_video_decoder_adapter,
+               webrtc::VideoDecoder::Settings settings,
+               base::WaitableEvent* waiter, int32_t* result) {
+              *result = rtc_video_decoder_adapter->Configure(settings);
+              waiter->Signal();
+            },
+            rtc_video_decoder_adapter_.get(), settings, &waiter, &result));
+    waiter.Wait();
+    return result;
+  }
+
+  int32_t RegisterDecodeCompleteCallback(
+      webrtc::DecodedImageCallback* callback) override {
+    int32_t result = false;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](RTCVideoDecoderAdapter* rtc_video_decoder_adapter,
+               webrtc::DecodedImageCallback* callback,
+               base::WaitableEvent* waiter, int32_t* result) {
+              *result =
+                  rtc_video_decoder_adapter->RegisterDecodeCompleteCallback(
+                      callback);
+              waiter->Signal();
+            },
+            rtc_video_decoder_adapter_.get(), callback, &waiter, &result));
+    waiter.Wait();
+    return result;
+  }
+  int32_t Decode(const webrtc::EncodedImage& input_image,
+                 bool missing_frames,
+                 int64_t render_time_ms) override {
+    int32_t result = false;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](RTCVideoDecoderAdapter* rtc_video_decoder_adapter,
+                          const webrtc::EncodedImage& input_image,
+                          bool missing_frames, int64_t render_time_ms,
+                          base::WaitableEvent* waiter, int32_t* result) {
+                         *result = rtc_video_decoder_adapter->Decode(
+                             input_image, missing_frames, render_time_ms);
+                         waiter->Signal();
+                       },
+                       rtc_video_decoder_adapter_.get(), input_image,
+                       missing_frames, render_time_ms, &waiter, &result));
+    waiter.Wait();
+    return result;
+  }
+
+  int32_t Release() override {
+    int32_t result = false;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](RTCVideoDecoderAdapter* rtc_video_decoder_adapter,
+                          base::WaitableEvent* waiter, int32_t* result) {
+                         *result = rtc_video_decoder_adapter->Release();
+                         waiter->Signal();
+                       },
+                       rtc_video_decoder_adapter_.get(), &waiter, &result));
+    waiter.Wait();
+    return result;
+  }
+
+  ~RTCVideoDecoderAdapterWrapper() override {
+    if (task_runner_) {
+      task_runner_->DeleteSoon(FROM_HERE,
+                               std::move(rtc_video_decoder_adapter_));
+    }
+    webrtc_decoder_thread_.FlushForTesting();
+  }
+
+ private:
+  RTCVideoDecoderAdapterWrapper()
+      : webrtc_decoder_thread_("WebRTC decoder thread") {
+    webrtc_decoder_thread_.Start();
+    task_runner_ = webrtc_decoder_thread_.task_runner();
+  }
+
+  base::Thread webrtc_decoder_thread_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // webrtc_decoder_thread_ members.
+  std::unique_ptr<RTCVideoDecoderAdapter> rtc_video_decoder_adapter_;
+};
+
 }  // namespace
 
 class RTCVideoDecoderAdapterTest : public ::testing::Test {
@@ -156,10 +282,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   }
 
   ~RTCVideoDecoderAdapterTest() override {
-    if (!rtc_video_decoder_adapter_)
-      return;
-
-    rtc_video_decoder_adapter_.reset();
+    adapter_wrapper_.reset();
     media_thread_.FlushForTesting();
   }
 
@@ -187,19 +310,20 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
                   base::test::RunOnceCallback<3>(
                       init_cb_result ? media::DecoderStatus::Codes::kOk
                                      : media::DecoderStatus::Codes::kFailed)));
-    rtc_video_decoder_adapter_ =
-        RTCVideoDecoderAdapter::Create(&gpu_factories_, sdp_format_);
-    return !!rtc_video_decoder_adapter_;
+
+    adapter_wrapper_ =
+        RTCVideoDecoderAdapterWrapper::Create(&gpu_factories_, sdp_format_);
+    return !!adapter_wrapper_;
   }
 
   bool InitDecode() {
     webrtc::VideoDecoder::Settings settings;
     settings.set_codec_type(webrtc::kVideoCodecVP9);
-    return rtc_video_decoder_adapter_->Configure(settings);
+    return adapter_wrapper_->Configure(settings);
   }
 
   int32_t RegisterDecodeCompleteCallback() {
-    return rtc_video_decoder_adapter_->RegisterDecodeCompleteCallback(
+    return adapter_wrapper_->RegisterDecodeCompleteCallback(
         &decoded_image_callback_);
   }
 
@@ -213,7 +337,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
     input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
     input_image.SetTimestamp(timestamp);
-    return rtc_video_decoder_adapter_->Decode(input_image, false, 0);
+    return adapter_wrapper_->Decode(input_image, false, 0);
   }
 
   void FinishDecode(uint32_t timestamp) {
@@ -236,7 +360,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     output_cb_.Run(std::move(frame));
   }
 
-  int32_t Release() { return rtc_video_decoder_adapter_->Release(); }
+  int32_t Release() { return adapter_wrapper_->Release(); }
 
   webrtc::EncodedImage GetEncodedImageWithColorSpace(uint32_t timestamp) {
     webrtc::EncodedImage input_image;
@@ -288,7 +412,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
 
   StrictMock<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   media::VideoDecoderConfig vda_config_;
-  std::unique_ptr<RTCVideoDecoderAdapter> rtc_video_decoder_adapter_;
+  std::unique_ptr<RTCVideoDecoderAdapterWrapper> adapter_wrapper_;
 
  private:
   webrtc::SdpVideoFormat sdp_format_;
@@ -300,20 +424,18 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
 };
 
 TEST_F(RTCVideoDecoderAdapterTest, Create_UnknownFormat) {
-  rtc_video_decoder_adapter_ = RTCVideoDecoderAdapter::Create(
+  ASSERT_FALSE(RTCVideoDecoderAdapterWrapper::Create(
       &gpu_factories_, webrtc::SdpVideoFormat(webrtc::CodecTypeToPayloadString(
-                           webrtc::kVideoCodecGeneric)));
-  ASSERT_FALSE(rtc_video_decoder_adapter_);
+                           webrtc::kVideoCodecGeneric))));
 }
 
 TEST_F(RTCVideoDecoderAdapterTest, Create_UnsupportedFormat) {
   EXPECT_CALL(gpu_factories_, IsDecoderConfigSupported(_))
       .WillRepeatedly(
           Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
-  rtc_video_decoder_adapter_ = RTCVideoDecoderAdapter::Create(
+  ASSERT_FALSE(RTCVideoDecoderAdapterWrapper::Create(
       &gpu_factories_, webrtc::SdpVideoFormat(webrtc::CodecTypeToPayloadString(
-                           webrtc::kVideoCodecVP9)));
-  ASSERT_FALSE(rtc_video_decoder_adapter_);
+                           webrtc::kVideoCodecVP9))));
 }
 
 TEST_F(RTCVideoDecoderAdapterTest, Lifecycle) {
@@ -409,7 +531,7 @@ TEST_F(RTCVideoDecoderAdapterTest, ReinitializesForHDRColorSpaceInitially) {
           SaveArg<0>(&vda_config_),
           base::test::RunOnceCallback<3>(media::DecoderStatus::Codes::kOk)));
   webrtc::EncodedImage first_input_image = GetEncodedImageWithColorSpace(0);
-  ASSERT_EQ(rtc_video_decoder_adapter_->Decode(first_input_image, false, 0),
+  ASSERT_EQ(adapter_wrapper_->Decode(first_input_image, false, 0),
             WEBRTC_VIDEO_CODEC_OK);
   media_thread_.FlushForTesting();
   EXPECT_TRUE(vda_config_.color_space_info().IsSpecified());
@@ -418,7 +540,7 @@ TEST_F(RTCVideoDecoderAdapterTest, ReinitializesForHDRColorSpaceInitially) {
 
   // Second Decode() with same params should happen normally.
   webrtc::EncodedImage second_input_image = GetEncodedImageWithColorSpace(1);
-  ASSERT_EQ(rtc_video_decoder_adapter_->Decode(second_input_image, false, 0),
+  ASSERT_EQ(adapter_wrapper_->Decode(second_input_image, false, 0),
             WEBRTC_VIDEO_CODEC_OK);
   FinishDecode(1);
   media_thread_.FlushForTesting();
@@ -442,7 +564,7 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesReinitializeFailure) {
   EXPECT_CALL(*video_decoder_, Initialize_(_, _, _, _, _, _))
       .WillOnce(
           base::test::RunOnceCallback<3>(media::DecoderStatus::Codes::kFailed));
-  ASSERT_EQ(rtc_video_decoder_adapter_->Decode(input_image, false, 0),
+  ASSERT_EQ(adapter_wrapper_->Decode(input_image, false, 0),
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
 
@@ -459,7 +581,7 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(
           media::DecoderStatus::Codes::kAborted));
-  ASSERT_EQ(rtc_video_decoder_adapter_->Decode(input_image, false, 0),
+  ASSERT_EQ(adapter_wrapper_->Decode(input_image, false, 0),
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
 
@@ -481,7 +603,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
 
   // Make sure that it goes back to zero.
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
-  rtc_video_decoder_adapter_.reset();
+  adapter_wrapper_.reset();
   media_thread_.FlushForTesting();
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
 }
@@ -502,7 +624,7 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
   int width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
   int height = RTCVideoDecoderAdapter::kMinResolution / width - 1;
   decoder_settings.set_max_render_resolution({width, height});
-  EXPECT_TRUE(rtc_video_decoder_adapter_->Configure(decoder_settings));
+  EXPECT_TRUE(adapter_wrapper_->Configure(decoder_settings));
 
   // The first decode should fail.  It shouldn't forward the decode call to the
   // underlying decoder.
@@ -519,7 +641,7 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
     RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting();
 
   // Deleting the decoder should not decrement the count.
-  rtc_video_decoder_adapter_.reset();
+  adapter_wrapper_.reset();
   media_thread_.FlushForTesting();
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
 }
@@ -540,7 +662,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
   int width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
   int height = RTCVideoDecoderAdapter::kMinResolution / width + 1;
   decoder_settings.set_max_render_resolution({width, height});
-  EXPECT_TRUE(rtc_video_decoder_adapter_->Configure(decoder_settings));
+  EXPECT_TRUE(adapter_wrapper_->Configure(decoder_settings));
 
   // The first decode should increment the count and succeed.
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
@@ -563,7 +685,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
       .WillOnce(::testing::DoAll(
           ::testing::SaveArg<0>(&decoder_buffer),
           base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk)));
-  EXPECT_EQ(rtc_video_decoder_adapter_->Decode(input_image, false, 0),
+  EXPECT_EQ(adapter_wrapper_->Decode(input_image, false, 0),
             WEBRTC_VIDEO_CODEC_OK);
 
   EXPECT_CALL(decoded_cb_, Run(_));
