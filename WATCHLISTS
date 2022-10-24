@@ -1006,6 +1006,9 @@
     'diagnostics_ui': {
       'filepath': 'ash/webui/diagnostics_ui/',
     },
+    'dips': {
+      'filepath': 'chrome/browser/dips/',
+    },
     'discardable_memory': {
         'filepath': 'components/discardable_memory/',
     },
@@ -2637,6 +2640,10 @@
                        'ashleydp+diagnostics-watch@google.com',
                        'dpad+diagnostics-watch@google.com',
                        'zhangwenyu+diagnostics-watch@google.com'],
+    'dips': ['jdh+watch-dips@chromium.org',
+             'kaklilu+watch-dips@chromium.org',
+             'rtarpine+watch-dips@chromium.org',
+             'wanderview+watch-dips@chromium.org'],
     'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org'],
