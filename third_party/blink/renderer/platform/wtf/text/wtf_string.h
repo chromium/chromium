@@ -258,6 +258,9 @@ class WTF_EXPORT String {
     return impl_ ? impl_->ReverseFind(value, start) : kNotFound;
   }
 
+  // Returns the Unicode code point starting at the specified offset of this
+  // string. If the offset points an unpaired surrogate, this function returns
+  // 0.
   UChar32 CharacterStartingAt(unsigned) const;
 
   bool StartsWith(

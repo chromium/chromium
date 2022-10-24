@@ -197,6 +197,10 @@ class WTF_EXPORT StringView {
     return {static_cast<const UChar*>(bytes_), length_};
   }
 
+  // Returns the Unicode code point starting at the specified offset of this
+  // string. If the offset points an unpaired surrogate, this function returns
+  // the surrogate code unit as is. If you'd like to check such surroagtes,
+  // use U_IS_SURROGATE() defined in unicode/utf.h.
   UChar32 CodepointAt(unsigned i) const;
 
   // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
