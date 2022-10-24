@@ -1817,7 +1817,8 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 // Tests the add password flow.
-- (void)testAddNewPasswordCredential {
+// (crbug.com/1377079#c6) Flaky, please re-enable once fixed.
+- (void)DISABLED_testAddNewPasswordCredential {
   OpenPasswordSettings();
 
   // Press "Add".
@@ -1863,7 +1864,8 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that when a new credential is saved or an existing one is updated via
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
-- (void)testAutoScroll {
+// (crbug.com/1377079#c6) Flaky, please re-enable once fixed.
+- (void)DISABLED_testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
     NSString* password = [NSString stringWithFormat:@"password %d", i];
@@ -1968,7 +1970,8 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that the duplicate credential section alert is shown when the user adds
 // a credential that has the same website as that of an existing credential
 // (does not contain username).
-- (void)testDuplicatedCredentialWithNoUsername {
+// (crbug.com/1377079#c6) Flaky, please re-enable once fixed.
+- (void)DISABLED_testDuplicatedCredentialWithNoUsername {
   OpenPasswordSettings();
 
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
