@@ -22,13 +22,13 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
   // The result of the parent access request, passed back to the caller.
   struct Result {
     // The status of the result.
-    enum Status {
+    enum class Status {
       kApproved,   // The parent was verified and they approved.
       kDeclined,   // The request was explicitly declined by the parent.
       kCancelled,  // The request was cancelled/dismissed by the parent.
       kError,      // An error occurred while handling the request.
     };
-    Status status = kCancelled;
+    Status status = Status::kCancelled;
 
     // The Parent Access Token.  Only set if status is kVerified.
     std::string parent_access_token = "";
@@ -89,7 +89,7 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
 class ParentAccessDialogProvider {
  public:
   // Error state returned by the Show() function.
-  enum ShowError { kNone, kDialogAlreadyVisible, kNotAChildUser };
+  enum class ShowError { kNone, kDialogAlreadyVisible, kNotAChildUser };
 
   ParentAccessDialogProvider() = default;
   ParentAccessDialogProvider(const ParentAccessDialogProvider& other) = delete;

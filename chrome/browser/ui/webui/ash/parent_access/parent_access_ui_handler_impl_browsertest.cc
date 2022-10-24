@@ -234,7 +234,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
           [](base::OnceClosure quit_closure,
              std::unique_ptr<ParentAccessDialog::Result> result) -> void {
             // The dialog result should contain the test token.
-            EXPECT_EQ(ParentAccessDialog::Result::kDeclined, result->status);
+            EXPECT_EQ(ParentAccessDialog::Result::Status::kDeclined,
+                      result->status);
             std::move(quit_closure).Run();
           },
           show_dialog_run_loop.QuitClosure()));

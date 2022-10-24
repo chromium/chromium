@@ -116,7 +116,8 @@ void WebApprovalsManager::RequestLocalApproval(
           base::TimeTicks::Now()));
 
   if (result != ash::ParentAccessDialogProvider::ShowError::kNone) {
-    LOG(ERROR) << "Error showing ParentAccessDialog: " << result;
+    LOG(ERROR) << "Error showing ParentAccessDialog: "
+               << static_cast<int>(result);
     std::move(callback).Run(false);
     return;
   }
