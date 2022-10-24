@@ -58,8 +58,8 @@ struct EntryDefinition {
   base::FilePath full_path;          // Value of Entry.fullPath.
   // Whether to create FileEntry or DirectoryEntry when the corresponding entry
   // is not found.
-  bool is_directory;
-  base::File::Error error;
+  bool is_directory = false;
+  base::File::Error error = base::File::FILE_ERROR_FAILED;
 };
 
 typedef std::vector<FileDefinition> FileDefinitionList;
