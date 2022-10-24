@@ -402,14 +402,14 @@ SkColor4f Color::toSkColor4f() const {
     case ColorSpace::kLab:
       return gfx::LabToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kOKLab:
-      return gfx::OKLabToSkColor4f(param0_, param1_, param2_, alpha_);
+      return gfx::OklabToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kLCH:
       return gfx::LchToSkColor4f(
           param0_, param1_,
           param2_is_none_ ? absl::nullopt : absl::optional<float>(param2_),
           alpha_);
     case ColorSpace::kOKLCH:
-      return gfx::OKLchToSkColor4f(
+      return gfx::OklchToSkColor4f(
           param0_, param1_,
           param2_is_none_ ? absl::nullopt : absl::optional<float>(param2_),
           alpha_);
