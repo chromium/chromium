@@ -19,11 +19,18 @@ class LacrosDataBackwardMigrationScreenView
     : public base::SupportsWeakPtr<LacrosDataBackwardMigrationScreenView> {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
-      "lacros-data-backward-migration"};
+      "lacros-data-backward-migration", "LacrosDataBackwardMigrationScreen"};
 
   virtual ~LacrosDataBackwardMigrationScreenView() = default;
 
   virtual void Show() = 0;
+
+  // Updates the progress bar.
+  // progress is a percentage.
+  virtual void SetProgressValue(int progress) = 0;
+
+  // Show an error message.
+  virtual void SetFailureStatus() = 0;
 };
 
 class LacrosDataBackwardMigrationScreenHandler
@@ -45,6 +52,8 @@ class LacrosDataBackwardMigrationScreenHandler
 
   // LacrosDataBackwardMigrationScreenView:
   void Show() override;
+  void SetProgressValue(int progress) override;
+  void SetFailureStatus() override;
 };
 
 }  // namespace chromeos

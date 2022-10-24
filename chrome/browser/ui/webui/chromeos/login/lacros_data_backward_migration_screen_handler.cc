@@ -20,14 +20,25 @@ LacrosDataBackwardMigrationScreenHandler::
 
 void LacrosDataBackwardMigrationScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
+  // TODO(b/254435635): Update with backward migration specific strings.
   builder->Add("lacrosDataBackwardMigrationTitle",
                IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE);
   builder->Add("lacrosDataBackwardMigrationSubtitle",
                IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE);
+  builder->Add("lacrosDataBackwardMigrationErrorTitle",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_TITLE);
 }
 
 void LacrosDataBackwardMigrationScreenHandler::Show() {
   ShowInWebUI();
+}
+
+void LacrosDataBackwardMigrationScreenHandler::SetProgressValue(int progress) {
+  CallExternalAPI("setProgressValue", progress);
+}
+
+void LacrosDataBackwardMigrationScreenHandler::SetFailureStatus() {
+  CallExternalAPI("setFailureStatus");
 }
 
 }  // namespace chromeos

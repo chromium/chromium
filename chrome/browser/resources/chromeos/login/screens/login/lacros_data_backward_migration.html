@@ -19,3 +19,11 @@ found in the LICENSE file.
     </p>
   </div>
 </oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="errorDialog" for-step="error" role="dialog"
+                      footer-shrinkable>
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'lacrosDataBackwardMigrationErrorTitle')]]
+  </h1>
+</oobe-adaptive-dialog>

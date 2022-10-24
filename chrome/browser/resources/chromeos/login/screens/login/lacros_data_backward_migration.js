@@ -39,6 +39,7 @@ const LacrosDataBackwardMigrationScreenElementBase = mixinBehaviors(
     ],
     PolymerElement);
 
+/** @polymer */
 class LacrosDataBackwardMigrationScreen extends
     LacrosDataBackwardMigrationScreenElementBase {
   static get is() {
@@ -65,7 +66,30 @@ class LacrosDataBackwardMigrationScreen extends
   get UI_STEPS() {
     return {
       PROGRESS: 'progress',
+      ERROR: 'error',
     };
+  }
+
+  get EXTERNAL_API() {
+    return [
+      'setProgressValue',
+      'setFailureStatus',
+    ];
+  }
+
+  /**
+   * Called when the migration failed.
+  */
+  setFailureStatus() {
+    this.setUIStep('error');
+  }
+
+  /**
+   * Called to update the progress of data migration.
+   * @param {number} progress Percentage of data copied so far.
+   */
+  setProgressValue(progress) {
+    this.progressValue_ = progress;
   }
 
   ready() {
