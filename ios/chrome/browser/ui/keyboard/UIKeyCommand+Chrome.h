@@ -10,15 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Common (and short) key modifier flags.
-extern UIKeyModifierFlags KeyModifierNone;
-extern UIKeyModifierFlags KeyModifierCommand;
-extern UIKeyModifierFlags KeyModifierControl;
-extern UIKeyModifierFlags KeyModifierAltCommand;
-extern UIKeyModifierFlags KeyModifierShiftCommand;
-extern UIKeyModifierFlags KeyModifierShiftAltCommand;
-extern UIKeyModifierFlags KeyModifierControlShift;
-
 // Note: this is implemented as a category on UIKeyCommand because UIKeyCommand
 // can't be subclassed as of iOS 9 beta 4. http://crbug.com/510970
 @interface UIKeyCommand (Chrome)
@@ -71,13 +62,6 @@ extern UIKeyModifierFlags KeyModifierControlShift;
 
 // Returns a symbolic description of the key command. For example: ⇧⌘T.
 @property(nonatomic, readonly) NSString* cr_symbolicDescription;
-
-// Returns a key command to return in -[UIResponder keyCommands] or to pass to
-// -[UIViewController addKeyCommand:].
-+ (instancetype)cr_commandWithInput:(NSString*)input
-                      modifierFlags:(UIKeyModifierFlags)modifierFlags
-                             action:(SEL)action
-                            titleID:(int)messageID;
 
 @end
 

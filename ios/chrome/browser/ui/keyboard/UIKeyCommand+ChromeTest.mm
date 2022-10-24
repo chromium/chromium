@@ -20,21 +20,31 @@ namespace {
 
 using UIKeyCommandChromeTest = PlatformTest;
 
-// Tests that UIKeyCommand-s are correctly created.
-TEST_F(UIKeyCommandChromeTest, UIKeyCommandFactory) {
-  UIKeyCommand* command =
-      [UIKeyCommand cr_commandWithInput:@"t"
-                          modifierFlags:KeyModifierCommand
-                                 action:@selector(description)
-                                titleID:IDS_IOS_TOOLS_MENU_NEW_TAB];
+void Verify(UIKeyCommand* command,
+            NSString* symbolicDescription,
+            NSString* action) {
+  EXPECT_NSEQ(command.cr_symbolicDescription, symbolicDescription);
+  EXPECT_TRUE(sel_isEqual(command.action, NSSelectorFromString(action)));
+  EXPECT_EQ(command.title.length, 0u);
+  EXPECT_EQ(command.discoverabilityTitle.length, 0u);
+}
 
-  EXPECT_NSEQ(command.input, @"t");
-  EXPECT_EQ(command.modifierFlags, UIKeyModifierCommand);
-  EXPECT_TRUE(sel_isEqual(command.action, @selector(description)));
-  EXPECT_NSEQ(command.title,
-              l10n_util::GetNSStringWithFixup(IDS_IOS_TOOLS_MENU_NEW_TAB));
-  EXPECT_NSEQ(command.discoverabilityTitle,
-              l10n_util::GetNSStringWithFixup(IDS_IOS_TOOLS_MENU_NEW_TAB));
+void Verify(UIKeyCommand* command,
+            NSString* symbolicDescription,
+            NSString* action,
+            int messageID) {
+  EXPECT_NSEQ(command.cr_symbolicDescription, symbolicDescription);
+  EXPECT_TRUE(sel_isEqual(command.action, NSSelectorFromString(action)));
+  EXPECT_NSEQ(command.title, l10n_util::GetNSStringWithFixup(messageID));
+  EXPECT_NSEQ(command.discoverabilityTitle, command.title);
+}
+
+// Tests that UIKeyCommand-s are correctly created.
+TEST_F(UIKeyCommandChromeTest, Factories) {
+  Verify(UIKeyCommand.cr_openNewTab, @"⌘T", @"keyCommand_openNewTab",
+         IDS_IOS_TOOLS_MENU_NEW_TAB);
+  Verify(UIKeyCommand.cr_openNewTab_2, @"⌘N", @"keyCommand_openNewTab");
+  // TODO(crbug.com/1376444): Verify all flavors of commands.
 }
 
 }  // namespace
