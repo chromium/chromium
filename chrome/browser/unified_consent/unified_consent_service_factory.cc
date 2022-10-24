@@ -83,7 +83,7 @@ KeyedService* UnifiedConsentServiceFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS creates various profiles (login, lock screen...) that do
   // not have unified consent.
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
+  if (!chromeos::ProfileHelper::IsUserProfile(profile))
     return nullptr;
 #endif
 

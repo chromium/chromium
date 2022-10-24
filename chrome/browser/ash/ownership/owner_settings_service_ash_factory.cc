@@ -88,7 +88,7 @@ bool OwnerSettingsServiceAshFactory::ServiceIsCreatedWithBrowserContext()
 KeyedService* OwnerSettingsServiceAshFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsRegularProfile(profile))
+  if (!ProfileHelper::IsUserProfile(profile))
     return nullptr;
 
   // If g_stub_cros_settings_provider_for_testing_ is set, we treat the current

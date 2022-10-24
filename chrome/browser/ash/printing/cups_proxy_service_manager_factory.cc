@@ -36,7 +36,7 @@ CupsProxyServiceManagerFactory::~CupsProxyServiceManagerFactory() = default;
 KeyedService* CupsProxyServiceManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // We do not need an instance of CupsProxyServiceManager on the lockscreen.
-  if (!ProfileHelper::IsRegularProfile(Profile::FromBrowserContext(context))) {
+  if (!ProfileHelper::IsUserProfile(Profile::FromBrowserContext(context))) {
     return nullptr;
   }
   return new CupsProxyServiceManager();

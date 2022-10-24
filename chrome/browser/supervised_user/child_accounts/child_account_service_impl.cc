@@ -304,7 +304,7 @@ void ChildAccountServiceImpl::AssertChildStatusOfTheUser(bool is_child) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user && is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
     LOG(FATAL) << "User child flag has changed: " << is_child;
-  if (!user && ash::ProfileHelper::IsRegularProfile(profile_))
+  if (!user && ash::ProfileHelper::IsUserProfile(profile_))
     LOG(DFATAL) << "User instance not found while setting child account flag.";
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   bool is_child_session = chromeos::BrowserParamsProxy::Get()->SessionType() ==

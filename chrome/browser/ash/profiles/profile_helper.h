@@ -117,10 +117,13 @@ class ProfileHelper
   // Returns true when |profile| is for an ephemeral user.
   static bool IsEphemeralUserProfile(const Profile* profile);
 
-  // Return true if |profile| or |profile_path| corrrespond to a regular
-  // (non-sign-in and non-lockscreen) profile.
-  static bool IsRegularProfile(const Profile* profile);
-  static bool IsRegularProfilePath(const base::FilePath& profile_path);
+  // Returns true if profile or profile_path has corresponding chrome os user.
+  // I.e. it is not one for internal use, such as sign-in or lockscreen etc.
+  // Note: System and Guest Profiles are considered User profiles. To check on
+  // that `Profile` specific method that checks the profile type should used
+  // such as `Profile::IsRegularProfile()` or `Profile::IsSystemProfile()`.
+  static bool IsUserProfile(const Profile* profile);
+  static bool IsUserProfilePath(const base::FilePath& profile_path);
 
   // Returns active user profile dir in a format [u-$hash].
   virtual base::FilePath GetActiveUserProfileDir() = 0;

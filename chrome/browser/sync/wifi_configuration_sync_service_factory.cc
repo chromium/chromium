@@ -39,7 +39,7 @@ bool WifiConfigurationSyncServiceFactory::ShouldRunInProfile(
     const Profile* profile) {
   // Run when signed in to a real account.  Skip during tests when network stack
   // has not been initialized.
-  return profile && ash::ProfileHelper::IsRegularProfile(profile) &&
+  return profile && ash::ProfileHelper::IsUserProfile(profile) &&
          !profile->IsOffTheRecord() && ash::NetworkHandler::IsInitialized();
 }
 

@@ -29,7 +29,7 @@ namespace {
 
 bool IsRealUserProfile(const Profile* profile) {
   // Return false for signin, lock screen and incognito profiles.
-  return chromeos::ProfileHelper::IsRegularProfile(profile) &&
+  return chromeos::ProfileHelper::IsUserProfile(profile) &&
          !profile->IsOffTheRecord();
 }
 

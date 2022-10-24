@@ -47,7 +47,7 @@ KeyedService* PrintingManagerFactory::BuildInstanceFor(
 
   // We do not want an instance of PrintingManager on the lock screen. The
   // result is multiple print job notifications. https://crbug.com/1011532
-  if (!ProfileHelper::IsRegularProfile(profile)) {
+  if (!ProfileHelper::IsUserProfile(profile)) {
     return nullptr;
   }
 

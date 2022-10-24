@@ -46,7 +46,7 @@ ProfileSupported CheckProfileSupported(const Profile* profile) {
     return ProfileSupported::kErrorEphemeral;
   }
 
-  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile)) {
     VLOG(1) << "non-regular profile is not supported";
     // If this happens, the profile is for something like the sign in screen or
     // lock screen. Return a generic error code because the user will not be

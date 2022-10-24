@@ -53,7 +53,7 @@ KeyedService* AccessibilityLabelsServiceFactory::BuildServiceInstanceFor(
   // ChromeOS creates various profiles (login, lock screen...) that do
   // not display web content and thus do not need the accessibility labels
   // service.
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
+  if (!chromeos::ProfileHelper::IsUserProfile(profile))
     return nullptr;
 #endif
 

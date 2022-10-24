@@ -89,7 +89,7 @@ KeyedService* ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
   // ChromeOS creates various profiles (login, lock screen...) that do
   // not have/need access to bookmarks.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
+  if (!chromeos::ProfileHelper::IsUserProfile(profile))
     return nullptr;
 #endif
   return BuildManagedBookmarkService(context).release();

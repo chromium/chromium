@@ -48,7 +48,7 @@ CreateProfilePolicyConnectorForBrowserContext(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* const profile = Profile::FromBrowserContext(context);
-  if (ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (ash::ProfileHelper::IsUserProfile(profile)) {
     user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
     CHECK(user);
   }

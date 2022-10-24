@@ -27,7 +27,7 @@ bool IsAccountManagerAvailable(const Profile* const profile) {
   // Signin Profile does not have any accounts associated with it,
   // LockScreenAppProfile and LockScreenProfile do not link to the user's
   // cryptohome.
-  if (!ProfileHelper::IsRegularProfile(profile))
+  if (!ProfileHelper::IsUserProfile(profile))
     return false;
 
   // Account Manager is unavailable on Guest (Incognito) Sessions.

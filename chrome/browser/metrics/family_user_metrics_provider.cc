@@ -54,7 +54,7 @@ Profile* GetPrimaryUserProfile() {
   DCHECK(primary_user->is_profile_created());
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
   DCHECK(profile);
-  DCHECK(ash::ProfileHelper::IsRegularProfile(profile));
+  DCHECK(ash::ProfileHelper::IsUserProfile(profile));
   return profile;
 }
 

@@ -60,7 +60,7 @@ KeyedService* UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // On the login/lock screen only device network policies apply.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile)) {
     return nullptr;
   }
 

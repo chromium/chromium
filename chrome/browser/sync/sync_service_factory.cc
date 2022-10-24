@@ -91,7 +91,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
   // profile and lockscreen profile).
   init_params.is_regular_profile_for_uma =
       init_params.is_regular_profile_for_uma &&
-      ash::ProfileHelper::IsRegularProfile(profile);
+      ash::ProfileHelper::IsUserProfile(profile);
 #endif
 
   init_params.sync_client =

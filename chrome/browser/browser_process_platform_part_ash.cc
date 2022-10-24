@@ -294,6 +294,6 @@ BrowserProcessPlatformPart::GetAccountManagerFactory() {
 bool BrowserProcessPlatformPart::CanRestoreUrlsForProfile(
     const Profile* profile) const {
   return profile->IsRegularProfile() && !profile->IsSystemProfile() &&
-         ash::ProfileHelper::IsRegularProfile(profile) &&
+         ash::ProfileHelper::IsUserProfile(profile) &&
          !ash::ProfileHelper::IsEphemeralUserProfile(profile);
 }

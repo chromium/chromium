@@ -39,7 +39,7 @@ AppListSyncableServiceFactory* AppListSyncableServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService> AppListSyncableServiceFactory::BuildInstanceFor(
     content::BrowserContext* browser_context) {
   Profile* profile = static_cast<Profile*>(browser_context);
-  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile)) {
     return nullptr;
   }
 

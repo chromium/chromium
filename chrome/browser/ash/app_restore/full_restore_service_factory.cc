@@ -27,7 +27,7 @@ bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
   // No service for non-regular user profile, or ephemeral user profile, system
   // profile.
   if (!profile || profile->IsSystemProfile() ||
-      !ProfileHelper::IsRegularProfile(profile) ||
+      !ProfileHelper::IsUserProfile(profile) ||
       ProfileHelper::IsEphemeralUserProfile(profile)) {
     return false;
   }

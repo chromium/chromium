@@ -259,7 +259,7 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
 
 bool IsRealUserProfile(const Profile* profile) {
   // Return false for signin, lock screen and incognito profiles.
-  return profile && ash::ProfileHelper::IsRegularProfile(profile) &&
+  return profile && ash::ProfileHelper::IsUserProfile(profile) &&
          !profile->IsOffTheRecord();
 }
 

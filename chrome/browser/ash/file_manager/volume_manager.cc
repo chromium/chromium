@@ -711,15 +711,15 @@ void VolumeManager::Initialize() {
   VLOG(1) << *this << "::Initialize";
 
   // If in the Sign in profile or the lock screen app profile or lock screen
-  // profile (i.e. if ash::ProfileHelper::IsRegularProfile(etc) returns false),
-  // skip mounting and listening for mount events. Note that this
-  // IsRegularProfile is a separate concept from profile_->IsRegularProfile().
+  // profile (i.e. if ash::ProfileHelper::IsUserProfile(etc) returns false),
+  // skip mounting and listening for mount events.
   //
   // Ditto (return early) for incognito profiles. We largely treat
   // VolumeManager as a per-login singleton regarding its control-plane duties.
-  if (!ash::ProfileHelper::IsRegularProfile(profile_) ||
+  if (!ash::ProfileHelper::IsUserProfile(profile_) ||
       profile_->IsIncognitoProfile()) {
-    VLOG(1) << *this << ": Not a regular profile: " << profile_->GetDebugName();
+    VLOG(1) << *this << ": Not an incogntio or a user profile: "
+            << profile_->GetDebugName();
     return;
   }
 

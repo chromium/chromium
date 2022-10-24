@@ -58,7 +58,7 @@ KeyedService*
 CertProvisioningSchedulerUserServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile || !ProfileHelper::IsRegularProfile(profile) ||
+  if (!profile || !ProfileHelper::IsUserProfile(profile) ||
       !profile->GetProfilePolicyConnector()->IsManaged()) {
     return nullptr;
   }

@@ -962,7 +962,7 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
   if (!SessionManagerClient::Get()->SupportsBrowserRestart())
     return false;
 
-  if (!ProfileHelper::IsRegularProfile(profile)) {
+  if (!ProfileHelper::IsUserProfile(profile)) {
     return false;
   }
 
@@ -1293,7 +1293,7 @@ void UserSessionManager::InitializeAccountManager() {
   base::FilePath profile_path =
       ProfileHelper::GetProfilePathByUserIdHash(user_context_.GetUserIDHash());
 
-  if (ProfileHelper::IsRegularProfilePath(profile_path)) {
+  if (ProfileHelper::IsUserProfilePath(profile_path)) {
     ash::InitializeAccountManager(
         profile_path,
         base::BindOnce(&UserSessionManager::PrepareProfile,

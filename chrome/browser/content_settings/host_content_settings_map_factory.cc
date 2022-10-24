@@ -106,7 +106,7 @@ scoped_refptr<RefcountedKeyedService>
   // used to browse the web and users can't configure. Don't collect metrics
   // about them.
   should_record_metrics =
-      should_record_metrics && ash::ProfileHelper::IsRegularProfile(profile);
+      should_record_metrics && ash::ProfileHelper::IsUserProfile(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   scoped_refptr<HostContentSettingsMap> settings_map(new HostContentSettingsMap(

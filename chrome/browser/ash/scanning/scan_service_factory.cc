@@ -34,7 +34,7 @@ KeyedService* ScanServiceFactory::BuildInstanceFor(
     content::BrowserContext* context) {
   // Prevent an instance of ScanService from being created on the lock screen.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsRegularProfile(profile)) {
+  if (!ProfileHelper::IsUserProfile(profile)) {
     return nullptr;
   }
 

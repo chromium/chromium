@@ -96,7 +96,7 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
         profile,
         secure_channel::SecureChannelClientProvider::GetInstance()
             ->GetClient());
-  } else if (!ProfileHelper::IsRegularProfile(profile) ||
+  } else if (!ProfileHelper::IsUserProfile(profile) ||
              !ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
   }

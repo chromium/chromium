@@ -36,7 +36,7 @@ KeyedService* LorgnetteScannerManagerFactory::BuildServiceInstanceFor(
   // Prevent an instance of LorgnetteScannerManager from being created on the
   // lock screen.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsRegularProfile(profile)) {
+  if (!ProfileHelper::IsUserProfile(profile)) {
     return nullptr;
   }
 

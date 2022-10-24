@@ -155,7 +155,7 @@ Profile* GetAshProfile() {
   int num_regular_profiles = 0;
   for (const Profile* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    if (ash::ProfileHelper::IsRegularProfile(profile))
+    if (ash::ProfileHelper::IsUserProfile(profile))
       ++num_regular_profiles;
   }
   DCHECK_EQ(1, num_regular_profiles);

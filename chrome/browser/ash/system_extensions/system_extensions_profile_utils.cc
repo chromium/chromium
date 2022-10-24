@@ -32,7 +32,7 @@ Profile* GetProfileForSystemExtensions(Profile* profile) {
   if (profile->IsSystemProfile())
     return nullptr;
 
-  if (!ash::ProfileHelper::IsRegularProfile(profile))
+  if (!ash::ProfileHelper::IsUserProfile(profile))
     return nullptr;
 
   if (!ash::ProfileHelper::IsPrimaryProfile(profile))

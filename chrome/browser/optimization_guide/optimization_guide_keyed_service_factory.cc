@@ -51,7 +51,7 @@ KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
   // lockscreen profile since it basically is an ephemeral profile anyway and we
   // cannot provide hints or models to it anyway.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ash::ProfileHelper::IsRegularProfile(profile))
+  if (!ash::ProfileHelper::IsUserProfile(profile))
     return nullptr;
 #endif
   return new OptimizationGuideKeyedService(context);

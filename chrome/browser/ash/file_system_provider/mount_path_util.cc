@@ -123,7 +123,7 @@ bool FileSystemURLParser::Parse() {
     Profile* original_profile = profile->GetOriginalProfile();
 
     if (original_profile != profile ||
-        !ProfileHelper::IsRegularProfile(original_profile)) {
+        !ProfileHelper::IsUserProfile(original_profile)) {
       continue;
     }
 

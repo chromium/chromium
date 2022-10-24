@@ -274,14 +274,14 @@ bool ProfileHelper::IsEphemeralUserProfile(const Profile* profile) {
 }
 
 // static
-bool ProfileHelper::IsRegularProfile(const Profile* profile) {
+bool ProfileHelper::IsUserProfile(const Profile* profile) {
   return !ProfileHelper::IsSigninProfile(profile) &&
          !ProfileHelper::IsLockScreenAppProfile(profile) &&
          !ProfileHelper::IsLockScreenProfile(profile);
 }
 
 // static
-bool ProfileHelper::IsRegularProfilePath(const base::FilePath& profile_path) {
+bool ProfileHelper::IsUserProfilePath(const base::FilePath& profile_path) {
   return !IsSigninProfilePath(profile_path) &&
          !IsLockScreenAppProfilePath(profile_path) &&
          !IsLockScreenProfilePath(profile_path);
@@ -384,7 +384,7 @@ Profile* ProfileHelperImpl::GetProfileByUser(const user_manager::User* user) {
 
 const user_manager::User* ProfileHelperImpl::GetUserByProfile(
     const Profile* profile) const {
-  if (!ProfileHelper::IsRegularProfile(profile)) {
+  if (!ProfileHelper::IsUserProfile(profile)) {
     return nullptr;
   }
 

@@ -92,7 +92,7 @@ void CreateConfigurationPolicyProvider(
   *active_directory_policy_manager_out = nullptr;
 
   // Don't initialize cloud policy for the signin and the lock screen profile.
-  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile)) {
     return;
   }
 

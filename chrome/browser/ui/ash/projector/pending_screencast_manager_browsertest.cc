@@ -132,8 +132,8 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  protected:
   virtual drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
-    // Ignore non-regular profile.
-    if (!ProfileHelper::IsRegularProfile(profile))
+    // Ignore non-user profile.
+    if (!ProfileHelper::IsUserProfile(profile))
       return nullptr;
 
     base::ScopedAllowBlockingForTesting allow_blocking;

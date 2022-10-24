@@ -58,7 +58,7 @@ KeyedService* EasyUnlockTpmKeyManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   const user_manager::User* user = nullptr;
-  if (ProfileHelper::IsRegularProfile(profile))
+  if (ProfileHelper::IsUserProfile(profile))
     user = ProfileHelper::Get()->GetUserByProfile(profile);
   else if (!ProfileHelper::IsSigninProfile(profile))
     return nullptr;

@@ -61,7 +61,7 @@ content::BrowserContext* RemoteAppsManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile || profile->IsSystemProfile() ||
-      !ProfileHelper::IsRegularProfile(profile)) {
+      !ProfileHelper::IsUserProfile(profile)) {
     return nullptr;
   }
 

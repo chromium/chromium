@@ -37,7 +37,7 @@ KeyedService* BruschettaServiceFactory::BuildServiceInstanceFor(
   // Don't create a BruschettaService for anything except the primary user
   // profile for the session.
   if (profile->IsOffTheRecord() ||
-      !ash::ProfileHelper::Get()->IsRegularProfile(profile) ||
+      !ash::ProfileHelper::Get()->IsUserProfile(profile) ||
       !ash::ProfileHelper::Get()->IsPrimaryProfile(profile) ||
       ash::ProfileHelper::Get()->IsEphemeralUserProfile(profile))
     return nullptr;

@@ -181,7 +181,7 @@ KeyedService* PlatformKeysServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   std::unique_ptr<PlatformKeysServiceImplDelegate> delegate;
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsRegularProfile(profile)) {
+  if (!ProfileHelper::IsUserProfile(profile)) {
     delegate = std::make_unique<DelegateForDevice>();
   } else {
     delegate = std::make_unique<DelegateForUser>(context);

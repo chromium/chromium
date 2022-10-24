@@ -79,7 +79,7 @@ base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile) {
   // which includes OS_CHROMEOS.
 
   // Exclude sign-in and lock screen profiles.
-  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile)) {
     return {};
   }
 

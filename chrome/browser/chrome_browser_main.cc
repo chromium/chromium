@@ -563,7 +563,7 @@ void ChromeBrowserMainParts::ProfileInitManager::OnProfileAdded(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore ChromeOS helper profiles (sign-in, lockscreen, etc).
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!chromeos::ProfileHelper::IsUserProfile(profile)) {
     // Notify of new profile initialization only for regular profiles. The
     // startup profile initialization is triggered by another code path.
     return;

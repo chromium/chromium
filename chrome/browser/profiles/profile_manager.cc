@@ -2351,7 +2351,7 @@ void ProfileManager::SetNonPersonalProfilePrefs(Profile* profile) {
 
 bool ProfileManager::ShouldGoOffTheRecord(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile)) {
     return true;
   }
 #endif

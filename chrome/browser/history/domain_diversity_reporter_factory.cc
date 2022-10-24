@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService> DomainDiversityReporterFactory::BuildInstanceFor(
   // representative and should not have the reporter created for. Note that
   // IsRegularProfile() returns true for these, so that ChromeOS specific APIs
   // must be used to test for the type.
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
+  if (!chromeos::ProfileHelper::IsUserProfile(profile))
     return nullptr;
 #endif
 

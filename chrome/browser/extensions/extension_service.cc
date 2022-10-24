@@ -471,7 +471,7 @@ void ExtensionService::Init() {
   bool load_saved_extensions = true;
   bool load_command_line_extensions = extensions_enabled_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::ProfileHelper::IsRegularProfile(profile_)) {
+  if (!ash::ProfileHelper::IsUserProfile(profile_)) {
     load_saved_extensions = false;
     load_command_line_extensions = false;
   }

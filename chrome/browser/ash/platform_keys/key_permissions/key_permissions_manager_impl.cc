@@ -265,7 +265,7 @@ KeyPermissionsManagerImpl::GetUserPrivateTokenKeyPermissionsManager(
           ->GetForBrowserContext(profile);
 
   if (!user_private_token_kpm_service) {
-    DCHECK(!ProfileHelper::IsRegularProfile(profile));
+    DCHECK(!ProfileHelper::IsUserProfile(profile));
     return nullptr;
   }
 

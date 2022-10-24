@@ -286,7 +286,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
   // API request and therefore can't show a permission prompt or check for
   // origin trial enrollment. Hence, just let these requests succeed without
   // further checks.
-  if (!ash::ProfileHelper::IsRegularProfile(
+  if (!ash::ProfileHelper::IsUserProfile(
           Profile::FromBrowserContext(browser_context()))) {
     DCHECK_EQ(params->options.tab_id, api::tabs::TAB_ID_NONE);
     return RespondNow(WithArguments(true));

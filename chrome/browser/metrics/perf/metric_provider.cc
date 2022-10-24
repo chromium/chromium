@@ -217,7 +217,7 @@ MetricProvider::RecordAttemptStatus MetricProvider::GetAppSyncState() {
     // The Default profile, lock screen app profile and lock screen profile are
     // all not regular user profiles on Chrome OS. They always disable sync and
     // we would skip them.
-    if (!ash::ProfileHelper::IsRegularProfile(profile))
+    if (!ash::ProfileHelper::IsUserProfile(profile))
       continue;
     auto app_sync_state = AppSyncStateForUserProfile(profile);
     if (app_sync_state != RecordAttemptStatus::kAppSyncEnabled)

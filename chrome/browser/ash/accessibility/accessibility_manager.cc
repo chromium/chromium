@@ -635,7 +635,7 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       prefs::kAccessibilitySpokenFeedbackEnabled);
 
-  if (ProfileHelper::IsRegularProfile(profile_)) {
+  if (ProfileHelper::IsUserProfile(profile_)) {
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.SetBooleanPref(
         multi_user_util::GetAccountIdFromProfile(profile_),

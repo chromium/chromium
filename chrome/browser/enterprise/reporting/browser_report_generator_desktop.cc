@@ -58,8 +58,7 @@ BrowserReportGeneratorDesktop::GetReportedProfiles() {
                                .GetAllProfilesAttributes()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Skip sign-in and lock screen app profile on Chrome OS.
-    if (!ash::ProfileHelper::IsRegularProfilePath(
-            entry->GetPath().BaseName())) {
+    if (!ash::ProfileHelper::IsUserProfilePath(entry->GetPath().BaseName())) {
       continue;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
