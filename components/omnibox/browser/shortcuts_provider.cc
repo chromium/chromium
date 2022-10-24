@@ -118,8 +118,7 @@ const ShortcutsDatabase::Shortcut* ShortestShortcutContent(
       });
 }
 
-// Helper for `CalculateScore()` and `CalculateAggregateScore()` to score
-// shortcuts based on their individual or aggregate factors.
+// Helper for `CalculateAggregateScore()` to score shortcuts.
 int CalculateScoreFromFactors(size_t typed_length,
                               size_t shortcut_text_length,
                               const base::Time& last_access_time,
@@ -131,44 +130,34 @@ int CalculateScoreFromFactors(size_t typed_length,
   // Due to appending 3 chars when updating shortcuts, and expanding the last
   // word when updating or creating shortcuts, the shortcut text can be longer
   // than the user's previous inputs (see
-  // `ShortcutsBackend::AddOrUpdateShortcut()`). As an approximation, ignore the
-  // 10 chars in the shortcut text, though this can overestimate or
-  // underestimate the actual previous inputs. Shortcuts are often deduped with
-  // higher scoring history suggestions anyway.
+  // `ShortcutsBackend::AddOrUpdateShortcut()`). As an approximation, ignore 3
+  // or 10 chars in the shortcut text. Shortcuts are often deduped with higher
+  // scoring history suggestions anyway.
   const size_t adjustment =
       OmniboxFieldTrial::IsShortcutExpandingEnabled() ? 10 : 3;
   const size_t adjusted_text_length =
       std::max(shortcut_text_length, typed_length + adjustment) - adjustment;
-  const double typed_fraction =
-      static_cast<double>(typed_length) / adjusted_text_length;
-
   // Using the square root of the typed fraction boosts the base score rapidly
   // as characters are typed, compared with simply using the typed fraction
   // directly. This makes sense since the first characters typed are much more
   // important for determining how likely it is a user wants a particular
   // shortcut than are the remaining continued characters.
-  const double base_score = max_relevance * sqrt(typed_fraction);
+  const double typed_fraction =
+      sqrt(static_cast<double>(typed_length) / adjusted_text_length);
 
-  // Then we decay this by half each week.
-  const double kLn2 = 0.6931471805599453;
-  base::TimeDelta time_passed = base::Time::Now() - last_access_time;
-  // Clamp to 0 in case time jumps backwards (e.g. due to DST).
-  double decay_exponent = std::max(0.0, kLn2 * time_passed / base::Days(7));
+  // Decay score by half each week. Clamp to 0 in case time jumps backwards
+  // (e.g. due to DST).
+  const double halftime_numerator =
+      std::max((base::Time::Now() - last_access_time) / base::Days(7), 0.);
+  // Reduce the decay factor for more used shortcuts. Once used, decay at full
+  // speed; otherwise, decay `n` times slower, where n increases by 0.2 for each
+  // additional hit, up to a maximum of 5.
+  const double halftime_denominator = std::min(.8 + number_of_hits * .2, 5.);
+  const double halftime_decay =
+      pow(.5, halftime_numerator / halftime_denominator);
 
-  // We modulate the decay factor based on how many times the shortcut has been
-  // used. Newly created shortcuts decay at full speed; otherwise, decaying by
-  // half takes |n| times as much time, where n increases by
-  // (1.0 / each 5 additional hits), up to a maximum of 5x as long.
-  const double kMaxDecaySpeedDivisor = 5.0;
-  const double kNumUsesPerDecaySpeedDivisorIncrement = 5.0;
-  const double decay_divisor =
-      std::min(kMaxDecaySpeedDivisor,
-               (number_of_hits + kNumUsesPerDecaySpeedDivisorIncrement - 1) /
-                   kNumUsesPerDecaySpeedDivisorIncrement);
-
-  return base::ClampRound(base_score / exp(decay_exponent / decay_divisor));
+  return base::ClampRound(typed_fraction * halftime_decay * max_relevance);
 }
-
 }  // namespace
 
 const int ShortcutsProvider::kShortcutsProviderDefaultMaxRelevance = 1199;
