@@ -297,9 +297,8 @@ const char kMimeTypePDF[] = "application/pdf";
   // If only given a single URL, include additionalText in shared payload.
   if (params.URLs.count == 1) {
     URLWithTitle* url = params.URLs[0];
-    LPLinkMetadata* metadata = [self linkMetadata:url];
     ShareToData* data = activity_services::ShareToDataForURL(
-        url.URL, url.title, params.additionalText, metadata);
+        url.URL, url.title, params.additionalText, nil);
     [dataItems addObject:data];
   } else {
     for (URLWithTitle* urlWithTitle in params.URLs) {
@@ -315,32 +314,6 @@ const char kMimeTypePDF[] = "application/pdf";
       [self.mediator applicationActivitiesForDataItems:dataItems];
 
   [self shareItems:items activities:activities];
-}
-
-// Returns some basic metadata for the Chrome App's app store link. If we do
-// not supply this metadata, UIActivityViewController will only display a
-// generic website icon and the hostname when given an app store link.
-- (LPLinkMetadata*)linkMetadata:(URLWithTitle*)url {
-  if (self.params.scenario != ActivityScenario::ShareChrome) {
-    // For non app store links, we will allow UIActivityViewController to choose
-    // how to display.
-    return nil;
-  }
-
-  LPLinkMetadata* metadata = [[LPLinkMetadata alloc] init];
-  metadata.originalURL = net::NSURLWithGURL(url.URL);
-  metadata.title = url.title;
-  metadata.iconProvider = [self appIconProvider];
-  return metadata;
-}
-
-- (NSItemProvider*)appIconProvider {
-  NSDictionary* allIcons =
-      [[NSBundle mainBundle] infoDictionary][@"CFBundleIcons"];
-  NSDictionary* primaryIcon = allIcons[@"CFBundlePrimaryIcon"];
-  NSArray* iconFiles = primaryIcon[@"CFBundleIconFiles"];
-  UIImage* iconFile = [UIImage imageNamed:iconFiles.lastObject];
-  return [[NSItemProvider alloc] initWithObject:iconFile];
 }
 
 @end
