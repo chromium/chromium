@@ -150,7 +150,7 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
     if (ThrowIfValidName(AtomicString(options->extends()), exception_state))
       return nullptr;
     // 7.2. If element interface is undefined element, throw exception
-    if (htmlElementTypeForTag(extends, owner_->document()) ==
+    if (HtmlElementTypeForTag(extends, owner_->document()) ==
         HTMLElementType::kHTMLUnknownElement) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,

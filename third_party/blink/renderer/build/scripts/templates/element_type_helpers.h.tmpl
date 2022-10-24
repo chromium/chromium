@@ -52,11 +52,11 @@ enum class HTMLElementType {
 };
 
 // Tag checking.
-// tagName is the local name for an html element in lowercase
-// The corresponding HTMLElement type for the tag name will be returned
-// Do NOT use this function with SVG tag names and SVGElements
-// If tagName is an undefined html tag name HTMLUnknownElement is returned
-HTMLElementType htmlElementTypeForTag(const AtomicString& tagName, const Document*);
+// |tag_name| is the local name for an HTML element in lowercase.
+// The corresponding HTMLElement type for the tag name will be returned.
+// Do NOT use this function with SVG tag names and SVGElements.
+// If |tag_name| is an undefined HTML tag name HTMLUnknownElement is returned.
+HTMLElementType HtmlElementTypeForTag(const AtomicString& tag_name, const Document*);
 
 bool IsKnownBuiltinTagName(const AtomicString& tag_name);
 
