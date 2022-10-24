@@ -9,6 +9,8 @@ source_set("app_store_rating") {
     "app_store_rating_display_handler.mm",
     "app_store_rating_scene_agent.h",
     "app_store_rating_scene_agent.mm",
+    "constants.h",
+    "constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
@@ -45,6 +47,27 @@ source_set("unit_tests") {
   deps = [
     ":app_store_rating",
     "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
+    "//ios/chrome/browser/ui/main/test",
+    "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
