@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -133,10 +132,12 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
         mApplicationViewportInsetBottomPx = inset;
 
-        RenderWidgetHostView renderWidgetHostView = mTab.getWebContents().getRenderWidgetHostView();
-        if (renderWidgetHostView == null) return;
+        if (mTab.getWebContents() == null
+                || mTab.getWebContents().getRenderWidgetHostView() == null) {
+            return;
+        }
 
-        renderWidgetHostView.onViewportInsetBottomChanged();
+        mTab.getWebContents().getRenderWidgetHostView().onViewportInsetBottomChanged();
     }
 
     @Override
