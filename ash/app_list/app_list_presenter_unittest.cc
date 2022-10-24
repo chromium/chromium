@@ -174,8 +174,7 @@ void SanityCheckSearchResultsAnchoredDialogBounds(
 // Returns the search box view from either the clamshell bubble or the tablet
 // mode fullscreen launcher.
 SearchBoxView* GetSearchBoxViewFromHelper(AppListTestHelper* helper) {
-  if (features::IsProductivityLauncherEnabled() &&
-      !Shell::Get()->IsInTabletMode()) {
+  if (!Shell::Get()->IsInTabletMode()) {
     DCHECK(Shell::Get()->app_list_controller()->IsVisible());
     return helper->GetBubbleSearchBoxView();
   }
@@ -207,8 +206,6 @@ class AppListPresenterTest : public AshTestBase,
   void EnsureLauncherWithVisibleAppsGrid() {
     auto* helper = GetAppListTestHelper();
     helper->ShowAndRunLoop(GetPrimaryDisplayId());
-    if (!features::IsProductivityLauncherEnabled())
-      helper->GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
     helper->WaitUntilIdle();
   }
 
@@ -253,10 +250,7 @@ class AppListPresenterTest : public AshTestBase,
   }
 
   AppsGridView* apps_grid_view() {
-    if (features::IsProductivityLauncherEnabled())
-      return GetAppListTestHelper()->GetScrollableAppsGridView();
-
-    return GetAppListTestHelper()->GetRootPagedAppsGridView();
+    return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
   SearchResultBaseView* GetSearchResultListViewItemAt(int index) {
@@ -2458,10 +2452,10 @@ TEST_F(PopulatedAppListTest,
   event_generator->MoveTouchBy(0, 10);
   EXPECT_TRUE(apps_grid_view_->FirePageFlipTimerForTest());
   // Move the pointer away from the grid horizontally for it to get out ouf apps
-  // grid drag buffer, so the release results in a canceled drag - for
-  // productivity launcher, the grid is spread out vertically so there is no
-  // area under the grid that's: in page flip area, outside of apps grid drag
-  // buffer, and outside of shelf bounds.
+  // grid drag buffer, so the release results in a canceled drag
+  // The grid is spread out vertically so there is no area under the grid
+  // that's: in page flip area, outside of apps grid drag buffer, and outside of
+  // shelf bounds.
   event_generator->MoveTouchBy(0, 270);
   event_generator->ReleaseTouch();
 
@@ -3359,12 +3353,7 @@ TEST_F(AppListPresenterTest, TapAppListThenShelfHidesAutoHiddenShelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
-TEST_P(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
-  // Parameterize by ProductivityLauncher.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kProductivityLauncher,
-                                    GetParam());
-
+TEST_F(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
   // Add enough shelf items for the shelf to enter overflow.
   Shelf* const shelf = GetPrimaryShelf();
   ScrollableShelfView* const scrollable_shelf_view =
