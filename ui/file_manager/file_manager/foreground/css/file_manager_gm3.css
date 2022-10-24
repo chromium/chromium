@@ -56,18 +56,21 @@ body {
 /* Main part of the dialog between header and footer. */
 .dialog-container {
   align-items: stretch;
-  background-color: var(--cros-bg-color);
+  background-color: var(--cros-sys-app_base);
   display: flex;
   flex: auto;
   flex-direction: row;
   overflow: hidden;
+  padding-inline-end: 16px;
+  padding-top: 16px;
   position: relative;
 }
 
 /* List and grid are inside this container. */
 .dialog-main {
   align-items: stretch;
-  background-color: inherit;
+  background-color: var(--cros-sys-app_base_shaded);
+  border-radius: 16px 16px 0 0;
   display: flex;
   flex: auto;
   flex-direction: column;
