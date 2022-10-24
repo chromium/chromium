@@ -150,6 +150,7 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Optin",
   "arc.Optin.vm",
   "arc.OptinNetworkError",
+  "arc.OptinNetworkError.vm",
 
   # https://crbug.com/1312121
   "policy.DefaultJavaScriptSetting",
