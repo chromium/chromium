@@ -14,7 +14,9 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -98,6 +100,9 @@ class NET_EXPORT IPAddressBytes {
 class NET_EXPORT IPAddress {
  public:
   enum : size_t { kIPv4AddressSize = 4, kIPv6AddressSize = 16 };
+
+  // Nullopt if `value` is malformed to be deserialized to IPAddress.
+  static absl::optional<IPAddress> FromValue(const base::Value& value);
 
   // Creates a zero-sized, invalid address.
   IPAddress();
@@ -214,6 +219,9 @@ class NET_EXPORT IPAddress {
   bool operator==(const IPAddress& that) const;
   bool operator!=(const IPAddress& that) const;
   bool operator<(const IPAddress& that) const;
+
+  // Must be a valid address (per IsValid()).
+  base::Value ToValue() const;
 
  private:
   IPAddressBytes ip_address_;

@@ -11,7 +11,9 @@
 #include <tuple>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -41,6 +43,9 @@ class NET_EXPORT HostPortPair {
   // Creates a HostPortPair from a string formatted in same manner as
   // ToString().
   static HostPortPair FromString(base::StringPiece str);
+
+  // Nullopt if `value` is malformed to be deserialized to HostPortPair.
+  static absl::optional<HostPortPair> FromValue(const base::Value& value);
 
   // TODO(willchan): Define a functor instead.
   // Comparator function so this can be placed in a std::map.
@@ -77,6 +82,8 @@ class NET_EXPORT HostPortPair {
 
   // Returns |host_|, adding IPv6 brackets if needed.
   std::string HostForURL() const;
+
+  base::Value ToValue() const;
 
  private:
   // If |host_| represents an IPv6 address, this string will not contain

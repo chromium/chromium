@@ -12,12 +12,22 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
+
+namespace {
+
+// Value dictionary keys
+constexpr base::StringPiece kValueHostKey = "host";
+constexpr base::StringPiece kValuePortKey = "port";
+
+}  // namespace
 
 HostPortPair::HostPortPair() : port_(0) {}
 HostPortPair::HostPortPair(base::StringPiece in_host, uint16_t in_port)
@@ -76,6 +86,23 @@ HostPortPair HostPortPair::FromString(base::StringPiece str) {
   return HostPortPair(host, port);
 }
 
+// static
+absl::optional<HostPortPair> HostPortPair::FromValue(const base::Value& value) {
+  const base::Value::Dict* dict = value.GetIfDict();
+  if (!dict)
+    return absl::nullopt;
+
+  const std::string* host = dict->FindString(kValueHostKey);
+  absl::optional<int> port = dict->FindInt(kValuePortKey);
+
+  if (host == nullptr || !port.has_value() ||
+      !base::IsValueInRangeForNumericType<uint16_t>(port.value())) {
+    return absl::nullopt;
+  }
+
+  return HostPortPair(*host, base::checked_cast<uint16_t>(port.value()));
+}
+
 std::string HostPortPair::ToString() const {
   std::string ret(HostForURL());
   ret += ':';
@@ -100,6 +127,14 @@ std::string HostPortPair::HostForURL() const {
   }
 
   return host_;
+}
+
+base::Value HostPortPair::ToValue() const {
+  base::Value::Dict dict;
+  dict.Set(kValueHostKey, host_);
+  dict.Set(kValuePortKey, port_);
+
+  return base::Value(std::move(dict));
 }
 
 }  // namespace net

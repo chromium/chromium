@@ -14,7 +14,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "net/base/parse_number.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_canon_ip.h"
 
@@ -166,6 +168,19 @@ bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
 
 bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {
   return !(*this == other);
+}
+
+// static
+absl::optional<IPAddress> IPAddress::FromValue(const base::Value& value) {
+  if (!value.is_string())
+    return absl::nullopt;
+
+  IPAddress address;
+  bool success = address.AssignFromIPLiteral(value.GetString());
+  if (!success || !address.IsValid())
+    return absl::nullopt;
+
+  return address;
 }
 
 IPAddress::IPAddress() = default;
@@ -359,6 +374,11 @@ std::string IPAddress::ToString() const {
 
   output.Complete();
   return str;
+}
+
+base::Value IPAddress::ToValue() const {
+  DCHECK(IsValid());
+  return base::Value(ToString());
 }
 
 std::string IPAddressToStringWithPort(const IPAddress& address, uint16_t port) {

@@ -9,7 +9,11 @@
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+using testing::Optional;
 
 namespace net {
 
@@ -829,6 +833,24 @@ TEST(IPAddressTest, ConvertIPv4ToIPv4EmbeddedIPv6) {
   EXPECT_EQ("32,1,13,184,192,0,2,33,0,0,0,0,0,0,0,0",
             DumpIPAddress(converted_ipv6_address_32));
   EXPECT_EQ("2001:db8:c000:221::", converted_ipv6_address_32.ToString());
+}
+
+TEST(IPAddressTest, RoundtripAddressThroughValue) {
+  IPAddress address(1, 2, 3, 4);
+  ASSERT_TRUE(address.IsValid());
+
+  base::Value value = address.ToValue();
+  EXPECT_THAT(IPAddress::FromValue(value), Optional(address));
+}
+
+TEST(IPAddressTest, FromGarbageValue) {
+  base::Value value(123);
+  EXPECT_FALSE(IPAddress::FromValue(value).has_value());
+}
+
+TEST(IPAddressTest, FromInvalidValue) {
+  base::Value value("1.2.3.4.5");
+  EXPECT_FALSE(IPAddress::FromValue(value).has_value());
 }
 
 }  // anonymous namespace
