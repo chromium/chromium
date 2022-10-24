@@ -1,18 +1,18 @@
-# Mac Team Triage Process
+# Chrome Mac Team Triage Process
 
-This document outlines how the Mac team triages bugs. Triage is the process of
-converting raw bug reports filed by developers or users into actionable,
-prioritized tasks assigned to engineers.
+This document outlines how the Chrome Mac Team triages bugs. Triage is the
+process of converting raw bug reports filed by developers or users into
+actionable, prioritized tasks assigned to engineers.
+
+*** promo
+If you are not on the Chrome Mac Team and want to send a bug to them for triage,
+please mark bugs as Untriaged with label `Mac` (not the OS label "Mac") and
+allow the Mac triage rotation to assign them.
+***
 
 The Mac bug triage process is split into two phases. First-phase triage is done
 daily in week-long shifts by a single person. Second-phase triage is done in a
-standing meeting at the end of the work week by three people. Each week, these
-three people are:
-
-* The primary oncall, who does both phases
-* The secondary oncall, who will become primary in the following week, and who
-  is in the triage meeting so they'll be aware of ongoing themes
-* The TL, who is currently ellyjones@
+standing meeting on Mondays by the Mac team as a group.
 
 A key tool of the triage process is the "Mac" label (*not* the same as the Mac
 OS tag), which makes bugs visible to the triaging step of the process. This
@@ -123,6 +123,15 @@ status:Untriaged to another component:
 If the bug is Mac-specific and in scope for the Mac team, try to:
 
 * Assign it to a sublabel of `Mac`
+    * `Mac-Accessibility`
+    * `Mac-Enterprise`
+    * `Mac-Graphics`
+    * `Mac-Infra`
+    * `Mac-Performance`
+    * `Mac-PlatformIntegration`
+    * `Mac-Polish`
+    * `Mac-TechDebt`
+    * `Mac-UI`
 * Assign it a priority:
     * Pri=0 means "this is an emergency, work on it immediately"
     * Pri=1 means "we should not ship a stable release with this bug if we can
@@ -131,20 +140,7 @@ If the bug is Mac-specific and in scope for the Mac team, try to:
       priority
     * Pri=3 means "it would be nice if we fixed this some day"
 * Maybe assign it an owner if needed - Pri=0 or 1 need one, Pri=2 or 3 can have
-  one if the owner is obvious but don't need one:
-    * `Mac-Accessibility`: ellyjones@ or lgrey@
-    * `Mac-Enterprise`: avi@
-    * `Mac-Graphics`: ccameron@
-    * `Mac-Infra`: ellyjones@
-    * `Mac-Performance`: lgrey@
-    * `Mac-PlatformIntegration`: ellyjones@
-    * `Mac-Polish`: ellyjones@
-    * `Mac-TechDebt`: ellyjones@
-    * `Mac-UI`: anyone
-
-**Caveat lector**: If you are outside the Mac team please do not use this
-assignment map - just mark bugs as Untriaged with label `Mac` and allow the Mac
-triage rotation to assign them. People go on vacation and such :)
+  one if the owner is obvious but don't need one
 
 These are the other components we put bugs into that we assume have their own
 triage processes:
