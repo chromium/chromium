@@ -47,6 +47,7 @@ constexpr int kManagedStateHighlightRadius = 16;
 constexpr SkScalar kManagedStateCornerRadii[] = {16, 16, 16, 16,
                                                  16, 16, 16, 16};
 constexpr auto kManagedStateBorderInsets = gfx::Insets::TLBR(0, 12, 0, 12);
+constexpr gfx::Size kManagedStateImageSize(20, 20);
 
 // Helper function for getting ContentLayerColor.
 inline SkColor GetContentLayerColor(AshColorProvider::ContentLayerType type) {
@@ -254,8 +255,12 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
   label_->SetSubpixelRenderingEnabled(false);
   label_->SetText(l10n_util::GetStringUTF16(label_id));
 
-  image_->SetPreferredSize(
-      gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
+  if (features::IsQsRevampEnabled()) {
+    image_->SetPreferredSize(kManagedStateImageSize);
+  } else {
+    image_->SetPreferredSize(
+        gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
+  }
 
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
@@ -314,7 +319,9 @@ EnterpriseManagedView::EnterpriseManagedView(
     : ManagedStateView(base::BindRepeating(&ShowEnterpriseInfo,
                                            base::Unretained(controller)),
                        IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
-                       kUnifiedMenuManagedIcon) {
+                       features::IsQsRevampEnabled()
+                           ? kQuickSettingsManagedIcon
+                           : kUnifiedMenuManagedIcon) {
   DCHECK(Shell::Get());
   SetID(VIEW_ID_QS_MANAGED_BUTTON);
   Shell::Get()->system_tray_model()->enterprise_domain()->AddObserver(this);

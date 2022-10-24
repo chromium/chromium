@@ -103,7 +103,7 @@ constexpr int kSubmitFeedbackButtonIconSize = 16;
 
 constexpr int kSubmitFeedbackButtonRevampHeight = 32;
 constexpr int kSubmitFeedbackButtonRevampWidth = 40;
-constexpr int kSubmitFeedbackButtonRevampIconSize = 18;
+constexpr int kSubmitFeedbackButtonRevampIconSize = 20;
 
 // Corners for the `SubmitFeedbackButton` contents.
 constexpr SkScalar kSubmitFeedbackButtonCorners[] = {
