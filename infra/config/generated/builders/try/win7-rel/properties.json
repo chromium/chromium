@@ -78,8 +78,7 @@
     "enable_ats": false,
     "jobs": 300,
     "rpc_extra_params": "?prod",
-    "server_host": "goma.chromium.org",
-    "use_luci_auth": true
+    "server_host": "goma.chromium.org"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

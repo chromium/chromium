@@ -233,8 +233,6 @@ def _goma_property(*, goma_backend, goma_debug, goma_enable_ats, goma_jobs):
     if goma_jobs != None:
         goma_properties["jobs"] = goma_jobs
 
-    goma_properties["use_luci_auth"] = True
-
     return goma_properties
 
 def _code_coverage_property(

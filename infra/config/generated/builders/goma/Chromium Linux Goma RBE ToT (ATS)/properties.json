@@ -2,8 +2,7 @@
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?tot",
-    "server_host": "staging-goma.chromium.org",
-    "use_luci_auth": true
+    "server_host": "staging-goma.chromium.org"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
