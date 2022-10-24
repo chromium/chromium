@@ -120041,6 +120041,32 @@
        {}
       ]
      ],
+     "font-variant-emoji-1.html": [
+      "53cf539edd8b61a7f08f8b95ae83f4f7a5179308",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-variant-emoji-1-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-variant-emoji-2.html": [
+      "cce4b0360476ee1f5129b211f4d41e84f404d7ea",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-variant-emoji-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-variant-ligatures-01.html": [
       "519bfd4bf43e5ec09968602bc88257482cab83d7",
       [
@@ -277379,6 +277405,14 @@
       "deb5f9324a1cb7747919fdfcf7a347e32ee0b514",
       []
      ],
+     "font-variant-emoji-1-notref.html": [
+      "bbf3654ccfcdd415fe5a28468e3329ba94ce63da",
+      []
+     ],
+     "font-variant-emoji-2-ref.html": [
+      "d899e0ff53c4661a2ac26bbe802eadd168ed5271",
+      []
+     ],
      "font-variant-ligatures-01-ref.html": [
       "68d5561e7f96767bcd5de7c5577cc18401568882",
       []
@@ -277504,7 +277538,7 @@
       []
      ],
      "inheritance-expected.txt": [
-      "68cc145db7dc3856612d22dd001ab0342b030785",
+      "0477e58d21dce3a5f12e53c7383f31dd4b7f9c37",
       []
      ],
      "line-gap-override-ref.html": [
@@ -277616,6 +277650,14 @@
       ],
       "font-style-computed-expected.txt": [
        "ad92993bc0f0263cd0261f2ecfa28f7b2c149bd0",
+       []
+      ],
+      "font-variant-emoji-computed-expected.txt": [
+       "1d51e079b19081fab0687ef65d91a68c34f0d06c",
+       []
+      ],
+      "font-variant-emoji-valid-expected.txt": [
+       "7eb1a38dbec7661df5fcc9948fb4f63f4d2c36a8",
        []
       ],
       "font-variant-position-computed-expected.txt": [
@@ -398444,7 +398486,7 @@
       ]
      ],
      "inheritance.html": [
-      "d499b50e99e2751e7d77fba382014837e097acbc",
+      "0646a7867862a9ea921f0652b88532f35255c24b",
       [
        null,
        {}
@@ -398854,6 +398896,27 @@
       ],
       "font-variant-east-asian-valid.html": [
        "0f16ceccfe1fe2668d01dfc64e99f4e3ca3164b1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-variant-emoji-computed.html": [
+       "5d24a1dfeec0d0a5575947973fb4fcba33a19095",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-variant-emoji-invalid.html": [
+       "afbf2c4878645139d2300a547d255dd71cc818cc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-variant-emoji-valid.html": [
+       "f3bf80bb52a8b14828155ecd9df53e3216b0c4f4",
        [
         null,
         {}
