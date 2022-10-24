@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -438,6 +439,60 @@ bool AggregationServiceStorageSql::ReportingOriginHasCapacity(
 
   int64_t count = count_request_statement.ColumnInt64(0);
   return count < max_stored_requests_per_reporting_origin_;
+}
+
+void AggregationServiceStorageSql::UpdateReportForSendFailure(
+    AggregationServiceStorage::RequestId request_id,
+    base::Time new_report_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent))
+    return;
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return;
+
+  static constexpr char kGetRequestProtoSql[] =
+      "SELECT request_proto FROM report_requests WHERE request_id=?";
+  sql::Statement get_request_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kGetRequestProtoSql));
+  get_request_statement.BindInt64(0, request_id.value());
+
+  if (!get_request_statement.Step())
+    return;
+
+  base::span<const uint8_t> blob = get_request_statement.ColumnBlob(0);
+  proto::AggregatableReportRequest request_proto;
+  if (!request_proto.ParseFromArray(blob.data(), blob.size()))
+    return;
+
+  if (request_proto.failed_send_attempts() < 0)
+    return;
+
+  request_proto.set_failed_send_attempts(request_proto.failed_send_attempts() +
+                                         1);
+
+  size_t size = request_proto.ByteSizeLong();
+  std::vector<uint8_t> serialized_proto(size);
+  if (!request_proto.SerializeToArray(serialized_proto.data(), size))
+    return;
+
+  static constexpr char kUpdateRequestSql[] =
+      "UPDATE report_requests SET report_time=?,request_proto=? "
+      "WHERE request_id=?";
+
+  sql::Statement update_request_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kUpdateRequestSql));
+
+  update_request_statement.BindTime(0, new_report_time);
+  update_request_statement.BindBlob(1, serialized_proto);
+  update_request_statement.BindInt64(2, request_id.value());
+
+  if (!update_request_statement.Run())
+    return;
+
+  transaction.Commit();
 }
 
 void AggregationServiceStorageSql::StoreRequest(

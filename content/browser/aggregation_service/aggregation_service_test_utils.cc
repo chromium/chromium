@@ -212,14 +212,17 @@ testing::AssertionResult SharedInfoEqual(
 }
 
 AggregatableReportRequest CreateExampleRequest(
-    mojom::AggregationServiceMode aggregation_mode) {
-  return CreateExampleRequestWithReportTime(base::Time::Now(),
-                                            aggregation_mode);
+    mojom::AggregationServiceMode aggregation_mode,
+    int failed_send_attempts) {
+  return CreateExampleRequestWithReportTime(
+      /*report_time=*/base::Time::Now(), aggregation_mode,
+      failed_send_attempts);
 }
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
-    mojom::AggregationServiceMode aggregation_mode) {
+    mojom::AggregationServiceMode aggregation_mode,
+    int failed_send_attempts) {
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
@@ -236,7 +239,8 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  /*additional_fields=*/base::Value::Dict(),
                  /*api_version=*/"",
                  /*api_identifier=*/"example-api"),
-             /*reporting_path-*/ "example-path")
+             /*reporting_path=*/"example-path",
+             /*debug_key=*/absl::nullopt, failed_send_attempts)
       .value();
 }
 

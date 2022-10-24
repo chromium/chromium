@@ -344,7 +344,8 @@ absl::optional<AggregatableReportRequest> ConvertReportRequestFromProto(
 
   return AggregatableReportRequest::Create(
       std::move(payload_contents.value()), std::move(shared_info.value()),
-      std::move(*request_proto.mutable_reporting_path()), debug_key);
+      std::move(*request_proto.mutable_reporting_path()), debug_key,
+      request_proto.failed_send_attempts());
 }
 
 void ConvertPayloadContentsToProto(
@@ -414,6 +415,7 @@ proto::AggregatableReportRequest ConvertReportRequestToProto(
   if (request.debug_key().has_value()) {
     request_proto.set_debug_key(request.debug_key().value());
   }
+  request_proto.set_failed_send_attempts(request.failed_send_attempts());
 
   return request_proto;
 }
@@ -511,12 +513,13 @@ absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key) {
+    absl::optional<uint64_t> debug_key,
+    int failed_send_attempts) {
   std::vector<GURL> processing_urls =
       GetDefaultProcessingUrls(payload_contents.aggregation_mode);
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
                         std::move(shared_info), std::move(reporting_path),
-                        debug_key);
+                        debug_key, failed_send_attempts);
 }
 
 // static
@@ -526,10 +529,11 @@ AggregatableReportRequest::CreateForTesting(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key) {
+    absl::optional<uint64_t> debug_key,
+    int failed_send_attempts) {
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
                         std::move(shared_info), std::move(reporting_path),
-                        debug_key);
+                        debug_key, failed_send_attempts);
 }
 
 // static
@@ -539,7 +543,8 @@ AggregatableReportRequest::CreateInternal(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key) {
+    absl::optional<uint64_t> debug_key,
+    int failed_send_attempts) {
   if (!AggregatableReport::IsNumberOfProcessingUrlsValid(
           processing_urls.size(), payload_contents.aggregation_mode)) {
     return absl::nullopt;
@@ -573,13 +578,18 @@ AggregatableReportRequest::CreateInternal(
     return absl::nullopt;
   }
 
+  if (failed_send_attempts < 0) {
+    return absl::nullopt;
+  }
+
   // Ensure the ordering of urls is deterministic. This is required for
   // AggregatableReport construction later.
   base::ranges::sort(processing_urls);
 
   return AggregatableReportRequest(
       std::move(processing_urls), std::move(payload_contents),
-      std::move(shared_info), std::move(reporting_path), debug_key);
+      std::move(shared_info), std::move(reporting_path), debug_key,
+      failed_send_attempts);
 }
 
 AggregatableReportRequest::AggregatableReportRequest(
@@ -587,12 +597,14 @@ AggregatableReportRequest::AggregatableReportRequest(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key)
+    absl::optional<uint64_t> debug_key,
+    int failed_send_attempts)
     : processing_urls_(std::move(processing_urls)),
       payload_contents_(std::move(payload_contents)),
       shared_info_(std::move(shared_info)),
       reporting_path_(std::move(reporting_path)),
-      debug_key_(debug_key) {}
+      debug_key_(debug_key),
+      failed_send_attempts_(failed_send_attempts) {}
 
 AggregatableReportRequest::AggregatableReportRequest(
     AggregatableReportRequest&& other) = default;

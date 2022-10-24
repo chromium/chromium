@@ -67,12 +67,14 @@ testing::AssertionResult SharedInfoEqual(
 // Returns an example report request, using the given parameters.
 AggregatableReportRequest CreateExampleRequest(
     mojom::AggregationServiceMode aggregation_mode =
-        mojom::AggregationServiceMode::kDefault);
+        mojom::AggregationServiceMode::kDefault,
+    int failed_send_attempts = 0);
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     mojom::AggregationServiceMode aggregation_mode =
-        mojom::AggregationServiceMode::kDefault);
+        mojom::AggregationServiceMode::kDefault,
+    int failed_send_attempts = 0);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);

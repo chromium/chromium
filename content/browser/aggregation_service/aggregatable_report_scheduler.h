@@ -46,6 +46,11 @@ class CONTENT_EXPORT AggregatableReportScheduler {
   static constexpr base::TimeDelta kOfflineReportTimeMaximumDelay =
       base::Minutes(1);
 
+  // Configuration for retrying to send reports that failed to send
+  static constexpr int kMaxRetries = 2;
+  static constexpr base::TimeDelta kInitialRetryDelay = base::Minutes(5);
+  static constexpr int kRetryDelayFactor = 3;
+
   AggregatableReportScheduler(
       AggregationServiceStorageContext* storage_context,
       base::RepeatingCallback<
@@ -72,9 +77,14 @@ class CONTENT_EXPORT AggregatableReportScheduler {
 
   // Notifies that the request to assemble and send the report with `request_id`
   // completed unsuccessfully. There must be an in-progress request stored with
-  // that `request_id`.
-  virtual void NotifyInProgressRequestFailed(
-      AggregationServiceStorage::RequestId request_id);
+  // that `request_id`.`failed_attemps_before_sending` is the number of times
+  // that this request previously failed. ie. not counting the failure being
+  // notified on.
+  // Returns true when the request will be scheduled to be retried.
+  // Returns false when the request is dropped. ie. it wont be retried.
+  virtual bool NotifyInProgressRequestFailed(
+      AggregationServiceStorage::RequestId request_id,
+      int previous_failed_attempts);
 
   // TODO(crbug.com/1340042): Implement offline and startup handling
 
@@ -93,7 +103,7 @@ class CONTENT_EXPORT AggregatableReportScheduler {
     TimerDelegate& operator=(TimerDelegate&&) = delete;
 
     // Notifies that we no longer need to track `request_id` as in-progress.
-    void NotifyRequestCompleted(
+    void NotifySendAttemptCompleted(
         AggregationServiceStorage::RequestId request_id);
 
     base::WeakPtr<AggregatableReportScheduler::TimerDelegate> GetWeakPtr() {
@@ -135,6 +145,14 @@ class CONTENT_EXPORT AggregatableReportScheduler {
     base::WeakPtrFactory<AggregatableReportScheduler::TimerDelegate>
         weak_ptr_factory_{this};
   };
+
+  // Returns how long to wait before attempting to send a report that has
+  // previously failed to be sent failed_send_attempts times. Returns
+  // `absl::nullopt` to indicate that no more attempts should be made.
+  // Otherwise, the return value must be positive. `failed_send_attempts`
+  // must be positive.
+  static absl::optional<base::TimeDelta> GetFailedReportDelay(
+      int failed_send_attempts);
 
   // Using a raw reference is safe because `storage_context_` is guaranteed to
   // outlive `this`.

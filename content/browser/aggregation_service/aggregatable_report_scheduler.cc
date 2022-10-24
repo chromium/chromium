@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
@@ -60,20 +61,47 @@ void AggregatableReportScheduler::NotifyInProgressRequestSucceeded(
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::DeleteRequest)
       .WithArgs(request_id)
-      .Then(base::BindOnce(&TimerDelegate::NotifyRequestCompleted,
+      .Then(base::BindOnce(&TimerDelegate::NotifySendAttemptCompleted,
                            timer_delegate_->GetWeakPtr(), request_id));
 }
 
-void AggregatableReportScheduler::NotifyInProgressRequestFailed(
-    AggregationServiceStorage::RequestId request_id) {
-  // TODO(crbug.com/1340040): Implement retry handling. Ideally also handle
-  // different errors differently. Also, ensure this composes well with offline
-  // handling.
+bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
+    AggregationServiceStorage::RequestId request_id,
+    int previous_failed_attempts) {
+  DCHECK_GE(previous_failed_attempts, 0);
+  absl::optional<base::TimeDelta> delay =
+      GetFailedReportDelay(previous_failed_attempts + 1);
+
+  if (delay.has_value()) {
+    base::Time next_report_time = base::Time::Now() + *delay;
+    storage_context_->GetStorage()
+        .AsyncCall(&AggregationServiceStorage::UpdateReportForSendFailure)
+        .WithArgs(request_id, next_report_time)
+        .Then(base::BindOnce(&TimerDelegate::NotifySendAttemptCompleted,
+                             timer_delegate_->GetWeakPtr(), request_id));
+
+    timer_.MaybeSet(next_report_time);
+    return true;
+  }
+
+  // no retries left, dropping request
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::DeleteRequest)
       .WithArgs(request_id)
-      .Then(base::BindOnce(&TimerDelegate::NotifyRequestCompleted,
+      .Then(base::BindOnce(&TimerDelegate::NotifySendAttemptCompleted,
                            timer_delegate_->GetWeakPtr(), request_id));
+  return false;
+}
+
+absl::optional<base::TimeDelta>
+AggregatableReportScheduler::GetFailedReportDelay(int failed_send_attempts) {
+  DCHECK_GT(failed_send_attempts, 0);
+
+  if (failed_send_attempts > kMaxRetries)
+    return absl::nullopt;
+
+  return kInitialRetryDelay *
+         std::pow(kRetryDelayFactor, failed_send_attempts - 1);
 }
 
 AggregatableReportScheduler::TimerDelegate::TimerDelegate(
@@ -128,7 +156,7 @@ void AggregatableReportScheduler::TimerDelegate::AdjustOfflineReportTimes(
       .Then(std::move(maybe_set_timer_cb));
 }
 
-void AggregatableReportScheduler::TimerDelegate::NotifyRequestCompleted(
+void AggregatableReportScheduler::TimerDelegate::NotifySendAttemptCompleted(
     AggregationServiceStorage::RequestId request_id) {
   in_progress_requests_.erase(request_id);
 }
