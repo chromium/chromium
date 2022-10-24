@@ -139,6 +139,11 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::MessageDeclined() {
       AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined);
 }
 
+void AutofillSaveUpdateAddressProfileDelegateIOS::AutoDecline() {
+  SetUserDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined);
+}
+
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
     const ServerFieldType& type,
     const std::u16string& value) {

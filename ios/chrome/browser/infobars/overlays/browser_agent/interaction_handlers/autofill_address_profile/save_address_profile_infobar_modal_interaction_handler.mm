@@ -28,6 +28,12 @@ void SaveAddressProfileInfobarModalInteractionHandler::PerformMainAction(
   infobar->set_accepted(GetInfoBarDelegate(infobar)->Accept());
 }
 
+void SaveAddressProfileInfobarModalInteractionHandler::InfobarVisibilityChanged(
+    InfoBarIOS* infobar,
+    bool visible) {
+  GetInfoBarDelegate(infobar)->set_is_infobar_visible(visible);
+}
+
 void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     InfoBarIOS* infobar,
     NSDictionary* profileData) {

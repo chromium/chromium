@@ -28,10 +28,12 @@ SaveAddressProfileInfobarBannerInteractionHandler::
 void SaveAddressProfileInfobarBannerInteractionHandler::BannerVisibilityChanged(
     InfoBarIOS* infobar,
     bool visible) {
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
+          FromInfobarDelegate(infobar->delegate());
+  delegate->set_is_infobar_visible(visible);
   if (!visible) {
-    autofill::AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
-        infobar->delegate())
-        ->MessageTimeout();
+    delegate->MessageTimeout();
   }
 }
 
