@@ -365,6 +365,10 @@ DownloadDisplayController::IconInfo DownloadDisplayController::GetIconInfo() {
   return icon_info_;
 }
 
+bool DownloadDisplayController::IsDisplayShowingDetails() {
+  return display_->IsShowingDetails();
+}
+
 DownloadDisplayController::ProgressInfo
 DownloadDisplayController::GetProgress() {
   ProgressInfo progress_info;
