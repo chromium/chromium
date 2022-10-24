@@ -130,4 +130,5 @@ fuzzer_test("libphonenumber_fuzzer") {
 fuzzer_test("charntorune_fuzzer") {
   sources = [ "charntorune_fuzzer.cc" ]
   deps = [ ":libphonenumber" ]
+  libfuzzer_options = [ "max_len = 4096" ]
 }
