@@ -909,7 +909,10 @@ bool IsSigninForcedByPolicy() {
         addAgent:[[PromosManagerSceneAgent alloc]
                      initWithCommandDispatcher:mainCommandDispatcher]];
   if (IsAppStoreRatingEnabled()) {
-    [self.sceneState addAgent:[[AppStoreRatingSceneAgent alloc] init]];
+    [self.sceneState
+        addAgent:[[AppStoreRatingSceneAgent alloc]
+                     initWithPromosManager:GetApplicationContext()
+                                               ->GetPromosManager()]];
   }
 
   if (IsWhatsNewEnabled()) {

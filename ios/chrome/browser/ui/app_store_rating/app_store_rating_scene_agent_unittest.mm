@@ -12,9 +12,7 @@
 // Test fixture for testing AppStoreRatingSceneAgent class.
 class AppStoreRatingSceneAgentTest : public PlatformTest {
  protected:
-  AppStoreRatingSceneAgentTest() {
-    test_scene_agent_ = [[AppStoreRatingSceneAgent alloc] init];
-  }
+  AppStoreRatingSceneAgentTest() {}
 
   ~AppStoreRatingSceneAgentTest() override {}
 
