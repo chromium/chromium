@@ -151,6 +151,10 @@ GURL ComputeURLForDeduping(const GURL& url) {
   if (url.has_ref())
     replacements.ClearRef();
 
+  if (GetConfig().use_host_for_visit_deduping && url.has_path()) {
+    replacements.ClearPath();
+  }
+
   url_for_deduping = url_for_deduping.ReplaceComponents(replacements);
   return url_for_deduping;
 }

@@ -335,6 +335,11 @@ struct Config {
   // The max time a host should be stored in the engagement score cache.
   base::TimeDelta engagement_score_cache_refresh_duration = base::Minutes(120);
 
+  // The `kHistoryClustersVisitDeduping` feature and child params.
+
+  // Use host instead of heavily-stripped URL as URL for deduping.
+  bool use_host_for_visit_deduping = false;
+
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

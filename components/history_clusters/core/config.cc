@@ -366,6 +366,13 @@ Config::Config() {
         JourneysCollectionContentClusteringBlocklist();
   }
 
+  // The `kHistoryClustersVisitDeduping` feature and child params.
+  {
+    use_host_for_visit_deduping = GetFieldTrialParamByFeatureAsBool(
+        internal::kHistoryClustersVisitDeduping, "use_host_for_visit_deduping",
+        use_host_for_visit_deduping);
+  }
+
   // Lonely features without child params.
   {
     non_user_visible_debug =

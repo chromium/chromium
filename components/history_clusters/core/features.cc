@@ -69,6 +69,10 @@ BASE_FEATURE(kHistoryClustersKeywordFiltering,
              "HistoryClustersKeywordFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHistoryClustersVisitDeduping,
+             "HistoryClustersVisitDeduping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace internal
 
 BASE_FEATURE(kJourneysSurveyForHistoryEntrypoint,

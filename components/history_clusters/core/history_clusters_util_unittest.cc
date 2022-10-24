@@ -14,43 +14,85 @@ namespace history_clusters {
 namespace {
 
 TEST(HistoryClustersUtilTest, ComputeURLForDeduping) {
-  EXPECT_EQ(ComputeURLForDeduping(GURL("https://www.google.com/")),
-            "https://google.com/")
-      << "Strip off WWW.";
-  EXPECT_EQ(ComputeURLForDeduping(GURL("http://google.com/")),
-            "https://google.com/")
-      << "Normalizes scheme to https.";
-  EXPECT_EQ(
-      ComputeURLForDeduping(GURL("https://google.com/path?foo=bar#reftag")),
-      "https://google.com/path")
-      << "Strips ref and query, leaves path.";
-  EXPECT_EQ(
-      ComputeURLForDeduping(GURL("http://www.google.com/path?foo=bar#reftag")),
-      "https://google.com/path")
-      << "Does all of the above at once.";
-  EXPECT_EQ(ComputeURLForDeduping(GURL("https://google.com/path")),
-            "https://google.com/path")
-      << "Sanity check when no replacements needed.";
+  {
+    Config config;
+    config.use_host_for_visit_deduping = false;
+    SetConfigForTesting(config);
+
+    EXPECT_EQ(ComputeURLForDeduping(GURL("https://www.google.com/")),
+              "https://google.com/")
+        << "Strip off WWW.";
+    EXPECT_EQ(ComputeURLForDeduping(GURL("http://google.com/")),
+              "https://google.com/")
+        << "Normalizes scheme to https.";
+    EXPECT_EQ(
+        ComputeURLForDeduping(GURL("https://google.com/path?foo=bar#reftag")),
+        "https://google.com/path")
+        << "Strips ref and query, leaves path.";
+    EXPECT_EQ(ComputeURLForDeduping(
+                  GURL("http://www.google.com/path?foo=bar#reftag")),
+              "https://google.com/path")
+        << "Does all of the above at once.";
+    EXPECT_EQ(ComputeURLForDeduping(GURL("https://google.com/path")),
+              "https://google.com/path")
+        << "Sanity check when no replacements needed.";
+  }
+
+  {
+    Config config;
+    config.use_host_for_visit_deduping = true;
+    SetConfigForTesting(config);
+
+    EXPECT_EQ(ComputeURLForDeduping(
+                  GURL("http://www.google.com/path?foo=bar#reftag")),
+              "https://google.com/")
+        << "Does all of the above at once.";
+
+    EXPECT_EQ(ComputeURLForDeduping(GURL("https://google.com/path/")),
+              "https://google.com/")
+        << "Strips path.";
+  }
 }
 
 TEST(HistoryClustersUtilTest, ComputeURLKeywordForLookup) {
-  EXPECT_EQ(ComputeURLKeywordForLookup(GURL("http://www.google.com/")),
-            "http://google.com/")
-      << "Strip off WWW.";
-  EXPECT_EQ(ComputeURLKeywordForLookup(GURL("https://google.com/")),
-            "http://google.com/")
-      << "Normalizes scheme to http.";
-  EXPECT_EQ(
-      ComputeURLKeywordForLookup(GURL("http://google.com/path?foo=bar#reftag")),
-      "http://google.com/path")
-      << "Strips ref and query, leaves path.";
-  EXPECT_EQ(ComputeURLKeywordForLookup(
-                GURL("https://www.google.com/path?foo=bar#reftag")),
-            "http://google.com/path")
-      << "Does all of the above at once.";
-  EXPECT_EQ(ComputeURLKeywordForLookup(GURL("http://google.com/path")),
-            "http://google.com/path")
-      << "Sanity check when no replacements needed.";
+  {
+    Config config;
+    config.use_host_for_visit_deduping = false;
+    SetConfigForTesting(config);
+
+    EXPECT_EQ(ComputeURLKeywordForLookup(GURL("http://www.google.com/")),
+              "http://google.com/")
+        << "Strip off WWW.";
+    EXPECT_EQ(ComputeURLKeywordForLookup(GURL("https://google.com/")),
+              "http://google.com/")
+        << "Normalizes scheme to http.";
+    EXPECT_EQ(ComputeURLKeywordForLookup(
+                  GURL("http://google.com/path?foo=bar#reftag")),
+              "http://google.com/path")
+        << "Strips ref and query, leaves path.";
+    EXPECT_EQ(ComputeURLKeywordForLookup(
+                  GURL("https://www.google.com/path?foo=bar#reftag")),
+              "http://google.com/path")
+        << "Does all of the above at once.";
+    EXPECT_EQ(ComputeURLKeywordForLookup(GURL("http://google.com/path")),
+              "http://google.com/path")
+        << "Sanity check when no replacements needed.";
+  }
+
+  {
+    Config config;
+    config.use_host_for_visit_deduping = true;
+    SetConfigForTesting(config);
+
+    EXPECT_EQ(ComputeURLKeywordForLookup(GURL("https://google.com/path/")),
+              "http://google.com/")
+        << "Strips path.";
+
+    EXPECT_EQ(ComputeURLKeywordForLookup(
+                  GURL("https://www.google.com/path?foo=bar#reftag")),
+              "http://google.com/")
+        << "Does everything at once.";
+  }
 }
 
 TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {

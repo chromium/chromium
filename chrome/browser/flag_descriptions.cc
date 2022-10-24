@@ -1792,6 +1792,10 @@ const char kJourneysShowAllClustersName[] =
 const char kJourneysShowAllClustersDescription[] =
     "Enables all Journeys clusters to be shown on prominent UI surfaces";
 
+const char kJourneysVisitDedupingName[] = "History Journeys Visit Deduping";
+const char kJourneysVisitDedupingDescription[] =
+    "Enables variations for how visits are deduped";
+
 const char kLargeFaviconFromGoogleName[] = "Large favicons from Google";
 const char kLargeFaviconFromGoogleDescription[] =
     "Request large favicons from Google's favicon service";

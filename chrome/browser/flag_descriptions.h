@@ -999,6 +999,9 @@ extern const char kJourneysOnDeviceClusteringKeywordFilteringDescription[];
 extern const char kJourneysShowAllClustersName[];
 extern const char kJourneysShowAllClustersDescription[];
 
+extern const char kJourneysVisitDedupingName[];
+extern const char kJourneysVisitDedupingDescription[];
+
 extern const char kLargeFaviconFromGoogleName[];
 extern const char kLargeFaviconFromGoogleDescription[];
 

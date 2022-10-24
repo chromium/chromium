@@ -58,6 +58,9 @@ BASE_DECLARE_FEATURE(kHistoryClustersUseContinueOnShutdown);
 // Enables use of additional keyword filtering operations on clusters.
 BASE_DECLARE_FEATURE(kHistoryClustersKeywordFiltering);
 
+// Enables experimentation for how to dedupe visits in clusters.
+BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);
+
 // Order consistently with config.h.
 
 }  // namespace internal

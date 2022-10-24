@@ -1321,6 +1321,13 @@ const FeatureEntry::FeatureVariation
              kJourneysOnDeviceClusteringKeywordFilteringWithSearchTermsParams),
          nullptr},
 };
+const FeatureEntry::FeatureParam kJourneysVisitDedupingUseHostParams[] = {
+    {"use_host_for_visit_deduping", "true"},
+};
+const FeatureEntry::FeatureVariation kJourneysVisitDedupingVariations[] = {
+    {"Use host", kJourneysVisitDedupingUseHostParams,
+     std::size(kJourneysVisitDedupingUseHostParams), nullptr},
+};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
@@ -5901,6 +5908,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      SINGLE_VALUE_TYPE(history_clusters::switches::
                            kShouldShowAllClustersOnProminentUiSurfaces)},
+
+    {"history-journeys-visit-deduping",
+     flag_descriptions::kJourneysVisitDedupingName,
+     flag_descriptions::kJourneysVisitDedupingDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         history_clusters::internal::kHistoryClustersVisitDeduping,
+         kJourneysVisitDedupingVariations,
+         "HistoryJourneysVisitDeduping")},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription,
