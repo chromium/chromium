@@ -100,15 +100,7 @@ BASE_FEATURE(kQuickCommands,
 
 // Enables the side search feature for Google Search. Presents recent Google
 // search results in a browser side panel.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enable by default as the ChromeOS iteration of Side Search has launched (See
-// crbug.com/1242730).
 BASE_FEATURE(kSideSearch, "SideSearch", base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-// Disable by default on remaining desktop platforms until desktop UX has
-// launched (See crbug.com/1279696).
-BASE_FEATURE(kSideSearch, "SideSearch", base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kSideSearchFeedback,
              "SideSearchFeedback",
@@ -119,7 +111,7 @@ BASE_FEATURE(kSideSearchFeedback,
 // kSideSearch on non-ChromeOS platforms.
 BASE_FEATURE(kSideSearchDSESupport,
              "SideSearchDSESupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Displays right-click search results of a highlighted text in side panel,
 // So users are not forced to switch to a new tab to view the search results

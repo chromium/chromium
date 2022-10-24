@@ -33,7 +33,9 @@ void ApplyDSEConfiguration(Profile* profile, SideSearchConfig& config) {
       [](Profile* profile, const GURL& url) {
         const auto* template_url_service =
             TemplateURLServiceFactory::GetForProfile(profile);
-        return template_url_service
+
+        return template_url_service &&
+               template_url_service
                    ->IsSideSearchSupportedForDefaultSearchProvider() &&
                template_url_service
                    ->IsSearchResultsPageFromDefaultSearchProvider(url);
@@ -49,7 +51,8 @@ void ApplyDSEConfiguration(Profile* profile, SideSearchConfig& config) {
       [](Profile* profile, const GURL& url) {
         const auto* template_url_service =
             TemplateURLServiceFactory::GetForProfile(profile);
-        return template_url_service
+        return template_url_service &&
+               template_url_service
                    ->IsSideSearchSupportedForDefaultSearchProvider() &&
                !template_url_service
                     ->IsSearchResultsPageFromDefaultSearchProvider(url) &&
