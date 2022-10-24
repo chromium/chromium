@@ -329,8 +329,10 @@ bool UtilityProcessHost::StartProcess() {
 #if BUILDFLAG(IS_WIN)
     if (media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
       // MediaFoundationD3D11VideoCapture requires Gpu memory buffers,
-      // which are unavailable if the GPU process isn't running.
-      if (!GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled()) {
+      // which are unavailable if the GPU process isn't running or if
+      // D3D shared images are not supported.
+      if (!GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled() &&
+          GpuDataManagerImpl::GetInstance()->GetGPUInfo().shared_image_d3d) {
         cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
       }
     }

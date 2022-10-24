@@ -15,6 +15,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "media/base/media_export.h"
@@ -201,6 +202,8 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() = 0;
 
   virtual viz::RasterContextProvider* GetMediaContextProvider() = 0;
+
+  virtual const gpu::Capabilities* ContextCapabilities() = 0;
 
   // Sets or gets the current pipeline rendering color space.
   virtual void SetRenderingColorSpace(const gfx::ColorSpace& color_space) = 0;

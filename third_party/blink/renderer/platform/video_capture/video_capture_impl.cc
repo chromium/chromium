@@ -378,7 +378,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
       // connection, while the capturer process will continue to produce
       // GPU backed frames.
       if (!video_capture_impl_.gpu_factories_ ||
-          !video_capture_impl_.media_task_runner_) {
+          !video_capture_impl_.media_task_runner_ ||
+          video_capture_impl_.gmb_not_supported_) {
         video_capture_impl_.RequirePremappedFrames();
         if (!frame_info_->is_premapped || !buffer_context_->data()) {
           // If the frame isn't premapped, can't do anything here.
@@ -486,6 +487,19 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
     buffer_context_->SetGpuFactories(gpu_factories);
     should_recreate_shared_image = true;
   }
+#if BUILDFLAG(IS_WIN)
+  // If the renderer is running in d3d9 mode due to e.g. driver bugs
+  // workarounds, DXGI D3D11 textures won't be supported.
+  // Can't check this from the ::Initialize() since media context provider can
+  // be accessed only on the Media thread.
+  const gpu::Capabilities* context_capabilites =
+      gpu_factories->ContextCapabilities();
+  if (!context_capabilites || !context_capabilites->shared_image_d3d) {
+    video_capture_impl_.RequirePremappedFrames();
+    video_capture_impl_.gmb_not_supported_ = true;
+    return false;
+  }
+#endif
 
   // Create GPU texture and bind GpuMemoryBuffer to the texture.
   auto* sii = buffer_context_->gpu_factories()->SharedImageInterface();

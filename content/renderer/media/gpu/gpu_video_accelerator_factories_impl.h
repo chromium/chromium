@@ -123,6 +123,8 @@ class GpuVideoAcceleratorFactoriesImpl
 
   viz::RasterContextProvider* GetMediaContextProvider() override;
 
+  const gpu::Capabilities* ContextCapabilities() override;
+
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space) override;
   const gfx::ColorSpace& GetRenderingColorSpace() const override;
 

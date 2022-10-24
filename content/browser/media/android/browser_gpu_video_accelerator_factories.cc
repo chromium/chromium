@@ -219,6 +219,12 @@ BrowserGpuVideoAcceleratorFactories::GetMediaContextProvider() {
   return context_provider_.get();
 }
 
+const gpu::Capabilities*
+BrowserGpuVideoAcceleratorFactories::ContextCapabilities() {
+  return context_provider_ ? &(context_provider_->ContextCapabilities())
+                           : nullptr;
+}
+
 void BrowserGpuVideoAcceleratorFactories::SetRenderingColorSpace(
     const gfx::ColorSpace& color_space) {}
 
