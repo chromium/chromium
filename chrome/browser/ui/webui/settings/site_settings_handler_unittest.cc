@@ -41,6 +41,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -3275,8 +3276,11 @@ TEST_F(SiteSettingsHandlerTest, HandleResetNotificationPermissionForOrigin) {
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 }
 
-// TODO(crbug.com/137935): Re-enable this test.
 TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      ::features::kSafetyCheckNotificationPermissions);
+
   // Add a couple of notification permission and check they appear in review
   // list.
   HostContentSettingsMap* map =
