@@ -1,9 +1,11 @@
     <style include="settings-shared passwords-shared">
-      .expiration-column {
+      .expiration-column,
+      .misc-column {
         align-items: center;
         display: flex;
         flex: 1;
       }
+
       .list-item {
         margin-bottom: 8px;
         margin-top: 8px;
@@ -34,8 +36,8 @@
         margin-inline-end: 16px;
       }
     </style>
-    <div class="list-item">
-      <div class="type-column">
+    <div class="list-item" role="row">
+      <div class="type-column" role="cell">
         <template is="dom-if" if="[[virtualCardMetadataEnabled_]]">
           <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
         </template>
@@ -58,35 +60,37 @@
         </span>
       </div>
       <div class="expiration-column">
-        <div id="creditCardExpiration">
+        <div id="creditCardExpiration" role="cell">
             [[creditCard.expirationMonth]]/[[creditCard.expirationYear]]
         </div>
-        <div id="paymentsIndicator"
-          hidden$="[[!shouldShowPaymentsIndicator_(creditCard.metadata)]]">
-          <if expr="_google_chrome">
-            <picture id="paymentsIcon">
-              <source
-                  srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK"
-                  media="(prefers-color-scheme: dark)">
-              <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY">
-            </picture>
-          </if>
-          <if expr="not _google_chrome">
-            <span class="payments-label">
-              [[getPaymentsLabel_(creditCard.metadata)]]
-            </span>
-          </if>
+        <div role="cell" class="misc-column">
+          <div id="paymentsIndicator"
+              hidden$="[[!shouldShowPaymentsIndicator_(creditCard.metadata)]]">
+            <if expr="_google_chrome">
+              <picture id="paymentsIcon">
+                <source
+                    srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK"
+                    media="(prefers-color-scheme: dark)">
+                <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY">
+              </picture>
+            </if>
+            <if expr="not _google_chrome">
+              <span class="payments-label">
+                [[getPaymentsLabel_(creditCard.metadata)]]
+              </span>
+            </if>
+          </div>
+          <template is="dom-if" if="[[showDots_(creditCard.metadata)]]">
+            <cr-icon-button class="icon-more-vert" id="creditCardMenu"
+                title="[[moreActionsTitle_(creditCard)]]"
+                on-click="onDotsMenuClick_">
+            </cr-icon-button>
+          </template>
+          <template is="dom-if" if="[[!showDots_(creditCard.metadata)]]">
+            <cr-icon-button class="icon-external" id="remoteCreditCardLink"
+                title="$i18n{remoteCreditCardLinkLabel}" role="link"
+                on-click="onRemoteEditClick_"></cr-icon-button>
+          </template>
         </div>
-        <template is="dom-if" if="[[showDots_(creditCard.metadata)]]">
-          <cr-icon-button class="icon-more-vert" id="creditCardMenu"
-              title="[[moreActionsTitle_(creditCard)]]"
-              on-click="onDotsMenuClick_">
-          </cr-icon-button>
-        </template>
-        <template is="dom-if" if="[[!showDots_(creditCard.metadata)]]">
-          <cr-icon-button class="icon-external" id="remoteCreditCardLink"
-              title="$i18n{remoteCreditCardLinkLabel}" role="link"
-              on-click="onRemoteEditClick_"></cr-icon-button>
-        </template>
       </div>
     </div>
