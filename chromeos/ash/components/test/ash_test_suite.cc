@@ -1,18 +1,19 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/test/ash_components_test_suite.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
-#include "base/test/test_suite.h"
-#include "mojo/public/c/system/functions.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/env.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
-#include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/test/gl_surface_test_support.h"
@@ -20,12 +21,12 @@
 
 namespace ash {
 
-AshComponentsTestSuite::AshComponentsTestSuite(int argc, char** argv)
+AshTestSuite::AshTestSuite(int argc, char** argv)
     : base::TestSuite(argc, argv) {}
 
-AshComponentsTestSuite::~AshComponentsTestSuite() = default;
+AshTestSuite::~AshTestSuite() = default;
 
-void AshComponentsTestSuite::Initialize() {
+void AshTestSuite::Initialize() {
   base::TestSuite::Initialize();
 
   // Force software-gl. This is necessary for tests that trigger launching ash
@@ -51,11 +52,10 @@ void AshComponentsTestSuite::Initialize() {
   env_ = aura::Env::CreateInstance();
 }
 
-void AshComponentsTestSuite::LoadTestResources() {
+void AshTestSuite::LoadTestResources() {
   // Load ash test resources and en-US strings; not 'common' (Chrome) resources.
   base::FilePath path;
   base::PathService::Get(base::DIR_ASSETS, &path);
-
   base::FilePath ash_test_strings =
       path.Append(FILE_PATH_LITERAL("ash_test_strings.pak"));
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ash_test_strings);
@@ -78,7 +78,7 @@ void AshComponentsTestSuite::LoadTestResources() {
   }
 }
 
-void AshComponentsTestSuite::Shutdown() {
+void AshTestSuite::Shutdown() {
   env_.reset();
   ui::ResourceBundle::CleanupSharedInstance();
   base::TestSuite::Shutdown();

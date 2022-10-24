@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//ash/public/mojom",
     "//ash/webui/shortcut_customization_ui/mojom",
     "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

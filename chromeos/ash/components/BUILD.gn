@@ -52,3 +52,30 @@ source_set("unit_tests") {
     deps += [ "//chromeos/ash/components/memory/userspace_swap:unit_tests" ]
   }
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test/ash_test_suite.cc",
+    "test/ash_test_suite.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gl",
+    "//ui/gl:test_support",
+    "//ui/lottie",
+  ]
+
+  data_deps = [
+    "//ash/resources:ash_test_resources_100_percent",
+    "//ash/resources:ash_test_resources_200_percent",
+    "//ash/resources:ash_test_resources_unscaled",
+    "//ash/strings:ash_test_strings",
+  ]
+}

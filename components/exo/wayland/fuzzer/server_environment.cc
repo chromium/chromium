@@ -10,7 +10,6 @@
 #include <cstdlib>
 #include <memory>
 
-#include "ash/test/ash_test_suite.h"
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -19,6 +18,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/test/icu_test_util.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/server.h"
 #include "mojo/core/embedder/embedder.h"

@@ -169,6 +169,7 @@ source_set("unit_tests") {
     "//ash/webui/eche_app_ui/proto",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/services/multidevice_setup/public/cpp",

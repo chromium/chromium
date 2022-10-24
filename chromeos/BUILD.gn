@@ -98,6 +98,7 @@ test("chromeos_unittests") {
   configs += [ "//build/config/linux/dbus" ]
 
   deps = [
+    "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
@@ -105,7 +106,7 @@ test("chromeos_unittests") {
 
   sources = [ "test/run_all_unittests.cc" ]
 
-  # Tests that common to Ash and Lacros.
+  # Tests that are common to Ash and Lacros.
   deps += [
     "//chromeos/constants:unit_tests",
     "//chromeos/system:unit_tests",
@@ -114,6 +115,7 @@ test("chromeos_unittests") {
   if (is_chromeos_ash) {
     deps += [
       ":test_support",
+      "//chromeos/ash/components:test_support",
       "//chromeos/ash/components:unit_tests",
       "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/network:test_support",

@@ -1,6 +1,7 @@
 include_rules = [
   # In general files in this directory should not depend upon content.
   "+cc/test",
+  "+chromeos/ash/components/test",
   "+components/viz/test",
   "+mojo/core/embedder",
    "+third_party/googletest/src/googletest/include/gtest/gtest.h",

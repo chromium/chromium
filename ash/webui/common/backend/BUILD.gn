@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//ash/webui/common/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
     "//chromeos/strings/",
     "//content/test:test_support",
     "//testing/gtest",

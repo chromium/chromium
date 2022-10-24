@@ -556,26 +556,24 @@ source_set("wayland_client_test_helper") {
     "clients/test/wayland_client_test_server.h",
   ]
 
+  public_deps = [ "//testing/gtest" ]
   deps = [
     ":wayland",
     "//ash",
     "//ash:test_support",
-    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//cc:test_support",
+    "//chromeos/ash/components:test_support",
     "//components/exo",
     "//components/exo/wayland",
     "//components/viz/test:test_support",
     "//mojo/core/embedder",
-    "//testing/gtest",
     "//ui/aura",
     "//ui/aura:test_support",
     "//ui/events:gesture_detection",
     "//ui/wm",
   ]
-
-  data_deps = []
 }
 
 test("wayland_client_tests") {
@@ -583,8 +581,6 @@ test("wayland_client_tests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
-    "../../../ash/test/ash_test_suite.cc",
-    "../../../ash/test/ash_test_suite.h",
     "clients/interface_binding_test.cc",
     "clients/test/run_all_client_tests.cc",
   ]
@@ -593,19 +589,11 @@ test("wayland_client_tests") {
     ":client_support",
     ":client_version_test",
     ":wayland_client_test_helper",
-    "//ash:test_support",
-    "//base/test:test_support",
     "//components/exo",
     "//components/exo/wayland",
     "//ui/base",
     "//ui/color:color",
     "//ui/gl:test_support",
-  ]
-
-  data_deps = [
-    "//ash/resources:ash_test_resources_100_percent",
-    "//ash/resources:ash_test_resources_200_percent",
-    "//ash/strings:ash_test_strings",
   ]
 }
 
@@ -613,8 +601,6 @@ test("wayland_client_perftests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
-    "../../../ash/test/ash_test_suite.cc",
-    "../../../ash/test/ash_test_suite.h",
     "clients/perftests.cc",
     "clients/test/run_all_client_tests.cc",
   ]
@@ -625,7 +611,6 @@ test("wayland_client_perftests") {
     ":client_version_test",
     ":simple",
     ":wayland_client_test_helper",
-    "//ash:test_support",
     "//base/test:test_support",
     "//cc:test_support",
     "//components/viz/test:test_support",
@@ -637,12 +622,6 @@ test("wayland_client_perftests") {
     "//ui/color:color",
     "//ui/compositor:test_support",
     "//ui/gl:test_support",
-  ]
-
-  data_deps = [
-    "//ash/resources:ash_test_resources_100_percent",
-    "//ash/resources:ash_test_resources_200_percent",
-    "//ash/strings:ash_test_strings",
   ]
 }
 

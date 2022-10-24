@@ -16,6 +16,7 @@
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/system/diagnostics/telemetry_log.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -28,19 +29,17 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
-
-#include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_suite.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::diagnostics {
 namespace {

@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/test/ash_test_suite.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #else
 #include "components/exo/test/exo_test_suite_aura.h"
 #endif

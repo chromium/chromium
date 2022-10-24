@@ -97,6 +97,7 @@ viz_static_library("test_support") {
     "test_types.cc",
     "test_types.h",
   ]
+
   deps = [
     "//base",
     "//base/test:test_support",
@@ -107,7 +108,6 @@ viz_static_library("test_support") {
     "//gpu:test_support",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster_interface",
-    "//gpu/ipc:gl_in_process_context",
     "//gpu/skia_bindings",
     "//services/viz/privileged/mojom",
     "//testing/gmock",
@@ -117,7 +117,10 @@ viz_static_library("test_support") {
     "//ui/latency:test_support",
   ]
 
-  public_deps = [ ":buildflags" ]
+  public_deps = [
+    ":buildflags",
+    "//gpu/ipc:gl_in_process_context",
+  ]
 
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/init" ]

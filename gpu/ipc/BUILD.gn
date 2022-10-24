@@ -19,6 +19,8 @@ component("gl_in_process_context") {
 
   defines = [ "GL_IN_PROCESS_CONTEXT_IMPLEMENTATION" ]
 
+  public_deps = [ "//gpu/command_buffer/service:gles2" ]
+
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
@@ -28,7 +30,6 @@ component("gl_in_process_context") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/service",
-    "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//gpu/ipc/client",
     "//gpu/ipc/common",

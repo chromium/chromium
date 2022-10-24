@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/ash_test_suite.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/gl/gl_switches.h"
 

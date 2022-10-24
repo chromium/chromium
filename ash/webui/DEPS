@@ -12,3 +12,9 @@ include_rules = [
   "+mojo/core/embedder",
   "+ui/webui",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+chromeos/ash/components/test",
+  ],
+}

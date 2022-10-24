@@ -94,11 +94,12 @@ source_set("unit_tests") {
   sources = [ "search/search_handler_unittest.cc" ]
   deps = [
     ":personalization_app",
-    "search:mojo_bindings",
     "//ash:test_support",
-    "//ash/constants:constants",
-    "//ash/public/cpp:cpp",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/personalization_app/search:mojo_bindings",
     "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/strings:strings_grit",

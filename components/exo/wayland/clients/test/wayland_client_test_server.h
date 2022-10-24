@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_EXO_WAYLAND_CLIENTS_TEST_WAYLAND_CLIENT_TEST_SERVER_H_
 #define COMPONENTS_EXO_WAYLAND_CLIENTS_TEST_WAYLAND_CLIENT_TEST_SERVER_H_
 
-#include "ash/test/ash_test_suite.h"
 #include "base/callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 
 namespace exo {
 

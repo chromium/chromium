@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/ash_test_suite.h"
 #include "base/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/threading/thread.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"

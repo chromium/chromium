@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/exo/wayland/fuzzer/wayland_templater.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -114,6 +115,8 @@ source_set("unit_tests") {
 }
 
 source_set("server_environment") {
+  assert(is_chromeos_ash)
+
   testonly = true
 
   sources = [
@@ -124,6 +127,7 @@ source_set("server_environment") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
     "//components/exo",
     "//components/exo/wayland:wayland",
     "//components/exo/wayland:wayland_client_test_helper",
@@ -132,9 +136,6 @@ source_set("server_environment") {
     "//ui/base",
     "//ui/gl:test_support",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "//ash:test_support" ]
-  }
 }
 
 source_set("harness") {

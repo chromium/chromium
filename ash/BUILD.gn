@@ -2568,8 +2568,9 @@ static_library("run_ash_unittests") {
   testonly = true
   sources = [ "test/ash_unittests.cc" ]
   deps = [
-    ":test_support",
+    "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
     "//components/viz/test:test_support",
     "//mojo/core/embedder:embedder",
   ]
@@ -3336,8 +3337,6 @@ test("ash_unittests") {
     "//url",
   ]
 
-  data_deps = [ "//ash/resources:ash_test_resources_100_percent" ]
-
   data = [
     # See DisplayColorManagerTest.
     "display/test_data/",
@@ -3390,17 +3389,17 @@ test("ash_perftests") {
   ]
 
   deps = [
+    ":ash",
     ":test_support",
-    "//ash/public/cpp",
+    "//base",
     "//base/test:test_support",
-    "//cc/base",
+    "//chromeos/ash/components:test_support",
     "//mojo/core/embedder",
-    "//testing/gtest",
     "//testing/perf",
     "//ui/aura",
-    "//ui/base",
+    "//ui/compositor",
     "//ui/compositor:test_support",
-    "//ui/gl:test_support",
+    "//ui/gl",
   ]
 }
 
@@ -3557,8 +3556,6 @@ static_library("test_support") {
     "test/ash_test_color_generator.h",
     "test/ash_test_helper.cc",
     "test/ash_test_helper.h",
-    "test/ash_test_suite.cc",
-    "test/ash_test_suite.h",
     "test/ash_test_ui_stabilizer.cc",
     "test/ash_test_ui_stabilizer.h",
     "test/ash_test_util.cc",
@@ -3718,12 +3715,5 @@ static_library("test_support") {
     "//ui/views:view_pixel_diff_test_support",
     "//ui/wm",
     "//ui/wm/public",
-  ]
-
-  data_deps = [
-    "//ash/resources:ash_test_resources_100_percent",
-    "//ash/resources:ash_test_resources_200_percent",
-    "//ash/resources:ash_test_resources_unscaled",
-    "//ash/strings:ash_test_strings",
   ]
 }
