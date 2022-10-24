@@ -2426,6 +2426,7 @@
     },
     {
       name: "SendMouseEventsDisabledFormControls",
+      base_feature: "SendMouseEventsDisabledFormControls",
       status: "experimental",
     },
     {

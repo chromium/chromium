@@ -436,6 +436,15 @@ void EventPath::AdjustTouchList(
   }
 }
 
+void EventPath::AdjustForDisabledFormControl() {
+  for (unsigned i = 0; i < node_event_contexts_.size(); i++) {
+    if (IsDisabledFormControl(&node_event_contexts_[i].GetNode())) {
+      Shrink(i);
+      return;
+    }
+  }
+}
+
 bool EventPath::DisabledFormControlExistsInPath() const {
   for (const auto& context : node_event_contexts_) {
     if (IsDisabledFormControl(&context.GetNode()))

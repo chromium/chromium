@@ -1,29 +1,36 @@
 <!DOCTYPE html>
-<html>
-<body>
-<p>This test ensures WebKit fires mousedown event on a disabled input element.</p>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=author href="mailto:rniwa@webkit.org">
+<link rel=help href="https://bugs.webkit.org/show_bug.cgi?id=27795">
+<link rel=help href="https://github.com/whatwg/html/issues/2368">
+<link rel=help href="https://github.com/whatwg/html/issues/5886">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+
 <span><input id="test" type="text" disabled></span>
-<div id="log">FAIL</div>
+
 <script>
-
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-function clickOn(element)
-{
-    var x = element.offsetLeft + element.offsetWidth / 2;
-    var y = element.offsetTop + element.offsetHeight / 2;
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
+async function rafPromise() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
 }
 
-var test = document.getElementById('test');
-test.parentNode.addEventListener('mousedown', function () { document.getElementById('log').textContent = 'PASS'; }, false);
+promise_test(async () => {
+  const test = document.getElementById('test');
+  test.parentNode.addEventListener('mousedown', () => assert_unreached('mousedown should not be fired.'));
 
-if (window.eventSender)
-    clickOn(test);
+  const x = test.offsetLeft + test.offsetWidth / 2;
+  const y = test.offsetTop + test.offsetHeight / 2;
+  const actions = new test_driver.Actions()
+    .pointerMove(x, y)
+    .pointerDown()
+    .pointerUp()
+    .pointerMove(0, 0);
+  await actions.send();
 
+  await rafPromise();
+  await rafPromise();
+}, 'mousedown events should not be fired on parents of disabled input elements.');
 </script>
-</body>
-</html>

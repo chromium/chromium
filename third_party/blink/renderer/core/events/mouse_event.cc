@@ -390,9 +390,10 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (!isTrusted())
     return dispatcher.Dispatch();
 
-  if (send_to_disabled_form_controls && is_click &&
-      GetEventPath().DisabledFormControlExistsInPath()) {
-    return DispatchEventResult::kCanceledBeforeDispatch;
+  if (send_to_disabled_form_controls &&
+      (is_click || type() == event_type_names::kMousedown ||
+       type() == event_type_names::kMouseup)) {
+    GetEventPath().AdjustForDisabledFormControl();
   }
 
   if (!send_to_disabled_form_controls &&
