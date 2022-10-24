@@ -36,7 +36,6 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -432,12 +431,7 @@ public class PartialCustomTabHeightStrategyTest {
 
     private void assertTabIsAtInitialPos(WindowManager.LayoutParams attrs) {
         if (mWindowAboveNavbar) {
-            if (attrs.gravity == Gravity.BOTTOM) {
-                assertEquals(INITIAL_HEIGHT, attrs.height);
-            } else if (attrs.gravity == Gravity.NO_GRAVITY) {
-                // Tab is in motion. Check y since the it is in full height.
-                assertEquals(INITIAL_HEIGHT + NAVBAR_HEIGHT, attrs.y);
-            }
+            assertEquals(INITIAL_HEIGHT + NAVBAR_HEIGHT, attrs.y);
         } else {
             assertEquals(MAX_INIT_POS, attrs.y);
         }

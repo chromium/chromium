@@ -567,12 +567,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (isFullHeight()) {
             attrs.height = MATCH_PARENT;
             attrs.y = 0;
-            attrs.gravity = Gravity.NO_GRAVITY;
         } else {
             attrs.height = height - mNavbarHeight;
-            attrs.y = mNavbarHeight;
-            attrs.gravity = Gravity.BOTTOM;
+            attrs.y = mDisplayHeight - attrs.height - mNavbarHeight;
         }
+        attrs.gravity = Gravity.TOP;
         mActivity.getWindow().setAttributes(attrs);
     }
 
@@ -697,9 +696,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             Window window = mActivity.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             WindowManager.LayoutParams attrs = window.getAttributes();
-            attrs.y = mDisplayHeight - attrs.height - mNavbarHeight;
             attrs.height = mDisplayHeight;
-            attrs.gravity = Gravity.NO_GRAVITY;
             window.setAttributes(attrs);
             showNavbarButtons(false);
         } else {
@@ -1043,11 +1040,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         Window window = mActivity.getWindow();
         WindowManager.LayoutParams attrs = window.getAttributes();
-        if (attrs.gravity == Gravity.BOTTOM || isFullHeight()) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            attrs.y = isFullHeight() ? getFullyExpandedY()
-                                     : mDisplayHeight - attrs.height - mNavbarHeight;
-            attrs.gravity = Gravity.TOP; // NO_GRAVITY doesn't work here.
+        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        if (isFullHeight()) {
+            attrs.y = getFullyExpandedY();
             window.setAttributes(attrs);
         }
         mAnimator.setIntValues(attrs.y, mDisplayHeight - mNavbarHeight);
