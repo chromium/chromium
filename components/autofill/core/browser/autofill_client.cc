@@ -178,6 +178,12 @@ bool AutofillClient::IsAutofillAssistantShowing() {
   return false;
 }
 
+bool AutofillClient::IsAutofillIBANEnabled() {
+  // This is overridden by the platform subclasses. Currently, only
+  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
+  return false;
+}
+
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }
@@ -186,6 +192,10 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
   // As finch configs are profile independent we can use a static instance here.
   static base::NoDestructor<AutofillAblationStudy> ablation_study;
   return *ablation_study;
+}
+
+bool AutofillClient::ShouldBlockAutofillForIBAN() const {
+  return false;
 }
 
 }  // namespace autofill

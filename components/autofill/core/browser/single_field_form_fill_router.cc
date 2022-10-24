@@ -75,9 +75,10 @@ bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
           context)) {
     return true;
   }
-  if (iban_manager_ && iban_manager_->OnGetSingleFieldSuggestions(
-                           query_id, autoselect_first_suggestion, field, client,
-                           handler, context)) {
+  if (!client.ShouldBlockAutofillForIBAN() && iban_manager_ &&
+      iban_manager_->OnGetSingleFieldSuggestions(
+          query_id, autoselect_first_suggestion, field, client, handler,
+          context)) {
     return true;
   }
   if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
