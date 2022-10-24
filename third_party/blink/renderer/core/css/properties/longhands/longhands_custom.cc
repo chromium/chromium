@@ -1599,45 +1599,45 @@ const CSSValue* Color::CSSValueFromComputedStyleInternal(
 }
 
 void Color::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetColor(state.Style()->InitialColorForColorScheme());
-  state.Style()->SetColorIsInherited(false);
-  state.Style()->SetColorIsCurrentColor(false);
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetColor(state.Style()->InitialColorForColorScheme());
+  builder.SetColorIsInherited(false);
+  builder.SetColorIsCurrentColor(false);
 }
 
 void Color::ApplyInherit(StyleResolverState& state) const {
-  ComputedStyle* style = state.Style();
-  if (style->ShouldPreserveParentColor()) {
-    style->SetColor(StyleColor(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  if (builder.ShouldPreserveParentColor()) {
+    builder.SetColor(StyleColor(
         state.ParentStyle()->VisitedDependentColor(GetCSSPropertyColor())));
   } else {
-    style->SetColor(state.ParentStyle()->GetColor());
+    builder.SetColor(state.ParentStyle()->GetColor());
   }
-  style->SetColorIsInherited(true);
-  state.Style()->SetColorIsCurrentColor(
-      state.ParentStyle()->ColorIsCurrentColor());
+  builder.SetColorIsInherited(true);
+  builder.SetColorIsCurrentColor(state.ParentStyle()->ColorIsCurrentColor());
 }
 
 void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
   // As per the spec, 'color: currentColor' is treated as 'color: inherit'
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
     ApplyInherit(state);
-    state.Style()->SetColorIsCurrentColor(true);
+    builder.SetColorIsCurrentColor(true);
     if (state.UsesHighlightPseudoInheritance() &&
         state.OriginatingElementStyle())
-      state.Style()->SetColor(state.OriginatingElementStyle()->GetColor());
+      builder.SetColor(state.OriginatingElementStyle()->GetColor());
     return;
   }
   if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
-    state.Style()->SetColor(state.Style()->InitialColorForColorScheme());
+    builder.SetColor(state.Style()->InitialColorForColorScheme());
   } else {
-    state.Style()->SetColor(
-        StyleBuilderConverter::ConvertStyleColor(state, value));
+    builder.SetColor(StyleBuilderConverter::ConvertStyleColor(state, value));
   }
-  state.Style()->SetColorIsInherited(false);
-  state.Style()->SetColorIsCurrentColor(false);
+  builder.SetColorIsInherited(false);
+  builder.SetColorIsCurrentColor(false);
 }
 
 const CSSValue* ColorInterpolation::CSSValueFromComputedStyleInternal(
@@ -3264,7 +3264,8 @@ void InternalVisitedColor::ApplyInitial(StyleResolverState& state) const {
 
 void InternalVisitedColor::ApplyInherit(StyleResolverState& state) const {
   ComputedStyle* style = state.Style();
-  if (style->ShouldPreserveParentColor()) {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  if (builder.ShouldPreserveParentColor()) {
     style->SetInternalVisitedColor(StyleColor(
         state.ParentStyle()->VisitedDependentColor(GetCSSPropertyColor())));
   } else {

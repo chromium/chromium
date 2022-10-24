@@ -2513,11 +2513,6 @@ bool ComputedStyle::ShouldForceColor(const StyleColor& unforced_color) const {
          !unforced_color.IsSystemColorIncludingDeprecated();
 }
 
-bool ComputedStyle::ShouldPreserveParentColor() const {
-  return InForcedColorsMode() &&
-         ForcedColorAdjust() == EForcedColorAdjust::kPreserveParentColor;
-}
-
 void ComputedStyle::SetMarginStart(const Length& margin) {
   if (IsHorizontalWritingMode()) {
     if (IsLeftToRightDirection())

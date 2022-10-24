@@ -3136,7 +3136,6 @@ class ComputedStyle : public ComputedStyleBase,
       const ComputedStyle& new_style);
 
   bool ShouldForceColor(const StyleColor& unforced_color) const;
-  bool ShouldPreserveParentColor() const;
 
   void ClearBackgroundImage();
 
@@ -3236,6 +3235,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetBoxOrdinalGroup(unsigned ordinal_group) {
     SetBoxOrdinalGroupInternal(
         std::min(std::numeric_limits<unsigned>::max() - 1, ordinal_group));
+  }
+
+  bool ShouldPreserveParentColor() const {
+    return InForcedColorsMode() &&
+           ForcedColorAdjust() == EForcedColorAdjust::kPreserveParentColor;
   }
 
  private:

@@ -116,6 +116,7 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
 
 void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
                                                ComputedStyle& style,
+                                               ComputedStyleBuilder& builder,
                                                const Color& color) {
   StyleColor style_color(color);
   switch (property.PropertyID()) {
@@ -141,7 +142,7 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
       style.SetCaretColor(StyleAutoColor(color));
       return;
     case CSSPropertyID::kColor:
-      style.SetColor(style_color);
+      builder.SetColor(style_color);
       return;
     case CSSPropertyID::kFloodColor:
       style.SetFloodColor(style_color);

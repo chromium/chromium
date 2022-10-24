@@ -802,6 +802,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   DCHECK(state.LayoutParentStyle());
   DCHECK(state.ParentStyle());
   ComputedStyle& style = state.StyleRef();
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   const ComputedStyle& parent_style = *state.ParentStyle();
   const ComputedStyle& layout_parent_style = *state.LayoutParentStyle();
 
@@ -910,7 +911,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       state.OriginatingElementStyle()) {
     const ComputedStyle* originating_style = state.OriginatingElementStyle();
     if (style.ColorIsCurrentColor())
-      style.SetColor(originating_style->GetColor());
+      builder.SetColor(originating_style->GetColor());
     if (style.InternalVisitedColorIsCurrentColor())
       style.SetInternalVisitedColor(originating_style->InternalVisitedColor());
   }

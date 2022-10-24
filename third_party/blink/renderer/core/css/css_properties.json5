@@ -914,6 +914,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       is_highlight_colors: true,
+      readonly: true,
     },
     {
       name: "direction",
