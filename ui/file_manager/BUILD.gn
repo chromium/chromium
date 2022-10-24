@@ -135,7 +135,19 @@ ts_library("build_ts") {
     "//ash/webui/common/resources:generate_definitions",
   ]
 
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [
+    "//third_party/material_web_components:library",
+    "//ui/webui/resources:library",
+  ]
+
+  path_mappings = [
+    "tslib|" + rebase_path(
+            "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.d.ts",
+            target_gen_dir),
+    "chrome://resources/mwc/*|" + rebase_path(
+            "//third_party/material_web_components/components-chromium/node_modules/*",
+            target_gen_dir),
+  ]
 
   in_files = static_js_files + generated_js_files + ts_files +
              ts_generated_templates + image_loader_static_js_files
@@ -221,6 +233,8 @@ js_library("js_from_ts") {
     sources += [ "$target_gen_dir/tsc/" + string_replace(_t, ".ts", ".js") ]
   }
   extra_deps = [ ":build_ts" ]
+  externs_list =
+      [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
 }
 
 grd_prefix = "file_manager_gen"

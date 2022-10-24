@@ -130,7 +130,7 @@ testcase.breadcrumbsRenderShortPath = async () => {
   chrome.test.assertEq(path, breadcrumbElement.attributes.path);
 
   // Check: some of the main breadcrumb buttons should be visible.
-  const buttons = [breadcrumbsTag, 'button:not([hidden])'];
+  const buttons = [breadcrumbsTag, 'button'];
   const elements = await remoteCall.callRemoteTestUtil(
       'deepQueryAllElements', appId, [buttons]);
   chrome.test.assertEq(3, elements.length);
@@ -145,16 +145,16 @@ testcase.breadcrumbsRenderShortPath = async () => {
   chrome.test.assertEq(undefined, elements[1].attributes.disabled);
   chrome.test.assertEq('', elements[2].attributes.disabled);
 
-  // Check: the breadcrumb elider button should be hidden.
-  const eliderButtonHidden = [breadcrumbsTag, '[elider][hidden]'];
-  await remoteCall.waitForElement(appId, eliderButtonHidden);
+  // Check: the breadcrumb elider button should not exist.
+  const eliderButton = [breadcrumbsTag, '[elider]'];
+  await remoteCall.waitForElementLost(appId, eliderButton);
 };
 
 /**
  * Tests that short breadcrumbs paths (of 4 or fewer components) should not
- * be rendered elided. The elider button should be hidden.
+ * be rendered elided. The elider button not exist.
  */
-testcase.breadcrumbsEliderButtonHidden = async () => {
+testcase.breadcrumbsEliderButtonNotExist = async () => {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
@@ -175,7 +175,7 @@ testcase.breadcrumbsEliderButtonHidden = async () => {
   chrome.test.assertEq(path, breadcrumbElement.attributes.path);
 
   // Check: all of the main breadcrumb buttons should be visible.
-  const buttons = [breadcrumbsTag, 'button:not([hidden])'];
+  const buttons = [breadcrumbsTag, 'button'];
   const elements = await remoteCall.callRemoteTestUtil(
       'deepQueryAllElements', appId, [buttons]);
   chrome.test.assertEq(4, elements.length);
@@ -192,9 +192,9 @@ testcase.breadcrumbsEliderButtonHidden = async () => {
   chrome.test.assertEq(undefined, elements[2].attributes.disabled);
   chrome.test.assertEq('', elements[3].attributes.disabled);
 
-  // Check: the breadcrumb elider button should be hidden.
-  const eliderButtonHidden = [breadcrumbsTag, '[elider][hidden]'];
-  await remoteCall.waitForElement(appId, eliderButtonHidden);
+  // Check: the breadcrumb elider button should not exist.
+  const eliderButton = [breadcrumbsTag, '[elider]'];
+  await remoteCall.waitForElementLost(appId, eliderButton);
 };
 
 /**
@@ -221,7 +221,7 @@ testcase.breadcrumbsRenderLongPath = async () => {
   chrome.test.assertEq(path, breadcrumbElement.attributes.path);
 
   // Check: some of the main breadcrumb buttons should be visible.
-  const buttons = [breadcrumbsTag, 'button[id]:not([hidden])'];
+  const buttons = [breadcrumbsTag, 'button[id]'];
   const elements = await remoteCall.callRemoteTestUtil(
       'deepQueryAllElements', appId, [buttons]);
   chrome.test.assertEq(3, elements.length);
@@ -237,7 +237,7 @@ testcase.breadcrumbsRenderLongPath = async () => {
   chrome.test.assertEq('', elements[2].attributes.disabled);
 
   // Check: the breadcrumb elider button should be shown.
-  const eliderButton = [breadcrumbsTag, '[elider]:not([hidden])'];
+  const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitForElement(appId, eliderButton);
 };
 
@@ -328,7 +328,7 @@ testcase.breadcrumbsEliderButtonClick = async () => {
   await navigateWithDirectoryTree(appId, breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
-  const eliderButton = [breadcrumbsTag, '[elider]:not([hidden])'];
+  const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitAndClickElement(appId, eliderButton);
 
   // Check: the elider button drop-down menu should open.
@@ -346,7 +346,7 @@ testcase.breadcrumbsEliderButtonClick = async () => {
   chrome.test.assertEq('nested-folder0', elements[1].text);
 
   // Check: the elider button should not have the focus.
-  const eliderFocus = [breadcrumbsTag, '[elider]:not([hidden]):focus'];
+  const eliderFocus = [breadcrumbsTag, '[elider]:focus'];
   await remoteCall.waitForElementLost(appId, eliderFocus);
 
   // Click the elider button.
@@ -378,7 +378,7 @@ testcase.breadcrumbsEliderButtonKeyboard = async () => {
   await navigateWithDirectoryTree(appId, breadcrumb);
 
   // Wait for the breadcrumb elider button to appear.
-  const eliderButton = [breadcrumbsTag, '[elider]:not([hidden])'];
+  const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitForElement(appId, eliderButton);
 
   // Send an Enter key to the breadcrumb elider button.
@@ -402,7 +402,7 @@ testcase.breadcrumbsEliderButtonKeyboard = async () => {
   chrome.test.assertEq('nested-folder1', elements[2].text);
 
   // Check: the elider button should not have the focus.
-  const eliderFocus = [breadcrumbsTag, '[elider]:not([hidden]):focus'];
+  const eliderFocus = [breadcrumbsTag, '[elider]:focus'];
   await remoteCall.waitForElementLost(appId, eliderFocus);
 
   // Send an Escape key to the drop-down menu.
@@ -436,7 +436,7 @@ testcase.breadcrumbsEliderMenuClickOutside = async () => {
   await navigateWithDirectoryTree(appId, breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
-  const eliderButton = [breadcrumbsTag, '[elider]:not([hidden])'];
+  const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitAndClickElement(appId, eliderButton);
 
   // Check: the elider button drop-down menu should open.
@@ -475,7 +475,7 @@ testcase.breadcrumbsEliderMenuItemClick = async () => {
   chrome.test.assertEq(path, breadcrumbElement.attributes.path);
 
   // Click the breadcrumb elider button when it appears.
-  const eliderButton = [breadcrumbsTag, '[elider]:not([hidden])'];
+  const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitAndClickElement(appId, eliderButton);
 
   // Check: the elider button drop-down menu should open.
@@ -523,7 +523,7 @@ testcase.breadcrumbsEliderMenuItemTabLeft = async () => {
   await navigateWithDirectoryTree(appId, breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
-  const eliderButton = [breadcrumbsTag, '[elider]:not([hidden])'];
+  const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitAndClickElement(appId, eliderButton);
 
   // Check: the elider button drop-down menu should open.
@@ -546,7 +546,7 @@ testcase.breadcrumbsEliderMenuItemTabLeft = async () => {
 
 /**
  * Tests that a Tab key on the elider button drop down menu closes the menu
- * and focuses button#third to the right of the elider button.
+ * and focuses button#second to the right of the elider button.
  */
 testcase.breadcrumbsEliderMenuItemTabRight = async () => {
   // Build an array of nested folder test entries.
@@ -563,7 +563,7 @@ testcase.breadcrumbsEliderMenuItemTabRight = async () => {
   await navigateWithDirectoryTree(appId, breadcrumb);
 
   // Click the breadcrumb elider button when it appears.
-  const eliderButton = [breadcrumbsTag, '[elider]:not([hidden])'];
+  const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitAndClickElement(appId, eliderButton);
 
   // Check: the elider button drop-down menu should open.
@@ -578,9 +578,9 @@ testcase.breadcrumbsEliderMenuItemTabRight = async () => {
   // Check: the elider button drop-down menu should close.
   await remoteCall.waitForElementLost(appId, menu);
 
-  // Check: the "third" main button should be focused.
+  // Check: the "second" main button should be focused.
   await remoteCall.waitForElement(
-      appId, [breadcrumbsTag, 'button[id="third"]:focus']);
+      appId, [breadcrumbsTag, 'button[id="second"]:focus']);
 };
 
 /**

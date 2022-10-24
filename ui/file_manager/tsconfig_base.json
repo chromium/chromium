@@ -12,6 +12,9 @@
       "trusted-types",
       "filesystem",
       "filewriter"
-    ]
+    ],
+    "experimentalDecorators": true,
+    "noEmitHelpers": true,
+    "skipLibCheck": true
   }
 }

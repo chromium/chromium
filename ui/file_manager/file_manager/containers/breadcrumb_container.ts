@@ -10,7 +10,7 @@ import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/actions.js';
 import {FileKey} from '../state/file_key.js';
 import {getStore, Store} from '../state/store.js';
-import {BREADCRUMB_CLICKED, BreadcrumbClickedEvent} from '../widgets/xf_breadcrumb.js';
+import {BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
 
 /**
  * The controller of breadcrumb. The Breadcrumb element only renders a given
@@ -76,7 +76,8 @@ export class BreadcrumbContainer {
       breadcrumb = document.createElement('xf-breadcrumb');
       breadcrumb.id = 'breadcrumbs';
       breadcrumb.addEventListener(
-          BREADCRUMB_CLICKED, this.breadcrumbClick_.bind(this));
+          XfBreadcrumb.events.BREADCRUMB_CLICKED,
+          this.breadcrumbClick_.bind(this));
       this.container_.appendChild(breadcrumb);
     }
 

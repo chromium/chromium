@@ -1678,7 +1678,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("breadcrumbsNavigate"),
                       TestCase("breadcrumbsDownloadsTranslation"),
                       TestCase("breadcrumbsRenderShortPath"),
-                      TestCase("breadcrumbsEliderButtonHidden"),
+                      TestCase("breadcrumbsEliderButtonNotExist"),
                       TestCase("breadcrumbsRenderLongPath"),
                       TestCase("breadcrumbsMainButtonClick"),
                       TestCase("breadcrumbsMainButtonEnterKey"),
