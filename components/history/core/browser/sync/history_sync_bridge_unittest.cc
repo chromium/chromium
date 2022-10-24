@@ -15,6 +15,7 @@
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/test_history_backend_for_sync.h"
 #include "components/sync/base/page_transition_conversion.h"
+#include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -306,6 +307,8 @@ class HistorySyncBridgeTest : public testing::Test {
 
   void ApplyInitialSyncChanges(
       const std::vector<sync_pb::HistorySpecifics>& specifics_vector) {
+    bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
+
     // Just before passing on the initial updates, the processor starts tracking
     // metadata.
     processor()->SetIsTrackingMetadata(true);
@@ -406,20 +409,6 @@ class HistorySyncBridgeTest : public testing::Test {
 
   std::unique_ptr<HistorySyncBridge> bridge_;
 };
-
-TEST_F(HistorySyncBridgeTest, DoesNotUploadPreexistingData) {
-  AddVisitToBackendAndAdvanceClock(GURL("https://www.url.com"),
-                                   ui::PAGE_TRANSITION_LINK);
-
-  ApplyInitialSyncChanges({});
-
-  // The data should *not* have been uploaded to Sync.
-  EXPECT_TRUE(processor()->GetEntities().empty());
-
-  // The local data should still exist though.
-  EXPECT_EQ(backend()->GetURLs().size(), 1u);
-  EXPECT_EQ(backend()->GetVisits().size(), 1u);
-}
 
 TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   const std::string remote_cache_guid("remote_cache_guid");
@@ -542,6 +531,71 @@ TEST_F(HistorySyncBridgeTest, UploadsNewLocalVisit) {
       ui::PAGE_TRANSITION_TYPED));
   EXPECT_FALSE(history.page_transition().forward_back());
   EXPECT_TRUE(history.page_transition().from_address_bar());
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotUploadPreexistingData) {
+  AddVisitToBackendAndAdvanceClock(GURL("https://www.url.com"),
+                                   ui::PAGE_TRANSITION_LINK);
+
+  ApplyInitialSyncChanges({});
+
+  // The data should *not* have been uploaded to Sync.
+  EXPECT_TRUE(processor()->GetEntities().empty());
+
+  // The local data should still exist though.
+  EXPECT_EQ(backend()->GetURLs().size(), 1u);
+  EXPECT_EQ(backend()->GetVisits().size(), 1u);
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotUploadWhileSyncIsPaused) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL and notify the bridge.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url1.com"), ui::PAGE_TRANSITION_LINK);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+
+  // Make sure it made it to the processor.
+  const std::string storage_key1 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row1.visit_time);
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  EXPECT_EQ(processor()->GetEntities().count(storage_key1), 1u);
+
+  // Stop Sync temporarily - this happens e.g. in the "Sync paused" case, i.e.
+  // when the user signs out from the web.
+  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+
+  // Visit a URL while Sync is paused.
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url2.com"), ui::PAGE_TRANSITION_LINK);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+
+  // Make sure this one did *not* make it to the processor.
+  const std::string storage_key2 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row2.visit_time);
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  EXPECT_EQ(processor()->GetEntities().count(storage_key2), 0u);
+
+  // Un-pause Sync.
+  bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
+
+  // Visit yet another URL.
+  auto [url_row3, visit_row3] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url3.com"), ui::PAGE_TRANSITION_LINK);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row3, visit_row3);
+
+  // This one should've made it to the processor again.
+  const std::string storage_key3 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row3.visit_time);
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
+  EXPECT_EQ(processor()->GetEntities().count(storage_key3), 1u);
 }
 
 TEST_F(HistorySyncBridgeTest, UploadsReferrerURL) {

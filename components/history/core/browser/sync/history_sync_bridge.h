@@ -43,6 +43,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   ~HistorySyncBridge() override;
 
   // syncer::ModelTypeSyncBridge implementation.
+  void OnSyncStarting(
+      const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   absl::optional<syncer::ModelError> MergeSyncData(
@@ -58,6 +60,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   syncer::ConflictResolution ResolveConflict(
       const std::string& storage_key,
       const syncer::EntityData& remote_data) const override;
+  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                delete_metadata_change_list) override;
 
   // HistoryBackendObserver:
   void OnURLVisited(HistoryBackend* history_backend,
@@ -82,6 +86,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // Synchronously loads sync metadata from the HistorySyncMetadataDatabase and
   // passes it to the processor so that it can start tracking changes.
   void LoadMetadata();
+
+  bool ShouldCommitRightNow() const;
 
   // Queries the redirect chain ending in `final_visit` from the HistoryBackend,
   // and creates the corresponding EntityData(s). Typically returns a single
@@ -117,6 +123,11 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // A non-owning pointer to the backend, which we're syncing local changes from
   // and sync changes to. Never null.
   const raw_ptr<HistoryBackendForSync, DanglingUntriaged> history_backend_;
+
+  // Whether Sync (for this data type) has been started. True between
+  // OnSyncStarting() and ApplyStopSyncChanges(). While this is false, no local
+  // changes will be sent to Sync.
+  bool sync_started_ = false;
 
   // Whether we're currently processing changes from the syncer. While this is
   // true, we ignore any local url changes, since we triggered them.

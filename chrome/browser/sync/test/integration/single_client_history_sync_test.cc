@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "sync_service_impl_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -343,6 +344,52 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(UrlIs(synced_url1.spec()),
                                                   UrlIs(synced_url2.spec()))));
 }
+
+// TODO(crbug.com/1373448): EnterSyncPausedStateForPrimaryAccount is currently
+// not supported on Android. Enable this test once it is.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate somewhere and make sure the URL arrives on the server.
+  GURL synced_url1 =
+      embedded_test_server()->GetURL("synced1.com", "/sync/simple.html");
+  NavigateToURL(synced_url1);
+  ASSERT_TRUE(WaitForHistory(UnorderedElementsAre(UrlIs(synced_url1.spec()))));
+
+  // Enter the Sync-paused state.
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+
+  // Navigate somewhere while Sync is paused.
+  GURL paused_url =
+      embedded_test_server()->GetURL("not-synced.com", "/sync/simple.html");
+  NavigateToURL(paused_url);
+
+  // Navigate somewhere else. The previous URL should *not* get synced, but this
+  // one (currently open at the time Sync is un-paused) will get synced when it
+  // gets updated, which in practice happens on the next navigation, or when the
+  // tab is closed.
+  GURL synced_url2 =
+      embedded_test_server()->GetURL("synced2.com", "/sync/simple.html");
+  NavigateToURL(synced_url2);
+
+  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+
+  // After Sync was un-paused, navigate further. This triggers an update to
+  // `synced_url2` and also uploads `synced_url3`.
+  GURL synced_url3 =
+      embedded_test_server()->GetURL("synced3.com", "/sync/simple.html");
+  NavigateToURL(synced_url3);
+
+  EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(UrlIs(synced_url1.spec()),
+                                                  UrlIs(synced_url2.spec()),
+                                                  UrlIs(synced_url3.spec()))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
