@@ -62,7 +62,7 @@ console.error = (() => {
   const orig = console.error;
   return (...args) => {
     window.JSErrorCount++;
-    return orig.apply(this, [createLoggableArgs('unhandled-error', args)]);
+    return orig.apply(this, [createLoggableArgs('unhandled-error', ...args)]);
   };
 })();
 
