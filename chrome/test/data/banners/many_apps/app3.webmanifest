@@ -1,0 +1,13 @@
+{
+  "name": "Test app 3",
+  "icons": [
+    {
+      "src": "/banners/image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/banners/many_apps/",
+  "start_url": "app3.html",
+  "display": "standalone"
+}
