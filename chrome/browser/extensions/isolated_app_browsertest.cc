@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
@@ -403,13 +402,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, SubresourceCookieIsolation) {
   //  - One will set app1{Media,Image}=1 cookies if app1=3 is set.
   // We expect only the app's cookies to be present.
   // We must wait for the onload event, to allow the subresources to finish.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::Source<WebContents>(
-          browser()->tab_strip_model()->GetActiveWebContents()));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("app1/app_subresources.html")));
-  observer.Wait();
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), base_url.Resolve("app1/app_subresources.html"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_FALSE(HasCookie(tab1, "nonAppMedia=1"));
   EXPECT_TRUE(HasCookie(tab1, "app1Media=1"));
   EXPECT_FALSE(HasCookie(tab1, "nonAppImage=1"));
