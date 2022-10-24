@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/security_state/core/security_state.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -53,6 +54,8 @@ class WebLayerDependencies : public ::autofill_assistant::DependenciesAndroid,
   std::string GetStoredPermanentCountryCode() const override;
   std::string GetSignedInEmail() const override;
   PrefService* GetPrefs() const override;
+  security_state::SecurityLevel GetSecurityLevel(
+      content::WebContents* web_contents) const override;
   bool IsSupervisedUser() const override;
   ::autofill_assistant::AnnotateDomModelService*
   GetOrCreateAnnotateDomModelService() const override;

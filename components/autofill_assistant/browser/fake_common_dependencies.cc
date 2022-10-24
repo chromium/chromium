@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/fake_common_dependencies.h"
+
+#include <string>
+
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
+#include "components/security_state/core/security_state.h"
 
 namespace autofill_assistant {
 
@@ -46,6 +50,11 @@ PrefService* FakeCommonDependencies::GetPrefs() const {
 
 std::string FakeCommonDependencies::GetSignedInEmail() const {
   return signed_in_email_;
+}
+
+security_state::SecurityLevel FakeCommonDependencies::GetSecurityLevel(
+    content::WebContents* web_contents) const {
+  return security_level_;
 }
 
 bool FakeCommonDependencies::IsSupervisedUser() const {

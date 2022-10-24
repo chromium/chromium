@@ -36,6 +36,7 @@
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/security_state/core/security_state.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -587,6 +588,11 @@ DeviceContext ClientAndroid::GetDeviceContext() const {
       Java_AutofillAssistantClient_getDeviceModel(AttachCurrentThread(),
                                                   java_object_));
   return context;
+}
+
+security_state::SecurityLevel ClientAndroid::GetSecurityLevel() const {
+  return dependencies_->GetCommonDependencies()->GetSecurityLevel(
+      GetWebContents());
 }
 
 bool ClientAndroid::IsAccessibilityEnabled() const {

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
+#include "components/security_state/core/security_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace consent_auditor {
@@ -41,6 +42,10 @@ class MockCommonDependencies : public CommonDependencies {
               (const override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const override));
   MOCK_METHOD(std::string, GetSignedInEmail, (), (const override));
+  MOCK_METHOD(security_state::SecurityLevel,
+              GetSecurityLevel,
+              (content::WebContents*),
+              (const override));
   MOCK_METHOD(bool, IsSupervisedUser, (), (const override));
   MOCK_METHOD(bool, IsAllowedForMachineLearning, (), (const override));
   MOCK_METHOD(AnnotateDomModelService*,

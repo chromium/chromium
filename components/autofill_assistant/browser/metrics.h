@@ -70,8 +70,9 @@ class Metrics {
     ONBOARDING_NAVIGATION = 26,
     ONBOARDING_DIALOG_DISMISSED = 27,
     MULTIPLE_AUTOSTARTABLE_SCRIPTS = 28,
+    CERTIFICATE_ERROR = 29,
 
-    kMaxValue = MULTIPLE_AUTOSTARTABLE_SCRIPTS
+    kMaxValue = CERTIFICATE_ERROR
   };
 
   // The different ways to complete the onboarding / user consent screen.

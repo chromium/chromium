@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FAKE_COMMON_DEPENDENCIES_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FAKE_COMMON_DEPENDENCIES_H_
 
+#include <memory>
+#include <string>
+
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/security_state/core/security_state.h"
 #include "components/version_info/channel.h"
 
 class PrefService;
@@ -34,6 +38,8 @@ class FakeCommonDependencies : public CommonDependencies {
       content::WebContents* web_contents) const override;
   PrefService* GetPrefs() const override;
   std::string GetSignedInEmail() const override;
+  security_state::SecurityLevel GetSecurityLevel(
+      content::WebContents* web_contents) const override;
   bool IsSupervisedUser() const override;
   bool IsAllowedForMachineLearning() const override;
   AnnotateDomModelService* GetOrCreateAnnotateDomModelService() const override;
@@ -58,6 +64,8 @@ class FakeCommonDependencies : public CommonDependencies {
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   std::unique_ptr<consent_auditor::FakeConsentAuditor> consent_auditor_ =
       std::make_unique<consent_auditor::FakeConsentAuditor>();
+  security_state::SecurityLevel security_level_ =
+      security_state::SecurityLevel::SECURE;
 };
 
 }  // namespace autofill_assistant

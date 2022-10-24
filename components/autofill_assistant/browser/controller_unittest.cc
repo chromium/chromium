@@ -38,6 +38,7 @@
 #include "components/autofill_assistant/browser/ukm_test_util.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
+#include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -109,6 +110,8 @@ class ControllerTest : public testing::Test {
     ON_CALL(mock_client_, HasHadUI()).WillByDefault(Return(true));
     ON_CALL(mock_client_, GetPasswordChangeSuccessTracker())
         .WillByDefault(Return(&mock_password_change_success_tracker_));
+    ON_CALL(mock_client_, GetSecurityLevel)
+        .WillByDefault(Return(security_state::SecurityLevel::SECURE));
 
     mock_runtime_manager_ = std::make_unique<MockRuntimeManager>();
     controller_ = std::make_unique<Controller>(
@@ -2132,6 +2135,41 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
   EXPECT_EQ(GetUserData()->selected_login_->origin,
             initialUrl.DeprecatedGetOriginAsURL());
   EXPECT_EQ(controller_->GetCurrentURL().host(), "b.example.com");
+}
+
+TEST_F(ControllerTest, StartOnInsecureDomain) {
+  const GURL initialUrl("https://example.com/");
+  EXPECT_CALL(mock_client_, GetSecurityLevel)
+      .WillOnce(Return(security_state::SecurityLevel::DANGEROUS));
+  SimulateNavigateToUrl(initialUrl);
+  EXPECT_FALSE(
+      controller_->Start(initialUrl, std::make_unique<TriggerContext>()));
+}
+
+TEST_F(ControllerTest, NavigateToInsecureDomain) {
+  // A single script, with a wait_for_navigation action
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "autostart")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetNextScriptResponse(script_response);
+
+  ActionsResponseProto autostart_script;
+  autostart_script.add_actions()->mutable_prompt()->add_choices();
+  SetupActionsForScript("autostart", autostart_script);
+
+  Start("https://example.com/page1");
+  EXPECT_EQ(controller_->GetState(), AutofillAssistantState::PROMPT);
+
+  // Navigate and change the connection state to insecure.
+  EXPECT_CALL(mock_client_, GetSecurityLevel)
+      .WillOnce(Return(security_state::SecurityLevel::DANGEROUS));
+
+  EXPECT_CALL(mock_observer_,
+              OnError(_, Metrics::DropOutReason::CERTIFICATE_ERROR));
+
+  SimulateNavigateToUrl(GURL("https://example.com/page2"));
+  EXPECT_EQ(controller_->GetState(), AutofillAssistantState::STOPPED);
 }
 
 TEST_F(ControllerTest, EndPromptWithOnEndNavigation) {

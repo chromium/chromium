@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/security_state/core/security_state.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,6 +67,10 @@ class MockClient : public Client {
                      void(base::OnceCallback<void(absl::optional<int64_t>)>));
   MOCK_CONST_METHOD0(GetMakeSearchesAndBrowsingBetterEnabled, bool());
   MOCK_CONST_METHOD0(GetMetricsReportingEnabled, bool());
+  MOCK_METHOD(security_state::SecurityLevel,
+              GetSecurityLevel,
+              (),
+              (const override));
 
  private:
   std::unique_ptr<MockPersonalDataManager> mock_personal_data_manager_;

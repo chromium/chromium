@@ -706,6 +706,8 @@ std::ostream& operator<<(std::ostream& out,
     case Metrics::DropOutReason::MULTIPLE_AUTOSTARTABLE_SCRIPTS:
       out << "MULTIPLE_AUTOSTARTABLE_SCRIPTS";
       break;
+    case Metrics::DropOutReason::CERTIFICATE_ERROR:
+      out << "CERTIFICATE_ERROR";
       // Do not add default case to force compilation error for new values.
   }
   return out;

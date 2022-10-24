@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "components/security_state/core/security_state.h"
 
 class PrefService;
 class Profile;
@@ -19,22 +20,22 @@ namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
 
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
+
 namespace password_manager {
 class PasswordManagerClient;
 }  // namespace password_manager
 
-namespace content {
-class WebContents;
-class BrowserContext;
-}  // namespace content
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
 
 namespace signin {
 class IdentityManager;
 }  // namespace signin
-
-namespace consent_auditor {
-class ConsentAuditor;
-}  // namespace consent_auditor
 
 namespace version_info {
 enum class Channel;
@@ -58,6 +59,8 @@ class CommonDependenciesChrome : public CommonDependencies {
       content::WebContents* web_contents) const override;
   PrefService* GetPrefs() const override;
   std::string GetSignedInEmail() const override;
+  security_state::SecurityLevel GetSecurityLevel(
+      content::WebContents* web_contents) const override;
   bool IsSupervisedUser() const override;
   bool IsAllowedForMachineLearning() const override;
   // The AnnotateDomModelService is a KeyedService. There is only one per

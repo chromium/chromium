@@ -9,6 +9,7 @@ include_rules = [
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/prefs",
+  "+components/security_state",
   "+components/sync/protocol",
   "+components/ukm",
   "+components/url_matcher",

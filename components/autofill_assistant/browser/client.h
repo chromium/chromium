@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/client_settings.h"
@@ -14,7 +16,7 @@
 #include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
-#include "content/public/browser/web_contents.h"
+#include "components/security_state/core/security_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
@@ -87,6 +89,9 @@ class Client {
 
   // Returns details about the device.
   virtual DeviceContext GetDeviceContext() const = 0;
+
+  // Returns the `SecurityLevel` of the current `WebContents`.
+  virtual security_state::SecurityLevel GetSecurityLevel() const = 0;
 
   // Returns whether a11y (talkback and touch exploration) is enabled or not.
   virtual bool IsAccessibilityEnabled() const = 0;

@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/dependencies_util.h"
 #include "components/autofill_assistant/browser/platform_dependencies.h"
 #include "components/keyed_service/core/simple_factory_key.h"
+#include "components/security_state/core/security_state.h"
 #include "components/version_info/android/channel_getter.h"
 #include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
 #include "weblayer/browser/browser_context_impl.h"
@@ -107,6 +108,11 @@ std::string WebLayerDependencies::GetSignedInEmail() const {
 bool WebLayerDependencies::IsSupervisedUser() const {
   // WebLayer does not support supervised users.
   return false;
+}
+
+security_state::SecurityLevel WebLayerDependencies::GetSecurityLevel(
+    content::WebContents* web_contents) const {
+  return security_state::SecurityLevel::NONE;
 }
 
 std::string WebLayerDependencies::GetLocale() const {

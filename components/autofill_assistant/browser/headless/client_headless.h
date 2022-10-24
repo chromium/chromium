@@ -7,26 +7,36 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client.h"
-#include "components/autofill_assistant/browser/common_dependencies.h"
-#include "components/autofill_assistant/browser/controller.h"
-#include "components/autofill_assistant/browser/device_context.h"
-#include "components/autofill_assistant/browser/headless/headless_ui_controller.h"
-#include "components/autofill_assistant/browser/platform_dependencies.h"
-#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/web_contents.h"
+#include "components/security_state/core/security_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class GoogleServiceAuthError;
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace signin {
+class AccessTokenFetcher;
+struct AccessTokenInfo;
+}  // namespace signin
+
 namespace autofill_assistant {
 
+class CommonDependencies;
+class Controller;
+struct DeviceContext;
+class HeadlessUiController;
+class RuntimeManager;
 class WebsiteLoginManager;
 
 // An Autofill Assistant client for headless runs.
@@ -73,6 +83,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   std::string GetLatestCountryCode() const override;
   std::string GetStoredPermanentCountryCode() const override;
   DeviceContext GetDeviceContext() const override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
   bool IsAccessibilityEnabled() const override;
   bool IsSpokenFeedbackAccessibilityServiceEnabled() const override;
   content::WebContents* GetWebContents() const override;

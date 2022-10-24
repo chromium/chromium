@@ -18,12 +18,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/dependencies_util.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_state/core/security_state.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -88,6 +90,13 @@ std::string CommonDependenciesChrome::GetSignedInEmail() const {
 
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
       .email;
+}
+
+security_state::SecurityLevel CommonDependenciesChrome::GetSecurityLevel(
+    content::WebContents* web_contents) const {
+  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  return SecurityStateTabHelper::FromWebContents(web_contents)
+      ->GetSecurityLevel();
 }
 
 bool CommonDependenciesChrome::IsSupervisedUser() const {

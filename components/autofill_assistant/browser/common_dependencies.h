@@ -8,27 +8,29 @@
 #include <memory>
 #include <string>
 
+#include "components/security_state/core/security_state.h"
+
 class PrefService;
 
 namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
 
-namespace password_manager {
-class PasswordManagerClient;
-}  // namespace password_manager
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+namespace password_manager {
+class PasswordManagerClient;
+}  // namespace password_manager
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
-
-namespace consent_auditor {
-class ConsentAuditor;
-}  // namespace consent_auditor
 
 namespace version_info {
 enum class Channel;
@@ -64,6 +66,9 @@ class CommonDependencies {
   virtual PrefService* GetPrefs() const = 0;
 
   virtual std::string GetSignedInEmail() const = 0;
+
+  virtual security_state::SecurityLevel GetSecurityLevel(
+      content::WebContents* web_contents) const = 0;
 
   virtual bool IsSupervisedUser() const = 0;
 

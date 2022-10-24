@@ -20,6 +20,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -139,6 +140,7 @@ class ClientAndroid : public Client,
   std::string GetLatestCountryCode() const override;
   std::string GetStoredPermanentCountryCode() const override;
   DeviceContext GetDeviceContext() const override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
   bool IsAccessibilityEnabled() const override;
   bool IsSpokenFeedbackAccessibilityServiceEnabled() const override;
   content::WebContents* GetWebContents() const override;

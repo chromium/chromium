@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -30,6 +31,7 @@
 #include "components/autofill_assistant/browser/view_layout.pb.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
+#include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -893,6 +895,11 @@ bool Controller::Start(const GURL& deeplink_url,
   deeplink_url_ = deeplink_url;
   InitFromParameters();
 
+  // Shut down immediately if the certificate is insecure.
+  if (ShutdownIfCertificateInsecure()) {
+    return false;
+  }
+
   // Force a re-evaluation of the script, to get a chance to autostart.
   if (state_ == AutofillAssistantState::TRACKING)
     script_tracker_->ClearRunnableScripts();
@@ -1243,11 +1250,31 @@ void Controller::DidStartNavigation(
 
 void Controller::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  // Ensure that the connection is still secure.
+  switch (GetState()) {
+    case AutofillAssistantState::STARTING:
+    case AutofillAssistantState::RUNNING:
+    case AutofillAssistantState::PROMPT:
+    case AutofillAssistantState::BROWSE:
+    case AutofillAssistantState::MODAL_DIALOG:
+      if (ShutdownIfCertificateInsecure()) {
+        return;
+      }
+      break;
+    case AutofillAssistantState::TRACKING:
+    case AutofillAssistantState::STOPPED:
+    case AutofillAssistantState::INACTIVE:
+      break;
+  }
+
   // TODO(b/159871774): Rethink how we handle navigation events. The early
   // return here may prevent us from updating |navigating_to_new_document_|.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->HasCommitted() || !IsNavigatingToNewDocument()) {
+  if (navigation_handle->IsSameDocument() || !IsNavigatingToNewDocument()) {
     return;
   }
 
@@ -1307,6 +1334,26 @@ void Controller::WebContentsDestroyed() {
   suppress_keyboard_raii_.reset();
   // Record failure, iff an earlier call didn't already record.
   MaybeRecordFlowFinishedMetrics(Metrics::FlowFinishedState::DESTROYED);
+}
+
+bool Controller::ShutdownIfCertificateInsecure() {
+  if (!web_contents()->GetLastCommittedURL().SchemeIsCryptographic()) {
+    return false;
+  }
+
+  switch (client_->GetSecurityLevel()) {
+    case security_state::SecurityLevel::SECURE:
+    case security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT:
+      return false;
+    case security_state::SecurityLevel::NONE:
+    case security_state::SecurityLevel::DANGEROUS:
+    case security_state::SecurityLevel::WARNING:
+    case security_state::SecurityLevel::SECURITY_LEVEL_COUNT:
+      OnFatalError(GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR,
+                                        GetSettings()),
+                   Metrics::DropOutReason::CERTIFICATE_ERROR);
+      return true;
+  }
 }
 
 void Controller::SuppressKeyboard(bool suppress) {

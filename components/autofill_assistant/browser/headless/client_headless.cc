@@ -13,12 +13,16 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
+#include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/controller.h"
+#include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/headless/headless_ui_controller.h"
 #include "components/autofill_assistant/browser/public/password_change/empty_website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/local_script_store.h"
@@ -27,6 +31,7 @@
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/security_state/core/security_state.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/version_info.h"
@@ -160,6 +165,10 @@ std::string ClientHeadless::GetStoredPermanentCountryCode() const {
 
 DeviceContext ClientHeadless::GetDeviceContext() const {
   return DeviceContext();
+}
+
+security_state::SecurityLevel ClientHeadless::GetSecurityLevel() const {
+  return common_dependencies_->GetSecurityLevel(GetWebContents());
 }
 
 bool ClientHeadless::IsAccessibilityEnabled() const {

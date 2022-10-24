@@ -6055,6 +6055,7 @@ others/histograms.xml -->
   <int value="28"
       label="Two or more autostartable scripts with satisfied preconditions
              received"/>
+  <int value="29" label="Site certificate with major error"/>
 </enum>
 
 <enum name="AutofillAssistantFeatureModuleInstallation">

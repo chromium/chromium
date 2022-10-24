@@ -46,6 +46,7 @@ bool ShouldShowFeedbackChipForReason(Metrics::DropOutReason reason) {
     case Metrics::DropOutReason::NAVIGATION:
     case Metrics::DropOutReason::NAVIGATION_WHILE_RUNNING:
     case Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE:
+    case Metrics::DropOutReason::CERTIFICATE_ERROR:
       return true;
     // These are possible error reasons for which we don't want to show the
     // feedback chip.
