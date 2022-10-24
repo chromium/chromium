@@ -19,6 +19,10 @@ namespace views {
 class View;
 }  // namespace views
 
+namespace ui {
+class Layer;
+}  // namespace ui
+
 namespace ui::test {
 class EventGenerator;
 }  // namespace ui::test
@@ -232,6 +236,9 @@ class ASH_EXPORT AppListTestApi {
   // completes.
   void ClickOnCloseButtonAndWaitForToastAnimation(
       ui::test::EventGenerator* event_generator);
+
+  // Returns `AppListView`'s layer.
+  ui::Layer* GetAppListViewLayer();
 
  private:
   // Adds a callback that runs at the end of the reorder animation.

@@ -403,13 +403,6 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
   DCHECK(features::IsProductivityLauncherEnabled());
   DCHECK(!Shell::Get()->IsInTabletMode());
 
-  // Wait for the tablet->clamshell animation if needed.
-  AppListView* const app_list_view = GetAppListView();
-  if (app_list_view) {
-    ui::LayerAnimationStoppedWaiter().Wait(
-        app_list_view->GetWidget()->GetNativeView()->layer());
-  }
-
   ScrollableAppsGridView* scrollable_apps_grid_view =
       static_cast<ScrollableAppsGridView*>(GetTopLevelAppsGridView());
   if (!scrollable_apps_grid_view->layer())
@@ -792,6 +785,10 @@ void AppListTestApi::ClickOnCloseButtonAndWaitForToastAnimation(
   // Wait until the toast fade out animation ends.
   ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(toast_container->toast_view()->layer());
+}
+
+ui::Layer* AppListTestApi::GetAppListViewLayer() {
+  return GetAppListView()->GetWidget()->GetNativeView()->layer();
 }
 
 void AppListTestApi::RegisterReorderAnimationDoneCallback(
