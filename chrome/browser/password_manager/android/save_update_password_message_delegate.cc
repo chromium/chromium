@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -439,6 +440,9 @@ void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {
       base::BindOnce(
           &SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog,
           base::Unretained(this)),
+      base::BindOnce(&SaveUpdatePasswordMessageDelegate::
+                         HandleSavePasswordFromLegacyDialog,
+                     base::Unretained(this)),
       base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleDialogDismissed,
                      base::Unretained(this)));
 }
@@ -462,6 +466,15 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
     const std::u16string& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_state_.form_manager());
+  passwords_state_.form_manager()->Save();
+}
+
+void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromLegacyDialog(
+    int username_index) {
+  UpdatePasswordFormUsernameAndPassword(
+      passwords_state_.GetCurrentForms()[username_index]->username_value,
+      passwords_state_.form_manager()->GetPendingCredentials().password_value,
+      passwords_state_.form_manager());
   passwords_state_.form_manager()->Save();
 }
 

@@ -14,19 +14,32 @@ import java.util.List;
  * Defines properties for password edit dialog custom view.
  */
 class PasswordEditDialogProperties {
-    /**
-     * The callback, invoked when the user selects a username. The value is 0 based index of
-     * selected username.
-     */
-    static final PropertyModel
-            .ReadableObjectPropertyKey<Callback<String>> USERNAME_CHANGED_CALLBACK =
-            new PropertyModel.ReadableObjectPropertyKey<>("username selected callback");
-
     static final PropertyModel.ReadableObjectPropertyKey<List<String>> USERNAMES =
             new PropertyModel.ReadableObjectPropertyKey<>("usernames");
 
+    // Used only when PasswordEditDialogWithDetails feature is on
     static final PropertyModel.WritableObjectPropertyKey<String> USERNAME =
             new PropertyModel.WritableObjectPropertyKey<>("username");
+
+    // Used only when PasswordEditDialogWithDetails feature is off
+    static final PropertyModel.WritableIntPropertyKey USERNAME_INDEX =
+            new PropertyModel.WritableIntPropertyKey("username index");
+    /**
+     * The callback, invoked when the user edits the username
+     * Used only when PasswordEditDialogWithDetails feature is on
+     */
+    static final PropertyModel
+            .ReadableObjectPropertyKey<Callback<String>> USERNAME_CHANGED_CALLBACK =
+            new PropertyModel.ReadableObjectPropertyKey<>("username changed callback");
+
+    /**
+     * The callback, invoked when the user selects a username. The value is 0 based index of
+     * selected username.
+     * Used only when PasswordEditDialogWithDetails feature is off
+     */
+    static final PropertyModel
+            .ReadableObjectPropertyKey<Callback<Integer>> USERNAME_SELECTED_CALLBACK =
+            new PropertyModel.ReadableObjectPropertyKey<>("username selected callback");
 
     static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD =
             new PropertyModel.WritableObjectPropertyKey<>("password");
@@ -41,6 +54,7 @@ class PasswordEditDialogProperties {
     static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD_ERROR =
             new PropertyModel.WritableObjectPropertyKey<>("empty password error");
 
-    static final PropertyKey[] ALL_KEYS = {USERNAME_CHANGED_CALLBACK, USERNAMES, USERNAME, PASSWORD,
+    static final PropertyKey[] ALL_KEYS = {USERNAMES, USERNAME, USERNAME_INDEX,
+            USERNAME_CHANGED_CALLBACK, USERNAME_SELECTED_CALLBACK, PASSWORD,
             PASSWORD_CHANGED_CALLBACK, PASSWORD_ERROR, FOOTER};
 }

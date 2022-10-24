@@ -37,11 +37,20 @@ class PasswordEditDialogCoordinator {
     interface Delegate {
         /**
          * Called when the user taps the dialog positive button.
+         * Used when PasswordEditDialogWithDetails feature is enabled.
          *
          * @param username The username, whose password is to be updated or saved (if it's new)
          * @param password The password to be saved
          */
         void onDialogAccepted(String username, String password);
+
+        /**
+         * Called when the user taps the dialog Continue button.
+         * Used when PasswordEditDialogWithDetails feature is disabled.
+         *
+         * @param usernameIndex Selected username index from the list.
+         */
+        void onLegacyDialogAccepted(int usernameIndex);
 
         /**
          * Called when the dialog is dismissed.
@@ -171,18 +180,21 @@ class PasswordEditDialogCoordinator {
         PropertyModel.Builder dialogViewModelBuilder =
                 new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                         .with(PasswordEditDialogProperties.USERNAMES, removeEmptyStrings(usernames))
-                        .with(PasswordEditDialogProperties.USERNAME,
-                                usernames[selectedUsernameIndex])
-                        .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
-                                mMediator::handleUsernameChanged)
                         .with(PasswordEditDialogProperties.PASSWORD, password);
         if (mIsDialogWithDetailsFeatureEnabled) {
             dialogViewModelBuilder
                     .with(PasswordEditDialogProperties.FOOTER,
                             mContext.getString(getEditPasswordDialogFooterId(account), account))
+                    .with(PasswordEditDialogProperties.USERNAME, usernames[selectedUsernameIndex])
+                    .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
+                            mMediator::handleUsernameChanged)
                     .with(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
-                            mMediator::handlePasswordChanged)
-                    .build();
+                            mMediator::handlePasswordChanged);
+        } else {
+            dialogViewModelBuilder
+                    .with(PasswordEditDialogProperties.USERNAME_INDEX, selectedUsernameIndex)
+                    .with(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
+                            mMediator::handleUsernameSelected);
         }
         return dialogViewModelBuilder.build();
     }
