@@ -113,15 +113,6 @@ export class SettingsReviewNotificationPermissionsElement extends
   }
 
   /**
-   * @return a user-friendly name for the primary pattern that is granted with
-   *     notification permission.
-   */
-  private getDisplayName_(notificationPermission: NotificationPermission):
-      string {
-    return this.toUrl(notificationPermission.origin)!.host;
-  }
-
-  /**
    * @return the correct CSS class to apply depending on this notification
    *     permissions entry based on the index.
    */
