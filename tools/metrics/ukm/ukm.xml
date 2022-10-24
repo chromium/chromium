@@ -5143,6 +5143,10 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BrowsingTopics.DocumentBrowsingTopicsApiResult">
+  <obsolete>
+    Deprecated 10/2022 in favor of
+    BrowsingTopics.DocumentBrowsingTopicsApiResult2
+  </obsolete>
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -5227,6 +5231,121 @@ be describing additional metrics about the same event.
     <summary>
       The version of the taxonomy applicable to `ReturnedTopic2`. This metric
       won't be recorded if the API returns less than 3 topics.
+    </summary>
+  </metric>
+</event>
+
+<event name="BrowsingTopics.DocumentBrowsingTopicsApiResult2">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The document.browsingTopics() result and other metadata. Recorded whenever
+    document.browsingTopics() is invoked from a context. If there are more than
+    3 candidate topics (e.g. due to custom configuration FeatureParam), only the
+    first 3 candidate topics will be recorded.
+  </summary>
+  <metric name="CandidateTopic0">
+    <summary>
+      The candidate topic ID at index 0. This metric won't be recorded if no
+      topics were derived from the candidate epochs (which can be due to
+      insufficient epochs, failed epoch topics calculation, cleared history, or
+      cleared/blocked individual topics).
+    </summary>
+  </metric>
+  <metric name="CandidateTopic0IsTrueTopTopic" enum="Boolean">
+    <summary>
+      Whether `CandidateTopic0` is a true top topic (as opposed to a padded or
+      random one). This metric will be recorded iff `CandidateTopic0` is
+      recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic0ModelVersion">
+    <summary>
+      The version of the model used to calculate `CandidateTopic0`. This metric
+      will be recorded iff `CandidateTopic0` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic0ShouldBeFiltered" enum="Boolean">
+    <summary>
+      Whether `CandidateTopic0` should be filtered. This metric will be recorded
+      iff `CandidateTopic0` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic0TaxonomyVersion">
+    <summary>
+      The version of the taxonomy applicable to `CandidateTopic0`. This metric
+      will be recorded iff `CandidateTopic0` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic1">
+    <summary>
+      The candidate topic ID at index 1. This metric won't be recorded if less
+      than 2 topics were derived from the candidate epochs (which can be due to
+      insufficient epochs, failed epoch topics calculation, cleared history, or
+      cleared/blocked individual topics).
+    </summary>
+  </metric>
+  <metric name="CandidateTopic1IsTrueTopTopic" enum="Boolean">
+    <summary>
+      Whether `CandidateTopic1` is a true top topic (as opposed to a padded or
+      random one). This metric will be recorded iff `CandidateTopic1` is
+      recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic1ModelVersion">
+    <summary>
+      The version of the model used to calculate `CandidateTopic1`. This metric
+      will be recorded iff `CandidateTopic1` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic1ShouldBeFiltered" enum="Boolean">
+    <summary>
+      Whether `CandidateTopic1` should be filtered. This metric will be recorded
+      iff `CandidateTopic1` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic1TaxonomyVersion">
+    <summary>
+      The version of the taxonomy applicable to `CandidateTopic1`. This metric
+      will be recorded iff `CandidateTopic1` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic2">
+    <summary>
+      The candidate topic ID at index 2. This metric won't be recorded if less
+      than 3 topics were derived from the candidate epochs (which can be due to
+      insufficient epochs, failed epoch topics calculation, cleared history, or
+      cleared/blocked individual topics).
+    </summary>
+  </metric>
+  <metric name="CandidateTopic2IsTrueTopTopic" enum="Boolean">
+    <summary>
+      Whether `CandidateTopic2` is a true top topic (as opposed to a padded or
+      random one). This metric will be recorded iff `CandidateTopic2` is
+      recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic2ModelVersion">
+    <summary>
+      The version of the model used to calculate `CandidateTopic2`. This metric
+      will be recorded iff `CandidateTopic2` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic2ShouldBeFiltered" enum="Boolean">
+    <summary>
+      Whether `CandidateTopic2` should be filtered. This metric will be recorded
+      iff `CandidateTopic2` is recorded.
+    </summary>
+  </metric>
+  <metric name="CandidateTopic2TaxonomyVersion">
+    <summary>
+      The version of the taxonomy applicable to `CandidateTopic2`. This metric
+      will be recorded iff `CandidateTopic2` is recorded.
+    </summary>
+  </metric>
+  <metric name="FailureReason" enum="BrowsingTopicsApiAccessFailureReason">
+    <summary>
+      The reason why the API access is not allowed.
     </summary>
   </metric>
 </event>

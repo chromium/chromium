@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/browsing_topics/browsing_topics_document_supplement.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -20,6 +22,19 @@
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
+
+namespace {
+
+void RecordInvalidRequestingContextUkmMetrics(Document& document) {
+  ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
+      document.UkmSourceID());
+
+  builder.SetFailureReason(static_cast<int64_t>(
+      browsing_topics::ApiAccessFailureReason::kInvalidRequestingContext));
+  builder.Record(document.UkmRecorder());
+}
+
+}  // namespace
 
 // static
 const char BrowsingTopicsDocumentSupplement::kSupplementName[] =
@@ -73,6 +88,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "A browsing context is required when "
                                       "calling document.browsingTopics().");
+    RecordInvalidRequestingContextUkmMetrics(document);
     return ScriptPromise();
   }
 
@@ -95,6 +111,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
         "document.browsingTopics() is not allowed in an opaque origin "
         "context."));
 
+    RecordInvalidRequestingContextUkmMetrics(document);
     return promise;
   }
 
@@ -104,6 +121,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
         "document.browsingTopics() is not allowed in a fenced frame."));
+    RecordInvalidRequestingContextUkmMetrics(document);
     return promise;
   }
 
@@ -114,6 +132,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
         "document.browsingTopics() is not allowed when the page is being "
         "prerendered."));
+    RecordInvalidRequestingContextUkmMetrics(document);
     return promise;
   }
 
@@ -124,6 +143,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
         "The \"browsing-topics\" Permissions Policy denied the use of "
         "document.browsingTopics()."));
 
+    RecordInvalidRequestingContextUkmMetrics(document);
     return promise;
   }
 
@@ -135,6 +155,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
         "The \"interest-cohort\" Permissions Policy denied the use of "
         "document.browsingTopics()."));
 
+    RecordInvalidRequestingContextUkmMetrics(document);
     return promise;
   }
 

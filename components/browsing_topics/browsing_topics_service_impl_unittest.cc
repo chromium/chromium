@@ -589,15 +589,16 @@ TEST_F(BrowsingTopicsServiceImplTest,
                       web_contents()->GetPrimaryMainFrame(),
                       /*observe=*/true)
                   .empty());
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEmptyReasonName,
-      0 /* kStateNotReady */);
+
+  std::vector<ApiResultUkmMetrics> metrics_entries =
+      ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(1u, metrics_entries.size());
+
+  EXPECT_EQ(metrics_entries[0].failure_reason,
+            ApiAccessFailureReason::kStateNotReady);
+  EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 
   EXPECT_TRUE(browsing_topics_service_->GetTopTopicsForDisplay().empty());
 
@@ -833,15 +834,15 @@ TEST_F(BrowsingTopicsServiceImplTest,
                       /*observe=*/true)
                   .empty());
 
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEmptyReasonName,
-      1 /* kAccessDisallowedBySettings */);
+  std::vector<ApiResultUkmMetrics> metrics_entries =
+      ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(1u, metrics_entries.size());
+
+  EXPECT_EQ(metrics_entries[0].failure_reason,
+            ApiAccessFailureReason::kAccessDisallowedBySettings);
+  EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_OneEpoch) {
@@ -870,15 +871,15 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_OneEpoch) {
 
   EXPECT_TRUE(result.empty());
 
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEmptyReasonName,
-      2 /* kNoCandicateTopics */);
+  std::vector<ApiResultUkmMetrics> metrics_entries =
+      ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(1u, metrics_entries.size());
+
+  // This is an empty event with no metrics.
+  EXPECT_FALSE(metrics_entries[0].failure_reason);
+  EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
@@ -923,15 +924,21 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   EXPECT_TRUE(result.empty());
 
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEmptyReasonName,
-      3 /* kCandicateTopicsFiltered */);
+  std::vector<ApiResultUkmMetrics> metrics_entries =
+      ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(1u, metrics_entries.size());
+
+  EXPECT_FALSE(metrics_entries[0].failure_reason);
+  EXPECT_TRUE(metrics_entries[0].topic0.IsValid());
+
+  EXPECT_EQ(metrics_entries[0].topic0.topic(), Topic(2));
+  EXPECT_TRUE(metrics_entries[0].topic0.is_true_topic());
+  EXPECT_TRUE(metrics_entries[0].topic0.should_be_filtered());
+  EXPECT_EQ(metrics_entries[0].topic0.taxonomy_version(), 1);
+  EXPECT_EQ(metrics_entries[0].topic0.model_version(), 5000000000LL);
+
+  EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 }
 
 TEST_F(BrowsingTopicsServiceImplTest,
@@ -1274,10 +1281,9 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
 
   NavigateToPage(GURL("https://www.foo.com"));
 
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(0u, entries.size());
+  std::vector<ApiResultUkmMetrics> metrics_entries =
+      ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(0u, metrics_entries.size());
 
   // Current time is before the epoch switch time. Expect one ukm event without
   // any metrics.
@@ -1285,20 +1291,13 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
       web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
 
-  entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
+  metrics_entries = ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(1u, metrics_entries.size());
 
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEmptyReasonName,
-      2 /* kNoCandicateTopics */);
-  EXPECT_FALSE(ukm_recorder.GetEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic0Name));
+  EXPECT_FALSE(metrics_entries[0].failure_reason);
+  EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
+  EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
@@ -1307,40 +1306,21 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
       web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
 
-  entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  metrics_entries = ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(2u, metrics_entries.size());
 
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic0Name,
-      2);
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic0IsTrueTopTopicName,
-      true);
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic0ModelVersionName,
-      5000000000ULL);
-  ukm_recorder.ExpectEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic0TaxonomyVersionName,
-      1);
-
-  EXPECT_FALSE(ukm_recorder.GetEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic1Name));
+  EXPECT_FALSE(metrics_entries[1].failure_reason);
+  EXPECT_TRUE(metrics_entries[1].topic0.IsValid());
+  EXPECT_EQ(metrics_entries[1].topic0.topic(), Topic(2));
+  EXPECT_TRUE(metrics_entries[1].topic0.is_true_topic());
+  EXPECT_FALSE(metrics_entries[1].topic0.should_be_filtered());
+  EXPECT_EQ(metrics_entries[1].topic0.taxonomy_version(), 1);
+  EXPECT_EQ(metrics_entries[1].topic0.model_version(), 5000000000LL);
+  EXPECT_FALSE(metrics_entries[1].topic1.IsValid());
+  EXPECT_FALSE(metrics_entries[1].topic2.IsValid());
 }
 
-TEST_F(BrowsingTopicsServiceImplTest,
-       ApiResultUkm_ReportTrueStatusIfTheTopicHasMixedTrueAndRandomStatus) {
+TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_3Topics) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
@@ -1386,46 +1366,39 @@ TEST_F(BrowsingTopicsServiceImplTest,
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  std::vector<blink::mojom::EpochTopicPtr> api_call_result =
+      browsing_topics_service_->GetBrowsingTopicsForJsApi(
+          /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
 
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
+  // The API returns 2 topics, but all 3 candidate topics are logged.
+  EXPECT_EQ(2u, api_call_result.size());
 
-  const int64_t* topic0_metric = ukm_recorder.GetEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic0Name);
-  const int64_t* topic0_is_true_metric = ukm_recorder.GetEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic0IsTrueTopTopicName);
-  const int64_t* topic1_metric = ukm_recorder.GetEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic1Name);
-  const int64_t* topic1_is_true_metric = ukm_recorder.GetEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic1IsTrueTopTopicName);
+  std::vector<ApiResultUkmMetrics> metrics_entries =
+      ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_EQ(1u, metrics_entries.size());
 
-  EXPECT_TRUE(topic0_metric);
-  EXPECT_TRUE(topic0_is_true_metric);
-  EXPECT_TRUE(topic1_metric);
-  EXPECT_TRUE(topic1_is_true_metric);
+  EXPECT_FALSE(metrics_entries[0].failure_reason);
+  EXPECT_TRUE(metrics_entries[0].topic0.IsValid());
+  EXPECT_EQ(metrics_entries[0].topic0.topic(), Topic(7));
+  EXPECT_FALSE(metrics_entries[0].topic0.is_true_topic());
+  EXPECT_FALSE(metrics_entries[0].topic0.should_be_filtered());
+  EXPECT_EQ(metrics_entries[0].topic0.taxonomy_version(), 1);
+  EXPECT_EQ(metrics_entries[0].topic0.model_version(), 5000000000LL);
 
-  EXPECT_TRUE((*topic0_metric == 2 && *topic0_is_true_metric == false &&
-               *topic1_metric == 7 && *topic1_is_true_metric == true) ||
-              (*topic0_metric == 7 && *topic0_is_true_metric == true &&
-               *topic1_metric == 2 && *topic1_is_true_metric == false));
+  EXPECT_TRUE(metrics_entries[0].topic1.IsValid());
+  EXPECT_EQ(metrics_entries[0].topic1.topic(), Topic(2));
+  EXPECT_FALSE(metrics_entries[0].topic1.is_true_topic());
+  EXPECT_FALSE(metrics_entries[0].topic1.should_be_filtered());
+  EXPECT_EQ(metrics_entries[0].topic1.taxonomy_version(), 1);
+  EXPECT_EQ(metrics_entries[0].topic1.model_version(), 5000000000LL);
 
-  EXPECT_FALSE(ukm_recorder.GetEntryMetric(
-      entries.back(),
-      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
-          kReturnedTopic2Name));
+  EXPECT_TRUE(metrics_entries[0].topic2.IsValid());
+  EXPECT_EQ(metrics_entries[0].topic2.topic(), Topic(7));
+  EXPECT_TRUE(metrics_entries[0].topic2.is_true_topic());
+  EXPECT_FALSE(metrics_entries[0].topic2.should_be_filtered());
+  EXPECT_EQ(metrics_entries[0].topic2.taxonomy_version(), 1);
+  EXPECT_EQ(metrics_entries[0].topic2.model_version(), 5000000000LL);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {

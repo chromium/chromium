@@ -8,8 +8,133 @@
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace browsing_topics {
+
+std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  using Event = ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2;
+
+  std::vector<ApiResultUkmMetrics> result;
+
+  auto entries = ukm_recorder.GetEntriesByName(Event::kEntryName);
+
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    std::vector<CandidateTopic> topics;
+
+    const int64_t* topic0_metric =
+        ukm_recorder.GetEntryMetric(entry, Event::kCandidateTopic0Name);
+    const int64_t* topic0_is_true_topic_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic0IsTrueTopTopicName);
+    const int64_t* topic0_should_be_filtered_metric =
+        ukm_recorder.GetEntryMetric(
+            entry, Event::kCandidateTopic0ShouldBeFilteredName);
+    const int64_t* topic0_taxonomy_version_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic0TaxonomyVersionName);
+    const int64_t* topic0_model_version_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic0ModelVersionName);
+
+    if (topic0_metric) {
+      topics.emplace_back(CandidateTopic::Create(
+          Topic(*topic0_metric), *topic0_is_true_topic_metric,
+          *topic0_should_be_filtered_metric, *topic0_taxonomy_version_metric,
+          *topic0_model_version_metric));
+
+      DCHECK(topic0_is_true_topic_metric);
+      DCHECK(topic0_should_be_filtered_metric);
+      DCHECK(topic0_taxonomy_version_metric);
+      DCHECK(topic0_model_version_metric);
+    } else {
+      topics.emplace_back(CandidateTopic::CreateInvalid());
+
+      DCHECK(!topic0_is_true_topic_metric);
+      DCHECK(!topic0_should_be_filtered_metric);
+      DCHECK(!topic0_taxonomy_version_metric);
+      DCHECK(!topic0_model_version_metric);
+    }
+
+    const int64_t* topic1_metric =
+        ukm_recorder.GetEntryMetric(entry, Event::kCandidateTopic1Name);
+    const int64_t* topic1_is_true_topic_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic1IsTrueTopTopicName);
+    const int64_t* topic1_should_be_filtered_metric =
+        ukm_recorder.GetEntryMetric(
+            entry, Event::kCandidateTopic1ShouldBeFilteredName);
+    const int64_t* topic1_taxonomy_version_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic1TaxonomyVersionName);
+    const int64_t* topic1_model_version_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic1ModelVersionName);
+
+    if (topic1_metric) {
+      topics.emplace_back(CandidateTopic::Create(
+          Topic(*topic1_metric), *topic1_is_true_topic_metric,
+          *topic1_should_be_filtered_metric, *topic1_taxonomy_version_metric,
+          *topic1_model_version_metric));
+
+      DCHECK(topic1_is_true_topic_metric);
+      DCHECK(topic1_should_be_filtered_metric);
+      DCHECK(topic1_taxonomy_version_metric);
+      DCHECK(topic1_model_version_metric);
+    } else {
+      topics.emplace_back(CandidateTopic::CreateInvalid());
+
+      DCHECK(!topic1_is_true_topic_metric);
+      DCHECK(!topic1_should_be_filtered_metric);
+      DCHECK(!topic1_taxonomy_version_metric);
+      DCHECK(!topic1_model_version_metric);
+    }
+
+    const int64_t* topic2_metric =
+        ukm_recorder.GetEntryMetric(entry, Event::kCandidateTopic2Name);
+    const int64_t* topic2_is_true_topic_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic2IsTrueTopTopicName);
+    const int64_t* topic2_should_be_filtered_metric =
+        ukm_recorder.GetEntryMetric(
+            entry, Event::kCandidateTopic2ShouldBeFilteredName);
+    const int64_t* topic2_taxonomy_version_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic2TaxonomyVersionName);
+    const int64_t* topic2_model_version_metric = ukm_recorder.GetEntryMetric(
+        entry, Event::kCandidateTopic2ModelVersionName);
+
+    if (topic2_metric) {
+      topics.emplace_back(CandidateTopic::Create(
+          Topic(*topic2_metric), *topic2_is_true_topic_metric,
+          *topic2_should_be_filtered_metric, *topic2_taxonomy_version_metric,
+          *topic2_model_version_metric));
+
+      DCHECK(topic2_is_true_topic_metric);
+      DCHECK(topic2_should_be_filtered_metric);
+      DCHECK(topic2_taxonomy_version_metric);
+      DCHECK(topic2_model_version_metric);
+    } else {
+      topics.emplace_back(CandidateTopic::CreateInvalid());
+
+      DCHECK(!topic2_is_true_topic_metric);
+      DCHECK(!topic2_should_be_filtered_metric);
+      DCHECK(!topic2_taxonomy_version_metric);
+      DCHECK(!topic2_model_version_metric);
+    }
+
+    DCHECK_EQ(topics.size(), 3u);
+
+    absl::optional<ApiAccessFailureReason> failure_reason;
+
+    const int64_t* failure_reason_metric =
+        ukm_recorder.GetEntryMetric(entry, Event::kFailureReasonName);
+
+    if (failure_reason_metric) {
+      failure_reason =
+          static_cast<ApiAccessFailureReason>(*failure_reason_metric);
+    }
+
+    result.emplace_back(std::move(failure_reason), std::move(topics[0]),
+                        std::move(topics[1]), std::move(topics[2]));
+  }
+
+  return result;
+}
 
 bool BrowsingTopicsEligibleForURLVisit(history::HistoryService* history_service,
                                        const GURL& url) {

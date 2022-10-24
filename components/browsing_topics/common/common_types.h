@@ -17,6 +17,22 @@ using HashedHost = base::StrongAlias<class HashedHostTag, int64_t>;
 using HashedDomain = base::StrongAlias<class HashedHostTag, int64_t>;
 using Topic = base::StrongAlias<class TopicTag, int>;
 
+// Represents the different reasons why the topics API access is denied. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class ApiAccessFailureReason {
+  // The requesting context doesn't allow the API (e.g. permissions policy).
+  kInvalidRequestingContext = 0,
+
+  // The topics state hasn't finished loading.
+  kStateNotReady = 1,
+
+  // Access is disallowed by user settings.
+  kAccessDisallowedBySettings = 2,
+
+  kMaxValue = kAccessDisallowedBySettings,
+};
+
 struct COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) ApiUsageContext {
   HashedDomain hashed_context_domain;
   HashedHost hashed_main_frame_host;

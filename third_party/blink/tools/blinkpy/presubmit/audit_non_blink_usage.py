@@ -1833,6 +1833,14 @@ _CONFIG = [
             'base::NoDestructor',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/browsing_topics/browsing_topics_document_supplement.cc',
+        ],
+        'allowed': [
+            'browsing_topics::ApiAccessFailureReason',
+        ]
+    },
 ]
 
 

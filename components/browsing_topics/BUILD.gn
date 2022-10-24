@@ -57,6 +57,8 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/browsing_topics/mojom:mojo_bindings",
     "//components/history/core/browser:browser",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/common",
   ]
 }

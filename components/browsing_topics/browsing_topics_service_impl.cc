@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -122,74 +123,50 @@ StartupCalculateDecision GetStartupCalculationDecision(
       .next_calculation_delay = presumed_next_calculation_delay};
 }
 
-// Represents the different reasons why the topics API returns an empty result.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class EmptyApiResultReason {
-  // The topics state hasn't finished loading.
-  kStateNotReady = 0,
-
-  // Access is disallowed by user settings.
-  kAccessDisallowedBySettings = 1,
-
-  // There are no candidate topics, e.g. no candidate epochs; epoch calculation
-  // failed; individual topics were cleared or blocked.
-  kNoCandicateTopics = 2,
-
-  // The candidate topics were filtered for the requesting context.
-  kCandicateTopicsFiltered = 3,
-
-  kMaxValue = kCandicateTopicsFiltered,
-};
-
 void RecordBrowsingTopicsApiResultUkmMetrics(
-    EmptyApiResultReason empty_reason,
+    ApiAccessFailureReason failure_reason,
     content::RenderFrameHost* main_frame) {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-  ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult builder(
+  ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
       main_frame->GetPageUkmSourceId());
-  builder.SetEmptyReason(static_cast<int64_t>(empty_reason));
+  builder.SetFailureReason(static_cast<int64_t>(failure_reason));
   builder.Record(ukm_recorder->Get());
 }
 
 void RecordBrowsingTopicsApiResultUkmMetrics(
-    const std::vector<std::pair<blink::mojom::EpochTopicPtr, bool>>&
-        topics_with_status,
+    const std::vector<CandidateTopic>& valid_candidate_topics,
     content::RenderFrameHost* main_frame) {
-  DCHECK(!topics_with_status.empty());
-
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-  ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult builder(
+  ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
       main_frame->GetPageUkmSourceId());
 
-  for (size_t i = 0; i < 3u && topics_with_status.size() > i; ++i) {
-    const blink::mojom::EpochTopicPtr& topic = topics_with_status[i].first;
-    bool is_true_topic = topics_with_status[i].second;
+  for (size_t i = 0; i < 3u && valid_candidate_topics.size() > i; ++i) {
+    const CandidateTopic& candidate_topic = valid_candidate_topics[i];
 
-    int taxonomy_version = 0;
-    base::StringToInt(topic->taxonomy_version, &taxonomy_version);
-    DCHECK(taxonomy_version);
-
-    int64_t model_version = 0;
-    base::StringToInt64(topic->model_version, &model_version);
-    DCHECK(model_version);
+    DCHECK(candidate_topic.IsValid());
 
     if (i == 0) {
-      builder.SetReturnedTopic0(topic->topic)
-          .SetReturnedTopic0IsTrueTopTopic(is_true_topic)
-          .SetReturnedTopic0TaxonomyVersion(taxonomy_version)
-          .SetReturnedTopic0ModelVersion(model_version);
+      builder.SetCandidateTopic0(candidate_topic.topic().value())
+          .SetCandidateTopic0IsTrueTopTopic(candidate_topic.is_true_topic())
+          .SetCandidateTopic0ShouldBeFiltered(
+              candidate_topic.should_be_filtered())
+          .SetCandidateTopic0TaxonomyVersion(candidate_topic.taxonomy_version())
+          .SetCandidateTopic0ModelVersion(candidate_topic.model_version());
     } else if (i == 1) {
-      builder.SetReturnedTopic1(topic->topic)
-          .SetReturnedTopic1IsTrueTopTopic(is_true_topic)
-          .SetReturnedTopic1TaxonomyVersion(taxonomy_version)
-          .SetReturnedTopic1ModelVersion(model_version);
+      builder.SetCandidateTopic1(candidate_topic.topic().value())
+          .SetCandidateTopic1IsTrueTopTopic(candidate_topic.is_true_topic())
+          .SetCandidateTopic1ShouldBeFiltered(
+              candidate_topic.should_be_filtered())
+          .SetCandidateTopic1TaxonomyVersion(candidate_topic.taxonomy_version())
+          .SetCandidateTopic1ModelVersion(candidate_topic.model_version());
     } else {
       DCHECK_EQ(i, 2u);
-      builder.SetReturnedTopic2(topic->topic)
-          .SetReturnedTopic2IsTrueTopTopic(is_true_topic)
-          .SetReturnedTopic2TaxonomyVersion(taxonomy_version)
-          .SetReturnedTopic2ModelVersion(model_version);
+      builder.SetCandidateTopic2(candidate_topic.topic().value())
+          .SetCandidateTopic2IsTrueTopTopic(candidate_topic.is_true_topic())
+          .SetCandidateTopic2ShouldBeFiltered(
+              candidate_topic.should_be_filtered())
+          .SetCandidateTopic2TaxonomyVersion(candidate_topic.taxonomy_version())
+          .SetCandidateTopic2ModelVersion(candidate_topic.model_version());
     }
   }
 
@@ -231,20 +208,20 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
     bool observe) {
   if (!browsing_topics_state_loaded_) {
     RecordBrowsingTopicsApiResultUkmMetrics(
-        EmptyApiResultReason::kStateNotReady, main_frame);
+        ApiAccessFailureReason::kStateNotReady, main_frame);
     return {};
   }
 
   if (!privacy_sandbox_settings_->IsTopicsAllowed()) {
     RecordBrowsingTopicsApiResultUkmMetrics(
-        EmptyApiResultReason::kAccessDisallowedBySettings, main_frame);
+        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame);
     return {};
   }
 
   if (!privacy_sandbox_settings_->IsTopicsAllowedForContext(
           context_origin.GetURL(), main_frame->GetLastCommittedOrigin())) {
     RecordBrowsingTopicsApiResultUkmMetrics(
-        EmptyApiResultReason::kAccessDisallowedBySettings, main_frame);
+        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame);
     return {};
   }
 
@@ -267,10 +244,7 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
           main_frame->GetLastCommittedOrigin().GetURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
-  bool has_filtered_topics = false;
-
-  // The result topics along with flags denoting whether they are true topics.
-  std::vector<std::pair<blink::mojom::EpochTopicPtr, bool>> topics_with_status;
+  std::vector<CandidateTopic> valid_candidate_topics;
 
   for (const EpochTopics* epoch :
        browsing_topics_state_.EpochsForSite(top_domain)) {
@@ -280,11 +254,6 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
     if (!candidate_topic.IsValid())
       continue;
 
-    if (candidate_topic.should_be_filtered()) {
-      has_filtered_topics = true;
-      continue;
-    }
-
     // Although a top topic can never be in the disallowed state, the returned
     // `candidate_topic` may be the random one. Thus we still need this check.
     if (!privacy_sandbox_settings_->IsTopicAllowed(
@@ -293,6 +262,17 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
       DCHECK(!candidate_topic.is_true_topic());
       continue;
     }
+
+    valid_candidate_topics.push_back(std::move(candidate_topic));
+  }
+
+  RecordBrowsingTopicsApiResultUkmMetrics(valid_candidate_topics, main_frame);
+
+  std::vector<blink::mojom::EpochTopicPtr> result_topics;
+
+  for (const CandidateTopic& candidate_topic : valid_candidate_topics) {
+    if (candidate_topic.should_be_filtered())
+      continue;
 
     // `PageSpecificContentSettings` should only observe true top topics
     // accessed on the page. It's okay to notify the same topic multiple
@@ -317,56 +297,19 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
     result_topic->version = base::StrCat({result_topic->config_version, ":",
                                           result_topic->taxonomy_version, ":",
                                           result_topic->model_version});
-    topics_with_status.emplace_back(std::move(result_topic),
-                                    candidate_topic.is_true_topic());
+    result_topics.emplace_back(std::move(result_topic));
   }
 
-  // Sort `topics_with_status` based on `EpochTopicPtr` first, and if the
-  // `EpochTopicPtr` parts are equal, then a true topic will be ordered before a
-  // random topic. This ensures that when we later deduplicate based on the
-  // `EpochTopicPtr` field only, the associated is-true-topic status will be
-  // true as long as there is one true topic for that topic in
-  // `topics_with_status`.
-  std::sort(topics_with_status.begin(), topics_with_status.end(),
-            [](const auto& left, const auto& right) {
-              if (left.first < right.first)
-                return true;
-              if (left.first > right.first)
-                return false;
-              return right.second < left.second;
-            });
+  std::sort(result_topics.begin(), result_topics.end());
 
-  // Remove duplicate `EpochTopicPtr` entries.
-  topics_with_status.erase(
-      std::unique(topics_with_status.begin(), topics_with_status.end(),
-                  [](const auto& left, const auto& right) {
-                    return left.first == right.first;
-                  }),
-      topics_with_status.end());
+  // Remove duplicate entries.
+  result_topics.erase(std::unique(result_topics.begin(), result_topics.end()),
+                      result_topics.end());
 
   // Shuffle the entries.
-  base::RandomShuffle(topics_with_status.begin(), topics_with_status.end());
-
-  if (topics_with_status.empty()) {
-    if (has_filtered_topics) {
-      RecordBrowsingTopicsApiResultUkmMetrics(
-          EmptyApiResultReason::kCandicateTopicsFiltered, main_frame);
-    } else {
-      RecordBrowsingTopicsApiResultUkmMetrics(
-          EmptyApiResultReason::kNoCandicateTopics, main_frame);
-    }
-    return {};
-  }
-
-  RecordBrowsingTopicsApiResultUkmMetrics(topics_with_status, main_frame);
-
-  std::vector<blink::mojom::EpochTopicPtr> result_topics;
-  result_topics.reserve(topics_with_status.size());
-  std::transform(topics_with_status.begin(), topics_with_status.end(),
-                 std::back_inserter(result_topics),
-                 [](auto& topic_with_status) {
-                   return std::move(topic_with_status.first);
-                 });
+  // TODO(yaoxia): Remove the random shuffle. The topics are already sorted /
+  // no longer in time order.
+  base::RandomShuffle(result_topics.begin(), result_topics.end());
 
   return result_topics;
 }

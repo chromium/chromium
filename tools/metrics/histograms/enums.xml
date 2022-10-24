@@ -13760,6 +13760,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Multiple pages, all of which are non-visible"/>
 </enum>
 
+<enum name="BrowsingTopicsApiAccessFailureReason">
+  <int value="0" label="Invalid requesting context"/>
+  <int value="1" label="State not ready"/>
+  <int value="2" label="Access disallowed by settings"/>
+</enum>
+
 <enum name="BrowsingTopicsCalculatorResultStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failure: permission denied"/>
@@ -13770,6 +13776,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BrowsingTopicsEmptyApiResultReason">
+  <obsolete>
+    Deprecated 10/2022 in favor of BrowsingTopicsApiAccessFailureReason.
+  </obsolete>
   <int value="0" label="State not ready"/>
   <int value="1" label="Access disallowed by settings"/>
   <int value="2" label="No candicate topics"/>

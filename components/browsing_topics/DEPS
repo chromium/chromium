@@ -19,4 +19,7 @@ specific_include_rules = {
     "+components/sync_preferences",
     "+components/ukm",
   ],
+  ".*test_util.cc": [
+    "+components/ukm",
+  ],
 }

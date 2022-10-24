@@ -10,5 +10,10 @@ blink_modules_sources("browsing_topics") {
     "browsing_topics_document_supplement.h",
   ]
 
+  deps = [
+    "//components/browsing_topics/common:common",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
 }

@@ -16,7 +16,31 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 
+namespace ukm {
+class TestAutoSetUkmRecorder;
+}  // namespace ukm
+
 namespace browsing_topics {
+
+struct ApiResultUkmMetrics {
+  ApiResultUkmMetrics(absl::optional<ApiAccessFailureReason> failure_reason,
+                      CandidateTopic topic0,
+                      CandidateTopic topic1,
+                      CandidateTopic topic2)
+      : failure_reason(std::move(failure_reason)),
+        topic0(std::move(topic0)),
+        topic1(std::move(topic1)),
+        topic2(std::move(topic2)) {}
+
+  absl::optional<ApiAccessFailureReason> failure_reason;
+  CandidateTopic topic0;
+  CandidateTopic topic1;
+  CandidateTopic topic2;
+};
+
+// Parse the `BrowsingTopics_DocumentBrowsingTopicsApiResult2` metrics.
+std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder);
 
 // Returns whether the URL entry is eligible in topics calculation.
 // Precondition: the history visits contain exactly one matching URL.
