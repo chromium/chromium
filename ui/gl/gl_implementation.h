@@ -120,9 +120,9 @@ typedef GLFunctionPointerType(WINAPI* GLGetProcAddressProc)(const char* name);
 typedef GLFunctionPointerType (*GLGetProcAddressProc)(const char* name);
 #endif
 
-// Initialize stub methods for drawing operations in the GL bindings. The
+// Sets stub methods for drawing operations in the GL bindings. The
 // null draw bindings default to enabled, so that draw operations do nothing.
-GL_EXPORT void InitializeNullDrawGLBindings();
+GL_EXPORT void SetNullDrawGLBindings(bool enabled);
 
 // TODO(danakj): Remove this when all test suites are using null-draw.
 GL_EXPORT bool HasInitializedNullDrawGLBindings();

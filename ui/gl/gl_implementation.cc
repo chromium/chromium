@@ -422,8 +422,8 @@ GLFunctionPointerType GetGLProcAddress(const char* name) {
   return NULL;
 }
 
-void InitializeNullDrawGLBindings() {
-  SetNullDrawGLBindingsEnabled(true);
+void SetNullDrawGLBindings(bool enabled) {
+  SetNullDrawGLBindingsEnabled(enabled);
 }
 
 bool HasInitializedNullDrawGLBindings() {

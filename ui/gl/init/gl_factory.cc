@@ -236,8 +236,7 @@ GLDisplay* InitializeGLOneOffPlatformImplementation(
 
   DVLOG(1) << "Using " << GetGLImplementationGLName(GetGLImplementationParts())
            << " GL implementation.";
-  if (disable_gl_drawing)
-    InitializeNullDrawGLBindings();
+  SetNullDrawGLBindings(disable_gl_drawing);
   return display;
 }
 
