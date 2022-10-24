@@ -221,6 +221,8 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   gl::GLContextAttribs attribs{};
   attribs.can_skip_validation = true;
   attribs.context_priority = gl::ContextPriorityMedium;
+  attribs.angle_context_virtualization_group_number =
+      gl::AngleContextVirtualizationGroup::kGLImageProcessor;
   gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(), attribs);
   if (!gl_context_) {
     LOG(ERROR) << "Could not create the GL context";
@@ -264,8 +266,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // Create a shader program to convert an MM21 buffer into an NV12 buffer.
   GLuint program = glCreateProgram();
   constexpr GLchar kVertexShader[] =
-      "#version 320 es\n"
-      "#extension GL_ARM_internal : enable\n"
+      "#version 300 es\n"
       "out vec2 texPos;\n"
       "void main() {\n"
       "  vec2 pos[4];\n"
@@ -296,9 +297,8 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // detiled coordinates. In practice, this second sample pass usually hits the
   // GPU's cache, so this doesn't influence DRAM bandwidth too negatively.
   constexpr GLchar kFragmentShader[] =
-      R"(#version 320 es
+      R"(#version 300 es
       #extension GL_EXT_YUV_target : require
-      #extension GL_ARM_internal : enable
       #pragma disable_alpha_to_coverage
       precision mediump float;
       precision mediump int;
@@ -310,7 +310,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
       in vec2 texPos;
       layout(yuv) out vec4 fragColor;
       void main() {
-        uvec2 iCoord = uvec2(gl_FragPositionARM.xy);
+        uvec2 iCoord = uvec2(gl_FragCoord.xy);
         uvec2 tileCoords = iCoord / kYTileDims;
         uint numTilesPerRow = width / kYTileDims.x;
         uint tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;

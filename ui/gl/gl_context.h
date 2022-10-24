@@ -68,9 +68,14 @@ enum ContextPriority {
 // Angle allows selecting context virtualization group at context creation time.
 // This enum is used to specify the group number to use for a given context.
 // Currently all contexts which does not specify any group number are part of
-// default angle context virtualization group. DrDc will use below enum to
-// become part of different virtualization group.
-enum class AngleContextVirtualizationGroup { kDefault = -1, kDrDc = 1 };
+// default angle context virtualization group. DrDc and the
+// GLImageProcessorBackend will use below enum to become part of different
+// virtualization groups.
+enum class AngleContextVirtualizationGroup {
+  kDefault = -1,
+  kDrDc = 1,
+  kGLImageProcessor = 2
+};
 
 struct GL_EXPORT GLContextAttribs {
   GLContextAttribs();
