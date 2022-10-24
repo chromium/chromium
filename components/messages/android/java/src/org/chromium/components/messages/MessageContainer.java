@@ -120,6 +120,13 @@ public class MessageContainer extends FrameLayout {
         mA11yDelegate = a11yDelegate;
     }
 
+    View getSiblingView(View current) {
+        assert getChildCount() > 1;
+        int idx = indexOfChild(current);
+        assert idx != -1;
+        return getChildAt(1 - idx);
+    }
+
     /**
      * Runs a {@link Runnable} after the message's initial layout. If the view is already laid out,
      * the {@link Runnable} will be called immediately.

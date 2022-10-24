@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import android.animation.Animator;
 import android.content.res.Resources;
 import android.provider.Settings;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -92,11 +93,28 @@ class MessageBannerCoordinator {
      * Shows the message banner.
      * @param fromIndex The initial position.
      * @param toIndex The target position the message is moving to.
+     * @param messageDimensSupplier Supplier of dimensions of the message next to current one.
      * @return The animator which shows the message view.
      */
-    Animator show(@Position int fromIndex, @Position int toIndex) {
+    Animator show(@Position int fromIndex, @Position int toIndex,
+            Supplier<MessageDimens> messageDimensSupplier) {
         mView.dismissSecondaryMenuIfShown();
-        return mMediator.show(fromIndex, toIndex, () -> {
+        int verticalOffset = 0;
+        if (toIndex == Position.BACK) {
+            MessageDimens prevMessageDimens = messageDimensSupplier.get();
+            int height = mView.getHeight();
+            if (!mView.isLaidOut()) {
+                int maxWidth = prevMessageDimens.getWidth();
+                int wSpec = View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST);
+                int hSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+                mView.measure(wSpec, hSpec);
+                height = mView.getMeasuredHeight();
+            }
+            if (height < prevMessageDimens.getHeight()) {
+                verticalOffset = prevMessageDimens.getHeight() - height;
+            }
+        }
+        return mMediator.show(fromIndex, toIndex, verticalOffset, () -> {
             if (toIndex != Position.FRONT) {
                 setOnTouchRunnable(null);
                 setOnTitleChanged(null);
