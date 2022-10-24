@@ -53,14 +53,14 @@ struct AutocompleteMatchTestData {
 };
 
 const AutocompleteMatchTestData kVerbatimMatches[] = {
-  { "http://search-what-you-typed/",
-    AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED },
-  { "http://url-what-you-typed/", AutocompleteMatchType::URL_WHAT_YOU_TYPED },
+    {"http://search-what-you-typed/",
+     AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+    {"http://url-what-you-typed/", AutocompleteMatchType::URL_WHAT_YOU_TYPED},
 };
 
 const AutocompleteMatchTestData kNonVerbatimMatches[] = {
-  { "http://search-history/", AutocompleteMatchType::SEARCH_HISTORY },
-  { "http://history-title/", AutocompleteMatchType::HISTORY_TITLE },
+    {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY},
+    {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
 };
 
 // Adds |count| AutocompleteMatches to |matches|.
@@ -215,10 +215,9 @@ void AutocompleteResultTest::PopulateAutocompleteMatch(
   match->inline_autocompletion = base::UTF8ToUTF16(data.inline_autocompletion);
 }
 
-void AutocompleteResultTest::PopulateAutocompleteMatches(
-    const TestData* data,
-    size_t count,
-    ACMatches* matches) {
+void AutocompleteResultTest::PopulateAutocompleteMatches(const TestData* data,
+                                                         size_t count,
+                                                         ACMatches* matches) {
   for (size_t i = 0; i < count; ++i) {
     AutocompleteMatch match;
     PopulateAutocompleteMatch(data[i], &match);
@@ -416,15 +415,15 @@ TEST_F(AutocompleteResultTest, AlternateNavUrl_IntranetRedirectPolicy) {
 // any copied results have their relevance shifted down.
 TEST_F(AutocompleteResultTest, TransferOldMatches) {
   TestData last[] = {
-    { 0, 1, 1000, true },
-    { 1, 1, 500,  true },
+      {0, 1, 1000, true},
+      {1, 1, 500, true},
   };
   TestData current[] = {
-    { 2, 1, 400,  true },
+      {2, 1, 400, true},
   };
   TestData result[] = {
-    { 2, 1, 400,  true },
-    { 1, 1, 399,  true },
+      {2, 1, 400, true},
+      {1, 1, 399, true},
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
@@ -437,20 +436,20 @@ TEST_F(AutocompleteResultTest, TransferOldMatches) {
 // be default constraint comes into play.
 TEST_F(AutocompleteResultTest, TransferOldMatchesAllowedToBeDefault) {
   TestData last[] = {
-    { 0, 1, 1300,  true },
-    { 1, 1, 1200,  true },
-    { 2, 1, 1100,  true },
+      {0, 1, 1300, true},
+      {1, 1, 1200, true},
+      {2, 1, 1100, true},
   };
   TestData current[] = {
-    { 3, 1, 1000, false },
-    { 4, 1, 900,  true  },
+      {3, 1, 1000, false},
+      {4, 1, 900, true},
   };
   // The expected results are out of relevance order because the top-scoring
   // allowed to be default match is always pulled to the top.
   TestData result[] = {
-    { 4, 1, 900,  true  },
-    { 3, 1, 1000, false },
-    { 2, 1, 899,  true },
+      {4, 1, 900, true},
+      {3, 1, 1000, false},
+      {2, 1, 899, true},
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
@@ -595,25 +594,19 @@ TEST_F(AutocompleteResultTest,
 // Tests that matches are copied correctly from two distinct providers.
 TEST_F(AutocompleteResultTest, TransferOldMatchesMultipleProviders) {
   TestData last[] = {
-    { 0, 1, 1300, false },
-    { 1, 2, 1250, true  },
-    { 2, 1, 1200, false },
-    { 3, 2, 1150, true  },
-    { 4, 1, 1100, false },
+      {0, 1, 1300, false}, {1, 2, 1250, true},  {2, 1, 1200, false},
+      {3, 2, 1150, true},  {4, 1, 1100, false},
   };
   TestData current[] = {
-    { 5, 1, 1000, false },
-    { 6, 2, 800,  true  },
-    { 7, 1, 500,  true  },
+      {5, 1, 1000, false},
+      {6, 2, 800, true},
+      {7, 1, 500, true},
   };
   // The expected results are out of relevance order because the top-scoring
   // allowed to be default match is always pulled to the top.
   TestData result[] = {
-    { 6, 2, 800,  true  },
-    { 5, 1, 1000, false },
-    { 3, 2, 799,  true  },
-    { 7, 1, 500,  true  },
-    { 4, 1, 499,  false  },
+      {6, 2, 800, true}, {5, 1, 1000, false}, {3, 2, 799, true},
+      {7, 1, 500, true}, {4, 1, 499, false},
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
@@ -626,23 +619,17 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesMultipleProviders) {
 TEST_F(AutocompleteResultTest,
        TransferOldMatchesWithOneProviderWithoutDefault) {
   TestData last[] = {
-    { 0, 2, 1250, true  },
-    { 1, 2, 1150, true  },
-    { 2, 1, 900,  false },
-    { 3, 1, 800,  false },
-    { 4, 1, 700,  false },
+      {0, 2, 1250, true}, {1, 2, 1150, true}, {2, 1, 900, false},
+      {3, 1, 800, false}, {4, 1, 700, false},
   };
   TestData current[] = {
-    { 5, 1, 1000, true },
-    { 6, 2, 800,  false },
-    { 7, 1, 500,  true  },
+      {5, 1, 1000, true},
+      {6, 2, 800, false},
+      {7, 1, 500, true},
   };
   TestData result[] = {
-    { 5, 1, 1000, true  },
-    { 1, 2, 999,  true  },
-    { 6, 2, 800,  false },
-    { 4, 1, 700,  false },
-    { 7, 1, 500,  true  },
+      {5, 1, 1000, true}, {1, 2, 999, true}, {6, 2, 800, false},
+      {4, 1, 700, false}, {7, 1, 500, true},
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
@@ -670,14 +657,23 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesSkipsSpecializedSuggestions) {
                                                     result, std::size(result)));
 }
 
-// Tests that transferred matches do not include the specialized match types.
-TEST_F(AutocompleteResultTest, TransferOldMatchesSkipDoneProviders) {
+// Enables `kAutocompleteStabilityDontCopyDoneProviders`. Can't be done locally
+// within the test, as the param value is cached by a static local variable.
+class AutocompleteResultTest_DontCopyDoneProviders
+    : public AutocompleteResultTest {
+ public:
+  AutocompleteResultTest_DontCopyDoneProviders() {
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kAutocompleteStability,
+        {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
+          "true"}});
+  }
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kAutocompleteStability,
-      {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
-        "true"}});
+};
 
+// Tests that transferred matches do not include the specialized match types.
+TEST_F(AutocompleteResultTest_DontCopyDoneProviders,
+       TransferOldMatchesSkipDoneProviders) {
   TestData last[] = {
       {0, 1, 500},  // Suggestion from done provider
       {1, 2, 400},  // Suggestion for not-done provider
@@ -735,11 +731,8 @@ TEST_F(AutocompleteResultTest,
 // and culled.
 TEST_F(AutocompleteResultTest, SortAndCullEmptyDestinationURLs) {
   TestData data[] = {
-    { 1, 1, 500,  true },
-    { 0, 1, 1100, true },
-    { 1, 1, 1000, true },
-    { 0, 1, 1300, true },
-    { 0, 1, 1200, true },
+      {1, 1, 500, true},  {0, 1, 1100, true}, {1, 1, 1000, true},
+      {0, 1, 1300, true}, {0, 1, 1200, true},
   };
 
   ACMatches matches;
@@ -1007,11 +1000,8 @@ TEST_F(AutocompleteResultTest, SortAndCullDuplicateSearchURLs) {
   template_url_service_->Add(std::make_unique<TemplateURL>(url_data));
 
   TestData data[] = {
-    { 0, 1, 1300, true },
-    { 1, 1, 1200, true },
-    { 2, 1, 1100, true },
-    { 3, 1, 1000, true },
-    { 4, 2, 900,  true },
+      {0, 1, 1300, true}, {1, 1, 1200, true}, {2, 1, 1100, true},
+      {3, 1, 1000, true}, {4, 2, 900, true},
   };
 
   ACMatches matches;
@@ -1036,8 +1026,7 @@ TEST_F(AutocompleteResultTest, SortAndCullDuplicateSearchURLs) {
   EXPECT_EQ("http://www.foo.com/s?q=foo2",
             result.match_at(1)->destination_url.spec());
   EXPECT_EQ(1200, result.match_at(1)->relevance);
-  EXPECT_EQ("http://www.foo.com/",
-            result.match_at(2)->destination_url.spec());
+  EXPECT_EQ("http://www.foo.com/", result.match_at(2)->destination_url.spec());
   EXPECT_EQ(900, result.match_at(2)->relevance);
 }
 
@@ -1055,12 +1044,8 @@ TEST_F(AutocompleteResultTest, SortAndCullWithMatchDups) {
   dups.push_back(dup_match);
 
   TestData data[] = {
-    { 0, 1, 1300, true, dups },
-    { 1, 1, 1200, true  },
-    { 2, 1, 1100, true  },
-    { 3, 1, 1000, true, dups },
-    { 4, 2, 900,  true  },
-    { 5, 1, 800,  true  },
+      {0, 1, 1300, true, dups}, {1, 1, 1200, true}, {2, 1, 1100, true},
+      {3, 1, 1000, true, dups}, {4, 2, 900, true},  {5, 1, 800, true},
   };
 
   ACMatches matches;
@@ -1102,11 +1087,11 @@ TEST_F(AutocompleteResultTest, SortAndCullWithDemotionsByType) {
   // Add some matches.
   ACMatches matches;
   const AutocompleteMatchTestData data[] = {
-    { "http://history-url/", AutocompleteMatchType::HISTORY_URL },
-    { "http://search-what-you-typed/",
-      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED },
-    { "http://history-title/", AutocompleteMatchType::HISTORY_TITLE },
-    { "http://search-history/", AutocompleteMatchType::SEARCH_HISTORY },
+      {"http://history-url/", AutocompleteMatchType::HISTORY_URL},
+      {"http://search-what-you-typed/",
+       AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+      {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
+      {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY},
   };
   PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
 
@@ -1344,12 +1329,10 @@ TEST_F(AutocompleteResultTest, DemoteByType) {
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {
-  TestData data[] = {
-    { 0, 1, 1300, true },
-    { 1, 1, 1200, true },
-    { 2, 1, 1100, true },
-    { 3, 1, 1000, true }
-  };
+  TestData data[] = {{0, 1, 1300, true},
+                     {1, 1, 1200, true},
+                     {2, 1, 1100, true},
+                     {3, 1, 1000, true}};
   TestSchemeClassifier test_scheme_classifier;
 
   {
@@ -1386,13 +1369,11 @@ TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullPromoteDefaultMatch) {
-  TestData data[] = {
-    { 0, 1, 1300, false },
-    { 1, 1, 1200, false },
-    { 2, 2, 1100, false },
-    { 2, 3, 1000, false },
-    { 2, 4, 900, true }
-  };
+  TestData data[] = {{0, 1, 1300, false},
+                     {1, 1, 1200, false},
+                     {2, 2, 1100, false},
+                     {2, 3, 1000, false},
+                     {2, 4, 900, true}};
   TestSchemeClassifier test_scheme_classifier;
 
   // Check that reorder swaps up a result, and promotes relevance,
@@ -1417,13 +1398,9 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDefaultMatch) {
 
 TEST_F(AutocompleteResultTest, SortAndCullPromoteUnconsecutiveMatches) {
   TestData data[] = {
-    { 0, 1, 1300, false },
-    { 1, 1, 1200, true },
-    { 3, 2, 1100, false },
-    { 2, 1, 1000, false },
-    { 3, 3, 900, true },
-    { 4, 1, 800, false },
-    { 3, 4, 700, false },
+      {0, 1, 1300, false}, {1, 1, 1200, true}, {3, 2, 1100, false},
+      {2, 1, 1000, false}, {3, 3, 900, true},  {4, 1, 800, false},
+      {3, 4, 700, false},
   };
   TestSchemeClassifier test_scheme_classifier;
 
@@ -1779,11 +1756,8 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDuplicateSearchURLs) {
   template_url_service_->Add(std::make_unique<TemplateURL>(url_data));
 
   TestData data[] = {
-    { 0, 1, 1300, false },
-    { 1, 1, 1200, true },
-    { 2, 1, 1100, true },
-    { 3, 1, 1000, true },
-    { 4, 2, 900,  true },
+      {0, 1, 1300, false}, {1, 1, 1200, true}, {2, 1, 1100, true},
+      {3, 1, 1000, true},  {4, 2, 900, true},
   };
 
   ACMatches matches;
@@ -1809,8 +1783,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDuplicateSearchURLs) {
   EXPECT_EQ("http://www.foo.com/s?q=foo2",
             result.match_at(1)->destination_url.spec());
   EXPECT_EQ(1200, result.match_at(1)->relevance);
-  EXPECT_EQ("http://www.foo.com/",
-            result.match_at(2)->destination_url.spec());
+  EXPECT_EQ("http://www.foo.com/", result.match_at(2)->destination_url.spec());
   EXPECT_EQ(900, result.match_at(2)->relevance);
 }
 
