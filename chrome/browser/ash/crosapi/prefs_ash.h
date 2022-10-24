@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
@@ -28,7 +29,6 @@
 
 class PrefService;
 class PrefChangeRegistrar;
-class ProfileManager;
 
 namespace crosapi {
 
@@ -90,9 +90,6 @@ class PrefsAsh : public mojom::Prefs,
 
   void OnAppTerminating();
 
-  // In production, owned by g_browser_process, which does not outlives this
-  // object.
-  ProfileManager* profile_manager_;
   // In production, owned by g_browser_process, which outlives this object.
   PrefService* const local_state_;
 
@@ -108,6 +105,9 @@ class PrefsAsh : public mojom::Prefs,
 
   // Observe profile destruction to reset prefs observation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   base::CallbackListSubscription on_app_terminating_subscription_;
   // Map of extension pref paths to preference names.
