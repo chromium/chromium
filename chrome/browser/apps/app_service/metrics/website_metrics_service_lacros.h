@@ -5,8 +5,15 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_SERVICE_LACROS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_SERVICE_LACROS_H_
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics.h"
+
+class Profile;
+class PrefRegistrySimple;
 
 namespace apps {
 
@@ -14,11 +21,13 @@ namespace apps {
 // Lacros side.
 class WebsiteMetricsServiceLacros {
  public:
-  WebsiteMetricsServiceLacros();
+  explicit WebsiteMetricsServiceLacros(Profile* profile);
   WebsiteMetricsServiceLacros(const WebsiteMetricsServiceLacros&) = delete;
   WebsiteMetricsServiceLacros& operator=(const WebsiteMetricsServiceLacros&) =
       delete;
   ~WebsiteMetricsServiceLacros();
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Start the timer for website metrics.
   void Start();
@@ -36,12 +45,16 @@ class WebsiteMetricsServiceLacros {
   // Called asynchronously when crosapi returns the device type for metrics.
   void OnGetDeviceTypeForMetrics(int result);
 
+  const raw_ptr<Profile> profile_;
+
   // A periodic timer that checks if five minutes have arrived.
   base::RepeatingTimer five_minutes_timer_;
 
   // A periodic timer that checks if the reporting interval for noisy AppKMs has
   // arrived to report noisy AppKM events.
   base::RepeatingTimer noisy_appkm_reporting_interval_timer_;
+
+  std::unique_ptr<apps::WebsiteMetrics> website_metrics_;
 
   base::WeakPtrFactory<WebsiteMetricsServiceLacros> weak_ptr_factory_{this};
 };

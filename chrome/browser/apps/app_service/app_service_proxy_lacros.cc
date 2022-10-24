@@ -635,7 +635,7 @@ void AppServiceProxyLacros::Initialize() {
                               std::make_unique<apps::AppIconSource>(profile_));
 
   if (!profile_->AsTestingProfile()) {
-    metrics_service_ = std::make_unique<WebsiteMetricsServiceLacros>();
+    metrics_service_ = std::make_unique<WebsiteMetricsServiceLacros>(profile_);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&AppServiceProxyLacros::InitWebsiteMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -667,6 +667,8 @@ void AppServiceProxyLacros::Initialize() {
 }
 
 void AppServiceProxyLacros::Shutdown() {
+  metrics_service_.reset();
+
   if (lacros_web_apps_controller_) {
     lacros_web_apps_controller_->Shutdown();
   }

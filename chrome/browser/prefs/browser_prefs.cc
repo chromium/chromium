@@ -460,6 +460,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
 #include "chrome/browser/lacros/account_manager/account_cache.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
@@ -1526,6 +1527,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::ProxyConfigServiceLacros::RegisterProfilePrefs(registry);
   lacros_prefs::RegisterExtensionControlledAshPrefs(registry);
   KioskSessionServiceLacros::RegisterProfilePrefs(registry);
+  apps::WebsiteMetricsServiceLacros::RegisterProfilePrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_WIN)

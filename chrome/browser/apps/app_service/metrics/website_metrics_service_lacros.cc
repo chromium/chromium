@@ -7,6 +7,8 @@
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace apps {
 
@@ -20,7 +22,8 @@ constexpr base::TimeDelta kFiveMinutes = base::Minutes(5);
 
 }  // namespace
 
-WebsiteMetricsServiceLacros::WebsiteMetricsServiceLacros() {
+WebsiteMetricsServiceLacros::WebsiteMetricsServiceLacros(Profile* profile)
+    : profile_(profile) {
   auto* service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<crosapi::mojom::DeviceAttributes>()) {
     return;
@@ -42,9 +45,13 @@ WebsiteMetricsServiceLacros::WebsiteMetricsServiceLacros() {
 
 WebsiteMetricsServiceLacros::~WebsiteMetricsServiceLacros() = default;
 
-void WebsiteMetricsServiceLacros::Start() {
-  // TODO(crbug.com/1334173): Create WebsiteMetrics to record website metrics.
+// static
+void WebsiteMetricsServiceLacros::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(kWebsiteUsageTime);
+}
 
+void WebsiteMetricsServiceLacros::Start() {
   // Check every `kFiveMinutes` to record websites usage time.
   five_minutes_timer_.Start(FROM_HERE, kFiveMinutes, this,
                             &WebsiteMetricsServiceLacros::CheckForFiveMinutes);
@@ -67,7 +74,8 @@ void WebsiteMetricsServiceLacros::CheckForNoisyAppKMReportingInterval() {
 
 void WebsiteMetricsServiceLacros::OnGetDeviceTypeForMetrics(
     int user_type_by_device_type) {
-  // TODO(crbug.com/1334173): Get the device type and create website metrics.
+  website_metrics_ = std::make_unique<apps::WebsiteMetrics>(
+      profile_, user_type_by_device_type);
 }
 
 }  // namespace apps
