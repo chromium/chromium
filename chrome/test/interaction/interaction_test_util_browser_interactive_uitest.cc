@@ -5,6 +5,7 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -21,8 +22,14 @@
 using InteractionTestUtilBrowserUiTest = InteractiveBrowserTest;
 
 // This test checks that we can attach to a WebUI that is embedded in a tab.
+// TODO(crbug.com/1376747): This test fails on the Win bot.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CompareScreenshot_TabWebUI DISABLED_CompareScreenshot_TabWebUI
+#else
+#define MAYBE_CompareScreenshot_TabWebUI CompareScreenshot_TabWebUI
+#endif
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
-                       CompareScreenshot_TabWebUI) {
+                       MAYBE_CompareScreenshot_TabWebUI) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDownloadsPageElementId);
 
   InstrumentTab(browser(), kDownloadsPageElementId);
