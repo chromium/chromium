@@ -444,6 +444,24 @@ bool DeleteWhereColumnEq(sql::Database* db,
   return statement.Run();
 }
 
+// Initializes `statement` with UPDATE `table_name` SET `column_names` = ?, with
+// a placeholder for every `column_names`. A WHERE clause can optionally be
+// specified in `where_clause`.
+void UpdateBuilder(sql::Database* db,
+                   sql::Statement& statement,
+                   base::StringPiece table_name,
+                   std::initializer_list<base::StringPiece> column_names,
+                   base::StringPiece where_clause = "") {
+  auto columns_with_placeholders =
+      base::JoinString(column_names, " = ?, ") + " = ?";
+  auto where =
+      where_clause.empty() ? "" : base::StrCat({" WHERE ", where_clause});
+  statement.Assign(
+      db->GetUniqueStatement(base::StrCat({"UPDATE ", table_name, " SET ",
+                                           columns_with_placeholders, where})
+                                 .c_str()));
+}
+
 // Initializes `statement` with SELECT `columns` FROM `table_name` and
 // optionally further `modifiers`, such as WHERE, ORDER BY, etc.
 void SelectBuilder(sql::Database* db,
@@ -1261,9 +1279,10 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
   if (!s_delete.Run())
     return false;
   for (const auto& update : updates) {
-    sql::Statement s_update(db_->GetUniqueStatement(
-        "UPDATE autofill SET date_created = ?, date_last_used = ?, count = ?"
-        "WHERE name = ? AND value = ?"));
+    sql::Statement s_update;
+    UpdateBuilder(db_, s_update, kAutofillTable,
+                  {kDateCreated, kDateLastUsed, kCount},
+                  "name = ? AND value = ?");
     s_update.BindInt64(0, update.date_created);
     s_update.BindInt64(1, update.date_last_used);
     s_update.BindInt(2, update.count);
@@ -1429,19 +1448,18 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
 
   bool update_modification_date = *old_profile != profile;
 
-  sql::Statement s(db_->GetUniqueStatement(
-      "UPDATE autofill_profiles "
-      "SET guid=?, company_name=?, street_address=?, dependent_locality=?, "
-      "    city=?, state=?, zipcode=?, sorting_code=?, country_code=?, "
-      "    use_count=?, use_date=?, date_modified=?, origin=?, "
-      "    language_code=?, label=?, disallow_settings_visible_updates=? "
-      "WHERE guid=?"));
+  sql::Statement s;
+  UpdateBuilder(
+      db_, s, kAutofillProfilesTable,
+      {kGuid, kCompanyName, kStreetAddress, kDependentLocality, kCity, kState,
+       kZipcode, kSortingCode, kCountryCode, kUseCount, kUseDate, kDateModified,
+       kOrigin, kLanguageCode, kLabel, kDisallowSettingsVisibleUpdates},
+      "guid = ?1");
   BindAutofillProfileToStatement(profile,
                                  update_modification_date
                                      ? AutofillClock::Now()
                                      : old_profile->modification_date(),
                                  &s);
-  s.BindString(16, profile.guid());
 
   bool result = s.Run();
   DCHECK_GT(db_->GetLastChangeCount(), 0);
@@ -1678,10 +1696,9 @@ bool AutofillTable::UpdateIBAN(const IBAN& iban) {
     return true;
   }
 
-  sql::Statement s(db_->GetUniqueStatement(
-      "UPDATE ibans "
-      "SET guid=?, use_count=?, use_date=?, value=?, nickname=? "
-      "WHERE guid=?1"));
+  sql::Statement s;
+  UpdateBuilder(db_, s, kIBANsTable,
+                {kGuid, kUseCount, kUseDate, kValue, kNickname}, "guid=?1");
   BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
 
   bool result = s.Run();
@@ -1752,12 +1769,12 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
 
   bool update_modification_date = *old_credit_card != credit_card;
 
-  sql::Statement s(db_->GetUniqueStatement(
-      "UPDATE credit_cards "
-      "SET guid=?, name_on_card=?, expiration_month=?,"
-      "expiration_year=?, card_number_encrypted=?, use_count=?, use_date=?,"
-      "date_modified=?, origin=?, billing_address_id=?, nickname=?"
-      "WHERE guid=?1"));
+  sql::Statement s;
+  UpdateBuilder(db_, s, kCreditCardsTable,
+                {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
+                 kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
+                 kOrigin, kBillingAddressId, kNickname},
+                "guid=?1");
   BindCreditCardToStatement(credit_card,
                             update_modification_date
                                 ? AutofillClock::Now()
@@ -2535,9 +2552,10 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
 
   // Clear out the origins for the found Autofill profiles.
   for (const std::string& guid : profile_guids) {
-    sql::Statement s_profile(db_->GetUniqueStatement(
-        "UPDATE autofill_profiles SET origin='' WHERE guid=?"));
-    s_profile.BindString(0, guid);
+    sql::Statement s_profile;
+    UpdateBuilder(db_, s_profile, kAutofillProfilesTable, {kOrigin}, "guid=?");
+    s_profile.BindString(0, "");
+    s_profile.BindString(1, guid);
     if (!s_profile.Run())
       return false;
 
@@ -2565,9 +2583,10 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
 
   // Clear out the origins for the found credit cards.
   for (const std::string& guid : credit_card_guids) {
-    sql::Statement s_credit_card(db_->GetUniqueStatement(
-        "UPDATE credit_cards SET origin='' WHERE guid=?"));
-    s_credit_card.BindString(0, guid);
+    sql::Statement s_credit_card;
+    UpdateBuilder(db_, s_credit_card, kCreditCardsTable, {kOrigin}, "guid=?");
+    s_credit_card.BindString(0, "");
+    s_credit_card.BindString(1, guid);
     if (!s_credit_card.Run())
       return false;
   }
