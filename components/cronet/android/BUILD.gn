@@ -1034,6 +1034,7 @@ if (!is_component_build) {
       "test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
       "test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
       "test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+      "test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
       "test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
       "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
       "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
