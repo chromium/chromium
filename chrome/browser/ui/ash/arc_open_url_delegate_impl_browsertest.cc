@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
@@ -124,14 +126,18 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
 void TestOpenSettingFromArc(Browser* browser,
                             ChromePage page,
                             const GURL& expected_url,
-                            size_t expected_setting_window_count) {
+                            bool expected_setting_window) {
   // Install the Settings App.
   ash::SystemWebAppManager::GetForTest(browser->profile())
       ->InstallSystemAppsForTesting();
 
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
+  if (expected_setting_window)
+    browser_opened.Wait();
 
-  EXPECT_EQ(expected_setting_window_count, GetNumberOfSettingsWindows());
+  EXPECT_EQ(expected_setting_window ? 1ul : 0ul, GetNumberOfSettingsWindows());
 
   // The right settings are loaded (not just the settings main page).
   content::WebContents* contents =
@@ -145,14 +151,14 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest,
   TestOpenSettingFromArc(
       browser(), ChromePage::AUTOFILL,
       GURL("chrome://settings/").Resolve(chrome::kAutofillSubPage),
-      /*expected_setting_window_count=*/0u);
+      /*expected_setting_window=*/false);
 
   // But opening an OS setting should open the OS setting window.
   TestOpenSettingFromArc(
       browser(), ChromePage::POWER,
       GURL("chrome://os-settings/")
           .Resolve(chromeos::settings::mojom::kPowerSubpagePath),
-      /*expected_setting_window_count=*/1u);
+      /*expected_setting_window=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest, OpenAboutChromePage) {
@@ -256,6 +262,8 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest,
 }
 
 void TestOpenChromePage(ChromePage page, const GURL& expected_url) {
+  // Note: It is impossible currently to 'wait until done' for this method, as
+  // it doesn't guarantee a new browser, web contents, or even navigation.
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
   content::WebContents* contents =
       GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
@@ -281,6 +289,8 @@ void TestOpenOSSettingsChromePage(ChromePage page, const GURL& expected_url) {
   TestSettingsWindowManager test_manager;
   chrome::SettingsWindowManager::SetInstanceForTesting(&test_manager);
 
+  // Note: It is impossible currently to 'wait until done' for this method, as
+  // it doesn't guarantee a new browser, web contents, or even navigation.
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
 
   EXPECT_EQ(expected_url, test_manager.last_navigation_url());
@@ -412,6 +422,12 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplBrowserParamTest,
   TestAllOSSettingPages(GURL(chrome::kChromeUIOSSettingsURL));
   TestAllBrowserSettingPages(GURL(chrome::kChromeUISettingsURL));
   TestAllAboutPages();
+  // This is required to make sure that all pending launches are flushed through
+  // the system. Ideally waiters could be added for each settings page, however
+  // due to some settings page 'opens' not triggering any navigations, this ends
+  // up being impossible currently. So this allows any pending launches to
+  // complete.
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace
