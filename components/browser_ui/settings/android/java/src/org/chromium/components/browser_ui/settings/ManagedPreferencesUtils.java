@@ -125,7 +125,12 @@ public class ManagedPreferencesUtils {
         if (delegate == null) return;
 
         if (!(preference instanceof ChromeImageViewPreference)) {
-            preference.setIcon(getManagedIconDrawable(delegate, preference));
+            if (SettingsFeatureList.isEnabled(
+                        SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
+                preference.setIcon(null);
+            } else {
+                preference.setIcon(getManagedIconDrawable(delegate, preference));
+            }
         }
 
         if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
@@ -141,10 +146,8 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * Disables the Preference's views if the preference is not clickable.
-     *
-     * Note: this disables the View instead of disabling the Preference, so that the Preference
-     * still receives click events, which will trigger a "Managed by your administrator" toast.
+     * Disables the Preference's views if the preference is not clickable and adds a disclaimer
+     * indicating that the preference is managed.
      *
      * This should be called from the Preference's onBindView() method.
      *
@@ -163,12 +166,46 @@ public class ManagedPreferencesUtils {
 
         // Append managed information to summary if necessary.
         TextView summaryView = view.findViewById(android.R.id.summary);
-        CharSequence summary =
-                ManagedPreferencesUtils.getSummaryWithManagedInfo(delegate, preference,
-                        summaryView.getVisibility() == View.VISIBLE ? summaryView.getText() : null);
-        if (!TextUtils.isEmpty(summary)) {
-            summaryView.setText(summary);
-            summaryView.setVisibility(View.VISIBLE);
+        CharSequence descriptionText =
+                summaryView.getVisibility() == View.VISIBLE ? summaryView.getText() : null;
+        CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
+        setSummaryWithManagedInfo(descriptionText, managedDisclaimerText, view);
+    }
+
+    /**
+     * Disables the Preference's views if the preference is not clickable and adds a disclaimer
+     * indicating that the preference is managed.
+     *
+     * @param delegate The delegate that controls whether the preference is managed. May be null,
+     *                 then this method does nothing.
+     * @param preference The ChromeBasePreference that owns the view.
+     * @param view The View that was bound to the ChromeBasePreference.
+     */
+    public static void onBindViewToChromeBasePreference(
+            @Nullable ManagedPreferenceDelegate delegate, ChromeBasePreference preference,
+            View view) {
+        assert SettingsFeatureList.isEnabled(
+                SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID);
+        if (delegate == null) return;
+
+        if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
+            ViewUtils.setEnabledRecursive(view, false);
+        }
+
+        // Append managed information to summary if necessary.
+        TextView summaryView = view.findViewById(android.R.id.summary);
+        CharSequence descriptionText =
+                summaryView.getVisibility() == View.VISIBLE ? summaryView.getText() : null;
+        CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
+        // Fallback to the old UI if the managed disclaimer view doesn't exist, which may happen if
+        // a {@link ChromeBasePreference} defines its own layout.
+        // TODO(crbug.com/1356748): Remove this fallback once all custom layouts for {@link
+        // ChromeBasePreference} and subclasses include the managed disclaimer view.
+        if (view.findViewById(R.id.managed_disclaimer_text) != null) {
+            setSummaryWithHighlightedManagedInfo(
+                    preference.getContext(), descriptionText, managedDisclaimerText, view);
+        } else {
+            setSummaryWithManagedInfo(descriptionText, managedDisclaimerText, view);
         }
     }
 
@@ -240,32 +277,73 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * @param delegate The {@link ManagedPreferenceDelegate} that controls whether the
-     *         preference is
-     *        managed.
-     * @param preference The {@link Preference} that the summary
-     *         should be used for.
-     * @param summary The original summary without the managed information.
-     * @return The summary appended with information about whether the specified preference is
-     *         managed.
+     * @param descriptionText A description or a state for a given preference.
+     * @param managedDisclaimerText The text the indicates that a preference is managed.
+     * @param view The view corresponding to a given preference.
      */
-    private static CharSequence getSummaryWithManagedInfo(
-            @Nullable ManagedPreferenceDelegate delegate, Preference preference,
-            @Nullable CharSequence summary) {
-        if (delegate == null) return summary;
+    private static void setSummaryWithManagedInfo(@Nullable CharSequence descriptionText,
+            @Nullable CharSequence managedDisclaimerText, View view) {
+        boolean emptyDescription = TextUtils.isEmpty(descriptionText);
+        boolean emptyManagedDisclaimer = TextUtils.isEmpty(managedDisclaimerText);
 
-        String extraSummary = null;
-        if (delegate.isPreferenceControlledByPolicy(preference)) {
-            extraSummary = preference.getContext().getString(R.string.managed_by_your_organization);
-        } else if (delegate.isPreferenceControlledByCustodian(preference)) {
-            extraSummary = preference.getContext().getString(getManagedByParentStringRes(delegate));
+        if (emptyDescription && emptyManagedDisclaimer) {
+            hideSummaryView(view);
+        } else if (emptyDescription) {
+            showSummaryViewWithText(managedDisclaimerText, view);
+        } else if (emptyManagedDisclaimer) {
+            showSummaryViewWithText(descriptionText, view);
+        } else {
+            showSummaryViewWithText(String.format(Locale.getDefault(), "%s\n%s", descriptionText,
+                                            managedDisclaimerText),
+                    view);
         }
-
-        if (TextUtils.isEmpty(extraSummary)) return summary;
-        if (TextUtils.isEmpty(summary)) return extraSummary;
-        return String.format(Locale.getDefault(), "%s\n%s", summary, extraSummary);
     }
 
+    /**
+     * @param context The context for a given preference.
+     * @param descriptionText A description or a state for a given preference.
+     * @param managedDisclaimerText The text the indicates that a preference is managed.
+     * @param view The view corresponding to a given preference.
+     */
+    private static void setSummaryWithHighlightedManagedInfo(Context context,
+            @Nullable CharSequence descriptionText, @Nullable CharSequence managedDisclaimerText,
+            View view) {
+        if (TextUtils.isEmpty(descriptionText)) {
+            hideSummaryView(view);
+        } else {
+            showSummaryViewWithText(descriptionText, view);
+        }
+
+        if (TextUtils.isEmpty(managedDisclaimerText)) {
+            hideManagedDisclaimerView(view);
+        } else {
+            showManagedDisclaimerView(view, managedDisclaimerText);
+        }
+    }
+
+    /**
+     * @param delegate The delegate that controls whether the preference is managed. If null,
+     *         then the preference is not managed.
+     * @param preference The {@link Preference} that is being shown to the user.
+     * @return Text indicating that a preference is managed by an administrator or custodian, or
+     *         null if the preference is not managed.
+     */
+    private static @Nullable CharSequence getManagedDisclaimerText(
+            @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
+        if (delegate == null) return null;
+        if (delegate.isPreferenceControlledByPolicy(preference)) {
+            return preference.getContext().getString(R.string.managed_by_your_organization);
+        }
+        if (delegate.isPreferenceControlledByCustodian(preference)) {
+            return preference.getContext().getString(getManagedByParentStringRes(delegate));
+        }
+        return null;
+    }
+
+    /**
+     * @param delegate The delegate that controls whether the preference is managed.
+     * @return The resource ID for the disclaimer text for a preference managed by a custodian.
+     */
     private static @StringRes int getManagedByParentStringRes(
             @Nullable ManagedPreferenceDelegate delegate) {
         boolean hasMultipleCustodians = false;
@@ -274,5 +352,54 @@ public class ManagedPreferencesUtils {
         }
         return hasMultipleCustodians ? R.string.managed_by_your_parents
                                      : R.string.managed_by_your_parent;
+    }
+
+    /**
+     * Hides the summary view for a preference.
+     * @param view The view corresponding to the preference.
+     */
+    private static void hideSummaryView(View view) {
+        TextView summaryView = view.findViewById(android.R.id.summary);
+        summaryView.setVisibility(View.GONE);
+    }
+
+    /**
+     * Sets the text to be shown in the summary view for a preference, and makes the summary view
+     * visible.
+     * @param view The view corresponding to the preference.
+     */
+    private static void showSummaryViewWithText(@Nullable CharSequence summary, View view) {
+        TextView summaryView = view.findViewById(android.R.id.summary);
+        summaryView.setText(summary);
+        summaryView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Removes the disclaimer view from the preference's view, if it exists.
+     * @param context The context for a given preference.
+     * @param view The view corresponding to the preference.
+     */
+    private static void hideManagedDisclaimerView(View view) {
+        View managedDisclaimerView = view.findViewById(R.id.managed_disclaimer_text);
+        assert managedDisclaimerView
+                != null : "Missing managed disclaimer view; custom layout for a new preference?";
+        managedDisclaimerView.setVisibility(View.GONE);
+    }
+
+    /**
+     * Sets the text to be shown in the managed disclaimer view for a preference.
+     * @param context The context for a given preference.
+     * @param view The view corresponding to the preference.
+     * @param managedDisclaimerText The text to be shown as a disclaimer that a preference is
+     *         managed.
+     */
+    private static void showManagedDisclaimerView(
+            View view, @Nullable CharSequence managedDisclaimerText) {
+        TextView managedDisclaimerView = view.findViewById(R.id.managed_disclaimer_text);
+        assert managedDisclaimerView
+                != null : "Missing managed disclaimer view; custom layout for a new preference?";
+        managedDisclaimerView.setText(managedDisclaimerText);
+        managedDisclaimerView.setVisibility(View.VISIBLE);
+        managedDisclaimerView.setEnabled(true);
     }
 }

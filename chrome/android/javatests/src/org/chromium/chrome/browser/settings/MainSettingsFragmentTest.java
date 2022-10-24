@@ -49,6 +49,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
@@ -89,6 +90,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -109,6 +111,7 @@ import java.util.HashSet;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
+@DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
@@ -594,7 +597,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
     @Policies.Add({
@@ -602,7 +606,26 @@ public class MainSettingsFragmentTest {
         , @Policies.Item(key = "BrowserSignin", string = "0")
     })
     public void
-    testPasswordsItemClickableWhenManaged() {
+    testPasswordsItemClickableWhenManaged_EnableHighlightManagedPrefDisclaimerAndroid() {
+        passwordsItemClickableWhenManaged();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    // Setting BrowserSignin suppresses the sync promo so the password settings preference
+    // is visible without scrolling.
+    @Policies.Add({
+        @Policies.Item(key = "PasswordManagerEnabled", string = "false")
+        , @Policies.Item(key = "BrowserSignin", string = "0")
+    })
+    public void
+    testPasswordsItemClickableWhenManaged_DisableHighlightManagedPrefDisclaimerAndroid() {
+        passwordsItemClickableWhenManaged();
+    }
+
+    public void passwordsItemClickableWhenManaged() {
         launchSettingsActivity();
         String prefTitleWithoutNewLabel =
                 SpanApplier
@@ -617,12 +640,33 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
     @Policies.Remove({ @Policies.Item(key = "PasswordManagerEnabled", string = "false") })
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
-    public void testPasswordsItemEnabledWhenNotManaged() throws InterruptedException {
+    public void
+    testPasswordsItemEnabledWhenNotManaged_EnableHighlightManagedPrefDisclaimerAndroid()
+            throws InterruptedException {
+        passwordsItemEnabledWhenNotManaged();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+    @Policies.Remove({ @Policies.Item(key = "PasswordManagerEnabled", string = "false") })
+    // Setting BrowserSignin suppresses the sync promo so the password settings preference
+    // is visible without scrolling.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    public void
+    testPasswordsItemEnabledWhenNotManaged_DisableHighlightManagedPrefDisclaimerAndroid()
+            throws InterruptedException {
+        passwordsItemEnabledWhenNotManaged();
+    }
+
+    public void passwordsItemEnabledWhenNotManaged() throws InterruptedException {
         launchSettingsActivity();
         String prefTitleWithoutNewLabel =
                 SpanApplier
@@ -637,6 +681,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
     @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
@@ -645,7 +690,26 @@ public class MainSettingsFragmentTest {
         , @Policies.Item(key = "BrowserSignin", string = "0")
     })
     public void
-    testPasswordsItemEnabledWhenManagedWithoutUPM() {
+    testPasswordsItemEnabledWhenManagedWithoutUPM_EnableHighlightManagedPrefDisclaimerAndroid() {
+        passwordsItemEnabledWhenManagedWithoutUPM();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
+    // Setting BrowserSignin suppresses the sync promo so the password settings preference
+    // is visible without scrolling.
+    @Policies.Add({
+        @Policies.Item(key = "PasswordManagerEnabled", string = "false")
+        , @Policies.Item(key = "BrowserSignin", string = "0")
+    })
+    public void
+    testPasswordsItemEnabledWhenManagedWithoutUPM_DisableHighlightManagedPrefDisclaimerAndroid() {
+        passwordsItemEnabledWhenManagedWithoutUPM();
+    }
+
+    public void passwordsItemEnabledWhenManagedWithoutUPM() {
         launchSettingsActivity();
         onViewWaiting(allOf(withText(R.string.password_settings_title),
                 not(hasSibling(withText(R.string.managed_by_your_organization))), isDisplayed()));
