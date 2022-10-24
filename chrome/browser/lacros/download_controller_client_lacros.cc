@@ -29,7 +29,7 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
 }  // namespace
 
 DownloadControllerClientLacros::DownloadControllerClientLacros() {
-  g_browser_process->profile_manager()->AddObserver(this);
+  profile_manager_observation_.Observe(g_browser_process->profile_manager());
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
   for (auto* profile : profiles)
     OnProfileAdded(profile);
@@ -50,10 +50,7 @@ DownloadControllerClientLacros::DownloadControllerClientLacros() {
       client_receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
-DownloadControllerClientLacros::~DownloadControllerClientLacros() {
-  if (g_browser_process && g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->RemoveObserver(this);
-}
+DownloadControllerClientLacros::~DownloadControllerClientLacros() = default;
 
 void DownloadControllerClientLacros::GetAllDownloads(
     crosapi::mojom::DownloadControllerClient::GetAllDownloadsCallback
@@ -104,6 +101,10 @@ void DownloadControllerClientLacros::SetOpenWhenComplete(
 
 void DownloadControllerClientLacros::OnProfileAdded(Profile* profile) {
   download_notifier_.AddProfile(profile);
+}
+
+void DownloadControllerClientLacros::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 void DownloadControllerClientLacros::OnManagerInitialized(
