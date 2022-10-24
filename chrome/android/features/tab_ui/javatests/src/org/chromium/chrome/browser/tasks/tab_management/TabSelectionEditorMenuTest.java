@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_SELECTION_EDITOR_V2;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_STRIP_IMPROVEMENTS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -77,8 +79,8 @@ import java.util.concurrent.TimeoutException;
  * classes.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Features.
-EnableFeatures({GRID_TAB_SWITCHER_FOR_TABLETS, TAB_STRIP_IMPROVEMENTS, TAB_GROUPS_FOR_TABLETS})
+@Features.EnableFeatures({GRID_TAB_SWITCHER_FOR_TABLETS, TAB_STRIP_IMPROVEMENTS,
+        TAB_GROUPS_FOR_TABLETS, TAB_SELECTION_EDITOR_V2})
 @Batch(Batch.UNIT_TESTS)
 public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private static final int TAB_COUNT = 3;
@@ -452,6 +454,55 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         mRenderTestRule.render(mTabSelectionEditorMenu.getContentView(),
                 "oneActionToolbarOneMenuItemEnabled_Menu");
         closeMenu(listener);
+    }
+
+    // Regression test for https://crbug.com/1377205.
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testLongTextActionViewAndMenuItem() throws Exception {
+        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            NumberRollView numberRoll =
+                    (NumberRollView) mToolbar.getActionViewLayout().getChildAt(0);
+            numberRoll.setStringForZero(R.string.close_all_tabs_dialog_message);
+            actions.add(new FakeTabSelectionEditorAction(getActivity(),
+                    R.id.tab_selection_editor_close_menu_item, ShowMode.MENU_ONLY, ButtonType.TEXT,
+                    IconPosition.START, R.plurals.tab_selection_editor_close_tabs,
+                    R.drawable.ic_close_tabs_24dp));
+            actions.add(new FakeTabSelectionEditorAction(getActivity(),
+                    R.id.tab_selection_editor_group_menu_item, ShowMode.IF_ROOM, ButtonType.ICON,
+                    IconPosition.START, R.plurals.tab_selection_editor_group_tabs,
+                    R.drawable.ic_widgets));
+            configureMenuWithActions(actions);
+            actions.get(0).setShouldEnableAction(false);
+            actions.get(1).setShouldEnableAction(false);
+        });
+
+        setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {})));
+
+        assertActionView(R.id.tab_selection_editor_group_menu_item, false);
+
+        mRenderTestRule.render(mToolbar, "longTextV2ActionAndMenu");
+    }
+
+    // Regression test for https://crbug.com/1377205.
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.DisableFeatures({TAB_SELECTION_EDITOR_V2})
+    public void testLongTextV2Disabled() throws Exception {
+        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mToolbar.setActionButtonVisibility(View.VISIBLE);
+            NumberRollView numberRoll =
+                    (NumberRollView) mToolbar.getActionViewLayout().getChildAt(0);
+            numberRoll.setStringForZero(R.string.close_all_tabs_dialog_message);
+        });
+
+        setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {})));
+
+        mRenderTestRule.render(mToolbar, "longTextDefaultGroupButton");
     }
 
     @Test
