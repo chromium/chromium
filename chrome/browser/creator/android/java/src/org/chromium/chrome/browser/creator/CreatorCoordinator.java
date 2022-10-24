@@ -6,18 +6,26 @@ package org.chromium.chrome.browser.creator;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,36 +37,57 @@ import java.util.List;
 public class CreatorCoordinator {
     private static final String NATIVE_CONTENT_ID = "0";
 
+    private final ViewGroup mViewGroup;
     private CreatorMediator mMediator;
     private Activity mActivity;
     private NtpListContentManager mContentManager;
     private RecyclerView mRecyclerView;
+    private View mProfileView;
     private HybridListRenderer mHybridListRenderer;
     private SurfaceScope mSurfaceScope;
     private FeedSurfaceScopeDependencyProvider mDependencyProvider;
+    private byte[] mWebFeedId;
+    private PropertyModel mCreatorProfileModel;
+    private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
+            mCreatorProfileModelChangeProcessor;
+    private boolean mIsFollowed;
 
-    private final ViewGroup mViewGroup;
-
-    public CreatorCoordinator(Activity activity) {
+    public CreatorCoordinator(Activity activity, byte[] webFeedId) {
         mActivity = activity;
+        mWebFeedId = webFeedId;
+
         mRecyclerView = setUpView();
         List<NtpListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
-
         // Add empty state to Content Manager
         contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
                 getLateralPaddingsPx(), NATIVE_CONTENT_ID, R.layout.no_content_v2));
         mContentManager.addContents(0, contentPreviewsList);
 
-        // Inflate the XML.
+        // Inflate the XML
         mViewGroup =
                 (ViewGroup) LayoutInflater.from(mActivity).inflate(R.layout.creator_activity, null);
         mViewGroup.addView(mRecyclerView);
+        mProfileView = mViewGroup.findViewById(R.id.creator_profile);
 
-        mMediator = new CreatorMediator(mActivity);
+        // TODO(crbug.com/1377069): Add a JNI to get the follow status from CreatorBridge instead
+        getIsFollowedStatus();
+
+        // Generate CreatorProfileModel
+        mCreatorProfileModel =
+                generateCreatorProfileModel(mWebFeedId, /* title */ "", /* url */ "", mIsFollowed);
+        mCreatorProfileModelChangeProcessor =
+                PropertyModelChangeProcessor.create(mCreatorProfileModel,
+                        (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
+
+        mMediator = new CreatorMediator(mActivity, mCreatorProfileModel);
     }
 
     public ViewGroup getView() {
         return mViewGroup;
+    }
+
+    public PropertyModel getCreatorProfileModel() {
+        return mCreatorProfileModel;
     }
 
     private RecyclerView setUpView() {
@@ -96,5 +125,32 @@ public class CreatorCoordinator {
 
     private int getLateralPaddingsPx() {
         return mActivity.getResources().getDimensionPixelSize(R.dimen.content_previews_padding);
+    }
+
+    private PropertyModel generateCreatorProfileModel(
+            byte[] webFeedId, String title, String url, boolean isFollowed) {
+        PropertyModel model = new PropertyModel.Builder(CreatorProfileProperties.ALL_KEYS)
+                                      .with(CreatorProfileProperties.WEB_FEED_ID_KEY, webFeedId)
+                                      .with(CreatorProfileProperties.TITLE_KEY, title)
+                                      .with(CreatorProfileProperties.URL_KEY, url)
+                                      .with(CreatorProfileProperties.IS_FOLLOWED_KEY, isFollowed)
+                                      .build();
+        return model;
+    }
+
+    private void getIsFollowedStatus() {
+        Callback<WebFeedMetadata> metadata_callback = result -> {
+            @WebFeedSubscriptionStatus
+            int subscriptionStatus =
+                    result == null ? WebFeedSubscriptionStatus.UNKNOWN : result.subscriptionStatus;
+            if (subscriptionStatus == WebFeedSubscriptionStatus.UNKNOWN
+                    || subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
+                mIsFollowed = false;
+            } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
+                mIsFollowed = true;
+            }
+        };
+
+        WebFeedBridge.getWebFeedMetadata(mWebFeedId, metadata_callback);
     }
 }

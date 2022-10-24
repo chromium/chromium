@@ -17,38 +17,11 @@
       android:layout_height="?attr/actionBarSize"
       style="@style/CreatorActivityNoActionBar"
       app:title="@string/cormorant_creator_activity" />
-  <LinearLayout
-      android:orientation="horizontal"
+  <include
+      layout="@layout/creator_profile"
+      android:id="@+id/creator_profile"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
-      android:layout_marginEnd="16dp"
-      android:layout_gravity="center_vertical"
-      android:background="@drawable/profile_background" >
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="16dp" >
-      <TextView
-          android:id="@+id/creator_name"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textAppearance="@style/TextAppearance.Headline.Primary" />
-      <TextView
-          android:id="@+id/creator_url"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
-    </LinearLayout>
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/follow_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:paddingHorizontal="60dp"
-        style="@style/FilledButton"
-        android:text="@string/menu_follow" />
-  </LinearLayout>
+      android:layout_marginEnd="16dp" />
 </LinearLayout>

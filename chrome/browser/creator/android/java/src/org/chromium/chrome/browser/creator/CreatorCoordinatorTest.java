@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.creator.test.R;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.ui.base.TestActivity;
 
 /**
@@ -30,36 +29,30 @@ import org.chromium.ui.base.TestActivity;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CreatorCoordinatorTest {
-    private TestActivity mActivity;
-    private CreatorCoordinator mCreatorCoordinator;
+    @Mock
+    private WebFeedBridge.Natives mWebFeedBridgeJniMock;
+    @Mock
+    private CreatorApiBridge.Natives mCreatorBridgeJniMock;
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private CreatorApiBridge.Natives mBridgeJniMock;
-
-    @Mock
-    private Profile mProfile;
+    private TestActivity mActivity;
+    private CreatorCoordinator mCreatorCoordinator;
+    private static final byte[] sWebFeedId = "webFeedId".getBytes();
 
     @Before
     public void setUpTest() {
+        MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(CreatorApiBridgeJni.TEST_HOOKS, mCreatorBridgeJniMock);
+        mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(CreatorApiBridgeJni.TEST_HOOKS, mBridgeJniMock);
-        Profile.setLastUsedProfileForTesting(mProfile);
-
-        mCreatorCoordinator = new CreatorCoordinator(mActivity);
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
+        mCreatorCoordinator = new CreatorCoordinator(mActivity, sWebFeedId);
     }
 
     @Test

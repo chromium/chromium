@@ -17,10 +17,14 @@ import org.chromium.chrome.browser.creator.CreatorCoordinator;
  * Activity for the Creator Page.
  */
 public class CreatorActivity extends SnackbarActivity {
+    // CREATOR_WEB_FEED_ID is the Intent key under which the Web Feed ID is stored.
+    public static final String CREATOR_WEB_FEED_ID = "CREATOR_WEB_FEED_ID";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        byte[] mWebFeedId = getIntent().getByteArrayExtra(CREATOR_WEB_FEED_ID);
         super.onCreate(savedInstanceState);
-        CreatorCoordinator coordinator = new CreatorCoordinator(this);
+        CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId);
         setContentView(coordinator.getView());
 
         Toolbar actionBar = findViewById(R.id.action_bar);

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.creator.CreatorProfileView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_gravity="center_vertical"
+    android:background="@drawable/profile_background" >
+  <LinearLayout
+      android:orientation="vertical"
+      android:layout_weight="1"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginStart="16dp" >
+    <TextView
+        android:id="@+id/creator_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
+    <TextView
+        android:id="@+id/creator_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+  </LinearLayout>
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/creator_follow_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="16dp"
+      android:paddingHorizontal="60dp"
+      style="@style/FilledButton"
+      android:text="@string/menu_follow"
+      android:visibility="gone" />
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/creator_following_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="16dp"
+      android:paddingHorizontal="60dp"
+      style="@style/FilledButton"
+      android:text="@string/menu_following"
+      android:visibility="gone" />
+</org.chromium.chrome.browser.creator.CreatorProfileView>
