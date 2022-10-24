@@ -109,6 +109,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     introDialog.showModal();
 
     this.closeDialogWhenExitFullscreen();
+    this.exitTesterWhenVolumeUpButtonPressed();
   }
 
   /**
@@ -126,6 +127,18 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
         if (this.receiver_) {
           this.receiver_.$.close();
         }
+      }
+    });
+  }
+
+  /**
+   * When in tablet mode, pressing volume up button will exit the tester.
+   */
+  private exitTesterWhenVolumeUpButtonPressed(): void {
+    window.addEventListener('keydown', (e: Event) => {
+      if ((e as KeyboardEvent).key === 'AudioVolumeUp' && this.isTabletMode) {
+        // Exit fullscreen will trigger closing the tester.
+        document.exitFullscreen();
       }
     });
   }

@@ -14,6 +14,7 @@ import {InputListElement} from 'chrome://diagnostics/input_list.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {isVisible} from '../../test_util.js';
@@ -207,6 +208,45 @@ export function inputListTestSuite() {
 
     touchscreenTester.shadowRoot.dispatchEvent(new Event('fullscreenchange'));
     assertFalse(introDialog.open);
+  });
+
+  test('TouchscreenTesterShowAndCloseInTabletMode', async () => {
+    await initializeInputList([], [fakeTouchDevices[1]]);
+    provider.setStartTesterWithClamshellMode();
+
+    const resolver = new PromiseResolver();
+    let exitFullscreenCalled = 0;
+
+    const touchscreenTester =
+        inputListElement.shadowRoot.querySelector('touchscreen-tester');
+    const introDialog = touchscreenTester.getDialog('intro-dialog');
+
+    // Mock requestFullscreen function since this API can only be initiated by a
+    // user gesture.
+    introDialog.requestFullscreen = () => {
+      resolver.resolve();
+    };
+
+    // Mock exitFullscreen call.
+    document.exitFullscreen = () => {
+      exitFullscreenCalled++;
+      resolver.resolve();
+    };
+
+    const testButton = getCardByDeviceType('touchscreen')
+                           .shadowRoot.querySelector('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+    assertTrue(introDialog.open);
+
+    provider.startTabletMode();
+    await flushTasks();
+
+    const keyEvent = eventToPromise('keydown', window);
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'AudioVolumeUp'}));
+    await keyEvent;
+    assertEquals(1, exitFullscreenCalled);
   });
 
   test('StartTouchscreenTesterWithClamshellMode', async () => {
