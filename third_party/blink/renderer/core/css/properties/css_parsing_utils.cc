@@ -3676,6 +3676,28 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange& range,
   return nullptr;
 }
 
+CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
+                                const CSSParserContext& context) {
+  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  if (CSSPrimitiveValue* time =
+          ConsumeTime(range, context, CSSPrimitiveValue::ValueRange::kAll)) {
+    return time;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  CSSValue* range_name =
+      ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover, CSSValueID::kEnter,
+                   CSSValueID::kExit>(range);
+  if (!range_name)
+    return nullptr;
+  list->Append(*range_name);
+  CSSValue* percentage =
+      ConsumePercent(range, context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!percentage)
+    return nullptr;
+  list->Append(*percentage);
+  return list;
+}
+
 bool ConsumeAnimationShorthand(
     const StylePropertyShorthand& shorthand,
     HeapVector<Member<CSSValueList>, kMaxNumAnimationLonghands>& longhands,

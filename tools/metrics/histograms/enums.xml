@@ -65821,6 +65821,8 @@ Called by update_use_counter_css.py.-->
   <int value="732" label="toggle-visibility"/>
   <int value="733" label="initial-letter"/>
   <int value="734" label="hyphenate-limit-chars"/>
+  <int value="735" label="animation-delay-start"/>
+  <int value="736" label="animation-delay-end"/>
 </enum>
 
 <enum name="MappedEditingCommands">

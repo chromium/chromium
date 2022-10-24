@@ -67,6 +67,8 @@ class CSSToStyleMap {
                                const CSSValue&);
 
   static double MapAnimationDelay(const CSSValue&);
+  static Timing::Delay MapAnimationDelayStart(const CSSValue&);
+  static Timing::Delay MapAnimationDelayEnd(const CSSValue&);
   static Timing::PlaybackDirection MapAnimationDirection(const CSSValue&);
   static double MapAnimationDuration(const CSSValue&);
   static Timing::FillMode MapAnimationFillMode(const CSSValue&);

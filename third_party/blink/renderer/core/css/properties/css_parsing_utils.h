@@ -313,6 +313,7 @@ CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange&,
                                    const CSSParserContext&);
 CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange&,
                                          const CSSParserContext&);
+CSSValue* ConsumeAnimationDelay(CSSParserTokenRange&, const CSSParserContext&);
 bool ConsumeAnimationShorthand(
     const StylePropertyShorthand&,
     HeapVector<Member<CSSValueList>, kMaxNumAnimationLonghands>&,

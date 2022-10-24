@@ -60,6 +60,8 @@ All changes to this list should go through Blink's feature review process: http:
     anchor-name
     anchor-scroll
     animation-delay
+    animation-delay-end
+    animation-delay-start
     animation-direction
     animation-duration
     animation-fill-mode

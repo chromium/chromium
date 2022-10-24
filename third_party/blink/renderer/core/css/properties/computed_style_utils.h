@@ -140,6 +140,8 @@ class CORE_EXPORT ComputedStyleUtils {
                                       bool will_change_contents,
                                       bool will_change_scroll_position);
   static CSSValue* ValueForAnimationDelay(const CSSTimingData*);
+  static CSSValue* ValueForAnimationDelayStart(const CSSTimingData*);
+  static CSSValue* ValueForAnimationDelayEnd(const CSSTimingData*);
   static CSSValue* ValueForAnimationDirection(Timing::PlaybackDirection);
   static CSSValue* ValueForAnimationDuration(const CSSTimingData*);
   static CSSValue* ValueForAnimationFillMode(Timing::FillMode);

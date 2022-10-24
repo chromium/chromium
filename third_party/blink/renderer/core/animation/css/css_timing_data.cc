@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/animation/css/css_timing_data.h"
 
-#include "third_party/blink/renderer/core/animation/timing.h"
-
 namespace blink {
 
 CSSTimingData::CSSTimingData() {
   delay_list_.push_back(InitialDelay());
+  delay_start_list_.push_back(InitialDelayStart());
+  delay_end_list_.push_back(InitialDelayEnd());
   duration_list_.push_back(InitialDuration());
   timing_function_list_.push_back(InitialTimingFunction());
 }
@@ -33,6 +33,10 @@ Timing CSSTimingData::ConvertToTiming(size_t index) const {
 bool CSSTimingData::TimingMatchForStyleRecalc(
     const CSSTimingData& other) const {
   if (delay_list_ != other.delay_list_)
+    return false;
+  if (delay_start_list_ != other.delay_start_list_)
+    return false;
+  if (delay_end_list_ != other.delay_end_list_)
     return false;
   if (duration_list_ != other.duration_list_)
     return false;

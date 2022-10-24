@@ -44,6 +44,17 @@ Timing CSSAnimationData::ConvertToTiming(size_t index) const {
   DCHECK_LT(index, name_list_.size());
   Timing timing = CSSTimingData::ConvertToTiming(index);
 
+  // For animations attached to ScrollTimelines, use the new start/end delay
+  // values instead.
+  //
+  // TODO(crbug.com/1375994): Once animation-delay is a shorthand, this
+  // should move to CSSTimingData::ConvertToTiming.
+  if (!GetTimeline(index).IsKeyword()) {
+    DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+    timing.start_delay = GetRepeated(DelayStartList(), index);
+    timing.end_delay = GetRepeated(DelayEndList(), index);
+  }
+
   timing.iteration_count = GetRepeated(iteration_count_list_, index);
   timing.direction = GetRepeated(direction_list_, index);
   timing.fill_mode = GetRepeated(fill_mode_list_, index);

@@ -33,6 +33,7 @@
 
 #include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_reflection_direction.h"
@@ -1793,6 +1794,48 @@ inline TimelineScroller CSSIdentifierValue::ConvertTo() const {
   }
   NOTREACHED();
   return TimelineScroller::kNearest;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    Timing::TimelineNamedPhase named_phase)
+    : CSSValue(kIdentifierClass) {
+  switch (named_phase) {
+    case Timing::TimelineNamedPhase::kCover:
+      value_id_ = CSSValueID::kCover;
+      break;
+    case Timing::TimelineNamedPhase::kContain:
+      value_id_ = CSSValueID::kContain;
+      break;
+    case Timing::TimelineNamedPhase::kEnter:
+      value_id_ = CSSValueID::kEnter;
+      break;
+    case Timing::TimelineNamedPhase::kExit:
+      value_id_ = CSSValueID::kExit;
+      break;
+    case Timing::TimelineNamedPhase::kNone:
+      NOTREACHED();
+      value_id_ = CSSValueID::kCover;
+      break;
+  }
+}
+
+template <>
+inline Timing::TimelineNamedPhase CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kCover:
+      return Timing::TimelineNamedPhase::kCover;
+    case CSSValueID::kContain:
+      return Timing::TimelineNamedPhase::kContain;
+    case CSSValueID::kEnter:
+      return Timing::TimelineNamedPhase::kEnter;
+    case CSSValueID::kExit:
+      return Timing::TimelineNamedPhase::kExit;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return Timing::TimelineNamedPhase::kCover;
 }
 
 }  // namespace blink

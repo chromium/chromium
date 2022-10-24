@@ -12,6 +12,8 @@ anchorName
 anchorScroll
 animation
 animationDelay
+animationDelayEnd
+animationDelayStart
 animationDirection
 animationDuration
 animationFillMode

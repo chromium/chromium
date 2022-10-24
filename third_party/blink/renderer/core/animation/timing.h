@@ -96,6 +96,8 @@ struct CORE_EXPORT Timing {
 
     Delay() = default;
 
+    Delay(TimelineNamedPhase phase, double relative_offset)
+        : phase(phase), relative_offset(relative_offset) {}
     explicit Delay(AnimationTimeDelta time) : time_delay(time) {}
 
     bool IsInfinite() const {

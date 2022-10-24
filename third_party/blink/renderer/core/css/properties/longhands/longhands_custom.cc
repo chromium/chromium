@@ -209,6 +209,38 @@ const CSSValue* AnimationDelay::InitialValue() const {
   return value;
 }
 
+const CSSValue* AnimationDelayStart::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeAnimationDelay, range, context);
+}
+
+const CSSValue* AnimationDelayStart::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValueForAnimationDelayStart(style.Animations());
+}
+
+const CSSValue* AnimationDelayEnd::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeAnimationDelay, range, context);
+}
+
+const CSSValue* AnimationDelayEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValueForAnimationDelayEnd(style.Animations());
+}
+
 const CSSValue* AnimationDirection::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,

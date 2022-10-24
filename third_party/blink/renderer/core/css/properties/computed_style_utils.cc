@@ -1735,6 +1735,47 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDelay(
   return list;
 }
 
+namespace {
+
+CSSValue* ValueForTimingDelay(const Timing::Delay& delay) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (delay.IsTimelineOffset()) {
+    list->Append(*MakeGarbageCollected<CSSIdentifierValue>(delay.phase));
+    list->Append(*CSSNumericLiteralValue::Create(
+        delay.relative_offset * 100.0,
+        CSSPrimitiveValue::UnitType::kPercentage));
+  } else {
+    list->Append(
+        *CSSNumericLiteralValue::Create(delay.AsTimeValue().InSecondsF(),
+                                        CSSPrimitiveValue::UnitType::kSeconds));
+  }
+  return list;
+}
+
+CSSValue* ValueForTimingDelayList(const Vector<Timing::Delay>& delay_list) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const Timing::Delay& delay : delay_list) {
+    list->Append(*ValueForTimingDelay(delay));
+  }
+  return list;
+}
+
+}  // namespace
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDelayStart(
+    const CSSTimingData* timing_data) {
+  if (!timing_data)
+    return ValueForTimingDelay(CSSTimingData::InitialDelayStart());
+  return ValueForTimingDelayList(timing_data->DelayStartList());
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDelayEnd(
+    const CSSTimingData* timing_data) {
+  if (!timing_data)
+    return ValueForTimingDelay(CSSTimingData::InitialDelayEnd());
+  return ValueForTimingDelayList(timing_data->DelayEndList());
+}
+
 CSSValue* ComputedStyleUtils::ValueForAnimationDirection(
     Timing::PlaybackDirection direction) {
   switch (direction) {

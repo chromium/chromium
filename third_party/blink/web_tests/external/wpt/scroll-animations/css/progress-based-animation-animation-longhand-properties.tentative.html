@@ -200,6 +200,7 @@ promise_test(async t => {
 
   // Let animation be in before phase.
   target.style.animationDelay = '10s';
+  target.style.animationDelayStart = '10s'; // crbug.com/1375994
   assert_equals(getComputedStyle(target).translate, 'none');
 
   await scrollTop(scroller, 50); // The animation enters active phase.
@@ -220,6 +221,7 @@ promise_test(async t => {
 
   await scrollTop(scroller, 20); // [0, 100].
   target.style.animationDelay = '-5s';
+  target.style.animationDelayStart = '-5s'; // crbug.com/1375994
   await waitForCSSScrollTimelineStyle();
   assert_equals(getComputedStyle(target).translate, '60px');
 }, 'animation-delay with a negative value');
@@ -233,6 +235,7 @@ promise_test(async t => {
   let [target, scroller] = createTargetAndScroller(t);
   target.style.animation = '10s linear anim scroll(nearest)';
   target.style.animationDelay = '10s';
+  target.style.animationDelayStart = '10s'; // crbug.com/1375994
 
   await scrollTop(scroller, 25);
   assert_equals(getComputedStyle(target).translate, 'none');
