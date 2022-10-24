@@ -1342,6 +1342,9 @@ void VideoResourceUpdater::ReturnTexture(scoped_refptr<VideoFrame> video_frame,
   if (lost_resource)
     return;
 
+  if (!sync_token.HasData())
+    return;
+
   // The video frame will insert a wait on the previous release sync token.
   SyncTokenClientImpl client(
       ContextGL(), nullptr /* gpu::SharedImageInterface* */, sync_token);
