@@ -100,8 +100,7 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
     } else {
       device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
                                              Protocol::kFastPairSubsequent);
-      device_->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
-                                 kAccountKey);
+      device_->set_account_key(kAccountKey);
     }
 
     FastPairDataEncryptorImpl::Factory::CreateAsync(

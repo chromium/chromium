@@ -145,15 +145,11 @@ FastPairPairerImpl::FastPairPairerImpl(
       pairing_procedure_complete_(std::move(pairing_procedure_complete)) {
   adapter_observation_.Observe(adapter_.get());
 
-  absl::optional<std::vector<uint8_t>> additional_data =
-      device_->GetAdditionalData(Device::AdditionalDataType::kFastPairVersion);
-
   // If this is a v1 pairing, we pass off the responsibility to the Bluetooth
   // pairing dialog, and will listen for the
   // BluetoothAdapter::Observer::DevicePairedChanged event before firing the
   // |paired_callback|.
-  if (additional_data.has_value() && additional_data->size() == 1 &&
-      (*additional_data)[0] == 1) {
+  if (device_->version().value() == DeviceFastPairVersion::kV1) {
     Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
         device_->ble_address);
     return;

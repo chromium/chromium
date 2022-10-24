@@ -200,30 +200,12 @@ TEST_F(MediatorTest, InvokesShowDiscoveryWhenDeviceFound) {
   mock_scanner_broker_->NotifyDeviceFound(device_);
 }
 
-TEST_F(MediatorTest, InvokesShowPairingOnAppropriateAction) {
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_ui_broker_, ShowPairing);
-  mock_ui_broker_->NotifyDiscoveryAction(device_,
-                                         DiscoveryAction::kPairToDevice);
-}
-
 TEST_F(MediatorTest, InvokesShowPairing_V1) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   auto device = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
                                              Protocol::kFastPairInitial);
-  device_->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion, {1});
+  device_->set_version(DeviceFastPairVersion::kV1);
   EXPECT_CALL(*mock_ui_broker_, ShowPairing).Times(0);
-  mock_ui_broker_->NotifyDiscoveryAction(device_,
-                                         DiscoveryAction::kPairToDevice);
-}
-
-TEST_F(MediatorTest, InvokesShowPairing_InvalidV1Data) {
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  auto device = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
-                                             Protocol::kFastPairInitial);
-  device_->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion,
-                             {1, 2});
-  EXPECT_CALL(*mock_ui_broker_, ShowPairing);
   mock_ui_broker_->NotifyDiscoveryAction(device_,
                                          DiscoveryAction::kPairToDevice);
 }
