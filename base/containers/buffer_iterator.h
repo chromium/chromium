@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_BUFFER_ITERATOR_H_
 #define BASE_CONTAINERS_BUFFER_ITERATOR_H_
 
+#include <string.h>
+
 #include <type_traits>
 
 #include "base/bit_cast.h"
