@@ -5,8 +5,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/history_specifics.pb.h"
@@ -117,6 +119,51 @@ MATCHER(StandardFieldsArePopulated, "") {
          arg.redirect_entries(0).originator_visit_id() > 0 &&
          !arg.redirect_entries(0).url().empty() && arg.has_browser_type() &&
          arg.window_id() > 0 && arg.tab_id() > 0 && arg.task_id() > 0;
+}
+
+sync_pb::HistorySpecifics CreateSpecifics(
+    base::Time visit_time,
+    const std::string& originator_cache_guid,
+    const std::vector<GURL>& urls,
+    const std::vector<history::VisitID>& originator_visit_ids) {
+  DCHECK_EQ(originator_visit_ids.size(), urls.size());
+  sync_pb::HistorySpecifics specifics;
+  specifics.set_visit_time_windows_epoch_micros(
+      visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_originator_cache_guid(originator_cache_guid);
+  specifics.mutable_page_transition()->set_core_transition(
+      sync_pb::SyncEnums_PageTransition_LINK);
+  for (size_t i = 0; i < urls.size(); ++i) {
+    auto* redirect_entry = specifics.add_redirect_entries();
+    redirect_entry->set_originator_visit_id(originator_visit_ids[i]);
+    redirect_entry->set_url(urls[i].spec());
+    if (i > 0) {
+      redirect_entry->set_redirect_type(
+          sync_pb::SyncEnums_PageTransitionRedirectType_SERVER_REDIRECT);
+    }
+  }
+  return specifics;
+}
+
+sync_pb::HistorySpecifics CreateSpecifics(
+    base::Time visit_time,
+    const std::string& originator_cache_guid,
+    const GURL& url,
+    history::VisitID originator_visit_id = 0) {
+  return CreateSpecifics(visit_time, originator_cache_guid, std::vector{url},
+                         std::vector{originator_visit_id});
+}
+
+std::unique_ptr<syncer::LoopbackServerEntity> CreateFakeServerEntity(
+    const sync_pb::HistorySpecifics& specifics) {
+  sync_pb::EntitySpecifics entity;
+  *entity.mutable_history() = specifics;
+  return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+      /*non_unique_name=*/"",
+      /*client_tag=*/
+      base::NumberToString(specifics.visit_time_windows_epoch_micros()), entity,
+      /*creation_time=*/0,
+      /*last_modified_time=*/0);
 }
 
 std::vector<sync_pb::HistorySpecifics> SyncEntitiesToHistorySpecifics(
@@ -243,11 +290,6 @@ class SingleClientHistorySyncTest : public SyncTest {
   bool WaitForHistory(
       testing::Matcher<std::vector<sync_pb::HistorySpecifics>> matcher) {
     return ServerHistoryMatchChecker(matcher).Wait();
-  }
-
-  std::vector<sync_pb::HistorySpecifics> GetAllServerHistory() {
-    return SyncEntitiesToHistorySpecifics(
-        fake_server_->GetSyncEntitiesByModelType(syncer::HISTORY));
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -426,6 +468,125 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
             IsChainEnd()),
       AllOf(StandardFieldsArePopulated(), UrlIs(url2.spec()), IsChainStart(),
             IsChainEnd(), HasOpenerVisit()))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Before Sync gets enabled, one URL exists locally, one remotely, and one in
+  // both places.
+  const GURL url_local("https://www.url-local.com");
+  const GURL url_remote("https://www.url-remote.com");
+  const GURL url_both("https://www.url-both.com");
+
+  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_local);
+  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_both);
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
+      base::Time::Now() - base::Minutes(4), "other_cache_guid", url_both)));
+
+  // Turn on Sync - this should cause the two remote URLs to get downloaded and
+  // merged with the existing local ones.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Now the "local" and "remote" URLs should have one visit each, while the
+  // "both" one should have two.
+  history::URLRow row_local;
+  EXPECT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row_local));
+  EXPECT_EQ(row_local.visit_count(), 1);
+
+  history::URLRow row_remote;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote,
+                                                  &row_remote));
+  EXPECT_EQ(row_remote.visit_count(), 1);
+
+  history::URLRow row_both;
+  EXPECT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_both, &row_both));
+  EXPECT_EQ(row_both.visit_count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       DownloadsServerRedirectChain) {
+  const GURL url1("https://www.url1.com");
+  const GURL url2("https://www.url2.com");
+  const GURL url3("https://www.url3.com");
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(
+      CreateSpecifics(base::Time::Now() - base::Minutes(5), "other_cache_guid",
+                      {url1, url2, url3}, {101, 102, 103})));
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Make sure the chain arrived intact.
+  history::URLRow url_row;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url3, &url_row));
+  history::VisitVector visits =
+      typed_urls_helper::GetVisitsFromClient(/*index=*/0, url_row.id());
+  ASSERT_EQ(visits.size(), 1u);
+  history::VisitVector redirect_chain =
+      typed_urls_helper::GetRedirectChainFromClient(/*index=*/0, visits[0]);
+  ASSERT_EQ(redirect_chain.size(), 3u);
+
+  history::URLRow url_row1;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+      /*index=*/0, redirect_chain[0].url_id, &url_row1));
+  EXPECT_EQ(url_row1.url(), url1);
+  history::URLRow url_row2;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+      /*index=*/0, redirect_chain[1].url_id, &url_row2));
+  EXPECT_EQ(url_row2.url(), url2);
+  history::URLRow url_row3;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+      /*index=*/0, redirect_chain[2].url_id, &url_row3));
+  EXPECT_EQ(url_row3.url(), url3);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       DownloadsClientRedirectChain) {
+  const GURL url1("https://www.url1.com");
+  const GURL url2("https://www.url2.com");
+
+  // As opposed to server redirects, client redirect entries have different
+  // visit_times, so the chain gets split up into multiple entities.
+  sync_pb::HistorySpecifics specifics1 = CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url1, 101);
+  sync_pb::HistorySpecifics specifics2 = CreateSpecifics(
+      base::Time::Now() - base::Minutes(4), "other_cache_guid", url2, 102);
+  // Link them together via the referring visit ID, and mark chain end/start
+  // incomplete, so they'll be considered one chain.
+  specifics1.set_redirect_chain_end_incomplete(true);
+  specifics2.set_redirect_chain_start_incomplete(true);
+  specifics2.set_originator_referring_visit_id(101);
+  specifics2.mutable_redirect_entries(0)->set_redirect_type(
+      sync_pb::SyncEnums_PageTransitionRedirectType_CLIENT_REDIRECT);
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics1));
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics2));
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Make sure the chain arrived intact (i.e. was stitched back together).
+  history::URLRow url_row;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url2, &url_row));
+  history::VisitVector visits =
+      typed_urls_helper::GetVisitsFromClient(/*index=*/0, url_row.id());
+  ASSERT_EQ(visits.size(), 1u);
+  history::VisitVector redirect_chain =
+      typed_urls_helper::GetRedirectChainFromClient(/*index=*/0, visits[0]);
+  ASSERT_EQ(redirect_chain.size(), 2u);
+
+  history::URLRow url_row1;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+      /*index=*/0, redirect_chain[0].url_id, &url_row1));
+  EXPECT_EQ(url_row1.url(), url1);
+  history::URLRow url_row2;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+      /*index=*/0, redirect_chain[1].url_id, &url_row2));
+  EXPECT_EQ(url_row2.url(), url2);
 }
 
 }  // namespace

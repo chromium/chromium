@@ -1471,7 +1471,6 @@ VisitID HistoryBackend::UpdateSyncedVisit(
   DCHECK_EQ(visit.url_id, 0);
   DCHECK(!visit.visit_time.is_null());
   DCHECK(!visit.originator_cache_guid.empty());
-  DCHECK(visit.transition & ui::PAGE_TRANSITION_CHAIN_END);
 
   if (!db_)
     return 0;

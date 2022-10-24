@@ -101,6 +101,33 @@ class GetUrlTask : public history::HistoryDBTask {
   raw_ptr<bool> found_;
 };
 
+class GetUrlByIdTask : public history::HistoryDBTask {
+ public:
+  GetUrlByIdTask(history::URLID url_id,
+                 history::URLRow* row,
+                 bool* found,
+                 base::WaitableEvent* event)
+      : url_id_(url_id), row_(row), wait_event_(event), found_(found) {}
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    // Fetch the typed URLs.
+    *found_ = backend->GetURLByID(url_id_, row_);
+    wait_event_->Signal();
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {}
+
+ private:
+  ~GetUrlByIdTask() override = default;
+
+  history::URLID url_id_;
+  raw_ptr<history::URLRow> row_;
+  raw_ptr<base::WaitableEvent> wait_event_;
+  raw_ptr<bool> found_;
+};
+
 class GetVisitsTask : public history::HistoryDBTask {
  public:
   GetVisitsTask(history::URLID id,
@@ -122,6 +149,31 @@ class GetVisitsTask : public history::HistoryDBTask {
   ~GetVisitsTask() override = default;
 
   history::URLID id_;
+  raw_ptr<history::VisitVector> visits_;
+  raw_ptr<base::WaitableEvent> wait_event_;
+};
+
+class GetRedirectChainTask : public history::HistoryDBTask {
+ public:
+  GetRedirectChainTask(const history::VisitRow& final_visit,
+                       history::VisitVector* visits,
+                       base::WaitableEvent* event)
+      : final_visit_(final_visit), visits_(visits), wait_event_(event) {}
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    // Fetch the visits.
+    *visits_ = backend->GetRedirectChain(final_visit_);
+    wait_event_->Signal();
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {}
+
+ private:
+  ~GetRedirectChainTask() override = default;
+
+  history::VisitRow final_visit_;
   raw_ptr<history::VisitVector> visits_;
   raw_ptr<base::WaitableEvent> wait_event_;
 };
@@ -257,6 +309,23 @@ bool GetUrlFromHistoryService(history::HistoryService* service,
   return found;
 }
 
+bool GetUrlFromHistoryService(history::HistoryService* service,
+                              history::URLID url_id,
+                              history::URLRow* row) {
+  base::CancelableTaskTracker tracker;
+  base::WaitableEvent wait_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  bool found = false;
+  service->ScheduleDBTask(
+      FROM_HERE,
+      std::unique_ptr<history::HistoryDBTask>(
+          new GetUrlByIdTask(url_id, row, &found, &wait_event)),
+      &tracker);
+  wait_event.Wait();
+  return found;
+}
+
 history::VisitVector GetVisitsFromHistoryService(
     history::HistoryService* service,
     history::URLID id) {
@@ -269,6 +338,23 @@ history::VisitVector GetVisitsFromHistoryService(
                           std::unique_ptr<history::HistoryDBTask>(
                               new GetVisitsTask(id, &visits, &wait_event)),
                           &tracker);
+  wait_event.Wait();
+  return visits;
+}
+
+history::VisitVector GetRedirectChainFromHistoryService(
+    history::HistoryService* service,
+    history::VisitRow final_visit) {
+  base::CancelableTaskTracker tracker;
+  base::WaitableEvent wait_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  history::VisitVector visits;
+  service->ScheduleDBTask(
+      FROM_HERE,
+      std::unique_ptr<history::HistoryDBTask>(
+          new GetRedirectChainTask(final_visit, &visits, &wait_event)),
+      &tracker);
   wait_event.Wait();
   return visits;
 }
@@ -336,6 +422,11 @@ bool GetUrlFromClient(int index, const GURL& url, history::URLRow* row) {
   return GetUrlFromHistoryService(service, url, row);
 }
 
+bool GetUrlFromClient(int index, history::URLID url_id, history::URLRow* row) {
+  history::HistoryService* service = GetHistoryServiceFromClient(index);
+  return GetUrlFromHistoryService(service, url_id, row);
+}
+
 history::VisitVector GetVisitsFromClient(int index, history::URLID id) {
   history::HistoryService* service = GetHistoryServiceFromClient(index);
   return GetVisitsFromHistoryService(service, id);
@@ -348,6 +439,12 @@ history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url) {
     return history::VisitVector();
   }
   return GetVisitsFromHistoryService(service, url_row.id());
+}
+
+history::VisitVector GetRedirectChainFromClient(int index,
+                                                history::VisitRow final_visit) {
+  history::HistoryService* service = GetHistoryServiceFromClient(index);
+  return GetRedirectChainFromHistoryService(service, final_visit);
 }
 
 void RemoveVisitsFromClient(int index, const history::VisitVector& visits) {

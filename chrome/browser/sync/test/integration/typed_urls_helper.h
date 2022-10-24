@@ -25,14 +25,18 @@ namespace syncer {
 class MetadataBatch;
 }
 
+// TODO(crbug.com/1365291): Rename this to history_helper.
 namespace typed_urls_helper {
 
 // Gets the typed URLs from a specific sync profile.
 history::URLRows GetTypedUrlsFromClient(int index);
 
-// Gets a specific url from a specific sync profile. Returns false if the URL
-// was not found in the history DB.
+// Gets the URLRow for a specific URL from a specific sync profile. Returns
+// false if the URL was not found in the history DB.
 bool GetUrlFromClient(int index, const GURL& url, history::URLRow* row);
+
+// Similar, but queries by URL ID rather than URL.
+bool GetUrlFromClient(int index, history::URLID url_id, history::URLRow* row);
 
 // Gets the visits for a URL from a specific sync profile.
 history::VisitVector GetVisitsFromClient(int index, history::URLID id);
@@ -41,6 +45,9 @@ history::VisitVector GetVisitsFromClient(int index, history::URLID id);
 // takes a GURL instead of URLID. Returns empty vector if |url| is not returned
 // by GetUrlFromClient().
 history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url);
+
+history::VisitVector GetRedirectChainFromClient(int index,
+                                                history::VisitRow final_visit);
 
 // Removes the passed |visits| from a specific sync profile.
 void RemoveVisitsFromClient(int index, const history::VisitVector& visits);
