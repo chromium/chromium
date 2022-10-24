@@ -30,7 +30,9 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
                                  public content::WebContentsObserver,
                                  public content::WebContentsDelegate {
  public:
-  explicit LensUnifiedSidePanelView(BrowserView* browser_view);
+  LensUnifiedSidePanelView(
+      BrowserView* browser_view,
+      base::RepeatingClosure update_new_tab_button_callback);
   LensUnifiedSidePanelView(const LensUnifiedSidePanelView&) = delete;
   LensUnifiedSidePanelView& operator=(const LensUnifiedSidePanelView&) = delete;
   ~LensUnifiedSidePanelView() override;
@@ -44,6 +46,9 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
 
   // Loads the Lens website if the side panel view is ready with a width.
   void MaybeLoadURLWithParams();
+
+  // Gets the URL needed to open the results shown in the view in a new tab.
+  GURL GetOpenInNewTabURL();
 
   // Opens current view URL in a new chrome tab and closes the side panel
   void LoadResultsInNewTab();
@@ -93,6 +98,7 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   // Copy of the most recent URL params to open.
   std::unique_ptr<content::OpenURLParams> side_panel_url_params_;
 
+  base::RepeatingClosure update_new_tab_button_callback_;
   base::WeakPtrFactory<LensUnifiedSidePanelView> weak_factory_{this};
 };
 

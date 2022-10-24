@@ -439,7 +439,8 @@ void SidePanelCoordinator::PopulateSidePanel(
     content->RequestFocus();
   }
   header_open_in_new_tab_button_->SetVisible(
-      current_entry_->GetOpenInNewTabURL().is_valid());
+      current_entry_->SupportsNewTabButton());
+  UpdateNewTabButtonState();
 }
 
 void SidePanelCoordinator::ClearCachedEntryViews() {
@@ -678,5 +679,12 @@ void SidePanelCoordinator::OnTabStripModelChanged(
              new_contextual_registry->active_entry().has_value()) {
     Show(new_contextual_registry->active_entry().value()->key().id(),
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
+  }
+}
+
+void SidePanelCoordinator::UpdateNewTabButtonState() {
+  if (header_open_in_new_tab_button_ && current_entry_) {
+    header_open_in_new_tab_button_->SetEnabled(
+        current_entry_->GetOpenInNewTabURL().is_valid());
   }
 }

@@ -82,6 +82,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   bool IsSidePanelShowing();
 
+  // Re-runs open new tab URL check and sets button state to enabled/disabled
+  // accordingly.
+  void UpdateNewTabButtonState();
+
   void AddSidePanelViewStateObserver(SidePanelViewStateObserver* observer);
 
   void RemoveSidePanelViewStateObserver(SidePanelViewStateObserver* observer);

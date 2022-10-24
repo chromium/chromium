@@ -119,3 +119,7 @@ GURL SidePanelEntry::GetOpenInNewTabURL() const {
 
   return open_in_new_tab_url_callback_.Run();
 }
+
+bool SidePanelEntry::SupportsNewTabButton() {
+  return !open_in_new_tab_url_callback_.is_null();
+}

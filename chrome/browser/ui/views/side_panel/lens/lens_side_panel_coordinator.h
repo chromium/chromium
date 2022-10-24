@@ -38,6 +38,10 @@ class LensSidePanelCoordinator
 
   content::WebContents* GetViewWebContentsForTesting();
 
+  // Gets the URL needed to open the current side panel results in a new tab.
+  // Returns an empty URL if the view is null or results have not yet loaded.
+  GURL GetOpenInNewTabURL() const;
+
   bool OpenResultsInNewTabForTesting();
 
   bool IsLaunchButtonEnabledForTesting();
@@ -64,6 +68,11 @@ class LensSidePanelCoordinator
 
   // Removes the lens entry from the side panel.
   void DeregisterLensFromSidePanel();
+
+  // Forces an update of the enabled/disabled state of the new tab button on the
+  // side panel header based on the new tab URL becoming available. If the new
+  // tab URL is valid it enables the button, otherwise it is disabled.
+  void UpdateNewTabButtonState();
 
   // TemplateURLServiceObserver
   void OnTemplateURLServiceChanged() override;

@@ -70,8 +70,11 @@ constexpr gfx::Insets kLensLabelButtonMargins = gfx::Insets::VH(12, 0);
 constexpr char kStaticLoadingScreenURL[] =
     "https://www.gstatic.com/lens/chrome/lens_side_panel_loading.html";
 
-LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view)
-    : browser_view_(browser_view) {
+LensUnifiedSidePanelView::LensUnifiedSidePanelView(
+    BrowserView* browser_view,
+    base::RepeatingCallback<void()> update_new_tab_button_callback)
+    : browser_view_(browser_view),
+      update_new_tab_button_callback_(update_new_tab_button_callback) {
   auto* browser_context = browser_view->GetProfile();
   // Align views vertically top to bottom.
   SetOrientation(views::LayoutOrientation::kVertical);
@@ -137,6 +140,19 @@ bool LensUnifiedSidePanelView::IsDefaultSearchProviderGoogle() {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
   return search::DefaultSearchProviderIsGoogle(profile);
+}
+
+GURL LensUnifiedSidePanelView::GetOpenInNewTabURL() {
+  const GURL last_committed_url =
+      web_view_->GetWebContents()->GetLastCommittedURL();
+  const GURL url = IsDefaultSearchProviderGoogle()
+                       ? lens::CreateURLForNewTab(last_committed_url)
+                       : last_committed_url;
+  // If there is no payload parameter, we will have an empty URL. This means
+  // we should return on empty and not close the side panel.
+  return url.is_empty()
+             ? GURL()
+             : GetTemplateURLService()->RemoveSideImageSearchParamFromURL(url);
 }
 
 void LensUnifiedSidePanelView::LoadResultsInNewTab() {
@@ -324,6 +340,8 @@ void LensUnifiedSidePanelView::SetContentAndNewTabButtonVisible(
 
   if (launch_button_ != nullptr)
     launch_button_->SetEnabled(enable_new_tab_button);
+  if (!update_new_tab_button_callback_.is_null())
+    update_new_tab_button_callback_.Run();
 }
 
 LensUnifiedSidePanelView::~LensUnifiedSidePanelView() = default;
