@@ -15,6 +15,8 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,11 +25,13 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace ash {
 
@@ -72,13 +76,13 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
     const base::FilePath& lacros_profile_dir) {
   LOG(WARNING) << "Running PreMigrationCleanUp()";
 
-  const base::FilePath tmp_user_dir =
+  const base::FilePath tmp_profile_dir =
       ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
-  if (base::PathExists(tmp_user_dir)) {
-    // Delete tmp_user_dir if any were left from a previous failed back
+  if (base::PathExists(tmp_profile_dir)) {
+    // Delete tmp_profile_dir if any were left from a previous failed back
     // migration attempt.
-    if (!base::DeletePathRecursively(tmp_user_dir)) {
-      PLOG(ERROR) << "Deleting " << tmp_user_dir.value() << " failed: ";
+    if (!base::DeletePathRecursively(tmp_profile_dir)) {
+      PLOG(ERROR) << "Deleting " << tmp_profile_dir.value() << " failed: ";
       return {TaskStatus::kPreMigrationCleanUpDeleteTmpDirFailed, errno};
     }
   }
@@ -138,7 +142,123 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running MergeSplitItems()";
 
-  // TODO(b/244573664): Not yet implemented.
+  const base::FilePath tmp_profile_dir =
+      ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
+
+  if (!base::CreateDirectory(tmp_profile_dir)) {
+    PLOG(ERROR) << "CreateDirectory() failed for  " << tmp_profile_dir.value();
+    return {TaskStatus::kMergeSplitItemsCreateTmpDirFailed, errno};
+  }
+
+  const base::FilePath lacros_profile_dir =
+      ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir)
+          .Append(browser_data_migrator_util::kLacrosProfilePath);
+
+  // For extensions that exist in both Ash and Lacros, take the Lacros version.
+  if (!MergeCommonExtensionsDataFiles(
+          ash_profile_dir, lacros_profile_dir, tmp_profile_dir,
+          browser_data_migrator_util::kExtensionsFilePath)) {
+    PLOG(ERROR) << "MergeCommonExtensionsDataFiles() failed for extensions";
+    return {TaskStatus::kMergeSplitItemsCopyExtensionsFailed, errno};
+  }
+
+  // For Storage objects for extensions that exist in both Ash and Lacros, take
+  // the Lacros version and delete the Ash version.
+  if (!MergeCommonExtensionsDataFiles(
+          ash_profile_dir, lacros_profile_dir, tmp_profile_dir,
+          base::FilePath(browser_data_migrator_util::kStorageFilePath)
+              .Append(browser_data_migrator_util::kStorageExtFilePath)
+              .value())) {
+    PLOG(ERROR)
+        << "MergeCommonExtensionsDataFiles() failed for extension storage";
+    return {TaskStatus::kMergeSplitItemsCopyExtensionStorageFailed, errno};
+  }
+
+  // Merge IndexedDB.
+  const base::FilePath ash_indexed_db_dir =
+      ash_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath);
+  const base::FilePath lacros_indexed_db_dir =
+      lacros_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath);
+
+  for (const char* extension_id :
+       browser_data_migrator_util::kExtensionsBothChromes) {
+    if (!MergeCommonIndexedDB(ash_indexed_db_dir, lacros_indexed_db_dir,
+                              extension_id)) {
+      return {TaskStatus::kMergeSplitItemsMergeIndexedDBFailed, errno};
+    }
+  }
+
+  // During forward migration, LevelDB databases were copied from Ash to Lacros
+  // verbatim, after which the Ash versions were edited and non-Ash entries were
+  // removed. As a result Lacros has entries that it does not need and never
+  // updates, which don't break anything and don't take up a lot of space.
+  // During backward migration, we take the Lacros version as basis and then
+  // overwrite some entries with the Ash entries that might have been changed.
+
+  // Merge `Local Storage` LevelDB database.
+  if (!CopyLevelDBBase(
+          lacros_profile_dir.Append(
+              browser_data_migrator_util::kLocalStorageFilePath),
+          tmp_profile_dir.Append(
+              browser_data_migrator_util::kLocalStorageFilePath))) {
+    LOG(ERROR) << "CopyLevelDBBase() failed for `Local Storage`";
+    return {TaskStatus::kMergeSplitItemsMergeLocalStorageLevelDBFailed};
+  }
+  if (!MergeLevelDB(
+          ash_profile_dir
+              .Append(browser_data_migrator_util::kLocalStorageFilePath)
+              .Append(browser_data_migrator_util::kLocalStorageLeveldbName),
+          tmp_profile_dir
+              .Append(browser_data_migrator_util::kLocalStorageFilePath)
+              .Append(browser_data_migrator_util::kLocalStorageLeveldbName),
+          browser_data_migrator_util::LevelDBType::kLocalStorage)) {
+    LOG(ERROR) << "MergeLevelDB() failed for `Local Storage`";
+    return {TaskStatus::kMergeSplitItemsMergeLocalStorageLevelDBFailed};
+  }
+
+  // Merge `kStateStorePaths` LevelDB databases.
+  for (const char* path : browser_data_migrator_util::kStateStorePaths) {
+    if (base::PathExists(lacros_profile_dir.Append(path))) {
+      if (!CopyLevelDBBase(lacros_profile_dir.Append(path),
+                           tmp_profile_dir.Append(path))) {
+        LOG(ERROR) << "CopyLevelDBBase() failed for `" << path << "`";
+        return {TaskStatus::kMergeSplitItemsMergeStateStoreLevelDBFailed};
+      }
+      if (!MergeLevelDB(ash_profile_dir.Append(path),
+                        tmp_profile_dir.Append(path),
+                        browser_data_migrator_util::LevelDBType::kStateStore)) {
+        LOG(ERROR) << "MergeLevelDB() failed for `" << path << "`";
+        return {TaskStatus::kMergeSplitItemsMergeStateStoreLevelDBFailed};
+      }
+    }
+  }
+
+  // Merge Preferences.
+  const base::FilePath ash_pref_path =
+      ash_profile_dir.Append(chrome::kPreferencesFilename);
+  const base::FilePath lacros_pref_path =
+      lacros_profile_dir.Append(chrome::kPreferencesFilename);
+  const base::FilePath tmp_pref_path =
+      tmp_profile_dir.Append(chrome::kPreferencesFilename);
+  if (!MergePreferences(ash_pref_path, lacros_pref_path, tmp_pref_path)) {
+    return {TaskStatus::kMergeSplitItemsMergePrefsFailed};
+  }
+
+  // Merge Sync Data.
+  const base::FilePath ash_sync_data_db_path =
+      ash_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+          .Append(browser_data_migrator_util::kSyncDataLeveldbName);
+  const base::FilePath lacros_sync_data_db_path =
+      lacros_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+          .Append(browser_data_migrator_util::kSyncDataLeveldbName);
+  const base::FilePath tmp_sync_data_db_path =
+      tmp_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+          .Append(browser_data_migrator_util::kSyncDataLeveldbName);
+
+  if (!MergeSyncDataLevelDB(ash_sync_data_db_path, lacros_sync_data_db_path,
+                            tmp_sync_data_db_path)) {
+    return {TaskStatus::kMergeSplitItemsMergeSyncDataFailed};
+  }
 
   return {TaskStatus::kSucceeded};
 }
@@ -148,6 +268,41 @@ void BrowserDataBackMigrator::OnMergeSplitItems(
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "MergeSplitItems() failed.";
+    std::move(finished_callback).Run(ToResult(result));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataBackMigrator::DeleteAshItems,
+                     ash_profile_dir_),
+      base::BindOnce(&BrowserDataBackMigrator::OnDeleteAshItems,
+                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+}
+
+// static
+BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteAshItems(
+    const base::FilePath& ash_profile_dir) {
+  LOG(WARNING) << "Running DeleteAshItems()";
+
+  // For extensions that exist in both Ash and Lacros, take the Lacros version
+  // and delete the Ash version.
+  if (!RemoveAshCommonExtensionsDataFiles(
+          ash_profile_dir, browser_data_migrator_util::kExtensionsFilePath)) {
+    PLOG(ERROR) << "RemoveAshCommonExtensionsDataFiles() failed for extensions";
+    return {TaskStatus::kDeleteAshItemsDeleteExtensionsFailed, errno};
+  }
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnDeleteAshItems(
+    BackMigrationFinishedCallback finished_callback,
+    TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "DeleteAshItems() failed.";
     std::move(finished_callback).Run(ToResult(result));
     return;
   }
@@ -289,12 +444,461 @@ void BrowserDataBackMigrator::OnDeleteTmpDir(
 }
 
 // static
+bool BrowserDataBackMigrator::MergeCommonExtensionsDataFiles(
+    const base::FilePath& ash_profile_dir,
+    const base::FilePath& lacros_profile_dir,
+    const base::FilePath& tmp_profile_dir,
+    const std::string& target_dir) {
+  // For objects that are in both Chromes copy the Lacros version to the
+  // temporary folder.
+  const base::FilePath lacros_target_dir =
+      lacros_profile_dir.Append(target_dir);
+
+  if (base::PathExists(lacros_target_dir)) {
+    const base::FilePath tmp_target_dir = tmp_profile_dir.Append(target_dir);
+    if (!base::CreateDirectory(tmp_target_dir)) {
+      PLOG(ERROR) << "CreateDirectory() failed for  " << tmp_target_dir.value();
+      return false;
+    }
+
+    for (const char* extension_id :
+         browser_data_migrator_util::kExtensionsBothChromes) {
+      base::FilePath lacros_target_path =
+          lacros_target_dir.Append(extension_id);
+
+      if (base::PathExists(lacros_target_path)) {
+        base::FilePath tmp_target_path = tmp_target_dir.Append(extension_id);
+
+        if (!base::CopyDirectory(lacros_target_path, tmp_target_path,
+                                 /*recursive=*/true)) {
+          PLOG(ERROR) << "Failed copying " << lacros_target_path.value()
+                      << " to " << tmp_target_path.value();
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::RemoveAshCommonExtensionsDataFiles(
+    const base::FilePath& ash_profile_dir,
+    const std::string& target_dir) {
+  // For objects that are in both Chromes delete the Ash version for those
+  // objects before it is overwritten by MoveMergedItemsBackToAsh.
+  const base::FilePath ash_target_dir = ash_profile_dir.Append(target_dir);
+
+  if (base::PathExists(ash_target_dir)) {
+    for (const char* extension_id :
+         browser_data_migrator_util::kExtensionsBothChromes) {
+      base::FilePath ash_target_path = ash_target_dir.Append(extension_id);
+
+      if (!base::DeletePathRecursively(ash_target_path)) {
+        PLOG(ERROR) << "Failed deleting " << ash_target_path.value();
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::MergeCommonIndexedDB(
+    const base::FilePath& ash_indexed_db_dir,
+    const base::FilePath& lacros_indexed_db_dir,
+    const char* extension_id) {
+  const auto& [ash_blob_path, ash_leveldb_path] =
+      browser_data_migrator_util::GetIndexedDBPaths(ash_indexed_db_dir,
+                                                    extension_id);
+
+  const auto& [lacros_blob_path, lacros_leveldb_path] =
+      browser_data_migrator_util::GetIndexedDBPaths(lacros_indexed_db_dir,
+                                                    extension_id);
+
+  if (base::PathExists(lacros_blob_path)) {
+    if (base::PathExists(ash_blob_path)) {
+      if (!base::DeletePathRecursively(ash_blob_path)) {
+        PLOG(ERROR) << "Failed deleting " << ash_blob_path.value();
+        return false;
+      }
+    }
+
+    if (!base::Move(lacros_blob_path, ash_blob_path)) {
+      PLOG(ERROR) << "Failed migrating " << lacros_blob_path.value() << " to "
+                  << ash_blob_path.value();
+      return false;
+    }
+  }
+
+  if (base::PathExists(lacros_leveldb_path)) {
+    if (base::PathExists(ash_leveldb_path)) {
+      if (!base::DeletePathRecursively(ash_leveldb_path)) {
+        PLOG(ERROR) << "Failed deleting " << ash_leveldb_path.value();
+        return false;
+      }
+    }
+
+    if (!base::Move(lacros_leveldb_path, ash_leveldb_path)) {
+      PLOG(ERROR) << "Failed migrating " << lacros_leveldb_path.value()
+                  << " to " << ash_leveldb_path.value();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::MergePreferences(
+    const base::FilePath& ash_pref_path,
+    const base::FilePath& lacros_pref_path,
+    const base::FilePath& tmp_pref_path) {
+  // Get string contents of the Ash file.
+  std::string ash_contents;
+  if (!base::ReadFileToString(ash_pref_path, &ash_contents)) {
+    PLOG(ERROR) << "Failure while opening Ash Preferences: "
+                << ash_pref_path.value();
+    return false;
+  }
+
+  // Parse the Ash JSON file.
+  absl::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
+  if (!ash_root) {
+    PLOG(ERROR) << "Failure while parsing Ash's Preferences";
+    return false;
+  }
+  base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
+  if (!ash_root_dict) {
+    PLOG(ERROR) << "Failure while parsing Ash's Preferences root node";
+    return false;
+  }
+
+  // Get string contents of the Lacros file.
+  std::string lacros_contents;
+  if (!base::ReadFileToString(lacros_pref_path, &lacros_contents)) {
+    PLOG(ERROR) << "Failure while opening Lacros Preferences: "
+                << lacros_pref_path.value();
+    return false;
+  }
+
+  // Parse the Lacros JSON file.
+  absl::optional<base::Value> lacros_root =
+      base::JSONReader::Read(lacros_contents);
+  if (!lacros_root) {
+    PLOG(ERROR) << "Failure while parsing Lacros's Preferences";
+    return false;
+  }
+  base::Value::Dict* lacros_root_dict = lacros_root->GetIfDict();
+  if (!lacros_root_dict) {
+    PLOG(ERROR) << "Failure while parsing Lacros's Preferences root node";
+    return false;
+  }
+
+  // For preferences that were moved to Lacros, and deleted in Ash, copy them
+  // back to Ash.
+  for (const char* key :
+       browser_data_migrator_util::kLacrosOnlyPreferencesKeys) {
+    base::Value* lacros_value = lacros_root_dict->FindByDottedPath(key);
+    if (lacros_value)
+      ash_root_dict->SetByDottedPath(key, lacros_value->Clone());
+  }
+
+  // Preferences that were split between Ash and Lacros relate to extensions.
+  // Here we need to take the preferences from Lacros that were removed from
+  // Ash during forward migration and put them back in Ash.
+  for (const char* key : browser_data_migrator_util::kSplitPreferencesKeys) {
+    base::Value* ash_value = ash_root_dict->FindByDottedPath(key);
+    base::Value* lacros_value = lacros_root_dict->FindByDottedPath(key);
+
+    // If there is nothing to copy back from Lacros, skip this preference.
+    if (!lacros_value)
+      continue;
+
+    // If there is no Ash counterpart for this preference, clone Lacros.
+    if (!ash_value) {
+      ash_root_dict->SetByDottedPath(key, lacros_value->Clone());
+    } else {
+      if (lacros_value->is_dict() && ash_value->is_dict()) {
+        for (const auto entry : lacros_value->GetDict()) {
+          const base::StringPiece extension_id = entry.first;
+          if (IsLacrosOnlyExtension(extension_id)) {
+            ash_value->GetDict().Set(extension_id, entry.second.Clone());
+          }
+        }
+      } else if (lacros_value->is_list() && ash_value->is_list()) {
+        ash_value->GetList().EraseIf([&](const base::Value& item) {
+          if (!item.is_string())
+            return false;
+
+          const base::StringPiece extension_id = item.GetString();
+          return IsLacrosOnlyExtension(extension_id);
+        });
+
+        for (const auto& entry : lacros_value->GetList()) {
+          if (!entry.is_string())
+            continue;
+
+          if (IsLacrosOnlyExtension(entry.GetString()))
+            ash_value->GetList().Append(entry.Clone());
+        }
+      }
+    }
+  }
+
+  // Generate the resulting JSON.
+  std::string merged_preferences;
+  if (!base::JSONWriter::Write(*ash_root, &merged_preferences)) {
+    PLOG(ERROR) << "Failure while generating resulting Preferences JSON";
+    return false;
+  }
+
+  // Write the resulting JSON to disk.
+  if (!base::WriteFile(tmp_pref_path, merged_preferences)) {
+    PLOG(ERROR) << "Failure while writing Preferences JSON to "
+                << tmp_pref_path.value();
+    return false;
+  }
+
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::IsLacrosOnlyExtension(
+    const base::StringPiece extension_id) {
+  return !base::Contains(browser_data_migrator_util::kExtensionsAshOnly,
+                         extension_id) &&
+         !base::Contains(browser_data_migrator_util::kExtensionsBothChromes,
+                         extension_id);
+}
+
+// static
+bool BrowserDataBackMigrator::CopyLevelDBBase(
+    const base::FilePath& lacros_leveldb_dir,
+    const base::FilePath& tmp_leveldb_dir) {
+  if (!base::CopyDirectory(lacros_leveldb_dir, tmp_leveldb_dir,
+                           true /* recursive */)) {
+    PLOG(ERROR) << "CopyDirectory() failed from " << lacros_leveldb_dir.value()
+                << " to " << tmp_leveldb_dir.value();
+    return false;
+  }
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::MergeLevelDB(
+    const base::FilePath& ash_db_path,
+    const base::FilePath& tmp_db_path,
+    const browser_data_migrator_util::LevelDBType leveldb_type) {
+  leveldb_env::Options options;
+  options.create_if_missing = false;
+
+  // Open Ash LevelDB database.
+  std::unique_ptr<leveldb::DB> ash_db;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, ash_db_path.value(), &ash_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening Ash leveldb: " << ash_db_path;
+    return false;
+  }
+
+  // Open temporary LevelDB database, which is the copy of Lacros one.
+  std::unique_ptr<leveldb::DB> tmp_db;
+  status = leveldb_env::OpenDB(options, tmp_db_path.value(), &tmp_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening Lacros leveldb: " << tmp_db_path;
+    return false;
+  }
+
+  // Retrieve all extensions' keys, indexed by extension id.
+  browser_data_migrator_util::ExtensionKeys ash_keys;
+  status = browser_data_migrator_util::GetExtensionKeys(
+      ash_db.get(), leveldb_type, &ash_keys);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while reading keys from Ash leveldb: "
+                << ash_db_path;
+    return false;
+  }
+
+  // Collect all necessary changes to be written in a batch.
+  leveldb::WriteBatch write_batch;
+  for (const auto& [extension_id, keys] : ash_keys) {
+    if (!IsLacrosOnlyExtension(extension_id)) {
+      for (const std::string& key : keys) {
+        std::string value;
+        status = ash_db->Get(leveldb::ReadOptions(), key, &value);
+        if (!status.ok()) {
+          PLOG(ERROR) << "Failure while reading from Ash leveldb: "
+                      << ash_db_path;
+          return false;
+        }
+        write_batch.Put(key, value);
+      }
+    }
+  }
+
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  status = tmp_db->Write(write_options, &write_batch);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while writing into new leveldb: "
+                << tmp_db_path.value();
+    return false;
+  }
+
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::MergeSyncDataLevelDB(
+    const base::FilePath& ash_db_path,
+    const base::FilePath& lacros_db_path,
+    const base::FilePath& tmp_db_path) {
+  // Create a directory for the result database.
+  if (!base::CreateDirectory(tmp_db_path.DirName().DirName()) ||
+      !base::CreateDirectory(tmp_db_path.DirName())) {
+    PLOG(ERROR) << "CreateDirectory() for " << tmp_db_path.value()
+                << " failed.";
+    return false;
+  }
+
+  // If only one of the databases exists we do not need to merge anything and
+  // can just copy the database to the temp directory.
+  if (base::PathExists(ash_db_path) && !base::PathExists(lacros_db_path)) {
+    LOG(WARNING) << "Only Ash Sync Data LevelDB exists.";
+    if (!base::CopyFile(ash_db_path, tmp_db_path)) {
+      PLOG(ERROR) << "Failure to copy Ash Sync Data LevelDB: "
+                  << ash_db_path.value() << " to " << tmp_db_path.value();
+      return false;
+    }
+    return true;
+  }
+
+  if (!base::PathExists(ash_db_path) && base::PathExists(lacros_db_path)) {
+    LOG(WARNING) << "Only Lacros Sync Data LevelDB exists.";
+    if (!base::CopyFile(lacros_db_path, tmp_db_path)) {
+      PLOG(ERROR) << "Failure to copy Lacros Sync Data LevelDB: "
+                  << lacros_db_path.value() << " to " << tmp_db_path.value();
+      return false;
+    }
+    return true;
+  }
+
+  // Both databases exist so we need to merge them.
+  leveldb_env::Options options;
+  options.create_if_missing = false;
+
+  // Open Ash LevelDB database.
+  std::unique_ptr<leveldb::DB> ash_db;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, ash_db_path.value(), &ash_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening Ash Sync Data LevelDB: "
+                << ash_db_path.value();
+    return false;
+  }
+
+  // Open Lacros LevelDB database.
+  std::unique_ptr<leveldb::DB> lacros_db;
+  status = leveldb_env::OpenDB(options, lacros_db_path.value(), &lacros_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening Lacros Sync Data LevelDB: "
+                << lacros_db_path.value();
+    return false;
+  }
+
+  // Open the result LevelDB database.
+  std::unique_ptr<leveldb::DB> result_db;
+  options.create_if_missing = true;
+  options.error_if_exists = true;
+  status = leveldb_env::OpenDB(options, tmp_db_path.value(), &result_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening result Sync Data LevelDB: "
+                << tmp_db_path;
+    return false;
+  }
+
+  // Get Ash Sync Data types from the Ash database.
+  leveldb::WriteBatch ash_write_batch;
+  {
+    std::unique_ptr<leveldb::Iterator> it(
+        ash_db->NewIterator(leveldb::ReadOptions()));
+    for (it->SeekToFirst(); it->Valid(); it->Next()) {
+      const std::string key = it->key().ToString();
+      std::string value;
+      status = ash_db->Get(leveldb::ReadOptions(), key, &value);
+      if (!status.ok()) {
+        PLOG(ERROR) << "Failure while reading from Ash Sync Data LevelDB: "
+                    << ash_db_path;
+        return false;
+      }
+
+      if (browser_data_migrator_util::IsAshOnlySyncDataType(key))
+        ash_write_batch.Put(key, value);
+    }
+  }
+
+  // Get Lacros Sync Data types from the Lacros database.
+  leveldb::WriteBatch lacros_write_batch;
+  {
+    std::unique_ptr<leveldb::Iterator> it(
+        lacros_db->NewIterator(leveldb::ReadOptions()));
+    for (it->SeekToFirst(); it->Valid(); it->Next()) {
+      const std::string key = it->key().ToString();
+      std::string value;
+
+      status = lacros_db->Get(leveldb::ReadOptions(), key, &value);
+      if (!status.ok()) {
+        PLOG(ERROR) << "Failure while reading from Lacros Sync Data LevelDB: "
+                    << lacros_db_path;
+        return false;
+      }
+
+      if (!browser_data_migrator_util::IsAshOnlySyncDataType(key))
+        lacros_write_batch.Put(key, value);
+    }
+  }
+
+  // Merge all the data types into the resulting database.
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+
+  // Write Lacros data first, i.e. prefer Ash data if there are duplicates.
+  status = result_db->Write(write_options, &lacros_write_batch);
+  if (!status.ok()) {
+    PLOG(ERROR)
+        << "Failure while writing Lacros Sync Data into result database: "
+        << tmp_db_path;
+    return false;
+  }
+  status = result_db->Write(write_options, &ash_write_batch);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while writing Ash Sync Data into result database: "
+                << tmp_db_path;
+    return false;
+  }
+
+  return true;
+}
+
+// static
 BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
     TaskResult result) {
   switch (result.status) {
     case TaskStatus::kSucceeded:
       return Result::kSucceeded;
     case TaskStatus::kPreMigrationCleanUpDeleteTmpDirFailed:
+    case TaskStatus::kMergeSplitItemsCreateTmpDirFailed:
+    case TaskStatus::kMergeSplitItemsCopyExtensionsFailed:
+    case TaskStatus::kMergeSplitItemsCopyExtensionStorageFailed:
+    case TaskStatus::kMergeSplitItemsCreateDirFailed:
+    case TaskStatus::kMergeSplitItemsMergeIndexedDBFailed:
+    case TaskStatus::kMergeSplitItemsMergePrefsFailed:
+    case TaskStatus::kMergeSplitItemsMergeLocalStorageLevelDBFailed:
+    case TaskStatus::kMergeSplitItemsMergeStateStoreLevelDBFailed:
+    case TaskStatus::kMergeSplitItemsMergeSyncDataFailed:
+    case TaskStatus::kDeleteAshItemsDeleteExtensionsFailed:
     case TaskStatus::kDeleteLacrosDirDeleteFailed:
     case TaskStatus::kDeleteTmpDirDeleteFailed:
       return Result::kFailed;
