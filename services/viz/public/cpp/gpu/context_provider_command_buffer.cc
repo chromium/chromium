@@ -489,9 +489,7 @@ void ContextProviderCommandBuffer::OnLostContext() {
   // be weak references in use further up the stack. This task is posted to
   // ensure that destruction is deferred until it's safe.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce([](scoped_refptr<ContextProviderCommandBuffer>) {},
-                     base::WrapRefCounted(this)));
+      FROM_HERE, base::DoNothingWithBoundArgs(base::WrapRefCounted(this)));
 
   for (auto& observer : observers_)
     observer.OnContextLost();

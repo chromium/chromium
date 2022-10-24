@@ -218,8 +218,7 @@ void UsbDeviceHandleWin::Close() {
     // this runner which will close it on completion. This is guaranteed to run
     // after any queued operations have completed.
     blocking_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce([](base::win::ScopedHandle) {}, std::move(hub_handle_)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(hub_handle_)));
   }
 
   for (auto& map_entry : interfaces_) {

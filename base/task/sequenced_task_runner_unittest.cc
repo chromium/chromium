@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -81,8 +82,7 @@ TEST_F(SequencedTaskRunnerTest, OnTaskRunnerDeleterOnMainThread) {
                        SequencedTaskRunner::GetCurrentDefault()),
       OnTaskRunnerDeleter(SequencedTaskRunner::GetCurrentDefault()));
   EXPECT_FALSE(deleted_on_main_thread);
-  foreign_runner_->PostTask(
-      FROM_HERE, BindOnce([](SequenceBoundUniquePtr) {}, std::move(ptr)));
+  foreign_runner_->PostTask(FROM_HERE, DoNothingWithBoundArgs(std::move(ptr)));
 
   {
     RunLoop run_loop;

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -262,8 +263,7 @@ UrlFetchRequestBase::DownloadData::DownloadData(
 UrlFetchRequestBase::DownloadData::~DownloadData() {
   if (output_file.IsValid()) {
     blocking_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce([](base::File file) {}, std::move(output_file)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(output_file)));
   }
 }
 
@@ -341,8 +341,7 @@ void UrlFetchRequestBase::OnComplete(bool success) {
   DCHECK(download_data_);
   blocking_task_runner()->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce([](base::File file) {},
-                     std::move(download_data_->output_file)),
+      base::DoNothingWithBoundArgs(std::move(download_data_->output_file)),
       base::BindOnce(&UrlFetchRequestBase::OnOutputFileClosed,
                      weak_ptr_factory_.GetWeakPtr(), success));
 }

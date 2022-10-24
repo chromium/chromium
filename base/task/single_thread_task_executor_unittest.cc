@@ -2140,8 +2140,8 @@ class PostTaskOnDestroy {
   static void PostTaskWithPostingDestructor(int times) {
     if (times > 0) {
       ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, BindOnce([](std::unique_ptr<PostTaskOnDestroy>) {},
-                              std::make_unique<PostTaskOnDestroy>(times - 1)));
+          FROM_HERE, DoNothingWithBoundArgs(
+                         std::make_unique<PostTaskOnDestroy>(times - 1)));
     }
   }
 

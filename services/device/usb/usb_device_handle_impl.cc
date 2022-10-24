@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
@@ -862,8 +863,7 @@ UsbDeviceHandleImpl::~UsbDeviceHandleImpl() {
     handle_.Reset();
   } else {
     blocking_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce([](ScopedLibusbDeviceHandle) {}, std::move(handle_)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(handle_)));
   }
 }
 

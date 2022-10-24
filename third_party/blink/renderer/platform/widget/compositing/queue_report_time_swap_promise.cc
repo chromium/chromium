@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/queue_report_time_swap_promise.h"
 
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -56,9 +57,8 @@ QueueReportTimeSwapPromise::~QueueReportTimeSwapPromise() {
   if (compositor_task_runner_ && (drain_callback_ || swap_callback_)) {
     DCHECK(!compositor_task_runner_->BelongsToCurrentThread());
     compositor_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce([](DrainCallback, base::OnceClosure) {},
-                       std::move(drain_callback_), std::move(swap_callback_)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(drain_callback_),
+                                                std::move(swap_callback_)));
   }
 }
 

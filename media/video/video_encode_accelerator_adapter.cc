@@ -987,8 +987,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
 
   shared_frame->BackWithSharedMemory(handle->region());
   shared_frame->AddDestructionObserver(
-      base::BindOnce([](std::unique_ptr<ReadOnlyRegionPool::Handle> handle) {},
-                     std::move(handle)));
+      base::DoNothingWithBoundArgs(std::move(handle)));
   return shared_frame;
 }
 

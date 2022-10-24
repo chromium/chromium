@@ -272,8 +272,7 @@ void VideoCaptureManager::DoStopDevice(VideoCaptureController* controller) {
   // ReleaseDeviceAsnyc() is executing, we pass it shared ownership to
   // |controller|.
   controller->ReleaseDeviceAsync(
-      base::BindOnce([](scoped_refptr<VideoCaptureController>) {},
-                     GetControllerSharedRef(controller)));
+      base::DoNothingWithBoundArgs(GetControllerSharedRef(controller)));
 }
 
 void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
@@ -657,8 +656,7 @@ void VideoCaptureManager::MaybePostDesktopCaptureWindowId(
 
   existing_device->SetDesktopCaptureWindowIdAsync(
       window_id_it->second,
-      base::BindOnce([](scoped_refptr<VideoCaptureManager>) {},
-                     scoped_refptr<VideoCaptureManager>(this)));
+      base::DoNothingWithBoundArgs(scoped_refptr<VideoCaptureManager>(this)));
   notification_window_ids_.erase(window_id_it);
 }
 

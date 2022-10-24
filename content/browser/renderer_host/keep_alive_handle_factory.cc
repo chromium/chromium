@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -99,9 +100,7 @@ KeepAliveHandleFactory::~KeepAliveHandleFactory() {
   // Extend the lifetime of `context_` a bit. Note that `context_` has an
   // ability to extend the lifetime of the associated render process.
   GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce([](std::unique_ptr<Context>) {}, std::move(context_)),
-      timeout_);
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(context_)), timeout_);
 }
 
 void KeepAliveHandleFactory::Bind(

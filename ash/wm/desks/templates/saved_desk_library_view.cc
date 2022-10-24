@@ -26,6 +26,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
+#include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
@@ -416,8 +417,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::GUID& uuid,
                       source_screen_bounds.height());
 
   views::AnimationBuilder()
-      .OnEnded(base::BindOnce([](std::unique_ptr<ui::LayerTreeOwner>) {},
-                              std::move(item_layer_tree)))
+      .OnEnded(base::DoNothingWithBoundArgs(std::move(item_layer_tree)))
       .Once()
       // Animating the desk item up to the desk bar.
       .SetDuration(kSaveAndRecallLaunchMoveDuration)

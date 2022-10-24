@@ -359,6 +359,7 @@ mixed_component("base") {
     "functional/callback_helpers.h",
     "functional/callback_internal.cc",
     "functional/callback_internal.h",
+    "functional/callback_tags.h",
     "functional/function_ref.h",
     "functional/identity.h",
     "functional/invoke.h",

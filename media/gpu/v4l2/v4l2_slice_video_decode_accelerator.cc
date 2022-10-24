@@ -2343,8 +2343,7 @@ void V4L2SliceVideoDecodeAccelerator::FrameProcessed(
                      base::Unretained(this), decoded_buffer));
 
   // This holds the IP video frame until everyone is done with it
-  surface->SetReleaseCallback(
-      base::BindOnce([](scoped_refptr<VideoFrame> frame) {}, frame));
+  surface->SetReleaseCallback(base::DoNothingWithBoundArgs(frame));
   DCHECK_EQ(decoded_buffer_map_.count(decoded_buffer->BufferId()), 0u);
   decoded_buffer_map_.emplace(decoded_buffer->BufferId(), ip_buffer_index);
   surface->SetDecoded();

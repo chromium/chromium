@@ -21,6 +21,7 @@
 #include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "android_webview/common/aw_switches.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -382,7 +383,7 @@ HardwareRendererViz::~HardwareRendererViz() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
   output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
-      base::BindOnce([](std::unique_ptr<OnViz>) {}, std::move(on_viz_)));
+      base::DoNothingWithBoundArgs(std::move(on_viz_)));
 }
 
 bool HardwareRendererViz::IsUsingVulkan() const {

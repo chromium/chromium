@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -300,8 +301,7 @@ void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
   gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
   // |on_query_done_cb| will keep |video_frame| alive.
-  auto on_query_done_cb =
-      base::BindOnce([](scoped_refptr<VideoFrame> video_frame) {}, video_frame);
+  auto on_query_done_cb = base::DoNothingWithBoundArgs(video_frame);
   context_support->SignalQuery(query_id, std::move(on_query_done_cb));
 
   // Delete the query immediately. This will cause |on_query_done_cb| to be

@@ -4,6 +4,7 @@
 
 #include "content/public/test/web_transport_simple_test_server.h"
 
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -25,9 +26,7 @@ WebTransportSimpleTestServer::WebTransportSimpleTestServer() {
 
 WebTransportSimpleTestServer::~WebTransportSimpleTestServer() {
   server_thread_->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce([](std::unique_ptr<net::QuicSimpleServer> server) {},
-                     std::move(server_)));
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(server_)));
 
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_for_thread_join;
   server_thread_.reset();

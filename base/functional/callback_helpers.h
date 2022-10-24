@@ -20,6 +20,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_tags.h"
 
 namespace base {
 
@@ -194,6 +195,20 @@ constexpr auto NullCallbackAs() {
 template <typename Signature>
 constexpr auto DoNothingAs() {
   return internal::DoNothingCallbackTag::WithSignature<Signature>();
+}
+
+// Similar to DoNothing above, but with bound arguments. This helper is useful
+// for keeping objects alive until the callback runs.
+// Example:
+//
+// void F(base::OnceCallback<void(int)> result_callback);
+//
+// std::unique_ptr<MyClass> ptr;
+// F(base::DoNothingWithBoundArgs(std::move(ptr)));
+template <typename... Args>
+constexpr auto DoNothingWithBoundArgs(Args&&... args) {
+  return internal::DoNothingCallbackTag::WithBoundArguments(
+      std::forward<Args>(args)...);
 }
 
 // Useful for creating a Closure that will delete a pointer when invoked. Only

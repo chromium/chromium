@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/widget_compositor.h"
 
+#include "base/callback_helpers.h"
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/blink/renderer/platform/widget/compositing/queue_report_time_swap_promise.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
@@ -106,9 +107,8 @@ void WidgetCompositor::CreateQueueSwapPromise(
   } else if (compositor_task_runner_) {
     // Delete callbacks on the compositor thread.
     compositor_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce([](base::OnceCallback<void(int)>, base::OnceClosure) {},
-                       std::move(drain_callback), std::move(swap_callback)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(drain_callback),
+                                                std::move(swap_callback)));
   }
 }
 

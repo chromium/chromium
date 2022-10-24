@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -173,8 +174,7 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  vea_->Encode(frame, force_keyframe,
-               base::BindOnce([](scoped_refptr<VideoFrame>) {}, frame));
+  vea_->Encode(frame, force_keyframe, base::DoNothingWithBoundArgs(frame));
 }
 
 void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(

@@ -5,6 +5,7 @@
 #include "media/audio/aecdump_recording_manager.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "media/audio/audio_manager.h"
@@ -14,9 +15,9 @@ namespace {
 void CloseFileWithoutBlocking(base::File file) {
   // Post as a low-priority task to a thread pool to avoid blocking the
   // current thread.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::LOWEST, base::MayBlock()},
-      base::BindOnce([](base::File) {}, std::move(file)));
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::TaskPriority::LOWEST, base::MayBlock()},
+                             base::DoNothingWithBoundArgs(std::move(file)));
 }
 }  // namespace
 

@@ -493,8 +493,7 @@ void ContentVerifier::GetContentHash(
     // pointer to fix this. Also add unit test to exercise this code path
     // explicitly.
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce([](ContentHashCallback) {}, std::move(callback)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(callback)));
     return;
   }
 

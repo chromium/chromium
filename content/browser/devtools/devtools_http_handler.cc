@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
@@ -228,7 +229,7 @@ void TerminateOnUI(std::unique_ptr<base::Thread> thread,
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT},
-        BindOnce([](std::unique_ptr<base::Thread>) {}, std::move(thread)));
+        DoNothingWithBoundArgs(std::move(thread)));
   }
 }
 

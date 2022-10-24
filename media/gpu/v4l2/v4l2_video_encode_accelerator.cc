@@ -1412,8 +1412,8 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
         NOTIFY_ERROR(kPlatformFailureError);
         return false;
       }
-      frame->AddDestructionObserver(base::BindOnce([](std::vector<uint8_t>) {},
-                                                   std::move(writable_buffer)));
+      frame->AddDestructionObserver(
+          base::DoNothingWithBoundArgs(std::move(writable_buffer)));
       break;
     }
     case V4L2_MEMORY_DMABUF: {

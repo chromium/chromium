@@ -473,8 +473,7 @@ void SharedProtoDatabase::OnDatabaseInit(bool create_if_missing,
     // Hold on to shared db until the remove operation is done or Shutdown()
     // clears the task.
     Callbacks::UpdateCallback keep_shared_db_alive =
-        base::BindOnce([](scoped_refptr<SharedProtoDatabase>, bool) {},
-                       base::WrapRefCounted<>(this));
+        base::DoNothingWithBoundArgs(base::WrapRefCounted<>(this));
     delete_obsolete_task_.Reset(base::BindOnce(
         &SharedProtoDatabase::DestroyObsoleteSharedProtoDatabaseClients, this,
         std::move(keep_shared_db_alive)));

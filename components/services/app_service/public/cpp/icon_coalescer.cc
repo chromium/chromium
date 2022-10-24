@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 
@@ -143,8 +144,7 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
       // The callback does nothing explicitly, but after it runs, it implicitly
       // decrements the scoped_refptr's shared reference count, and therefore
       // possibly deletes the underlying IconLoader::Releaser.
-      base::BindOnce([](scoped_refptr<RefCountedReleaser>) {},
-                     std::move(shared_releaser)));
+      base::DoNothingWithBoundArgs(std::move(shared_releaser)));
 }
 
 void IconCoalescer::OnLoadIcon(IconLoader::Key key,

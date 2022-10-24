@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
@@ -36,8 +37,7 @@ void CorsOriginPatternSetter::SetForStoragePartition(
   partition->GetNetworkContext()->SetCorsOriginAccessListsForOrigin(
       source_origin_, mojo::Clone(allow_patterns_),
       mojo::Clone(block_patterns_),
-      base::BindOnce([](scoped_refptr<CorsOriginPatternSetter> setter) {},
-                     base::RetainedRef(this)));
+      base::DoNothingWithBoundArgs(base::RetainedRef(this)));
 }
 
 // static

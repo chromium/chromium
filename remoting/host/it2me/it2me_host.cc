@@ -630,9 +630,7 @@ void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {
     // other end of the connection can display and log an accurate disconnect
     // reason.
     host_context_->network_task_runner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce([](std::unique_ptr<SignalStrategy> signaling) {},
-                       std::move(signal_strategy_)),
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(signal_strategy_)),
         kDestroySignalingDelay);
   }
 

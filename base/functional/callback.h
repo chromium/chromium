@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"  // IWYU pragma: export
 #include "base/functional/callback_internal.h"
+#include "base/functional/callback_tags.h"
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/types/always_false.h"
@@ -58,15 +59,30 @@ namespace base {
 
 namespace internal {
 
-struct NullCallbackTag {
-  template <typename Signature>
-  struct WithSignature {};
-};
-
-struct DoNothingCallbackTag {
-  template <typename Signature>
-  struct WithSignature {};
-};
+template <bool is_once,
+          typename R,
+          typename... UnboundArgs,
+          typename... BoundArgs>
+static std::conditional_t<is_once,
+                          OnceCallback<R(UnboundArgs...)>,
+                          RepeatingCallback<R(UnboundArgs...)>>
+ToDoNothingCallback(DoNothingCallbackTag::WithBoundArguments<BoundArgs...> t) {
+  return std::apply(
+      [](auto&&... args) {
+        if constexpr (is_once) {
+          return base::BindOnce(
+              [](TransformToUnwrappedType<is_once, BoundArgs>...,
+                 UnboundArgs...) {},
+              std::move(args)...);
+        } else {
+          return base::BindRepeating(
+              [](TransformToUnwrappedType<is_once, BoundArgs>...,
+                 UnboundArgs...) {},
+              std::move(args)...);
+        }
+      },
+      std::move(t.bound_args));
+}
 
 }  // namespace internal
 
@@ -108,6 +124,18 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
       internal::DoNothingCallbackTag::WithSignature<RunType>) {
     *this = internal::DoNothingCallbackTag();
     return *this;
+  }
+
+  template <typename... BoundArgs>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr OnceCallback(
+      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
+      : OnceCallback(
+            internal::ToDoNothingCallback<true, R, Args...>(std::move(tag))) {}
+  template <typename... BoundArgs>
+  constexpr OnceCallback& operator=(
+      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
+    *this = internal::ToDoNothingCallback<true, R, Args...>(std::move(tag));
   }
 
   explicit OnceCallback(internal::BindStateBase* bind_state)
@@ -238,6 +266,18 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
       internal::DoNothingCallbackTag::WithSignature<RunType>) {
     *this = internal::DoNothingCallbackTag();
     return *this;
+  }
+
+  template <typename... BoundArgs>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr RepeatingCallback(
+      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
+      : RepeatingCallback(
+            internal::ToDoNothingCallback<false, R, Args...>(std::move(tag))) {}
+  template <typename... BoundArgs>
+  constexpr RepeatingCallback& operator=(
+      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
+    *this = internal::ToDoNothingCallback<false, R, Args...>(std::move(tag));
   }
 
   explicit RepeatingCallback(internal::BindStateBase* bind_state)

@@ -1117,7 +1117,7 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
     return nullptr;
 
   frame->AddDestructionObserver(
-      base::BindOnce([](sk_sp<SkImage>) {}, std::move(sk_image)));
+      base::DoNothingWithBoundArgs(std::move(sk_image)));
   return frame;
 }
 

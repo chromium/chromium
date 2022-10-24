@@ -13,6 +13,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -369,7 +370,7 @@ void AudioProcessor::OnStartDump(base::File dump_file) {
     // Post the file close to avoid blocking the control sequence.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::LOWEST, base::MayBlock()},
-        base::BindOnce([](base::File) {}, std::move(dump_file)));
+        base::DoNothingWithBoundArgs(std::move(dump_file)));
   }
 }
 

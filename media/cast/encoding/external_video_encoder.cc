@@ -17,6 +17,7 @@
 #endif
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -757,8 +758,7 @@ void ExternalVideoEncoder::DestroyClientSoon() {
   // reference to it within an encoder task.
   if (client_) {
     client_->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce([](scoped_refptr<VEAClientImpl> client) {},
-                                  std::move(client_)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(client_)));
   }
 }
 

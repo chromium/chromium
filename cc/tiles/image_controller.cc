@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/task/task_traits.h"
 #include "base/trace_event/trace_event.h"
@@ -34,8 +35,7 @@ ImageController::~ImageController() {
     // Delete `worker_state_` on `worker_task_runner_` (or elsewhere via the
     // callback's destructor if `worker_task_runner_` stopped accepting tasks).
     worker_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce([](std::unique_ptr<WorkerState>) {},
-                                  std::move(worker_state_)));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(worker_state_)));
   }
 }
 

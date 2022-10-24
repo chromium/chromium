@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/token.h"
@@ -49,10 +50,8 @@ InProcessLaunchedVideoCaptureDevice::~InProcessLaunchedVideoCaptureDevice() {
   media::VideoCaptureDevice* device_ptr = device_.release();
   device_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &StopAndReleaseDeviceOnDeviceThread, device_ptr,
-          base::BindOnce([](scoped_refptr<base::SingleThreadTaskRunner>) {},
-                         device_task_runner_)));
+      base::BindOnce(&StopAndReleaseDeviceOnDeviceThread, device_ptr,
+                     base::DoNothingWithBoundArgs(device_task_runner_)));
 }
 
 void InProcessLaunchedVideoCaptureDevice::GetPhotoState(

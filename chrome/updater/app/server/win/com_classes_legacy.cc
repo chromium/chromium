@@ -1035,10 +1035,9 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &UpdateService::FetchPolicies, com_server->update_service(),
-          base::BindOnce([](PolicyStatusImplPtr /* obj */, int /* result */) {},
-                         PolicyStatusImplPtr(this))));
+      base::BindOnce(&UpdateService::FetchPolicies,
+                     com_server->update_service(),
+                     base::DoNothingWithBoundArgs(PolicyStatusImplPtr(this))));
   return S_OK;
 }
 

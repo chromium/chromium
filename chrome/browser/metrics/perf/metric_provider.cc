@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -79,9 +80,7 @@ MetricProvider::MetricProvider(std::unique_ptr<MetricCollector> collector,
 MetricProvider::~MetricProvider() {
   // Destroy the metric_collector_ on the collector sequence.
   collector_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce([](std::unique_ptr<MetricCollector> collector_) {},
-                     std::move(metric_collector_)));
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(metric_collector_)));
 }
 
 void MetricProvider::Init() {

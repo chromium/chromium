@@ -5,6 +5,7 @@
 #include "media/audio/android/aaudio_output.h"
 
 #include "base/android/build_info.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
@@ -136,9 +137,7 @@ AAudioOutputStream::~AAudioOutputStream() {
   // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
   // bound to the callback stays valid, until the callbacks stop.
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce([](std::unique_ptr<AAudioDestructionHelper>) {},
-                     std::move(destruction_helper_)),
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(destruction_helper_)),
       base::Seconds(1));
 }
 
