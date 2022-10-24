@@ -772,7 +772,7 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "M proguard",
     ),
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 8 * time.hour,
     # TODO(b/234140184) Once reproxy is fixed, remove the goma and reclient
     # values
     goma_backend = goma.backend.RBE_PROD,
