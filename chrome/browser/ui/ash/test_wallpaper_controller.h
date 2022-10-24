@@ -68,6 +68,10 @@ class TestWallpaperController : public ash::WallpaperController {
   update_current_wallpaper_layout_layout() const {
     return update_current_wallpaper_layout_layout_;
   }
+  void add_dedup_key_to_wallpaper_info(const std::string& dedup_key) {
+    if (wallpaper_info_.has_value())
+      wallpaper_info_->dedup_key = dedup_key;
+  }
 
   // ash::WallpaperController:
   void SetClient(ash::WallpaperControllerClient* client) override;
@@ -96,6 +100,8 @@ class TestWallpaperController : public ash::WallpaperController {
                                   SetWallpaperCallback callback) override;
   void SetGooglePhotosWallpaper(const ash::GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
+  void SetGooglePhotosDailyRefreshAlbumId(const AccountId& account_id,
+                                          const std::string& album_id) override;
   std::string GetGooglePhotosDailyRefreshAlbumId(
       const AccountId& account_id) const override;
   bool SetDailyGooglePhotosWallpaperIdCache(

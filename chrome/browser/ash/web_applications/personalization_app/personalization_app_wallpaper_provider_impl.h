@@ -153,7 +153,7 @@ class PersonalizationAppWallpaperProviderImpl
       SelectGooglePhotosPhotoCallback callback) override;
 
   void SelectGooglePhotosAlbum(
-      const std::string& id,
+      const std::string& album_id,
       SelectGooglePhotosAlbumCallback callback) override;
 
   void GetGooglePhotosDailyRefreshAlbumId(
@@ -189,6 +189,7 @@ class PersonalizationAppWallpaperProviderImpl
 
  private:
   friend class PersonalizationAppWallpaperProviderImplTest;
+  friend class PersonalizationAppWallpaperProviderImplGooglePhotosTest;
 
   void OnFetchCollections(bool success,
                           const std::vector<backdrop::Collection>& collections);
@@ -203,6 +204,11 @@ class PersonalizationAppWallpaperProviderImpl
   void OnFetchGooglePhotosEnabled(
       FetchGooglePhotosEnabledCallback callback,
       ash::personalization_app::mojom::GooglePhotosEnablementState state);
+
+  void OnFetchGooglePhotosPhotos(
+      absl::optional<std::string> album_id,
+      FetchGooglePhotosPhotosCallback callback,
+      mojo::StructPtr<mojom::FetchGooglePhotosPhotosResponse> response);
 
   void OnGetDefaultImage(GetDefaultImageThumbnailCallback callback,
                          const gfx::ImageSkia& image);
@@ -222,10 +228,6 @@ class PersonalizationAppWallpaperProviderImpl
   // dropped if new requests come in.
   void OnGooglePhotosWallpaperSelected(bool success);
 
-  // Called after attempting to select a Google Photos album for daily refresh.
-  // Will be dropped if new requests come in.
-  void OnGooglePhotosAlbumSelected(bool success);
-
   // Called after attempting to select a local image. Will be dropped if new
   // requests come in.
   void OnLocalImageSelected(bool success);
@@ -233,6 +235,10 @@ class PersonalizationAppWallpaperProviderImpl
   // Called after attempting to update a daily refresh wallpaper. Will be
   // dropped if new requests come in.
   void OnDailyRefreshWallpaperUpdated(bool success);
+
+  // Called after forching the current wallpaper image to refresh as part of
+  // toggling on daily refresh mode.
+  void OnDailyRefreshWallpaperForced(bool success);
 
   void FindAttribution(
       const ash::WallpaperInfo& info,
@@ -330,6 +336,11 @@ class PersonalizationAppWallpaperProviderImpl
   // user wallpaper selections. This is filled when a user first visits the
   // Wallpaper subpage of Personalization App.
   std::map<uint64_t, ImageInfo> image_asset_id_map_;
+
+  // Stores the mapping of Google Photos album id to its photos' dedup keys.
+  // Used to determine whether an album contains the currently selected
+  // wallpaper image.
+  std::map<std::string, std::set<std::string>> album_id_dedup_key_map_;
 
   // When local images are fetched, store the valid file paths in the set. This
   // is checked when the SWA requests thumbnail data or sets an image as the

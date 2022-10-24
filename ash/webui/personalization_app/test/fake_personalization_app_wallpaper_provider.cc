@@ -139,7 +139,8 @@ void FakePersonalizationAppWallpaperProvider::SelectGooglePhotosPhoto(
 void FakePersonalizationAppWallpaperProvider::SelectGooglePhotosAlbum(
     const std::string& id,
     SelectGooglePhotosAlbumCallback callback) {
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(mojom::SetDailyRefreshResponse::New(
+      /*success=*/false, /*force_refresh=*/false));
 }
 
 void FakePersonalizationAppWallpaperProvider::

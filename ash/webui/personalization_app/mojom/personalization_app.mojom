@@ -165,6 +165,16 @@ struct FetchGooglePhotosPhotosResponse {
     string? resume_token;
 };
 
+// Represents the response to a daily refresh request.
+struct SetDailyRefreshResponse {
+  // Indicates whether the request is successful.
+  bool success;
+
+  // Indicates whether the request forces the current wallpaper image to
+  // refresh.
+  bool force_refresh;
+};
+
 // Represents the currently selected wallpaper image.
 struct CurrentWallpaper {
   // Attribution text such as "Photo by John Doe" or the file name of the local
@@ -278,8 +288,10 @@ interface WallpaperProvider {
         bool preview_mode) => (bool success);
 
     // Sets the Google Photos album with the given id as the daily refresh
+    // album. May refresh the current wallpaper image if it is not part of the
     // album.
-    SelectGooglePhotosAlbum(string id) => (bool success);
+    SelectGooglePhotosAlbum(string id)
+        => (SetDailyRefreshResponse response);
 
     // Gets the id of the current Google Photos album on daily refresh, or an
     // empty string if Google Photos daily refresh is not active.

@@ -110,6 +110,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
       const GooglePhotosWallpaperParams& params,
       SetWallpaperCallback callback) = 0;
 
+  // Sets and stores the collection id used to refresh Google Photos wallpapers.
+  // `album_id` is empty if daily refresh is not enabled.
+  virtual void SetGooglePhotosDailyRefreshAlbumId(
+      const AccountId& account_id,
+      const std::string& album_id) = 0;
+
   // Get the Google Photos daily refresh album id. Empty if
   // `current_wallpaper_.type` is not `kDailyGooglePhotos`
   virtual std::string GetGooglePhotosDailyRefreshAlbumId(

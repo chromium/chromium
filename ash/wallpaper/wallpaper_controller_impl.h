@@ -253,6 +253,8 @@ class ASH_EXPORT WallpaperControllerImpl
                                   SetWallpaperCallback callback) override;
   void SetGooglePhotosWallpaper(const GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
+  void SetGooglePhotosDailyRefreshAlbumId(const AccountId& account_id,
+                                          const std::string& album_id) override;
   std::string GetGooglePhotosDailyRefreshAlbumId(
       const AccountId& account_id) const override;
   bool SetDailyGooglePhotosWallpaperIdCache(

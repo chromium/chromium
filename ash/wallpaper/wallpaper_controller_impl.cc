@@ -1195,6 +1195,30 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
   }
 }
 
+void WallpaperControllerImpl::SetGooglePhotosDailyRefreshAlbumId(
+    const AccountId& account_id,
+    const std::string& album_id) {
+  WallpaperInfo info;
+  if (!GetUserWallpaperInfo(account_id, &info)) {
+    LOG(ERROR) << __func__ << " Failed to get user wallpaper info.";
+    return;
+  }
+
+  // If daily refresh is being enabled.
+  if (!album_id.empty()) {
+    info.type = WallpaperType::kDailyGooglePhotos;
+    info.collection_id = album_id;
+  }
+
+  // If Daily Refresh is disabled without selecting another wallpaper, we should
+  // keep the current wallpaper and change to type
+  // `WallpaperType::kOnceGooglePhotos`, so daily refreshes stop.
+  if (album_id.empty() && info.type == WallpaperType::kDailyGooglePhotos) {
+    info.type = WallpaperType::kOnceGooglePhotos;
+  }
+  SetUserWallpaperInfo(account_id, info);
+}
+
 std::string WallpaperControllerImpl::GetGooglePhotosDailyRefreshAlbumId(
     const AccountId& account_id) const {
   absl::optional<WallpaperInfo> info = GetActiveUserWallpaperInfo();

@@ -89,6 +89,15 @@ void TestWallpaperController::SetGooglePhotosWallpaper(
   std::move(callback).Run(/*success=*/true);
 }
 
+void TestWallpaperController::SetGooglePhotosDailyRefreshAlbumId(
+    const AccountId& account_id,
+    const std::string& album_id) {
+  if (!wallpaper_info_)
+    wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kDailyGooglePhotos;
+  wallpaper_info_->collection_id = album_id;
+}
+
 std::string TestWallpaperController::GetGooglePhotosDailyRefreshAlbumId(
     const AccountId& account_id) const {
   if (!wallpaper_info_.has_value() ||

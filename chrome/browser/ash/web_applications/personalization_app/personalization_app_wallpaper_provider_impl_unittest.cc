@@ -543,6 +543,13 @@ class PersonalizationAppWallpaperProviderImplGooglePhotosTest
     wallpaper_provider_remote()->FlushForTesting();
   }
 
+  void AddToAlbumIdMap(const std::string& album_id,
+                       const std::string& dedup_key) {
+    std::set<std::string> dedup_keys;
+    dedup_keys.insert(dedup_key);
+    delegate()->album_id_dedup_key_map_.insert({album_id, dedup_keys});
+  }
+
   // The number of times to start each idempotent API query.
   static constexpr size_t kNumFetches = 2;
   // Resume token value used across several tests.
@@ -1000,6 +1007,71 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                  /*preview_mode=*/false, "dedup_key"}) ==
                 test_wallpaper_controller()->wallpaper_info().value_or(
                     ash::WallpaperInfo()));
+}
+
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
+       SelectGooglePhotosAlbum) {
+  test_wallpaper_controller()->ClearCounts();
+  const std::string album_id = "OmnisVirLupus";
+  bool feature_enabled = GooglePhotosEnabled();
+
+  // Test selecting an album before fetching the enterprise setting.
+  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
+      album_id, base::BindLambdaForTesting(
+                    [](mojom::SetDailyRefreshResponsePtr response) {
+                      EXPECT_FALSE(response->success);
+                    }));
+  wallpaper_provider_remote()->FlushForTesting();
+
+  // Test selecting an album after fetching the enterprise setting.
+  FetchGooglePhotosEnabled();
+  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
+      album_id,
+      base::BindLambdaForTesting(
+          [feature_enabled](mojom::SetDailyRefreshResponsePtr response) {
+            EXPECT_EQ(response->success, feature_enabled);
+            EXPECT_EQ(response->force_refresh, feature_enabled);
+          }));
+  wallpaper_provider_remote()->FlushForTesting();
+}
+
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
+       SelectGooglePhotosAlbum_WithoutForcingRefresh) {
+  test_wallpaper_controller()->ClearCounts();
+  const std::string album_id = "OmnisVirLupus";
+  const std::string photo_id = "DummyPhotoId";
+  bool feature_enabled = GooglePhotosEnabled();
+
+  // Test selecting an album before fetching the enterprise setting.
+  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
+      album_id, base::BindLambdaForTesting(
+                    [](mojom::SetDailyRefreshResponsePtr response) {
+                      EXPECT_FALSE(response->success);
+                    }));
+  wallpaper_provider_remote()->FlushForTesting();
+
+  // Test selecting an album after fetching the enterprise setting.
+  FetchGooglePhotosEnabled();
+
+  wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
+      photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false,
+      base::BindLambdaForTesting([feature_enabled](bool success) {
+        EXPECT_EQ(success, feature_enabled);
+      }));
+  wallpaper_provider_remote()->FlushForTesting();
+
+  AddToAlbumIdMap(album_id, photo_id);
+  test_wallpaper_controller()->add_dedup_key_to_wallpaper_info(photo_id);
+  wallpaper_provider_remote()->get()->SelectGooglePhotosAlbum(
+      album_id,
+      base::BindLambdaForTesting(
+          [feature_enabled](mojom::SetDailyRefreshResponsePtr response) {
+            EXPECT_EQ(response->success, feature_enabled);
+            if (feature_enabled)
+              EXPECT_FALSE(response->force_refresh);
+          }));
+  wallpaper_provider_remote()->FlushForTesting();
 }
 
 }  // namespace ash::personalization_app
