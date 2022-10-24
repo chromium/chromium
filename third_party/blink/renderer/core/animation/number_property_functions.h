@@ -12,6 +12,7 @@
 namespace blink {
 
 class ComputedStyle;
+class ComputedStyleBuilder;
 class CSSProperty;
 
 class NumberPropertyFunctions {
@@ -24,7 +25,10 @@ class NumberPropertyFunctions {
   static absl::optional<double> GetNumber(const CSSProperty&,
                                           const ComputedStyle&);
   static double ClampNumber(const CSSProperty&, double);
-  static bool SetNumber(const CSSProperty&, ComputedStyle&, double);
+  static bool SetNumber(const CSSProperty&,
+                        ComputedStyle&,
+                        ComputedStyleBuilder&,
+                        double);
 };
 
 }  // namespace blink

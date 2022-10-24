@@ -1680,6 +1680,7 @@
       style_builder_custom_functions: ["inherit", "value"],
       keywords: ["baseline", "sub", "super"],
       typedom_types: ["Keyword", "Percentage", "Length"],
+      readonly: true,
     },
     {
       name: "border-bottom-color",
@@ -2661,6 +2662,7 @@
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "flood-opacity",
@@ -2673,6 +2675,7 @@
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "grid-auto-columns",
@@ -2972,6 +2975,7 @@
       converter: "ConvertStyleColor",
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "line-height",
@@ -4319,6 +4323,7 @@
       converter: "ConvertStyleColor",
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "stop-opacity",
@@ -4330,6 +4335,7 @@
       default_value: "1",
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "stroke",
@@ -4349,6 +4355,7 @@
       },
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      readonly: true,
     },
     {
       name: "stroke-dasharray",
@@ -4365,6 +4372,7 @@
       converter: "ConvertStrokeDasharray",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "stroke-dashoffset",
@@ -4378,6 +4386,7 @@
       name_for_methods: "StrokeDashOffset",
       converter: "ConvertLength",
       typedom_types: ["Length", "Percentage"],
+      readonly: true,
     },
     {
       name: "stroke-linecap",
@@ -4391,6 +4400,7 @@
       name_for_methods: "CapStyle",
       keywords: ["butt", "round", "square"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "stroke-linejoin",
@@ -4404,6 +4414,7 @@
       name_for_methods: "JoinStyle",
       keywords: ["miter", "bevel", "round"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "stroke-miterlimit",
@@ -4416,6 +4427,7 @@
       default_value: "4",
       name_for_methods: "StrokeMiterLimit",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "stroke-opacity",
@@ -4428,6 +4440,7 @@
       default_value: "1",
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "stroke-width",
@@ -4443,6 +4456,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      readonly: true,
     },
     {
       name: "table-layout",

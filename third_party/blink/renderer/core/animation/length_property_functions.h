@@ -13,6 +13,7 @@
 namespace blink {
 
 class ComputedStyle;
+class ComputedStyleBuilder;
 class CSSProperty;
 
 class LengthPropertyFunctions {
@@ -30,7 +31,10 @@ class LengthPropertyFunctions {
   static bool GetLength(const CSSProperty&,
                         const ComputedStyle&,
                         Length& result);
-  static bool SetLength(const CSSProperty&, ComputedStyle&, const Length&);
+  static bool SetLength(const CSSProperty&,
+                        ComputedStyle&,
+                        ComputedStyleBuilder&,
+                        const Length&);
 };
 
 }  // namespace blink

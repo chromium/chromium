@@ -49,7 +49,6 @@ class ColorPropertyFunctions {
                                 ComputedStyleBuilder&,
                                 const Color&);
   static void SetVisitedColor(const CSSProperty&,
-                              ComputedStyle&,
                               ComputedStyleBuilder&,
                               const Color&);
 };

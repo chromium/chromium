@@ -132,11 +132,11 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
       interpolable_color, state);
   switch (CssProperty().PropertyID()) {
     case CSSPropertyID::kFill:
-      state.Style()->SetFillPaint(SVGPaint(color));
+      builder.SetFillPaint(SVGPaint(color));
       builder.SetInternalVisitedFillPaint(SVGPaint(color));
       break;
     case CSSPropertyID::kStroke:
-      state.Style()->SetStrokePaint(SVGPaint(color));
+      builder.SetStrokePaint(SVGPaint(color));
       builder.SetInternalVisitedStrokePaint(SVGPaint(color));
       break;
     default:

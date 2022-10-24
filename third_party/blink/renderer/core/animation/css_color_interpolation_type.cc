@@ -331,7 +331,7 @@ void CSSColorInterpolationType::ApplyStandardPropertyValue(
           *color_pair.Get(kUnvisited), state, false,
           CssProperty().PropertyID() == CSSPropertyID::kTextDecorationColor));
   ColorPropertyFunctions::SetVisitedColor(
-      CssProperty(), *state.Style(), state.StyleBuilder(),
+      CssProperty(), state.StyleBuilder(),
       ResolveInterpolableColor(
           *color_pair.Get(kVisited), state, true,
           CssProperty().PropertyID() == CSSPropertyID::kTextDecorationColor));

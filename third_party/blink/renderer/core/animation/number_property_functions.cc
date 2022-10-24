@@ -129,6 +129,7 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
 
 bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
                                         ComputedStyle& style,
+                                        ComputedStyleBuilder& builder,
                                         double value) {
   DCHECK_EQ(value, ClampNumber(property, value));
   switch (property.PropertyID()) {
@@ -142,7 +143,7 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       style.SetFlexShrink(value);
       return true;
     case CSSPropertyID::kFloodOpacity:
-      style.SetFloodOpacity(value);
+      builder.SetFloodOpacity(value);
       return true;
     case CSSPropertyID::kLineHeight:
       style.SetLineHeight(Length::Percent(value * 100));
@@ -163,13 +164,13 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       style.SetShapeImageThreshold(value);
       return true;
     case CSSPropertyID::kStopOpacity:
-      style.SetStopOpacity(value);
+      builder.SetStopOpacity(value);
       return true;
     case CSSPropertyID::kStrokeMiterlimit:
-      style.SetStrokeMiterLimit(value);
+      builder.SetStrokeMiterLimit(value);
       return true;
     case CSSPropertyID::kStrokeOpacity:
-      style.SetStrokeOpacity(value);
+      builder.SetStrokeOpacity(value);
       return true;
     case CSSPropertyID::kColumnCount:
       style.SetColumnCount(value);

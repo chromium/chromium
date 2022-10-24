@@ -136,12 +136,14 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
   ComputedStyle& style = *state.Style();
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   float zoom = EffectiveZoom(style);
   CSSToLengthConversionData conversion_data =
       state.CssToLengthConversionData().CopyWithAdjustedZoom(zoom);
   Length length = To<InterpolableLength>(interpolable_value)
                       .CreateLength(conversion_data, value_range_);
-  if (LengthPropertyFunctions::SetLength(CssProperty(), style, length)) {
+  if (LengthPropertyFunctions::SetLength(CssProperty(), style, builder,
+                                         length)) {
 #if DCHECK_IS_ON()
     // Assert that setting the length on ComputedStyle directly is identical to
     // the StyleBuilder code path. This check is useful for catching differences

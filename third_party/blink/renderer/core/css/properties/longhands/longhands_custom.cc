@@ -754,12 +754,14 @@ const CSSValue* BaselineShift::CSSValueFromComputedStyleInternal(
 }
 
 void BaselineShift::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetBaselineShiftType(state.ParentStyle()->BaselineShiftType());
-  state.Style()->SetBaselineShift(state.ParentStyle()->BaselineShift());
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetBaselineShiftType(state.ParentStyle()->BaselineShiftType());
+  builder.SetBaselineShift(state.ParentStyle()->BaselineShift());
 }
 
 void BaselineShift::ApplyValue(StyleResolverState& state,
                                const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     EBaselineShiftType baseline_shift_type = EBaselineShiftType::kLength;
     switch (identifier_value->GetValueID()) {
@@ -775,11 +777,11 @@ void BaselineShift::ApplyValue(StyleResolverState& state,
       default:
         NOTREACHED();
     }
-    state.Style()->SetBaselineShiftType(baseline_shift_type);
-    state.Style()->SetBaselineShift(Length::Fixed());
+    builder.SetBaselineShiftType(baseline_shift_type);
+    builder.SetBaselineShift(Length::Fixed());
   } else {
-    state.Style()->SetBaselineShiftType(EBaselineShiftType::kLength);
-    state.Style()->SetBaselineShift(StyleBuilderConverter::ConvertLength(
+    builder.SetBaselineShiftType(EBaselineShiftType::kLength);
+    builder.SetBaselineShift(StyleBuilderConverter::ConvertLength(
         state, To<CSSPrimitiveValue>(value)));
   }
 }

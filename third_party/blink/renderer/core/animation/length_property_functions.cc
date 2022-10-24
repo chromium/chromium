@@ -321,12 +321,13 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
 
 bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
                                         ComputedStyle& style,
+                                        ComputedStyleBuilder& builder,
                                         const Length& value) {
   switch (property.PropertyID()) {
     // Setters that take a Length value.
     case CSSPropertyID::kBaselineShift:
-      style.SetBaselineShiftType(EBaselineShiftType::kLength);
-      style.SetBaselineShift(value);
+      builder.SetBaselineShiftType(EBaselineShiftType::kLength);
+      builder.SetBaselineShift(value);
       return true;
     case CSSPropertyID::kBottom:
       style.SetBottom(value);
@@ -401,7 +402,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetShapeMargin(value);
       return true;
     case CSSPropertyID::kStrokeDashoffset:
-      style.SetStrokeDashOffset(value);
+      builder.SetStrokeDashOffset(value);
       return true;
     case CSSPropertyID::kTop:
       style.SetTop(value);

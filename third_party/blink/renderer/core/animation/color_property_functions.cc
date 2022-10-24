@@ -145,16 +145,16 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
       builder.SetColor(style_color);
       return;
     case CSSPropertyID::kFloodColor:
-      style.SetFloodColor(style_color);
+      builder.SetFloodColor(style_color);
       return;
     case CSSPropertyID::kLightingColor:
-      style.SetLightingColor(style_color);
+      builder.SetLightingColor(style_color);
       return;
     case CSSPropertyID::kOutlineColor:
       style.SetOutlineColor(style_color);
       return;
     case CSSPropertyID::kStopColor:
-      style.SetStopColor(style_color);
+      builder.SetStopColor(style_color);
       return;
     case CSSPropertyID::kTextDecorationColor:
       style.SetTextDecorationColor(style_color);
@@ -175,7 +175,6 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
 }
 
 void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
-                                             ComputedStyle& style,
                                              ComputedStyleBuilder& builder,
                                              const Color& color) {
   StyleColor style_color(color);
@@ -205,16 +204,16 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       builder.SetInternalVisitedColor(style_color);
       return;
     case CSSPropertyID::kFloodColor:
-      style.SetFloodColor(style_color);
+      builder.SetFloodColor(style_color);
       return;
     case CSSPropertyID::kLightingColor:
-      style.SetLightingColor(style_color);
+      builder.SetLightingColor(style_color);
       return;
     case CSSPropertyID::kOutlineColor:
       builder.SetInternalVisitedOutlineColor(style_color);
       return;
     case CSSPropertyID::kStopColor:
-      style.SetStopColor(style_color);
+      builder.SetStopColor(style_color);
       return;
     case CSSPropertyID::kTextDecorationColor:
       builder.SetInternalVisitedTextDecorationColor(style_color);
