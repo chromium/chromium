@@ -20213,7 +20213,6 @@
         "policies": {},
         "prefs": {
           "settings.input.hindi_inscript_layout_enabled": {
-            "location": "local_state",
             "default_value": false
           }
         }
@@ -20224,7 +20223,6 @@
         },
         "prefs": {
           "settings.input.hindi_inscript_layout_enabled": {
-            "location": "local_state",
             "value": false
           }
         }
@@ -20235,7 +20233,6 @@
         },
         "prefs": {
           "settings.input.hindi_inscript_layout_enabled": {
-            "location": "local_state",
             "value": true
           }
         }
