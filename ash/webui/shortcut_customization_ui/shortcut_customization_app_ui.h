@@ -39,12 +39,14 @@ class ShortcutCustomizationAppUI : public ui::MojoWebUIController {
       delete;
   ~ShortcutCustomizationAppUI() override;
 
- private:
   void BindInterface(
       mojo::PendingReceiver<
           shortcut_customization::mojom::AcceleratorConfigurationProvider>
           receiver);
+
+ private:
   std::unique_ptr<shortcut_ui::AcceleratorConfigurationProvider> provider_;
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace ash

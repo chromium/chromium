@@ -87,4 +87,5 @@ void ShortcutCustomizationAppUI::BindInterface(
   provider_->BindInterface(std::move(receiver));
 }
 
+WEB_UI_CONTROLLER_TYPE_IMPL(ShortcutCustomizationAppUI)
 }  // namespace ash

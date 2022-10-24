@@ -5216,6 +5216,7 @@ static_library("browser") {
       "//ash/webui/shimless_rma",
       "//ash/webui/shimless_rma/mojom",
       "//ash/webui/shortcut_customization_ui",
+      "//ash/webui/shortcut_customization_ui/mojom",
       "//ash/webui/system_extensions_internals_ui",
       "//ash/webui/system_extensions_internals_ui/mojom",
       "//build:chromeos_buildflags",

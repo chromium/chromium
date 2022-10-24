@@ -250,6 +250,8 @@
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
+#include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
+#include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/mojom/system_extensions_internals_ui.mojom.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_impl.h"
@@ -1218,6 +1220,12 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::shimless_rma::mojom::ShimlessRmaService, ash::ShimlessRMADialogUI>(
         map);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kShortcutCustomizationApp)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::shortcut_customization::mojom::AcceleratorConfigurationProvider,
+        ash::ShortcutCustomizationAppUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<
