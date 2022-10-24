@@ -48,7 +48,6 @@
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
@@ -1753,8 +1752,8 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
   // If partitioned storage is enabled, the quota node is used to represent all
   // types of quota managed storage. If not, the quota node type is excluded as
   // it is represented by other types.
-  bool use_quota_only = base::FeatureList::IsEnabled(
-      net::features::kThirdPartyStoragePartitioning);
+  bool use_quota_only =
+      blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
 
   // Types managed by Quota:
   auto database_helper =
