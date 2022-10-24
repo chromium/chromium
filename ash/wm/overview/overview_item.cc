@@ -257,8 +257,16 @@ void OverviewItem::RevertHideForDesksTemplatesGrid(bool animate) {
   ShowWindowInOverview();
 
   // `item_widget_` may be null during shutdown if the window is minimized.
-  if (item_widget_)
+  if (item_widget_) {
+    // When a template is being launched, this overview item will be hidden
+    // first so that the library widget fade out animation can take place. Once
+    // the fade out animation is done, the hide will be reverted. Here we need
+    // to make sure header and shadow are sync'ed with the item window.
+    UpdateHeaderLayout(OVERVIEW_ANIMATION_NONE);
+    UpdateRoundedCornersAndShadow();
+
     PerformFadeInLayer(item_widget_->GetLayer(), animate);
+  }
 
   for (aura::Window* transient_child :
        GetTransientTreeIterator(transform_window_.window())) {
@@ -454,15 +462,20 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   } else {
     gfx::RectF inset_bounds(target_bounds);
     SetItemBounds(inset_bounds, new_animation_type, is_first_update);
-    UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
-                                       : new_animation_type);
+
+    // Update header only when the overview item window is visible.
+    if (GetWindow()->IsVisible()) {
+      UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
+                                         : new_animation_type);
+    }
   }
 
   // Shadow is normally set after an animation is finished. In the case of no
   // animations, manually set the shadow. Shadow relies on both the window
   // transform and |item_widget_|'s new bounds so set it after SetItemBounds
-  // and UpdateHeaderLayout. Do not apply the shadow for drop target.
-  if (new_animation_type == OVERVIEW_ANIMATION_NONE)
+  // and UpdateHeaderLayout. Do not apply the shadow for drop target. In
+  // addition, only update shadow when the overview item window is visible.
+  if (new_animation_type == OVERVIEW_ANIMATION_NONE && GetWindow()->IsVisible())
     UpdateRoundedCornersAndShadow();
 
   if (cannot_snap_widget_) {
@@ -1444,8 +1457,11 @@ void OverviewItem::HideWindowInOverview() {
       overview_session_->hide_windows_for_saved_desks_grid();
   DCHECK(hide_windows);
 
+  // Hide the application window.
   if (!hide_windows->HasWindow(GetWindow()))
     hide_windows->AddWindow(GetWindow());
+
+  // Hide the overview item window.
   if (item_widget_ && !hide_windows->HasWindow(item_widget_->GetNativeWindow()))
     hide_windows->AddWindow(item_widget_->GetNativeWindow());
 }
@@ -1455,8 +1471,15 @@ void OverviewItem::ShowWindowInOverview() {
       overview_session_->hide_windows_for_saved_desks_grid();
   DCHECK(hide_windows);
 
-  if (hide_windows->HasWindow(GetWindow()))
+  // Hide the application window. Also make sure to ignore activation for this
+  // application window, so that it remains in overview.
+  if (hide_windows->HasWindow(GetWindow())) {
+    overview_session_->set_ignore_activations(true);
     hide_windows->RemoveWindow(GetWindow());
+    overview_session_->set_ignore_activations(false);
+  }
+
+  // Show the overview item window.
   if (item_widget_ && hide_windows->HasWindow(item_widget_->GetNativeWindow()))
     hide_windows->RemoveWindow(item_widget_->GetNativeWindow());
 }
