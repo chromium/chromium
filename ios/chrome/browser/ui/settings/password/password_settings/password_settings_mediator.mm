@@ -70,7 +70,7 @@
   // correct initial value for `canExportPasswords` or else the export button
   // will not behave correctly on load.
   self.exporterIsReady = self.passwordExporter.exportState == ExportState::IDLE;
-  [self savedPasswordsDidChanged:_savedPasswordsPresenter->GetSavedPasswords()];
+  [self savedPasswordsDidChange:_savedPasswordsPresenter->GetSavedPasswords()];
 
   // TODO(crbug.com/1335156): Replace placeholder data with actual data piped
   // from observing pref and enterprise policy.
@@ -128,7 +128,9 @@
   [self pushExportStateToConsumerAndUpdate];
 }
 
-- (void)savedPasswordsDidChanged:
+#pragma mark - SavedPasswordsPresenterObserver
+
+- (void)savedPasswordsDidChange:
     (password_manager::SavedPasswordsPresenter::SavedPasswordsView)passwords {
   self.hasSavedPasswords = !passwords.empty();
   [self pushExportStateToConsumerAndUpdate];

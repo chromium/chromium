@@ -21,5 +21,5 @@ SavedPasswordsPresenterObserverBridge::
 
 void SavedPasswordsPresenterObserverBridge::OnSavedPasswordsChanged(
     password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords) {
-  [delegate_ savedPasswordsDidChanged:passwords];
+  [delegate_ savedPasswordsDidChange:passwords];
 }
