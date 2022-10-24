@@ -23,9 +23,6 @@ BASE_DECLARE_FEATURE(kOnDeviceClusteringContentClustering);
 // Uses an in-memory cache that stores engagement score.
 BASE_DECLARE_FEATURE(kUseEngagementScoreCache);
 
-// Splits clustering task into smaller batches.
-BASE_DECLARE_FEATURE(kSplitClusteringTasksToSmallerBatches);
-
 // Specifies various blocklists for on-device clustering backend.
 BASE_DECLARE_FEATURE(kOnDeviceClusteringBlocklists);
 
