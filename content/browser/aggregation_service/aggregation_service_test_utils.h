@@ -163,6 +163,11 @@ class MockAggregationService : public AggregationService {
               (AggregatableReportRequest report_request),
               (override));
 
+  MOCK_METHOD(void,
+              AssembleAndSendReport,
+              (AggregatableReportRequest report_request),
+              (override));
+
   MOCK_METHOD(
       void,
       GetPendingReportRequestsForWebUI,
@@ -183,10 +188,12 @@ class MockAggregationService : public AggregationService {
   void NotifyRequestStorageModified();
 
   // `report_handled_time` indicates when the report has been handled.
-  void NotifyReportHandled(AggregationServiceStorage::RequestAndId request,
-                           absl::optional<AggregatableReport> report,
-                           base::Time report_handled_time,
-                           AggregationServiceObserver::ReportStatus status);
+  void NotifyReportHandled(
+      const AggregatableReportRequest& request,
+      absl::optional<AggregationServiceStorage::RequestId> id,
+      absl::optional<AggregatableReport> report,
+      base::Time report_handled_time,
+      AggregationServiceObserver::ReportStatus status);
 
  private:
   base::ObserverList<AggregationServiceObserver, /*check_empty=*/true>

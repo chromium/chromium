@@ -406,12 +406,13 @@ void MockAggregationService::NotifyRequestStorageModified() {
 }
 
 void MockAggregationService::NotifyReportHandled(
-    AggregationServiceStorage::RequestAndId request,
+    const AggregatableReportRequest& request,
+    absl::optional<AggregationServiceStorage::RequestId> id,
     absl::optional<AggregatableReport> report,
     base::Time report_handled_time,
     AggregationServiceObserver::ReportStatus status) {
   for (auto& observer : observers_)
-    observer.OnReportHandled(request, report, report_handled_time, status);
+    observer.OnReportHandled(request, id, report, report_handled_time, status);
 }
 
 AggregatableReportRequestsAndIdsBuilder::

@@ -179,7 +179,8 @@ function reportStatusToText(status: ReportStatus) {
 }
 
 class Report extends Selectable {
-  id: AggregatableReportRequestID;
+  // `undefined` indicates a report that wasn't stored/scheduled.
+  id: AggregatableReportRequestID|undefined;
   reportBody: string;
   reportUrl: string;
   reportTime: Date;
@@ -198,8 +199,8 @@ class Report extends Selectable {
     this.apiIdentifier = mojo.apiIdentifier;
     this.apiVersion = mojo.apiVersion;
 
-    // Only pending reports are selectable.
-    if (mojo.status !== ReportStatus.kPending) {
+    // Only pending stored/scheduled reports are selectable.
+    if (mojo.status !== ReportStatus.kPending || mojo.id === undefined) {
       this.selectCheckbox.disabled = true;
     }
 
@@ -287,7 +288,7 @@ class ReportTableModel extends TableModel<Report> {
     const ids: AggregatableReportRequestID[] = [];
     this.storedReports.forEach((report) => {
       if (!report.selectCheckbox.disabled && report.selectCheckbox.checked) {
-        ids.push(report.id);
+        ids.push(report.id as AggregatableReportRequestID);
       }
     });
 

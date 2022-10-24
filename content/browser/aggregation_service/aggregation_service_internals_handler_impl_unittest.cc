@@ -55,13 +55,13 @@ class MockObserver : public aggregation_service_internals::mojom::Observer {
 void VerifyWebUIAggregatableReport(
     const aggregation_service_internals::mojom::WebUIAggregatableReport&
         web_report,
-    const AggregationServiceStorage::RequestAndId& request_and_id,
+    const AggregatableReportRequest& request,
+    absl::optional<AggregationServiceStorage::RequestId> id,
     const absl::optional<AggregatableReport>& report,
     base::Time report_time,
     aggregation_service_internals::mojom::ReportStatus status) {
-  EXPECT_EQ(web_report.id, request_and_id.id);
+  EXPECT_EQ(web_report.id, id);
 
-  const AggregatableReportRequest& request = request_and_id.request;
   EXPECT_EQ(web_report.report_time, report_time.ToJsTime());
   EXPECT_EQ(web_report.api_identifier, request.shared_info().api_identifier);
   EXPECT_EQ(web_report.api_version, request.shared_info().api_version);
@@ -141,13 +141,13 @@ class AggregationServiceInternalsHandlerImplTest
     internals_handler_->OnRequestStorageModified();
   }
 
-  void OnReportHandled(
-      const AggregationServiceStorage::RequestAndId& request_and_id,
-      const absl::optional<AggregatableReport>& report,
-      base::Time actual_report_time,
-      AggregationServiceObserver::ReportStatus status) {
-    internals_handler_->OnReportHandled(request_and_id, report,
-                                        actual_report_time, status);
+  void OnReportHandled(const AggregatableReportRequest& request,
+                       absl::optional<AggregationServiceStorage::RequestId> id,
+                       const absl::optional<AggregatableReport>& report,
+                       base::Time actual_report_time,
+                       AggregationServiceObserver::ReportStatus status) {
+    internals_handler_->OnReportHandled(request, id, report, actual_report_time,
+                                        status);
   }
 
   TestWebUI web_ui_;
@@ -157,10 +157,9 @@ class AggregationServiceInternalsHandlerImplTest
 };
 
 TEST_F(AggregationServiceInternalsHandlerImplTest, GetReports) {
-  AggregationServiceStorage::RequestAndId request_and_id{
-      .request = aggregation_service::CreateExampleRequest(),
-      .id = AggregationServiceStorage::RequestId(20),
-  };
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+  AggregationServiceStorage::RequestId id{20};
 
   EXPECT_CALL(*aggregation_service_, GetPendingReportRequestsForWebUI)
       .WillOnce([&](base::OnceCallback<void(
@@ -168,9 +167,8 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, GetReports) {
                         callback) {
         std::move(callback).Run(
             AggregatableReportRequestsAndIdsBuilder()
-                .AddRequestWithID(aggregation_service::CloneReportRequest(
-                                      request_and_id.request),
-                                  request_and_id.id)
+                .AddRequestWithID(
+                    aggregation_service::CloneReportRequest(request), id)
                 .Build());
       });
 
@@ -181,8 +179,8 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, GetReports) {
               reports) {
         ASSERT_EQ(reports.size(), 1u);
         VerifyWebUIAggregatableReport(
-            *reports.front(), request_and_id, /*report=*/absl::nullopt,
-            request_and_id.request.shared_info().scheduled_report_time,
+            *reports.front(), request, id, /*report=*/absl::nullopt,
+            request.shared_info().scheduled_report_time,
             aggregation_service_internals::mojom::ReportStatus::kPending);
         run_loop.Quit();
       }));
@@ -239,26 +237,60 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled) {
       .WillOnce(testing::DoAll(base::test::RunClosure(run_loop.QuitClosure()),
                                MoveArg<0>(&web_report)));
 
-  AggregationServiceStorage::RequestAndId request_and_id{
-      .request = aggregation_service::CreateExampleRequest(),
-      .id = AggregationServiceStorage::RequestId(5),
-  };
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+  AggregationServiceStorage::RequestId id{5};
 
   aggregation_service::TestHpkeKey hpke_key =
       aggregation_service::GenerateKey("id123");
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          request_and_id.request, {hpke_key.public_key});
+          request, {hpke_key.public_key});
 
   base::Time now = base::Time::Now();
 
-  OnReportHandled(request_and_id, report, /*actual_report_time=*/now,
+  OnReportHandled(request, id, report, /*actual_report_time=*/now,
                   AggregationServiceObserver::ReportStatus::kSent);
   run_loop.Run();
 
   ASSERT_TRUE(web_report);
   VerifyWebUIAggregatableReport(
-      *web_report, request_and_id, report, now,
+      *web_report, request, id, report, now,
+      aggregation_service_internals::mojom::ReportStatus::kSent);
+}
+
+TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled_NoId) {
+  MockObserver observer;
+  mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver(
+      &observer);
+  internals_handler_->AddObserver(receiver.BindNewPipeAndPassRemote(),
+                                  base::DoNothing());
+
+  aggregation_service_internals::mojom::WebUIAggregatableReportPtr web_report;
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnReportHandled)
+      .WillOnce(testing::DoAll(base::test::RunClosure(run_loop.QuitClosure()),
+                               MoveArg<0>(&web_report)));
+
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+
+  aggregation_service::TestHpkeKey hpke_key =
+      aggregation_service::GenerateKey("id123");
+  absl::optional<AggregatableReport> report =
+      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
+          request, {hpke_key.public_key});
+
+  base::Time now = base::Time::Now();
+
+  OnReportHandled(request, /*id=*/absl::nullopt, report,
+                  /*actual_report_time=*/now,
+                  AggregationServiceObserver::ReportStatus::kSent);
+  run_loop.Run();
+
+  ASSERT_TRUE(web_report);
+  VerifyWebUIAggregatableReport(
+      *web_report, request, /*id=*/absl::nullopt, report, now,
       aggregation_service_internals::mojom::ReportStatus::kSent);
 }
 

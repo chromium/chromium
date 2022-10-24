@@ -81,6 +81,7 @@ class CONTENT_EXPORT AggregationServiceImpl
                  StoragePartition::StorageKeyMatcherFunction filter,
                  base::OnceClosure done) override;
   void ScheduleReport(AggregatableReportRequest report_request) override;
+  void AssembleAndSendReport(AggregatableReportRequest report_request) override;
   void GetPendingReportRequestsForWebUI(
       base::OnceCallback<
           void(std::vector<AggregationServiceStorage::RequestAndId>)> callback)
@@ -111,31 +112,38 @@ class CONTENT_EXPORT AggregationServiceImpl
   void OnScheduledReportTimeReached(
       std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids);
 
+  void AssembleAndSendReports(
+      std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids,
+      base::RepeatingClosure done);
+
+  // `request_id` is `absl::nullopt` iff `report_request` was not
+  // stored/scheduled.
+  void AssembleAndSendReportImpl(
+      AggregatableReportRequest report_request,
+      absl::optional<AggregationServiceStorage::RequestId> request_id,
+      base::OnceClosure done);
   void OnReportAssemblyComplete(
       base::OnceClosure done,
-      AggregationServiceStorage::RequestId request_id,
+      absl::optional<AggregationServiceStorage::RequestId> request_id,
       GURL reporting_url,
       AggregatableReportRequest report_request,
       absl::optional<AggregatableReport> report,
       AggregatableReportAssembler::AssemblyStatus status);
-
   void OnReportSendingComplete(
       base::OnceClosure done,
-      AggregationServiceStorage::RequestAndId request_and_id,
+      AggregatableReportRequest report_request,
+      absl::optional<AggregationServiceStorage::RequestId> request_id,
       AggregatableReport report,
       AggregatableReportSender::RequestStatus status);
-
-  void AssembleAndSendReports(
-      std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids,
-      base::RepeatingClosure done);
 
   void OnGetRequestsToSendFromWebUI(
       base::OnceClosure reports_sent_callback,
       std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids);
 
   void NotifyReportHandled(
-      AggregationServiceStorage::RequestAndId request_and_id,
-      absl::optional<AggregatableReport> report,
+      const AggregatableReportRequest& request,
+      absl::optional<AggregationServiceStorage::RequestId> request_id,
+      const absl::optional<AggregatableReport>& report,
       AggregationServiceObserver::ReportStatus status);
 
   void NotifyRequestStorageModified();

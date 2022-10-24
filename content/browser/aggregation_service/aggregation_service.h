@@ -54,6 +54,8 @@ class AggregationService {
   virtual void AssembleReport(AggregatableReportRequest report_request,
                               AssemblyCallback callback) = 0;
 
+  // TODO(alexmt): Consider removing `SendReport()`.
+
   // Sends an aggregatable report to the reporting endpoint `url`.
   virtual void SendReport(const GURL& url,
                           const AggregatableReport& report,
@@ -80,6 +82,10 @@ class AggregationService {
   // time. It is stored on disk (unless in incognito) until then. See the
   // `AggregatableReportScheduler` for details.
   virtual void ScheduleReport(AggregatableReportRequest report_request) = 0;
+
+  // Immediately assembles and then sends `report_request`.
+  virtual void AssembleAndSendReport(
+      AggregatableReportRequest report_request) = 0;
 
   // Gets all pending report requests that are currently stored. Used for
   // populating WebUI.
