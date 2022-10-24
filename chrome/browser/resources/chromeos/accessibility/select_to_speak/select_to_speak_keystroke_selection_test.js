@@ -97,6 +97,26 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
         '</script>' +
         '<body onload="doSelection()">' + bodyHtml + '</body>';
   }
+
+  /**
+   * Function to set the value property and the text selection properties of
+   * the given node using a text value, a start index, and an end index. It
+   * keeps trying to set and wait for textSelStart and textSelEnd until these
+   * text selection properties are set with the given indices, respectively.
+   * @param {AutomationNode} node The automation node to be set.
+   * @param {string} text The text to be set to the node's value property.
+   * @param {number} startIndex The index in the text field where focus starts.
+   * @param {number} endIndex The index in the text field where focus ends.
+   */
+  async setValueAndTextSelection(node, value, startIndex, endIndex) {
+    node.setValue(value);
+    await this.waitForEvent(node, 'valueChanged');
+
+    while (node.textSelStart !== startIndex || node.textSelEnd !== endIndex) {
+      node.setSelection(startIndex, endIndex);
+      await this.waitForEvent(node, 'textSelectionChanged');
+    }
+  }
 };
 
 AX_TEST_F(
@@ -623,6 +643,7 @@ AX_TEST_F(
       this.assertEqualsCollapseWhitespace(
           this.mockTts.pendingUtterances()[0], 'Column 2, Text 2');
     });
+
 AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'NonReorderedSvgPreservesSelectionStartEnd', async function() {
@@ -659,4 +680,103 @@ AX_TEST_F(
       assertTrue(this.mockTts.currentlySpeaking());
       this.assertEqualsCollapseWhitespace(
           this.mockTts.pendingUtterances()[0], 'My cat is Grumpy!');
+    });
+
+AX_TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxFullySelected',
+    async function() {
+      let omnibox;
+      await this.runWithLoadedDesktop(desktop => {
+        omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});
+      });
+
+      await this.setValueAndTextSelection(
+          omnibox, 'Hello, Chromium a11y', 0, 20);
+      assertEquals('Hello, Chromium a11y', omnibox.value);
+      assertEquals(0, omnibox.textSelStart);
+      assertEquals(20, omnibox.textSelEnd);
+
+      this.triggerReadSelectedText();
+      assertTrue(this.mockTts.currentlySpeaking());
+      this.assertEqualsCollapseWhitespace(
+          this.mockTts.pendingUtterances()[0], 'Hello, Chromium a11y');
+    });
+
+AX_TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedFromStart',
+    async function() {
+      let omnibox;
+      await this.runWithLoadedDesktop(desktop => {
+        omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});
+      });
+
+      await this.setValueAndTextSelection(
+          omnibox, 'Hello, Chromium a11y', 0, 5);
+      assertEquals('Hello, Chromium a11y', omnibox.value);
+      assertEquals(0, omnibox.textSelStart);
+      assertEquals(5, omnibox.textSelEnd);
+
+      this.triggerReadSelectedText();
+      assertTrue(this.mockTts.currentlySpeaking());
+      this.assertEqualsCollapseWhitespace(
+          this.mockTts.pendingUtterances()[0], 'Hello');
+    });
+
+
+AX_TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedToEnd',
+    async function() {
+      let omnibox;
+      await this.runWithLoadedDesktop(desktop => {
+        omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});
+      });
+
+      await this.setValueAndTextSelection(
+          omnibox, 'Hello, Chromium a11y', 7, 20);
+      assertEquals('Hello, Chromium a11y', omnibox.value);
+      assertEquals(7, omnibox.textSelStart);
+      assertEquals(20, omnibox.textSelEnd);
+
+      this.triggerReadSelectedText();
+      assertTrue(this.mockTts.currentlySpeaking());
+      this.assertEqualsCollapseWhitespace(
+          this.mockTts.pendingUtterances()[0], 'Chromium a11y');
+    });
+
+AX_TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedInMid',
+    async function() {
+      let omnibox;
+      await this.runWithLoadedDesktop(desktop => {
+        omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});
+      });
+
+      await this.setValueAndTextSelection(
+          omnibox, 'Hello, Chromium a11y', 7, 15);
+      assertEquals('Hello, Chromium a11y', omnibox.value);
+      assertEquals(7, omnibox.textSelStart);
+      assertEquals(15, omnibox.textSelEnd);
+
+      this.triggerReadSelectedText();
+      assertTrue(this.mockTts.currentlySpeaking());
+      this.assertEqualsCollapseWhitespace(
+          this.mockTts.pendingUtterances()[0], 'Chromium');
+    });
+
+AX_TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxNoneSelected',
+    async function() {
+      let omnibox;
+      await this.runWithLoadedDesktop(desktop => {
+        omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});
+      });
+
+      await this.setValueAndTextSelection(
+          omnibox, 'Hello, Chromium a11y', 0, 0);
+      assertEquals('Hello, Chromium a11y', omnibox.value);
+      assertEquals(0, omnibox.textSelStart);
+      assertEquals(0, omnibox.textSelEnd);
+
+      this.triggerReadSelectedText();
+      assertEquals(false, this.mockTts.currentlySpeaking());
     });
