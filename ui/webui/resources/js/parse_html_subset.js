@@ -90,6 +90,7 @@ export const parseHtmlSubset = (function() {
     ],
     ['tabindex', allowAttribute],
     ['aria-hidden', allowAttribute],
+    ['aria-label', allowAttribute],
     ['aria-labelledby', allowAttribute],
   ]);
 
