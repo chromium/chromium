@@ -3,17 +3,27 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/linux/update_service_proxy.h"
-#include "chrome/updater/service_proxy_factory.h"
 
+#include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/version.h"
+#include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
+#include "chrome/updater/linux/ipc_constants.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
 
 namespace updater {
 
@@ -21,10 +31,19 @@ namespace updater {
 class UpdateServiceProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceProxyImpl> {
  public:
-  explicit UpdateServiceProxyImpl(UpdaterScope /*scope*/) {}
+  explicit UpdateServiceProxyImpl(UpdaterScope /*scope*/,
+                                  mojo::Remote<mojom::UpdateService> remote)
+      : remote_(std::move(remote)) {}
 
   void GetVersion(base::OnceCallback<void(const base::Version&)> callback) {
-    NOTIMPLEMENTED();
+    remote_->GetVersion(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        base::BindOnce(
+            [](base::OnceCallback<void(const base::Version&)> callback,
+               const std::string& version) {
+              std::move(callback).Run(base::Version(version));
+            },
+            std::move(callback)),
+        ""));
   }
 
   void FetchPolicies(base::OnceCallback<void(int)> callback) {
@@ -82,10 +101,15 @@ class UpdateServiceProxyImpl
  private:
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;
   virtual ~UpdateServiceProxyImpl() = default;
+
+  mojo::Remote<mojom::UpdateService> remote_;
 };
 
-UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
-    : impl_(base::MakeRefCounted<UpdateServiceProxyImpl>(updater_scope)) {}
+UpdateServiceProxy::UpdateServiceProxy(
+    UpdaterScope updater_scope,
+    mojo::Remote<mojom::UpdateService> remote)
+    : impl_(base::MakeRefCounted<UpdateServiceProxyImpl>(updater_scope,
+                                                         std::move(remote))) {}
 
 void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
@@ -187,7 +211,31 @@ UpdateServiceProxy::~UpdateServiceProxy() {
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope scope,
     const base::TimeDelta& /*get_version_timeout*/) {
-  return base::MakeRefCounted<UpdateServiceProxy>(scope);
+  // TODO(crbug.com/1375890): This code assumes that the out-of-process service
+  // is running. The creation and lifetime management of the server needs to be
+  // handled.
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = kUpdateServerChannelName;
+  mojo::NamedPlatformChannel named_channel(options);
+
+  mojo::OutgoingInvitation invitation;
+  mojo::ScopedMessagePipeHandle pipe =
+      invitation.AttachMessagePipe(kUpdateServerChannelPipeName);
+
+  mojo::OutgoingInvitation::Send(std::move(invitation),
+                                 base::kNullProcessHandle,
+                                 named_channel.TakeServerEndpoint());
+  mojo::Remote<mojom::UpdateService> remote({std::move(pipe), 0});
+  remote.set_disconnect_handler(base::BindOnce([]() {
+    LOG(ERROR) << "UpdateService remote has unexpectedly disconnected.";
+  }));
+  return CreateUpdateServiceProxy(scope, std::move(remote));
+}
+
+scoped_refptr<UpdateService> CreateUpdateServiceProxy(
+    UpdaterScope scope,
+    mojo::Remote<mojom::UpdateService> remote) {
+  return base::MakeRefCounted<UpdateServiceProxy>(scope, std::move(remote));
 }
 
 }  // namespace updater

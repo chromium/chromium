@@ -1,0 +1,5 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+mojom("mojom") {
+  sources = [ "updater_service.mojom" ]
+  deps = [ "//mojo/public/mojom/base/" ]
+}

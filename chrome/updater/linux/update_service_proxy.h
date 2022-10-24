@@ -8,7 +8,10 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace updater {
 
@@ -17,7 +20,8 @@ class UpdateServiceProxyImpl;
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
-  explicit UpdateServiceProxy(UpdaterScope scope);
+  explicit UpdateServiceProxy(UpdaterScope scope,
+                              mojo::Remote<mojom::UpdateService> remote);
 
   // Overrides for updater::UpdateService
   void GetVersion(
@@ -57,6 +61,10 @@ class UpdateServiceProxy : public UpdateService {
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdateServiceProxyImpl> impl_;
 };
+
+scoped_refptr<UpdateService> CreateUpdateServiceProxy(
+    UpdaterScope scope,
+    mojo::Remote<mojom::UpdateService> remote);
 
 }  // namespace updater
 

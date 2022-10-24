@@ -359,7 +359,11 @@ if (is_win || is_mac || is_linux) {
         "activity_impl_linux.cc",
         "app/server/linux/server.cc",
         "app/server/linux/server.h",
+        "app/server/linux/update_service_stub.cc",
+        "app/server/linux/update_service_stub.h",
         "device_management/dm_storage_linux.cc",
+        "linux/ipc_constants.cc",
+        "linux/ipc_constants.h",
         "linux/ipc_support.cc",
         "linux/ipc_support.h",
         "linux/linux_util.cc",
@@ -377,7 +381,10 @@ if (is_win || is_mac || is_linux) {
         "update_usage_stats_task_linux.cc",
       ]
 
-      deps += [ "//mojo/core/embedder" ]
+      deps += [
+        "//chrome/updater/app/server/linux/mojom",
+        "//mojo/core/embedder",
+      ]
     }
   }
 

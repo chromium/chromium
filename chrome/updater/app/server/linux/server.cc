@@ -4,22 +4,44 @@
 
 #include "chrome/updater/app/server/linux/server.h"
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/app/server/linux/update_service_stub.h"
+#include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace updater {
 
 AppServerLinux::AppServerLinux() = default;
 AppServerLinux::~AppServerLinux() = default;
 
-// TODO(crbug.com/1276117) - implement.
-void AppServerLinux::ActiveDuty(scoped_refptr<UpdateService> update_service) {
-  NOTIMPLEMENTED();
+mojo::ScopedMessagePipeHandle AppServerLinux::ConnectToClient() {
+  mojo::PlatformChannelEndpoint endpoint =
+      mojo::NamedPlatformChannel::ConnectToServer(
+          mojo::NamedPlatformChannel::ServerNameFromUTF8(
+              kUpdateServerChannelName));
+
+  mojo::IncomingInvitation invitation =
+      mojo::IncomingInvitation::Accept(std::move(endpoint));
+
+  return invitation.ExtractMessagePipe(kUpdateServerChannelPipeName);
 }
 
+void AppServerLinux::ActiveDuty(scoped_refptr<UpdateService> update_service) {
+  service_wrapper_ = std::make_unique<UpdateServiceStub>(
+      mojo::PendingReceiver<mojom::UpdateService>(ConnectToClient()),
+      std::move(update_service));
+}
+
+// TODO(crbug.com/1276117) - implement.
 void AppServerLinux::ActiveDutyInternal(
     scoped_refptr<UpdateServiceInternal> update_service_internal) {
   NOTIMPLEMENTED();
