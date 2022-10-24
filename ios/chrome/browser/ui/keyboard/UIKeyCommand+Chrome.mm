@@ -163,17 +163,25 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
 }
 
 + (UIKeyCommand*)cr_showNextTab_3 {
-  // TODO(crbug.com/1278594): Doesn't work on iOS 15+.
-  return [self keyCommandWithInput:@"\t"
-                     modifierFlags:Control
-                            action:@selector(keyCommand_showNextTab)];
+  UIKeyCommand* keyCommand =
+      [self keyCommandWithInput:@"\t"
+                  modifierFlags:Control
+                         action:@selector(keyCommand_showNextTab)];
+  if (@available(iOS 15.0, *)) {
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
+  }
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_showPreviousTab_3 {
-  // TODO(crbug.com/1278594): Doesn't work on iOS 15+.
-  return [self keyCommandWithInput:@"\t"
-                     modifierFlags:ControlShift
-                            action:@selector(keyCommand_showPreviousTab)];
+  UIKeyCommand* keyCommand =
+      [self keyCommandWithInput:@"\t"
+                  modifierFlags:ControlShift
+                         action:@selector(keyCommand_showPreviousTab)];
+  if (@available(iOS 15.0, *)) {
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
+  }
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_addToBookmarks {
