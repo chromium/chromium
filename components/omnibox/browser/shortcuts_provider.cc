@@ -31,7 +31,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -76,30 +75,25 @@ struct ShortcutMatch {
         type(shortcut->match_core.type) {}
 
   int relevance;
-  // To satisfy |CompareWithDemoteByType<>::operator()|.
-  size_t subrelevance = 0;
   GURL stripped_destination_url;
   raw_ptr<const ShortcutsDatabase::Shortcut> shortcut;
   std::u16string contents;
   AutocompleteMatch::Type type;
-
-  AutocompleteMatch::Type GetDemotionType() const { return type; }
 };
 
 // Helpers for extracting aggregated factors from a vector of shortcuts.
 const ShortcutsDatabase::Shortcut* ShortestShortcutText(
     std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
-  return *base::ranges::min_element(
-      shortcuts, [](auto len1, auto len2) { return len1 < len2; },
-      [](const auto* shortcut) { return shortcut->text.length(); });
+  return *base::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
+    return shortcut->text.length();
+  });
 }
 
 const ShortcutsDatabase::Shortcut* MostRecentShortcut(
     std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
-  return *base::ranges::max_element(
-      shortcuts,
-      [](const auto& time1, const auto& time2) { return time1 < time2; },
-      [](const auto* shortcut) { return shortcut->last_access_time; });
+  return *base::ranges::max_element(shortcuts, {}, [](const auto* shortcut) {
+    return shortcut->last_access_time;
+  });
 }
 
 int SumNumberOfHits(std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
@@ -111,11 +105,9 @@ int SumNumberOfHits(std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
 
 const ShortcutsDatabase::Shortcut* ShortestShortcutContent(
     std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
-  return *base::ranges::min_element(
-      shortcuts, [](auto len1, auto len2) { return len1 < len2; },
-      [](const auto* shortcut) {
-        return shortcut->match_core.contents.length();
-      });
+  return *base::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
+    return shortcut->match_core.contents.length();
+  });
 }
 
 // Helper for `CalculateAggregateScore()` to score shortcuts.
@@ -266,9 +258,10 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
     shortcuts_by_url[stripped_destination_url].push_back(&shortcut);
   }
 
-  for (auto const& it : shortcuts_by_url) {
+  for (const auto& [url, shortcuts] : shortcuts_by_url) {
     int relevance =
-        CalculateAggregateScore(term_string, it.second, max_relevance);
+        CalculateAggregateScore(term_string, shortcuts, max_relevance);
+
     // Don't return shortcuts with zero relevance.
     if (relevance) {
       // Pick the shortcut with the shortest content. Picking the shortest
@@ -276,14 +269,13 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
       // text changes as the user types their input for shortcut texts that
       // are prefixes of each other.
       const ShortcutsDatabase::Shortcut* shortcut =
-          ShortestShortcutContent(it.second);
-
+          ShortestShortcutContent(shortcuts);
+      ShortcutMatch shortcut_match = {relevance, url, shortcut};
       if (shortcut->match_core.type ==
           AutocompleteMatch::Type::HISTORY_CLUSTER) {
-        history_cluster_shortcut_matches.emplace_back(relevance, it.first,
-                                                      shortcut);
+        history_cluster_shortcut_matches.push_back(shortcut_match);
       } else {
-        shortcut_matches.emplace_back(relevance, it.first, shortcut);
+        shortcut_matches.push_back(shortcut_match);
       }
     }
   }
