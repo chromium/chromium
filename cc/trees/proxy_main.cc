@@ -165,9 +165,11 @@ void ProxyMain::BeginMainFrame(
         "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
         TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
         TRACE_EVENT_FLAG_FLOW_IN, "reason", "ABORTED_NOT_VISIBLE");
-    // In this case, since the commit is deferred to a later time, gathered
-    // events metrics are not discarded so that they can be reported if the
-    // commit happens in the future.
+    // Since the commit is deferred due to the page becoming invisible, the
+    // metrics are not meaningful anymore (as the page might become visible in
+    // any arbitrary time in the future and cause an arbitrarily large latency).
+    // Discard event metrics.
+    layer_tree_host_->ClearEventsMetrics();
     std::vector<std::unique_ptr<SwapPromise>> empty_swap_promises;
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,

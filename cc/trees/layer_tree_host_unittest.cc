@@ -9488,8 +9488,8 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
 };
 
 // Verifies that if the commit is aborted (deferred) due to LayerTreeHost being
-// hidden, events metrics are not thrown away to be used when it becomes
-// visible.
+// hidden, events metrics are discarded to prevent reporting arbitrarily large
+// latencies when the frame becomes visible again.
 class LayerTreeHostTestKeepEventsMetricsForVisibility
     : public LayerTreeHostTestEventsMetrics {
  protected:
@@ -9521,19 +9521,20 @@ class LayerTreeHostTestKeepEventsMetricsForVisibility
     EXPECT_EQ(reason, CommitEarlyOutReason::ABORTED_NOT_VISIBLE);
 
     // Since the main frame is aborted due to invisibility, events metrics
-    // should not have been thrown away.
-    PostVerifyMainSavedEventsMetricsCount(1);
+    // should be discarded.
+    PostVerifyMainSavedEventsMetricsCount(0);
 
-    // Make layer tree host visible so that the deferred commit is completed,
-    // causing events metrics being passed to the impl thread.
+    // Make layer tree host visible so that the deferred commit is completed.
+    // Note that there is no events metrics to be passed to the impl thread.
     PostSetLayerTreeHostVisible(true);
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* impl) override {
-    // Now that a commit is completed and activated, events metrics from main
-    // thread should have been moved to the impl thread.
+    // Now a commit is completed and activated, but events metrics from main are
+    // already discarded, so there is no events metrics to be moved to the impl
+    // thread.
     PostVerifyMainSavedEventsMetricsCount(0);
-    EXPECT_SCOPED(VerifyImplEventsMetricsFromMainCount(impl, 1));
+    EXPECT_SCOPED(VerifyImplEventsMetricsFromMainCount(impl, 0));
 
     EndTest();
   }

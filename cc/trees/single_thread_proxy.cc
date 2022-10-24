@@ -1032,6 +1032,13 @@ void SingleThreadProxy::BeginMainFrame(
 
   if (!layer_tree_host_->IsVisible()) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotVisible", TRACE_EVENT_SCOPE_THREAD);
+
+    // Since the commit is deferred due to the page becoming invisible, the
+    // metrics are not meaningful anymore (as the page might become visible in
+    // any arbitrary time in the future and cause an arbitrarily large latency).
+    // Discard event metrics.
+    layer_tree_host_->ClearEventsMetrics();
+
     BeginMainFrameAbortedOnImplThread(
         CommitEarlyOutReason::ABORTED_NOT_VISIBLE);
     return;
