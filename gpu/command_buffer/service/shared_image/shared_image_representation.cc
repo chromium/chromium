@@ -314,6 +314,10 @@ scoped_refptr<gl::DCOMPSurfaceProxy>
 OverlayImageRepresentation::GetDCOMPSurfaceProxy() {
   return nullptr;
 }
+#elif BUILDFLAG(IS_MAC)
+bool OverlayImageRepresentation::IsInUseByWindowServer() const {
+  return false;
+}
 #endif
 
 OverlayImageRepresentation::ScopedReadAccess::ScopedReadAccess(

@@ -68,8 +68,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
-  bool IsInUseByWindowServer() const override;
-  void DisableInUseByWindowServer() override;
 
   gfx::GenericSharedMemoryId io_surface_id() const { return io_surface_id_; }
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface() { return io_surface_; }

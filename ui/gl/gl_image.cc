@@ -97,14 +97,6 @@ bool GLImage::EmulatingRGB() const {
   return false;
 }
 
-bool GLImage::IsInUseByWindowServer() const {
-  return false;
-}
-
-void GLImage::DisableInUseByWindowServer() {
-  NOTIMPLEMENTED();
-}
-
 GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }

@@ -181,8 +181,6 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   DCHECK(target != GL_TEXTURE_2D || texture_2d_support ||
          image->ShouldBindOrCopy() == gl::GLImage::BIND);
 #endif  // DCHECK_IS_ON()
-  if (usage & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
-    image->DisableInUseByWindowServer();
 
   const viz::ResourceFormat plane_format =
       viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
@@ -335,8 +333,6 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   level_info_internal_format = image->GetInternalFormat();
   if (color_space.IsValid())
     image->SetColorSpace(color_space);
-  if (usage & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
-    image->DisableInUseByWindowServer();
 
   InitializeGLTextureParams params;
   params.target = target;

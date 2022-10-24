@@ -90,10 +90,7 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
 #if BUILDFLAG(IS_MAC)
     if (!scoped_read_access_)
       return false;
-    auto* gl_image = scoped_read_access_->gl_image();
-    if (!gl_image)
-      return false;
-    return gl_image->IsInUseByWindowServer();
+    return scoped_read_access_->IsInUseByWindowServer();
 #else
     return false;
 #endif

@@ -459,6 +459,10 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy() {
       return representation()->GetDCOMPSurfaceProxy();
     }
+#elif BUILDFLAG(IS_MAC)
+    bool IsInUseByWindowServer() const {
+      return representation()->IsInUseByWindowServer();
+    }
 #endif
 
     gfx::GpuFenceHandle TakeAcquireFence() { return std::move(acquire_fence_); }
@@ -500,6 +504,10 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
   scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 #elif BUILDFLAG(IS_WIN)
   virtual scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy();
+#elif BUILDFLAG(IS_MAC)
+  // Return true if the macOS WindowServer is currently using the underlying
+  // storage for the image.
+  virtual bool IsInUseByWindowServer() const;
 #endif
 
   // TODO(penghuang): Refactor it to not depend on GL.

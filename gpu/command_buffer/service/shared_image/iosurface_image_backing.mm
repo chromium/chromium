@@ -18,6 +18,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_image_io_surface.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
@@ -232,6 +233,20 @@ void OverlayIOSurfaceRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   auto* gl_backing = static_cast<IOSurfaceImageBacking*>(backing());
   gl_backing->SetReleaseFence(std::move(release_fence));
+}
+
+bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
+  // IOSurfaceIsInUse() will always return true if the IOSurface is wrapped in
+  // a CVPixelBuffer. Ignore the signal for such IOSurfaces (which are the ones
+  // output by hardware video decode and video capture).
+  if (backing()->usage() & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
+    return false;
+
+  if (gl_image_->GetType() != gl::GLImage::Type::IOSURFACE)
+    return false;
+
+  return IOSurfaceIsInUse(
+      static_cast<gl::GLImageIOSurface*>(gl_image_.get())->io_surface());
 }
 
 gl::GLImage* OverlayIOSurfaceRepresentation::GetGLImage() {

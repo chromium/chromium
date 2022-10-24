@@ -112,6 +112,7 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
+  bool IsInUseByWindowServer() const override;
   gl::GLImage* GetGLImage() override;
 
   scoped_refptr<gl::GLImage> gl_image_;

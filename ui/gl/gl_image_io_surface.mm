@@ -239,19 +239,6 @@ void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
   }
 }
 
-bool GLImageIOSurface::IsInUseByWindowServer() const {
-  // IOSurfaceIsInUse() will always return true if the IOSurface is wrapped in
-  // a CVPixelBuffer. Ignore the signal for such IOSurfaces (which are the ones
-  // output by hardware video decode).
-  if (disable_in_use_by_window_server_)
-    return false;
-  return IOSurfaceIsInUse(io_surface_.get());
-}
-
-void GLImageIOSurface::DisableInUseByWindowServer() {
-  disable_in_use_by_window_server_ = true;
-}
-
 GLImage::Type GLImageIOSurface::GetType() const {
   return Type::IOSURFACE;
 }
