@@ -4067,17 +4067,10 @@ viz::LocalSurfaceId SynchronizeVisualPropertiesInterceptor::WaitForSurfaceId() {
 
 void SynchronizeVisualPropertiesInterceptor::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties) {
-  // Monitor |is_pinch_gesture_active| to determine when pinch gestures begin
-  // and end.
-  if (visual_properties.is_pinch_gesture_active &&
-      !last_pinch_gesture_active_) {
-    pinch_gesture_active_set_ = true;
-  }
+  // Monitor |is_pinch_gesture_active| to determine when pinch gesture ends.
   if (!visual_properties.is_pinch_gesture_active &&
       last_pinch_gesture_active_) {
-    pinch_gesture_active_cleared_ = true;
-    if (pinch_end_run_loop_)
-      pinch_end_run_loop_->Quit();
+    pinch_end_run_loop_.Quit();
   }
   last_pinch_gesture_active_ = visual_properties.is_pinch_gesture_active;
 
@@ -4139,11 +4132,7 @@ void SynchronizeVisualPropertiesInterceptor::OnUpdatedSurfaceIdOnUI(
 }
 
 void SynchronizeVisualPropertiesInterceptor::WaitForPinchGestureEnd() {
-  if (pinch_gesture_active_cleared_)
-    return;
-  DCHECK(!pinch_end_run_loop_);
-  pinch_end_run_loop_ = std::make_unique<base::RunLoop>();
-  pinch_end_run_loop_->Run();
+  pinch_end_run_loop_.Run();
 }
 
 RenderWidgetHostMouseEventMonitor::RenderWidgetHostMouseEventMonitor(

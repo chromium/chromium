@@ -2010,16 +2010,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, VisibilityChange) {
 
 // This test verifies that the main-frame's page scale factor propagates to
 // the compositor layertrees in each of the child processes.
-// Flaky on Android emulator bots: https://crbug.com/1116774
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
-#define MAYBE_PageScaleFactorPropagatesToOOPIFs \
-  DISABLED_PageScaleFactorPropagatesToOOPIFs
-#else
-#define MAYBE_PageScaleFactorPropagatesToOOPIFs \
-  PageScaleFactorPropagatesToOOPIFs
-#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       MAYBE_PageScaleFactorPropagatesToOOPIFs) {
+                       PageScaleFactorPropagatesToOOPIFs) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c),d)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2116,11 +2108,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // to wait for it from each renderer. If it's never seen, the test fails by
   // timing out.
   interceptor_mainframe->WaitForPinchGestureEnd();
-  EXPECT_TRUE(interceptor_mainframe->pinch_gesture_active_set());
-  EXPECT_TRUE(interceptor_mainframe->pinch_gesture_active_cleared());
   interceptor_child_b->WaitForPinchGestureEnd();
-  EXPECT_TRUE(interceptor_child_b->pinch_gesture_active_set());
-  EXPECT_TRUE(interceptor_child_b->pinch_gesture_active_cleared());
 }
 
 // Test that the compositing scale factor for an out-of-process iframe are set

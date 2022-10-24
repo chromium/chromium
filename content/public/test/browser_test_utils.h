@@ -2124,9 +2124,6 @@ class SynchronizeVisualPropertiesInterceptor
   // Waits for the next viz::LocalSurfaceId be received and returns it.
   viz::LocalSurfaceId WaitForSurfaceId();
 
-  bool pinch_gesture_active_set() { return pinch_gesture_active_set_; }
-  bool pinch_gesture_active_cleared() { return pinch_gesture_active_cleared_; }
-
   void WaitForPinchGestureEnd();
 
  private:
@@ -2146,10 +2143,8 @@ class SynchronizeVisualPropertiesInterceptor
   viz::LocalSurfaceId last_surface_id_;
   std::unique_ptr<base::RunLoop> surface_id_run_loop_;
 
-  bool pinch_gesture_active_set_ = false;
-  bool pinch_gesture_active_cleared_ = false;
   bool last_pinch_gesture_active_ = false;
-  std::unique_ptr<base::RunLoop> pinch_end_run_loop_;
+  base::RunLoop pinch_end_run_loop_;
 
   mojo::test::ScopedSwapImplForTesting<
       mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
