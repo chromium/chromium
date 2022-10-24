@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions)
 
@@ -1001,5 +1002,13 @@ source_set("unit_tests") {
     "//extensions/browser/extension_function_histogram_value.h",
     "//tools/metrics/histograms/enums.xml",
     "//extensions/browser/api/declarative_net_request/flat/extension_ruleset.fbs",
+  ]
+}
+
+fuzzer_test("extension_file_highlighter_fuzzer") {
+  sources = [ "file_highlighter_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
   ]
 }
