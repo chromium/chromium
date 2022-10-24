@@ -477,6 +477,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Thumbnail) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Truncate) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/truncate",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Unmount) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/unmount",
                                {.extension_url = "test.html"},

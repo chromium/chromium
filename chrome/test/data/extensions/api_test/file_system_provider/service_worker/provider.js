@@ -264,6 +264,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onReadDirectoryRequested', true);
     this.setHandlerEnabled('onReadFileRequested', true);
     this.setHandlerEnabled('onRemoveWatcherRequested', true);
+    this.setHandlerEnabled('onTruncateRequested', true);
     this.setHandlerEnabled('onUnmountRequested', true);
     this.setHandlerEnabled('onWriteFileRequested', true);
   }
@@ -976,6 +977,37 @@ export class TestFileSystemProvider {
 
     onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
   };
+
+  /**
+   * FSP: implementation for truncating a file to the specified length.
+   *
+   * @param {!chrome.fileSystemProvider.TruncateRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback.
+   * @param {function(string)} onError Error callback.
+   */
+  onTruncateRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    let entry = this.findEntryByPath(options.filePath);
+    if (!entry) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
+
+    // Truncating beyond the end of the file.
+    if (options.length > entry.metadata.size) {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    entry.metadata.size = options.length;
+    onSuccess();
+  }
+
 
   /**
    * FSP: requests to mount this filesystem.
