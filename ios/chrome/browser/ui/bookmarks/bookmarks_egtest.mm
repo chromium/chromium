@@ -511,10 +511,13 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI verifyFolderCreatedWithTitle:newFolderTitle];
 }
 
-// TODO(crbug.com/801453): Folder name is not commited as expected in this test.
 // Tests the new folder name is committed when "hide keyboard" button is
 // pressed. (iPad specific)
-- (void)DISABLED_testNewFolderNameCommittedWhenKeyboardDismissedOnIpad {
+- (void)testNewFolderNameCommittedWhenKeyboardDismissedOnIpad {
+#if TARGET_IPHONE_SIMULATOR
+  EARL_GREY_TEST_SKIPPED(@"The keyboard is not considered 'dismissed' on "
+                         @"simulator when tapping on 'hide keyboard'.");
+#endif
   // Tablet only (handset keyboard does not have "hide keyboard" button).
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not supported on iPhone");
