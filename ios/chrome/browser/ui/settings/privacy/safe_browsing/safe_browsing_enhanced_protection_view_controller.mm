@@ -84,11 +84,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/1307428): Add UMA recording
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSafeBrowsingEnhancedProtectionSettingsClose"));
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/1307428): Add UMA recording
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSafeBrowsingEnhancedProtectionSettingsBack"));
 }
 
 #pragma mark - SafeBrowsingEnhancedProtectionConsumer
@@ -126,7 +128,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  // TODO(crbug.com/1307428): Add UMA recording
+  base::RecordAction(base::UserMetricsAction(
+      "IOSSafeBrowsingEnhancedProtectionSettingsCloseWithSwipe"));
 }
 
 #pragma mark - UITableViewDelegate

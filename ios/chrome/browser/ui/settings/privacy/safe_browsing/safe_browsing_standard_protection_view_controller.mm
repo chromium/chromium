@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_view_controller.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/settings/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -135,11 +137,13 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/1307428): Add UMA recording.
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSafeBrowsingStandardProtectionSettingsClose"));
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/1307428): Add UMA recording.
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSafeBrowsingStandardProtectionSettingsBack"));
 }
 
 #pragma mark - Actions
@@ -223,7 +227,8 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  // TODO(crbug.com/1307428): Add UMA recording.
+  base::RecordAction(base::UserMetricsAction(
+      "IOSSafeBrowsingStandardProtectionSettingsCloseWithSwipe"));
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate

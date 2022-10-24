@@ -61,11 +61,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/1307428): Add UMA recording
+  base::RecordAction(
+      base::UserMetricsAction("MobilePrivacySafeBrowsingSettingsClose"));
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/1307428): Add UMA recording
+  base::RecordAction(
+      base::UserMetricsAction("MobilePrivacySafeBrowsingSettingsBack"));
 }
 
 #pragma mark - PrivacySafeBrowsingConsumer
@@ -137,7 +139,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  // TODO(crbug.com/1307428): Add UMA recording
+  base::RecordAction(
+      base::UserMetricsAction("IOSPrivacySafeBrowsingSettingsCloseWithSwipe"));
 }
 
 #pragma mark - Actions

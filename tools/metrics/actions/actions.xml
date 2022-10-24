@@ -11636,6 +11636,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSPrivacySafeBrowsingSettingsCloseWithSwipe">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Privacy Safe Browsing Settings UI was dismissed using swipe
+    down gesture. iOS only.
+  </description>
+</action>
+
 <action name="IOSReadingListCloseWithSwipe">
   <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -11649,6 +11658,24 @@ should be able to be added at any place in this file.
   <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user closes Recent Tabs using swipe down gesture. iOS-only.
+  </description>
+</action>
+
+<action name="IOSSafeBrowsingEnhancedProtectionSettingsCloseWithSwipe">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Safe Browsing Enhanced Protection Settings UI was dismissed
+    using swipe down gesture. iOS only.
+  </description>
+</action>
+
+<action name="IOSSafeBrowsingStandardProtectionSettingsCloseWithSwipe">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Safe Browsing Standard Protection Settings UI was dismissed
+    using swipe down gesture. iOS only.
   </description>
 </action>
 
@@ -19378,6 +19405,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePrivacySafeBrowsingSettingsBack">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when user goes back from Privacy Safe Browsing Settings UI to root
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobilePrivacySafeBrowsingSettingsClose">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Privacy Safe Browsing Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobilePrivacySettingsBack">
   <owner>msramek@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
@@ -19675,6 +19719,42 @@ should be able to be added at any place in this file.
   <description>
     The user pressed the Send Feedback button on a tab that is displaying the
     sad view.
+  </description>
+</action>
+
+<action name="MobileSafeBrowsingEnhancedProtectionSettingsBack">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when user goes back from Safe Browsing Enhanced Protection Settings
+    UI to root Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileSafeBrowsingEnhancedProtectionSettingsClose">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Safe Browsing Enhanced Protection Settings UI was dismissed.
+    iOS only.
+  </description>
+</action>
+
+<action name="MobileSafeBrowsingStandardProtectionSettingsBack">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when user goes back from Safe Browsing Standard Protection Settings
+    UI to root Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileSafeBrowsingStandardProtectionSettingsClose">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Safe Browsing Standard Protection Settings UI was dismissed.
+    iOS only.
   </description>
 </action>
 
