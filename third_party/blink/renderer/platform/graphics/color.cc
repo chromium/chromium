@@ -123,9 +123,20 @@ inline const NamedColor* FindNamedColor(const String& name) {
   return FindColor(buffer, length);
 }
 
-RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {
-  return ColorFloatToRGBAByte(a) << 24 | ColorFloatToRGBAByte(r) << 16 |
-         ColorFloatToRGBAByte(g) << 8 | ColorFloatToRGBAByte(b);
+bool ValidColorSpaceForFromColorFunction(Color::ColorSpace color_space) {
+  switch (color_space) {
+    case Color::ColorSpace::kSRGB:
+    case Color::ColorSpace::kSRGBLinear:
+    case Color::ColorSpace::kDisplayP3:
+    case Color::ColorSpace::kA98RGB:
+    case Color::ColorSpace::kProPhotoRGB:
+    case Color::ColorSpace::kRec2020:
+    case Color::ColorSpace::kXYZD50:
+    case Color::ColorSpace::kXYZD65:
+      return true;
+    default:
+      return false;
+  }
 }
 
 constexpr int RedChannel(RGBA32 color) {
@@ -164,23 +175,31 @@ Color::Color(int r, int g, int b, int a) {
 
 // static
 Color Color::FromHSLA(double h, double s, double l, double a) {
-  return Color(gfx::HSLToSkColor4f(h, s, l, a));
+  Color result = Color(gfx::HSLToSkColor4f(h, s, l, a));
+  result.color_space_ = ColorSpace::kHSL;
+  return result;
 }
 
 // static
 Color Color::FromHWBA(double h, double w, double b, double a) {
-  return Color(gfx::HWBToSkColor4f(h, w, b, a));
+  Color result = Color(gfx::HWBToSkColor4f(h, w, b, a));
+  result.color_space_ = ColorSpace::kHWB;
+  return result;
 }
 
 // static
-Color Color::FromColorFunction(ColorFunctionSpace space,
+Color Color::FromColorFunction(ColorSpace space,
                                absl::optional<float> red_or_x,
                                absl::optional<float> green_or_y,
                                absl::optional<float> blue_or_z,
                                absl::optional<float> alpha) {
+  if (!ValidColorSpaceForFromColorFunction(space)) {
+    NOTREACHED();
+    return Color();
+  }
+
   Color result;
-  result.serialization_type_ = SerializationType::kColor;
-  result.color_function_space_ = space;
+  result.color_space_ = space;
   result.param0_is_none_ = !red_or_x;
   result.param1_is_none_ = !green_or_y;
   result.param2_is_none_ = !blue_or_z;
@@ -198,7 +217,7 @@ Color Color::FromLab(absl::optional<float> L,
                      absl::optional<float> b,
                      absl::optional<float> alpha) {
   Color result;
-  result.serialization_type_ = SerializationType::kLab;
+  result.color_space_ = ColorSpace::kLab;
   result.param0_is_none_ = !L;
   result.param1_is_none_ = !a;
   result.param2_is_none_ = !b;
@@ -216,7 +235,7 @@ Color Color::FromOKLab(absl::optional<float> L,
                        absl::optional<float> b,
                        absl::optional<float> alpha) {
   Color result;
-  result.serialization_type_ = SerializationType::kOKLab;
+  result.color_space_ = ColorSpace::kOKLab;
   result.param0_is_none_ = !L;
   result.param1_is_none_ = !a;
   result.param2_is_none_ = !b;
@@ -234,7 +253,7 @@ Color Color::FromLCH(absl::optional<float> L,
                      absl::optional<float> hue,
                      absl::optional<float> alpha) {
   Color result;
-  result.serialization_type_ = SerializationType::kLCH;
+  result.color_space_ = ColorSpace::kLCH;
   result.param0_is_none_ = !L;
   result.param1_is_none_ = !chroma;
   result.param2_is_none_ = !hue;
@@ -252,7 +271,7 @@ Color Color::FromOKLCH(absl::optional<float> L,
                        absl::optional<float> hue,
                        absl::optional<float> alpha) {
   Color result;
-  result.serialization_type_ = SerializationType::kOKLCH;
+  result.color_space_ = ColorSpace::kOKLCH;
   result.param0_is_none_ = !L;
   result.param1_is_none_ = !chroma;
   result.param2_is_none_ = !hue;
@@ -285,7 +304,7 @@ Color Color::FromColorMix(Color::ColorInterpolationSpace interpolation_space,
   float alpha2 = color2.PremultiplyColor();
 
   Color result = FromColorFunction(
-      ColorFunctionSpace::kSRGB,
+      ColorSpace::kSRGB,
       blink::Blend(color2.param0_, color1.param0_, percentage),
       blink::Blend(color2.param1_, color1.param1_, percentage),
       blink::Blend(color2.param2_, color1.param2_, percentage),
@@ -301,12 +320,10 @@ Color Color::FromColorMix(Color::ColorInterpolationSpace interpolation_space,
 void Color::ConvertToColorInterpolationSpace(
     Color::ColorInterpolationSpace interpolation_space) {
   if (interpolation_space == ColorInterpolationSpace::kSRGB) {
-    if (serialization_type_ == SerializationType::kColor &&
-        color_function_space_ == ColorFunctionSpace::kSRGB)
+    if (color_space_ == ColorSpace::kSRGB)
       return;
     SkColor4f sRGB_color = toSkColor4f();
-    serialization_type_ = SerializationType::kColor;
-    color_function_space_ = ColorFunctionSpace::kSRGB;
+    color_space_ = ColorSpace::kSRGB;
     param0_ = sRGB_color.fR;
     param1_ = sRGB_color.fG;
     param2_ = sRGB_color.fB;
@@ -335,12 +352,12 @@ void Color::UnpremultiplyColor() {
 
 // static
 Color Color::FromRGBAFloat(float r, float g, float b, float a) {
-  return Color(MakeRGBA32FromFloats(r, g, b, a));
+  return Color(SkColor4f{r, g, b, a});
 }
 
 // static
 Color Color::FromSkColor4f(SkColor4f fc) {
-  return Color(MakeRGBA32FromFloats(fc.fR, fc.fG, fc.fB, fc.fA));
+  return Color(fc);
 }
 
 // This converts -0.0 to 0.0, so that they have the same hash value. This
@@ -352,8 +369,7 @@ float NormalizeSign(float number) {
 }
 
 unsigned Color::GetHash() const {
-  unsigned result = WTF::HashInts(static_cast<uint8_t>(serialization_type_),
-                                  static_cast<uint8_t>(color_function_space_));
+  unsigned result = WTF::HashInt(static_cast<uint8_t>(color_space_));
   WTF::AddFloatToHash(result, NormalizeSign(param0_));
   WTF::AddFloatToHash(result, NormalizeSign(param1_));
   WTF::AddFloatToHash(result, NormalizeSign(param2_));
@@ -366,45 +382,41 @@ unsigned Color::GetHash() const {
 }
 
 SkColor4f Color::toSkColor4f() const {
-  switch (serialization_type_) {
-    case SerializationType::kRGB:
+  switch (color_space_) {
+    case ColorSpace::kSRGB:
       return SkColor4f{param0_, param1_, param2_, alpha_};
-    case SerializationType::kColor:
-      switch (color_function_space_) {
-        case ColorFunctionSpace::kSRGB:
-          return SkColor4f{param0_, param1_, param2_, alpha_};
-        case ColorFunctionSpace::kSRGBLinear:
-          return gfx::SRGBLinearToSkColor4f(param0_, param1_, param2_, alpha_);
-        case ColorFunctionSpace::kDisplayP3:
-          return gfx::DisplayP3ToSkColor4f(param0_, param1_, param2_, alpha_);
-        case ColorFunctionSpace::kA98RGB:
-          return gfx::AdobeRGBToSkColor4f(param0_, param1_, param2_, alpha_);
-        case ColorFunctionSpace::kProPhotoRGB:
-          return gfx::ProPhotoToSkColor4f(param0_, param1_, param2_, alpha_);
-        case ColorFunctionSpace::kRec2020:
-          return gfx::Rec2020ToSkColor4f(param0_, param1_, param2_, alpha_);
-        case ColorFunctionSpace::kXYZD50:
-          return gfx::XYZD50ToSkColor4f(param0_, param1_, param2_, alpha_);
-        case ColorFunctionSpace::kXYZD65:
-          return gfx::XYZD65ToSkColor4f(param0_, param1_, param2_, alpha_);
-        default:
-          NOTIMPLEMENTED();
-          return SkColor4f{0.f, 0.f, 0.f, 0.f};
-      }
-    case SerializationType::kLab:
+    case ColorSpace::kSRGBLinear:
+      return gfx::SRGBLinearToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kDisplayP3:
+      return gfx::DisplayP3ToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kA98RGB:
+      return gfx::AdobeRGBToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kProPhotoRGB:
+      return gfx::ProPhotoToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kRec2020:
+      return gfx::Rec2020ToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kXYZD50:
+      return gfx::XYZD50ToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kXYZD65:
+      return gfx::XYZD65ToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kLab:
       return gfx::LabToSkColor4f(param0_, param1_, param2_, alpha_);
-    case SerializationType::kOKLab:
+    case ColorSpace::kOKLab:
       return gfx::OKLabToSkColor4f(param0_, param1_, param2_, alpha_);
-    case SerializationType::kLCH:
+    case ColorSpace::kLCH:
       return gfx::LchToSkColor4f(
           param0_, param1_,
           param2_is_none_ ? absl::nullopt : absl::optional<float>(param2_),
           alpha_);
-    case SerializationType::kOKLCH:
+    case ColorSpace::kOKLCH:
       return gfx::OKLchToSkColor4f(
           param0_, param1_,
           param2_is_none_ ? absl::nullopt : absl::optional<float>(param2_),
           alpha_);
+    case ColorSpace::kRGBLegacy:
+    case ColorSpace::kHSL:
+    case ColorSpace::kHWB:
+      return SkColor4f{param0_, param1_, param2_, alpha_};
     default:
       NOTIMPLEMENTED();
       return SkColor4f{0.f, 0.f, 0.f, 0.f};
@@ -464,30 +476,34 @@ bool Color::SetFromString(const String& name) {
   return ParseHexColor(name.Characters16() + 1, name.length() - 1, *this);
 }
 
-static String ColorFunctionSpaceToString(
-    Color::ColorFunctionSpace color_space) {
+static String ColorSpaceToString(Color::ColorSpace color_space) {
   switch (color_space) {
-    case Color::ColorFunctionSpace::kSRGB:
+    case Color::ColorSpace::kSRGB:
       return "srgb";
-    case Color::ColorFunctionSpace::kSRGBLinear:
+    case Color::ColorSpace::kSRGBLinear:
       return "srgb-linear";
-    case Color::ColorFunctionSpace::kDisplayP3:
+    case Color::ColorSpace::kDisplayP3:
       return "display-p3";
-    case Color::ColorFunctionSpace::kA98RGB:
+    case Color::ColorSpace::kA98RGB:
       return "a98-rgb";
-    case Color::ColorFunctionSpace::kProPhotoRGB:
+    case Color::ColorSpace::kProPhotoRGB:
       return "prophoto-rgb";
-    case Color::ColorFunctionSpace::kRec2020:
+    case Color::ColorSpace::kRec2020:
       return "rec2020";
-    case Color::ColorFunctionSpace::kXYZD50:
+    case Color::ColorSpace::kXYZD50:
       return "xyz-d50";
-    case Color::ColorFunctionSpace::kXYZD65:
+    case Color::ColorSpace::kXYZD65:
       return "xyz-d65";
+    default:
+      NOTREACHED();
+      return "";
   }
 }
 
 String Color::SerializeAsCanvasColor() const {
-  if (serialization_type_ == SerializationType::kRGB && !HasAlpha())
+  if ((color_space_ == ColorSpace::kRGBLegacy ||
+       color_space_ == ColorSpace::kHSL || color_space_ == ColorSpace::kHWB) &&
+      !HasAlpha())
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
 
   return SerializeAsCSSColor();
@@ -497,8 +513,10 @@ String Color::SerializeAsCSSColor() const {
   StringBuilder result;
   result.ReserveCapacity(28);
 
-  switch (serialization_type_) {
-    case SerializationType::kRGB:
+  switch (color_space_) {
+    case ColorSpace::kRGBLegacy:
+    case ColorSpace::kHSL:
+    case ColorSpace::kHWB:
       if (HasAlpha())
         result.Append("rgba(");
       else
@@ -526,17 +544,17 @@ String Color::SerializeAsCSSColor() const {
       result.Append(')');
       return result.ToString();
 
-    case SerializationType::kLab:
-    case SerializationType::kOKLab:
-    case SerializationType::kLCH:
-    case SerializationType::kOKLCH:
-      if (serialization_type_ == SerializationType::kLab)
+    case ColorSpace::kLab:
+    case ColorSpace::kOKLab:
+    case ColorSpace::kLCH:
+    case ColorSpace::kOKLCH:
+      if (color_space_ == ColorSpace::kLab)
         result.Append("lab(");
-      if (serialization_type_ == SerializationType::kOKLab)
+      if (color_space_ == ColorSpace::kOKLab)
         result.Append("oklab(");
-      if (serialization_type_ == SerializationType::kLCH)
+      if (color_space_ == ColorSpace::kLCH)
         result.Append("lch(");
-      if (serialization_type_ == SerializationType::kOKLCH)
+      if (color_space_ == ColorSpace::kOKLCH)
         result.Append("oklch(");
 
       if (param0_is_none_) {
@@ -567,9 +585,16 @@ String Color::SerializeAsCSSColor() const {
       result.Append(")");
       return result.ToString();
 
-    case SerializationType::kColor:
+    case ColorSpace::kSRGB:
+    case ColorSpace::kSRGBLinear:
+    case ColorSpace::kDisplayP3:
+    case ColorSpace::kA98RGB:
+    case ColorSpace::kProPhotoRGB:
+    case ColorSpace::kRec2020:
+    case ColorSpace::kXYZD50:
+    case ColorSpace::kXYZD65:
       result.Append("color(");
-      result.Append(ColorFunctionSpaceToString(color_function_space_));
+      result.Append(ColorSpaceToString(color_space_));
 
       result.Append(" ");
       if (param0_is_none_)
@@ -606,7 +631,8 @@ String Color::SerializeAsCSSColor() const {
 }
 
 String Color::NameForLayoutTreeAsText() const {
-  if (serialization_type_ != SerializationType::kRGB) {
+  if (color_space_ != ColorSpace::kRGBLegacy &&
+      color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB) {
     // TODO(https://crbug.com/1333988): Determine if CSS Color Level 4 colors
     // should use this representation here.
     return SerializeAsCSSColor();
@@ -788,7 +814,8 @@ RGBA32 PremultipliedARGBFromColor(const Color& color) {
 
 // https://www.w3.org/TR/css-color-4/#legacy-color-syntax
 bool Color::IsLegacyColor() const {
-  return serialization_type_ == SerializationType::kRGB;
+  return (color_space_ == ColorSpace::kRGBLegacy ||
+          color_space_ == ColorSpace::kHSL || color_space_ == ColorSpace::kHWB);
 }
 
 // From https://www.w3.org/TR/css-color-4/#interpolation

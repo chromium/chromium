@@ -51,6 +51,54 @@ class PLATFORM_EXPORT Color {
   DISALLOW_NEW();
 
  public:
+  // This enum represent the color space of the color itself. This is also used
+  // for serialization purposes and for initialization. Don't change the order
+  // of this enum, as how it's ordered helps performance (the compiler can
+  // decide that the first few elements are for ColorFunctionSpace and the last
+  // few elements are for RGB-like serialization.)
+  enum class ColorSpace : uint8_t {
+    // All these are to be serialized with the color() syntax of a given
+    // predefined color space. The
+    // values of `params0_`, `params1_`, and `params2_` are red, green, and blue
+    // values in the color space specified by `color_space_`.
+    kSRGB,
+    kSRGBLinear,
+    kDisplayP3,
+    kA98RGB,
+    kProPhotoRGB,
+    kRec2020,
+    kXYZD50,
+    kXYZD65,
+    // Serializes to lab(). The value of `param0_` is lightness and is
+    // guaranteed to be non-negative. The value of `param1_` and `param2_` are
+    // the a-axis and b-axis values and are unbounded.
+    kLab,
+    // Serializes to oklab(). Parameter meanings are the same as for kLab.
+    kOKLab,
+    // Serializes to lch(). The value of `param0_` is lightness and is
+    // guaranteed to be non-negative. The value of `param1_` is chroma and is
+    // also guaranteed to be non-negative. The value of `param2_` is hue, and
+    // is unbounded.
+    kLCH,
+    // Serializes to oklch(). Parameter meanings are the same as for kLCH.
+    kOKLCH,
+    // All these below are to be serialized to rgb() or rgba().
+    // The values of `params0_`, `params1_`, and `params2_` are red, green, and
+    // blue sRGB values, and are guaranteed to be present and in the [0, 1]
+    // interval.
+    kRGBLegacy,
+    // The values of `params0_`, `params1_`, and `params2_` are Hue, Saturation,
+    // and Ligthness. These can be none. Hue is a namber in the range from 0.0
+    // to 6.0, and the rest are in the rance from 0.0 to 1.0.
+    // interval.
+    kHSL,
+    // The values of `params0_`, `params1_`, and `params2_` are Hue, White,
+    // and Black. These can be none. Hue is a namber in the range from 0.0
+    // to 6.0, and the rest are in the rance from 0.0 to 1.0.
+    // interval.
+    kHWB,
+  };
+
   // The default constructor creates a transparent color.
   constexpr Color()
       : param0_is_none_(0),
@@ -89,17 +137,7 @@ class PLATFORM_EXPORT Color {
   // color spaces and xyz spaces. Parameters that are none should be specified
   // as absl::nullopt. The value for `alpha` will be clamped to the [0, 1]
   // interval.
-  enum class ColorFunctionSpace : uint8_t {
-    kSRGB,
-    kSRGBLinear,
-    kDisplayP3,
-    kA98RGB,
-    kProPhotoRGB,
-    kRec2020,
-    kXYZD50,
-    kXYZD65,
-  };
-  static Color FromColorFunction(ColorFunctionSpace space,
+  static Color FromColorFunction(ColorSpace space,
                                  absl::optional<float> red_or_x,
                                  absl::optional<float> green_or_y,
                                  absl::optional<float> blue_or_z,
@@ -240,8 +278,7 @@ class PLATFORM_EXPORT Color {
   static const Color kTransparent;
 
   inline bool operator==(const Color& other) const {
-    return serialization_type_ == other.serialization_type_ &&
-           color_function_space_ == other.color_function_space_ &&
+    return color_space_ == other.color_space_ &&
            param0_is_none_ == other.param0_is_none_ &&
            param1_is_none_ == other.param1_is_none_ &&
            param2_is_none_ == other.param2_is_none_ &&
@@ -293,36 +330,7 @@ class PLATFORM_EXPORT Color {
   float PremultiplyColor();
   void UnpremultiplyColor();
 
-  // The way that this color will be serialized. The value of
-  // `serialization_type` determines the interpretation of `params_`.
-  enum class SerializationType : uint8_t {
-    // Serializes to rgb() or rgba(). The values of `params0_`, `params1_`, and
-    // `params2_` are red, green, and blue sRGB values, and are guaranteed to be
-    // present and in the [0, 1] interval.
-    kRGB,
-    // Serialize to the color() syntax of a given predefined color space. The
-    // values of `params0_`, `params1_`, and `params2_` are red, green, and blue
-    // values in the color space specified by `color_function_space_`.
-    kColor,
-    // Serializes to lab(). The value of `param0_` is lightness and is
-    // guaranteed to be non-negative. The value of `param1_` and `param2_` are
-    // the a-axis and b-axis values and are unbounded.
-    kLab,
-    // Serializes to oklab(). Parameter meanings are the same as for kLab.
-    kOKLab,
-    // Serializes to lch(). The value of `param0_` is lightness and is
-    // guaranteed to be non-negative. The value of `param1_` is chroma and is
-    // also guaranteed to be non-negative. The value of `param2_` is hue, and
-    // is unbounded.
-    kLCH,
-    // Serializes to oklch(). Parameter meanings are the same as for kLCH.
-    kOKLCH,
-  };
-  SerializationType serialization_type_ = SerializationType::kRGB;
-
-  // The color space for serialization type kColor. For all other serialization
-  // types this is not used, and must be set to kSRGB.
-  ColorFunctionSpace color_function_space_ = ColorFunctionSpace::kSRGB;
+  ColorSpace color_space_ = ColorSpace::kRGBLegacy;
 
   // Whether or not color parameters were specified as none (this only affects
   // interpolation behavior, the parameter values area always valid).

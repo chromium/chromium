@@ -1794,32 +1794,32 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
   CSSParserTokenRange args = ConsumeFunction(range);
   // First argument is the colorspace
   CSSValueID colorspace_id_ = args.ConsumeIncludingWhitespace().Id();
-  Color::ColorFunctionSpace colorspace;
+  Color::ColorSpace colorspace;
   switch (colorspace_id_) {
     case CSSValueID::kSRGB:
-      colorspace = Color::ColorFunctionSpace::kSRGB;
+      colorspace = Color::ColorSpace::kSRGB;
       break;
     case CSSValueID::kRec2020:
-      colorspace = Color::ColorFunctionSpace::kRec2020;
+      colorspace = Color::ColorSpace::kRec2020;
       break;
     case CSSValueID::kSRGBLinear:
-      colorspace = Color::ColorFunctionSpace::kSRGBLinear;
+      colorspace = Color::ColorSpace::kSRGBLinear;
       break;
     case CSSValueID::kDisplayP3:
-      colorspace = Color::ColorFunctionSpace::kDisplayP3;
+      colorspace = Color::ColorSpace::kDisplayP3;
       break;
     case CSSValueID::kA98Rgb:
-      colorspace = Color::ColorFunctionSpace::kA98RGB;
+      colorspace = Color::ColorSpace::kA98RGB;
       break;
     case CSSValueID::kProphotoRgb:
-      colorspace = Color::ColorFunctionSpace::kProPhotoRGB;
+      colorspace = Color::ColorSpace::kProPhotoRGB;
       break;
     case CSSValueID::kXyzD50:
-      colorspace = Color::ColorFunctionSpace::kXYZD50;
+      colorspace = Color::ColorSpace::kXYZD50;
       break;
     case CSSValueID::kXyz:
     case CSSValueID::kXyzD65:
-      colorspace = Color::ColorFunctionSpace::kXYZD65;
+      colorspace = Color::ColorSpace::kXYZD65;
       break;
     default:
       return false;
