@@ -371,6 +371,13 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool resourceless_draw() const { return resourceless_draw_; }
 
+  bool processing_animation_worklets_for_pending_tree() const {
+    return processing_animation_worklets_for_pending_tree_;
+  }
+  bool processing_paint_worklets_for_pending_tree() const {
+    return processing_paint_worklets_for_pending_tree_;
+  }
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
