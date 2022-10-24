@@ -228,8 +228,6 @@ void NavigateToURLWithPost(Browser* browser, const GURL& url) {
 }
 
 content::RenderFrameHost* NavigateToURL(Browser* browser, const GURL& url) {
-  // TODO(crbug.com/1243903): Remove logging after bug investigation.
-  LOG(INFO) << __func__ << ": " << url;
   return NavigateToURLWithDisposition(browser, url,
                                       WindowOpenDisposition::CURRENT_TAB,
                                       BROWSER_TEST_WAIT_FOR_LOAD_STOP);
