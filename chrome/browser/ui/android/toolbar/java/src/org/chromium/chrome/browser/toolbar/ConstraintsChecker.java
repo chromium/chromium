@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
@@ -27,13 +28,17 @@ public class ConstraintsChecker implements Callback<Integer> {
     /**
      * @param viewResourceAdapter The target to notify when a capture is needed.
      * @param constraintsSupplier The underlying supplier for the state of constraints.
-     * @param handler Handler to post deferred tasks to.
+     * @param looper Message loop to post deferred tasks to.
      */
     public ConstraintsChecker(@NonNull ViewResourceAdapter viewResourceAdapter,
-            @NonNull ObservableSupplier<Integer> constraintsSupplier, @NonNull Handler handler) {
+            @NonNull ObservableSupplier<Integer> constraintsSupplier, @NonNull Looper looper) {
         mViewResourceAdapter = viewResourceAdapter;
         mConstraintsSupplier = constraintsSupplier;
-        mHandler = handler;
+        mHandler = new Handler(looper);
+    }
+
+    public void destroy() {
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     /**

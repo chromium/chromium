@@ -5,12 +5,10 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.os.Handler;
+import android.os.Looper;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.cc.input.BrowserControlsState;
@@ -34,22 +33,13 @@ public final class ConstraintsCheckerTest {
 
     @Mock
     private ViewResourceAdapter mViewResourceAdapter;
-    @Mock
-    private Handler mHandler;
 
     private ObservableSupplierImpl mConstraintsSupplier = new ObservableSupplierImpl();
 
     @Test
     public void testScheduleRequestResourceOnUnlock() {
-        doAnswer((invocation) -> {
-            Runnable runnable = (Runnable) invocation.getArguments()[0];
-            runnable.run();
-            return null;
-        })
-                .when(mHandler)
-                .post(any(Runnable.class));
-        ConstraintsChecker constraintsChecker =
-                new ConstraintsChecker(mViewResourceAdapter, mConstraintsSupplier, mHandler);
+        ConstraintsChecker constraintsChecker = new ConstraintsChecker(
+                mViewResourceAdapter, mConstraintsSupplier, Looper.myLooper());
         constraintsChecker.scheduleRequestResourceOnUnlock();
         mConstraintsSupplier.set(BrowserControlsState.SHOWN);
         verify(mViewResourceAdapter, times(0)).onResourceRequested();
@@ -58,13 +48,14 @@ public final class ConstraintsCheckerTest {
         verify(mViewResourceAdapter, times(0)).onResourceRequested();
 
         mConstraintsSupplier.set(BrowserControlsState.BOTH);
+        ShadowLooper.idleMainLooper();
         verify(mViewResourceAdapter, times(1)).onResourceRequested();
     }
 
     @Test
     public void testAreControlsLocked() {
-        ConstraintsChecker constraintsChecker =
-                new ConstraintsChecker(mViewResourceAdapter, mConstraintsSupplier, mHandler);
+        ConstraintsChecker constraintsChecker = new ConstraintsChecker(
+                mViewResourceAdapter, mConstraintsSupplier, Looper.myLooper());
         assertEquals(true, constraintsChecker.areControlsLocked());
 
         mConstraintsSupplier.set(BrowserControlsState.SHOWN);

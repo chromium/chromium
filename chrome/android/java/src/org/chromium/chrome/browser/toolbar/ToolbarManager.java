@@ -1614,6 +1614,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mComponentCallbacks = null;
         ChromeAccessibilityUtil.get().removeObserver(this);
 
+        mControlContainer.destroy();
         mConstraintsProxy.destroy();
     }
 
