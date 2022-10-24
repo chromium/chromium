@@ -638,7 +638,7 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
         blink::features::kPrerender2SequentialPrerendering));
     CancelHost(host->frame_tree_node_id(),
                PrerenderHost::FinalStatus::kActivatedBeforeStarted);
-    return false;
+    return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
   // Compare navigation params from activation with the navigation params
