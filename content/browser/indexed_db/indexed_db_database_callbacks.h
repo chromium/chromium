@@ -40,8 +40,6 @@ class CONTENT_EXPORT IndexedDBDatabaseCallbacks
                        const IndexedDBDatabaseError& error);
   virtual void OnComplete(const IndexedDBTransaction& transaction);
 
-  void OnConnectionError();
-
  protected:
   virtual ~IndexedDBDatabaseCallbacks();
 
