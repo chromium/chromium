@@ -45,31 +45,28 @@ struct TileParameters {
 absl::optional<TileParameters> ComputeTileParameters(
     ENinePieceImageRule tile_rule,
     float dst_extent,
-    float src_extent,
-    float in_scale_factor) {
-  float scaled_tile_extent = src_extent * in_scale_factor;
+    float src_extent) {
   switch (tile_rule) {
     case kRoundImageRule: {
-      float repetitions =
-          std::max(1.0f, roundf(dst_extent / scaled_tile_extent));
-      float scale_factor = dst_extent / (src_extent * repetitions);
+      const float repetitions = std::max(1.0f, roundf(dst_extent / src_extent));
+      const float scale_factor = dst_extent / (src_extent * repetitions);
       return TileParameters{scale_factor, 0, 0};
     }
     case kRepeatImageRule: {
       // We want to construct the phase such that the pattern is centered (when
       // stretch is not set for a particular rule).
-      float phase = (dst_extent - scaled_tile_extent) / 2;
-      return TileParameters{in_scale_factor, phase, 0};
+      const float phase = (dst_extent - src_extent) / 2;
+      return TileParameters{1, phase, 0};
     }
     case kSpaceImageRule: {
-      absl::optional<float> spacing =
-          CalculateSpaceNeeded(dst_extent, scaled_tile_extent);
+      const absl::optional<float> spacing =
+          CalculateSpaceNeeded(dst_extent, src_extent);
       if (!spacing)
         return absl::nullopt;
-      return TileParameters{in_scale_factor, *spacing, *spacing};
+      return TileParameters{1, *spacing, *spacing};
     }
     case kStretchImageRule:
-      return TileParameters{in_scale_factor, 0, 0};
+      return TileParameters{1, 0, 0};
     default:
       NOTREACHED();
   }
@@ -152,12 +149,12 @@ void PaintPieces(GraphicsContext& context,
     }
 
     // TODO(cavalcantii): see crbug.com/662513.
-    absl::optional<TileParameters> h_tile = ComputeTileParameters(
+    const absl::optional<TileParameters> h_tile = ComputeTileParameters(
         draw_info.tile_rule.horizontal, draw_info.destination.width(),
-        draw_info.source.width(), draw_info.tile_scale.x());
-    absl::optional<TileParameters> v_tile = ComputeTileParameters(
+        draw_info.source.width() * draw_info.tile_scale.x());
+    const absl::optional<TileParameters> v_tile = ComputeTileParameters(
         draw_info.tile_rule.vertical, draw_info.destination.height(),
-        draw_info.source.height(), draw_info.tile_scale.y());
+        draw_info.source.height() * draw_info.tile_scale.y());
     if (!h_tile || !v_tile)
       continue;
 
@@ -169,8 +166,8 @@ void PaintPieces(GraphicsContext& context,
 
     ImageTilingInfo tiling_info;
     tiling_info.image_rect = draw_info.source;
-    tiling_info.scale =
-        gfx::Vector2dF(h_tile->scale_factor, v_tile->scale_factor);
+    tiling_info.scale = gfx::ScaleVector2d(
+        draw_info.tile_scale, h_tile->scale_factor, v_tile->scale_factor);
     // The phase defines the origin of the whole image - not the image
     // rect (see ImageTilingInfo) - so we need to adjust it to account
     // for that.
