@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/gl_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 
 #include <thread>
 
@@ -82,13 +82,13 @@ class MockProgressReporter : public gl::ProgressReporter {
   MOCK_METHOD0(ReportProgress, void());
 };
 
-class GLImageBackingFactoryTestBase
-    : public testing::TestWithParam<std::tuple<bool, viz::SharedImageFormat>> {
+class IOSurfaceImageBackingFactoryTestBase
+    : public testing::TestWithParam<viz::SharedImageFormat> {
  public:
-  explicit GLImageBackingFactoryTestBase(bool is_thread_safe)
+  explicit IOSurfaceImageBackingFactoryTestBase(bool is_thread_safe)
       : shared_image_manager_(
             std::make_unique<SharedImageManager>(is_thread_safe)) {}
-  ~GLImageBackingFactoryTestBase() override {
+  ~IOSurfaceImageBackingFactoryTestBase() override {
     // |context_state_| must be destroyed on its own context.
     context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
   }
@@ -106,7 +106,7 @@ class GLImageBackingFactoryTestBase
 
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = use_passthrough();
-    backing_factory_ = std::make_unique<GLImageBackingFactory>(
+    backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(), factory,
         &progress_reporter_);
 
@@ -116,10 +116,7 @@ class GLImageBackingFactoryTestBase
             shared_image_manager_.get(), nullptr);
   }
 
-  bool use_passthrough() {
-    return std::get<0>(GetParam()) &&
-           gles2::PassthroughCommandDecoderSupported();
-  }
+  bool use_passthrough() { return gles2::PassthroughCommandDecoderSupported(); }
 
   bool can_create_scanout_or_gmb_shared_image(
       viz::SharedImageFormat format) const {
@@ -131,14 +128,14 @@ class GLImageBackingFactoryTestBase
     return true;
   }
 
-  viz::SharedImageFormat get_format() { return std::get<1>(GetParam()); }
+  viz::SharedImageFormat get_format() { return GetParam(); }
 
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<GLImageBackingFactory> backing_factory_;
+  std::unique_ptr<IOSurfaceImageBackingFactory> backing_factory_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -148,9 +145,11 @@ class GLImageBackingFactoryTestBase
   bool supports_ab30_ = false;
 };
 
-class GLImageBackingFactoryTest : public GLImageBackingFactoryTestBase {
+class IOSurfaceImageBackingFactoryTest
+    : public IOSurfaceImageBackingFactoryTestBase {
  public:
-  GLImageBackingFactoryTest() : GLImageBackingFactoryTestBase(false) {}
+  IOSurfaceImageBackingFactoryTest()
+      : IOSurfaceImageBackingFactoryTestBase(false) {}
   void SetUp() override {
     GpuDriverBugWorkarounds workarounds;
     SetUpBase(workarounds, &image_factory_);
@@ -160,7 +159,7 @@ class GLImageBackingFactoryTest : public GLImageBackingFactoryTestBase {
   TextureImageFactory image_factory_;
 };
 
-TEST_P(GLImageBackingFactoryTest, Basic) {
+TEST_P(IOSurfaceImageBackingFactoryTest, Basic) {
   // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
   // (crbug.com/1100975)
   gpu::GPUTestBotConfig bot_config;
@@ -293,7 +292,7 @@ TEST_P(GLImageBackingFactoryTest, Basic) {
   }
 }
 
-TEST_P(GLImageBackingFactoryTest, InitialData) {
+TEST_P(IOSurfaceImageBackingFactoryTest, InitialData) {
   // TODO(andrescj): these loop over the formats can be replaced by test
   // parameters.
   for (auto resource_format :
@@ -361,7 +360,7 @@ TEST_P(GLImageBackingFactoryTest, InitialData) {
   }
 }
 
-TEST_P(GLImageBackingFactoryTest, InitialDataImage) {
+TEST_P(IOSurfaceImageBackingFactoryTest, InitialDataImage) {
   const bool should_succeed =
       can_create_scanout_or_gmb_shared_image(get_format());
   if (should_succeed)
@@ -412,7 +411,7 @@ TEST_P(GLImageBackingFactoryTest, InitialDataImage) {
   }
 }
 
-TEST_P(GLImageBackingFactoryTest, InitialDataWrongSize) {
+TEST_P(IOSurfaceImageBackingFactoryTest, InitialDataWrongSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -432,7 +431,7 @@ TEST_P(GLImageBackingFactoryTest, InitialDataWrongSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(GLImageBackingFactoryTest, InvalidFormat) {
+TEST_P(IOSurfaceImageBackingFactoryTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = viz::SharedImageFormat::SinglePlane(
       viz::ResourceFormat::YUV_420_BIPLANAR);
@@ -448,7 +447,7 @@ TEST_P(GLImageBackingFactoryTest, InvalidFormat) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(GLImageBackingFactoryTest, InvalidSize) {
+TEST_P(IOSurfaceImageBackingFactoryTest, InvalidSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(0, 0);
@@ -469,7 +468,7 @@ TEST_P(GLImageBackingFactoryTest, InvalidSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(GLImageBackingFactoryTest, EstimatedSize) {
+TEST_P(IOSurfaceImageBackingFactoryTest, EstimatedSize) {
   const bool should_succeed =
       can_create_scanout_or_gmb_shared_image(get_format());
   if (should_succeed)
@@ -506,7 +505,7 @@ TEST_P(GLImageBackingFactoryTest, EstimatedSize) {
 // Ensures that the various conversion functions used w/ TexStorage2D match
 // their TexImage2D equivalents, allowing us to minimize the amount of parallel
 // data tracked in the SharedImageFactoryGLImage.
-TEST_P(GLImageBackingFactoryTest, TexImageTexStorageEquivalence) {
+TEST_P(IOSurfaceImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(GpuDriverBugWorkarounds(), GpuFeatureInfo());
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
@@ -589,10 +588,12 @@ class StubImage : public gl::GLImageStub {
   int update_counter_ = 0;
 };
 
-class GLImageBackingFactoryWithGMBTest : public GLImageBackingFactoryTestBase,
-                                         public gpu::ImageFactory {
+class IOSurfaceImageBackingFactoryWithGMBTest
+    : public IOSurfaceImageBackingFactoryTestBase,
+      public gpu::ImageFactory {
  public:
-  GLImageBackingFactoryWithGMBTest() : GLImageBackingFactoryTestBase(false) {}
+  IOSurfaceImageBackingFactoryWithGMBTest()
+      : IOSurfaceImageBackingFactoryTestBase(false) {}
   void SetUp() override { SetUpBase(GpuDriverBugWorkarounds(), this); }
 
   scoped_refptr<gl::GLImage> GetImageFromMailbox(Mailbox mailbox) {
@@ -632,7 +633,7 @@ class GLImageBackingFactoryWithGMBTest : public GLImageBackingFactoryTestBase,
   static constexpr int kClientId = 3;
 };
 
-TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportEmpty) {
+TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportEmpty) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
   gfx::BufferFormat format = viz::BufferFormat(get_format());
@@ -648,7 +649,7 @@ TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportEmpty) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
+TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
   // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
   // (crbug.com/1100975)
   gpu::GPUTestBotConfig bot_config;
@@ -706,36 +707,24 @@ TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
   EXPECT_GT(stub_image->update_counter(), update_counter);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 const auto kSharedImageFormats = ::testing::Values(
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102));
-#else
-// High bit depth rendering is not supported on Android.
-const auto kSharedImageFormats = ::testing::Values(
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888));
-#endif
 
 std::string TestParamToString(
-    const testing::TestParamInfo<std::tuple<bool, viz::SharedImageFormat>>&
-        param_info) {
-  const bool allow_passthrough = std::get<0>(param_info.param);
-  const viz::SharedImageFormat format = std::get<1>(param_info.param);
+    const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
   return base::StringPrintf(
-      "%s_%s", (allow_passthrough ? "AllowPassthrough" : "DisallowPassthrough"),
-      gfx::BufferFormatToString(viz::BufferFormat(format)));
+      "%s", gfx::BufferFormatToString(viz::BufferFormat(param_info.param)));
 }
 
 INSTANTIATE_TEST_SUITE_P(Service,
-                         GLImageBackingFactoryTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            kSharedImageFormats),
+                         IOSurfaceImageBackingFactoryTest,
+                         kSharedImageFormats,
                          TestParamToString);
 INSTANTIATE_TEST_SUITE_P(Service,
-                         GLImageBackingFactoryWithGMBTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            kSharedImageFormats),
+                         IOSurfaceImageBackingFactoryWithGMBTest,
+                         kSharedImageFormats,
                          TestParamToString);
 
 }  // anonymous namespace

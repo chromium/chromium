@@ -296,7 +296,6 @@ test("gl_tests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
-    "command_buffer/service/shared_image/gl_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/gl_texture_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_manager_unittest.cc",
@@ -422,7 +421,10 @@ test("gl_tests") {
     ]
   } else if (is_mac) {
     frameworks = [ "IOSurface.framework" ]
-    sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
+    sources += [
+      "command_buffer/service/shared_image/gl_image_backing_factory_unittest.cc",
+      "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc",
+    ]
   } else if (is_win) {
     deps += [
       "//ui/platform_window",

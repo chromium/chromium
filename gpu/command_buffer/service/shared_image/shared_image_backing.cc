@@ -52,6 +52,8 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "CompoundImageBacking";
     case SharedImageBackingType::kDCOMPSurfaceProxy:
       return "DCOMPSurfaceProxy";
+    case SharedImageBackingType::kIOSurface:
+      return "IOSurface";
   }
   NOTREACHED();
 }

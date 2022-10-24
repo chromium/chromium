@@ -1,9 +1,9 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_IOSURFACE_IMAGE_BACKING_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_IOSURFACE_IMAGE_BACKING_H_
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -16,52 +16,26 @@
 namespace gpu {
 
 // Interface through which a representation that has a GL texture calls into its
-// GLImage backing.
-class GLTextureImageRepresentationClient {
+// IOSurface backing.
+class GLTextureIOSurfaceRepresentationClient {
  public:
   virtual bool GLTextureImageRepresentationBeginAccess(bool readonly) = 0;
   virtual void GLTextureImageRepresentationEndAccess(bool readonly) = 0;
   virtual void GLTextureImageRepresentationRelease(bool have_context) = 0;
 };
 
-// Representation of a GLTextureImageBacking or GLImageBacking
-// as a GL Texture.
-class GLTextureGLCommonRepresentation : public GLTextureImageRepresentation {
- public:
-  GLTextureGLCommonRepresentation(SharedImageManager* manager,
-                                  SharedImageBacking* backing,
-                                  GLTextureImageRepresentationClient* client,
-                                  MemoryTypeTracker* tracker,
-                                  gles2::Texture* texture);
-  ~GLTextureGLCommonRepresentation() override;
-
- private:
-  // GLTextureImageRepresentation:
-  gles2::Texture* GetTexture(int plane_index) override;
-  bool BeginAccess(GLenum mode) override;
-  void EndAccess() override;
-
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
-  raw_ptr<gles2::Texture> texture_;
-  GLenum mode_ = 0;
-};
-
 // Representation of a GLTextureImageBacking or
 // GLTextureImageBackingPassthrough as a GL TexturePassthrough.
-class GLTexturePassthroughGLCommonRepresentation
+class GLTextureIOSurfaceRepresentation
     : public GLTexturePassthroughImageRepresentation {
  public:
-  class Client {
-   public:
-    virtual bool OnGLTexturePassthroughBeginAccess(GLenum mode) = 0;
-  };
-  GLTexturePassthroughGLCommonRepresentation(
+  GLTextureIOSurfaceRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
-      GLTextureImageRepresentationClient* client,
+      GLTextureIOSurfaceRepresentationClient* client,
       MemoryTypeTracker* tracker,
       scoped_refptr<gles2::TexturePassthrough> texture_passthrough);
-  ~GLTexturePassthroughGLCommonRepresentation() override;
+  ~GLTextureIOSurfaceRepresentation() override;
 
  private:
   // GLTexturePassthroughImageRepresentation:
@@ -70,26 +44,26 @@ class GLTexturePassthroughGLCommonRepresentation
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
+  const raw_ptr<GLTextureIOSurfaceRepresentationClient> client_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   GLenum mode_ = 0;
 };
 
 // Skia representation for both GLTextureImageBackingHelper.
-class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
+class SkiaIOSurfaceRepresentation : public SkiaImageRepresentation {
  public:
   class Client {
    public:
     virtual bool OnSkiaBeginReadAccess() = 0;
     virtual bool OnSkiaBeginWriteAccess() = 0;
   };
-  SkiaGLCommonRepresentation(SharedImageManager* manager,
-                             SharedImageBacking* backing,
-                             GLTextureImageRepresentationClient* client,
-                             scoped_refptr<SharedContextState> context_state,
-                             sk_sp<SkPromiseImageTexture> promise_texture,
-                             MemoryTypeTracker* tracker);
-  ~SkiaGLCommonRepresentation() override;
+  SkiaIOSurfaceRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              GLTextureIOSurfaceRepresentationClient* client,
+                              scoped_refptr<SharedContextState> context_state,
+                              sk_sp<SkPromiseImageTexture> promise_texture,
+                              MemoryTypeTracker* tracker);
+  ~SkiaIOSurfaceRepresentation() override;
 
   void SetBeginReadAccessCallback(
       base::RepeatingClosure begin_read_access_callback);
@@ -116,7 +90,7 @@ class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
 
   void CheckContext();
 
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
+  const raw_ptr<GLTextureIOSurfaceRepresentationClient> client_ = nullptr;
   scoped_refptr<SharedContextState> context_state_;
   sk_sp<SkPromiseImageTexture> promise_texture_;
 
@@ -126,14 +100,14 @@ class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
 #endif
 };
 
-// Overlay representation for a GLImageBacking.
-class OverlayGLImageRepresentation : public OverlayImageRepresentation {
+// Overlay representation for a IOSurfaceImageBacking.
+class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
  public:
-  OverlayGLImageRepresentation(SharedImageManager* manager,
-                               SharedImageBacking* backing,
-                               MemoryTypeTracker* tracker,
-                               scoped_refptr<gl::GLImage> gl_image);
-  ~OverlayGLImageRepresentation() override;
+  OverlayIOSurfaceRepresentation(SharedImageManager* manager,
+                                 SharedImageBacking* backing,
+                                 MemoryTypeTracker* tracker,
+                                 scoped_refptr<gl::GLImage> gl_image);
+  ~OverlayIOSurfaceRepresentation() override;
 
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
@@ -143,13 +117,13 @@ class OverlayGLImageRepresentation : public OverlayImageRepresentation {
   scoped_refptr<gl::GLImage> gl_image_;
 };
 
-class MemoryGLImageRepresentation : public MemoryImageRepresentation {
+class MemoryIOSurfaceRepresentation : public MemoryImageRepresentation {
  public:
-  MemoryGLImageRepresentation(SharedImageManager* manager,
-                              SharedImageBacking* backing,
-                              MemoryTypeTracker* tracker,
-                              scoped_refptr<gl::GLImageMemory> image_memory);
-  ~MemoryGLImageRepresentation() override;
+  MemoryIOSurfaceRepresentation(SharedImageManager* manager,
+                                SharedImageBacking* backing,
+                                MemoryTypeTracker* tracker,
+                                scoped_refptr<gl::GLImageMemory> image_memory);
+  ~MemoryIOSurfaceRepresentation() override;
 
  protected:
   SkPixmap BeginReadAccess() override;
@@ -161,14 +135,14 @@ class MemoryGLImageRepresentation : public MemoryImageRepresentation {
 // Implementation of SharedImageBacking that creates a GL Texture that is backed
 // by a GLImage and stores it as a gles2::Texture. Can be used with the legacy
 // mailbox implementation.
-class GPU_GLES2_EXPORT GLImageBacking
+class GPU_GLES2_EXPORT IOSurfaceImageBacking
     : public SharedImageBacking,
-      public GLTextureImageRepresentationClient {
+      public GLTextureIOSurfaceRepresentationClient {
  public:
-  // Used when GLImageBacking is serving as a temporary SharedImage
+  // Used when IOSurfaceImageBacking is serving as a temporary SharedImage
   // wrapper to an already-allocated texture. The returned backing will not
   // create any new textures.
-  static std::unique_ptr<GLImageBacking> CreateFromGLTexture(
+  static std::unique_ptr<IOSurfaceImageBacking> CreateFromGLTexture(
       scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -180,7 +154,7 @@ class GPU_GLES2_EXPORT GLImageBacking
       GLenum texture_target,
       scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
 
-  GLImageBacking(
+  IOSurfaceImageBacking(
       scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -191,9 +165,9 @@ class GPU_GLES2_EXPORT GLImageBacking
       uint32_t usage,
       const GLTextureImageBackingHelper::InitializeGLTextureParams& params,
       bool is_passthrough);
-  GLImageBacking(const GLImageBacking& other) = delete;
-  GLImageBacking& operator=(const GLImageBacking& other) = delete;
-  ~GLImageBacking() override;
+  IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
+  IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
+  ~IOSurfaceImageBacking() override;
 
   void InitializePixels(GLenum format, GLenum type, const uint8_t* data);
 
@@ -235,7 +209,7 @@ class GPU_GLES2_EXPORT GLImageBacking
       MemoryTypeTracker* tracker) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
-  // GLTextureImageRepresentationClient:
+  // GLTextureIOSurfaceRepresentationClient:
   bool GLTextureImageRepresentationBeginAccess(bool readonly) override;
   void GLTextureImageRepresentationEndAccess(bool readonly) override;
   void GLTextureImageRepresentationRelease(bool have_context) override;
@@ -248,6 +222,13 @@ class GPU_GLES2_EXPORT GLImageBacking
   // to the GL texture, and un-set |image_bind_or_copy_needed_|.
   bool BindOrCopyImageIfNeeded();
   bool image_bind_or_copy_needed_ = true;
+
+  // Used to determine whether to release the texture in EndAccess() in use
+  // cases that need to ensure IOSurface synchronization.
+  uint num_ongoing_read_accesses_ = 0;
+  // Used with the above variable to catch cases where clients are performing
+  // disallowed concurrent read/write accesses.
+  bool ongoing_write_access_ = false;
 
   void RetainGLTexture();
   void ReleaseGLTexture(bool have_context);
@@ -271,9 +252,9 @@ class GPU_GLES2_EXPORT GLImageBacking
   // Wait on this fence before allowing another access.
   gfx::GpuFenceHandle release_fence_;
 
-  base::WeakPtrFactory<GLImageBacking> weak_factory_;
+  base::WeakPtrFactory<IOSurfaceImageBacking> weak_factory_;
 };
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_IOSURFACE_IMAGE_BACKING_H_

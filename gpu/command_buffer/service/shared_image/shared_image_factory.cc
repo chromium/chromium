@@ -20,8 +20,8 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/gl_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/raw_draw_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -269,15 +269,12 @@ SharedImageFactory::SharedImageFactory(
 #endif  // defined(USE_OZONE)
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(hitawala): Temporary factory that will be replaced with Ozone and
-  // other backings
-  if (use_gl) {
-    auto gl_image_backing_factory = std::make_unique<GLImageBackingFactory>(
-        gpu_preferences, workarounds, feature_info.get(), image_factory,
-        shared_context_state_ ? shared_context_state_->progress_reporter()
-                              : nullptr);
-    factories_.push_back(std::move(gl_image_backing_factory));
-  }
+  auto iosurface_backing_factory =
+      std::make_unique<IOSurfaceImageBackingFactory>(
+          gpu_preferences, workarounds, feature_info.get(), image_factory,
+          shared_context_state_ ? shared_context_state_->progress_reporter()
+                                : nullptr);
+  factories_.push_back(std::move(iosurface_backing_factory));
 #endif
 }
 

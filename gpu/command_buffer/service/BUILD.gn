@@ -237,8 +237,6 @@ target(link_target_type, "gles2_sources") {
     "shared_image/gl_common_image_backing_factory.h",
     "shared_image/gl_image_backing.cc",
     "shared_image/gl_image_backing.h",
-    "shared_image/gl_image_backing_factory.cc",
-    "shared_image/gl_image_backing_factory.h",
     "shared_image/gl_repack_utils.cc",
     "shared_image/gl_repack_utils.h",
     "shared_image/gl_texture_image_backing.cc",
@@ -457,6 +455,9 @@ target(link_target_type, "gles2_sources") {
   if (is_mac) {
     deps += [ "//components/viz/common:metal_context_provider" ]
     sources += [
+      "shared_image/gl_image_backing_factory.cc",
+      "shared_image/iosurface_image_backing.h",
+      "shared_image/iosurface_image_backing.mm",
       "shared_image/iosurface_image_backing_factory.h",
       "shared_image/iosurface_image_backing_factory.mm",
     ]
