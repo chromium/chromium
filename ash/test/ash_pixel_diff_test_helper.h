@@ -10,7 +10,6 @@
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 namespace ash {
-class DemoAshPixelDiffTest;
 
 // A helper class that provides utility functions for performing pixel diff
 // tests via the Skia Gold.
@@ -25,15 +24,15 @@ class AshPixelDiffTestHelper {
   AshPixelDiffTestHelper& operator=(const AshPixelDiffTestHelper&) = delete;
   ~AshPixelDiffTestHelper();
 
-  // Similar to `ComparePrimaryFullScreen()` but with the difference that only
-  // the pixels within the screen bounds of `ui_components` are compared. The
-  // function caller has the duty to choose suitable `ui_components` in their
-  // tests to avoid unnecessary pixel comparisons. Otherwise, pixel tests could
-  // be fragile to the changes in production code.
-  // `ui_components` is a variadic argument list, consisting of view pointers,
-  // widget pointers or window pointers. `ui_components` can have the pointers
-  // of different categories.
-  // Example usages:
+  // Takes a full primary screenshot then compares it with the benchmark image
+  // specified by `screenshot_name`. Only the pixels within the screen bounds of
+  // `ui_components` affect the comparison result. Returns the comparison
+  // result. The function caller has the duty to choose suitable `ui_components`
+  // in their tests to avoid unnecessary pixel comparisons. Otherwise, pixel
+  // tests could be fragile to the changes in production code. `ui_components`
+  // is a variadic argument list, consisting of view pointers, widget pointers
+  // or window pointers. `ui_components` can have the pointers of different
+  // categories. Example usages:
   //
   //  views::View* view_ptr = ...;
   //  views::Widget* widget_ptr = ...;
@@ -55,11 +54,8 @@ class AshPixelDiffTestHelper {
   }
 
  private:
-  friend DemoAshPixelDiffTest;
-
-  // Takes a screenshot of the primary fullscreen then uploads it to the Skia
-  // Gold to perform pixel comparison. `screenshot_name` specifies the benchmark
-  // image. Returns the comparison result.
+  // Similar to `CompareUiComponentsOnPrimaryScreen()` but with the difference
+  // that every pixel on the screen is compared.
   // NOTE: use this function only when necessary. Otherwise, a tiny UI change
   // may break many pixel tests.
   bool ComparePrimaryFullScreen(const std::string& screenshot_name);
