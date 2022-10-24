@@ -726,11 +726,10 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
   if (Document* popup_document = GetPopupDocumentIfShowing())
     UpdateLifecycleIfNeeded(*popup_document);
 
-  // Next flush all accessibility events and dirty objects.
-  if (IsMainDocumentDirty())
+  // Next flush all accessibility events and dirty objects, for both the main
+  // and popup document.
+  if (IsDirty())
     ProcessDeferredAccessibilityEvents(GetDocument());
-  if (IsPopupDocumentDirty())
-    ProcessDeferredAccessibilityEvents(*GetPopupDocumentIfShowing());
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
