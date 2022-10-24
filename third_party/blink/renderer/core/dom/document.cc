@@ -4842,7 +4842,7 @@ void Document::LayoutViewportWasResized() {
     if (GetFrame()->IsMainFrame() && !Printing())
       probe::DidResizeMainFrame(GetFrame());
   }
-  if (!HasStaticViewportUnits())
+  if (!HasViewportUnits())
     return;
   GetStyleResolver().SetResizedForViewportUnits();
   GetStyleEngine().MarkViewportUnitDirty(ViewportUnitFlag::kStatic);

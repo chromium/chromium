@@ -16,16 +16,20 @@
   }
 </style>
 
-<iframe id=iframe></iframe>
+<main id=main></main>
 
 <script>
 
-const doc = iframe.contentDocument;
-const win = iframe.contentWindow;
-
 function test_invalidation_value(value, expected_pre, expected_post) {
   test((t) => {
-    t.add_cleanup(() => { doc.body.innerHTML = ''; });
+    let iframe = document.createElement('iframe');
+    main.append(iframe);
+    const doc = iframe.contentDocument;
+    const win = iframe.contentWindow;
+    t.add_cleanup(() => {
+      doc.body.innerHTML = '';
+      iframe.remove();
+    });
     doc.body.innerHTML = `<div style="height: ${value};"></div>`;
     let div = doc.querySelector('div');
     assert_equals(win.getComputedStyle(div).height, expected_pre);
