@@ -122,7 +122,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   //
   // The output will look like: "HEX\r\n[payload]\r\n"
   // where HEX is a length in hexdecimal (without the "0x" prefix).
-  static int EncodeChunk(const base::StringPiece& payload,
+  static int EncodeChunk(base::StringPiece payload,
                          char* output,
                          size_t output_size);
 

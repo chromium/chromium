@@ -438,7 +438,7 @@ void HttpUtil::TrimLWS(std::string::const_iterator* begin,
 }
 
 // static
-base::StringPiece HttpUtil::TrimLWS(const base::StringPiece& string) {
+base::StringPiece HttpUtil::TrimLWS(base::StringPiece string) {
   const char* begin = string.data();
   const char* end = string.data() + string.size();
   TrimLWSImplementation(&begin, &end);

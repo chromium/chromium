@@ -101,7 +101,7 @@ std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
 // bit, which directs the name server to pursue query recursively, and sets
 // the QDCOUNT to 1, meaning the question section has a single entry.
 DnsQuery::DnsQuery(uint16_t id,
-                   const base::StringPiece& qname,
+                   base::StringPiece qname,
                    uint16_t qtype,
                    const OptRecordRdata* opt_rdata,
                    PaddingStrategy padding_strategy)

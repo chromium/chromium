@@ -122,7 +122,7 @@ class NET_EXPORT HttpUtil {
   // Trim HTTP_LWS chars from the beginning and end of the string.
   static void TrimLWS(std::string::const_iterator* begin,
                       std::string::const_iterator* end);
-  static base::StringPiece TrimLWS(const base::StringPiece& string);
+  static base::StringPiece TrimLWS(base::StringPiece string);
 
   // Whether the character is a valid |tchar| as defined in RFC 7230 Sec 3.2.6.
   static bool IsTokenChar(char c);

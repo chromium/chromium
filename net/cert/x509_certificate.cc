@@ -62,7 +62,7 @@ const char kPKCS7Header[] = "PKCS7";
 // Utility to split |src| on the first occurrence of |c|, if any. |right| will
 // either be empty if |c| was not found, or will contain the remainder of the
 // string including the split character itself.
-void SplitOnChar(const base::StringPiece& src,
+void SplitOnChar(base::StringPiece src,
                  char c,
                  base::StringPiece* left,
                  base::StringPiece* right) {

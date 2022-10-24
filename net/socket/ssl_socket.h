@@ -22,9 +22,9 @@ public:
  // RFC and |context| is ignored.  The call will fail with an error if
  // the socket is not connected or the SSL implementation does not
  // support the operation.
- virtual int ExportKeyingMaterial(const base::StringPiece& label,
+ virtual int ExportKeyingMaterial(base::StringPiece label,
                                   bool has_context,
-                                  const base::StringPiece& context,
+                                  base::StringPiece context,
                                   unsigned char* out,
                                   unsigned int outlen) = 0;
 };

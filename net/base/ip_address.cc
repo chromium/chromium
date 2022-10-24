@@ -112,7 +112,7 @@ bool IsPubliclyRoutableIPv6(const IPAddressBytes& ip_address) {
   return false;
 }
 
-bool ParseIPLiteralToBytes(const base::StringPiece& ip_literal,
+bool ParseIPLiteralToBytes(base::StringPiece ip_literal,
                            IPAddressBytes* bytes) {
   // |ip_literal| could be either an IPv4 or an IPv6 literal. If it contains
   // a colon however, it must be an IPv6 address.
@@ -287,7 +287,7 @@ bool IPAddress::IsLinkLocal() const {
   return false;
 }
 
-bool IPAddress::AssignFromIPLiteral(const base::StringPiece& ip_literal) {
+bool IPAddress::AssignFromIPLiteral(base::StringPiece ip_literal) {
   bool success = ParseIPLiteralToBytes(ip_literal, &ip_address_);
   if (!success)
     ip_address_.Resize(0);
@@ -454,7 +454,7 @@ bool ParseCIDRBlock(base::StringPiece cidr_literal,
   return true;
 }
 
-bool ParseURLHostnameToAddress(const base::StringPiece& hostname,
+bool ParseURLHostnameToAddress(base::StringPiece hostname,
                                IPAddress* ip_address) {
   if (hostname.size() >= 2 && hostname.front() == '[' &&
       hostname.back() == ']') {

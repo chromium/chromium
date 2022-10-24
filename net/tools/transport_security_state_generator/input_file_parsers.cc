@@ -97,7 +97,7 @@ bool MatchCertificateName(base::StringPiece name, base::StringPiece pin_name) {
   }
 
   for (size_t i = 0; i < words.size(); ++i) {
-    const base::StringPiece& word = words[i];
+    base::StringPiece word = words[i];
     if (word == "Class" && (i + 1) < words.size()) {
       std::string class_name = base::StrCat({word, words[i + 1]});
 
@@ -200,7 +200,7 @@ bool ParseCertificatesFile(base::StringPiece certs_input,
   bssl::UniquePtr<X509> certificate;
   SPKIHash hash;
 
-  for (const base::StringPiece& line : SplitStringPiece(
+  for (base::StringPiece line : SplitStringPiece(
            certs_input, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL)) {
     if (!line.empty() && line[0] == '#') {
       continue;

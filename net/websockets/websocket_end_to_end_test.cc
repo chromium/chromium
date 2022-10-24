@@ -82,7 +82,7 @@ using test_server::HttpResponse;
 static const char kEchoServer[] = "echo-with-no-extension";
 
 // Simplify changing URL schemes.
-GURL ReplaceUrlScheme(const GURL& in_url, const base::StringPiece& scheme) {
+GURL ReplaceUrlScheme(const GURL& in_url, base::StringPiece scheme) {
   GURL::Replacements replacements;
   replacements.SetSchemeStr(scheme);
   return in_url.ReplaceComponents(replacements);

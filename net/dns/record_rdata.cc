@@ -24,7 +24,7 @@ static const size_t kSrvRecordMinimumSize = 6;
 // Minimal HTTPS rdata is 2 octets priority + 1 octet empty name.
 static constexpr size_t kHttpsRdataMinimumSize = 3;
 
-bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
+bool RecordRdata::HasValidSize(base::StringPiece data, uint16_t type) {
   switch (type) {
     case dns_protocol::kTypeSRV:
       return data.size() >= kSrvRecordMinimumSize;
@@ -53,7 +53,7 @@ SrvRecordRdata::~SrvRecordRdata() = default;
 
 // static
 std::unique_ptr<SrvRecordRdata> SrvRecordRdata::Create(
-    const base::StringPiece& data,
+    base::StringPiece data,
     const DnsRecordParser& parser) {
   if (!HasValidSize(data, kType))
     return nullptr;
@@ -92,7 +92,7 @@ ARecordRdata::~ARecordRdata() = default;
 
 // static
 std::unique_ptr<ARecordRdata> ARecordRdata::Create(
-    const base::StringPiece& data,
+    base::StringPiece data,
     const DnsRecordParser& parser) {
   if (!HasValidSize(data, kType))
     return nullptr;
@@ -119,7 +119,7 @@ AAAARecordRdata::~AAAARecordRdata() = default;
 
 // static
 std::unique_ptr<AAAARecordRdata> AAAARecordRdata::Create(
-    const base::StringPiece& data,
+    base::StringPiece data,
     const DnsRecordParser& parser) {
   if (!HasValidSize(data, kType))
     return nullptr;
@@ -146,7 +146,7 @@ CnameRecordRdata::~CnameRecordRdata() = default;
 
 // static
 std::unique_ptr<CnameRecordRdata> CnameRecordRdata::Create(
-    const base::StringPiece& data,
+    base::StringPiece data,
     const DnsRecordParser& parser) {
   auto rdata = base::WrapUnique(new CnameRecordRdata());
 
@@ -173,7 +173,7 @@ PtrRecordRdata::~PtrRecordRdata() = default;
 
 // static
 std::unique_ptr<PtrRecordRdata> PtrRecordRdata::Create(
-    const base::StringPiece& data,
+    base::StringPiece data,
     const DnsRecordParser& parser) {
   auto rdata = base::WrapUnique(new PtrRecordRdata());
 
@@ -199,7 +199,7 @@ TxtRecordRdata::~TxtRecordRdata() = default;
 
 // static
 std::unique_ptr<TxtRecordRdata> TxtRecordRdata::Create(
-    const base::StringPiece& data,
+    base::StringPiece data,
     const DnsRecordParser& parser) {
   auto rdata = base::WrapUnique(new TxtRecordRdata());
 
@@ -234,7 +234,7 @@ NsecRecordRdata::~NsecRecordRdata() = default;
 
 // static
 std::unique_ptr<NsecRecordRdata> NsecRecordRdata::Create(
-    const base::StringPiece& data,
+    base::StringPiece data,
     const DnsRecordParser& parser) {
   auto rdata = base::WrapUnique(new NsecRecordRdata());
 

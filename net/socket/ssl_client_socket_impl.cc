@@ -408,9 +408,9 @@ std::vector<uint8_t> SSLClientSocketImpl::GetECHRetryConfigs() {
   return std::vector<uint8_t>(retry_configs, retry_configs + retry_configs_len);
 }
 
-int SSLClientSocketImpl::ExportKeyingMaterial(const base::StringPiece& label,
+int SSLClientSocketImpl::ExportKeyingMaterial(base::StringPiece label,
                                               bool has_context,
-                                              const base::StringPiece& context,
+                                              base::StringPiece context,
                                               unsigned char* out,
                                               unsigned int outlen) {
   if (!IsConnected())

@@ -474,8 +474,7 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
     server_ssl_config_.client_cert_verifier = client_cert_verifier_.get();
   }
 
-  std::unique_ptr<crypto::RSAPrivateKey> ReadTestKey(
-      const base::StringPiece& name) {
+  std::unique_ptr<crypto::RSAPrivateKey> ReadTestKey(base::StringPiece name) {
     base::FilePath certs_dir(GetTestCertsDirectory());
     base::FilePath key_path = certs_dir.AppendASCII(name);
     std::string key_string;

@@ -28,7 +28,7 @@ struct PEMTokenizer::PEMType {
 };
 
 PEMTokenizer::PEMTokenizer(
-    const StringPiece& str,
+    StringPiece str,
     const std::vector<std::string>& allowed_block_types) {
   Init(str, allowed_block_types);
 }
@@ -83,7 +83,7 @@ bool PEMTokenizer::GetNext() {
   return false;
 }
 
-void PEMTokenizer::Init(const StringPiece& str,
+void PEMTokenizer::Init(StringPiece str,
                         const std::vector<std::string>& allowed_block_types) {
   str_ = str;
   pos_ = 0;

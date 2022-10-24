@@ -24,7 +24,7 @@ class NET_EXPORT_PRIVATE PEMTokenizer {
   // Create a new PEMTokenizer that iterates through |str| searching for
   // instances of PEM encoded blocks that are of the |allowed_block_types|.
   // |str| must remain valid for the duration of the PEMTokenizer.
-  PEMTokenizer(const base::StringPiece& str,
+  PEMTokenizer(base::StringPiece str,
                const std::vector<std::string>& allowed_block_types);
 
   PEMTokenizer(const PEMTokenizer&) = delete;
@@ -48,7 +48,7 @@ class NET_EXPORT_PRIVATE PEMTokenizer {
   const std::string& data() const { return data_; }
 
  private:
-  void Init(const base::StringPiece& str,
+  void Init(base::StringPiece str,
             const std::vector<std::string>& allowed_block_types);
 
   // A simple cache of the allowed PEM header and footer for a given PEM

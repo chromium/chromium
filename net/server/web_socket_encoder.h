@@ -38,7 +38,7 @@ class WebSocketEncoder final {
   static std::unique_ptr<WebSocketEncoder> CreateClient(
       const std::string& response_extensions);
 
-  WebSocket::ParseResult DecodeFrame(const base::StringPiece& frame,
+  WebSocket::ParseResult DecodeFrame(base::StringPiece frame,
                                      int* bytes_consumed,
                                      std::string* output);
   void EncodeTextFrame(base::StringPiece frame,

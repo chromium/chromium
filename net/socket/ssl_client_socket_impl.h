@@ -76,9 +76,9 @@ class SSLClientSocketImpl : public SSLClientSocket,
   std::vector<uint8_t> GetECHRetryConfigs() override;
 
   // SSLSocket implementation.
-  int ExportKeyingMaterial(const base::StringPiece& label,
+  int ExportKeyingMaterial(base::StringPiece label,
                            bool has_context,
-                           const base::StringPiece& context,
+                           base::StringPiece context,
                            unsigned char* out,
                            unsigned int outlen) override;
 

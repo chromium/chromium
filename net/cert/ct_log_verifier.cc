@@ -57,7 +57,7 @@ const EVP_MD* GetEvpAlg(ct::DigitallySigned::HashAlgorithm alg) {
 
 // static
 scoped_refptr<const CTLogVerifier> CTLogVerifier::Create(
-    const base::StringPiece& public_key,
+    base::StringPiece public_key,
     std::string description) {
   auto result = base::WrapRefCounted(new CTLogVerifier(std::move(description)));
   if (!result->Init(public_key))
@@ -269,7 +269,7 @@ CTLogVerifier::~CTLogVerifier() {
     EVP_PKEY_free(public_key_);
 }
 
-bool CTLogVerifier::Init(const base::StringPiece& public_key) {
+bool CTLogVerifier::Init(base::StringPiece public_key) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   CBS cbs;
@@ -306,8 +306,8 @@ bool CTLogVerifier::Init(const base::StringPiece& public_key) {
   return true;
 }
 
-bool CTLogVerifier::VerifySignature(const base::StringPiece& data_to_sign,
-                                    const base::StringPiece& signature) const {
+bool CTLogVerifier::VerifySignature(base::StringPiece data_to_sign,
+                                    base::StringPiece signature) const {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   const EVP_MD* hash_alg = GetEvpAlg(hash_algorithm_);

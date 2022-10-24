@@ -120,7 +120,7 @@ absl::optional<HostCache::Entry> CreateCacheEntry(
 int ParseAddressList(base::StringPiece host_list,
                      std::vector<net::IPEndPoint>* ip_endpoints) {
   ip_endpoints->clear();
-  for (const base::StringPiece& address : base::SplitStringPiece(
+  for (base::StringPiece address : base::SplitStringPiece(
            host_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     IPAddress ip_address;
     if (!ip_address.AssignFromIPLiteral(address)) {

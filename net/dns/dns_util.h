@@ -32,8 +32,7 @@ namespace net {
 //
 //   dotted: a string in dotted form: "www.google.com"
 //   out: a result in DNS form: "\x03www\x06google\x03com\x00"
-NET_EXPORT bool DNSDomainFromDot(const base::StringPiece& dotted,
-                                 std::string* out);
+NET_EXPORT bool DNSDomainFromDot(base::StringPiece dotted, std::string* out);
 
 // DNSDomainFromUnrestrictedDot - convert a domain string to DNS format. Adapted
 // from DJB's public domain DNS library. No validation of the characters in
@@ -41,16 +40,15 @@ NET_EXPORT bool DNSDomainFromDot(const base::StringPiece& dotted,
 //
 //   dotted: a string in dotted form: "Foo Printer._tcp.local"
 //   out: a result in DNS form: "\x0bFoo Printer\x04_tcp\x05local\x00"
-NET_EXPORT bool DNSDomainFromUnrestrictedDot(const base::StringPiece& dotted,
+NET_EXPORT bool DNSDomainFromUnrestrictedDot(base::StringPiece dotted,
                                              std::string* out);
 
 // Checks that a hostname is valid. Simple wrapper around DNSDomainFromDot.
-NET_EXPORT_PRIVATE bool IsValidDNSDomain(const base::StringPiece& dotted);
+NET_EXPORT_PRIVATE bool IsValidDNSDomain(base::StringPiece dotted);
 
 // Checks that a hostname is valid. Simple wrapper around
 // DNSDomainFromUnrestrictedDot.
-NET_EXPORT_PRIVATE bool IsValidUnrestrictedDNSDomain(
-    const base::StringPiece& dotted);
+NET_EXPORT_PRIVATE bool IsValidUnrestrictedDNSDomain(base::StringPiece dotted);
 
 // Returns true if the character is valid in a DNS hostname label, whether in
 // the first position or later in the label.

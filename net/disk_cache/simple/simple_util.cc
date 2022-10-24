@@ -40,7 +40,7 @@ std::string GetEntryHashKeyAsHexString(const std::string& key) {
   return hash_key_str;
 }
 
-bool GetEntryHashKeyFromHexString(const base::StringPiece& hash_key,
+bool GetEntryHashKeyFromHexString(base::StringPiece hash_key,
                                   uint64_t* hash_key_out) {
   if (hash_key.size() != kEntryHashKeyAsHexStringSize) {
     return false;

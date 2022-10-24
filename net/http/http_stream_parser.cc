@@ -1149,7 +1149,7 @@ void HttpStreamParser::GetSSLCertRequestInfo(
     stream_socket_->GetSSLCertRequestInfo(cert_request_info);
 }
 
-int HttpStreamParser::EncodeChunk(const base::StringPiece& payload,
+int HttpStreamParser::EncodeChunk(base::StringPiece payload,
                                   char* output,
                                   size_t output_size) {
   if (output_size < payload.size() + kChunkHeaderFooterSize)

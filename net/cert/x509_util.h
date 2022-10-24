@@ -112,7 +112,7 @@ NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 
 // Creates a CRYPTO_BUFFER in the same pool returned by GetBufferPool.
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
-    const base::StringPiece& data);
+    base::StringPiece data);
 
 // Overload with no definition, to disallow creating a CRYPTO_BUFFER from a
 // char* due to StringPiece implicit ctor.

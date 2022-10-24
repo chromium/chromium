@@ -93,7 +93,7 @@ NET_EXPORT bool EncodeSignedCertificateTimestamp(
     std::string* output);
 
 // Writes an SCTList into |output|, containing a single |sct|.
-NET_EXPORT_PRIVATE bool EncodeSCTListForTesting(const base::StringPiece& sct,
+NET_EXPORT_PRIVATE bool EncodeSCTListForTesting(base::StringPiece sct,
                                                 std::string* output);
 }  // namespace net::ct
 

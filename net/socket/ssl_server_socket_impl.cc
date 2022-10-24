@@ -60,9 +60,9 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int Handshake(CompletionOnceCallback callback) override;
 
   // SSLSocket interface.
-  int ExportKeyingMaterial(const base::StringPiece& label,
+  int ExportKeyingMaterial(base::StringPiece label,
                            bool has_context,
-                           const base::StringPiece& context,
+                           base::StringPiece context,
                            unsigned char* out,
                            unsigned int outlen) override;
 
@@ -399,9 +399,9 @@ int SSLServerContextImpl::SocketImpl::Handshake(
 }
 
 int SSLServerContextImpl::SocketImpl::ExportKeyingMaterial(
-    const base::StringPiece& label,
+    base::StringPiece label,
     bool has_context,
-    const base::StringPiece& context,
+    base::StringPiece context,
     unsigned char* out,
     unsigned int outlen) {
   if (!IsConnected())

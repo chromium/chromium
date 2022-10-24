@@ -85,9 +85,9 @@ class FailingSSLClientSocket : public SSLClientSocket {
   void ApplySocketTag(const net::SocketTag& tag) override {}
 
   // SSLSocket implementation:
-  int ExportKeyingMaterial(const base::StringPiece& label,
+  int ExportKeyingMaterial(base::StringPiece label,
                            bool has_context,
-                           const base::StringPiece& context,
+                           base::StringPiece context,
                            unsigned char* out,
                            unsigned int outlen) override {
     NOTREACHED();

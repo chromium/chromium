@@ -44,7 +44,7 @@ namespace net {
 namespace {
 
 // Based on DJB's public domain code.
-bool DNSDomainFromDot(const base::StringPiece& dotted,
+bool DNSDomainFromDot(base::StringPiece dotted,
                       bool is_unrestricted,
                       std::string* out) {
   const char* buf = dotted.data();
@@ -120,21 +120,20 @@ DohProviderEntry::List GetDohProviderEntriesFromNameservers(
 
 }  // namespace
 
-bool DNSDomainFromDot(const base::StringPiece& dotted, std::string* out) {
+bool DNSDomainFromDot(base::StringPiece dotted, std::string* out) {
   return DNSDomainFromDot(dotted, false /* is_unrestricted */, out);
 }
 
-bool DNSDomainFromUnrestrictedDot(const base::StringPiece& dotted,
-                                  std::string* out) {
+bool DNSDomainFromUnrestrictedDot(base::StringPiece dotted, std::string* out) {
   return DNSDomainFromDot(dotted, true /* is_unrestricted */, out);
 }
 
-bool IsValidDNSDomain(const base::StringPiece& dotted) {
+bool IsValidDNSDomain(base::StringPiece dotted) {
   std::string dns_formatted;
   return DNSDomainFromDot(dotted, &dns_formatted);
 }
 
-bool IsValidUnrestrictedDNSDomain(const base::StringPiece& dotted) {
+bool IsValidUnrestrictedDNSDomain(base::StringPiece dotted) {
   std::string dns_formatted;
   return DNSDomainFromUnrestrictedDot(dotted, &dns_formatted);
 }

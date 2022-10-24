@@ -1455,9 +1455,9 @@ void MockSSLClientSocket::GetSSLCertRequestInfo(
   }
 }
 
-int MockSSLClientSocket::ExportKeyingMaterial(const base::StringPiece& label,
+int MockSSLClientSocket::ExportKeyingMaterial(base::StringPiece label,
                                               bool has_context,
-                                              const base::StringPiece& context,
+                                              base::StringPiece context,
                                               unsigned char* out,
                                               unsigned int outlen) {
   memset(out, 'A', outlen);

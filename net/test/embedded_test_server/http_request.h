@@ -104,7 +104,7 @@ class HttpRequestParser {
   ~HttpRequestParser();
 
   // Adds chunk of data into the internal buffer.
-  void ProcessChunk(const base::StringPiece& data);
+  void ProcessChunk(base::StringPiece data);
 
   // Parses the http request (including data - if provided).
   // If returns ACCEPTED, then it means that the whole request has been found

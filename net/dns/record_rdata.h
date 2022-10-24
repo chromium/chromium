@@ -35,7 +35,7 @@ class NET_EXPORT RecordRdata {
   // Return true if `data` represents RDATA in the wire format with a valid size
   // for the give `type`. Always returns true for unrecognized `type`s as the
   // size is never known to be invalid.
-  static bool HasValidSize(const base::StringPiece& data, uint16_t type);
+  static bool HasValidSize(base::StringPiece data, uint16_t type);
 
   virtual bool IsEqual(const RecordRdata* other) const = 0;
   virtual uint16_t Type() const = 0;
@@ -54,7 +54,7 @@ class NET_EXPORT_PRIVATE SrvRecordRdata : public RecordRdata {
   SrvRecordRdata& operator=(const SrvRecordRdata&) = delete;
 
   ~SrvRecordRdata() override;
-  static std::unique_ptr<SrvRecordRdata> Create(const base::StringPiece& data,
+  static std::unique_ptr<SrvRecordRdata> Create(base::StringPiece data,
                                                 const DnsRecordParser& parser);
 
   bool IsEqual(const RecordRdata* other) const override;
@@ -86,7 +86,7 @@ class NET_EXPORT ARecordRdata : public RecordRdata {
   ARecordRdata& operator=(const ARecordRdata&) = delete;
 
   ~ARecordRdata() override;
-  static std::unique_ptr<ARecordRdata> Create(const base::StringPiece& data,
+  static std::unique_ptr<ARecordRdata> Create(base::StringPiece data,
                                               const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -109,7 +109,7 @@ class NET_EXPORT AAAARecordRdata : public RecordRdata {
   AAAARecordRdata& operator=(const AAAARecordRdata&) = delete;
 
   ~AAAARecordRdata() override;
-  static std::unique_ptr<AAAARecordRdata> Create(const base::StringPiece& data,
+  static std::unique_ptr<AAAARecordRdata> Create(base::StringPiece data,
                                                  const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -133,7 +133,7 @@ class NET_EXPORT_PRIVATE CnameRecordRdata : public RecordRdata {
 
   ~CnameRecordRdata() override;
   static std::unique_ptr<CnameRecordRdata> Create(
-      const base::StringPiece& data,
+      base::StringPiece data,
       const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -156,7 +156,7 @@ class NET_EXPORT_PRIVATE PtrRecordRdata : public RecordRdata {
   PtrRecordRdata& operator=(const PtrRecordRdata&) = delete;
 
   ~PtrRecordRdata() override;
-  static std::unique_ptr<PtrRecordRdata> Create(const base::StringPiece& data,
+  static std::unique_ptr<PtrRecordRdata> Create(base::StringPiece data,
                                                 const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -180,7 +180,7 @@ class NET_EXPORT_PRIVATE TxtRecordRdata : public RecordRdata {
   TxtRecordRdata& operator=(const TxtRecordRdata&) = delete;
 
   ~TxtRecordRdata() override;
-  static std::unique_ptr<TxtRecordRdata> Create(const base::StringPiece& data,
+  static std::unique_ptr<TxtRecordRdata> Create(base::StringPiece data,
                                                 const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -205,7 +205,7 @@ class NET_EXPORT_PRIVATE NsecRecordRdata : public RecordRdata {
   NsecRecordRdata& operator=(const NsecRecordRdata&) = delete;
 
   ~NsecRecordRdata() override;
-  static std::unique_ptr<NsecRecordRdata> Create(const base::StringPiece& data,
+  static std::unique_ptr<NsecRecordRdata> Create(base::StringPiece data,
                                                  const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;

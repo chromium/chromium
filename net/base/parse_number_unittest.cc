@@ -60,7 +60,7 @@ const char* kInvalidParseTests[] = {
 // This wrapper calls func() and expects the result to match |expected_output|.
 template <typename OutputType, typename ParseFunc, typename ExpectationType>
 void ExpectParseIntSuccess(ParseFunc func,
-                           const base::StringPiece& input,
+                           base::StringPiece input,
                            ParseIntFormat format,
                            ExpectationType expected_output) {
   // Try parsing without specifying an error output - expecting success.
@@ -83,7 +83,7 @@ void ExpectParseIntSuccess(ParseFunc func,
 // This wrapper calls func() and expects the failure to match |expected_error|.
 template <typename OutputType, typename ParseFunc>
 void ExpectParseIntFailure(ParseFunc func,
-                           const base::StringPiece& input,
+                           base::StringPiece input,
                            ParseIntFormat format,
                            ParseIntError expected_error) {
   const OutputType kBogusOutput(23614);
@@ -213,9 +213,8 @@ void TestParseUint(ParseFunc func) {
   // TestParseIntUsingFormat() expects a functor that has a |format|
   // parameter. For ParseUint*() there is no such parameter. For all intents
   // and purposes can just fix it to NON_NEGATIVE and re-use that test driver.
-  auto func_adapter = [&func](const base::StringPiece& input,
-                              ParseIntFormat format, T* output,
-                              ParseIntError* optional_error) {
+  auto func_adapter = [&func](base::StringPiece input, ParseIntFormat format,
+                              T* output, ParseIntError* optional_error) {
     EXPECT_EQ(ParseIntFormat::NON_NEGATIVE, format);
     return func(input, output, optional_error);
   };

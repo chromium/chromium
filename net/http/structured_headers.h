@@ -47,8 +47,7 @@ inline absl::optional<List> ParseList(base::StringPiece str) {
   return quiche::structured_headers::ParseList(
       base::StringPieceToStringView(str));
 }
-inline absl::optional<Dictionary> ParseDictionary(
-    const base::StringPiece& str) {
+inline absl::optional<Dictionary> ParseDictionary(base::StringPiece str) {
   return quiche::structured_headers::ParseDictionary(
       base::StringPieceToStringView(str));
 }

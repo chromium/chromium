@@ -46,7 +46,7 @@ HttpRequestParser::HttpRequestParser()
 
 HttpRequestParser::~HttpRequestParser() = default;
 
-void HttpRequestParser::ProcessChunk(const base::StringPiece& data) {
+void HttpRequestParser::ProcessChunk(base::StringPiece data) {
   buffer_.append(data.data(), data.size());
   DCHECK_LE(buffer_.size() + data.size(), kRequestSizeLimit) <<
       "The HTTP request is too large.";
