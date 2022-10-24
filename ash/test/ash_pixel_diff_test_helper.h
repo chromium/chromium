@@ -54,6 +54,8 @@ class AshPixelDiffTestHelper {
   }
 
  private:
+  friend class FullscreenPixelTest;
+
   // Similar to `CompareUiComponentsOnPrimaryScreen()` but with the difference
   // that every pixel on the screen is compared.
   // NOTE: use this function only when necessary. Otherwise, a tiny UI change

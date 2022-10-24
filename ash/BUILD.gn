@@ -3360,6 +3360,7 @@ test("ash_unittests") {
 test("ash_pixeltests") {
   sources = [
     "app_list/views/app_list_view_pixeltest.cc",
+    "fullscreen_pixeltest.cc",
     "shelf/login_shelf_view_pixeltest.cc",
     "shelf/scrollable_shelf_view_pixeltest.cc",
     "test/demo_ash_pixel_diff_test.cc",
