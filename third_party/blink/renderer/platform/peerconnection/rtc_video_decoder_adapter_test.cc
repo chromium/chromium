@@ -327,7 +327,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
         &decoded_image_callback_);
   }
 
-  int32_t Decode(uint32_t timestamp) {
+  int32_t Decode(uint32_t timestamp, bool keyframe = true) {
     webrtc::EncodedImage input_image;
     static const uint8_t data[1] = {0};
     input_image.SetSpatialIndex(spatial_index_);
@@ -335,7 +335,11 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
       input_image.SetSpatialLayerFrameSize(i, 4);
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
-    input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
+    if (timestamp == 0 || keyframe) {
+      input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
+    } else {
+      input_image._frameType = webrtc::VideoFrameType::kVideoFrameDelta;
+    }
     input_image.SetTimestamp(timestamp);
     return adapter_wrapper_->Decode(input_image, false, 0);
   }
@@ -480,8 +484,13 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode_Hang_Short) {
   // Ignore Decode() calls.
   EXPECT_CALL(*video_decoder_, Decode_(_, _)).Times(AtLeast(1));
 
-  for (int counter = 0; counter < 10; counter++) {
-    int32_t result = Decode(counter);
+  for (int counter = 0; counter < 11; counter++) {
+    // At the ten-th frame, EnqueueBuffer() notifies kErrorRequestKeyFrame for
+    // DecodeInternal(). It checks if the frame is keyframe on 11-th frame. If
+    // the frame is the keyframe, Decode() doesn't return
+    // WEBRTC_VIDEO_CODEC_ERROR. This sets |keyframe|=false so that Decode()
+    // returns WEBRTC_VIDEO_CODEC_ERROR.
+    int32_t result = Decode(counter, /*keyframe=*/false);
     if (result == WEBRTC_VIDEO_CODEC_ERROR) {
       ASSERT_GT(counter, 2);
       return;
@@ -599,6 +608,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
       .WillOnce(
           base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+  media_thread_.FlushForTesting();
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
 
   // Make sure that it goes back to zero.
@@ -629,7 +639,13 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
   // The first decode should fail.  It shouldn't forward the decode call to the
   // underlying decoder.
   EXPECT_CALL(*video_decoder_, Decode_(_, _)).Times(0);
-  EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+  // The check about the number of concurrent instances decoding small
+  // resolutions is executed on media thread and its check failure is notified
+  // on the second frame.
+  ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+  media_thread_.FlushForTesting();
+  EXPECT_EQ(Decode(1), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+  media_thread_.FlushForTesting();
   // It should not increment the count, else more decoders might fall back.
   const auto max_decoder_instances =
       RTCVideoDecoderAdapter::kMaxDecoderInstances;
@@ -669,6 +685,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
       .WillOnce(
           base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+  media_thread_.FlushForTesting();
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(),
             RTCVideoDecoderAdapter::kMaxDecoderInstances + 1);
 

@@ -134,16 +134,17 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
                                media::VideoDecoderType* decoder_type);
   absl::optional<RTCVideoDecoderFallbackReason>
   FallbackOrRegisterConcurrentInstanceOnce(media::VideoCodec codec);
+  void DecodeOnMediaThread(scoped_refptr<media::DecoderBuffer> buffer);
   absl::variant<DecodeResult, RTCVideoDecoderFallbackReason> EnqueueBuffer(
       scoped_refptr<media::DecoderBuffer> buffer);
-  void DecodeOnMediaThread();
+  void DecodePendingBuffersOnMediaThread();
   void ReleaseOnMediaThread();
   void RegisterDecodeCompleteCallbackOnMediaThread(
       webrtc::DecodedImageCallback* callback);
   void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
-  absl::variant<DecodeResult, RTCVideoDecoderFallbackReason> DecodeInternal(
+  absl::optional<DecodeResult> DecodeInternal(
       const webrtc::EncodedImage& input_image,
       bool missing_frames,
       int64_t render_time_ms);
@@ -152,7 +153,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   bool ReinitializeSync(const media::VideoDecoderConfig& config);
   void FlushOnMediaThread(WTF::CrossThreadOnceClosure flush_success_cb,
                           WTF::CrossThreadOnceClosure flush_fail_cb);
-  void ChangeStatus(Status new_status) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ChangeStatus(Status new_status);
 
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
@@ -164,15 +165,34 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // pointer.
   std::unique_ptr<media::MediaLog> media_log_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
-  // TODO(hiroh): Add GUARDED_BY_CONTEXT(media_sequence_checker_) once
-  // NeedSoftwareFallback() is executed on media thread.
-  std::unique_ptr<media::VideoDecoder> video_decoder_;
+  std::unique_ptr<media::VideoDecoder> video_decoder_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
   int32_t outstanding_decode_requests_
       GUARDED_BY_CONTEXT(media_sequence_checker_){0};
   absl::optional<base::TimeTicks> start_time_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
   webrtc::DecodedImageCallback* decode_complete_callback_
       GUARDED_BY_CONTEXT(media_sequence_checker_){nullptr};
+  int32_t consecutive_error_count_ GUARDED_BY_CONTEXT(media_sequence_checker_){
+      0};
+  // Requests that have not been submitted to the decoder yet.
+  WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+  // Record of timestamps that have been sent to be decoded. Removing a
+  // timestamp will cause the frame to be dropped when it is output.
+  WTF::Deque<base::TimeDelta> decode_timestamps_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+  bool require_key_frame_ GUARDED_BY_CONTEXT(media_sequence_checker_){true};
+  WTF::CrossThreadRepeatingFunction<void(Status)> change_status_callback_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+  // Has anything been sent to Decode() yet?
+  bool have_started_decoding_ GUARDED_BY_CONTEXT(media_sequence_checker_){
+      false};
+
+  // Decoding thread members.
+  // Has anything been sent to Decode() yet?
+  Status status_ GUARDED_BY_CONTEXT(decoding_sequence_checker_){
+      Status::kNeedKeyFrame};
 
   // DecoderInfo is constant after InitializeSync() is complete.
   DecoderInfo decoder_info_;
@@ -182,17 +202,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   // Shared members.
   base::Lock lock_;
-  // Has anything been sent to Decode() yet?
-  bool have_started_decoding_ GUARDED_BY(lock_){false};
-  int32_t consecutive_error_count_ GUARDED_BY(lock_){0};
-  Status status_ GUARDED_BY(lock_){Status::kNeedKeyFrame};
 
-  // Requests that have not been submitted to the decoder yet.
-  WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_
-      GUARDED_BY(lock_);
-  // Record of timestamps that have been sent to be decoded. Removing a
-  // timestamp will cause the frame to be dropped when it is output.
-  WTF::Deque<base::TimeDelta> decode_timestamps_ GUARDED_BY(lock_);
   // Resolution of most recently decoded frame, or the initial resolution if we
   // haven't decoded anything yet.  Since this is updated asynchronously, it's
   // only an approximation of "most recently".

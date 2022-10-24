@@ -24,6 +24,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -235,7 +236,7 @@ void RTCVideoDecoderAdapter::InitializeOnMediaThread(
 absl::optional<RTCVideoDecoderFallbackReason>
 RTCVideoDecoderAdapter::FallbackOrRegisterConcurrentInstanceOnce(
     media::VideoCodec codec) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   base::AutoLock auto_lock(lock_);
   // If this is the first decode, then increment the count of working decoders.
@@ -261,18 +262,43 @@ RTCVideoDecoderAdapter::FallbackOrRegisterConcurrentInstanceOnce(
   return absl::nullopt;
 }
 
+void RTCVideoDecoderAdapter::DecodeOnMediaThread(
+    scoped_refptr<media::DecoderBuffer> buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  auto result = EnqueueBuffer(std::move(buffer));
+  if (const auto* fallback_reason =
+          absl::get_if<RTCVideoDecoderFallbackReason>(&result)) {
+    RecordRTCVideoDecoderFallbackReason(config_.codec(), *fallback_reason);
+    change_status_callback_.Run(Status::kError);
+    return;
+  }
+
+  const auto* decode_result =
+      absl::get_if<RTCVideoDecoderAdapter::DecodeResult>(&result);
+  switch (*decode_result) {
+    case DecodeResult::kOk:
+      DecodePendingBuffersOnMediaThread();
+      break;
+    case DecodeResult::kErrorRequestKeyFrame:
+      if (!require_key_frame_) {
+        require_key_frame_ = true;
+        change_status_callback_.Run(Status::kNeedKeyFrame);
+      }
+      break;
+  }
+}
+
 absl::variant<RTCVideoDecoderAdapter::DecodeResult,
               RTCVideoDecoderFallbackReason>
 RTCVideoDecoderAdapter::EnqueueBuffer(
     scoped_refptr<media::DecoderBuffer> buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (auto fallback_reason =
           FallbackOrRegisterConcurrentInstanceOnce(config_.codec())) {
     return *fallback_reason;
   }
 
-  base::AutoLock auto_lock(lock_);
-  if (status_ == Status::kNeedKeyFrame) {
+  if (require_key_frame_) {
     // We discarded previous frame because we have too many pending buffers (see
     // logic) below. Now we need to wait for the key frame and discard
     // everything else.
@@ -282,12 +308,10 @@ RTCVideoDecoderAdapter::EnqueueBuffer(
     }
     DVLOG(2) << "Key frame received, resume decoding";
     // ok, we got key frame and can continue decoding
-    ChangeStatus(Status::kOk);
+    require_key_frame_ = false;
+    // We don't need to call change_status_callback_.Run(Status::kOk), because
+    // |status_| has been changed to kOk in DecodeInternal().
   }
-
-  // Queue for decoding.
-  if (status_ == Status::kError)
-    return RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode;
 
   if (HasSoftwareFallback(config_.codec()) &&
       pending_buffers_.size() >= kMaxPendingBuffers) {
@@ -299,10 +323,8 @@ RTCVideoDecoderAdapter::EnqueueBuffer(
     // drop any other non-key frame.
     if (++consecutive_error_count_ > kMaxConsecutiveErrors) {
       decode_timestamps_.clear();
-      ChangeStatus(Status::kError);
       return RTCVideoDecoderFallbackReason::kConsecutivePendingBufferOverflow;
     }
-    ChangeStatus(Status::kNeedKeyFrame);
     return DecodeResult::kErrorRequestKeyFrame;
   }
 
@@ -310,28 +332,21 @@ RTCVideoDecoderAdapter::EnqueueBuffer(
   return DecodeResult::kOk;
 }
 
-void RTCVideoDecoderAdapter::DecodeOnMediaThread() {
+void RTCVideoDecoderAdapter::DecodePendingBuffersOnMediaThread() {
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   int max_decode_requests = video_decoder_->GetMaxDecodeRequests();
-  while (outstanding_decode_requests_ < max_decode_requests) {
-    scoped_refptr<media::DecoderBuffer> buffer;
-    {
-      base::AutoLock auto_lock(lock_);
+  while (outstanding_decode_requests_ < max_decode_requests &&
+         !pending_buffers_.empty()) {
+    // Take the first pending buffer.
+    auto buffer = pending_buffers_.front();
+    pending_buffers_.pop_front();
 
-      // Take the first pending buffer.
-      if (pending_buffers_.empty())
-        return;
-      buffer = pending_buffers_.front();
-      pending_buffers_.pop_front();
-
-      // Record the timestamp.
-      while (decode_timestamps_.size() >= kMaxDecodeHistory)
-        decode_timestamps_.pop_front();
-      decode_timestamps_.push_back(buffer->timestamp());
-    }
-
+    // Record the timestamp.
+    while (decode_timestamps_.size() >= kMaxDecodeHistory)
+      decode_timestamps_.pop_front();
+    decode_timestamps_.push_back(buffer->timestamp());
     // Submit for decoding.
     outstanding_decode_requests_++;
     video_decoder_->Decode(
@@ -346,10 +361,7 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Remove any pending tasks.
-  {
-    base::AutoLock auto_lock(lock_);
-    pending_buffers_.clear();
-  }
+  pending_buffers_.clear();
 
   // Send EOS frame for flush.
   video_decoder_->Decode(
@@ -368,7 +380,6 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(
 
 void RTCVideoDecoderAdapter::ReleaseOnMediaThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  base::AutoLock auto_lock(lock_);
   pending_buffers_.clear();
   decode_timestamps_.clear();
 }
@@ -392,14 +403,13 @@ void RTCVideoDecoderAdapter::OnDecodeDone(media::DecoderStatus status) {
     base::UmaHistogramSparse("Media.RTCVideoDecoderError",
                              static_cast<int>(status.code()));
 
-    base::AutoLock auto_lock(lock_);
-    ChangeStatus(Status::kError);
+    change_status_callback_.Run(Status::kError);
     pending_buffers_.clear();
     decode_timestamps_.clear();
     return;
   }
 
-  DecodeOnMediaThread();
+  DecodePendingBuffersOnMediaThread();
 }
 
 void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
@@ -417,8 +427,6 @@ void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
           .set_rotation(webrtc::kVideoRotation_0)
           .build();
 
-  base::AutoLock auto_lock(lock_);
-
   // Record time to first frame if we haven't yet.
   if (start_time_) {
     // We haven't recorded the first frame time yet, so do so now.
@@ -427,10 +435,13 @@ void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
     start_time_.reset();
   }
 
-  // Update `current_resolution_`, in case it's changed.  This lets us fall back
-  // to software, or avoid doing so, if we're over the decoder limit.
-  current_resolution_ =
-      static_cast<int32_t>(rtc_frame.width()) * rtc_frame.height();
+  {
+    base::AutoLock auto_lock(lock_);
+    // Update `current_resolution_`, in case it's changed.  This lets us fall
+    // back to software, or avoid doing so, if we're over the decoder limit.
+    current_resolution_ =
+        static_cast<int32_t>(rtc_frame.width()) * rtc_frame.height();
+  }
 
   if (!base::Contains(decode_timestamps_, timestamp)) {
     DVLOG(2) << "Discarding frame with timestamp " << timestamp;
@@ -502,6 +513,13 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
   decoder_info_.is_hardware_accelerated = true;
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
+
+  // |change_status_callback_| is only invoked from places there this is ensured
+  // to be alive (such inside methods protected against use-after-free with
+  // |weak_this_|).
+  change_status_callback_ =
+      CrossThreadBindRepeating(media::BindToCurrentLoop(base::BindRepeating(
+          &RTCVideoDecoderAdapter::ChangeStatus, base::Unretained(this))));
 }
 
 RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
@@ -524,14 +542,12 @@ void RTCVideoDecoderAdapter::DecrementCounterOnMediaThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   weak_this_factory_.InvalidateWeakPtrs();
-  {
-    base::AutoLock auto_lock(lock_);
-    if (have_started_decoding_)
-      GetDecoderCounter()->DecrementCount();
 
-    pending_buffers_.clear();
-    decode_timestamps_.clear();
-  }
+  if (have_started_decoding_)
+    GetDecoderCounter()->DecrementCount();
+
+  pending_buffers_.clear();
+  decode_timestamps_.clear();
 
   video_decoder_.reset();
   media_log_.reset();
@@ -583,7 +599,6 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
     return false;
 
   base::AutoLock auto_lock(lock_);
-
   // Save the initial resolution so that we can fall back later, if needed.
   current_resolution_ =
       static_cast<int32_t>(settings.max_render_resolution().Width()) *
@@ -604,35 +619,45 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
   auto result = DecodeInternal(input_image, missing_frames, render_time_ms);
-  if (const auto* fallback_reason =
-          absl::get_if<RTCVideoDecoderFallbackReason>(&result)) {
-    RecordRTCVideoDecoderFallbackReason(config_.codec(), *fallback_reason);
+  if (!result)
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-  }
 
-  return *absl::get_if<DecodeResult>(&result) == DecodeResult::kOk
-             ? WEBRTC_VIDEO_CODEC_OK
-             : WEBRTC_VIDEO_CODEC_ERROR;
+  return *result == DecodeResult::kOk ? WEBRTC_VIDEO_CODEC_OK
+                                      : WEBRTC_VIDEO_CODEC_ERROR;
 }
 
-absl::variant<RTCVideoDecoderAdapter::DecodeResult,
-              RTCVideoDecoderFallbackReason>
+absl::optional<RTCVideoDecoderAdapter::DecodeResult>
 RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+
+  if (status_ == Status::kError)
+    return absl::nullopt;
+
   if (missing_frames) {
     DVLOG(2) << "Missing frames";
     // We probably can't handle broken frames. Request a key frame.
     return DecodeResult::kErrorRequestKeyFrame;
   }
 
+  if (status_ == Status::kNeedKeyFrame) {
+    if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey)
+      return DecodeResult::kErrorRequestKeyFrame;
+
+    ChangeStatus(Status::kOk);
+  }
+
   if (ShouldReinitializeForSettingHDRColorSpace(input_image)) {
     config_.set_color_space_info(
         blink::WebRtcToMediaVideoColorSpace(*input_image.ColorSpace()));
-    if (!ReinitializeSync(config_))
-      return RTCVideoDecoderFallbackReason::kReinitializationFailed;
+    if (!ReinitializeSync(config_)) {
+      RecordRTCVideoDecoderFallbackReason(
+          config_.codec(),
+          RTCVideoDecoderFallbackReason::kReinitializationFailed);
+      return absl::nullopt;
+    }
     if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey)
       return DecodeResult::kErrorRequestKeyFrame;
   }
@@ -640,19 +665,19 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
   auto buffer = ConvertToDecoderBuffer(input_image);
   if (auto fallback_reason =
           NeedSoftwareFallback(config_.codec(), *buffer, decoder_type_)) {
-    return *fallback_reason;
+    RecordRTCVideoDecoderFallbackReason(config_.codec(), *fallback_reason);
+    return absl::nullopt;
   }
 
-  auto enqueue_res = EnqueueBuffer(std::move(buffer));
-  const auto* ret = absl::get_if<DecodeResult>(&enqueue_res);
-  if (ret && *ret == DecodeResult::kOk) {
-    PostCrossThreadTask(
-        *media_task_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(&RTCVideoDecoderAdapter::DecodeOnMediaThread,
-                            weak_this_));
+  if (!PostCrossThreadTask(
+          *media_task_runner_.get(), FROM_HERE,
+          CrossThreadBindOnce(&RTCVideoDecoderAdapter::DecodeOnMediaThread,
+                              weak_this_, std::move(buffer)))) {
+    // TODO(b/246460597): Add rtc video decoder fallback reason about
+    // PostCrossThreadTask failure.
+    return absl::nullopt;
   }
-
-  return enqueue_res;
+  return DecodeResult::kOk;
 }
 
 int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
@@ -669,7 +694,6 @@ int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
   }
 
-  base::AutoLock auto_lock(lock_);
   if (status_ == Status::kError) {
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(),
@@ -738,7 +762,7 @@ bool RTCVideoDecoderAdapter::ReinitializeSync(
 }
 
 void RTCVideoDecoderAdapter::ChangeStatus(Status new_status) {
-  // It is impossible to recover once status becomes kError.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   if (status_ != Status::kError)
     status_ = new_status;
 }
