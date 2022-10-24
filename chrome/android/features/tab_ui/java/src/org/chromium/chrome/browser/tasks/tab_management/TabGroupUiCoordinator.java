@@ -145,7 +145,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mTabStripCoordinator = new TabListCoordinator(TabListCoordinator.TabListMode.STRIP,
                     mContext, mTabModelSelector, null, null, actionOnAllRelatedTabs, null, null,
                     TabProperties.UiType.STRIP, null, null, mTabListContainerView, true,
-                    COMPONENT_NAME, mRootView, onModelTokenChange);
+                    COMPONENT_NAME, mRootView, onModelTokenChange, null);
             mTabStripCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
 
             mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,

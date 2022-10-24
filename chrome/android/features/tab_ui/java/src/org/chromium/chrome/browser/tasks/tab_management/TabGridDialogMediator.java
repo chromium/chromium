@@ -62,7 +62,8 @@ import java.util.Locale;
  * for dialog show/hide.
  */
 public class TabGridDialogMediator
-        implements SnackbarManager.SnackbarController, TabGridDialogView.VisibilityListener {
+        implements SnackbarManager.SnackbarController, TabGridDialogView.VisibilityListener,
+                   TabGridItemTouchHelperCallback.OnLongPressEventListener {
     /**
      * Defines an interface for a {@link TabGridDialogMediator} to control dialog.
      */
@@ -298,11 +299,7 @@ public class TabGridDialogMediator
                     mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
                 }
                 mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
-                List<Tab> tabs = getRelatedTabs(mCurrentTabId);
-                // Setup dialog selection editor.
-                setupDialogSelectionEditor();
-                if (mTabSelectionEditorControllerSupplier.get() != null) {
-                    mTabSelectionEditorControllerSupplier.get().show(tabs);
+                if (setupAndShowTabSelectionEditorV2(mCurrentTabId)) {
                     if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
                         RecordUserAction.record("TabMultiSelectV2.OpenFromDialog");
                     } else {
@@ -751,6 +748,24 @@ public class TabGridDialogMediator
                 model.commitTabClosure(tab.getId());
             }
         }
+    }
+
+    // OnLongPressEventListener implementation
+    @Override
+    public void onLongPressEvent(int tabId) {
+        if (setupAndShowTabSelectionEditorV2(tabId)) {
+            RecordUserAction.record("TabMultiSelectV2.OpenLongPressInDialog");
+        }
+    }
+
+    private boolean setupAndShowTabSelectionEditorV2(int currentTabId) {
+        if (mTabSelectionEditorControllerSupplier == null) return false;
+
+        List<Tab> tabs = getRelatedTabs(currentTabId);
+        // Setup dialog selection editor.
+        setupDialogSelectionEditor();
+        mTabSelectionEditorControllerSupplier.get().show(tabs);
+        return true;
     }
 
     /**

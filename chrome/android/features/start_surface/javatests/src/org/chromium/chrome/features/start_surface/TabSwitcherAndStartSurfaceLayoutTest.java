@@ -9,6 +9,7 @@ import static android.os.Build.VERSION_CODES.Q;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
@@ -1820,6 +1821,52 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         verifyTabSwitcherCardCount(cta, 0);
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @MediumTest
+    public void testLongPressTab_entryInTabSwitcher() {
+        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
+
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // LongPress entry to TabSelectionEditor.
+        onView(tabSwitcherViewMatcher())
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
+
+        TabSelectionEditorTestingRobot mSelectionEditorRobot = new TabSelectionEditorTestingRobot();
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @MediumTest
+    public void testLongPressTabGroup_entryInTabSwitcher() {
+        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
+
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // LongPress entry to TabSelectionEditor.
+        onView(tabSwitcherViewMatcher())
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
+
+        TabSelectionEditorTestingRobot mSelectionEditorRobot = new TabSelectionEditorTestingRobot();
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
     }
 
     private TabSwitcher.TabListDelegate getTabListDelegateFromUIThread() {
