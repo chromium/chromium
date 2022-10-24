@@ -44,10 +44,7 @@ class InputHandlerProxyClient {
       const blink::WebInputEventAttribution& attribution,
       const cc::EventMetrics* update_metrics) = 0;
 
-  virtual void SetAllowedTouchAction(
-      cc::TouchAction touch_action,
-      uint32_t unique_touch_event_id,
-      InputHandlerProxy::EventDisposition event_disposition) = 0;
+  virtual void SetAllowedTouchAction(cc::TouchAction touch_action) = 0;
 
   virtual bool AllowsScrollResampling() = 0;
 

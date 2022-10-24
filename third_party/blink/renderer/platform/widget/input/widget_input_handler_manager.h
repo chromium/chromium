@@ -124,10 +124,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       const WebGestureEvent& update_event,
       const WebInputEventAttribution& attribution,
       const cc::EventMetrics* update_metrics) override;
-  void SetAllowedTouchAction(
-      cc::TouchAction touch_action,
-      uint32_t unique_touch_event_id,
-      InputHandlerProxy::EventDisposition event_disposition) override;
+  void SetAllowedTouchAction(cc::TouchAction touch_action) override;
   bool AllowsScrollResampling() override { return allow_scroll_resampling_; }
 
   void ObserveGestureEventOnMainThread(
