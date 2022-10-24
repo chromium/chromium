@@ -312,6 +312,23 @@ const char* const kForbiddenHeaderFields[] = {
     "via",
 };
 
+// A header string containing any of the following fields with a forbidden
+// method name in the value will cause an error. The list comes from the fetch
+// standard.
+const char* const kForbiddenHeaderFieldsWithForbiddenMethod[] = {
+    "x-http-method",
+    "x-http-method-override",
+    "x-method-override",
+};
+
+// The forbidden method names that is defined in the fetch standard, and used
+// to check the kForbiddenHeaderFileWithForbiddenMethod above.
+const char* const kForbiddenMethods[] = {
+    "connect",
+    "trace",
+    "track",
+};
+
 }  // namespace
 
 // static
@@ -341,6 +358,27 @@ bool HttpUtil::IsSafeHeader(base::StringPiece name, base::StringPiece value) {
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(features::kBlockNewForbiddenHeaders)) {
+    bool is_forbidden_header_fields_with_forbidden_method = false;
+    for (const char* field : kForbiddenHeaderFieldsWithForbiddenMethod) {
+      if (base::EqualsCaseInsensitiveASCII(name, field)) {
+        is_forbidden_header_fields_with_forbidden_method = true;
+        break;
+      }
+    }
+    if (is_forbidden_header_fields_with_forbidden_method) {
+      std::string value_string(value);
+      ValuesIterator method_iterator(value_string.begin(), value_string.end(),
+                                     ',');
+      while (method_iterator.GetNext()) {
+        base::StringPiece method = method_iterator.value_piece();
+        for (const char* forbidden_method : kForbiddenMethods) {
+          if (base::EqualsCaseInsensitiveASCII(method, forbidden_method))
+            return false;
+        }
+      }
+    }
+  }
   return true;
 }
 

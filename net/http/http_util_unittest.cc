@@ -91,11 +91,44 @@ TEST(HttpUtilTest, IsSafeHeader) {
       "user-agenta",
       "user_agent",
       "viaa",
+      // Following 3 headers are safe if there is no forbidden method in values.
+      "x-http-method",
+      "x-http-method-override",
+      "x-method-override",
   };
   for (const auto* safe_header : safe_headers) {
     EXPECT_TRUE(HttpUtil::IsSafeHeader(safe_header, "")) << safe_header;
     EXPECT_TRUE(HttpUtil::IsSafeHeader(base::ToUpperASCII(safe_header), ""))
         << safe_header;
+  }
+
+  static const char* const disallowed_with_forbidden_methods_headers[] = {
+      "x-http-method",
+      "x-http-method-override",
+      "x-method-override",
+  };
+  static const struct {
+    const char* value;
+    bool is_safe;
+  } disallowed_values[] = {{"connect", false},
+                           {"trace", false},
+                           {"track", false},
+                           {"CONNECT", false},
+                           {"cOnnEcT", false},
+                           {"get", true},
+                           {"get,post", true},
+                           {"get,connect", false},
+                           {"get, connect", false},
+                           {"get,connect ", false},
+                           {"get,connect ,post", false},
+                           {"get,,,,connect", false},
+                           {"trace,get,PUT", false}};
+  for (const auto* header : disallowed_with_forbidden_methods_headers) {
+    for (const auto& test_case : disallowed_values) {
+      EXPECT_EQ(test_case.is_safe,
+                HttpUtil::IsSafeHeader(header, test_case.value))
+          << header << ": " << test_case.value;
+    }
   }
 }
 

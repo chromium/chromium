@@ -425,6 +425,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 // Whether to do IPv4 to IPv6 address translation for IPv4 literals.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNAT64ForIPv4Literal);
 
+// Whether to block newly added forbidden headers (https://crbug.com/1362331).
+NET_EXPORT BASE_DECLARE_FEATURE(kBlockNewForbiddenHeaders);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

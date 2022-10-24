@@ -380,4 +380,8 @@ BASE_FEATURE(kUseNAT64ForIPv4Literal,
              "UseNAT64ForIPv4Literal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBlockNewForbiddenHeaders,
+             "BlockNewForbiddenHeaders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features
