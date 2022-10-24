@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill::payments {
 
@@ -211,17 +213,19 @@ void TestPaymentsClient::SetUseLegalMessageWithMultipleLinesInGetUploadDetails(
 std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
   if (use_invalid_legal_message_) {
     // Legal message is invalid because it's missing the url.
-    return std::unique_ptr<base::Value>(
-        base::JSONReader::ReadDeprecated("{"
-                                         "  \"line\" : [ {"
-                                         "     \"template\": \"Panda {0}.\","
-                                         "     \"template_parameter\": [ {"
-                                         "        \"display_text\": \"bear\""
-                                         "     } ]"
-                                         "  } ]"
-                                         "}"));
+    absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+        "{"
+        "  \"line\" : [ {"
+        "     \"template\": \"Panda {0}.\","
+        "     \"template_parameter\": [ {"
+        "        \"display_text\": \"bear\""
+        "     } ]"
+        "  } ]"
+        "}");
+    DCHECK(parsed_json);
+    return base::Value::ToUniquePtrValue(std::move(*parsed_json));
   } else if (use_legal_message_with_multiple_lines_) {
-    return std::unique_ptr<base::Value>(base::JSONReader::ReadDeprecated(
+    absl::optional<base::Value> parsed_json = base::JSONReader::Read(
         "{"
         "  \"line\": ["
         "    {"
@@ -251,9 +255,11 @@ std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
         "      ]"
         "    }"
         "  ]"
-        "}"));
+        "}");
+      DCHECK(parsed_json);
+      return base::Value::ToUniquePtrValue(std::move(*parsed_json));
   } else {
-    return std::unique_ptr<base::Value>(base::JSONReader::ReadDeprecated(
+    absl::optional<base::Value> parsed_json = base::JSONReader::Read(
         "{"
         "  \"line\" : [ {"
         "     \"template\": \"The legal documents are: {0} and {1}.\","
@@ -265,7 +271,9 @@ std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
         "        \"url\": \"http://www.example.com/pp\""
         "     } ]"
         "  } ]"
-        "}"));
+        "}");
+      DCHECK(parsed_json);
+      return base::Value::ToUniquePtrValue(std::move(*parsed_json));
   }
 }
 
