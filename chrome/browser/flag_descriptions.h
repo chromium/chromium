@@ -3211,9 +3211,6 @@ extern const char kImeAssistPersonalInfoDescription[];
 extern const char kVirtualKeyboardNewHeaderName[];
 extern const char kVirtualKeyboardNewHeaderDescription[];
 
-extern const char kCrosJpSysPkSetingsMigrateName[];
-extern const char kCrosJpSysPkSetingsMigrateDescription[];
-
 extern const char kHindiInscriptLayoutName[];
 extern const char kHindiInscriptLayoutDescription[];
 

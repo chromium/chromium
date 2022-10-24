@@ -1969,11 +1969,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-cros-jp-sys-pk-setings-migrate",
-    "owners": [ "keithlee", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-cros-language-settings-update-japanese",
     "owners": [ "keithlee", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110

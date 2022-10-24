@@ -5605,12 +5605,6 @@ const char kVirtualKeyboardNewHeaderName[] =
 const char kVirtualKeyboardNewHeaderDescription[] =
     "Enable new header for virtual keyboard to improve navigation.";
 
-const char kCrosJpSysPkSetingsMigrateName[] =
-    "Migrate Japanese user settings storage";
-const char kCrosJpSysPkSetingsMigrateDescription[] =
-    "Duplicate the settings storage for JP users so there is a copy of their "
-    "settings in prefs - via legacy settings page.";
-
 const char kImeSystemEmojiPickerClipboardName[] =
     "System emoji picker clipboard";
 const char kImeSystemEmojiPickerClipboardDescription[] =
