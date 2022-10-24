@@ -67,7 +67,7 @@ const invokers = [
   ...unsupportedTypes,
 ];
 window.addEventListener('load', () => {
-  ["auto","hint","manual"].forEach(type => {
+  ["auto","manual"].forEach(type => {
     invokers.forEach(testcase => {
       let t_set = [1], s_set = [1], h_set = [1];
       if (testcase.supported) {

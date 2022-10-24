@@ -5638,39 +5638,6 @@ String AXNodeObject::Description(
     }
   }
 
-  // For form controls that act as triggering elements for popups of type kHint,
-  // then set aria-describedby to the hint popup.
-  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-    auto popup = form_control->popupTargetElement();
-    if (popup.element && popup.element->PopupType() == PopupValueType::kHint) {
-      description_from = ax::mojom::blink::DescriptionFrom::kPopupElement;
-      if (description_sources) {
-        description_sources->push_back(
-            DescriptionSource(found_description, popup.attribute_name));
-        description_sources->back().type = description_from;
-      }
-      AXObject* popup_ax_object = AXObjectCache().GetOrCreate(popup.element);
-      if (popup_ax_object) {
-        AXObjectSet visited;
-        description = RecursiveTextAlternative(*popup_ax_object,
-                                               popup_ax_object, visited);
-        if (related_objects) {
-          related_objects->push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(popup_ax_object,
-                                                            description));
-        }
-        if (description_sources) {
-          DescriptionSource& source = description_sources->back();
-          source.related_objects = *related_objects;
-          source.text = description;
-          found_description = true;
-        } else {
-          return description;
-        }
-      }
-    }
-  }
-
   description_from = ax::mojom::blink::DescriptionFrom::kNone;
 
   if (found_description) {

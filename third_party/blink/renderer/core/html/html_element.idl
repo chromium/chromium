@@ -68,7 +68,7 @@
     // The Pop-up API
     [MeasureAs=ElementShowPopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void showPopUp();
     [MeasureAs=ElementHidePopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void hidePopUp();
-    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popUp;
+    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popUp;
     [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute boolean defaultOpen;
 
     // Non-standard APIs

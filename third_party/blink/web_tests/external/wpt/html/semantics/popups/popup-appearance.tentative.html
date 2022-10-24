@@ -7,18 +7,16 @@
 
 <style>
 [popup] {top: 100px; bottom: auto;}
-[popup=""] {left: -400px}
-[popup=auto] {left: -200px; }
-[popup=hint] {left: 0; }
-[popup=manual] {left: 200px; }
-[popup=invalid] {left: 400px; }
+[popup=""] {left: -300px}
+[popup=auto] {left: -100px; }
+[popup=manual] {left: 100px; }
+[popup=invalid] {left: 300px; }
 </style>
 
-<p>There should be five pop-ups with similar appearance.</p>
+<p>There should be four pop-ups with similar appearance.</p>
 <div popup>Blank
   <div popup=auto>Auto</div>
 </div>
-<div popup=hint>Hint</div>
 <div popup=manual>Manual</div>
 <!-- This ensures unsupported popup values are treated as popup=manual -->
 <div popup=invalid>Invalid</div>

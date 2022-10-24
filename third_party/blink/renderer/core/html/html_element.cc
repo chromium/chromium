@@ -1148,8 +1148,6 @@ PopupValueType GetPopUpTypeFromAttributeValue(String value) {
   if (EqualIgnoringASCIICase(value, kPopupTypeValueAuto) ||
       (!value.IsNull() && value.empty())) {
     return PopupValueType::kAuto;
-  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueHint)) {
-    return PopupValueType::kHint;
   } else if (EqualIgnoringASCIICase(value, kPopupTypeValueManual)) {
     return PopupValueType::kManual;
   } else if (!value.IsNull()) {
@@ -1277,51 +1275,27 @@ void HTMLElement::showPopUp(ExceptionState& exception_state) {
 
   bool should_restore_focus = false;
   auto& document = GetDocument();
-  if (PopupType() == PopupValueType::kAuto ||
-      PopupType() == PopupValueType::kHint) {
-    if (PopupType() == PopupValueType::kHint) {
-      // If the new pop-up is popup=hint, hide other hints first.
-      if (document.PopupHintShowing()) {
-        document.PopupHintShowing()->HidePopUpInternal(
-            HidePopupFocusBehavior::kNone,
-            HidePopupForcingLevel::kHideAfterAnimations);
-      }
-      // Then hide open pop-ups that aren't ancestors of this hint.
-      if (const auto* hint_ancestor =
-              NearestOpenAncestralPopup(*this, PopUpAncestorType::kNewPopUp)) {
-        HideAllPopupsUntil(hint_ancestor, document,
-                           HidePopupFocusBehavior::kNone,
-                           HidePopupForcingLevel::kHideAfterAnimations,
-                           HidePopupIndependence::kHideUnrelated);
-      }
-    } else {
-      // If the new pop-up is a popup=auto, hide any pop-up above this in the
-      // stack, and hide any hint pop-ups. Because this pop-up isn't yet in the
-      // stack, we call NearestOpenAncestralPopup to find this pop-up's
-      // ancestor, if any.
-      const auto* auto_ancestor =
-          NearestOpenAncestralPopup(*this, PopUpAncestorType::kNewPopUp);
-      HideAllPopupsUntil(auto_ancestor, document, HidePopupFocusBehavior::kNone,
-                         HidePopupForcingLevel::kHideAfterAnimations,
-                         HidePopupIndependence::kHideUnrelated);
-    }
+  if (PopupType() == PopupValueType::kAuto) {
+    // If the new pop-up is a popup=auto, hide any pop-up above this in the
+    // stack. Because this pop-up isn't yet in the stack, we call
+    // NearestOpenAncestralPopup to find this pop-up's ancestor, if any.
+    const auto* auto_ancestor =
+        NearestOpenAncestralPopup(*this, PopUpAncestorType::kNewPopUp);
+    HideAllPopupsUntil(auto_ancestor, document, HidePopupFocusBehavior::kNone,
+                       HidePopupForcingLevel::kHideAfterAnimations);
 
     // The 'popuphide' event handlers could have changed this popup, e.g. by
     // changing its type, removing it from the document, or calling showPopUp().
     if (!HasPopupAttribute() || !isConnected() || popupOpen())
       return;
 
-    // We only restore focus for popup/hint, and only for the first popup in
+    // We only restore focus for popup=auto, and only for the first popup in
     // the stack. If there's nothing showing, restore focus.
-    should_restore_focus = !document.TopmostPopupAutoOrHint();
-    if (PopupType() == PopupValueType::kAuto) {
-      // Add this popup to the popup stack.
-      auto& stack = document.PopupStack();
-      DCHECK(!stack.Contains(this));
-      stack.push_back(this);
-    } else {
-      document.SetPopupHintShowing(this);
-    }
+    should_restore_focus = !document.TopmostPopUp();
+    // Add this popup to the popup stack.
+    auto& stack = document.PopupStack();
+    DCHECK(!stack.Contains(this));
+    stack.push_back(this);
   }
 
   GetPopupData()->setAnimationFinishedListener(nullptr);
@@ -1353,15 +1327,11 @@ void HTMLElement::showPopUp(ExceptionState& exception_state) {
 }
 
 // static
-// All pop-ups up to, but not including, |endpoint|, will be hidden. If there
-// are "unrelated" pop-ups open, such as a stack of popup=auto pop-ups and
-// |endpoint| is a popup=hint, then the popup_independence argument controls
-// whether those unrelated popup=auto pop-ups are hidden.
+// All pop-ups up to, but not including, |endpoint|, will be hidden.
 void HTMLElement::HideAllPopupsUntil(const HTMLElement* endpoint,
                                      Document& document,
                                      HidePopupFocusBehavior focus_behavior,
-                                     HidePopupForcingLevel forcing_level,
-                                     HidePopupIndependence popup_independence) {
+                                     HidePopupForcingLevel forcing_level) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       document.GetExecutionContext()));
   DCHECK(!endpoint || endpoint->HasPopupAttribute());
@@ -1376,7 +1346,7 @@ void HTMLElement::HideAllPopupsUntil(const HTMLElement* endpoint,
   }
 
   auto close_all_open_pop_ups = [&document, &focus_behavior, &forcing_level]() {
-    while (auto* pop_up = document.TopmostPopupAutoOrHint()) {
+    while (auto* pop_up = document.TopmostPopUp()) {
       pop_up->HidePopUpInternal(focus_behavior, forcing_level);
     }
   };
@@ -1384,61 +1354,25 @@ void HTMLElement::HideAllPopupsUntil(const HTMLElement* endpoint,
   if (!endpoint)
     return close_all_open_pop_ups();
 
-  if (endpoint->PopupType() == PopupValueType::kHint) {
-    if (popup_independence == HidePopupIndependence::kHideUnrelated) {
-      if (document.PopupHintShowing() != endpoint) {
-        document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
-                                                       forcing_level);
-      }
-      while (!document.PopupStack().empty()) {
-        document.PopupStack().back()->HidePopUpInternal(focus_behavior,
-                                                        forcing_level);
-      }
+  DCHECK_EQ(endpoint->PopupType(), PopupValueType::kAuto);
+  // Then hide everything in the popup=auto stack until the last_to_hide
+  // pop-up is closed, or the stack is empty.
+  const HTMLElement* last_to_hide = nullptr;
+  bool found_endpoint = false;
+  for (auto pop_up : document.PopupStack()) {
+    if (pop_up == endpoint) {
+      found_endpoint = true;
+    } else if (found_endpoint) {
+      last_to_hide = pop_up;
+      break;
     }
-  } else {
-    DCHECK_EQ(endpoint->PopupType(), PopupValueType::kAuto);
-    const Element* hint_ancestor = nullptr;
-    if (document.PopupHintShowing()) {
-      // If there is a hint showing that is a descendant of something on the
-      // stack, then the hint should be hidden before that ancestor is hidden,
-      // regardless of popup_independence.
-      hint_ancestor = NearestOpenAncestralPopup(*document.PopupHintShowing(),
-                                                PopUpAncestorType::kDefault);
-      if (!hint_ancestor &&
-          popup_independence == HidePopupIndependence::kHideUnrelated) {
-        document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
-                                                       forcing_level);
-      }
-    }
-    // Then hide everything in the popup=auto stack until the last_to_hide
-    // pop-up is closed, or the stack is empty.
-    const HTMLElement* last_to_hide = nullptr;
-    bool found_endpoint = false;
-    for (auto pop_up : document.PopupStack()) {
-      if (pop_up == endpoint) {
-        found_endpoint = true;
-      } else if (found_endpoint) {
-        last_to_hide = pop_up;
-        break;
-      }
-    }
-    if (!found_endpoint)
-      return close_all_open_pop_ups();
-    if (!last_to_hide && document.PopupHintShowing() &&
-        hint_ancestor == endpoint) {
-      // endpoint is the top of the pop-up stack, and there's a nested hint.
-      document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
-                                                     forcing_level);
-    }
-    while (last_to_hide && last_to_hide->popupOpen() &&
-           !document.PopupStack().empty()) {
-      if (document.PopupStack().back() == hint_ancestor) {
-        document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
-                                                       forcing_level);
-      }
-      document.PopupStack().back()->HidePopUpInternal(focus_behavior,
-                                                      forcing_level);
-    }
+  }
+  if (!found_endpoint)
+    return close_all_open_pop_ups();
+  while (last_to_hide && last_to_hide->popupOpen() &&
+         !document.PopupStack().empty()) {
+    document.PopupStack().back()->HidePopUpInternal(focus_behavior,
+                                                    forcing_level);
   }
 }
 
@@ -1483,11 +1417,9 @@ void HTMLElement::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
       GetDocument().GetExecutionContext()));
   DCHECK(HasPopupAttribute());
   auto& document = GetDocument();
-  if (PopupType() == PopupValueType::kAuto ||
-      PopupType() == PopupValueType::kHint) {
-    // Hide any popups/hints above us in the stack.
-    HideAllPopupsUntil(this, document, focus_behavior, forcing_level,
-                       HidePopupIndependence::kLeaveUnrelated);
+  if (PopupType() == PopupValueType::kAuto) {
+    // Hide any pop-ups above us in the stack.
+    HideAllPopupsUntil(this, document, focus_behavior, forcing_level);
 
     // The 'popuphide' event handlers could have changed this popup, e.g. by
     // changing its type, removing it from the document, or calling hidePopUp().
@@ -1497,17 +1429,12 @@ void HTMLElement::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
       return;
     }
 
-    // Then remove this popup/hint from the stack, if present. If the popup
+    // Then remove this pop-up from the stack, if present. If the pop-up
     // is already hidden, it won't be in the stack.
-    if (PopupType() == PopupValueType::kAuto) {
-      auto& stack = document.PopupStack();
-      DCHECK(!stack.empty());
-      DCHECK_EQ(stack.back(), this);
-      stack.pop_back();
-    } else {
-      DCHECK_EQ(document.TopmostPopupAutoOrHint(), this);
-      document.SetPopupHintShowing(nullptr);
-    }
+    auto& stack = document.PopupStack();
+    DCHECK(!stack.empty());
+    DCHECK_EQ(stack.back(), this);
+    stack.pop_back();
   }
   document.PopupsWaitingToHide().insert(this);
 
@@ -1752,13 +1679,6 @@ const HTMLElement* HTMLElement::NearestOpenAncestralPopup(
     if (popup->anchorElement())
       anchors_to_popups.Set(popup->anchorElement(), popup);
   }
-  auto* hint_showing = node.GetDocument().PopupHintShowing();
-  if (hint_showing) {
-    popup_positions.Set(hint_showing, indx++);
-    if (hint_showing->anchorElement()) {
-      anchors_to_popups.Set(hint_showing->anchorElement(), hint_showing);
-    }
-  }
   auto* element = DynamicTo<HTMLElement>(node);
   if (ancestor_type == PopUpAncestorType::kNewPopUp) {
     DCHECK(element && element->HasPopupAttribute() && !element->popupOpen());
@@ -1768,9 +1688,6 @@ const HTMLElement* HTMLElement::NearestOpenAncestralPopup(
   // typically the position of the provided element.
   int upper_bound =
       popup_positions.Contains(element) ? popup_positions.at(element) : INT_MAX;
-  if (hint_showing && ancestor_type == PopUpAncestorType::kNewPopUp) {
-    upper_bound = popup_positions.at(hint_showing);  // Do not include the hint
-  }
   if (ancestor_type == PopUpAncestorType::kInclusive) {
     // For inclusive mode, we need to walk up the tree until we find an open
     // pop-up, or an invoker for an open pop-up, and then modify the upper bound
@@ -1815,7 +1732,7 @@ void HTMLElement::HandlePopupLightDismiss(const Event& event) {
   auto& document = target_node->GetDocument();
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       document.GetExecutionContext()));
-  DCHECK(document.TopmostPopupAutoOrHint());
+  DCHECK(document.TopmostPopUp());
   const AtomicString& event_type = event.type();
   if (event_type == event_type_names::kPointerdown) {
     document.SetPopUpPointerdownTarget(
@@ -1836,14 +1753,13 @@ void HTMLElement::HandlePopupLightDismiss(const Event& event) {
     if (same_target) {
       HideAllPopupsUntil(ancestor_pop_up, document,
                          HidePopupFocusBehavior::kNone,
-                         HidePopupForcingLevel::kHideAfterAnimations,
-                         HidePopupIndependence::kHideUnrelated);
+                         HidePopupForcingLevel::kHideAfterAnimations);
     }
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
     if (key_event && key_event->key() == "Escape") {
-      // Escape key just pops the topmost popup or hint off the stack.
-      document.TopmostPopupAutoOrHint()->HidePopUpInternal(
+      // Escape key just pops the topmost pop-up off the stack.
+      document.TopmostPopUp()->HidePopUpInternal(
           HidePopupFocusBehavior::kFocusPreviousElement,
           HidePopupForcingLevel::kHideAfterAnimations);
     }
@@ -1990,14 +1906,13 @@ bool HTMLElement::DispatchFocusEvent(
   Document& document = GetDocument();
   if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
           document.GetExecutionContext()) &&
-      document.TopmostPopupAutoOrHint()) {
+      document.TopmostPopUp()) {
     // If there's a pop-up showing, and we focus an element, hide all pop-ups
     // outside the that element's pop-up tree, including unrelated pop-ups.
     HideAllPopupsUntil(
         NearestOpenAncestralPopup(*this, PopUpAncestorType::kInclusive),
         document, HidePopupFocusBehavior::kNone,
-        HidePopupForcingLevel::kHideAfterAnimations,
-        HidePopupIndependence::kHideUnrelated);
+        HidePopupForcingLevel::kHideAfterAnimations);
   }
   return true;
 }

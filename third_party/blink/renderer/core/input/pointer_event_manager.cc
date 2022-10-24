@@ -182,7 +182,7 @@ bool PointerEventManager::ShouldFireEventForPopup(PointerEvent* event) {
       event->type() == event_type_names::kPointerdown) {
     if (auto* document = event->GetDocument()) {
       // Fire pointer events if there is any showing non-manual pop-up.
-      return document->TopmostPopupAutoOrHint();
+      return document->TopmostPopUp();
     }
   }
   return false;

@@ -6,17 +6,15 @@
 
 <style>
 [popup] {top: 100px; bottom: auto;}
-[popup=""] {left: -300px}
-[popup=auto] {left: -100px; }
-[popup=hint] {left: 100px; }
-[popup=manual] {left: 300px; }
+[popup=""] {left: -200px}
+[popup=auto] {left: 0; }
+[popup=manual] {left: 200px; }
 </style>
 
 <p>This test passes if it does not crash.</p>
-<div popup>Blank
-  <div popup=auto>Auto</div>
+<div popup>Auto1
+  <div popup=auto>Auto2</div>
 </div>
-<div popup=hint>Hint</div>
 <div popup=manual>Manual</div>
 <script>
   document.querySelectorAll('[popup]').forEach(p => p.showPopUp());

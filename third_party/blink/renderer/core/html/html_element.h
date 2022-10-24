@@ -62,11 +62,9 @@ enum class ContentEditableType {
 enum class PopupValueType {
   kNone,
   kAuto,
-  kHint,
   kManual,
 };
 constexpr const char* kPopupTypeValueAuto = "auto";
-constexpr const char* kPopupTypeValueHint = "hint";
 constexpr const char* kPopupTypeValueManual = "manual";
 
 enum class PopupTriggerAction {
@@ -84,11 +82,6 @@ enum class HidePopupFocusBehavior {
 enum class HidePopupForcingLevel {
   kHideAfterAnimations,
   kHideImmediately,
-};
-
-enum class HidePopupIndependence {
-  kLeaveUnrelated,
-  kHideUnrelated,
 };
 
 enum class PopUpAncestorType {
@@ -243,8 +236,7 @@ class CORE_EXPORT HTMLElement : public Element {
   static void HideAllPopupsUntil(const HTMLElement*,
                                  Document&,
                                  HidePopupFocusBehavior,
-                                 HidePopupForcingLevel,
-                                 HidePopupIndependence);
+                                 HidePopupForcingLevel);
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.

@@ -189,8 +189,7 @@ void HTMLDialogElement::show() {
           GetDocument().GetExecutionContext())) {
     HTMLElement::HideAllPopupsUntil(nullptr, GetDocument(),
                                     HidePopupFocusBehavior::kNone,
-                                    HidePopupForcingLevel::kHideImmediately,
-                                    HidePopupIndependence::kHideUnrelated);
+                                    HidePopupForcingLevel::kHideImmediately);
   }
 
   // The layout must be updated here because setFocusForDialog calls
@@ -251,8 +250,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
           document.GetExecutionContext())) {
     HTMLElement::HideAllPopupsUntil(nullptr, document,
                                     HidePopupFocusBehavior::kNone,
-                                    HidePopupForcingLevel::kHideImmediately,
-                                    HidePopupIndependence::kHideUnrelated);
+                                    HidePopupForcingLevel::kHideImmediately);
   }
 
   document.AddToTopLayer(this);

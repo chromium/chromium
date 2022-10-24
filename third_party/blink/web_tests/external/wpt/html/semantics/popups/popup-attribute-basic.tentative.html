@@ -11,7 +11,6 @@
   <div popup id=boolean>Pop up</div>
   <div popup="">Pop up</div>
   <div popup=auto>Pop up</div>
-  <div popup=hint>Pop up</div>
   <div popup=manual>Pop up</div>
   <article popup>Different element type</article>
   <header popup>Different element type</header>
@@ -116,20 +115,18 @@
     // Getting the `popUp` IDL value only retrieves valid values.
     const popUp = createPopUp(t);
     assert_equals(popUp.popUp,'auto');
-    popUp.setAttribute('popup','hint');
-    assert_equals(popUp.popUp,'hint');
-    popUp.setAttribute('popup','HiNt');
-    assert_equals(popUp.popUp,'hint','Case is normalized in IDL');
-    assert_equals(popUp.getAttribute('popup'),'HiNt','Case is *not* normalized/changed in the content attribute');
-    popUp.popUp='hInT';
-    assert_equals(popUp.popUp,'hint','Case is normalized in IDL');
-    assert_equals(popUp.getAttribute('popup'),'hInT','Value set from IDL is propagated exactly to the content attribute');
+    popUp.setAttribute('popup','auto');
+    assert_equals(popUp.popUp,'auto');
+    popUp.setAttribute('popup','AuTo');
+    assert_equals(popUp.popUp,'auto','Case is normalized in IDL');
+    assert_equals(popUp.getAttribute('popup'),'AuTo','Case is *not* normalized/changed in the content attribute');
+    popUp.popUp='aUtO';
+    assert_equals(popUp.popUp,'auto','Case is normalized in IDL');
+    assert_equals(popUp.getAttribute('popup'),'aUtO','Value set from IDL is propagated exactly to the content attribute');
     popUp.setAttribute('popup','invalid');
     assert_equals(popUp.popUp,'manual','Invalid values should reflect as "manual"');
     popUp.removeAttribute('popup');
     assert_equals(popUp.popUp,null,'No value should reflect as null');
-    popUp.popUp='hint';
-    assert_equals(popUp.getAttribute('popup'),'hint');
     popUp.popUp='auto';
     assert_equals(popUp.getAttribute('popup'),'auto');
     popUp.popUp='';
@@ -176,11 +173,11 @@
   test((t) => {
     const popUp = createPopUp(t);
     assertIsFunctionalPopUp(popUp);
-    popUp.setAttribute('popup','hint'); // Change pop-up type
+    popUp.setAttribute('popup','manual'); // Change pop-up type
     assertIsFunctionalPopUp(popUp);
     popUp.setAttribute('popup','invalid'); // Change pop-up type to something invalid
     assertIsFunctionalPopUp(popUp);
-    popUp.popUp = 'hint'; // Change pop-up type via IDL
+    popUp.popUp = 'manual'; // Change pop-up type via IDL
     assertIsFunctionalPopUp(popUp);
     popUp.popUp = 'invalid'; // Make invalid via IDL (treated as "manual")
     assertIsFunctionalPopUp(popUp);
@@ -190,11 +187,7 @@
     const popUp = createPopUp(t);
     popUp.showPopUp();
     assert_true(popUp.matches(':open'));
-    popUp.setAttribute('popup','hint'); // Change pop-up type
-    assert_false(popUp.matches(':open'));
-    popUp.showPopUp();
-    assert_true(popUp.matches(':open'));
-    popUp.setAttribute('popup','manual');
+    popUp.setAttribute('popup','manual'); // Change pop-up type
     assert_false(popUp.matches(':open'));
     popUp.showPopUp();
     assert_true(popUp.matches(':open'));
@@ -217,7 +210,8 @@
     }
   }
 
-  ["auto","hint","manual"].forEach(type => {
+  const validTypes = ["auto","manual"];
+  validTypes.forEach(type => {
     test((t) => {
       const popUp = createPopUp(t);
       popUp.setAttribute('popup',type);
@@ -241,7 +235,6 @@
     }
   });
 
-  const validTypes = ["auto","hint","manual"];
   function interpretedType(typeString,method) {
     if (validTypes.includes(typeString))
       return typeString;
@@ -308,8 +301,7 @@
                     popUp.hidePopUp();
                     break;
                   case 'auto':
-                  case 'hint':
-                    assert_false(popUp.matches(':open'),'A popup=auto/hint should light-dismiss');
+                    assert_false(popUp.matches(':open'),'A popup=auto should light-dismiss');
                     break;
                 }
               }

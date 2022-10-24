@@ -7691,14 +7691,7 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-void Document::SetPopupHintShowing(HTMLElement* element) {
-  DCHECK(!element || element->HasPopupAttribute());
-  popup_hint_showing_ = element;
-}
-
-HTMLElement* Document::TopmostPopupAutoOrHint() const {
-  if (PopupHintShowing())
-    return PopupHintShowing();
+HTMLElement* Document::TopmostPopUp() const {
   if (PopupStack().empty())
     return nullptr;
   return PopupStack().back();
@@ -8464,7 +8457,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lists_invalidated_at_document_);
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
-  visitor->Trace(popup_hint_showing_);
   visitor->Trace(popup_stack_);
   visitor->Trace(pop_up_pointerdown_target_);
   visitor->Trace(popups_waiting_to_hide_);

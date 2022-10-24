@@ -209,8 +209,7 @@ void GoFullscreen(Element& element,
           document.GetExecutionContext())) {
     HTMLElement::HideAllPopupsUntil(nullptr, document,
                                     HidePopupFocusBehavior::kNone,
-                                    HidePopupForcingLevel::kHideImmediately,
-                                    HidePopupIndependence::kHideUnrelated);
+                                    HidePopupForcingLevel::kHideImmediately);
   }
 
   // To fullscreen an |element| within a |document|, set the |element|'s
