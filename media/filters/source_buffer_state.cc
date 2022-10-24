@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -720,9 +721,14 @@ bool SourceBufferState::OnNewConfigs(
       DCHECK(video_config.IsValidConfig());
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
-      // Only encrypted Dolby Vision (DV) is supported, so require the config
-      // to be for an encrypted track.
-      if (video_config.codec() == VideoCodec::kDolbyVision &&
+      // When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is true, encrypted Dolby
+      // Vision is allowed in Media Source while clear Dolby Vision is not
+      // allowed, unless when
+      // `kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled` is
+      // specified which force allow Dolby Vision in Media Source.
+      if (!base::FeatureList::IsEnabled(
+              kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled) &&
+          video_config.codec() == VideoCodec::kDolbyVision &&
           !video_config.is_encrypted()) {
         MEDIA_LOG(ERROR, media_log_)
             << "MSE playback of DolbyVision is only supported via platform "

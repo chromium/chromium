@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -566,15 +567,21 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   ContentType filtered_content_type = content_type;
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
-  // Here, we special-case when encrypted Dolby Vision (DV) is supported but
-  // clear DV is not supported. isTypeSupported(fully qualified type with DV
-  // codec) should say false on such platform, but addSourceBuffer(same) and
-  // changeType(same) shouldn't fail just due to having DV codec. We use
-  // `enforce_codec_specificity` to understand if we are servicing
+  // When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is true, encrypted Dolby Vision
+  // is allowed in Media Source while clear Dolby Vision is not allowed.
+  // isTypeSupported(fully qualified type with DV codec) should say false on
+  // such platform, but addSourceBuffer(same) and changeType(same) shouldn't
+  // fail just due to having DV codec.
+  // Note:
+  // - We use `enforce_codec_specificity` to understand if we are servicing
   // isTypeSupported (if true) vs addSourceBuffer or changeType (if false). When
   // `enforce_codec_specificity` is false, we'll remove any detected DV codec
   // from the codecs in the `filtered_content_type`.
-  if (!enforce_codec_specificity) {
+  // - When `kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled` is
+  // specified, always allow DV.
+  if (base::FeatureList::IsEnabled(
+          media::kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled) ||
+      !enforce_codec_specificity) {
     // Remove any detected DolbyVision codec from the query to GetSupportsType.
     std::string filtered_codecs;
     std::vector<std::string> parsed_codec_ids;

@@ -318,6 +318,11 @@ MEDIA_EXPORT extern const base::FeatureParam<
     kMediaFoundationClearRenderingStrategyParam;
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(
+    kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDeprecateLowUsageCodecs);
 #endif

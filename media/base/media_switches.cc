@@ -5,6 +5,7 @@
 #include "media/base/media_switches.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
@@ -1061,6 +1062,16 @@ const base::FeatureParam<MediaFoundationClearRenderingStrategy>
         MediaFoundationClearRenderingStrategy::kDynamic,
         &kMediaFoundationClearRenderingStrategyOptions};
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+// When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is true, encrypted Dolby Vision
+// is allowed in Media Source while clear Dolby Vision is not allowed. This
+// feature allows the support of clear Dolby Vision in Media Source, which is
+// useful to work around some JavaScript player limitations.
+BASE_FEATURE(kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled,
+             "AllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 const base::Feature MEDIA_EXPORT kDeprecateLowUsageCodecs{
