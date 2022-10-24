@@ -111,38 +111,6 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   std::vector<scoped_refptr<V4L2DecodeSurface>> reference_surfaces_;
 };
 
-// ConfigStore is ChromeOS-specific legacy stuff
-// TODO(b/222774780): Remove when all legacy implementations are gone.
-#if BUILDFLAG(IS_CHROMEOS)
-// An implementation of V4L2DecodeSurface that uses the config store to
-// associate controls/buffers to frames.
-class V4L2ConfigStoreDecodeSurface : public V4L2DecodeSurface {
- public:
-  V4L2ConfigStoreDecodeSurface(V4L2WritableBufferRef input_buffer,
-                               V4L2WritableBufferRef output_buffer,
-                               scoped_refptr<VideoFrame> frame)
-      : V4L2DecodeSurface(std::move(input_buffer),
-                          std::move(output_buffer),
-                          std::move(frame)),
-        // config store IDs are arbitrarily defined to be buffer ID + 1
-        config_store_(this->input_buffer().BufferId() + 1) {}
-
-  V4L2ConfigStoreDecodeSurface(const V4L2ConfigStoreDecodeSurface&) = delete;
-  V4L2ConfigStoreDecodeSurface& operator=(const V4L2ConfigStoreDecodeSurface&) =
-      delete;
-
-  void PrepareSetCtrls(struct v4l2_ext_controls* ctrls) const override;
-  uint64_t GetReferenceID() const override;
-  bool Submit() override;
-
- private:
-  ~V4L2ConfigStoreDecodeSurface() override = default;
-
-  // The configuration store of the input buffer.
-  uint32_t config_store_;
-};
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // An implementation of V4L2DecodeSurface that uses requests to associate
 // controls/buffers to frames
 class V4L2RequestDecodeSurface : public V4L2DecodeSurface {

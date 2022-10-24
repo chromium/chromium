@@ -68,13 +68,6 @@ source_set("v4l2") {
 
   if (is_chromeos) {
     sources += [
-      "v4l2_video_decoder_delegate_h264_legacy.cc",
-      "v4l2_video_decoder_delegate_h264_legacy.h",
-      "v4l2_video_decoder_delegate_vp8_legacy.cc",
-      "v4l2_video_decoder_delegate_vp8_legacy.h",
-      "v4l2_video_decoder_delegate_vp9_legacy.cc",
-      "v4l2_video_decoder_delegate_vp9_legacy.h",
-
       # TODO(crbug.com/901264): Encoders use hack for passing offset
       # within a DMA-buf, which is not supported upstream.
       "v4l2_video_encode_accelerator.cc",
