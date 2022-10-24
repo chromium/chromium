@@ -108,7 +108,7 @@ typedef void (^UIKeyCommandAction)(void);
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showPreviousTab_2;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showNextTab_3;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showPreviousTab_3;
-@property(class, nonatomic, readonly) UIKeyCommand* cr_bookmarkThisPage;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_addToBookmarks;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reload;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_goBack;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_goForward;

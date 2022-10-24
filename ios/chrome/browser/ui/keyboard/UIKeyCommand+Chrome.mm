@@ -189,11 +189,11 @@ UIKeyModifierFlags KeyModifierControlShift =
                             action:@selector(keyCommand_showPreviousTab)];
 }
 
-+ (UIKeyCommand*)cr_bookmarkThisPage {
++ (UIKeyCommand*)cr_addToBookmarks {
   return [self cr_commandWithInput:@"d"
                      modifierFlags:KeyModifierCommand
-                            action:@selector(keyCommand_bookmarkThisPage)
-                           titleID:IDS_IOS_KEYBOARD_BOOKMARK_THIS_PAGE];
+                            action:@selector(keyCommand_addToBookmarks)
+                           titleID:IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS];
 }
 
 + (UIKeyCommand*)cr_reload {

@@ -20,7 +20,7 @@
 - (void)keyCommand_closeTab;
 - (void)keyCommand_showNextTab;
 - (void)keyCommand_showPreviousTab;
-- (void)keyCommand_bookmarkThisPage;
+- (void)keyCommand_addToBookmarks;
 - (void)keyCommand_reload;
 - (void)keyCommand_goBack;
 - (void)keyCommand_goForward;

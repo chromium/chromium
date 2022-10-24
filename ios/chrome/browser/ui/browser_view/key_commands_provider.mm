@@ -115,7 +115,7 @@
       UIKeyCommand.cr_showPreviousTab_2,
       UIKeyCommand.cr_showNextTab_3,
       UIKeyCommand.cr_showPreviousTab_3,
-      UIKeyCommand.cr_bookmarkThisPage,
+      UIKeyCommand.cr_addToBookmarks,
       UIKeyCommand.cr_reload,
       UIKeyCommand.cr_goBack,
       UIKeyCommand.cr_goForward,
@@ -259,7 +259,7 @@
   }
 }
 
-- (void)keyCommand_bookmarkThisPage {
+- (void)keyCommand_addToBookmarks {
   web::WebState* currentWebState =
       _browser->GetWebStateList()->GetActiveWebState();
   if (!currentWebState) {
