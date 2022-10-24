@@ -36,20 +36,11 @@ constexpr int kUsedWithSuccess = static_cast<int>(
     feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess);
 
 // Uses NoSessionAshTestBase because some tests need to simulate kiosk login.
-// Tests are optionally parameterized by feature ProductivityLauncher.
-class AppListFeatureUsageMetricsTest
-    : public NoSessionAshTestBase,
-      public testing::WithParamInterface<bool> {
+class AppListFeatureUsageMetricsTest : public NoSessionAshTestBase {
  public:
   AppListFeatureUsageMetricsTest()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    // Support both TEST_F and TEST_P.
-    if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
-      feature_list_.InitWithFeatureState(features::kProductivityLauncher,
-                                         GetParam());
-    }
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~AppListFeatureUsageMetricsTest() override = default;
 
   // Simulates a device that supports tablet mode.
@@ -70,13 +61,8 @@ class AppListFeatureUsageMetricsTest
     FastForwardBy(feature_usage::FeatureUsageMetrics::kInitialInterval);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histograms_;
 };
-
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         AppListFeatureUsageMetricsTest,
-                         testing::Bool());
 
 TEST_F(AppListFeatureUsageMetricsTest, CountsStartAtZero) {
   SimulateUserLogin("user@gmail.com");
@@ -124,7 +110,7 @@ TEST_F(AppListFeatureUsageMetricsTest, NotEligibleInKioskMode) {
   histograms_.ExpectBucketCount(kTabletMetric, kEnabled, 0);
 }
 
-TEST_P(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInClamshell) {
+TEST_F(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInClamshell) {
   SimulateUserLogin("user@gmail.com");
   Shell::Get()->app_list_controller()->ShowAppList();
   histograms_.ExpectBucketCount(kClamshellMetric, kUsedWithSuccess, 1);
@@ -138,7 +124,7 @@ TEST_P(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInClamshell) {
   histograms_.ExpectTotalCount(kTabletUsetimeMetric, 0);
 }
 
-TEST_P(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInTablet) {
+TEST_F(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInTablet) {
   SimulateTabletModeSupport();
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->CanEnterTabletMode());
   SimulateUserLogin("user@gmail.com");
@@ -157,7 +143,7 @@ TEST_P(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInTablet) {
   histograms_.ExpectTotalCount(kClamshellUsetimeMetric, 0);
 }
 
-TEST_P(AppListFeatureUsageMetricsTest,
+TEST_F(AppListFeatureUsageMetricsTest,
        EnterTabletModeWithLauncherAndWindowOpen) {
   SimulateTabletModeSupport();
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->CanEnterTabletMode());
@@ -179,7 +165,7 @@ TEST_P(AppListFeatureUsageMetricsTest,
   histograms_.ExpectTimeBucketCount(kTabletUsetimeMetric, base::Seconds(1), 1);
 }
 
-TEST_P(AppListFeatureUsageMetricsTest, OpenClamshellThenTabletThenExit) {
+TEST_F(AppListFeatureUsageMetricsTest, OpenClamshellThenTabletThenExit) {
   SimulateTabletModeSupport();
   SimulateUserLogin("user@gmail.com");
 

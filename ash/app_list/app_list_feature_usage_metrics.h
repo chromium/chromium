@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 namespace ash {
@@ -17,10 +16,8 @@ namespace ash {
 // (go/sful) framework. Tracks clamshell app list and tablet mode app list as
 // separate features because the user experience is different and some devices
 // are not eligible for tablet mode. Both features are tracked from this single
-// class to simplify accounting for a tablet mode transition while the launcher
-// is open.
-class AppListFeatureUsageMetrics : public TabletModeObserver,
-                                   public AppListControllerObserver {
+// class.
+class AppListFeatureUsageMetrics : public AppListControllerObserver {
  public:
   AppListFeatureUsageMetrics();
   AppListFeatureUsageMetrics(AppListFeatureUsageMetrics&) = delete;
@@ -28,9 +25,6 @@ class AppListFeatureUsageMetrics : public TabletModeObserver,
   ~AppListFeatureUsageMetrics() override;
 
  private:
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
 

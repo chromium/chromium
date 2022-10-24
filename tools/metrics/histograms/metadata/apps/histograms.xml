@@ -1219,17 +1219,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.ZeroStateSearchResultRemovalDecision"
-    enum="AppListResultRemovalConfirmation" expires_after="2022-10-04">
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The decision of the user whether to remove a zero state search result. This
-    is gathered per click of a remove or cancel button of a search result
-    removal confirmation dialog.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.ZeroStateSearchResultUserActionType"
     enum="AppListZeroStateSearchResultUserActionType"
     expires_after="2022-05-01">

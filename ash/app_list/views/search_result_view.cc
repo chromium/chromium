@@ -955,20 +955,9 @@ void SearchResultView::OnQueryRemovalAccepted(bool accepted) {
     SetSelected(false, absl::nullopt);
   }
 
-  // Record different dialog action metric depending on productivity launcher
-  // state - productivity launcher does not show zero-state search results, so
-  // zero-state specific metric is not suitable. On the other hand, removal
-  // action outside of zero-state search UI is only allowed if the productivity
-  // launcher feature is on.
-  if (features::IsProductivityLauncherEnabled()) {
-    RecordSearchResultRemovalDialogDecision(
-        accepted ? SearchResultRemovalConfirmation::kRemovalConfirmed
-                 : SearchResultRemovalConfirmation::kRemovalCanceled);
-  } else {
-    RecordZeroStateSearchResultRemovalHistogram(
-        accepted ? SearchResultRemovalConfirmation::kRemovalConfirmed
-                 : SearchResultRemovalConfirmation::kRemovalCanceled);
-  }
+  RecordSearchResultRemovalDialogDecision(
+      accepted ? SearchResultRemovalConfirmation::kRemovalConfirmed
+               : SearchResultRemovalConfirmation::kRemovalCanceled);
 }
 
 void SearchResultView::OnSelectedResultChanged() {
