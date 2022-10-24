@@ -12,6 +12,7 @@
 
 @optional
 - (void)keyCommand_openNewTab;
+- (void)keyCommand_openNewRegularTab;
 - (void)keyCommand_openNewIncognitoTab;
 - (void)keyCommand_reopenLastClosedTab;
 - (void)keyCommand_openFindInPage;

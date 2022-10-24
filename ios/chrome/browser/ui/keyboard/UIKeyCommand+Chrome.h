@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 // etc. They don't have a title and don't appear in the HUD or menu, but trigger
 // the same action method keyCommand_xxx.
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewTab;
-@property(class, nonatomic, readonly) UIKeyCommand* cr_openNewTab_2;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_openNewRegularTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewIncognitoTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reopenLastClosedTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openFindInPage;

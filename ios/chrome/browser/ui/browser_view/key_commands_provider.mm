@@ -142,7 +142,7 @@
 
   // List the commands that don't appear in the HUD but are always present.
   [keyCommands addObjectsFromArray:@[
-    UIKeyCommand.cr_openNewTab_2,
+    UIKeyCommand.cr_openNewRegularTab,
     UIKeyCommand.cr_showSettings,
   ]];
 
@@ -172,16 +172,19 @@
 #pragma mark - Key Command Actions
 
 - (void)keyCommand_openNewTab {
-  OpenNewTabCommand* newTabCommand = [OpenNewTabCommand command];
-  newTabCommand.shouldFocusOmnibox = YES;
-  [_dispatcher openURLInNewTab:newTabCommand];
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    [self openNewIncognitoTab];
+  } else {
+    [self openNewRegularTab];
+  }
+}
+
+- (void)keyCommand_openNewRegularTab {
+  [self openNewRegularTab];
 }
 
 - (void)keyCommand_openNewIncognitoTab {
-  OpenNewTabCommand* newIncognitoTabCommand =
-      [OpenNewTabCommand incognitoTabCommand];
-  newIncognitoTabCommand.shouldFocusOmnibox = YES;
-  [_dispatcher openURLInNewTab:newIncognitoTabCommand];
+  [self openNewIncognitoTab];
 }
 
 - (void)keyCommand_reopenLastClosedTab {
@@ -378,6 +381,19 @@
   return [firstResponder isKindOfClass:[UITextField class]] ||
          [firstResponder isKindOfClass:[UITextView class]] ||
          [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardVisible];
+}
+
+- (void)openNewRegularTab {
+  OpenNewTabCommand* newTabCommand = [OpenNewTabCommand command];
+  newTabCommand.shouldFocusOmnibox = YES;
+  [_dispatcher openURLInNewTab:newTabCommand];
+}
+
+- (void)openNewIncognitoTab {
+  OpenNewTabCommand* newIncognitoTabCommand =
+      [OpenNewTabCommand incognitoTabCommand];
+  newIncognitoTabCommand.shouldFocusOmnibox = YES;
+  [_dispatcher openURLInNewTab:newIncognitoTabCommand];
 }
 
 - (void)showTabAtIndex:(NSUInteger)index {

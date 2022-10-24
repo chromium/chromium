@@ -43,7 +43,8 @@ void Verify(UIKeyCommand* command,
 TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_openNewTab, @"⌘T", @"keyCommand_openNewTab",
          IDS_IOS_TOOLS_MENU_NEW_TAB);
-  Verify(UIKeyCommand.cr_openNewTab_2, @"⌘N", @"keyCommand_openNewTab");
+  Verify(UIKeyCommand.cr_openNewRegularTab, @"⌘N",
+         @"keyCommand_openNewRegularTab");
   // TODO(crbug.com/1376444): Verify all flavors of commands.
 }
 

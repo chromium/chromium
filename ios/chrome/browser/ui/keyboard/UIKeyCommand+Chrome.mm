@@ -34,10 +34,10 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
                            titleID:IDS_IOS_TOOLS_MENU_NEW_TAB];
 }
 
-+ (UIKeyCommand*)cr_openNewTab_2 {
++ (UIKeyCommand*)cr_openNewRegularTab {
   return [self keyCommandWithInput:@"n"
                      modifierFlags:Command
-                            action:@selector(keyCommand_openNewTab)];
+                            action:@selector(keyCommand_openNewRegularTab)];
 }
 
 + (UIKeyCommand*)cr_openNewIncognitoTab {
