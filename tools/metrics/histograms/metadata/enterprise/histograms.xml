@@ -620,8 +620,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
-    enum="BooleanSuccess" expires_after="2022-12-11">
+    enum="BooleanSuccess" expires_after="2023-11-30">
   <owner>rbock@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Recorded every time policy file is missing or corrupted on Chrome OS. Should
@@ -631,8 +632,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2022-12-04">
+    enum="DeviceSettingsStatus" expires_after="2023-11-30">
   <owner>rbock@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Recorded every time as DeviceSettingsProvider updates its current state.
@@ -1308,8 +1310,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DMServerRequestSuccess{EnterpriseDMServerRequest}"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2022-11-30">
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2023-11-30">
   <owner>rbock@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of retries the client did to execute a DeviceManagementServer
@@ -1582,7 +1585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRollbackAttestation"
-    enum="EnterpriseEnrollmentType" expires_after="2023-07-14">
+    enum="EnterpriseEnrollmentType" expires_after="2023-11-30">
   <owner>crisguerrero@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1595,7 +1598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRollbackManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2023-07-14">
+    enum="EnterpriseEnrollmentType" expires_after="2023-11-30">
   <owner>crisguerrero@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2157,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
-    expires_after="2023-10-01">
+    expires_after="2023-11-30">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2167,7 +2170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
-    expires_after="2023-10-01">
+    expires_after="2023-11-30">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2177,7 +2180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="2023-10-01">
+    expires_after="2023-11-30">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2187,7 +2190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUserVerification"
-    enum="EnterprisePolicyUserVerification" expires_after="2022-10-23">
+    enum="EnterprisePolicyUserVerification" expires_after="2023-11-30">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>Tracking the results of policy user verification.</summary>
@@ -2445,6 +2448,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-09">
   <owner>hendrich@chromium.org</owner>
   <owner>rbock@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>Re-registration results after failed policy fetch.</summary>
 </histogram>
@@ -2561,7 +2565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidJsonPolicies" enum="EnterprisePolicies"
-    expires_after="2021-07-01">
+    expires_after="2023-11-30">
   <owner>olsen@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2570,7 +2574,7 @@ chromium-metrics-reviews@google.com.
     the policy has changed.
 
     The histogram was expired (not recording data) from 2020-06-18 until
-    2021-03-15.
+    2021-03-15 and from 2021-07-01 to 2022-10-23.
   </summary>
 </histogram>
 
