@@ -2456,6 +2456,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "cy",
@@ -2467,6 +2468,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "d",
@@ -2482,6 +2484,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "display",
@@ -2539,6 +2542,7 @@
       },
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      readonly: true,
     },
     {
       name: "fill-opacity",
@@ -2551,6 +2555,7 @@
       default_value: "1",
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "fill-rule",
@@ -3139,6 +3144,7 @@
       converter: "ConvertElementReference",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "marker-mid",
@@ -3153,6 +3159,7 @@
       converter: "ConvertElementReference",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "marker-start",
@@ -3167,6 +3174,7 @@
       converter: "ConvertElementReference",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "mask",
@@ -3897,6 +3905,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "rx",
@@ -3909,6 +3918,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "ry",
@@ -3921,6 +3931,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "scrollbar-gutter",
@@ -5024,6 +5035,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "y",
@@ -5035,6 +5047,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "appearance",

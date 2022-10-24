@@ -333,10 +333,10 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetBottom(value);
       return true;
     case CSSPropertyID::kCx:
-      style.SetCx(value);
+      builder.SetCx(value);
       return true;
     case CSSPropertyID::kCy:
-      style.SetCy(value);
+      builder.SetCy(value);
       return true;
     case CSSPropertyID::kFlexBasis:
       style.SetFlexBasis(value);
@@ -387,13 +387,13 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetPaddingTop(value);
       return true;
     case CSSPropertyID::kR:
-      style.SetR(value);
+      builder.SetR(value);
       return true;
     case CSSPropertyID::kRx:
-      style.SetRx(value);
+      builder.SetRx(value);
       return true;
     case CSSPropertyID::kRy:
-      style.SetRy(value);
+      builder.SetRy(value);
       return true;
     case CSSPropertyID::kRight:
       style.SetRight(value);
@@ -423,10 +423,10 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetTransformOriginY(value);
       return true;
     case CSSPropertyID::kX:
-      style.SetX(value);
+      builder.SetX(value);
       return true;
     case CSSPropertyID::kY:
-      style.SetY(value);
+      builder.SetY(value);
       return true;
 
     case CSSPropertyID::kLineHeight:

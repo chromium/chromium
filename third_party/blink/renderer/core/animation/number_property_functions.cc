@@ -134,7 +134,7 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
   DCHECK_EQ(value, ClampNumber(property, value));
   switch (property.PropertyID()) {
     case CSSPropertyID::kFillOpacity:
-      style.SetFillOpacity(value);
+      builder.SetFillOpacity(value);
       return true;
     case CSSPropertyID::kFlexGrow:
       style.SetFlexGrow(value);
