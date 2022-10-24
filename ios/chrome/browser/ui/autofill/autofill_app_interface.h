@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
+#import "base/time/time.h"
 
 // CreditCardSaveManager events that can be waited on by the IOSTestEventWaiter.
 // Name reflects the observer method that is triggering this event.
@@ -78,7 +78,7 @@ enum CreditCardSaveManagerObserverEvent : int {
 
 // Sets the Autofill events that are expected to be triggered.
 + (void)resetEventWaiterForEvents:(NSArray*)events
-                          timeout:(NSTimeInterval)timeout;
+                          timeout:(base::TimeDelta)timeout;
 
 // Wait until all expected events are triggered.
 + (BOOL)waitForEvents [[nodiscard]];

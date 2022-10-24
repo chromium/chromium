@@ -8,6 +8,7 @@
 #include <list>
 
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 
 namespace autofill {
 
@@ -24,8 +25,7 @@ namespace autofill {
 template <typename Event>
 class IOSTestEventWaiter {
  public:
-  explicit IOSTestEventWaiter(std::list<Event> expected_events,
-                              double timeout = 0);
+  IOSTestEventWaiter(std::list<Event> expected_events, base::TimeDelta timeout);
 
   IOSTestEventWaiter(const IOSTestEventWaiter&) = delete;
   IOSTestEventWaiter& operator=(const IOSTestEventWaiter&) = delete;
@@ -46,12 +46,12 @@ class IOSTestEventWaiter {
  private:
   std::list<Event> expected_events_;
   bool runloop_running_;
-  double timeout_;
+  base::TimeDelta timeout_;
 };
 
 template <typename Event>
 IOSTestEventWaiter<Event>::IOSTestEventWaiter(std::list<Event> expected_events,
-                                              double timeout)
+                                              base::TimeDelta timeout)
     : expected_events_(std::move(expected_events)),
       runloop_running_(false),
       timeout_(timeout) {}

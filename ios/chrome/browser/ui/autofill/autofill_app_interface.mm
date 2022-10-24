@@ -231,7 +231,7 @@ class SaveCardInfobarEGTestHelper
   }
 
   // Reset the IOSTestEventWaiter and make it watch `events`.
-  void ResetEventWaiterForEvents(NSArray* events, NSTimeInterval timeout) {
+  void ResetEventWaiterForEvents(NSArray* events, base::TimeDelta timeout) {
     std::list<CreditCardSaveManagerObserverEvent> events_list;
     for (NSNumber* e : events) {
       events_list.push_back(
@@ -439,7 +439,7 @@ class SaveCardInfobarEGTestHelper
 }
 
 + (void)resetEventWaiterForEvents:(NSArray*)events
-                          timeout:(NSTimeInterval)timeout {
+                          timeout:(base::TimeDelta)timeout {
   autofill::SaveCardInfobarEGTestHelper::SharedInstance()
       ->ResetEventWaiterForEvents(events, timeout);
 }
