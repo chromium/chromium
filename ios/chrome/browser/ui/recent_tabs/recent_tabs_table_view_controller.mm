@@ -1479,6 +1479,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     if (self.searchTerms.length) {
       base::RecordAction(base::UserMetricsAction(
           "MobileRecentTabManagerTabFromOtherDeviceOpenedSearchResult"));
+      self.searchTerms = @"";
     }
     new_tab_page_uma::RecordAction(
         self.browserState, self.webStateList->GetActiveWebState(),
