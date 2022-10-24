@@ -58,15 +58,19 @@ message ContactInfoSpecifics {
 
   // A globally unique, immutable UUID represented in lowercase.
   optional string guid = 1;
-  // Represents where the profile originated from, which can be either from the
-  // settings or a website.
-  // This field exists only for compatibility purposes with Autofill.
-  optional string source = 2;
+  reserved 2;
+  reserved "source";
   // The number of time this profile has been used.
   optional int64 use_count = 3;
 
   // The last time this profile was used.
   optional int64 use_date_windows_epoch_micros = 4;
+
+  // The last time the profile was modified.
+  optional int64 date_modified_windows_epoch_micros = 37;
+
+  // The BCP 47 language code used to format the address for display.
+  optional string language_code = 38;
 
   // A user chosen profile label that is used to identify the profile.
   // The value of the label can be freely chosen by the user.
@@ -117,8 +121,8 @@ message ContactInfoSpecifics {
   // roughly equivalent to a city. Examples of dependent localities include
   // inner-city districts and suburbs.
   optional StringToken address_dependent_locality = 23;
-  // A BCP 47 language code.
-  optional StringToken address_language_code = 24;
+  reserved 24;
+  reserved "address_language_code";
   // The street name of the address, without a house number.
   optional StringToken address_thoroughfare_name = 25;
   // The house number, which may be alphanumeric.

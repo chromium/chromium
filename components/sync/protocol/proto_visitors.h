@@ -294,9 +294,10 @@ VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(guid);
-  VISIT(source);
   VISIT(use_count);
   VISIT(use_date_windows_epoch_micros);
+  VISIT(date_modified_windows_epoch_micros);
+  VISIT(language_code);
   VISIT(profile_label);
   VISIT(name_honorific);
   VISIT(name_first);
@@ -316,7 +317,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_street_address);
   VISIT(address_sorting_code);
   VISIT(address_dependent_locality);
-  VISIT(address_language_code);
   VISIT(address_thoroughfare_name);
   VISIT(address_thoroughfare_number);
   VISIT(address_dependent_thoroughfare_name);
