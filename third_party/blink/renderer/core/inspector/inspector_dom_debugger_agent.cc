@@ -526,9 +526,9 @@ InspectorDOMDebuggerAgent::BuildObjectForEventListener(
         context, function, object_group_id, false /* generatePreview */));
     value->setOriginalHandler(v8_session_->wrapObject(
         context, info.handler, object_group_id, false /* generatePreview */));
-    if (info.backend_node_id)
-      value->setBackendNodeId(static_cast<int>(info.backend_node_id));
   }
+  if (info.backend_node_id)
+    value->setBackendNodeId(static_cast<int>(info.backend_node_id));
   return value;
 }
 

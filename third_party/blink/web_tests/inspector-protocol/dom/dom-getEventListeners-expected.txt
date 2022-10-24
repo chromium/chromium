@@ -3,6 +3,7 @@ Fetching listeners for depth = undefined and pierce = undefined
 {
     listeners : [
         [0] : {
+            backendNodeId : <number>
             columnNumber : 50
             lineNumber : 8
             once : false
@@ -17,6 +18,7 @@ Fetching listeners for depth = 1 and pierce = undefined
 {
     listeners : [
         [0] : {
+            backendNodeId : <number>
             columnNumber : 50
             lineNumber : 8
             once : false
@@ -31,6 +33,7 @@ Fetching listeners for depth = 4 and pierce = undefined
 {
     listeners : [
         [0] : {
+            backendNodeId : <number>
             columnNumber : 50
             lineNumber : 8
             once : false
@@ -40,6 +43,7 @@ Fetching listeners for depth = 4 and pierce = undefined
             useCapture : false
         }
         [1] : {
+            backendNodeId : <number>
             columnNumber : 63
             lineNumber : 5
             once : false
@@ -54,6 +58,7 @@ Fetching listeners for depth = -1 and pierce = undefined
 {
     listeners : [
         [0] : {
+            backendNodeId : <number>
             columnNumber : 50
             lineNumber : 8
             once : false
@@ -63,6 +68,7 @@ Fetching listeners for depth = -1 and pierce = undefined
             useCapture : false
         }
         [1] : {
+            backendNodeId : <number>
             columnNumber : 63
             lineNumber : 5
             once : false
@@ -72,6 +78,7 @@ Fetching listeners for depth = -1 and pierce = undefined
             useCapture : false
         }
         [2] : {
+            backendNodeId : <number>
             columnNumber : 63
             lineNumber : 6
             once : false
@@ -81,6 +88,7 @@ Fetching listeners for depth = -1 and pierce = undefined
             useCapture : false
         }
         [3] : {
+            backendNodeId : <number>
             columnNumber : 63
             lineNumber : 7
             once : false
@@ -95,6 +103,7 @@ Fetching listeners for depth = -1 and pierce = true
 {
     listeners : [
         [0] : {
+            backendNodeId : <number>
             columnNumber : 50
             lineNumber : 8
             once : false
@@ -104,6 +113,7 @@ Fetching listeners for depth = -1 and pierce = true
             useCapture : false
         }
         [1] : {
+            backendNodeId : <number>
             columnNumber : 63
             lineNumber : 5
             once : false
@@ -113,6 +123,7 @@ Fetching listeners for depth = -1 and pierce = true
             useCapture : false
         }
         [2] : {
+            backendNodeId : <number>
             columnNumber : 63
             lineNumber : 6
             once : false
@@ -122,6 +133,7 @@ Fetching listeners for depth = -1 and pierce = true
             useCapture : false
         }
         [3] : {
+            backendNodeId : <number>
             columnNumber : 63
             lineNumber : 7
             once : false
@@ -131,6 +143,7 @@ Fetching listeners for depth = -1 and pierce = true
             useCapture : false
         }
         [4] : {
+            backendNodeId : <number>
             columnNumber : 73
             lineNumber : 6
             once : false

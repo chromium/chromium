@@ -654,6 +654,7 @@ Tests DOMSnapshot.getSnapshot method.
             documentURL : <string>
             eventListeners : [
                 [0] : {
+                    backendNodeId : <number>
                     columnNumber : 46
                     lineNumber : 43
                     once : false
@@ -871,6 +872,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             eventListeners : [
                 [0] : {
+                    backendNodeId : <number>
                     columnNumber : 59
                     lineNumber : 40
                     once : false
@@ -972,6 +974,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             eventListeners : [
                 [0] : {
+                    backendNodeId : <number>
                     columnNumber : 59
                     lineNumber : 41
                     once : false
@@ -1030,6 +1033,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             eventListeners : [
                 [0] : {
+                    backendNodeId : <number>
                     columnNumber : 59
                     lineNumber : 42
                     once : false
