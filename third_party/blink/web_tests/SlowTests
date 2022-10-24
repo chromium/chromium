@@ -841,3 +841,5 @@ crbug.com/1361922 virtual/document-transition/wpt_internal/document-transition/j
 crbug.com/1293315 external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
 
 crbug.com/1372747 [ Win ] http/tests/uri/css-href.php [ Slow ]
+
+crbug.com/1376679 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
