@@ -243891,6 +243891,27 @@
       ]
      },
      "scripting-1": {
+      "the-script-element": {
+       "module": {
+        "dynamic-import": {
+         "microtasks": {
+          "worklet.https.html": [
+           "5cd59f86dc77082db3ac2b83d152bfed8e32eafc",
+           [
+            null,
+            [
+             [
+              "/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/worklet-ref.https.html",
+              "=="
+             ]
+            ],
+            {}
+           ]
+          ]
+         }
+        }
+       }
+      },
       "the-template-element": {
        "additions-to-the-css-user-agent-style-sheet": {
         "css-user-agent-style-sheet-test-001.html": [
@@ -329659,6 +329680,32 @@
            []
           ]
          },
+         "microtasks": {
+          "basic.any.sharedworker-expected.txt": [
+           "12abf0212bde80dc17d2c7e52ce41bbe8cb2f697",
+           []
+          ],
+          "basic.any.worker-expected.txt": [
+           "12abf0212bde80dc17d2c7e52ce41bbe8cb2f697",
+           []
+          ],
+          "empty-module.css": [
+           "108e7649bddfe721393b7c32925c3e11deceda28",
+           []
+          ],
+          "empty-module.js": [
+           "108e7649bddfe721393b7c32925c3e11deceda28",
+           []
+          ],
+          "ticker.js": [
+           "42619b6e700e528217662def8ebe3598b1f22fc3",
+           []
+          ],
+          "worklet-ref.https.html": [
+           "6c598aee3937a1f19c4058fb0b84cfafa8e67880",
+           []
+          ]
+         },
          "propagate-nonce-external.js": [
           "3b97d2f40e914af5d22ecc338913dcb0591927ba",
           []
@@ -346519,12 +346566,8 @@
    },
    "soft-navigation-heuristics": {
     "resources": {
-     "content.json": [
-      "f198059604719a1f48aff554d074bcf615a1292b",
-      []
-     ],
      "soft-navigation-helper.js": [
-      "f057bf7982a6fadd948912fbb05a55bd046804d2",
+      "1bef2c2fa0bcc907d235eef64bb26dc3dbdf363a",
       []
      ]
     }
@@ -504034,6 +504077,155 @@
            {}
           ]
          ],
+         "microtasks": {
+          "basic.any.js": [
+           "82cb3b215dbad2ce945e636e12e992054a30849f",
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "window,dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ],
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "window,dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ],
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "window,dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ]
+          ],
+          "css-import-in-worker.any.js": [
+           "bd6f5d092f3a6af3d405a86254dde9f7fc608ce2",
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/css-import-in-worker.any.sharedworker.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ],
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/css-import-in-worker.any.worker.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ]
+          ],
+          "serviceworker.any.js": [
+           "4c75cab1b65b4b9f6de5e716b7779fe27d20b3d0",
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/serviceworker.any.serviceworker.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "serviceworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ]
+          ],
+          "with-import-assertions.any.js": [
+           "f67ba9a1ae4fcedba1a7254c7b930e93d1ac66c6",
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/with-import-assertions.any.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "window,dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ],
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/with-import-assertions.any.sharedworker.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "window,dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ],
+           [
+            "html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/with-import-assertions.any.worker.html",
+            {
+             "script_metadata": [
+              [
+               "global",
+               "window,dedicatedworker,sharedworker"
+              ],
+              [
+               "script",
+               "ticker.js"
+              ]
+             ]
+            }
+           ]
+          ]
+         },
          "propagate-nonce-external-classic.html": [
           "0958cfbeba21fa0ced503c17e96b97709fb66423",
           [
@@ -515371,7 +515563,7 @@
      ]
     ],
     "longtask-in-externalscript.html": [
-     "ad194ac971911349b7b86f82eea1869fb37140ef",
+     "0d8f5ccb67d052133e38721d29365588fc284cd1",
      [
       null,
       {}
@@ -554694,7 +554886,7 @@
    },
    "soft-navigation-heuristics": {
     "back.tentative.html": [
-     "94a8c7ea2f419df2385b75b3ad99fd9bcd115b4e",
+     "349eaf465c456954d552d42f46fd2a5590c254a9",
      [
       null,
       {
@@ -554703,7 +554895,7 @@
      ]
     ],
     "dropped-entries.tentative.html": [
-     "c29b060a1eb69188b775e261f0bc4447b67c106a",
+     "9c3ea473f2e8eb792a473bf771422696e0ff7239",
      [
       null,
       {
@@ -554713,7 +554905,7 @@
      ]
     ],
     "image-lcp-followed-by-image-softnav-lcp.tentative.html": [
-     "7e6c96ee69b875eff4860c86664a280cfda75895",
+     "27e9bbbd13c6c9affad7bbd4b0aa3cdad2d0b3bb",
      [
       null,
       {
@@ -554722,7 +554914,7 @@
      ]
     ],
     "image-lcp-followed-by-text-softnav-lcp.tentative.html": [
-     "c2e2e149cefa2b4a888fbbd76bb052d1a833765f",
+     "5aa1b1da2ef1c1fecddedbef0067a1a24167c9fa",
      [
       null,
       {
@@ -554731,7 +554923,7 @@
      ]
     ],
     "navigation-api-preventDefault.tentative.html": [
-     "7c15064466c3efbee0dd34f0520296b2baa1713f",
+     "f9f8cdec76c7f52a8f4efe9060f9087adf4d6009",
      [
       null,
       {
@@ -554740,7 +554932,7 @@
      ]
     ],
     "navigation-api-rejected.tentative.html": [
-     "84dd1b4e194d22870fa2b31d4a12e0c64be8f8dc",
+     "7d3e9e35afc00cdc3220da3ab1fe5c78727cbd00",
      [
       null,
       {
@@ -554749,7 +554941,7 @@
      ]
     ],
     "navigation-api.tentative.html": [
-     "a275ff004cad05621eb6909bb4ffb65c0b790218",
+     "3ad16dd9e6b8195e49515c9713fac1597afe1989",
      [
       null,
       {
@@ -554758,7 +554950,7 @@
      ]
     ],
     "soft-navigation-detection-main-descendent.tentative.html": [
-     "c358f8095b5004979f46dd43ac1528261416a611",
+     "96ff55260c3b9553ac5735cc5fe209ee7cfd5f37",
      [
       null,
       {
@@ -554767,7 +554959,7 @@
      ]
     ],
     "soft-navigation-detection-non-main.tentative.html": [
-     "3aefdd8e9926143cf31c8e314aa71207d6dd630e",
+     "86da167c3393903dfb3fe01e59a9bbfb216d5a44",
      [
       null,
       {
@@ -554776,7 +554968,7 @@
      ]
     ],
     "soft-navigation-detection-web-component-lifecycle.tentative.html": [
-     "1455e4e7cdb371fc3e0391e18575f889db4fa9bc",
+     "7e27b0073c9f7f8c5afc63e23b261e328cb8d6c8",
      [
       null,
       {
@@ -554785,7 +554977,7 @@
      ]
     ],
     "soft-navigation-detection.tentative.html": [
-     "8ca969da66c467ef57bfec6de1a9d2feee7c6a20",
+     "618984d8592dc6d2f68a15fe7f4f87592731236e",
      [
       null,
       {
@@ -554794,7 +554986,7 @@
      ]
     ],
     "soft-navigation-no-url.tentative.html": [
-     "12e27f10e8f4de17c5fa46a612edb8b242711e7a",
+     "d1a11111e03374a0b1b25a5cada06b326612b4ab",
      [
       null,
       {
@@ -554803,7 +554995,7 @@
      ]
     ],
     "text-lcp-followed-by-image-softnav-lcp.tentative.html": [
-     "3f66a7f3e6fb50c2640d12004e7dd443050bc2f4",
+     "3a8398347ce0ecb31aae24b4e8c8403aa2c9ef79",
      [
       null,
       {
@@ -554812,7 +555004,7 @@
      ]
     ],
     "text-lcp-followed-by-text-softnav-lcp.tentative.html": [
-     "6df2b738c0a6e7d4c8572d7fe523493928c55d5b",
+     "929f59f019df81195700e61ca0cfcbb3db04a688",
      [
       null,
       {
