@@ -20,6 +20,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_latency.h"
 #include "services/audio/output_controller.h"
+#include "services/audio/output_glitch_counter.h"
 
 namespace audio {
 
@@ -35,6 +36,12 @@ class SyncReader : public OutputController::SyncReader {
   SyncReader(base::RepeatingCallback<void(const std::string&)> log_callback,
              const media::AudioParameters& params,
              base::CancelableSyncSocket* foreign_socket);
+
+  // Allows us to set a custom OutputGlitchCounter for testing.
+  SyncReader(base::RepeatingCallback<void(const std::string&)> log_callback,
+             const media::AudioParameters& params,
+             base::CancelableSyncSocket* foreign_socket,
+             std::unique_ptr<OutputGlitchCounter> glitch_counter);
 
   SyncReader(const SyncReader&) = delete;
   SyncReader& operator=(const SyncReader&) = delete;
@@ -89,14 +96,8 @@ class SyncReader : public OutputController::SyncReader {
   // Shared memory wrapper used for transferring audio data to Read() callers.
   std::unique_ptr<media::AudioBus> output_bus_;
 
-  // Track the number of times the renderer missed its real-time deadline and
-  // report a UMA stat during destruction.
-  size_t renderer_callback_count_{0};
-  size_t renderer_missed_callback_count_{0};
-  size_t trailing_renderer_missed_callback_count_{0};
-  size_t mixing_renderer_callback_count_{0};
-  size_t mixing_renderer_missed_callback_count_{0};
-  size_t mixing_trailing_renderer_missed_callback_count_{0};
+  // Used for logging.
+  size_t renderer_missed_callback_count_ = 0;
 
   // The maximum amount of time to wait for data from the renderer.  Calculated
   // from the parameters given at construction.
@@ -106,6 +107,8 @@ class SyncReader : public OutputController::SyncReader {
   // The index of the audio buffer we're expecting to be sent from the renderer;
   // used to block with timeout for audio data.
   uint32_t buffer_index_{0};
+
+  std::unique_ptr<OutputGlitchCounter> glitch_counter_;
 };
 
 }  // namespace audio

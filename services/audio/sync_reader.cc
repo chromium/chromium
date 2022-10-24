@@ -22,79 +22,9 @@
 #include "media/audio/audio_device_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
+#include "services/audio/output_glitch_counter.h"
 
 using media::AudioLatency;
-
-namespace {
-
-// Used to log if any audio glitches have been detected during an audio session.
-// Elements in this enum should not be added, deleted or rearranged.
-enum class AudioGlitchResult {
-  kNoGlitches = 0,
-  kGlitches = 1,
-  kMaxValue = kGlitches
-};
-
-void LogPerLatencyGlitchUma(AudioLatency::LatencyType latency,
-                            int renderer_missed_callback_count,
-                            int renderer_callback_count,
-                            bool mixing) {
-  DCHECK_LE(renderer_missed_callback_count, renderer_callback_count);
-
-  auto LatencyToString = [](AudioLatency::LatencyType latency) {
-    switch (latency) {
-      case AudioLatency::LATENCY_EXACT_MS:
-        return "LatencyExactMs";
-      case AudioLatency::LATENCY_INTERACTIVE:
-        return "LatencyInteractive";
-      case AudioLatency::LATENCY_RTC:
-        return "LatencyRtc";
-      case AudioLatency::LATENCY_PLAYBACK:
-        return "LatencyPlayback";
-      default:
-        return "LatencyUnknown";
-    }
-  };
-
-  const std::string suffix = LatencyToString(latency);
-
-  if (!mixing) {
-    base::UmaHistogramEnumeration("Media.AudioRendererAudioGlitches2." + suffix,
-                                  (renderer_missed_callback_count > 0)
-                                      ? AudioGlitchResult::kGlitches
-                                      : AudioGlitchResult::kNoGlitches);
-  }
-  const int kPermilleScaling = 1000;
-  // 10%: if we have more that 10% of callbacks having issues, the details are
-  // not very interesting any more, so we just log all those cases together to
-  // have a better resolution for lower values.
-  const int kHistogramRange = kPermilleScaling / 10;
-
-  // 30 s for 10 ms buffers (RTC streams)/ 1 minute for 20 ms buffers (media
-  // playback).
-  const int kShortStreamMaxCallbackCount = 3000;
-
-  if (renderer_callback_count <= 0)
-    return;
-
-  int missed_permille = std::ceil(
-      kPermilleScaling * static_cast<double>(renderer_missed_callback_count) /
-      renderer_callback_count);
-
-  std::string histogram_name = base::StrCat(
-      {"Media.AudioRendererMissedDeadline2.", mixing ? "Mixing." : "",
-       (renderer_callback_count < kShortStreamMaxCallbackCount) ? "Short"
-                                                                : "Long"});
-  base::UmaHistogramCustomCounts(histogram_name,
-                                 std::min(missed_permille, kHistogramRange), 0,
-                                 kHistogramRange + 1, 100);
-
-  base::UmaHistogramCustomCounts(histogram_name + "." + suffix,
-                                 std::min(missed_permille, kHistogramRange), 0,
-                                 kHistogramRange + 1, 100);
-}
-
-}  // namespace
 
 namespace audio {
 
@@ -112,13 +42,24 @@ SyncReader::SyncReader(
     base::RepeatingCallback<void(const std::string&)> log_callback,
     const media::AudioParameters& params,
     base::CancelableSyncSocket* foreign_socket)
+    : SyncReader(std::move(log_callback),
+                 params,
+                 foreign_socket,
+                 std::make_unique<OutputGlitchCounter>(params.latency_tag())) {}
+
+SyncReader::SyncReader(
+    base::RepeatingCallback<void(const std::string&)> log_callback,
+    const media::AudioParameters& params,
+    base::CancelableSyncSocket* foreign_socket,
+    std::unique_ptr<OutputGlitchCounter> glitch_counter)
     : log_callback_(std::move(log_callback)),
       latency_tag_(params.latency_tag()),
       mute_audio_for_testing_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kMuteAudio)),
       output_bus_buffer_size_(
           media::AudioBus::CalculateMemorySize(params.channels(),
-                                               params.frames_per_buffer())) {
+                                               params.frames_per_buffer())),
+      glitch_counter_(std::move(glitch_counter)) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   maximum_wait_time_ = params.GetBufferDuration() / 2;
@@ -166,60 +107,16 @@ SyncReader::SyncReader(
 }
 
 SyncReader::~SyncReader() {
-  DCHECK_GE(renderer_callback_count_, mixing_renderer_callback_count_);
-
-  if (!renderer_callback_count_)
-    return;
-
-  // Subtract 'trailing' count of callbacks missed just before the destructor
-  // call. This happens if the renderer process was killed or e.g. the page
-  // refreshed while the output device was open etc.
-  // This trims off the end of both the missed and total counts so that we
-  // preserve the proportion of counts before the teardown period.
-  DCHECK_LE(trailing_renderer_missed_callback_count_,
-            renderer_missed_callback_count_);
-  DCHECK_LE(trailing_renderer_missed_callback_count_, renderer_callback_count_);
-
-  renderer_missed_callback_count_ -= trailing_renderer_missed_callback_count_;
-  renderer_callback_count_ -= trailing_renderer_missed_callback_count_;
-
-  DCHECK_LE(mixing_trailing_renderer_missed_callback_count_,
-            mixing_renderer_missed_callback_count_);
-  DCHECK_LE(mixing_trailing_renderer_missed_callback_count_,
-            mixing_renderer_callback_count_);
-
-  mixing_renderer_missed_callback_count_ -=
-      mixing_trailing_renderer_missed_callback_count_;
-  mixing_renderer_callback_count_ -=
-      mixing_trailing_renderer_missed_callback_count_;
-
-  DCHECK_GE(renderer_callback_count_, mixing_renderer_callback_count_);
-
-  if (!renderer_callback_count_)
-    return;
-
-  base::UmaHistogramEnumeration("Media.AudioRendererAudioGlitches",
-                                (renderer_missed_callback_count_ > 0)
-                                    ? AudioGlitchResult::kGlitches
-                                    : AudioGlitchResult::kNoGlitches);
+  OutputGlitchCounter::LogStats log_stats = glitch_counter_->GetLogStats();
   int percentage_missed =
-      100.0 * renderer_missed_callback_count_ / renderer_callback_count_;
-
-  base::UmaHistogramPercentage("Media.AudioRendererMissedDeadline",
-                               percentage_missed);
-
-  LogPerLatencyGlitchUma(latency_tag_, renderer_missed_callback_count_,
-                         renderer_callback_count_, /*mixing=*/false);
-
-  LogPerLatencyGlitchUma(latency_tag_, mixing_renderer_missed_callback_count_,
-                         mixing_renderer_callback_count_, /*mixing=*/true);
+      100.0 * log_stats.miss_count_ / log_stats.callback_count_;
 
   TRACE_EVENT_INSTANT1("audio", "~SyncReader", TRACE_EVENT_SCOPE_THREAD,
                        "Missed callback percentage", percentage_missed);
 
   log_callback_.Run(base::StringPrintf(
       "ASR: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
-      renderer_missed_callback_count_, renderer_callback_count_));
+      log_stats.miss_count_, log_stats.callback_count_));
 }
 
 bool SyncReader::IsValid() const {
@@ -283,17 +180,10 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
 }
 
 void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
-  ++renderer_callback_count_;
-  if (is_mixing)
-    ++mixing_renderer_callback_count_;
-
-  if (!WaitUntilDataIsReady(is_mixing)) {
-    ++trailing_renderer_missed_callback_count_;
+  bool missed_callback = !WaitUntilDataIsReady(is_mixing);
+  glitch_counter_->ReportMissedCallback(missed_callback, is_mixing);
+  if (missed_callback) {
     ++renderer_missed_callback_count_;
-    if (is_mixing) {
-      ++mixing_trailing_renderer_missed_callback_count_;
-      ++mixing_renderer_missed_callback_count_;
-    }
     if (renderer_missed_callback_count_ <= 100 &&
         renderer_missed_callback_count_ % 10 == 0) {
       LOG(WARNING) << "SyncReader::Read timed out, audio glitch count="
@@ -304,9 +194,6 @@ void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
     dest->Zero();
     return;
   }
-
-  trailing_renderer_missed_callback_count_ = 0;
-  mixing_trailing_renderer_missed_callback_count_ = 0;
 
   // Zeroed buffers may be discarded immediately when outputing compressed
   // bitstream.

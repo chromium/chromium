@@ -27,7 +27,11 @@ enum class AudioGlitchResult {
 
 InputGlitchCounter::InputGlitchCounter(
     base::RepeatingCallback<void(const std::string&)> log_callback)
-    : log_callback_(std::move(log_callback)) {}
+    : log_callback_(std::move(log_callback)) {
+  // Reserve one minutes worth of complete samples (assuming 10ms buffers) to
+  // hopefully avoid allocating them on the realtime thread.
+  complete_samples_.reserve(6);
+}
 
 InputGlitchCounter::~InputGlitchCounter() {
   // Subtract 'trailing' error counts that will happen if the renderer process
