@@ -409,7 +409,8 @@ void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
 
 void DesksClient::GetAllDesks(GetAllDesksCallback callback) {
   std::vector<const ash::Desk*> desks;
-  desks_controller_->GetAllDesks(desks);
+  for (const auto& desk : desks_controller_->desks())
+    desks.push_back(desk.get());
   // There should be at least one default desk.
   std::move(callback).Run(desks, desks.empty() ? kCantGetAllDesksError : "");
 }

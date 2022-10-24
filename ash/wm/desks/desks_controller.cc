@@ -1954,11 +1954,6 @@ const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
   return nullptr;
 }
 
-void DesksController::GetAllDesks(std::vector<const Desk*>& out_desks) const {
-  for (const auto& d : desks_)
-    out_desks.push_back(d.get());
-}
-
 void DesksController::ReportNumberOfWindowsPerDeskHistogram() const {
   DCHECK_LE(desks_.size(), desks_util::kDesksUpperLimit);
   for (size_t i = 0; i < desks_.size(); ++i) {

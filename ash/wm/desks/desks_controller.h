@@ -286,9 +286,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   int GetDeskIndex(const Desk* desk) const;
 
-  // Fills `out_desks` with all the existing desks.
-  void GetAllDesks(std::vector<const Desk*>& out_desks) const;
-
   // Gets the container of the desk at |desk_index| in a specific screen with a
   // |target_root|. If desk_index is invalid, it returns nullptr.
   aura::Window* GetDeskContainer(aura::Window* target_root, int desk_index);
