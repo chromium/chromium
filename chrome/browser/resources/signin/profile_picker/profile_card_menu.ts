@@ -104,6 +104,11 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         ],
       },
 
+      moreActionsButtonAriaLabel_: {
+        type: String,
+        computed: 'computeMoreActionsButtonAriaLabel_(profileState)',
+      },
+
       removeWarningText_: {
         type: String,
         // <if expr="chromeos_lacros">
@@ -161,6 +166,11 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
           .addEventListener('click', () => this.onAccountSettingsClicked_());
     });
     // </if>
+  }
+
+  private computeMoreActionsButtonAriaLabel_(): string {
+    return this.i18n(
+        'profileMenuAriaLabel', this.profileState.localProfileName);
   }
 
   // <if expr="not chromeos_lacros">

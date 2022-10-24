@@ -112,6 +112,8 @@ void AddStrings(content::WebUIDataSource* html_source) {
     {"menu", IDS_MENU},
     {"cancel", IDS_CANCEL},
     {"profileMenuName", IDS_SETTINGS_MORE_ACTIONS},
+    {"profileMenuAriaLabel",
+     IDS_PROFILE_PICKER_PROFILE_MORE_ACTIONS_ARIA_LABEL},
     {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
     {"profileMenuCustomizeText",
      IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},

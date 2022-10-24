@@ -590,6 +590,9 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL" desc="Not displayed. Used by screen readers to describe the input used to rename the profile.">
       Rename your profile
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_MORE_ACTIONS_ARIA_LABEL" desc="Label for a button that opens a menu of additional options for a given profile. Not displayed.">
+      More actions for <ph name="PROFILE_NAME">$1<ex>User</ex></ph>
+    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT" desc="Text of the remove button in profile card menu.">
       Delete
     </message>
