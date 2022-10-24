@@ -139,7 +139,7 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     bool use_fallback,
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : noop_lock_(std::make_unique<NoopLock>()),
+    : noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_surface_(install_surface),
       web_contents_(contents),
       bypass_service_worker_check_(bypass_service_worker_check),
@@ -153,13 +153,13 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
 
 FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
 
-Lock& FetchManifestAndInstallCommand::lock() const {
-  DCHECK(noop_lock_ || app_lock_);
+LockDescription& FetchManifestAndInstallCommand::lock_description() const {
+  DCHECK(noop_lock_description_ || app_lock_description_);
 
-  if (noop_lock_ != nullptr)
-    return *noop_lock_;
+  if (noop_lock_description_)
+    return *noop_lock_description_;
 
-  return *app_lock_;
+  return *app_lock_description_;
 }
 
 void FetchManifestAndInstallCommand::Start() {
@@ -293,12 +293,13 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 
   app_id_ = GenerateAppId(web_app_info_->manifest_id, web_app_info_->start_url);
 
-  app_lock_ = command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_), {app_id_},
-      base::BindOnce(
-          &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
-          weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
-          skip_page_favicons));
+  app_lock_description_ =
+      command_manager()->lock_manager().UpgradeAndAcquireLock(
+          std::move(noop_lock_description_), {app_id_},
+          base::BindOnce(&FetchManifestAndInstallCommand::
+                             CheckForPlayStoreIntentOrGetIcons,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
+                         skip_page_favicons));
 }
 
 void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(

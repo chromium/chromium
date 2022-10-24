@@ -8,7 +8,8 @@
 
 namespace web_app {
 
-NoopLock::NoopLock() : Lock({}, Lock::Type::kNoOp) {}
-NoopLock::~NoopLock() = default;
+NoopLockDescription::NoopLockDescription()
+    : LockDescription({}, LockDescription::Type::kNoOp) {}
+NoopLockDescription::~NoopLockDescription() = default;
 
 }  // namespace web_app

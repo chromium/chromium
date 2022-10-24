@@ -28,8 +28,10 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback)
-    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>(
-          {GenerateAppId(install_info->manifest_id, install_info->start_url)})),
+    : lock_description_(
+          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+              {GenerateAppId(install_info->manifest_id,
+                             install_info->start_url)})),
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
       install_info_(std::move(install_info)),
@@ -45,8 +47,10 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
     const WebAppInstallParams& install_params)
-    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>(
-          {GenerateAppId(install_info->manifest_id, install_info->start_url)})),
+    : lock_description_(
+          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+              {GenerateAppId(install_info->manifest_id,
+                             install_info->start_url)})),
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
       install_info_(std::move(install_info)),
@@ -64,8 +68,8 @@ InstallFromInfoCommand::InstallFromInfoCommand(
 }
 InstallFromInfoCommand::~InstallFromInfoCommand() = default;
 
-Lock& InstallFromInfoCommand::lock() const {
-  return *lock_;
+LockDescription& InstallFromInfoCommand::lock_description() const {
+  return *lock_description_;
 }
 
 void InstallFromInfoCommand::Start() {

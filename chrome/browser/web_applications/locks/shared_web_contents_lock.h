@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_LOCK_H_
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/locks/lock.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace web_app {
 
@@ -17,10 +22,23 @@ namespace web_app {
 // when the callback given to the WebAppLockManager is called. Destruction of
 // this class will release the lock or cancel the lock request if it is not
 // acquired yet.
-class SharedWebContentsLock : public Lock {
+class SharedWebContentsLockDescription : public LockDescription {
  public:
-  SharedWebContentsLock();
+  SharedWebContentsLockDescription();
+  ~SharedWebContentsLockDescription();
+};
+
+class SharedWebContentsLock {
+ public:
+  explicit SharedWebContentsLock(content::WebContents& shared_web_contents);
   ~SharedWebContentsLock();
+
+  content::WebContents& shared_web_contents() const {
+    return *shared_web_contents_;
+  }
+
+ private:
+  raw_ref<content::WebContents> shared_web_contents_;
 };
 
 }  // namespace web_app

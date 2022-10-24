@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_FULL_SYSTEM_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_FULL_SYSTEM_LOCK_H_
 
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 
 namespace web_app {
+
+class WebAppRegistrar;
+class WebAppSyncBridge;
 
 // This locks the whole system. No other locks can be held when this lock is
 // acquired.
@@ -16,9 +20,15 @@ namespace web_app {
 // when the callback given to the WebAppLockManager is called. Destruction of
 // this class will release the lock or cancel the lock request if it is not
 // acquired yet.
-class FullSystemLock : public Lock {
+class FullSystemLockDescription : public LockDescription {
  public:
-  FullSystemLock();
+  FullSystemLockDescription();
+  ~FullSystemLockDescription();
+};
+
+class FullSystemLock : public AppLock {
+ public:
+  FullSystemLock(WebAppRegistrar& registrar, WebAppSyncBridge& sync_bridge);
   ~FullSystemLock();
 };
 

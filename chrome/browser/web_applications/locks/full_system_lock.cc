@@ -4,11 +4,17 @@
 
 #include "chrome/browser/web_applications/locks/full_system_lock.h"
 
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 
 namespace web_app {
 
-FullSystemLock::FullSystemLock() : Lock({}, Lock::Type::kFullSystem) {}
-FullSystemLock::~FullSystemLock() = default;
+FullSystemLockDescription::FullSystemLockDescription()
+    : LockDescription({}, LockDescription::Type::kFullSystem) {}
+FullSystemLockDescription::~FullSystemLockDescription() = default;
 
+FullSystemLock::FullSystemLock(WebAppRegistrar& registrar,
+                               WebAppSyncBridge& sync_bridge)
+    : AppLock(registrar, sync_bridge) {}
+FullSystemLock::~FullSystemLock() = default;
 }  // namespace web_app

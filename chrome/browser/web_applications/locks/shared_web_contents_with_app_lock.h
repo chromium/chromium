@@ -6,10 +6,18 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 
 #include "base/containers/flat_set.h"
-#include "chrome/browser/web_applications/locks/lock.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace web_app {
+
+class WebAppRegistrar;
+class WebAppSyncBridge;
 
 // This locks both the background shared web contents AND the given app ids. The
 // background web contents is used by the WebAppProvider system to do operations
@@ -20,9 +28,18 @@ namespace web_app {
 // when the callback given to the WebAppLockManager is called. Destruction of
 // this class will release the lock or cancel the lock request if it is not
 // acquired yet.
-class SharedWebContentsWithAppLock : public Lock {
+class SharedWebContentsWithAppLockDescription : public LockDescription {
  public:
-  explicit SharedWebContentsWithAppLock(base::flat_set<AppId> app_ids);
+  explicit SharedWebContentsWithAppLockDescription(
+      base::flat_set<AppId> app_ids);
+  ~SharedWebContentsWithAppLockDescription();
+};
+
+class SharedWebContentsWithAppLock : public SharedWebContentsLock, AppLock {
+ public:
+  SharedWebContentsWithAppLock(content::WebContents& shared_web_contents,
+                               WebAppRegistrar& registrar,
+                               WebAppSyncBridge& sync_bridge);
   ~SharedWebContentsWithAppLock();
 };
 

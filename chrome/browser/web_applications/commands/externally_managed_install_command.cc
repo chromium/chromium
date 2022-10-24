@@ -33,7 +33,7 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
     base::WeakPtr<content::WebContents> contents,
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : noop_lock_(std::make_unique<NoopLock>()),
+    : noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_params_(
           ConvertExternalInstallOptionsToParams(external_install_options)),
       install_surface_(ConvertExternalInstallSourceToInstallSource(
@@ -54,13 +54,13 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
 
 ExternallyManagedInstallCommand::~ExternallyManagedInstallCommand() = default;
 
-Lock& ExternallyManagedInstallCommand::lock() const {
-  DCHECK(noop_lock_ || app_lock_);
+LockDescription& ExternallyManagedInstallCommand::lock_description() const {
+  DCHECK(noop_lock_description_ || app_lock_description_);
 
-  if (noop_lock_ != nullptr)
-    return *noop_lock_;
+  if (noop_lock_description_)
+    return *noop_lock_description_;
 
-  return *app_lock_;
+  return *app_lock_description_;
 }
 
 void ExternallyManagedInstallCommand::Start() {
@@ -183,12 +183,12 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
   data_retriever_->GetIcons(
       web_contents_.get(), std::move(icon_urls), skip_page_favicons,
-      base::BindOnce(
-          &ExternallyManagedInstallCommand::OnIconsRetrievedUpgradeLock,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&ExternallyManagedInstallCommand::
+                         OnIconsRetrievedUpgradeLockDescription,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void ExternallyManagedInstallCommand::OnIconsRetrievedUpgradeLock(
+void ExternallyManagedInstallCommand::OnIconsRetrievedUpgradeLockDescription(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
@@ -205,14 +205,16 @@ void ExternallyManagedInstallCommand::OnIconsRetrievedUpgradeLock(
   install_error_log_entry_.LogDownloadedIconsErrors(
       *web_app_info_, result, icons_map, icons_http_results);
 
-  app_lock_ = command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_), {app_id_},
-      base::BindOnce(
-          &ExternallyManagedInstallCommand::OnLockUpgradedFinalizeInstall,
-          weak_factory_.GetWeakPtr()));
+  app_lock_description_ =
+      command_manager()->lock_manager().UpgradeAndAcquireLock(
+          std::move(noop_lock_description_), {app_id_},
+          base::BindOnce(&ExternallyManagedInstallCommand::
+                             OnLockDescriptionUpgradedFinalizeInstall,
+                         weak_factory_.GetWeakPtr()));
 }
 
-void ExternallyManagedInstallCommand::OnLockUpgradedFinalizeInstall() {
+void ExternallyManagedInstallCommand::
+    OnLockDescriptionUpgradedFinalizeInstall() {
   if (on_lock_upgraded_callback_for_testing_)
     std::move(on_lock_upgraded_callback_for_testing_).Run();
 

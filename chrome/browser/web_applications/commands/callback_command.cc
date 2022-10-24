@@ -13,10 +13,12 @@
 
 namespace web_app {
 
-CallbackCommand::CallbackCommand(std::unique_ptr<Lock> lock,
-                                 base::OnceClosure callback)
-    : lock_(std::move(lock)), callback_(std::move(callback)) {
-  DCHECK(lock_);
+CallbackCommand::CallbackCommand(
+    std::unique_ptr<LockDescription> lock_description,
+    base::OnceClosure callback)
+    : lock_description_(std::move(lock_description)),
+      callback_(std::move(callback)) {
+  DCHECK(lock_description_);
 }
 
 CallbackCommand::~CallbackCommand() = default;
@@ -26,8 +28,8 @@ void CallbackCommand::Start() {
                                          base::BindOnce(std::move(callback_)));
 }
 
-Lock& CallbackCommand::lock() const {
-  return *lock_;
+LockDescription& CallbackCommand::lock_description() const {
+  return *lock_description_;
 }
 
 base::Value CallbackCommand::ToDebugValue() const {

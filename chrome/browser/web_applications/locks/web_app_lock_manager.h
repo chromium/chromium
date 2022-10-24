@@ -14,11 +14,11 @@
 
 namespace web_app {
 
-class AppLock;
-class Lock;
-class NoopLock;
-class SharedWebContentsLock;
-class SharedWebContentsWithAppLock;
+class AppLockDescription;
+class LockDescription;
+class NoopLockDescription;
+class SharedWebContentsLockDescription;
+class SharedWebContentsWithAppLockDescription;
 
 // This class handles acquiring and upgrading locks in the WebAppProvider
 // system.
@@ -35,18 +35,18 @@ class WebAppLockManager {
   // complete. This call will CHECK-fail if the lock has already been used in an
   // `AcquireLock` call. The lock is considered released when the `lock` is
   // destroyed.
-  void AcquireLock(Lock& lock, base::OnceClosure on_lock_acquired);
+  void AcquireLock(LockDescription& lock, base::OnceClosure on_lock_acquired);
 
   // Upgrades the given lock to a new one, and will call `on_lock_acquired` on
   // when the new lock has been acquired. This call will CHECK-fail if `lock`
   // was not already used in a call to `AcquireLock`.
-  std::unique_ptr<SharedWebContentsWithAppLock> UpgradeAndAcquireLock(
-      std::unique_ptr<SharedWebContentsLock> lock,
-      const base::flat_set<AppId>& app_ids,
-      base::OnceClosure on_lock_acquired);
+  std::unique_ptr<SharedWebContentsWithAppLockDescription>
+  UpgradeAndAcquireLock(std::unique_ptr<SharedWebContentsLockDescription> lock,
+                        const base::flat_set<AppId>& app_ids,
+                        base::OnceClosure on_lock_acquired);
 
-  std::unique_ptr<AppLock> UpgradeAndAcquireLock(
-      std::unique_ptr<NoopLock> lock,
+  std::unique_ptr<AppLockDescription> UpgradeAndAcquireLock(
+      std::unique_ptr<NoopLockDescription> lock,
       const base::flat_set<AppId>& app_ids,
       base::OnceClosure on_lock_acquired);
 

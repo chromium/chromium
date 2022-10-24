@@ -43,13 +43,16 @@ using ::testing::StrictMock;
 
 class MockCommand : public WebAppCommand {
  public:
-  explicit MockCommand(std::unique_ptr<Lock> lock) : lock_(std::move(lock)) {}
+  explicit MockCommand(std::unique_ptr<LockDescription> lock_description)
+      : lock_description_(std::move(lock_description)) {}
 
   MOCK_METHOD(void, OnDestruction, ());
 
   ~MockCommand() override { OnDestruction(); }
 
-  Lock& lock() const override { return *lock_; }
+  LockDescription& lock_description() const override {
+    return *lock_description_;
+  }
 
   MOCK_METHOD(void, Start, (), (override));
   MOCK_METHOD(void, OnSyncSourceRemoved, (), (override));
@@ -73,7 +76,7 @@ class MockCommand : public WebAppCommand {
   }
 
  private:
-  std::unique_ptr<Lock> lock_;
+  std::unique_ptr<LockDescription> lock_description_;
 
   base::WeakPtrFactory<MockCommand> weak_factory_{this};
 };
@@ -211,7 +214,7 @@ TEST_F(WebAppCommandManagerTest, SimpleCommand) {
   // Simple test of a command enqueued, starting, and completing.
   testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
   auto mock_command = std::make_unique<::testing::StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command_ptr = mock_command->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(mock_command));
@@ -235,7 +238,7 @@ TEST_F(WebAppCommandManagerTest, CompleteInStart) {
   // method.
   testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
   auto command = std::make_unique<::testing::StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command_ptr = command->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command));
@@ -255,9 +258,11 @@ TEST_F(WebAppCommandManagerTest, CompleteInStart) {
 
 TEST_F(WebAppCommandManagerTest, TwoQueues) {
   auto command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}));
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId}));
   auto command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId2}));
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId2}));
   base::WeakPtr<MockCommand> command1_ptr = command1->AsWeakPtr();
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
 
@@ -268,9 +273,10 @@ TEST_F(WebAppCommandManagerTest, TwoQueues) {
 
 TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
   auto command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   auto command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}));
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId}));
   base::WeakPtr<MockCommand> command1_ptr = command1->AsWeakPtr();
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
 
@@ -280,9 +286,9 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
   CheckCommandsRunInOrder(command1_ptr, command2_ptr);
 
   command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<SharedWebContentsLock>());
+      std::make_unique<SharedWebContentsLockDescription>());
   command1_ptr = command1->AsWeakPtr();
   command2_ptr = command2->AsWeakPtr();
 
@@ -297,9 +303,10 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
 
   url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}));
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId}));
   command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<SharedWebContentsLock>());
+      std::make_unique<SharedWebContentsLockDescription>());
   command1_ptr = command1->AsWeakPtr();
   command2_ptr = command2->AsWeakPtr();
 
@@ -313,11 +320,13 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
 
 TEST_F(WebAppCommandManagerTest, SingleAppQueue) {
   auto command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}));
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId}));
   base::WeakPtr<MockCommand> command1_ptr = command1->AsWeakPtr();
 
   auto command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}));
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId}));
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
@@ -327,11 +336,11 @@ TEST_F(WebAppCommandManagerTest, SingleAppQueue) {
 
 TEST_F(WebAppCommandManagerTest, GlobalQueue) {
   auto command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command1_ptr = command1->AsWeakPtr();
 
   auto command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
@@ -341,11 +350,11 @@ TEST_F(WebAppCommandManagerTest, GlobalQueue) {
 
 TEST_F(WebAppCommandManagerTest, BackgroundWebContentsQueue) {
   auto command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<SharedWebContentsLock>());
+      std::make_unique<SharedWebContentsLockDescription>());
   base::WeakPtr<MockCommand> command1_ptr = command1->AsWeakPtr();
 
   auto command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<SharedWebContentsLock>());
+      std::make_unique<SharedWebContentsLockDescription>());
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
 
   url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
@@ -357,7 +366,7 @@ TEST_F(WebAppCommandManagerTest, BackgroundWebContentsQueue) {
 
 TEST_F(WebAppCommandManagerTest, ShutdownPreStartCommand) {
   auto command = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command_ptr = command->AsWeakPtr();
   manager().ScheduleCommand(std::move(command));
   EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
@@ -367,7 +376,7 @@ TEST_F(WebAppCommandManagerTest, ShutdownPreStartCommand) {
 TEST_F(WebAppCommandManagerTest, ShutdownStartedCommand) {
   testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
   auto mock_command = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command_ptr = mock_command->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(mock_command));
@@ -389,11 +398,11 @@ TEST_F(WebAppCommandManagerTest, ShutdownStartedCommand) {
 
 TEST_F(WebAppCommandManagerTest, ShutdownQueuedCommand) {
   auto command1 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command1_ptr = command1->AsWeakPtr();
 
   auto command2 = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
@@ -411,7 +420,7 @@ TEST_F(WebAppCommandManagerTest, ShutdownQueuedCommand) {
 TEST_F(WebAppCommandManagerTest, OnShutdownCallsCompleteAndDestruct) {
   testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
   auto command = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<FullSystemLock>());
+      std::make_unique<FullSystemLockDescription>());
   base::WeakPtr<MockCommand> command_ptr = command->AsWeakPtr();
   manager().ScheduleCommand(std::move(command));
   {
@@ -435,7 +444,8 @@ TEST_F(WebAppCommandManagerTest, OnShutdownCallsCompleteAndDestruct) {
 TEST_F(WebAppCommandManagerTest, NotifySyncCallsCompleteAndDestruct) {
   testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
   auto command = std::make_unique<StrictMock<MockCommand>>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}));
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId}));
   base::WeakPtr<MockCommand> command_ptr = command->AsWeakPtr();
   manager().ScheduleCommand(std::move(command));
   {
@@ -471,7 +481,7 @@ TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
         },
         app_id, barrier);
     manager().ScheduleCommand(std::make_unique<CallbackCommand>(
-        std::make_unique<AppLock, base::flat_set<AppId>>({app_id}),
+        std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
         std::move(callback)));
   }
   loop.Run();
@@ -479,12 +489,13 @@ TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
 
 TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
   auto command1 = std::make_unique<MockCommand>(
-      std::make_unique<SharedWebContentsWithAppLock, base::flat_set<AppId>>(
-          {kTestAppId}));
+      std::make_unique<SharedWebContentsWithAppLockDescription,
+                       base::flat_set<AppId>>({kTestAppId}));
   auto command2 = std::make_unique<MockCommand>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}));
-  auto command3 =
-      std::make_unique<MockCommand>(std::make_unique<SharedWebContentsLock>());
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId}));
+  auto command3 = std::make_unique<MockCommand>(
+      std::make_unique<SharedWebContentsLockDescription>());
   base::WeakPtr<MockCommand> command1_ptr = command1->AsWeakPtr();
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
   base::WeakPtr<MockCommand> command3_ptr = command3->AsWeakPtr();
@@ -542,10 +553,11 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
 TEST_F(WebAppCommandManagerTest, ToDebugValue) {
   base::RunLoop loop;
   manager().ScheduleCommand(std::make_unique<CallbackCommand>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId}),
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>({kTestAppId}),
       base::BindLambdaForTesting([&]() { loop.Quit(); })));
   manager().ScheduleCommand(std::make_unique<CallbackCommand>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({kTestAppId2}),
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+          {kTestAppId2}),
       base::DoNothing()));
   loop.Run();
   manager().ToDebugValue();

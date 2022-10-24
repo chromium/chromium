@@ -4,13 +4,26 @@
 
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 
 namespace web_app {
 
+SharedWebContentsWithAppLockDescription::
+    SharedWebContentsWithAppLockDescription(base::flat_set<AppId> app_ids)
+    : LockDescription(std::move(app_ids),
+                      LockDescription::Type::kAppAndWebContents) {}
+SharedWebContentsWithAppLockDescription::
+    ~SharedWebContentsWithAppLockDescription() = default;
+
 SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
-    base::flat_set<AppId> app_ids)
-    : Lock(std::move(app_ids), Lock::Type::kAppAndWebContents) {}
+    content::WebContents& shared_web_contents,
+    WebAppRegistrar& registrar,
+    WebAppSyncBridge& sync_bridge)
+    : SharedWebContentsLock(shared_web_contents),
+      AppLock(registrar, sync_bridge) {}
+
 SharedWebContentsWithAppLock::~SharedWebContentsWithAppLock() = default;
 
 }  // namespace web_app

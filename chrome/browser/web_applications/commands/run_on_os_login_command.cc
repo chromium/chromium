@@ -62,7 +62,9 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
     absl::optional<RunOnOsLoginMode> login_mode,
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
-    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>({app_id})),
+    : lock_description_(
+          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+              {app_id})),
       app_id_(app_id),
       registrar_(registrar),
       os_integration_manager_(os_integration_manager),
@@ -73,8 +75,8 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
 
 RunOnOsLoginCommand::~RunOnOsLoginCommand() = default;
 
-Lock& RunOnOsLoginCommand::lock() const {
-  return *lock_;
+LockDescription& RunOnOsLoginCommand::lock_description() const {
+  return *lock_description_;
 }
 
 void RunOnOsLoginCommand::Start() {

@@ -25,7 +25,8 @@ class WebContents;
 
 namespace web_app {
 
-class NoopLock;
+class LockDescription;
+class NoopLockDescription;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 
@@ -40,7 +41,7 @@ class ExternallyManagedInstallCommand : public WebAppCommand {
       std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~ExternallyManagedInstallCommand() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
 
   void Start() override;
   void OnSyncSourceRemoved() override;
@@ -59,20 +60,20 @@ class ExternallyManagedInstallCommand : public WebAppCommand {
                                     const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
                                     bool is_installable);
-  void OnIconsRetrievedUpgradeLock(
+  void OnIconsRetrievedUpgradeLockDescription(
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
 
-  void OnLockUpgradedFinalizeInstall();
+  void OnLockDescriptionUpgradedFinalizeInstall();
 
   void OnInstallFinalized(const AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
-  std::unique_ptr<NoopLock> noop_lock_;
+  std::unique_ptr<NoopLockDescription> noop_lock_description_;
 
-  std::unique_ptr<AppLock> app_lock_ = nullptr;
+  std::unique_ptr<AppLockDescription> app_lock_description_ = nullptr;
 
   WebAppInstallParams install_params_;
   webapps::WebappInstallSource install_surface_;

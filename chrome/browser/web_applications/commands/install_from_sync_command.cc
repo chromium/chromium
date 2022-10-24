@@ -79,9 +79,9 @@ InstallFromSyncCommand::InstallFromSyncCommand(
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     const Params& params,
     OnceInstallCallback install_callback)
-    : lock_(
-          std::make_unique<SharedWebContentsWithAppLock, base::flat_set<AppId>>(
-              {params.app_id})),
+    : lock_description_(
+          std::make_unique<SharedWebContentsWithAppLockDescription,
+                           base::flat_set<AppId>>({params.app_id})),
       url_loader_(url_loader),
       profile_(profile),
       finalizer_(finalizer),
@@ -129,8 +129,8 @@ void InstallFromSyncCommand::OnSyncSourceRemoved() {
                          webapps::InstallResultCode::kHaltedBySyncUninstall);
 }
 
-Lock& InstallFromSyncCommand::lock() const {
-  return *lock_;
+LockDescription& InstallFromSyncCommand::lock_description() const {
+  return *lock_description_;
 }
 
 void InstallFromSyncCommand::Start() {

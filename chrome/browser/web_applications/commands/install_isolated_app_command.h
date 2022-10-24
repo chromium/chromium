@@ -32,7 +32,8 @@ class WebContents;
 
 namespace web_app {
 
-class AppLock;
+class AppLockDescription;
+class LockDescription;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 class WebAppUrlLoader;
@@ -89,7 +90,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
   ~InstallIsolatedAppCommand() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
 
   base::Value ToDebugValue() const override;
 
@@ -131,7 +132,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<AppLock> lock_;
+  std::unique_ptr<AppLockDescription> lock_description_;
 
   IsolatedWebAppUrlInfo isolation_info_;
   IsolationData isolation_data_;

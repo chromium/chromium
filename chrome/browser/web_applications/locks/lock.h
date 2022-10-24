@@ -22,7 +22,7 @@ namespace web_app {
 // `WebAppLockManager` to acquire the lock. The lock is acquired when the
 // callback given to the WebAppLockManager is called. Destruction of this class
 // will release the lock or cancel the lock request if it is not acquired yet.
-class Lock {
+class LockDescription {
  public:
   enum class Type {
     kNoOp,
@@ -32,13 +32,13 @@ class Lock {
     kFullSystem,
   };
 
-  Lock(Lock&&);
-  Lock& operator=(Lock&&);
+  LockDescription(LockDescription&&);
+  LockDescription& operator=(LockDescription&&);
 
-  Lock(const Lock&) = delete;
-  Lock& operator=(const Lock&) = delete;
+  LockDescription(const LockDescription&) = delete;
+  LockDescription& operator=(const LockDescription&) = delete;
 
-  ~Lock();
+  ~LockDescription();
 
   Type type() const { return type_; }
 
@@ -51,7 +51,7 @@ class Lock {
   bool HasLockBeenRequested() const { return !!holder_.get(); }
 
  protected:
-  explicit Lock(base::flat_set<AppId> app_ids, Type type);
+  explicit LockDescription(base::flat_set<AppId> app_ids, Type type);
 
  private:
   friend class WebAppLockManager;
@@ -62,11 +62,13 @@ class Lock {
     kMaxValue = kApp,
   };
 
+  // LockDescription owns the lockholder for `WebAppLockManager` to ensure
+  // LockDescription only request lock once. Can change?
   std::unique_ptr<content::PartitionedLockHolder> holder_;
   const base::flat_set<AppId> app_ids_{};
   const Type type_;
 
-  base::WeakPtrFactory<Lock> weak_factory_{this};
+  base::WeakPtrFactory<LockDescription> weak_factory_{this};
 };
 
 }  // namespace web_app

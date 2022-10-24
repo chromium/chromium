@@ -69,7 +69,7 @@ WebAppUninstallCommand::WebAppUninstallCommand(
     WebAppRegistrar* registrar,
     WebAppInstallManager* install_manager,
     WebAppTranslationManager* translation_manager)
-    : lock_(std::make_unique<FullSystemLock>()),
+    : lock_description_(std::make_unique<FullSystemLockDescription>()),
       app_id_(app_id),
       callback_(std::move(callback)),
       profile_prefs_(profile->GetPrefs()),
@@ -171,8 +171,8 @@ void WebAppUninstallCommand::OnShutdown() {
   return;
 }
 
-Lock& WebAppUninstallCommand::lock() const {
-  return *lock_;
+LockDescription& WebAppUninstallCommand::lock_description() const {
+  return *lock_description_;
 }
 
 base::Value WebAppUninstallCommand::ToDebugValue() const {

@@ -543,9 +543,10 @@ TEST_F(InstallIsolatedAppCommandTest, CommandLocksOnAppIdAndWebContents) {
       CreateIsolationDataDevProxy(), std::make_unique<TestWebAppUrlLoader>(),
       test_future.GetCallback());
   EXPECT_THAT(
-      command->lock(),
-      AllOf(Property(&Lock::type, Eq(Lock::Type::kApp)),
-            Property(&Lock::app_ids, UnorderedElementsAre(url_info.app_id()))));
+      command->lock_description(),
+      AllOf(Property(&LockDescription::type, Eq(LockDescription::Type::kApp)),
+            Property(&LockDescription::app_ids,
+                     UnorderedElementsAre(url_info.app_id()))));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,

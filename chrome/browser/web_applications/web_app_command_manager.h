@@ -95,11 +95,14 @@ class WebAppCommandManager {
  private:
   void AddValueToLog(base::Value value);
 
-  void OnLockAcquired(WebAppCommand::Id command_id);
+  void OnLockAcquired(WebAppCommand::Id command_id,
+                      base::OnceClosure start_command);
 
-  void StartCommandOrPrepareForLoad(WebAppCommand* command);
+  void StartCommandOrPrepareForLoad(WebAppCommand* command,
+                                    base::OnceClosure start_command);
 
   void OnAboutBlankLoadedForCommandStart(WebAppCommand* command,
+                                         base::OnceClosure start_command,
                                          WebAppUrlLoaderResult result);
 
   content::WebContents* EnsureWebContentsCreated();
@@ -107,6 +110,7 @@ class WebAppCommandManager {
   SEQUENCE_CHECKER(command_sequence_checker_);
 
   raw_ptr<Profile> profile_;
+
   // TODO(https://crbug.com/1329934): Figure out better ownership of this.
   // Perhaps set as subsystem?
   std::unique_ptr<WebAppUrlLoader> url_loader_;
@@ -118,7 +122,6 @@ class WebAppCommandManager {
   std::unique_ptr<WebAppLockManager> lock_manager_;
 
   raw_ptr<WebAppInstallManager> install_manager_;
-
   std::map<WebAppCommand::Id, std::unique_ptr<WebAppCommand>> commands_{};
 
   std::unique_ptr<base::RunLoop> run_loop_for_testing_;

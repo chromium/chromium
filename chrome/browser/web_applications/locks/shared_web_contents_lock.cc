@@ -8,8 +8,12 @@
 
 namespace web_app {
 
-SharedWebContentsLock::SharedWebContentsLock()
-    : Lock({}, Lock::Type::kBackgroundWebContents) {}
-SharedWebContentsLock::~SharedWebContentsLock() = default;
+SharedWebContentsLockDescription::SharedWebContentsLockDescription()
+    : LockDescription({}, LockDescription::Type::kBackgroundWebContents) {}
+SharedWebContentsLockDescription::~SharedWebContentsLockDescription() = default;
 
+SharedWebContentsLock::SharedWebContentsLock(
+    content::WebContents& shared_web_contents)
+    : shared_web_contents_(shared_web_contents) {}
+SharedWebContentsLock::~SharedWebContentsLock() = default;
 }  // namespace web_app

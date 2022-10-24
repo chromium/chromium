@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 
 #include "base/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -64,27 +65,27 @@ GetAppIdLocks(const base::flat_set<AppId>& app_ids) {
 }
 
 std::vector<content::PartitionedLockManager::PartitionedLockRequest>
-GetLockRequestsForLock(const Lock& lock) {
+GetLockRequestsForLock(const LockDescription& lock) {
   std::vector<content::PartitionedLockManager::PartitionedLockRequest> requests;
   switch (lock.type()) {
-    case Lock::Type::kNoOp:
+    case LockDescription::Type::kNoOp:
       requests = {
           GetSystemLock(content::PartitionedLockManager::LockType::kShared)};
       break;
-    case Lock::Type::kApp:
+    case LockDescription::Type::kApp:
       requests = GetAppIdLocks(lock.app_ids());
       requests.push_back(
           GetSystemLock(content::PartitionedLockManager::LockType::kShared));
       break;
-    case Lock::Type::kAppAndWebContents:
+    case LockDescription::Type::kAppAndWebContents:
       requests = GetAppIdLocks(lock.app_ids());
       ABSL_FALLTHROUGH_INTENDED;
-    case Lock::Type::kBackgroundWebContents:
+    case LockDescription::Type::kBackgroundWebContents:
       requests.push_back(
           GetSystemLock(content::PartitionedLockManager::LockType::kShared));
       requests.push_back(GetSharedWebContentsLock());
       break;
-    case Lock::Type::kFullSystem:
+    case LockDescription::Type::kFullSystem:
       requests = {
           GetSystemLock(content::PartitionedLockManager::LockType::kExclusive)};
       break;
@@ -102,31 +103,33 @@ bool WebAppLockManager::IsSharedWebContentsLockFree() {
          content::PartitionedLockManager::TestLockResult::kFree;
 }
 
-void WebAppLockManager::AcquireLock(Lock& lock,
+void WebAppLockManager::AcquireLock(LockDescription& lock_description,
                                     base::OnceClosure on_lock_acquired) {
-  CHECK(!lock.HasLockBeenRequested()) << "Cannot acquire a lock twice.";
+  CHECK(!lock_description.HasLockBeenRequested())
+      << "Cannot acquire a lock twice.";
   std::vector<content::PartitionedLockManager::PartitionedLockRequest>
-      requests = GetLockRequestsForLock(lock);
+      requests = GetLockRequestsForLock(lock_description);
   // TODO(dmurph): Create option for lock acquisition callbacks to always be
   // posted async. https://crbug.com/1354312
   auto posted_callback =
       base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
                      base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
                      std::move(on_lock_acquired));
-  lock.holder_ = std::make_unique<content::PartitionedLockHolder>();
-  lock_manager_.AcquireLocks(std::move(requests), lock.holder_->AsWeakPtr(),
+  lock_description.holder_ = std::make_unique<content::PartitionedLockHolder>();
+  lock_manager_.AcquireLocks(std::move(requests),
+                             lock_description.holder_->AsWeakPtr(),
                              std::move(posted_callback));
 }
 
-std::unique_ptr<SharedWebContentsWithAppLock>
+std::unique_ptr<SharedWebContentsWithAppLockDescription>
 WebAppLockManager::UpgradeAndAcquireLock(
-    std::unique_ptr<SharedWebContentsLock> lock,
+    std::unique_ptr<SharedWebContentsLockDescription> lock_description,
     const base::flat_set<AppId>& app_ids,
     base::OnceClosure on_lock_acquired) {
-  CHECK(lock->HasLockBeenRequested());
-  std::unique_ptr<SharedWebContentsWithAppLock> result_lock =
-      std::make_unique<SharedWebContentsWithAppLock>(app_ids);
-  result_lock->holder_ = std::move(lock->holder_);
+  CHECK(lock_description->HasLockBeenRequested());
+  std::unique_ptr<SharedWebContentsWithAppLockDescription> result_lock =
+      std::make_unique<SharedWebContentsWithAppLockDescription>(app_ids);
+  result_lock->holder_ = std::move(lock_description->holder_);
   // TODO(dmurph): Create option for lock acquisition callbacks to always be
   // posted async. https://crbug.com/1354312
   auto posted_callback =
@@ -136,16 +139,18 @@ WebAppLockManager::UpgradeAndAcquireLock(
   lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
                              result_lock->holder_->AsWeakPtr(),
                              std::move(posted_callback));
+
   return result_lock;
 }
 
-std::unique_ptr<AppLock> WebAppLockManager::UpgradeAndAcquireLock(
-    std::unique_ptr<NoopLock> lock,
+std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
+    std::unique_ptr<NoopLockDescription> lock_description,
     const base::flat_set<AppId>& app_ids,
     base::OnceClosure on_lock_acquired) {
-  CHECK(lock->HasLockBeenRequested());
-  std::unique_ptr<AppLock> result_lock = std::make_unique<AppLock>(app_ids);
-  result_lock->holder_ = std::move(lock->holder_);
+  CHECK(lock_description->HasLockBeenRequested());
+  std::unique_ptr<AppLockDescription> result_lock =
+      std::make_unique<AppLockDescription>(app_ids);
+  result_lock->holder_ = std::move(lock_description->holder_);
   // TODO(dmurph): Create option for lock acquisition callbacks to always be
   // posted async. https://crbug.com/1354312
   auto posted_callback =

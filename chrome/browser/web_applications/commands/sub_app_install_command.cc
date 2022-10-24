@@ -116,8 +116,9 @@ SubAppInstallCommand::SubAppInstallCommand(
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : lock_(std::make_unique<SharedWebContentsWithAppLock>(
-          CreateAppIdsForLock(parent_app_id, sub_apps))),
+    : lock_description_(
+          std::make_unique<SharedWebContentsWithAppLockDescription>(
+              CreateAppIdsForLock(parent_app_id, sub_apps))),
       parent_app_id_{parent_app_id},
       requested_installs_{std::move(sub_apps)},
       install_callback_{std::move(install_callback)},
@@ -131,8 +132,8 @@ SubAppInstallCommand::SubAppInstallCommand(
 
 SubAppInstallCommand::~SubAppInstallCommand() = default;
 
-Lock& SubAppInstallCommand::lock() const {
-  return *lock_;
+LockDescription& SubAppInstallCommand::lock_description() const {
+  return *lock_description_;
 }
 
 base::Value SubAppInstallCommand::ToDebugValue() const {

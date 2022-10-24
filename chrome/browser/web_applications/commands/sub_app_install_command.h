@@ -30,7 +30,8 @@ class Profile;
 
 namespace web_app {
 
-class SharedWebContentsWithAppLock;
+class LockDescription;
+class SharedWebContentsWithAppLockDescription;
 class WebAppRegistrar;
 class WebAppInstallFinalizer;
 class WebAppUrlLoader;
@@ -54,7 +55,7 @@ class SubAppInstallCommand : public WebAppCommand {
   SubAppInstallCommand(const SubAppInstallCommand&) = delete;
   SubAppInstallCommand& operator=(const SubAppInstallCommand&) = delete;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
   void SetDialogNotAcceptedForTesting();
 
@@ -115,7 +116,7 @@ class SubAppInstallCommand : public WebAppCommand {
       const AppId& installed_app_id,
       const blink::mojom::SubAppsServiceAddResultCode& code);
 
-  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
+  std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   const AppId parent_app_id_;
   std::vector<std::pair<UnhashedAppId, GURL>> requested_installs_;
   SubAppInstallResultCallback install_callback_;

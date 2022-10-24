@@ -30,7 +30,7 @@ FetchInstallabilityForChromeManagement::FetchInstallabilityForChromeManagement(
     std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     FetchInstallabilityForChromeManagementCallback callback)
-    : noop_lock_(std::make_unique<NoopLock>()),
+    : noop_lock_description_(std::make_unique<NoopLockDescription>()),
       url_(url),
       registry_(registry),
       web_contents_(web_contents),
@@ -46,11 +46,12 @@ FetchInstallabilityForChromeManagement::FetchInstallabilityForChromeManagement(
 FetchInstallabilityForChromeManagement::
     ~FetchInstallabilityForChromeManagement() = default;
 
-Lock& FetchInstallabilityForChromeManagement::lock() const {
-  DCHECK(noop_lock_ || app_lock_);
-  if (noop_lock_)
-    return *noop_lock_;
-  return *app_lock_;
+LockDescription& FetchInstallabilityForChromeManagement::lock_description()
+    const {
+  DCHECK(noop_lock_description_ || app_lock_description_);
+  if (noop_lock_description_)
+    return *noop_lock_description_;
+  return *app_lock_description_;
 }
 
 void FetchInstallabilityForChromeManagement::Start() {
@@ -143,10 +144,12 @@ void FetchInstallabilityForChromeManagement::OnWebAppInstallabilityChecked(
   DCHECK(opt_manifest);
   app_id_ = GenerateAppIdFromManifest(*opt_manifest);
 
-  app_lock_ = command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_), {app_id_},
-      base::BindOnce(&FetchInstallabilityForChromeManagement::OnAppLockGranted,
-                     weak_factory_.GetWeakPtr()));
+  app_lock_description_ =
+      command_manager()->lock_manager().UpgradeAndAcquireLock(
+          std::move(noop_lock_description_), {app_id_},
+          base::BindOnce(
+              &FetchInstallabilityForChromeManagement::OnAppLockGranted,
+              weak_factory_.GetWeakPtr()));
 }
 
 void FetchInstallabilityForChromeManagement::OnAppLockGranted() {

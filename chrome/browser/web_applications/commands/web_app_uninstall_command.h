@@ -30,7 +30,8 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class FullSystemLock;
+class FullSystemLockDescription;
+class LockDescription;
 class OsIntegrationManager;
 class WebAppIconManager;
 class WebAppInstallManager;
@@ -65,7 +66,7 @@ class WebAppUninstallCommand : public WebAppCommand {
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
 
   void SetRemoveManagementTypeCallbackForTesting(
@@ -104,7 +105,7 @@ class WebAppUninstallCommand : public WebAppCommand {
                                  webapps::UninstallResultCode code);
   void MaybeFinishUninstallAndDestruct();
 
-  std::unique_ptr<FullSystemLock> lock_;
+  std::unique_ptr<FullSystemLockDescription> lock_description_;
   const AppId app_id_;
   base::circular_deque<UninstallInfo> queued_uninstalls_;
   base::flat_map<AppId, webapps::UninstallResultCode> uninstall_results_;

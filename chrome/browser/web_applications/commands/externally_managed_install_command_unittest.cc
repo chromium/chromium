@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -203,13 +204,14 @@ TEST_F(ExternallyManagedInstallCommandTest, UpgradeLock) {
 
   bool callback_command_run = false;
   auto callback_command = std::make_unique<CallbackCommand>(
-      std::make_unique<AppLock>(app_ids),
+      std::make_unique<AppLockDescription>(app_ids),
       base::BindLambdaForTesting([&]() { callback_command_run = true; }));
 
   bool callback_command_2_run = false;
   base::RunLoop callback_runloop;
   auto callback_command_2 = std::make_unique<CallbackCommand>(
-      std::make_unique<AppLock>(app_ids), base::BindLambdaForTesting([&]() {
+      std::make_unique<AppLockDescription>(app_ids),
+      base::BindLambdaForTesting([&]() {
         callback_command_2_run = true;
         callback_runloop.Quit();
       }));

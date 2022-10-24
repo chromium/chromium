@@ -15,8 +15,8 @@
 
 namespace web_app {
 
-class AppLock;
-class Lock;
+class AppLockDescription;
+class LockDescription;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 class OsIntegrationManager;
@@ -56,7 +56,7 @@ class UpdateFileHandlerCommand : public WebAppCommand {
 
   void Start() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
 
   base::Value ToDebugValue() const override;
 
@@ -73,7 +73,7 @@ class UpdateFileHandlerCommand : public WebAppCommand {
   void OnFileHandlerUpdated(bool file_handling_enabled, Result result);
   void ReportResultAndDestroy(CommandResult result);
 
-  std::unique_ptr<AppLock> lock_;
+  std::unique_ptr<AppLockDescription> lock_description_;
 
   const AppId app_id_;
   absl::optional<bool> user_choice_to_remember_;

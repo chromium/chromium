@@ -53,7 +53,9 @@ UpdateFileHandlerCommand::UpdateFileHandlerCommand(
     WebAppRegistrar* registrar,
     WebAppSyncBridge* sync_bridge,
     OsIntegrationManager* os_integration_manager)
-    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>({app_id})),
+    : lock_description_(
+          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
+              {app_id})),
       app_id_(app_id),
       user_choice_to_remember_(std::move(user_choice_to_remember)),
       callback_(std::move(callback)),
@@ -131,8 +133,8 @@ void UpdateFileHandlerCommand::Start() {
 #endif
 }
 
-Lock& UpdateFileHandlerCommand::lock() const {
-  return *lock_;
+LockDescription& UpdateFileHandlerCommand::lock_description() const {
+  return *lock_description_;
 }
 
 base::Value UpdateFileHandlerCommand::ToDebugValue() const {

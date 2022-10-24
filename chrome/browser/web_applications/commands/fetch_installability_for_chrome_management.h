@@ -21,8 +21,9 @@ class WebContents;
 
 namespace web_app {
 
-class NoopLock;
-class AppLock;
+class AppLockDescription;
+class LockDescription;
+class NoopLockDescription;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
@@ -49,7 +50,7 @@ class FetchInstallabilityForChromeManagement : public WebAppCommand {
       FetchInstallabilityForChromeManagementCallback callback);
   ~FetchInstallabilityForChromeManagement() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
 
   void Start() override;
   void OnSyncSourceRemoved() override;
@@ -68,8 +69,8 @@ class FetchInstallabilityForChromeManagement : public WebAppCommand {
   void Abort(InstallableCheckResult result);
   bool IsWebContentsDestroyed();
 
-  std::unique_ptr<NoopLock> noop_lock_;
-  std::unique_ptr<AppLock> app_lock_;
+  std::unique_ptr<NoopLockDescription> noop_lock_description_;
+  std::unique_ptr<AppLockDescription> app_lock_description_;
   const GURL url_;
   AppId app_id_;
   // The registry is owned by the WebAppProvider, and is always destroyed after

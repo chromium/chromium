@@ -74,7 +74,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
                                            InstallIsolatedAppCommandError>)>
         callback)
-    : lock_(std::make_unique<AppLock>(
+    : lock_description_(std::make_unique<AppLockDescription>(
           base::flat_set<AppId>{isolation_info.app_id()})),
       isolation_info_(isolation_info),
       isolation_data_(isolation_data),
@@ -103,8 +103,8 @@ void InstallIsolatedAppCommand::SetDataRetrieverForTesting(
 
 InstallIsolatedAppCommand::~InstallIsolatedAppCommand() = default;
 
-Lock& InstallIsolatedAppCommand::lock() const {
-  return *lock_;
+LockDescription& InstallIsolatedAppCommand::lock_description() const {
+  return *lock_description_;
 }
 
 void InstallIsolatedAppCommand::Start() {

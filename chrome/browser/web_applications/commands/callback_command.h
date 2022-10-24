@@ -10,19 +10,20 @@
 
 namespace web_app {
 
-class Lock;
+class LockDescription;
 
 // CallbackCommand simply runs the callback being passed. This is handy for
 // small operations to web app system to avoid defining a new command class but
 // still providing isolation for the work done in the callback.
 class CallbackCommand : public WebAppCommand {
  public:
-  CallbackCommand(std::unique_ptr<Lock> lock, base::OnceClosure callback);
+  CallbackCommand(std::unique_ptr<LockDescription> lock_description,
+                  base::OnceClosure callback);
   ~CallbackCommand() override;
 
   void Start() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
 
   base::Value ToDebugValue() const override;
 
@@ -30,7 +31,7 @@ class CallbackCommand : public WebAppCommand {
   void OnShutdown() override {}
 
  private:
-  std::unique_ptr<Lock> lock_;
+  std::unique_ptr<LockDescription> lock_description_;
   base::OnceClosure callback_;
 };
 

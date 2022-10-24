@@ -210,7 +210,7 @@ void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
   // base::Unretained is safe as the command manager won't execute the command
   // if the provider no longer exists.
   provider_.command_manager().ScheduleCommand(std::make_unique<CallbackCommand>(
-      std::make_unique<AppLock, base::flat_set<AppId>>({app_id()}),
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id()}),
       base::BindOnce(&WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen,
                      base::Unretained(&provider_.sync_bridge()), app_id(),
                      !registrar().AlwaysShowToolbarInFullscreen(app_id()))));

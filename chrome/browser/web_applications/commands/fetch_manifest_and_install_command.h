@@ -28,8 +28,9 @@ class WebContents;
 
 namespace web_app {
 
-class AppLock;
-class NoopLock;
+class AppLockDescription;
+class LockDescription;
+class NoopLockDescription;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 
@@ -50,7 +51,7 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
 
   ~FetchManifestAndInstallCommand() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
 
   void Start() override;
   void OnSyncSourceRemoved() override;
@@ -112,8 +113,8 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
 
   void LogInstallInfo();
 
-  std::unique_ptr<NoopLock> noop_lock_;
-  std::unique_ptr<AppLock> app_lock_;
+  std::unique_ptr<NoopLockDescription> noop_lock_description_;
+  std::unique_ptr<AppLockDescription> app_lock_description_;
 
   webapps::WebappInstallSource install_surface_;
   base::WeakPtr<content::WebContents> web_contents_;

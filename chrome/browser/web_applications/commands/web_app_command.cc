@@ -5,6 +5,8 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 
 #include "base/atomic_sequence_num.h"
+#include "base/functional/callback_forward.h"
+#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 
 namespace web_app {
@@ -37,7 +39,17 @@ void WebAppCommand::SignalCompletionAndSelfDestruct(
                                       std::move(completion_callback));
 }
 
-void WebAppCommand::Start(WebAppCommandManager* command_manager) {
+void WebAppCommand::RequestLock(WebAppCommandManager* command_manager,
+                                WebAppLockManager* lock_manager,
+                                LockAcquiredCallback on_lock_acquired) {
+  lock_manager->AcquireLock(
+      lock_description(),
+      base::BindOnce(std::move(on_lock_acquired),
+                     base::BindOnce(&WebAppCommand::StartWithManager,
+                                    AsWeakPtr(), command_manager)));
+}
+
+void WebAppCommand::StartWithManager(WebAppCommandManager* command_manager) {
   command_manager_ = command_manager;
   Start();
 }

@@ -26,11 +26,12 @@ struct WebAppInstallInfo;
 
 namespace web_app {
 
-enum class WebAppUrlLoaderResult;
-class SharedWebContentsWithAppLock;
+class LockDescription;
+class SharedWebContentsWithAppLockDescription;
 class WebAppInstallFinalizer;
 class WebAppDataRetriever;
 class WebAppRegistrar;
+enum class WebAppUrlLoaderResult;
 
 class InstallFromSyncCommand : public WebAppCommand {
  public:
@@ -68,7 +69,7 @@ class InstallFromSyncCommand : public WebAppCommand {
       OnceInstallCallback install_callback);
   ~InstallFromSyncCommand() override;
 
-  Lock& lock() const override;
+  LockDescription& lock_description() const override;
 
   base::Value ToDebugValue() const override;
 
@@ -109,7 +110,7 @@ class InstallFromSyncCommand : public WebAppCommand {
   void ReportResultAndDestroy(const AppId& app_id,
                               webapps::InstallResultCode code);
 
-  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
+  std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   const base::raw_ptr<WebAppUrlLoader> url_loader_;
   const base::raw_ptr<Profile> profile_;
   const base::raw_ptr<WebAppInstallFinalizer> finalizer_;
