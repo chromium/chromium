@@ -478,6 +478,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2675],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/untrusted_resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2685],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.

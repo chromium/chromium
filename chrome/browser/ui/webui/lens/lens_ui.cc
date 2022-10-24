@@ -9,6 +9,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/lens_resources.h"
 #include "chrome/grit/lens_resources_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -19,7 +20,15 @@ LensUI::LensUI(content::WebUI* web_ui) : WebUIController(web_ui) {
                                              chrome::kChromeUILensHost);
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kLensResources, kLensResourcesSize),
-      IDR_LENS_LENS_HTML);
+      IDR_LENS_REGION_SEARCH_HTML);
+
+  // Set up Content Security Policy (CSP) for chrome-untrusted://lens iframe.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+  // Allow chrome-untrusted://lens page to load as an iframe in the page.
+  std::string frame_src = base::StringPrintf("frame-src %s 'self';",
+                                             chrome::kChromeUILensUntrustedURL);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, frame_src);
 }
 
 LensUI::~LensUI() = default;

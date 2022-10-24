@@ -625,6 +625,7 @@ const char kChromeUICastFeedbackHost[] = "cast-feedback";
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kChromeUILensURL[] = "chrome://lens/";
+const char kChromeUILensUntrustedURL[] = "chrome-untrusted://lens/";
 const char kChromeUILensHost[] = "lens";
 #endif
 

@@ -1761,15 +1761,14 @@ static_library("ui") {
     ]
     if (is_chrome_branded) {
       sources += [
-        "webui/media_router/cast_feedback_ui.cc",
-        "webui/media_router/cast_feedback_ui.h",
-      ]
-    }
-
-    if (toolkit_views && is_chrome_branded) {
-      sources += [
         "webui/lens/lens_ui.cc",
         "webui/lens/lens_ui.h",
+        "webui/lens/lens_untrusted_ui.cc",
+        "webui/lens/lens_untrusted_ui.h",
+        "webui/lens/lens_untrusted_ui_config.cc",
+        "webui/lens/lens_untrusted_ui_config.h",
+        "webui/media_router/cast_feedback_ui.cc",
+        "webui/media_router/cast_feedback_ui.h",
       ]
     }
 

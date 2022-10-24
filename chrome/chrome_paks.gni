@@ -209,18 +209,17 @@ template("chrome_extra_paks") {
       ]
       if (is_chrome_branded) {
         sources += [
+          "$root_gen_dir/chrome/lens_resources.pak",
+          "$root_gen_dir/chrome/lens_untrusted_resources.pak",
           "$root_gen_dir/chrome/media_router_feedback_resources.pak",
           "$root_gen_dir/chrome/preinstalled_web_apps_resources.pak",
         ]
         deps += [
           "//chrome/browser/resources:preinstalled_web_apps_resources",
+          "//chrome/browser/resources/lens:resources",
+          "//chrome/browser/resources/lens:untrusted_resources",
           "//chrome/browser/resources/media_router/cast_feedback:resources",
         ]
-      }
-
-      if (is_chrome_branded && toolkit_views) {
-        sources += [ "$root_gen_dir/chrome/lens_resources.pak" ]
-        deps += [ "//chrome/browser/resources/lens:resources" ]
       }
     }
     if (is_chromeos_ash) {
