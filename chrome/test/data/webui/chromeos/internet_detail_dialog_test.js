@@ -305,4 +305,28 @@ suite('internet-detail-dialog', () => {
     assertFalse(networkNameservers.disabled);
     assertFalse(infoFields.disabled);
   });
+
+  // Syntactic sugar for running test twice with different values for the
+  // apnRevamp feature flag.
+  [true, false].forEach(isApnRevampEnabled => {
+    test('Show/Hide APN row correspondingly to ApnRevamp flag', async () => {
+      loadTimeData.overrideValues({
+        apnRevamp: isApnRevampEnabled,
+      });
+      await setupCellularNetwork(
+          /* isPrimary= */ true, /* isInhibited= */ false);
+
+      await init();
+      const legacyApnElement =
+          internetDetailDialog.shadowRoot.querySelector('network-apnlist');
+
+      // TODO(b/162365553): Check visibility of new APN element when
+      // implemented.
+      if (isApnRevampEnabled) {
+        assertFalse(!!legacyApnElement);
+      } else {
+        assertTrue(!!legacyApnElement);
+      }
+    });
+  });
 });

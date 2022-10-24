@@ -173,6 +173,7 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
                      !ash::features::IsSeparateNetworkIconsEnabled());
   source->AddBoolean("captivePortalUI2022",
                      ash::features::IsCaptivePortalUI2022Enabled());
+  source->AddBoolean("apnRevamp", ash::features::IsApnRevampEnabled());
   cellular_setup::AddNonStringLoadTimeData(source);
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);

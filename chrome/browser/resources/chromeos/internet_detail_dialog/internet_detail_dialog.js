@@ -112,6 +112,18 @@ Polymer({
 
     /** @private {!GlobalPolicy|undefined} */
     globalPolicy_: Object,
+
+    /**
+     * Return true if apnRevamp feature flag is enabled.
+     * @private
+     */
+    isApnRevampEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('apnRevamp') &&
+            loadTimeData.getBoolean('apnRevamp');
+      },
+    },
   },
 
   /**
@@ -434,8 +446,9 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isCellular_(managedProperties) {
-    return managedProperties.type == NetworkType.kCellular;
+  shouldShowApnList_(managedProperties) {
+    return !this.isApnRevampEnabled_ &&
+        managedProperties.type == NetworkType.kCellular;
   },
 
   /**

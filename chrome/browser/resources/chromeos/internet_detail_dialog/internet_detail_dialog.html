@@ -95,7 +95,9 @@
   </template>
 
   <!-- APN (Cellular only) -->
-  <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
+  <template is="dom-if"
+      if="[[shouldShowApnList_(managedProperties_,
+          isApnRevampEnabled_)]]">
     <div class="cr-row">
       <network-apnlist class="flex" editable on-apn-change="onApnChange_"
           managed-properties="[[managedProperties_]]"
