@@ -67,6 +67,21 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertNotification(false);
   }
 
+  /* Asserts for each row whether or not it is animating. */
+  function assertAnimation(expectedAnimation: boolean[]) {
+    const rows = testElement.shadowRoot!.querySelectorAll('.cr-row');
+
+    assertEquals(
+        rows.length, expectedAnimation.length,
+        'Provided ' + expectedAnimation.length +
+            ' expectations but there are ' + rows.length + ' rows');
+    for (let i = 0; i < rows.length; ++i) {
+      assertEquals(
+          expectedAnimation[i]!, rows[i]!.classList.contains('removed'),
+          'Expectation not met for row #' + i);
+    }
+  }
+
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     browserProxy.setNotificationPermissionReview(mockData);
@@ -76,6 +91,13 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
         window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('review-notification-permissions');
     document.body.appendChild(testElement);
+
+    // The model update delay exists to allow animations to finish before
+    // the list is updated. As most of the test cases are not dependent on
+    // animation visuals and this delay would slow down test execution,
+    // set it to zero.
+    testElement.setModelUpdateDelayMsForTesting(0);
+
     flush();
   });
 
@@ -135,10 +157,12 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertEquals(2, entries.length);
 
     assertNotification(false);
+    assertAnimation([false, false]);
 
     // User clicks don't allow.
     const element = entries[0]!.querySelector('#block')! as HTMLElement;
     element.click();
+    assertAnimation([true, false]);
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
@@ -165,12 +189,14 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertEquals(2, entries.length);
 
     assertNotification(false);
+    assertAnimation([false, false]);
 
     // User clicks ignore.
     openActionMenu(0);
     const reset =
         testElement.shadowRoot!.querySelector<HTMLElement>('#ignore')!;
     reset.click();
+    assertAnimation([true, false]);
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
@@ -202,11 +228,13 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertEquals(2, entries.length);
 
     assertNotification(false);
+    assertAnimation([false, false]);
 
     // User clicks reset.
     openActionMenu(0);
     const reset = testElement.shadowRoot!.querySelector<HTMLElement>('#reset')!;
     reset.click();
+    assertAnimation([true, false]);
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
@@ -237,9 +265,13 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Click block button
     testElement.shadowRoot!.querySelector<HTMLElement>(
                                '.cr-row #block')!.click();
+    assertAnimation([true, false]);
     await browserProxy.whenCalled('blockNotificationPermissionForOrigin');
 
     await assertUndo('allowNotificationPermissionForOrigin', 0);
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', mockData);
+    assertAnimation([false, false]);
   });
 
   /**
@@ -254,10 +286,14 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     openActionMenu(0);
     // Click ignore button.
     testElement.shadowRoot!.querySelector<HTMLElement>('#ignore')!.click();
+    assertAnimation([true, false]);
 
     await browserProxy.whenCalled('ignoreNotificationPermissionForOrigin');
 
     await assertUndo('undoIgnoreNotificationPermissionForOrigin', 0);
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', mockData);
+    assertAnimation([false, false]);
   });
 
   /**
@@ -272,10 +308,14 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     openActionMenu(0);
     // Click reset button.
     testElement.shadowRoot!.querySelector<HTMLElement>('#reset')!.click();
+    assertAnimation([true, false]);
 
     await browserProxy.whenCalled('resetNotificationPermissionForOrigin');
 
     await assertUndo('allowNotificationPermissionForOrigin', 0);
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', mockData);
+    assertAnimation([false, false]);
   });
 
   test('Completion State', async function() {
