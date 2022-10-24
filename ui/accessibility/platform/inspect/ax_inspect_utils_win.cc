@@ -12,8 +12,10 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/scoped_bstr.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
@@ -773,6 +775,72 @@ AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
   }
 
   return info.matched_hwnd;
+}
+
+AX_EXPORT std::u16string RoleVariantToU16String(
+    const base::win::ScopedVariant& role) {
+  if (role.type() == VT_I4)
+    return base::WideToUTF16(IAccessible2RoleToString(V_I4(role.ptr())));
+  if (role.type() == VT_BSTR)
+    return base::WideToUTF16(V_BSTR(role.ptr()));
+  return std::u16string();
+}
+
+AX_EXPORT std::string RoleVariantToString(
+    const base::win::ScopedVariant& role) {
+  if (role.type() == VT_I4)
+    return base::WideToUTF8(IAccessible2RoleToString(V_I4(role.ptr())));
+  if (role.type() == VT_BSTR)
+    return base::WideToUTF8(
+        std::wstring(V_BSTR(role.ptr()), SysStringLen(V_BSTR(role.ptr()))));
+  return std::string();
+}
+
+AX_EXPORT absl::optional<std::string> GetIAccessible2Attribute(
+    Microsoft::WRL::ComPtr<IAccessible2> element,
+    std::string attribute) {
+  base::win::ScopedBstr bstr;
+  if (element->get_attributes(bstr.Receive()) == S_OK) {
+    std::vector<std::string> ia2_attributes =
+        base::SplitString(base::WideToUTF8(bstr.Get()), std::string(1, ';'),
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+
+    for (const auto& str : ia2_attributes) {
+      std::vector<std::string> ia2_attribute =
+          base::SplitString(str, std::string(1, ':'), base::KEEP_WHITESPACE,
+                            base::SPLIT_WANT_ALL);
+
+      if (ia2_attribute.size() != 2)
+        continue;
+      if (ia2_attribute[0] == attribute)
+        return ia2_attribute[1];
+    }
+  }
+  return absl::nullopt;
+}
+
+AX_EXPORT std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element) {
+  Microsoft::WRL::ComPtr<IAccessible2> ia2;
+  if (S_OK != IA2QueryInterface<IAccessible2>(element.Get(), &ia2))
+    return "";
+
+  absl::optional<std::string> id = GetIAccessible2Attribute(ia2, "id");
+  if (id) {
+    return *id;
+  }
+  return "";
+}
+
+AX_EXPORT std::vector<Microsoft::WRL::ComPtr<IAccessible>>
+IAccessibleChildrenOf(Microsoft::WRL::ComPtr<IAccessible> parent) {
+  auto children = std::vector<Microsoft::WRL::ComPtr<IAccessible>>();
+  for (const ui::MSAAChild& msaa_child : ui::MSAAChildren(parent)) {
+    Microsoft::WRL::ComPtr<IAccessible> child = msaa_child.AsIAccessible();
+    if (child) {
+      children.emplace_back(child);
+    }
+  }
+  return children;
 }
 
 MSAAChild::MSAAChild() = default;

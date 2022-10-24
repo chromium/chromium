@@ -51,6 +51,17 @@ AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid);
 // Returns HWND of window matching a given tree selector.
 AX_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
 
+AX_EXPORT std::u16string RoleVariantToU16String(
+    const base::win::ScopedVariant& role);
+AX_EXPORT std::string RoleVariantToString(const base::win::ScopedVariant& role);
+
+AX_EXPORT absl::optional<std::string> GetIAccessible2Attribute(
+    Microsoft::WRL::ComPtr<IAccessible2> element,
+    std::string attribute);
+AX_EXPORT std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element);
+AX_EXPORT std::vector<Microsoft::WRL::ComPtr<IAccessible>>
+IAccessibleChildrenOf(Microsoft::WRL::ComPtr<IAccessible> parent);
+
 // Returns IA2 Interfaces
 template <typename ServiceType>
 HRESULT IA2QueryInterface(IAccessible* accessible,

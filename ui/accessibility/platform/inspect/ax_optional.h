@@ -8,7 +8,16 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_export.h"
+
+// Used for template specialization.
+template <typename T>
+struct is_variant : std::false_type {};
+template <typename... Args>
+struct is_variant<absl::variant<Args...>> : std::true_type {};
+template <typename T>
+inline constexpr bool is_variant_v = is_variant<T>::value;
 
 namespace ui {
 
@@ -44,13 +53,13 @@ class AX_EXPORT AXOptional final {
 
   template <typename T = ValueType>
   bool constexpr IsNotNull(
-      typename std::enable_if<std::is_pointer<T>::value>::type* = 0) const {
+      typename std::enable_if<!is_variant_v<T>>::type* = 0) const {
     return value_ != nullptr;
   }
 
   template <typename T = ValueType>
   bool constexpr IsNotNull(
-      typename std::enable_if<!std::is_pointer<T>::value>::type* = 0) const {
+      typename std::enable_if<is_variant_v<T>>::type* = 0) const {
     return true;
   }
 
@@ -93,8 +102,20 @@ class AX_EXPORT AXOptional final {
     kUnsupported,
   };
 
-  explicit constexpr AXOptional(State state, const std::string& state_text = {})
+  template <typename T = ValueType>
+  explicit constexpr AXOptional(
+      State state,
+      const std::string& state_text = {},
+      typename std::enable_if<!is_variant_v<T>>::type* = 0)
       : value_(nullptr), state_(state), state_text_(state_text) {}
+
+  template <typename T = ValueType>
+  explicit constexpr AXOptional(
+      State state,
+      const std::string& state_text = {},
+      typename std::enable_if<is_variant_v<T>>::type* = 0)
+      : value_(absl::monostate()), state_(state), state_text_(state_text) {}
+
   explicit constexpr AXOptional(ValueType value, State state)
       : value_(value), state_(state) {}
 

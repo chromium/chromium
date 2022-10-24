@@ -173,6 +173,8 @@ source_set("platform") {
         "ax_platform_relation_win.h",
         "ax_system_caret_win.cc",
         "ax_system_caret_win.h",
+        "inspect/ax_call_statement_invoker_win.cc",
+        "inspect/ax_call_statement_invoker_win.h",
         "inspect/ax_event_recorder_win.cc",
         "inspect/ax_event_recorder_win.h",
         "inspect/ax_event_recorder_win_uia.cc",
@@ -183,6 +185,7 @@ source_set("platform") {
         "inspect/ax_tree_formatter_uia_win.h",
         "inspect/ax_tree_formatter_win.cc",
         "inspect/ax_tree_formatter_win.h",
+        "inspect/ax_tree_indexer_win.h",
         "uia_registrar_win.cc",
         "uia_registrar_win.h",
       ]

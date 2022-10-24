@@ -24,6 +24,10 @@ class AX_EXPORT AXTreeFormatterWin : public AXTreeFormatterBase {
 
   base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
+  std::string EvaluateScript(
+      const AXTreeSelector& selector,
+      const ui::AXInspectScenario& scenario) const override;
+
  protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
@@ -60,6 +64,10 @@ class AX_EXPORT AXTreeFormatterWin : public AXTreeFormatterBase {
                              base::Value::Dict* dict) const;
   std::string ProcessTreeForOutput(
       const base::Value::Dict& node) const override;
+
+  // Returns the root IAccessible object for the selector.
+  Microsoft::WRL::ComPtr<IAccessible> FindAccessibleRoot(
+      const AXTreeSelector& selector) const;
 
   // Returns a document accessible object for an active tab in a browser.
   Microsoft::WRL::ComPtr<IAccessible> FindActiveDocument(
