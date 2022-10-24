@@ -19,8 +19,8 @@ PolicyLoaderCommandLine::PolicyLoaderCommandLine(
     : command_line_(command_line) {}
 PolicyLoaderCommandLine::~PolicyLoaderCommandLine() = default;
 
-std::unique_ptr<PolicyBundle> PolicyLoaderCommandLine::Load() {
-  std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
+PolicyBundle PolicyLoaderCommandLine::Load() {
+  PolicyBundle bundle;
   if (!command_line_.HasSwitch(switches::kChromePolicy))
     return bundle;
 
@@ -37,7 +37,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderCommandLine::Load() {
     return bundle;
   }
 
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+  bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .LoadFrom(policies->GetDict(), POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_COMMAND_LINE);
   return bundle;

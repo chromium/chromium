@@ -45,7 +45,7 @@ class POLICY_EXPORT PolicyLoaderWin
 
   // AsyncPolicyLoader implementation.
   void InitOnBackgroundThread() override;
-  std::unique_ptr<PolicyBundle> Load() override;
+  PolicyBundle Load() override;
 
  private:
   // Parses Chrome policy from |gpo_dict| for the given |scope| and |level| and

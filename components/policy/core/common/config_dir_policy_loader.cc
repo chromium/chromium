@@ -77,14 +77,12 @@ void ConfigDirPolicyLoader::InitOnBackgroundThread() {
                              callback);
 }
 
-std::unique_ptr<PolicyBundle> ConfigDirPolicyLoader::Load() {
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
-  LoadFromPath(config_dir_.Append(kMandatoryConfigDir),
-               POLICY_LEVEL_MANDATORY,
-               bundle.get());
+PolicyBundle ConfigDirPolicyLoader::Load() {
+  PolicyBundle bundle;
+  LoadFromPath(config_dir_.Append(kMandatoryConfigDir), POLICY_LEVEL_MANDATORY,
+               &bundle);
   LoadFromPath(config_dir_.Append(kRecommendedConfigDir),
-               POLICY_LEVEL_RECOMMENDED,
-               bundle.get());
+               POLICY_LEVEL_RECOMMENDED, &bundle);
   return bundle;
 }
 

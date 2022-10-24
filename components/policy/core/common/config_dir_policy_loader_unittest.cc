@@ -204,10 +204,9 @@ class ConfigDirPolicyLoaderTest : public PolicyTestBase {
 TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsEmpty) {
   ConfigDirPolicyLoader loader(task_environment_.GetMainThreadTaskRunner(),
                                harness_.test_dir(), POLICY_SCOPE_MACHINE);
-  std::unique_ptr<PolicyBundle> bundle(loader.Load());
-  ASSERT_TRUE(bundle.get());
+  PolicyBundle bundle = loader.Load();
   const PolicyBundle kEmptyBundle;
-  EXPECT_TRUE(bundle->Equals(kEmptyBundle));
+  EXPECT_TRUE(bundle.Equals(kEmptyBundle));
 }
 
 // Reading from a non-existent directory should result in an empty preferences
@@ -217,25 +216,23 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsNonExistentDirectory) {
       harness_.test_dir().Append(FILE_PATH_LITERAL("not_there")));
   ConfigDirPolicyLoader loader(task_environment_.GetMainThreadTaskRunner(),
                                non_existent_dir, POLICY_SCOPE_MACHINE);
-  std::unique_ptr<PolicyBundle> bundle(loader.Load());
-  ASSERT_TRUE(bundle.get());
+  PolicyBundle bundle = loader.Load();
   const PolicyBundle kEmptyBundle;
-  EXPECT_TRUE(bundle->Equals(kEmptyBundle));
+  EXPECT_TRUE(bundle.Equals(kEmptyBundle));
 }
 
 TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsWithComments) {
   harness_.WriteConfigFile(PolicyWithQuirks, "policies.json");
   ConfigDirPolicyLoader loader(task_environment_.GetMainThreadTaskRunner(),
                                harness_.test_dir(), POLICY_SCOPE_MACHINE);
-  std::unique_ptr<PolicyBundle> bundle(loader.Load());
-  ASSERT_TRUE(bundle.get());
+  PolicyBundle bundle = loader.Load();
   PolicyBundle expected_bundle;
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set(key::kHomepageIsNewTabPage, POLICY_LEVEL_MANDATORY,
            POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM, base::Value(true),
            /*external_data_fetcher=*/nullptr);
 
-  EXPECT_TRUE(bundle->Equals(expected_bundle));
+  EXPECT_TRUE(bundle.Equals(expected_bundle));
 }
 
 // Test merging values from different files.
@@ -257,8 +254,7 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
 
   ConfigDirPolicyLoader loader(task_environment_.GetMainThreadTaskRunner(),
                                harness_.test_dir(), POLICY_SCOPE_USER);
-  std::unique_ptr<PolicyBundle> bundle(loader.Load());
-  ASSERT_TRUE(bundle.get());
+  PolicyBundle bundle = loader.Load();
   PolicyBundle expected_bundle;
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .LoadFrom(test_dict_foo, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -279,7 +275,7 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
         ->AddMessage(PolicyMap::MessageType::kWarning,
                      IDS_POLICY_CONFLICT_DIFF_VALUE);
   }
-  EXPECT_TRUE(bundle->Equals(expected_bundle));
+  EXPECT_TRUE(bundle.Equals(expected_bundle));
 }
 
 }  // namespace policy

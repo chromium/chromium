@@ -275,7 +275,7 @@ void PolicyLoaderWin::InitOnBackgroundThread() {
   CollectEnterpriseUMAs();
 }
 
-std::unique_ptr<PolicyBundle> PolicyLoaderWin::Load() {
+PolicyBundle PolicyLoaderWin::Load() {
   // Reset the watches BEFORE reading the individual policies to avoid
   // missing a change notification.
   if (is_initialized_)
@@ -291,9 +291,9 @@ std::unique_ptr<PolicyBundle> PolicyLoaderWin::Load() {
   };
 
   // Load policy data for the different scopes/levels and merge them.
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
+  PolicyBundle bundle;
   PolicyMap* chrome_policy =
-      &bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+      &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   for (size_t i = 0; i < std::size(kScopes); ++i) {
     PolicyScope scope = kScopes[i].scope;
     PolicyLoadStatusUmaReporter status;
@@ -314,7 +314,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderWin::Load() {
 
     // Load 3rd-party policy.
     if (third_party_dict)
-      Load3rdPartyPolicy(third_party_dict.get(), scope, bundle.get());
+      Load3rdPartyPolicy(third_party_dict.get(), scope, &bundle);
   }
 
   return bundle;

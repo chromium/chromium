@@ -104,13 +104,13 @@ void PolicyLoaderMac::InitOnBackgroundThread() {
                             state.user_joined);
 }
 
-std::unique_ptr<PolicyBundle> PolicyLoaderMac::Load() {
+PolicyBundle PolicyLoaderMac::Load() {
   preferences_->AppSynchronize(application_id_);
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
+  PolicyBundle bundle;
 
   // Load Chrome's policy.
   PolicyMap& chrome_policy =
-      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+      bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
 
   PolicyLoadStatusUmaReporter status;
   bool policy_present = false;
@@ -147,7 +147,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderMac::Load() {
     status.Add(POLICY_LOAD_STATUS_NO_POLICY);
 
   // Load policy for the registered components.
-  LoadPolicyForDomain(POLICY_DOMAIN_EXTENSIONS, "extensions", bundle.get());
+  LoadPolicyForDomain(POLICY_DOMAIN_EXTENSIONS, "extensions", &bundle);
 
   if (!ShouldHonorPolicies())
     FilterSensitivePolicies(&chrome_policy);

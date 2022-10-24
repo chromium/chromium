@@ -34,7 +34,7 @@ class POLICY_EXPORT ConfigDirPolicyLoader : public AsyncPolicyLoader {
 
   // AsyncPolicyLoader implementation.
   void InitOnBackgroundThread() override;
-  std::unique_ptr<PolicyBundle> Load() override;
+  PolicyBundle Load() override;
   base::Time LastModificationTime() override;
 
  private:

@@ -14,10 +14,10 @@ FakeAsyncPolicyLoader::FakeAsyncPolicyLoader(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true) {}
 
-std::unique_ptr<PolicyBundle> FakeAsyncPolicyLoader::Load() {
-  std::unique_ptr<PolicyBundle> result(new PolicyBundle());
-  result->CopyFrom(policy_bundle_);
-  return result;
+PolicyBundle FakeAsyncPolicyLoader::Load() {
+  PolicyBundle bundle;
+  bundle.CopyFrom(policy_bundle_);
+  return bundle;
 }
 
 void FakeAsyncPolicyLoader::InitOnBackgroundThread() {

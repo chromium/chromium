@@ -58,7 +58,7 @@ class POLICY_EXPORT AsyncPolicyLoader {
   // Returns the currently configured policies. Load() is always invoked on
   // the background thread, except for the initial Load() at startup which is
   // invoked from the thread that owns the provider.
-  virtual std::unique_ptr<PolicyBundle> Load() = 0;
+  virtual PolicyBundle Load() = 0;
 
   // Allows implementations to finalize their initialization on the background
   // thread (e.g. setup file watchers).

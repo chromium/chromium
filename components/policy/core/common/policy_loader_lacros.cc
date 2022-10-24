@@ -94,13 +94,13 @@ void PolicyLoaderLacros::InitOnBackgroundThread() {
   }
 }
 
-std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
+PolicyBundle PolicyLoaderLacros::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
+  PolicyBundle bundle;
 
   // If per_profile loader is used, apply policy for extensions.
   if (per_profile_ == PolicyPerProfileFilter::kTrue && component_policy_)
-    bundle->MergeFrom(*component_policy_);
+    bundle.MergeFrom(*component_policy_);
 
   if (!policy_fetch_response_ || policy_fetch_response_->empty()) {
     return bundle;
@@ -138,7 +138,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
         NOTREACHED();
     }
   }
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+  bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .MergeFrom(policy_map);
 
   // Remember if the main profile is managed or not.

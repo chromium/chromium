@@ -23,7 +23,8 @@ class PolicyLoaderCommandLineTest : public ::testing::Test {
   void LoadAndVerifyPolicies(PolicyLoaderCommandLine* loader,
                              const base::Value& expected_policies) {
     DCHECK(expected_policies.is_dict());
-    std::unique_ptr<PolicyBundle> bundle = loader->Load();
+    std::unique_ptr<PolicyBundle> bundle =
+        std::make_unique<PolicyBundle>(loader->Load());
     PolicyMap& map =
         bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     EXPECT_EQ(expected_policies.DictSize(), map.size());

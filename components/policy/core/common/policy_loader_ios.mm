@@ -107,14 +107,14 @@ void PolicyLoaderIOS::InitOnBackgroundThread() {
                                                 taskRunner:task_runner()];
 }
 
-std::unique_ptr<PolicyBundle> PolicyLoaderIOS::Load() {
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
+PolicyBundle PolicyLoaderIOS::Load() {
+  PolicyBundle bundle;
   NSDictionary* configuration = [[NSUserDefaults standardUserDefaults]
       dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
-  LoadNSDictionaryToPolicyBundle(configuration, bundle.get());
+  LoadNSDictionaryToPolicyBundle(configuration, &bundle);
 
   const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
-  size_t count = bundle->Get(chrome_ns).size();
+  size_t count = bundle.Get(chrome_ns).size();
   UMA_HISTOGRAM_COUNTS_100("Enterprise.IOSPolicies", count);
 
   return bundle;

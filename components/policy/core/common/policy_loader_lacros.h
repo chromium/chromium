@@ -46,7 +46,7 @@ class POLICY_EXPORT PolicyLoaderLacros
   void InitOnBackgroundThread() override;
   // Loads the policy data from LacrosInitParams and populates it in the bundle
   // that is returned.
-  std::unique_ptr<PolicyBundle> Load() override;
+  PolicyBundle Load() override;
 
   // Return the policy data object as received from Ash. Returns nullptr if
   // initial load was not done yet.

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_COMMAND_LINE_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_COMMAND_LINE_H_
 
-#include <memory>
-
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/policy_export.h"
@@ -26,7 +24,7 @@ class POLICY_EXPORT PolicyLoaderCommandLine {
 
   ~PolicyLoaderCommandLine();
 
-  std::unique_ptr<PolicyBundle> Load();
+  PolicyBundle Load();
 
  private:
   const base::CommandLine& command_line_;
