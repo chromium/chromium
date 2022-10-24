@@ -522,6 +522,7 @@
     'chrome_public_wpt': {
       'chrome_public_wpt': {
         'args': [
+          '--no-wpt-internal',
           '--log-wptreport',
         ],
         'swarming': {
