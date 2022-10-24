@@ -23,8 +23,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- chrome.*
-- chrome_os
 - fuchsia
 owners:
 - anthonyvd@chromium.org
@@ -43,5 +41,8 @@ schema:
       minimum: 0
       type: integer
   type: object
+supported_on:
+- chrome.*:108-
+- chrome_os:108-
 tags: []
 type: dict
