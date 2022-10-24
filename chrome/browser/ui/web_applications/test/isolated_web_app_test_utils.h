@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_APP_TEST_UTILS_H_
-#define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_APP_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
+#define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
 
 #include <string>
 
@@ -20,17 +20,18 @@ class RenderFrameHost;
 
 namespace web_app {
 
-class IsolatedAppBrowserTestHarness : public WebAppControllerBrowserTest {
+class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
  public:
-  IsolatedAppBrowserTestHarness();
-  IsolatedAppBrowserTestHarness(const IsolatedAppBrowserTestHarness&) = delete;
-  IsolatedAppBrowserTestHarness& operator=(
-      const IsolatedAppBrowserTestHarness&) = delete;
-  ~IsolatedAppBrowserTestHarness() override;
+  IsolatedWebAppBrowserTestHarness();
+  IsolatedWebAppBrowserTestHarness(const IsolatedWebAppBrowserTestHarness&) =
+      delete;
+  IsolatedWebAppBrowserTestHarness& operator=(
+      const IsolatedWebAppBrowserTestHarness&) = delete;
+  ~IsolatedWebAppBrowserTestHarness() override;
 
  protected:
-  AppId InstallIsolatedApp(const std::string& host);
-  AppId InstallIsolatedApp(const GURL& app_url);
+  AppId InstallIsolatedWebApp(const std::string& host);
+  AppId InstallIsolatedWebApp(const GURL& app_url);
   content::RenderFrameHost* OpenApp(const AppId& app_id);
   content::RenderFrameHost* NavigateToURLInNewTab(
       Browser* window,
@@ -46,4 +47,4 @@ class IsolatedAppBrowserTestHarness : public WebAppControllerBrowserTest {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_APP_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_

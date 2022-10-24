@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/test/isolated_app_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
@@ -176,7 +176,7 @@ class ServiceWorkerVersionStoppedRunningWaiter
 };
 }  // namespace
 
-class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
+class IsolatedAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
  public:
   IsolatedAppBrowserTest() = default;
   IsolatedAppBrowserTest(const IsolatedAppBrowserTest&) = delete;
@@ -184,7 +184,7 @@ class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
   ~IsolatedAppBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedAppBrowserTestHarness::SetUpCommandLine(command_line);
+    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
 
     std::string isolated_app_origins =
         std::string("https://") + kAppHost + ",https://" + kApp2Host;
@@ -205,8 +205,8 @@ class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
-  AppId app1_id = InstallIsolatedApp(kAppHost);
-  AppId app2_id = InstallIsolatedApp(kApp2Host);
+  AppId app1_id = InstallIsolatedWebApp(kAppHost);
+  AppId app2_id = InstallIsolatedWebApp(kApp2Host);
 
   auto* non_app_frame = ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/banners/isolated/simple.html"));
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
                        OmniboxNavigationOpensNewPwaWindow) {
-  AppId app_id = InstallIsolatedApp(kAppHost);
+  AppId app_id = InstallIsolatedWebApp(kAppHost);
 
   GURL app_url =
       https_server()->GetURL(kAppHost, "/banners/isolated/simple.html");
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     IsolatedAppBrowserTest,
     OmniboxNavigationOpensNewPwaWindowEvenIfUserDisplayModeIsBrowser) {
-  AppId app_id = InstallIsolatedApp(kAppHost);
+  AppId app_id = InstallIsolatedWebApp(kAppHost);
 
   WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge()
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that the app menu doesn't have an 'Open in Chrome' option.
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, NoOpenInChrome) {
-  AppId app_id = InstallIsolatedApp(kAppHost);
+  AppId app_id = InstallIsolatedWebApp(kAppHost);
   auto* app_frame = OpenApp(app_id);
   auto* app_browser = GetBrowserFromFrame(app_frame);
 
@@ -331,7 +331,7 @@ class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
-  AppId app_id = InstallIsolatedApp(kAppHost);
+  AppId app_id = InstallIsolatedWebApp(kAppHost);
 
   GURL app_url =
       https_server()->GetURL(kAppHost, "/banners/isolated/cookie.html");
@@ -382,7 +382,7 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
   }
 
   int64_t InstallIsolatedAppAndWaitForServiceWorker() {
-    AppId app_id = InstallIsolatedApp(app_url_);
+    AppId app_id = InstallIsolatedWebApp(app_url_);
 
     auto* original_frame = OpenApp(app_id);
     app_web_contents_ =

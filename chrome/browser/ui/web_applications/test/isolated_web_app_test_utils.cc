@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/test/isolated_app_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,26 +21,27 @@
 
 namespace web_app {
 
-IsolatedAppBrowserTestHarness::IsolatedAppBrowserTestHarness() = default;
+IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() = default;
 
-IsolatedAppBrowserTestHarness::~IsolatedAppBrowserTestHarness() = default;
+IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 
-AppId IsolatedAppBrowserTestHarness::InstallIsolatedApp(
+AppId IsolatedWebAppBrowserTestHarness::InstallIsolatedWebApp(
     const std::string& host) {
   GURL app_url = https_server()->GetURL(host,
                                         "/banners/manifest_test_page.html"
                                         "?manifest=manifest_isolated.json");
-  return InstallIsolatedApp(app_url);
+  return InstallIsolatedWebApp(app_url);
 }
 
-AppId IsolatedAppBrowserTestHarness::InstallIsolatedApp(const GURL& app_url) {
+AppId IsolatedWebAppBrowserTestHarness::InstallIsolatedWebApp(
+    const GURL& app_url) {
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   return test::InstallPwaForCurrentUrl(browser());
 }
 
-Browser* IsolatedAppBrowserTestHarness::GetBrowserFromFrame(
+Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
     content::RenderFrameHost* frame) {
   Browser* browser = chrome::FindBrowserWithWebContents(
       content::WebContents::FromRenderFrameHost(frame));
@@ -48,7 +49,7 @@ Browser* IsolatedAppBrowserTestHarness::GetBrowserFromFrame(
   return browser;
 }
 
-void IsolatedAppBrowserTestHarness::CreateIframe(
+void IsolatedWebAppBrowserTestHarness::CreateIframe(
     content::RenderFrameHost* parent_frame,
     const std::string& iframe_id,
     const GURL& url,
@@ -68,7 +69,7 @@ void IsolatedAppBrowserTestHarness::CreateIframe(
                                          iframe_id, url, permissions_policy)));
 }
 
-content::RenderFrameHost* IsolatedAppBrowserTestHarness::OpenApp(
+content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
     const AppId& app_id) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForWebApps(profile())->registrar();
@@ -81,7 +82,8 @@ content::RenderFrameHost* IsolatedAppBrowserTestHarness::OpenApp(
   return NavigateToURLInNewTab(app_window, app->start_url());
 }
 
-content::RenderFrameHost* IsolatedAppBrowserTestHarness::NavigateToURLInNewTab(
+content::RenderFrameHost*
+IsolatedWebAppBrowserTestHarness::NavigateToURLInNewTab(
     Browser* window,
     const GURL& url,
     WindowOpenDisposition disposition) {

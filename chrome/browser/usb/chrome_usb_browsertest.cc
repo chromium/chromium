@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/test/isolated_app_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
@@ -64,7 +64,7 @@ namespace {
 using ::base::test::TestFuture;
 using ::testing::Return;
 
-constexpr char kIsolatedAppHost[] = "app.com";
+constexpr char kIsolatedWebAppHost[] = "app.com";
 constexpr char kNonAppHost[] = "nonapp.com";
 constexpr char kNonAppHost2[] = "nonapp2.com";
 constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
@@ -559,21 +559,22 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbAppTest, AllowProtectedInterfaces) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class IsolatedAppUsbBrowserTest
-    : public web_app::IsolatedAppBrowserTestHarness {
+class IsolatedWebAppUsbBrowserTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedAppUsbBrowserTest() = default;
-  ~IsolatedAppUsbBrowserTest() override = default;
+  IsolatedWebAppUsbBrowserTest() = default;
+  ~IsolatedWebAppUsbBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedAppBrowserTestHarness::SetUpCommandLine(command_line);
+    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    std::string("https://") + kIsolatedAppHost);
+    command_line->AppendSwitchASCII(
+        switches::kIsolatedAppOrigins,
+        std::string("https://") + kIsolatedWebAppHost);
   }
 
   void SetUpOnMainThread() override {
-    IsolatedAppBrowserTestHarness::SetUpOnMainThread();
+    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
 
     mojo::PendingRemote<device::mojom::UsbDeviceManager> remote;
     device_manager_.AddReceiver(remote.InitWithNewPipeAndPassReceiver());
@@ -590,11 +591,11 @@ class IsolatedAppUsbBrowserTest
   device::FakeUsbDeviceManager device_manager_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppUsbBrowserTest, ClaimInterface) {
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
   auto* non_app_frame = ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/banners/isolated/simple.html"));
 
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
   auto* app_frame = OpenApp(app_id);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -625,11 +626,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppUsbBrowserTest, ClaimInterface) {
   })();)"));
 }
 
-class IsolatedAppPermissionsPolicyBrowserTest
-    : public IsolatedAppUsbBrowserTest {
+class IsolatedWebAppPermissionsPolicyBrowserTest
+    : public IsolatedWebAppUsbBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedAppUsbBrowserTest::SetUpCommandLine(command_line);
+    IsolatedWebAppUsbBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "FeaturePolicyReporting");
     command_line->AppendSwitch(
@@ -637,16 +638,16 @@ class IsolatedAppPermissionsPolicyBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Iframe_NoAllowAttribute) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Create a same-origin iframe on the page that does not specify an
   // allow attribute, and expect that usb is accessible on the main frame, as
   // well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  GURL app_url =
-      https_server()->GetURL(kIsolatedAppHost, "/banners/isolated/simple.html");
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
+                                        "/banners/isolated/simple.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
 
@@ -673,17 +674,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Iframe_Self) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Create a same-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'self', and expect that usb is accessible on the
   // main frame, as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  const url::Origin app_origin = https_server()->GetOrigin(kIsolatedAppHost);
-  GURL app_url =
-      https_server()->GetURL(kIsolatedAppHost, "/banners/isolated/simple.html");
+  const url::Origin app_origin = https_server()->GetOrigin(kIsolatedWebAppHost);
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
+                                        "/banners/isolated/simple.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
 
@@ -712,17 +713,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Iframe_Src) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Create a cross-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'src', and expect that usb is accessible on the
   // main frame, as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  const url::Origin app_origin = https_server()->GetOrigin(kIsolatedAppHost);
-  GURL app_url =
-      https_server()->GetURL(kIsolatedAppHost, "/banners/isolated/simple.html");
+  const url::Origin app_origin = https_server()->GetOrigin(kIsolatedWebAppHost);
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
+                                        "/banners/isolated/simple.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
   GURL non_app_url_2 =
@@ -754,17 +755,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Iframe_None) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Create a cross-origin iframe on the page that specifies an allow
   // attribute allowing usb with the 'none' token, and expect that usb is
   // accessible on the main frame, but is blocked by permissions policy in the
   // iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  GURL app_url =
-      https_server()->GetURL(kIsolatedAppHost, "/banners/isolated/simple.html");
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
+                                        "/banners/isolated/simple.html");
 
   auto* app_frame = OpenApp(app_id);
   auto* app_browser = GetBrowserFromFrame(app_frame);
@@ -783,17 +784,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Iframe_CrossOrigin) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Create a cross-origin iframe on the page that specifies an allow
   // attribute allowing usb for the iframe by explicitly listing the iframe
   // origin in the allowlist, and expect that usb is accessible on the main
   // frame as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  GURL app_url =
-      https_server()->GetURL(kIsolatedAppHost, "/banners/isolated/simple.html");
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
+                                        "/banners/isolated/simple.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
 
@@ -813,17 +814,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
   EXPECT_EQ("Success", EvalJs(iframe, OpenAndClaimDeviceScript));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Headers_None) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Load a page in the app window that has a Permissions Policy
   // header which does not allow usb on any origin (using an empty allowlist).
   // Create a same-origin iframe on the page that does not specify an allow
   // attribute, and expect that usb is not accessible on the main frame or in
   // the iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  GURL app_url = https_server()->GetURL(kIsolatedAppHost,
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
                                         "/banners/isolated/usb-none.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/usb-none.html");
@@ -852,17 +853,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Headers_Self) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Load a page in the app window that has a Permissions Policy
   // header which allows usb on the same origin using the 'self' token. Create a
   // same-origin iframe on the page that does not specify an allow attribute,
   // and expect that usb is accessible on the main frame, as well as in the
   // iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  GURL app_url = https_server()->GetURL(kIsolatedAppHost,
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
                                         "/banners/isolated/usb-self.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/usb-self.html");
@@ -889,16 +890,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Headers_All) {
-  // Install an isolated app that has usb turned on for all origins in its
+  // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Load a page in the app window that has a Permissions Policy
   // header which allows usb on any origin. Create a same-origin iframe on the
   // page that does not specify an allow attribute, and expect that usb is
   // accessible on the main frame, as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
+  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
 
-  GURL app_url = https_server()->GetURL(kIsolatedAppHost,
+  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
                                         "/banners/isolated/usb-all.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/usb-all.html");
