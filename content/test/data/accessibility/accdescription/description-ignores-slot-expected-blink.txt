@@ -1,0 +1,1 @@
+button description='description' name='foobar' nameFrom=contents descriptionFrom=relatedElement

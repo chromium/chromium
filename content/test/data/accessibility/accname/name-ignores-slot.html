@@ -1,0 +1,28 @@
+<!--
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:nameFrom=*
+-->
+<!-- AccName calculation should ignore slot element -->
+<template id="template">
+  <button id="test">one <slot aria-label="label" name="my-slot"></slot> three</button>
+</template>
+
+<my-element>
+  <b slot="my-slot">two</b>
+</my-element>
+
+<script>
+customElements.define(
+    'my-element',
+    class extends HTMLElement {
+        constructor() {
+            super();
+            let template = document.getElementById('template');
+            let templateContent = template.content;
+
+            const shadowRoot = this.attachShadow({mode: 'open'})
+                  .appendChild(templateContent.cloneNode(true));
+        }
+    }
+);
+</script>
