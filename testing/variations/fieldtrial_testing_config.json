@@ -11116,6 +11116,21 @@
             ]
         }
     ],
+    "UseThreadQoSMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseThreadQoSMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserAgentOverrideExperiment": [
         {
             "platforms": [
