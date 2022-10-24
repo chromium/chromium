@@ -309,8 +309,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
 }
 
+// TODO(https://crbug.com/1377748): Re-enable this test once it is not flaky.
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       ClearSiteDataOnChangedSetsForContext_Successful) {
+       DISABLED_ClearSiteDataOnChangedSetsForContext_Successful) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kFirstPartySets,
