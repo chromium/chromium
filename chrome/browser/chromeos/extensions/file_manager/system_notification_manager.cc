@@ -129,6 +129,40 @@ std::u16string GetIOTaskMessage(Profile* profile,
 
 namespace file_manager {
 
+std::unique_ptr<message_center::Notification> CreateSystemNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
+  return ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
+      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(),
+      message_center::NotifierId(), message_center::RichNotificationData(),
+      delegate, ash::kFilesAppIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+}
+
+std::unique_ptr<message_center::Notification> CreateSystemNotification(
+    const std::string& notification_id,
+    int title_id,
+    int message_id,
+    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
+  return CreateSystemNotification(
+      notification_id, l10n_util::GetStringUTF16(title_id),
+      l10n_util::GetStringUTF16(message_id), delegate);
+}
+
+std::unique_ptr<message_center::Notification> CreateSystemNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    const base::RepeatingClosure& click_callback) {
+  return CreateSystemNotification(
+      notification_id, title, message,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          click_callback));
+}
+
 SystemNotificationManager::SystemNotificationManager(Profile* profile)
     : profile_(profile),
       app_name_(l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME)) {}
@@ -143,33 +177,8 @@ std::unique_ptr<message_center::Notification>
 SystemNotificationManager::CreateNotification(
     const std::string& notification_id,
     const std::u16string& title,
-    const std::u16string& message,
-    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
-  return ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      app_name_, GURL(), message_center::NotifierId(),
-      message_center::RichNotificationData(), delegate, ash::kFilesAppIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
-}
-
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateNotification(
-    const std::string& notification_id,
-    const std::u16string& title,
-    const std::u16string& message,
-    const base::RepeatingClosure& click_callback) {
-  return CreateNotification(
-      notification_id, title, message,
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          click_callback));
-}
-
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateNotification(
-    const std::string& notification_id,
-    const std::u16string& title,
     const std::u16string& message) {
-  return CreateNotification(
+  return CreateSystemNotification(
       notification_id, title, message,
       base::BindRepeating(&SystemNotificationManager::Dismiss,
                           weak_ptr_factory_.GetWeakPtr(), notification_id));
@@ -183,17 +192,6 @@ SystemNotificationManager::CreateNotification(
   std::u16string title = l10n_util::GetStringUTF16(title_id);
   std::u16string message = l10n_util::GetStringUTF16(message_id);
   return CreateNotification(notification_id, title, message);
-}
-
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateNotification(
-    const std::string& notification_id,
-    int title_id,
-    int message_id,
-    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
-  std::u16string title = l10n_util::GetStringUTF16(title_id);
-  std::u16string message = l10n_util::GetStringUTF16(message_id);
-  return CreateNotification(notification_id, title, message, delegate);
 }
 
 void SystemNotificationManager::HandleProgressClick(
@@ -467,7 +465,7 @@ SystemNotificationManager::MakeDriveConfirmDialogNotification(
             base::BindRepeating(
                 &SystemNotificationManager::HandleDriveDialogClick,
                 weak_ptr_factory_.GetWeakPtr()));
-    notification = CreateNotification(
+    notification = CreateSystemNotification(
         kDriveDialogId, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
         IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE, delegate);
 
@@ -800,8 +798,8 @@ SystemNotificationManager::MakeMountErrorNotification(
                 &SystemNotificationManager::HandleRemovableNotificationClick,
                 weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
                 uma_types_for_buttons));
-    notification =
-        CreateNotification(kDeviceFailNotificationId, title, message, delegate);
+    notification = CreateSystemNotification(kDeviceFailNotificationId, title,
+                                            message, delegate);
     DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
     notification->set_buttons(notification_buttons);
   }
@@ -925,8 +923,8 @@ SystemNotificationManager::MakeRemovableNotification(
                 &SystemNotificationManager::HandleRemovableNotificationClick,
                 weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
                 uma_types_for_buttons));
-    notification =
-        CreateNotification(kRemovableNotificationId, title, message, delegate);
+    notification = CreateSystemNotification(kRemovableNotificationId, title,
+                                            message, delegate);
     std::vector<message_center::ButtonInfo> notification_buttons;
     notification_buttons.push_back(
         message_center::ButtonInfo(l10n_util::GetStringUTF16(

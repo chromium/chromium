@@ -84,6 +84,31 @@ inline constexpr char kNotificationShowHistogramName[] =
 inline constexpr char kNotificationUserActionHistogramName[] =
     "FileBrowser.Notification.UserAction";
 
+// Returns an instance of an 'ash' Notification with a bound click delegate.
+// The notification will have Files app system notification theme.
+std::unique_ptr<message_center::Notification> CreateSystemNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    const scoped_refptr<message_center::NotificationDelegate>& delegate);
+
+// Returns an instance of an 'ash' Notification with title and message specified
+// by string ID values (for 110n) with a bound click delegate.
+// The notification will have Files app system notification theme.
+std::unique_ptr<message_center::Notification> CreateSystemNotification(
+    const std::string& notification_id,
+    int title_id,
+    int message_id,
+    const scoped_refptr<message_center::NotificationDelegate>& delegate);
+
+// Returns an instance of an 'ash' Notification with a bound click callback.
+// The notification will have Files app system notification theme.
+std::unique_ptr<message_center::Notification> CreateSystemNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    const base::RepeatingClosure& click_callback);
+
 // Manages creation/deletion and update of system notifications on behalf
 // of the File Manager application.
 class SystemNotificationManager {
@@ -101,34 +126,6 @@ class SystemNotificationManager {
    * Processes a device event to generate a system notification if needed.
    */
   void HandleDeviceEvent(const file_manager_private::DeviceEvent& event);
-
-  /**
-   *  Returns an instance of an 'ash' Notification with a bound click callback.
-   */
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const std::string& notification_id,
-      const std::u16string& title,
-      const std::u16string& message,
-      const base::RepeatingClosure& click_callback);
-
-  /**
-   *  Returns an instance of an 'ash' Notification with title and message
-   *  specified by string ID values (for 110n) with a bound click delegate.
-   */
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const std::string& notification_id,
-      int title_id,
-      int message_id,
-      const scoped_refptr<message_center::NotificationDelegate>& delegate);
-
-  /**
-   *  Returns an instance of an 'ash' Notification with a bound click delegate.
-   */
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const std::string& notification_id,
-      const std::u16string& title,
-      const std::u16string& message,
-      const scoped_refptr<message_center::NotificationDelegate>& delegate);
 
   /**
    *  Returns an instance of an 'ash' Notification.
