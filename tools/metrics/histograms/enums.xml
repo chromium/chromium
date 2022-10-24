@@ -29346,6 +29346,26 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Unknown error"/>
 </enum>
 
+<enum name="DTManagementServiceError">
+  <int value="0" label="The device is missing the management group id."/>
+  <int value="1"
+      label="The management-service binary is missing the management group
+             id."/>
+  <int value="2"
+      label="Could not get the path to the management-service binary."/>
+  <int value="3"
+      label="Failure when retrieving the pipe name from the rotate command."/>
+  <int value="4" label="The Rotate command is missing the pipe name."/>
+  <int value="5" label="The Rotate command is missing the dm token."/>
+  <int value="6" label="The Rotate command is missing the dm server url."/>
+  <int value="7" label="The url loader factory is invalid."/>
+  <int value="8"
+      label="Failure binding the url loader factory to the browser process."/>
+  <int value="9" label="Invalid command to rotate."/>
+  <int value="10"
+      label="An argument used in the rotate request is incorrectly encoded."/>
+</enum>
+
 <enum name="DTOrigin">
   <int value="0" label="In session"/>
   <int value="1" label="On login screen"/>

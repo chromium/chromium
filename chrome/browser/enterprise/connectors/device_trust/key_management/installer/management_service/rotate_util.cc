@@ -16,6 +16,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/metrics_utils.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -23,6 +24,12 @@
 namespace enterprise_connectors {
 
 namespace {
+
+void RecordFailure(ManagementServiceError error,
+                   const std::string& log_message) {
+  RecordError(error);
+  SYSLOG(ERROR) << log_message;
+}
 
 constexpr char kStableChannelHostName[] = "m.google.com";
 
@@ -35,8 +42,9 @@ absl::optional<std::string> Decode(const std::string& encoded_value) {
 
   std::string value;
   if (!base::Base64Decode(encoded_value, &value)) {
-    SYSLOG(ERROR)
-        << "Argument passed on the command line is not correctly encoded";
+    RecordFailure(
+        ManagementServiceError::kIncorrectlyEncodedArgument,
+        "Argument passed on the command line is not correctly encoded.");
     return absl::nullopt;
   }
   return value;
@@ -65,6 +73,12 @@ bool RotateDeviceTrustKey(
       return false;
   }
 
+  if (!command_line.HasSwitch(switches::kDmServerUrl)) {
+    RecordFailure(
+        ManagementServiceError::kCommandMissingDMServerUrl,
+        "Device trust key rotation failed. Command missing dm server url.");
+    return false;
+  }
   GURL dm_server_url(command_line.GetSwitchValueASCII(switches::kDmServerUrl));
 
   // An invalid command is when `channel` is stable and the `hostname` of
@@ -72,8 +86,9 @@ bool RotateDeviceTrustKey(
   auto valid_command = (channel != version_info::Channel::STABLE ||
                         dm_server_url.host() == kStableChannelHostName);
   if (!valid_command || !dm_server_url.SchemeIsHTTPOrHTTPS()) {
-    SYSLOG(ERROR)
-        << "Device trust key rotation failed. The server URL is invalid.";
+    RecordFailure(
+        ManagementServiceError::kInvalidRotateCommand,
+        "Device trust key rotation failed. The server URL is invalid.");
     return false;
   }
 

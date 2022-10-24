@@ -862,6 +862,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.ManagementService.Error"
+    enum="DTManagementServiceError" expires_after="2023-10-18">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Captures any terminal failures that occur in the Device Trust management
+    service binary during the execution of a command (e.g. key rotation).
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Origin" enum="DTOrigin"
     expires_after="2023-08-01">
   <owner>lmasopust@google.com</owner>

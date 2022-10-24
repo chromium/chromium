@@ -12,6 +12,7 @@
 #include "base/threading/thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/chrome_management_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/metrics_utils.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 
@@ -22,6 +23,8 @@ int main(int argc, char** argv) {
 
   if (!command_line ||
       !command_line->HasSwitch(enterprise_connectors::switches::kPipeName)) {
+    enterprise_connectors::RecordError(
+        enterprise_connectors::ManagementServiceError::kCommandMissingPipeName);
     SYSLOG(ERROR) << "The chrome-management-service failed. Invalid command, "
                   << "missing details to connect to the browser process.";
     return enterprise_connectors::kFailure;
@@ -31,6 +34,9 @@ int main(int argc, char** argv) {
   if (!base::StringToUint64(command_line->GetSwitchValueNative(
                                 enterprise_connectors::switches::kPipeName),
                             &pipe_name)) {
+    enterprise_connectors::RecordError(
+        enterprise_connectors::ManagementServiceError::
+            kPipeNameRetrievalFailure);
     SYSLOG(ERROR) << "The chrome-management-service failed. Could not "
                   << "correctly retrieve the details to connect to the browser "
                   << "process.";

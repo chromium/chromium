@@ -19,6 +19,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
 #include "chrome/common/channel_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -32,12 +33,20 @@ namespace enterprise_connectors {
 
 namespace {
 
+enterprise_connectors::Status RecordFailure(ManagementServiceError error,
+                                            const std::string& log_message) {
+  RecordError(ManagementServiceError::kIncorrectlyEncodedArgument);
+  SYSLOG(ERROR) << log_message;
+  return kFailure;
+}
+
 // Verifies group permissions for the chrome-management-service binary.
 bool CheckBinaryPermissions() {
   base::FilePath exe_path;
   if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
-    SYSLOG(ERROR) << "The chrome-management-service failed. Could not get the "
-                  << "path to the chrome-management-service.";
+    RecordFailure(ManagementServiceError::kFilePathResolutionFailure,
+                  "The chrome-management-service failed. Could not get the "
+                  "path to the chrome-management-service.");
     return false;
   }
   exe_path = exe_path.Append(constants::kBinaryFileName);
@@ -45,8 +54,9 @@ bool CheckBinaryPermissions() {
   // Gets the chromemgmt group gid stored on the device.
   struct group* chrome_mgmt_group = getgrnam(constants::kGroupName);
   if (!chrome_mgmt_group) {
-    SYSLOG(ERROR) << "The chrome-management-service failed. Device missing the "
-                  << "necessary group permissions to run the command.";
+    RecordFailure(ManagementServiceError::kManagementGroupIdDoesNotExist,
+                  "The chrome-management-service failed. Device missing the "
+                  "necessary group permissions to run the command.");
     return false;
   }
   gid_t chrome_mgmt_gid = chrome_mgmt_group->gr_gid;
@@ -57,8 +67,9 @@ bool CheckBinaryPermissions() {
   gid_t binary_gid = st.st_gid;
 
   if (getegid() != chrome_mgmt_gid || binary_gid != chrome_mgmt_gid) {
-    SYSLOG(ERROR) << "The chrome-management-service failed. Incorrect "
-                  << "permissions for the chrome-management-service.";
+    RecordFailure(ManagementServiceError::kBinaryMissingManagementGroupID,
+                  "The chrome-management-service failed. Incorrect permissions "
+                  "for the chrome-management-service.");
     return false;
   }
   return true;
@@ -85,9 +96,9 @@ ChromeManagementService::~ChromeManagementService() = default;
 int ChromeManagementService::Run(const base::CommandLine* command_line,
                                  uint64_t pipe_name) {
   if (!command_line || !command_line->HasSwitch(switches::kRotateDTKey)) {
-    SYSLOG(ERROR)
-        << "Device trust key rotation failed. Command missing rotate details.";
-    return kFailure;
+    return RecordFailure(
+        ManagementServiceError::kCommandMissingRotateDTKey,
+        "Device trust key rotation failed. Command missing rotate key switch.");
   }
 
   if (!std::move(permissions_callback_).Run())
@@ -102,16 +113,16 @@ int ChromeManagementService::Run(const base::CommandLine* command_line,
   auto pending_remote_url_loader_factory =
       mojo::PendingRemote<network::mojom::URLLoaderFactory>(std::move(pipe), 0);
   if (!pending_remote_url_loader_factory.is_valid()) {
-    SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
-                     "connect to the browser process.";
-    return kFailure;
+    return RecordFailure(
+        ManagementServiceError::kInvalidUrlLoaderFactory,
+        "Device trust key rotation failed. Invalid url loader factory.");
   }
 
   remote_url_loader_factory_.Bind(std::move(pending_remote_url_loader_factory));
   if (!remote_url_loader_factory_.is_bound()) {
-    SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
-                     "connect to the browser process.";
-    return kFailure;
+    return RecordFailure(ManagementServiceError::kUnBoundUrlLoaderFactory,
+                         "Device trust key rotation failed. The url loader "
+                         "factory failed to bind to the browser process.");
   }
 
   return std::move(rotation_callback_).Run(command_line);
