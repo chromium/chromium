@@ -124,6 +124,9 @@ std::map<variations::VariationID, int> GetGroupWeightsForFREVariations() {
       };
       break;
     case version_info::Channel::STABLE:
+      for (auto& [id, weight] : weight_by_id) {
+        weight = 4;
+      };
       break;
   }
   return weight_by_id;
