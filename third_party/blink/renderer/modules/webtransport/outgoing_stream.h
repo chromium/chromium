@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -179,6 +180,7 @@ class MODULES_EXPORT OutgoingStream final
   size_t offset_ = 0;
 
   Member<WritableStream> writable_;
+  Member<AbortSignal::AlgorithmHandle> send_stream_abort_handle_;
   Member<WritableStreamDefaultController> controller_;
 
   // If an asynchronous write() on the underlying sink object is pending, this

@@ -239,7 +239,7 @@ class ReadableStream::PipeToEngine final
       }
 
       //   c. Add abortAlgorithm to signal.
-      signal->AddAlgorithm(
+      abort_handle_ = signal->AddAlgorithm(
           MakeGarbageCollected<PipeToAbortAlgorithm>(this, signal));
     }
 
@@ -282,6 +282,7 @@ class ReadableStream::PipeToEngine final
     visitor->Trace(promise_);
     visitor->Trace(last_write_);
     visitor->Trace(shutdown_error_);
+    visitor->Trace(abort_handle_);
   }
 
  private:
@@ -717,8 +718,16 @@ class ReadableStream::PipeToEngine final
       ReadableStreamDefaultReader::Release(script_state_, default_reader);
     }
 
-    // TODO(ricea): Implement signal.
     // d. If signal is not undefined, remove abortAlgorithm from signal.
+    //
+    // An abort algorithm is only added if the signal provided to pipeTo is not
+    // undefined *and* not aborted, which means `abort_handle_` can be null if
+    // signal is not undefined.
+    if (abort_handle_) {
+      auto* signal = pipe_options_->Signal();
+      DCHECK(signal);
+      signal->RemoveAlgorithm(abort_handle_);
+    }
 
     v8::Local<v8::Value> error;
     if (error_maybe.ToLocal(&error)) {
@@ -820,6 +829,7 @@ class ReadableStream::PipeToEngine final
   Member<ReadableStreamDefaultReader> reader_;
   Member<WritableStreamDefaultWriter> writer_;
   Member<StreamPromiseResolver> promise_;
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
   TraceWrapperV8Reference<v8::Promise> last_write_;
   Action shutdown_action_;
   TraceWrapperV8Reference<v8::Value> shutdown_error_;

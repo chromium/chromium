@@ -495,6 +495,7 @@ void WebSocketStream::DidConnect(const String& subprotocol,
   connection->setReadable(readable);
   connection->setWritable(writable);
   connection_resolver_->Resolve(connection);
+  abort_handle_.Clear();
 }
 
 void WebSocketStream::DidReceiveTextMessage(const String& string) {
@@ -562,6 +563,7 @@ void WebSocketStream::DidClose(
 
   channel_->Disconnect();
   channel_ = nullptr;
+  abort_handle_.Clear();
   if (source_)
     source_->DidClose(was_clean, code, reason);
   if (sink_)
@@ -581,6 +583,7 @@ void WebSocketStream::ContextDestroyed() {
   if (common_.GetState() != WebSocketCommon::kClosed) {
     common_.SetState(WebSocketCommon::kClosed);
   }
+  abort_handle_.Clear();
 }
 
 bool WebSocketStream::HasPendingActivity() const {
@@ -596,6 +599,7 @@ void WebSocketStream::Trace(Visitor* visitor) const {
   visitor->Trace(channel_);
   visitor->Trace(source_);
   visitor->Trace(sink_);
+  visitor->Trace(abort_handle_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   WebSocketChannelClient::Trace(visitor);
@@ -622,7 +626,7 @@ void WebSocketStream::Connect(ScriptState* script_state,
       return;
     }
 
-    signal->AddAlgorithm(
+    abort_handle_ = signal->AddAlgorithm(
         WTF::BindOnce(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
   }
 
@@ -720,6 +724,7 @@ void WebSocketStream::OnAbort() {
       "WebSocket handshake was aborted");
   connection_resolver_->Reject(exception);
   closed_resolver_->Reject(exception);
+  abort_handle_.Clear();
 }
 
 WebSocketCloseInfo* WebSocketStream::MakeCloseInfo(uint16_t code,

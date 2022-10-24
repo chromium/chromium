@@ -198,12 +198,13 @@ void OutgoingStream::InitWithExistingWritableStream(
   stream->InitWithCountQueueingStrategy(
       script_state_, MakeGarbageCollected<UnderlyingSink>(this), 1,
       /*optimizer=*/nullptr, exception_state);
-
-  controller_->signal()->AddAlgorithm(
+  send_stream_abort_handle_ = controller_->signal()->AddAlgorithm(
       MakeGarbageCollected<SendStreamAbortAlgorithm>(this));
 }
 
 void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
+  send_stream_abort_handle_.Clear();
+
   // Step 6 of https://w3c.github.io/webtransport/#sendstream-create
   // 1. If stream's [[PendingOperation]] is null, then abort these steps.
   if (!stream->pending_operation_) {
@@ -286,6 +287,7 @@ void OutgoingStream::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(client_);
   visitor->Trace(writable_);
+  visitor->Trace(send_stream_abort_handle_);
   visitor->Trace(controller_);
   visitor->Trace(write_promise_resolver_);
   visitor->Trace(close_promise_resolver_);
