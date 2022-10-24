@@ -201,6 +201,13 @@ crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
 # Mac Nvidia laptops are quite old and the test times out on release builds too.
 crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 
+# MediaFoundation for Clear DirectComposition only supported on WIN10_RS3.
+[ android ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
+[ chromeos ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
+[ fuchsia ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
+[ linux ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
+[ mac ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
+[ win8 ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -464,6 +471,8 @@ crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaF
 crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 crbug.com/1373965 [ fuchsia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ Failure ]
+
+crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
