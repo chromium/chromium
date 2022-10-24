@@ -63,7 +63,7 @@ import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.m.js';
 import './screens/oobe/quick_start.m.js';
 import './screens/oobe/update.js';
-import './screens/oobe/welcome.m.js';
+import './screens/oobe/welcome.js';
 
 /**
  * List of screens that are used for both `oobe` and `login` flows.
