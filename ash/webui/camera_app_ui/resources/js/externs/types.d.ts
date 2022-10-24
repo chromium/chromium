@@ -163,55 +163,6 @@ type BarcodeFormat =
     'aztec'|'codabar'|'code_39'|'code_93'|'code_128'|'data_matrix'|'ean_8'|
     'ean_13'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';
 
-// Trusted Types, this spec is still in draft stage.
-// https://w3c.github.io/webappsec-trusted-types/dist/spec/
-interface TrustedScriptURL {
-  toJSON(): string;
-}
-
-interface TrustedHTML {
-  toJSON(): string;
-}
-
-interface TrustedScript {
-  toJSON(): string;
-}
-
-interface TrustedTypePolicyOptions {
-  createHTML?: CreateHTMLCallback;
-  createScript?: CreateScriptCallback;
-  createScriptURL?: CreateScriptURLCallback;
-}
-
-type CreateHTMLCallback = (input: string, arguments: any) => string;
-type CreateScriptCallback = (input: string, arguments: any) => string;
-type CreateScriptURLCallback = (input: string, arguments: any) => string;
-
-interface TrustedTypePolicy {
-  readonly name: string;
-  createHTML(input: string, arguments?: any): TrustedHTML;
-  createScript(input: string, arguments?: any): TrustedScript;
-  createScriptURL(input: string, arguments?: any): TrustedScriptURL;
-}
-
-interface TrustedTypePolicyFactory {
-  createPolicy(policyName: string, policyOptions?: TrustedTypePolicyOptions):
-      TrustedTypePolicy;
-  isHTML(value: any): boolean;
-  isScript(value: any): boolean;
-  isScriptURL(value: any): boolean;
-  readonly emptyHTML: TrustedHTML;
-  readonly emptyScript: TrustedScript;
-  getAttributeType(
-      tagName: string, attribute: string, elementNs?: string,
-      attrNs?: string): string;
-  getPropertyType(tagName: string, property: string, elementNs?: string):
-      string;
-  readonly defaultPolicy: TrustedTypePolicy;
-}
-
-declare const trustedTypes: TrustedTypePolicyFactory;
-
 // Web Workers API interface. This is included in lib.webworker.d.ts and
 // available if we enable lib: ["webworker"] in tsconfig.json, but it conflicts
 // with the "dom" lib that we also need. For simplicity we're providing a

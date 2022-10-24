@@ -8,8 +8,9 @@ import {assert} from './assert.js';
  * The GA library URL in trusted type.
  */
 const gaLibraryURL = (() => {
-  const staticUrlPolicy = trustedTypes.createPolicy(
-      'ga-js-static', {createScriptURL: () => '../js/lib/analytics.js'});
+  const staticUrlPolicy = window.trustedTypes!.createPolicy(
+      'ga-js-static',
+      {createScriptURL: (_url: string) => '../js/lib/analytics.js'});
   return staticUrlPolicy.createScriptURL('');
 })();
 
