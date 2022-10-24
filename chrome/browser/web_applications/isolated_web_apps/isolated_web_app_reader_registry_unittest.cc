@@ -185,14 +185,15 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
   web_package::mojom::BundleResponsePtr response_;
 };
 
-using Result = base::expected<IsolatedWebAppReaderRegistry::Response,
-                              IsolatedWebAppReaderRegistry::ReadResponseError>;
+using ReadResult =
+    base::expected<IsolatedWebAppReaderRegistry::Response,
+                   IsolatedWebAppReaderRegistry::ReadResponseError>;
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -200,7 +201,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_TRUE(result.has_value()) << result.error().message;
   EXPECT_EQ(result->head()->response_code, 200);
 
@@ -216,7 +217,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   network::ResourceRequest resource_request;
   resource_request.url = GURL(kPrimaryUrl.spec() + "?bar=baz#foo");
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -224,7 +225,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_TRUE(result.has_value()) << result.error().message;
   EXPECT_EQ(result->head()->response_code, 200);
 
@@ -240,7 +241,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -248,7 +249,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_TRUE(result.has_value()) << result.error().message;
   EXPECT_EQ(result->head()->response_code, 200);
 
@@ -270,14 +271,14 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
   network::ResourceRequest resource_request;
   resource_request.url = GURL(kPrimaryUrl.spec() + "foo");
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
       result.error().type,
@@ -308,7 +309,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
           "Pending Tasks have been logged.");
 
   {
-    base::test::TestFuture<Result> read_response_future;
+    base::test::TestFuture<ReadResult> read_response_future;
     registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
@@ -324,7 +325,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     FulfillMetadata();
     FulfillResponse(resource_request);
 
-    Result result = read_response_future.Take();
+    ReadResult result = read_response_future.Take();
     ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
   }
@@ -341,7 +342,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
           "Pending Tasks have been logged.");
 
   {
-    base::test::TestFuture<Result> read_response_future;
+    base::test::TestFuture<ReadResult> read_response_future;
     registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
@@ -349,7 +350,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     // `SignedWebBundleReader` should still be cached.
     FulfillResponse(resource_request);
 
-    Result result = read_response_future.Take();
+    ReadResult result = read_response_future.Take();
     ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
   }
@@ -376,7 +377,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
           "Pending Tasks have been logged.");
 
   {
-    base::test::TestFuture<Result> read_response_future;
+    base::test::TestFuture<ReadResult> read_response_future;
     registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                             read_response_future.GetCallback());
 
@@ -386,7 +387,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     FulfillMetadata();
     FulfillResponse(resource_request);
 
-    Result result = read_response_future.Take();
+    ReadResult result = read_response_future.Take();
     ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
   }
@@ -409,7 +410,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlock) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -417,7 +418,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlock) {
   error->message = "test error";
   parser_factory_->RunIntegrityBlockCallback(nullptr, std::move(error));
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
@@ -436,13 +437,13 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
             return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
           }));
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
@@ -467,7 +468,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
             return std::make_unique<FakeSignatureVerifier>(GetParam());
           }));
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -481,10 +482,10 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_TRUE(result.has_value()) << result.error().message;
 #else
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
@@ -507,7 +508,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadata) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -517,7 +518,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadata) {
   parser_factory_->RunMetadataCallback(integrity_block_->size, nullptr,
                                        std::move(error));
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
@@ -528,7 +529,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -538,7 +539,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
@@ -553,7 +554,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -565,7 +566,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
@@ -580,7 +581,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  base::test::TestFuture<Result> read_response_future;
+  base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future.GetCallback());
 
@@ -594,7 +595,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {
           response_->payload_offset, response_->payload_length),
       nullptr, std::move(error));
 
-  Result result = read_response_future.Take();
+  ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
@@ -607,10 +608,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   resource_request.url = kPrimaryUrl;
 
   // Simulate two simultaneous requests for the same web bundle
-  base::test::TestFuture<Result> read_response_future_1;
+  base::test::TestFuture<ReadResult> read_response_future_1;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_1.GetCallback());
-  base::test::TestFuture<Result> read_response_future_2;
+  base::test::TestFuture<ReadResult> read_response_future_2;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_2.GetCallback());
 
@@ -618,7 +619,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   FulfillMetadata();
   FulfillResponse(resource_request);
   {
-    Result result = read_response_future_1.Take();
+    ReadResult result = read_response_future_1.Take();
     ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
 
@@ -631,7 +632,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
 
   FulfillResponse(resource_request);
   {
-    Result result = read_response_future_2.Take();
+    ReadResult result = read_response_future_2.Take();
     ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
 
@@ -642,13 +643,13 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
     EXPECT_EQ(kResponseBody, response_body);
   }
 
-  base::test::TestFuture<Result> read_response_future_3;
+  base::test::TestFuture<ReadResult> read_response_future_3;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_3.GetCallback());
 
   FulfillResponse(resource_request);
   {
-    Result result = read_response_future_3.Take();
+    ReadResult result = read_response_future_3.Take();
     ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
 
