@@ -68,6 +68,7 @@ bool PermissionPromptBubble::UpdateAnchor() {
   }
 
   if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
+      !delegate()->Requests().empty() &&
       delegate()->Requests()[0]->IsConfirmationChipSupported()) {
     // If we have a location bar view but the chip_controller_ doesn't exist,
     // it means that the we switched from a browser mode that did not have a
@@ -76,7 +77,8 @@ bool PermissionPromptBubble::UpdateAnchor() {
     // finally initialize it with the current permission request.
     LocationBarView* lbv = GetLocationBarView();
 
-    if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen()) {
+    if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen() &&
+        !lbv->IsEditingOrEmpty()) {
       auto* chip_controller = lbv->chip_controller();
       chip_controller->InitializePermissionPrompt(web_contents(), delegate());
       chip_controller->UpdateBrowser(browser());
