@@ -564,6 +564,7 @@ void StressUpdateService(UpdaterScope scope) {
 
   // Runs on the main sequence.
   auto loop_closure = [&]() {
+    LOG(ERROR) << __func__ << ": n: " << n;
     if (--n)
       return false;
     loop.Quit();
