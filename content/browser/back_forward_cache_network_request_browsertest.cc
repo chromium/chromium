@@ -110,8 +110,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Keepalive prevents the page from entering into the bfcache, and
 // the redirect is handled correctly in the renderer.
+// TODO(https://crbug.com/1377737): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       KeepAliveFetchRedirectedWhileStoring) {
+                       DISABLED_KeepAliveFetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   net::test_server::ControllableHttpResponse fetch2_response(
