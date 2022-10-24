@@ -169,9 +169,11 @@ public abstract class OriginVerifier {
      */
     public void validate(BrowserContextHandle browserContextHandle, @NonNull Origin origin) {
         String scheme = origin.uri().getScheme();
+        String host = origin.uri().getHost();
         if (TextUtils.isEmpty(scheme)
-                || !UrlConstants.HTTPS_SCHEME.equals(scheme.toLowerCase(Locale.US))) {
-            Log.i(TAG, "Verification failed for %s as not https.", origin);
+                || !(UrlConstants.LOCALHOST.equals(host.toLowerCase(Locale.US))
+                        || UrlConstants.HTTPS_SCHEME.equals(scheme.toLowerCase(Locale.US)))) {
+            Log.i(TAG, "Verification failed for %s as not https or localhost.", origin);
             recordResultMetrics(VerifierResult.HTTPS_FAILURE);
             PostTask.runOrPostTask(
                     UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, false, null));

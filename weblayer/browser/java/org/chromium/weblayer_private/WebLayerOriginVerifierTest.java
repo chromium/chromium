@@ -45,6 +45,7 @@ public class WebLayerOriginVerifierTest {
     private int mUid = Process.myUid();
     private Origin mHttpsOrigin = Origin.create("https://www.example.com");
     private Origin mHttpOrigin = Origin.create("http://www.android.com");
+    private Origin mHttpLocalhostOrigin = Origin.create("http://localhost:1234/");
 
     private WebLayerOriginVerifier mHandleAllUrlsVerifier;
 
@@ -123,6 +124,16 @@ public class WebLayerOriginVerifierTest {
                 () -> mHandleAllUrlsVerifier.start(resultListener, null, mHttpOrigin));
         mVerificationResultLatch.await();
         Assert.assertFalse(resultListener.isVerified());
+    }
+
+    @Test
+    public void testHttpLocalhostVerificationAllowed() throws Exception {
+        TestOriginVerificationListener resultListener =
+                new TestOriginVerificationListener(mVerificationResultLatch);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mHandleAllUrlsVerifier.start(resultListener, null, mHttpLocalhostOrigin));
+        mVerificationResultLatch.await();
+        Assert.assertTrue(resultListener.isVerified());
     }
 
     @Test
