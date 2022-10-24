@@ -10,6 +10,7 @@
 // Declares the possible actions from key commands.
 @protocol KeyCommandActions <NSObject>
 
+@optional
 - (void)keyCommand_openNewTab;
 - (void)keyCommand_openNewIncognitoTab;
 - (void)keyCommand_reopenClosedTab;

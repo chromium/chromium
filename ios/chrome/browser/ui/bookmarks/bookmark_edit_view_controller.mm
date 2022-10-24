@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -81,7 +82,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 @interface BookmarkEditViewController () <BookmarkFolderViewControllerDelegate,
                                           BookmarkModelBridgeObserver,
-                                          BookmarkTextFieldItemDelegate> {
+                                          BookmarkTextFieldItemDelegate,
+                                          KeyCommandActions> {
   // Flag to ignore bookmark model changes notifications.
   BOOL _ignoresBookmarkModelChanges;
 
@@ -693,10 +695,11 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 #pragma mark - UIResponder
 
 - (NSArray*)keyCommands {
-  return @[ [UIKeyCommand
-      keyCommandWithInput:UIKeyInputEscape
-            modifierFlags:KeyModifierNone
-                   action:@selector(dismissBookmarkEditView)] ];
+  return @[ UIKeyCommand.cr_dismissModalDialogs ];
+}
+
+- (void)keyCommand_dismissModalDialogs {
+  [self dismissBookmarkEditView];
 }
 
 @end

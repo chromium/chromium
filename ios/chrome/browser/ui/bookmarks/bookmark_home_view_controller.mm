@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -129,6 +130,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                           BookmarkInteractionControllerDelegate,
                                           BookmarkModelBridgeObserver,
                                           BookmarkTableCellTitleEditDelegate,
+                                          KeyCommandActions,
                                           TableViewURLDragDataSource,
                                           TableViewURLDropDelegate,
                                           UIGestureRecognizerDelegate,
@@ -455,10 +457,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (NSArray*)keyCommands {
-  return
-      @[ [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
-                             modifierFlags:KeyModifierNone
-                                    action:@selector(navigationBarCancel:)] ];
+  return @[ UIKeyCommand.cr_dismissModalDialogs ];
+}
+
+- (void)keyCommand_dismissModalDialogs {
+  [self navigationBarCancel:nil];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {

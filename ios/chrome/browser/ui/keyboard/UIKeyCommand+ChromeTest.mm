@@ -37,18 +37,4 @@ TEST_F(UIKeyCommandChromeTest, UIKeyCommandFactory) {
               l10n_util::GetNSStringWithFixup(IDS_IOS_TOOLS_MENU_NEW_TAB));
 }
 
-// Tests that UIApplication correctly calls the keyboard command action block
-// when invoked.
-TEST_F(UIKeyCommandChromeTest, UIApplicationHandleKeyCommand_CallsBlock) {
-  __block BOOL called = NO;
-  UIKeyCommand* command = [UIKeyCommand cr_keyCommandWithInput:@""
-                                                 modifierFlags:KeyModifierNone
-                                                         title:nil
-                                                        action:^{
-                                                          called = YES;
-                                                        }];
-  [[UIApplication sharedApplication] cr_handleKeyCommand:command];
-  EXPECT_TRUE(called);
-}
-
 }  // namespace

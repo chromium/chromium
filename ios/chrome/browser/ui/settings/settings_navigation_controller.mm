@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
@@ -47,6 +48,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 @interface SettingsNavigationController () <
     ClearBrowsingDataCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
+    KeyCommandActions,
     ManageSyncSettingsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
@@ -734,11 +736,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     return nil;
   }
 
-  return @[
-    [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
-                        modifierFlags:KeyModifierNone
-                               action:@selector(closeSettings)],
-  ];
+  return @[ UIKeyCommand.cr_dismissModalDialogs ];
+}
+
+- (void)keyCommand_dismissModalDialogs {
+  [self closeSettings];
 }
 
 #pragma mark - ApplicationSettingsCommands

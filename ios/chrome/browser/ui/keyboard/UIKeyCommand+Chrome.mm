@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 
-#import <objc/runtime.h>
-
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -27,14 +25,6 @@ UIKeyModifierFlags KeyModifierShiftAltCommand =
     UIKeyModifierShift | UIKeyModifierAlternate | UIKeyModifierCommand;
 UIKeyModifierFlags KeyModifierControlShift =
     UIKeyModifierControl | UIKeyModifierShift;
-
-@implementation UIApplication (ChromeKeyCommandHandler)
-
-- (void)cr_handleKeyCommand:(UIKeyCommand*)keyCommand {
-  [keyCommand cr_action]();
-}
-
-@end
 
 @implementation UIKeyCommand (Chrome)
 
@@ -382,17 +372,6 @@ UIKeyModifierFlags KeyModifierControlShift =
                             action:@selector(keyCommand_showLastTab)];
 }
 
-#pragma mark - Block
-
-- (UIKeyCommandAction _Nonnull)cr_action {
-  return objc_getAssociatedObject(self, @selector(cr_action));
-}
-
-- (void)cr_setAction:(UIKeyCommandAction _Nonnull)action {
-  objc_setAssociatedObject(self, @selector(cr_action), action,
-                           OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
 #pragma mark - Symbolic Description
 
 - (NSString*)cr_symbolicDescription {
@@ -448,20 +427,6 @@ UIKeyModifierFlags KeyModifierControlShift =
                modifierFlags:modifierFlags
                 propertyList:nil];
   keyCommand.discoverabilityTitle = keyCommand.title;
-  return keyCommand;
-}
-
-+ (nonnull instancetype)
-cr_keyCommandWithInput:(nonnull NSString*)input
-         modifierFlags:(UIKeyModifierFlags)modifierFlags
-                 title:(nullable NSString*)discoveryTitle
-                action:(nonnull UIKeyCommandAction)action {
-  UIKeyCommand* keyCommand =
-      [self keyCommandWithInput:input
-                  modifierFlags:modifierFlags
-                         action:@selector(cr_handleKeyCommand:)];
-  keyCommand.discoverabilityTitle = discoveryTitle;
-  keyCommand.cr_action = action;
   return keyCommand;
 }
 
