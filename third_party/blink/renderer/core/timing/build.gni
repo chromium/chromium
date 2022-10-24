@@ -56,6 +56,8 @@ blink_core_sources_timing = [
   "performance_server_timing.h",
   "performance_timing.cc",
   "performance_timing.h",
+  "performance_timing_for_reporting.h",
+  "performance_timing_for_reporting.cc",
   "performance_user_timing.cc",
   "performance_user_timing.h",
   "profiler.cc",

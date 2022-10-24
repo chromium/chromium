@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
@@ -369,8 +370,10 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
   }
   auto* coordinator = GetSupplementable()->GetResourceCoordinator();
   if (coordinator && GetFrame() && GetFrame()->IsOutermostMainFrame()) {
-    PerformanceTiming* timing = performance->timing();
-    base::TimeDelta fcp = stamp - timing->NavigationStartAsMonotonicTime();
+    PerformanceTimingForReporting* timing_for_reporting =
+        performance->timingForReporting();
+    base::TimeDelta fcp =
+        stamp - timing_for_reporting->NavigationStartAsMonotonicTime();
     coordinator->OnFirstContentfulPaint(fcp);
   }
 

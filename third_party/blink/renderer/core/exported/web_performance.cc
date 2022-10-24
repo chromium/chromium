@@ -1,35 +1,10 @@
-/*
- * Copyright (C) 2010 Google Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- * copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the
- * distribution.
- *     * Neither the name of Google Inc. nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2010 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "third_party/blink/public/web/web_performance.h"
 
+#include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 namespace blink {
@@ -66,13 +41,14 @@ double WebPerformance::NavigationStart() const {
 }
 
 base::TimeTicks WebPerformance::NavigationStartAsMonotonicTime() const {
-  return private_->timing()->NavigationStartAsMonotonicTime();
+  return private_->timingForReporting()->NavigationStartAsMonotonicTime();
 }
 
 WebPerformance::BackForwardCacheRestoreTimings
 WebPerformance::BackForwardCacheRestore() const {
-  PerformanceTiming::BackForwardCacheRestoreTimings restore_timings =
-      private_->timing()->BackForwardCacheRestore();
+  PerformanceTimingForReporting::BackForwardCacheRestoreTimings
+      restore_timings =
+          private_->timingForReporting()->BackForwardCacheRestore();
 
   WebVector<BackForwardCacheRestoreTiming> timings(restore_timings.size());
   for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
@@ -91,7 +67,7 @@ WebPerformance::BackForwardCacheRestore() const {
 }
 
 double WebPerformance::InputForNavigationStart() const {
-  return MillisecondsToSeconds(private_->timing()->inputStart());
+  return MillisecondsToSeconds(private_->timingForReporting()->inputStart());
 }
 
 double WebPerformance::UnloadEventEnd() const {
@@ -172,59 +148,65 @@ double WebPerformance::LoadEventEnd() const {
 }
 
 double WebPerformance::FirstPaint() const {
-  return MillisecondsToSeconds(private_->timing()->FirstPaintForMetrics());
+  return MillisecondsToSeconds(
+      private_->timingForReporting()->FirstPaintForMetrics());
 }
 
 double WebPerformance::FirstImagePaint() const {
-  return MillisecondsToSeconds(private_->timing()->FirstImagePaint());
+  return MillisecondsToSeconds(
+      private_->timingForReporting()->FirstImagePaint());
 }
 
 double WebPerformance::FirstContentfulPaint() const {
   return MillisecondsToSeconds(
-      private_->timing()->FirstContentfulPaintIgnoringSoftNavigations());
+      private_->timingForReporting()
+          ->FirstContentfulPaintIgnoringSoftNavigations());
 }
 
 base::TimeTicks WebPerformance::FirstContentfulPaintAsMonotonicTime() const {
-  return private_->timing()->FirstContentfulPaintAsMonotonicTimeForMetrics();
+  return private_->timingForReporting()
+      ->FirstContentfulPaintAsMonotonicTimeForMetrics();
 }
 
 base::TimeTicks
 WebPerformance::FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
     const {
-  return private_->timing()
+  return private_->timingForReporting()
       ->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
 }
 
 double WebPerformance::FirstMeaningfulPaint() const {
-  return MillisecondsToSeconds(private_->timing()->FirstMeaningfulPaint());
+  return MillisecondsToSeconds(
+      private_->timingForReporting()->FirstMeaningfulPaint());
 }
 
 double WebPerformance::FirstMeaningfulPaintCandidate() const {
   return MillisecondsToSeconds(
-      private_->timing()->FirstMeaningfulPaintCandidate());
+      private_->timingForReporting()->FirstMeaningfulPaintCandidate());
 }
 
 double WebPerformance::LargestImagePaintForMetrics() const {
   return MillisecondsToSeconds(
-      private_->timing()->LargestImagePaintForMetrics());
+      private_->timingForReporting()->LargestImagePaintForMetrics());
 }
 
 uint64_t WebPerformance::LargestImagePaintSizeForMetrics() const {
-  return private_->timing()->LargestImagePaintSizeForMetrics();
+  return private_->timingForReporting()->LargestImagePaintSizeForMetrics();
 }
 
 double WebPerformance::LargestTextPaintForMetrics() const {
   return MillisecondsToSeconds(
-      private_->timing()->LargestTextPaintForMetrics());
+      private_->timingForReporting()->LargestTextPaintForMetrics());
 }
 
 uint64_t WebPerformance::LargestTextPaintSizeForMetrics() const {
-  return private_->timing()->LargestTextPaintSizeForMetrics();
+  return private_->timingForReporting()->LargestTextPaintSizeForMetrics();
 }
 
 base::TimeTicks
 WebPerformance::LargestContentfulPaintAsMonotonicTimeForMetrics() const {
-  return private_->timing()->LargestContentfulPaintAsMonotonicTimeForMetrics();
+  return private_->timingForReporting()
+      ->LargestContentfulPaintAsMonotonicTimeForMetrics();
 }
 
 double WebPerformance::ExperimentalLargestImagePaint() const {
@@ -237,11 +219,12 @@ uint64_t WebPerformance::ExperimentalLargestImagePaintSize() const {
 
 blink::LargestContentfulPaintType
 WebPerformance::LargestContentfulPaintTypeForMetrics() const {
-  return private_->timing()->LargestContentfulPaintTypeForMetrics();
+  return private_->timingForReporting()->LargestContentfulPaintTypeForMetrics();
 }
 
 double WebPerformance::LargestContentfulPaintImageBPPForMetrics() const {
-  return private_->timing()->LargestContentfulPaintImageBPPForMetrics();
+  return private_->timingForReporting()
+      ->LargestContentfulPaintImageBPPForMetrics();
 }
 
 double WebPerformance::ExperimentalLargestTextPaint() const {
@@ -253,114 +236,116 @@ uint64_t WebPerformance::ExperimentalLargestTextPaintSize() const {
 }
 
 double WebPerformance::FirstEligibleToPaint() const {
-  return MillisecondsToSeconds(private_->timing()->FirstEligibleToPaint());
+  return MillisecondsToSeconds(
+      private_->timingForReporting()->FirstEligibleToPaint());
 }
 
 double WebPerformance::FirstInputOrScrollNotifiedTimestamp() const {
   return MillisecondsToSeconds(
-      private_->timing()->FirstInputOrScrollNotifiedTimestamp());
+      private_->timingForReporting()->FirstInputOrScrollNotifiedTimestamp());
 }
 
 absl::optional<base::TimeDelta> WebPerformance::FirstInputDelay() const {
-  return private_->timing()->FirstInputDelay();
+  return private_->timingForReporting()->FirstInputDelay();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::FirstInputTimestamp() const {
-  return private_->timing()->FirstInputTimestamp();
+  return private_->timingForReporting()->FirstInputTimestamp();
 }
 
 absl::optional<base::TimeTicks>
 WebPerformance::FirstInputTimestampAsMonotonicTime() const {
-  return private_->timing()->FirstInputTimestampAsMonotonicTime();
+  return private_->timingForReporting()->FirstInputTimestampAsMonotonicTime();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::LongestInputDelay() const {
-  return private_->timing()->LongestInputDelay();
+  return private_->timingForReporting()->LongestInputDelay();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::LongestInputTimestamp() const {
-  return private_->timing()->LongestInputTimestamp();
+  return private_->timingForReporting()->LongestInputTimestamp();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::FirstInputProcessingTime()
     const {
-  return private_->timing()->FirstInputProcessingTime();
+  return private_->timingForReporting()->FirstInputProcessingTime();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::FirstScrollDelay() const {
-  return private_->timing()->FirstScrollDelay();
+  return private_->timingForReporting()->FirstScrollDelay();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::FirstScrollTimestamp() const {
-  return private_->timing()->FirstScrollTimestamp();
+  return private_->timingForReporting()->FirstScrollTimestamp();
 }
 
 double WebPerformance::ParseStart() const {
-  return MillisecondsToSeconds(private_->timing()->ParseStart());
+  return MillisecondsToSeconds(private_->timingForReporting()->ParseStart());
 }
 
 double WebPerformance::ParseStop() const {
-  return MillisecondsToSeconds(private_->timing()->ParseStop());
+  return MillisecondsToSeconds(private_->timingForReporting()->ParseStop());
 }
 
 double WebPerformance::ParseBlockedOnScriptLoadDuration() const {
   return MillisecondsToSeconds(
-      private_->timing()->ParseBlockedOnScriptLoadDuration());
+      private_->timingForReporting()->ParseBlockedOnScriptLoadDuration());
 }
 
 double WebPerformance::ParseBlockedOnScriptLoadFromDocumentWriteDuration()
     const {
   return MillisecondsToSeconds(
-      private_->timing()->ParseBlockedOnScriptLoadFromDocumentWriteDuration());
+      private_->timingForReporting()
+          ->ParseBlockedOnScriptLoadFromDocumentWriteDuration());
 }
 
 double WebPerformance::ParseBlockedOnScriptExecutionDuration() const {
   return MillisecondsToSeconds(
-      private_->timing()->ParseBlockedOnScriptExecutionDuration());
+      private_->timingForReporting()->ParseBlockedOnScriptExecutionDuration());
 }
 
 double WebPerformance::ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
     const {
   return MillisecondsToSeconds(
-      private_->timing()
+      private_->timingForReporting()
           ->ParseBlockedOnScriptExecutionFromDocumentWriteDuration());
 }
 
 absl::optional<base::TimeTicks> WebPerformance::LastPortalActivatedPaint()
     const {
-  return private_->timing()->LastPortalActivatedPaint();
+  return private_->timingForReporting()->LastPortalActivatedPaint();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::PrerenderActivationStart()
     const {
-  return private_->timing()->PrerenderActivationStart();
+  return private_->timingForReporting()->PrerenderActivationStart();
 }
 
 absl::optional<base::TimeTicks> WebPerformance::UnloadStart() const {
-  return private_->timing()->UnloadStart();
+  return private_->timingForReporting()->UnloadStart();
 }
 
 absl::optional<base::TimeTicks> WebPerformance::UnloadEnd() const {
-  return private_->timing()->UnloadEnd();
+  return private_->timingForReporting()->UnloadEnd();
 }
 
 absl::optional<base::TimeTicks> WebPerformance::CommitNavigationEnd() const {
-  return private_->timing()->CommitNavigationEnd();
+  return private_->timingForReporting()->CommitNavigationEnd();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyLoaded()
     const {
-  return private_->timing()->UserTimingMarkFullyLoaded();
+  return private_->timingForReporting()->UserTimingMarkFullyLoaded();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyVisible()
     const {
-  return private_->timing()->UserTimingMarkFullyVisible();
+  return private_->timingForReporting()->UserTimingMarkFullyVisible();
 }
 
 absl::optional<base::TimeDelta> WebPerformance::UserTimingMarkInteractive()
     const {
-  return private_->timing()->UserTimingMarkInteractive();
+  return private_->timingForReporting()->UserTimingMarkInteractive();
 }
 
 WebPerformance::WebPerformance(WindowPerformance* performance)

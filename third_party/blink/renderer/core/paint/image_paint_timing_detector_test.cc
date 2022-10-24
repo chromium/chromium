@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/performance_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -94,10 +94,11 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     return GetChildFrameView().GetPaintTimingDetector();
   }
 
-  const PerformanceTiming& GetPerformanceTiming() {
-    PerformanceTiming* performance =
-        DOMWindowPerformance::performance(*GetFrame()->DomWindow())->timing();
-    return *performance;
+  const PerformanceTimingForReporting& GetPerformanceTimingForReporting() {
+    PerformanceTimingForReporting* performance_for_reporting =
+        DOMWindowPerformance::performance(*GetFrame()->DomWindow())
+            ->timingForReporting();
+    return *performance_for_reporting;
   }
 
   gfx::Rect GetViewportRect(LocalFrameView& view) {
@@ -478,28 +479,38 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
 }
 
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTiming) {
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSizeForMetrics(), 0u);
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintForMetrics(), 0u);
+  EXPECT_EQ(
+      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(), 0u);
+  EXPECT_EQ(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
+            0u);
   SetBodyInnerHTML(R"HTML(
     <img id="target"></img>
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSizeForMetrics(), 25u);
-  EXPECT_GT(GetPerformanceTiming().LargestImagePaintForMetrics(), 0u);
+  EXPECT_EQ(
+      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
+      25u);
+  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
+            0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest,
        PerformanceTimingHasZeroTimeNonZeroSizeWhenTheLargestIsNotPainted) {
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSizeForMetrics(), 0u);
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintForMetrics(), 0u);
+  EXPECT_EQ(
+      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(), 0u);
+  EXPECT_EQ(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
+            0u);
   SetBodyInnerHTML(R"HTML(
     <img id="target"></img>
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSizeForMetrics(), 25u);
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintForMetrics(), 0u);
+  EXPECT_EQ(
+      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
+      25u);
+  EXPECT_EQ(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
+            0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTimingToZero) {
@@ -508,12 +519,18 @@ TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTimingToZero) {
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSizeForMetrics(), 25u);
-  EXPECT_GT(GetPerformanceTiming().LargestImagePaintForMetrics(), 0u);
+  EXPECT_EQ(
+      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
+      25u);
+  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
+            0u);
   GetDocument().body()->RemoveChild(GetDocument().getElementById("target"));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSizeForMetrics(), 25u);
-  EXPECT_GT(GetPerformanceTiming().LargestImagePaintForMetrics(), 0u);
+  EXPECT_EQ(
+      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
+      25u);
+  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
+            0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OpacityZero) {
@@ -1222,8 +1239,11 @@ TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML) {
                                                 "opacity: 1");
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(CountImageRecords(), 1u);
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSizeForMetrics(), 25u);
-  EXPECT_GT(GetPerformanceTiming().LargestImagePaintForMetrics(), 0u);
+  EXPECT_EQ(
+      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
+      25u);
+  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
+            0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML2) {
