@@ -7,10 +7,11 @@
 #include <cmath>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
@@ -101,13 +102,17 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
       dips_service_(DIPSService::Get(web_contents->GetBrowserContext())),
       site_engagement_service_(site_engagement::SiteEngagementService::Get(
           web_contents->GetBrowserContext())),
-      detector_(this, base::DefaultTickClock::GetInstance()) {}
+      detector_(this,
+                base::DefaultTickClock::GetInstance(),
+                base::DefaultClock::GetInstance()) {}
 
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
 
 DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
-                                       const base::TickClock* clock)
-    : clock_(clock),
+                                       const base::TickClock* tick_clock,
+                                       const base::Clock* clock)
+    : tick_clock_(tick_clock),
+      clock_(clock),
       delegate_(delegate),
       // It's safe to use unretained because the callback is owned by the
       // DIPSRedirectContext which is owned by this.
@@ -275,9 +280,22 @@ void DIPSBounceDetector::HandleRedirect(const DIPSRedirectInfo& redirect,
     return;
   }
 
+  // Record this bounce in the DIPS database.
+  delegate_->RecordBounce(redirect.url, clock_->Now(),
+                          redirect.access_type > CookieAccessType::kRead);
+
   RedirectCategory category = ClassifyRedirect(redirect.access_type, level);
   UmaHistogramBounceCategory(category, delegate_->GetCookieMode(),
                              redirect.redirect_type);
+}
+
+void DIPSWebContentsObserver::RecordBounce(const GURL& url,
+                                           const base::Time& time,
+                                           bool stateful) {
+  dips_service_->storage()
+      ->AsyncCall(stateful ? &DIPSStorage::RecordStatefulBounce
+                           : &DIPSStorage::RecordStatelessBounce)
+      .WithArgs(url, time);
 }
 
 const GURL& DIPSWebContentsObserver::GetLastCommittedURL() const {
@@ -334,7 +352,7 @@ void DIPSWebContentsObserver::DidStartNavigation(
 
 void DIPSBounceDetector::DidStartNavigation(
     DIPSNavigationHandle* navigation_handle) {
-  base::TimeTicks now = clock_->NowTicks();
+  base::TimeTicks now = tick_clock_->NowTicks();
 
   DIPSRedirectInfoPtr client_redirect;
   if (client_detection_state_.has_value()) {
@@ -433,7 +451,7 @@ void DIPSWebContentsObserver::DidFinishNavigation(
 
 void DIPSBounceDetector::DidFinishNavigation(
     DIPSNavigationHandle* navigation_handle) {
-  base::TimeTicks now = clock_->NowTicks();
+  base::TimeTicks now = tick_clock_->NowTicks();
   // Iff the primary page changed, reset the client detection state while
   // storing the page load time and previous_url. A primary page change is
   // verified by checking IsInPrimaryMainFrame, !IsSameDocument, and

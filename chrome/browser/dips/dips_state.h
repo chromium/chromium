@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DIPSStorage;
 
@@ -62,7 +61,8 @@ class DIPSState {
   }
   void update_site_storage_time(base::Time time);
   void update_user_interaction_time(base::Time time);
-
+  void update_stateful_bounce_time(base::Time);
+  void update_stateless_bounce_time(base::Time);
   StateValue ToStateValue() const { return state_; }
 
  private:

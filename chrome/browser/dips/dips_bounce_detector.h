@@ -23,6 +23,7 @@
 #include "url/gurl.h"
 
 namespace base {
+class Clock;
 class TickClock;
 }
 
@@ -164,6 +165,9 @@ class DIPSBounceDetectorDelegate {
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
   virtual blink::mojom::EngagementLevel GetEngagementLevel(
       const GURL&) const = 0;
+  virtual void RecordBounce(const GURL& url,
+                            const base::Time& time,
+                            bool stateful) = 0;
 };
 
 // ServerBounceDetectionState gets attached to NavigationHandle (which is a
@@ -214,11 +218,12 @@ class DIPSNavigationHandle {
 };
 
 // Detects client/server-side bounces and handles them (currently by collecting
-// metrics).
+// metrics and storing them in the DIPSDatabase).
 class DIPSBounceDetector {
  public:
   explicit DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
-                              const base::TickClock* clock);
+                              const base::TickClock* tick_clock,
+                              const base::Clock* clock);
   ~DIPSBounceDetector();
   DIPSBounceDetector(const DIPSBounceDetector&) = delete;
   DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
@@ -240,7 +245,8 @@ class DIPSBounceDetector {
   void SetRedirectHandlerForTesting(DIPSRedirectHandler handler);
 
  private:
-  raw_ptr<const base::TickClock> clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
+  raw_ptr<const base::Clock> clock_;
   raw_ptr<DIPSBounceDetectorDelegate> delegate_;
   absl::optional<ClientBounceDetectionState> client_detection_state_;
   DIPSRedirectContext redirect_context_;
@@ -268,6 +274,9 @@ class DIPSWebContentsObserver
   const GURL& GetLastCommittedURL() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
   blink::mojom::EngagementLevel GetEngagementLevel(const GURL&) const override;
+  void RecordBounce(const GURL& url,
+                    const base::Time& time,
+                    bool stateful) override;
 
   // WebContentsObserver overrides:
   void DidStartNavigation(

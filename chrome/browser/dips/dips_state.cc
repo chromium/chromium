@@ -53,3 +53,30 @@ void DIPSState::update_user_interaction_time(base::Time time) {
   state_.user_interaction_times.last = time;
   dirty_ = true;
 }
+
+void DIPSState::update_stateful_bounce_time(base::Time time) {
+  if (time == stateful_bounce_times().first ||
+      time == stateful_bounce_times().last)
+    return;
+
+  if (!stateful_bounce_times().first.has_value())
+    state_.stateful_bounce_times.first = time;
+
+  DCHECK_GE(time, stateful_bounce_times().first.value());
+  state_.stateful_bounce_times.last = time;
+  dirty_ = true;
+}
+
+void DIPSState::update_stateless_bounce_time(base::Time time) {
+  if (time == stateless_bounce_times().first ||
+      time == stateless_bounce_times().last) {
+    return;
+  }
+
+  if (!stateless_bounce_times().first.has_value())
+    state_.stateless_bounce_times.first = time;
+
+  DCHECK_GE(time, stateless_bounce_times().first.value());
+  state_.stateless_bounce_times.last = time;
+  dirty_ = true;
+}
