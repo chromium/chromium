@@ -1287,6 +1287,13 @@
                   'ios/chrome/browser/widget_kit|'\
                   'ios/chrome/widget_kit_extension',
     },
+    'kiosk': {
+      'filepath': 'chrome/browser/chromeos/app_mode/'\
+                  '|chrome/browser/ash/app_mode/'\
+                  '|chrome/browser/ash/login/app_mode/'
+                  '|chrome/browser/lacros/app_mode/'\
+                  '|chromeos/crosapi/mojom/kiosk_session_service.mojom',
+    },
     'language': {
       'filepath': 'chrome/browser/language|'\
                   'components/language|'\
@@ -2737,6 +2744,7 @@
                      'marq+watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
+    'kiosk': ['chromeos-kiosk-eng+watch@google.com'],
     'language': ['language-reviews@chromium.org'],
     'libaom': ['fgalligan@chromium.org',
                'jianj@chromium.org',
