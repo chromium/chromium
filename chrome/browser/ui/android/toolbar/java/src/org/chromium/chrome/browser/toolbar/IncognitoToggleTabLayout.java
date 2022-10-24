@@ -179,8 +179,10 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
     }
 
     private void updateTabSwitcherDrawableCount() {
-        mTabSwitcherDrawable.updateForTabCount(
-                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false).getCount(),
-                false);
+        final int tabCount = mTabModelSelector.getTabModelFilterProvider()
+                                     .getTabModelFilter(
+                                             /*isIncognito=*/false)
+                                     .getCount();
+        mTabSwitcherDrawable.updateForTabCount(tabCount, false);
     }
 }

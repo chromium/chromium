@@ -86,6 +86,13 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     /**
+     * @return The total tab count in the underlying {@link TabModel}.
+     */
+    public int getTotalTabCount() {
+        return mTabModel.getCount();
+    }
+
+    /**
      * Any of the concrete class can override and define a relationship that links a {@link Tab} to
      * a list of related {@link Tab}s. By default, this returns an unmodifiable list that only
      * contains the {@link Tab} with the given id. Note that the meaning of related can vary

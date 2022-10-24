@@ -9,11 +9,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 import java.util.List;
 
@@ -166,11 +164,9 @@ public class TabCountProvider {
     private void updateTabCount() {
         if (!mTabModelSelector.isTabStateInitialized()) return;
 
-        final TabModelFilter modelFilter =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-        final int tabCount = (modelFilter instanceof TabGroupModelFilter)
-                ? ((TabGroupModelFilter) modelFilter).getTotalTabCount()
-                : modelFilter.getCount();
+        final int tabCount = mTabModelSelector.getTabModelFilterProvider()
+                                     .getCurrentTabModelFilter()
+                                     .getTotalTabCount();
         final boolean isIncognito = mTabModelSelector.isIncognitoSelected();
 
         if (mTabCount == tabCount && mIsIncognito == isIncognito) return;

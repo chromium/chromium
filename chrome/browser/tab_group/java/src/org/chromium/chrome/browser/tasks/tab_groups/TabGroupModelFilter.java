@@ -916,13 +916,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         return mGroupIdToGroupMap.size();
     }
 
-    /**
-     * @return tab count across all @{@link TabGroup}s.
-     */
-    public int getTotalTabCount() {
-        return getTabModel().getCount();
-    }
-
     @Override
     public Tab getTabAt(int index) {
         if (index < 0 || index >= getCount()) return null;
