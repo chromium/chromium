@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_remover.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_sshfs.h"
 #include "chrome/browser/ash/crostini/crostini_terminal_provider.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
@@ -791,6 +792,7 @@ void CrostiniManager::CrostiniRestarter::OnWaylandServerCreated(
 
 void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  VLOG(2) << "StartTerminaVmFinished for " << container_id_;
   for (auto& observer : observer_list_) {
     observer.OnVmStarted(success);
   }
@@ -798,7 +800,8 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kStartTerminaVm);
-  if (!success) {
+  auto vm_info = crostini_manager_->GetVmInfo(container_id_.vm_name);
+  if (!success || !vm_info.has_value()) {
     FinishRestart(CrostiniResult::VM_START_FAILED);
     return;
   }
@@ -826,8 +829,8 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
   // TODO(timloh): This should probably share paths from all requests. Requests
   // added too late will also miss this.
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePaths(
-      container_id_.vm_name, requests_[0].options.share_paths,
-      /*persist=*/false,
+      container_id_.vm_name, vm_info->info.seneschal_server_handle(),
+      requests_[0].options.share_paths,
       base::BindOnce(&CrostiniRestarter::SharePathsFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -835,6 +838,7 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
 void CrostiniManager::CrostiniRestarter::SharePathsFinished(
     bool success,
     const std::string& failure_reason) {
+  VLOG(2) << "SharePathsFinished for " << container_id_;
   if (!success) {
     LOG(WARNING) << "Failed to share paths: " << failure_reason;
   }
@@ -923,6 +927,8 @@ void CrostiniManager::CrostiniRestarter::SetUpLxdContainerUserFinished(
 }
 
 void CrostiniManager::CrostiniRestarter::FinishRestart(CrostiniResult result) {
+  VLOG(2) << "Finishing restart with result: " << CrostiniResultString(result)
+          << " for " << container_id_;
   EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage_);
 
   base::OnceClosure closure;
@@ -1023,6 +1029,9 @@ absl::optional<VmInfo> CrostiniManager::GetVmInfo(std::string vm_name) {
 }
 
 void CrostiniManager::AddRunningVmForTesting(std::string vm_name) {
+  guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+      ->AddGuestForTesting(  // IN-TEST
+          guest_os::GuestId{guest_os::VmType::TERMINA, vm_name, "unused"});
   running_vms_[std::move(vm_name)] = VmInfo{VmState::STARTED};
 }
 
@@ -2538,6 +2547,8 @@ void CrostiniManager::OnStartTerminaVm(
   DCHECK_EQ(response->status(), vm_tools::concierge::VM_STATUS_STARTING);
   bool wait_for_tremplin = running_vms_.find(vm_name) == running_vms_.end();
 
+  uint32_t seneschal_server_handle =
+      response->vm_info().seneschal_server_handle();
   running_vms_[vm_name] =
       VmInfo{VmState::STARTING, std::move(response->vm_info())};
   // If we thought a container was running for this VM, we're wrong. This can
@@ -2549,13 +2560,14 @@ void CrostiniManager::OnStartTerminaVm(
     tremplin_started_callbacks_.emplace(
         vm_name, base::BindOnce(&CrostiniManager::OnStartTremplin,
                                 weak_ptr_factory_.GetWeakPtr(), vm_name,
-                                std::move(callback)));
+                                seneschal_server_handle, std::move(callback)));
   } else {
-    OnStartTremplin(vm_name, std::move(callback));
+    OnStartTremplin(vm_name, seneschal_server_handle, std::move(callback));
   }
 }
 
 void CrostiniManager::OnStartTremplin(std::string vm_name,
+                                      uint32_t seneschal_server_handle,
                                       BoolCallback callback) {
   // Record the running vm.
   VLOG(1) << "Received TremplinStartedSignal, VM: " << owner_id_ << ", "
@@ -2569,8 +2581,8 @@ void CrostiniManager::OnStartTremplin(std::string vm_name,
 
   // Share fonts directory with the VM but don't persist as a shared path.
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
-      vm_name, base::FilePath(file_manager::util::kSystemFontsPath),
-      /*persist=*/false, base::DoNothing());
+      vm_name, seneschal_server_handle,
+      base::FilePath(file_manager::util::kSystemFontsPath), base::DoNothing());
 
   // Run the original callback.
   std::move(callback).Run(/*success=*/true);

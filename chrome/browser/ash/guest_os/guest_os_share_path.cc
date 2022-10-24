@@ -60,25 +60,6 @@ void OnSeneschalSharePathResponse(
                           response.value().failure_reason());
 }
 
-void OnVmRestartedForSeneschal(
-    Profile* profile,
-    const std::string& vm_name,
-    guest_os::GuestOsSharePath::SharePathCallback callback,
-    vm_tools::seneschal::SharePathRequest request,
-    crostini::CrostiniResult result) {
-  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
-  absl::optional<crostini::VmInfo> vm_info =
-      crostini_manager->GetVmInfo(vm_name);
-  if (!vm_info || vm_info->state != crostini::VmState::STARTED) {
-    std::move(callback).Run(base::FilePath(), false, "VM could not be started");
-    return;
-  }
-  request.set_handle(vm_info->info.seneschal_server_handle());
-  ash::SeneschalClient::Get()->SharePath(
-      request,
-      base::BindOnce(&OnSeneschalSharePathResponse, std::move(callback)));
-}
-
 void OnSeneschalUnsharePathResponse(
     guest_os::SuccessCallback callback,
     absl::optional<vm_tools::seneschal::UnsharePathResponse> response) {
@@ -224,8 +205,8 @@ void GuestOsSharePath::AddObserver(Observer* obs) {
 }
 
 void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
+                                              uint32_t seneschal_server_handle,
                                               const base::FilePath& path,
-                                              bool persist,
                                               SharePathCallback callback) {
   // Verify path is in one of the allowable mount points.
   // This logic is similar to DownloadPrefs::SanitizeDownloadTargetPath().
@@ -377,59 +358,11 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
 
   // We will not make a blocking call to verify the path exists since
   // we don't want to block, and seneschal must verify this regardless.
-
-  // Even if VM is not running, save to prefs now.
-  if (persist) {
-    RegisterPersistedPath(vm_name, path);
-  }
   RegisterSharedPath(vm_name, path);
-  for (Observer& observer : observers_) {
-    observer.OnShare(vm_name, path, persist);
-  }
 
   request.mutable_shared_path()->set_path(relative_path.value());
   request.mutable_shared_path()->set_writable(true);
-
-  // Handle PluginVm.  TODO(joelhockey): If we ever require to (re)start
-  // PluginVm before sharing, we can detect that the VM is not started
-  // if handle == 0.
-  if (vm_name == plugin_vm::kPluginVmName) {
-    auto info =
-        GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(vm_name);
-    if (info) {
-      request.set_handle(info->seneschal_server_handle());
-    } else {
-      LOG(WARNING) << "Trying to share with pluginvm when it's not running";
-    }
-  } else if (vm_name == arc::kArcVmName) {
-    const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
-    if (!vm_info) {
-      LOG(WARNING) << "ARCVM not running, cannot share paths";
-      std::move(callback).Run(base::FilePath(), false,
-                              "ARCVM not running, cannot share paths");
-      return;
-    }
-    request.set_handle(vm_info->seneschal_server_handle());
-  } else {
-    // Restart VM if not currently running.
-    auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-    absl::optional<crostini::VmInfo> vm_info =
-        crostini_manager->GetVmInfo(vm_name);
-    if (!crostini_manager->IsVmRunning(vm_name)) {
-      crostini::CrostiniManager::RestartOptions options;
-      options.start_vm_only = true;
-      // kCrostiniDefaultContainerName is not used in the following function
-      // since we are only starting the VM.
-      crostini_manager->RestartCrostiniWithOptions(
-          GuestId(crostini::kCrostiniDefaultVmType, vm_name,
-                  crostini::kCrostiniDefaultContainerName),
-          std::move(options),
-          base::BindOnce(&OnVmRestartedForSeneschal, profile_, vm_name,
-                         std::move(callback), std::move(request)));
-      return;
-    }
-    request.set_handle(vm_info->info.seneschal_server_handle());
-  }
+  request.set_handle(seneschal_server_handle);
 
   ash::SeneschalClient::Get()->SharePath(
       request,
@@ -442,32 +375,13 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
   vm_tools::seneschal::UnsharePathRequest request;
 
   // Return success if VM is not currently running.
-  if (vm_name == plugin_vm::kPluginVmName) {
-    auto vm_info =
-        GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(vm_name);
-    if (!vm_info) {
-      std::move(callback).Run(true, "PluginVm not running");
-      return;
-    }
-    request.set_handle(vm_info->seneschal_server_handle());
-  } else if (vm_name == arc::kArcVmName) {
-    const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
-    if (!vm_info) {
-      LOG(WARNING) << "ARCVM not running, cannot unshare paths";
-      std::move(callback).Run(true, "ARCVM not running, cannot unshare paths");
-      return;
-    }
-    request.set_handle(vm_info->seneschal_server_handle());
-  } else {
-    auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-    absl::optional<crostini::VmInfo> vm_info =
-        crostini_manager->GetVmInfo(vm_name);
-    if (!vm_info || vm_info->state != crostini::VmState::STARTED) {
-      std::move(callback).Run(true, "VM not running");
-      return;
-    }
-    request.set_handle(vm_info->info.seneschal_server_handle());
+  auto vm_info =
+      GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(vm_name);
+  if (!vm_info) {
+    std::move(callback).Run(true, "VM not running");
+    return;
   }
+  request.set_handle(vm_info->seneschal_server_handle());
 
   // Convert path to a virtual path relative to one of the external mounts,
   // then get it as a FilesSystemURL to convert to a path inside the VM,
@@ -497,16 +411,17 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
 }
 
 void GuestOsSharePath::SharePath(const std::string& vm_name,
+                                 uint32_t seneschal_server_handle,
                                  const base::FilePath& path,
-                                 bool persist,
                                  SharePathCallback callback) {
   DCHECK(callback);
-  CallSeneschalSharePath(vm_name, path, persist, std::move(callback));
+  CallSeneschalSharePath(vm_name, seneschal_server_handle, path,
+                         std::move(callback));
 }
 
 void GuestOsSharePath::SharePaths(const std::string& vm_name,
+                                  uint32_t seneschal_server_handle,
                                   std::vector<base::FilePath> paths,
-                                  bool persist,
                                   SuccessCallback callback) {
   if (paths.empty()) {
     std::move(callback).Run(true, "");
@@ -518,7 +433,7 @@ void GuestOsSharePath::SharePaths(const std::string& vm_name,
           &ErrorCapture::Run,
           base::Owned(new ErrorCapture(paths.size(), std::move(callback))));
   for (const auto& path : paths) {
-    CallSeneschalSharePath(vm_name, path, persist,
+    CallSeneschalSharePath(vm_name, seneschal_server_handle, path,
                            base::BindOnce(barrier, path));
   }
 }
@@ -577,42 +492,49 @@ std::vector<base::FilePath> GuestOsSharePath::GetPersistedSharedPaths(
 }
 
 void GuestOsSharePath::SharePersistedPaths(const std::string& vm_name,
+                                           uint32_t seneschal_server_handle,
                                            SuccessCallback callback) {
-  SharePaths(vm_name, GetPersistedSharedPaths(vm_name),
-             /*persist=*/false, std::move(callback));
+  SharePaths(vm_name, seneschal_server_handle, GetPersistedSharedPaths(vm_name),
+             std::move(callback));
 }
 
-void GuestOsSharePath::RegisterPersistedPath(const std::string& vm_name,
-                                             const base::FilePath& path) {
+void GuestOsSharePath::RegisterPersistedPaths(
+    const std::string& vm_name,
+    const std::vector<base::FilePath>& paths) {
   PrefService* pref_service = profile_->GetPrefs();
   ScopedDictPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
   base::Value::Dict& shared_paths = *update;
-  // Check if path is already shared so we know whether we need to add it.
-  bool already_shared = false;
-  // Remove any paths that are children of this path.
-  // E.g. if path /foo/bar is already shared, and then we share /foo, we
-  // remove /foo/bar from the list since it will be shared as part of /foo.
-  std::vector<base::FilePath> children;
-  for (const auto it : shared_paths) {
-    base::FilePath shared(it.first);
-    auto& vms = it.second;
-    auto vm_matches = base::Contains(vms.GetList(), base::Value(vm_name));
-    if (path == shared) {
-      already_shared = true;
-      if (!vm_matches) {
-        vms.GetList().Append(vm_name);
+  for (const auto& path : paths) {
+    // Check if path is already shared so we know whether we need to add it.
+    bool already_shared = false;
+    // Remove any paths that are children of this path.
+    // E.g. if path /foo/bar is already shared, and then we share /foo, we
+    // remove /foo/bar from the list since it will be shared as part of /foo.
+    std::vector<base::FilePath> children;
+    for (const auto it : shared_paths) {
+      base::FilePath shared(it.first);
+      auto& vms = it.second;
+      auto vm_matches = base::Contains(vms.GetList(), base::Value(vm_name));
+      if (path == shared) {
+        already_shared = true;
+        if (!vm_matches) {
+          vms.GetList().Append(vm_name);
+        }
+      } else if (path.IsParent(shared) && vm_matches) {
+        children.emplace_back(shared);
       }
-    } else if (path.IsParent(shared) && vm_matches) {
-      children.emplace_back(shared);
     }
-  }
-  for (const auto& child : children) {
-    RemovePersistedPathFromPrefs(shared_paths, vm_name, child);
-  }
-  if (!already_shared) {
-    base::Value::List vms;
-    vms.Append(vm_name);
-    shared_paths.Set(path.value(), std::move(vms));
+    for (const auto& child : children) {
+      RemovePersistedPathFromPrefs(shared_paths, vm_name, child);
+    }
+    if (!already_shared) {
+      base::Value::List vms;
+      vms.Append(vm_name);
+      shared_paths.Set(path.value(), std::move(vms));
+    }
+    for (Observer& observer : observers_) {
+      observer.OnPersistedPathRegistered(vm_name, path);
+    }
   }
 }
 
@@ -641,6 +563,7 @@ void GuestOsSharePath::OnVmStarted(
       base::BindOnce(
           &GuestOsSharePath::SharePersistedPaths,
           weak_ptr_factory_.GetWeakPtr(), signal.name(),
+          signal.vm_info().seneschal_server_handle(),
           base::BindOnce([](bool success, const std::string& failure_reason) {
             if (!success) {
               LOG(ERROR) << "Error sharing persistent paths: "
@@ -679,10 +602,11 @@ void GuestOsSharePath::OnVolumeMounted(ash::MountError error_code,
     const auto& vms = it.second.GetList();
     for (const auto& vm : vms) {
       RegisterSharedPath(vm.GetString(), path);
-      if (crostini::CrostiniManager::GetForProfile(profile_)->IsVmRunning(
-              vm.GetString())) {
+      auto vm_info = GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(
+          vm.GetString());
+      if (vm_info) {
         CallSeneschalSharePath(
-            vm.GetString(), path, false,
+            vm.GetString(), vm_info->seneschal_server_handle(), path,
             base::BindOnce(seneschal_callback_, "share-on-mount", path));
       }
     }

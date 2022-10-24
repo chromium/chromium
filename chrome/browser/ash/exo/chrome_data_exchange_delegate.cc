@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -274,9 +275,18 @@ void ShareAndTranslateHostToVM(
 
   if (!paths_to_share.empty()) {
     if (!is_plugin_vm) {
+      auto vm_info =
+          guest_os::GuestOsSessionTracker::GetForProfile(primary_profile)
+              ->GetVmInfo(vm_name);
+      if (!vm_info) {
+        // VM must be running for copy-paste or drag-drop to be happening so
+        // something's gone wrong, skip trying to share and just send the data.
+        std::move(callback).Run(std::move(file_urls));
+        return;
+      }
       share_path->SharePaths(
-          vm_name, std::move(paths_to_share),
-          /*persist=*/false,
+          vm_name, vm_info->seneschal_server_handle(),
+          std::move(paths_to_share),
           base::BindOnce(
               [](base::OnceCallback<void(std::vector<std::string>)> callback,
                  std::vector<std::string> file_urls, bool success,

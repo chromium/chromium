@@ -270,12 +270,19 @@ base::CallbackListSubscription GuestOsSessionTracker::RunOnceContainerStarted(
 void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,
                                                const GuestInfo& info,
                                                bool notify) {
+  vm_tools::concierge::VmInfo vm_info;
+  vm_info.set_cid(info.cid);
+  vms_.insert_or_assign(id.vm_name, vm_info);
   guests_.insert_or_assign(id, info);
   if (notify) {
     for (auto& observer : container_started_observers_) {
       observer.OnContainerStarted(id);
     }
   }
+}
+
+void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id) {
+  AddGuestForTesting(id, GuestInfo{id, {}, {}, {}, {}, {}});
 }
 
 base::CallbackListSubscription GuestOsSessionTracker::RunOnShutdown(

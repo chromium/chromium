@@ -926,13 +926,25 @@ FileManagerPrivateInternalSharePathsWithCrostiniFunction::Run() {
     paths.emplace_back(cracked.path());
   }
 
-  guest_os::GuestOsSharePath::GetForProfile(profile)->SharePaths(
-      params->vm_name, std::move(paths), params->persist,
-      base::BindOnce(&FileManagerPrivateInternalSharePathsWithCrostiniFunction::
-                         SharePathsCallback,
-                     this));
+  auto vm_info =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          params->vm_name);
+  auto* share_service = guest_os::GuestOsSharePath::GetForProfile(profile);
 
-  return RespondLater();
+  share_service->RegisterPersistedPaths(params->vm_name, paths);
+  if (vm_info) {
+    // The share service will mount persistent shares at VM boot, but if the VM
+    // is already running we need to trigger the first mount ourselves.
+    share_service->SharePaths(
+        params->vm_name, vm_info->seneschal_server_handle(), std::move(paths),
+        base::BindOnce(
+            &FileManagerPrivateInternalSharePathsWithCrostiniFunction::
+                SharePathsCallback,
+            this));
+    return RespondLater();
+  } else {
+    return RespondNow(WithArguments());
+  }
 }
 
 void FileManagerPrivateInternalSharePathsWithCrostiniFunction::

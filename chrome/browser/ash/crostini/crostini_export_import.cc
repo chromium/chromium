@@ -342,14 +342,17 @@ void CrostiniExportImport::SharePath(
     const base::FilePath& path,
     guest_os::GuestOsSharePath::SharePathCallback callback,
     crostini::CrostiniResult result) {
-  if (result != CrostiniResult::SUCCESS) {
+  auto vm_info =
+      crostini::CrostiniManager::GetForProfile(profile_)->GetVmInfo(vm_name);
+  if (result != CrostiniResult::SUCCESS || !vm_info.has_value()) {
     std::move(callback).Run(
         base::FilePath(), false,
         base::StringPrintf("VM could not be started: %d", result));
     return;
   }
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
-      vm_name, path, false, std::move(callback));
+      vm_name, vm_info->info.seneschal_server_handle(), path,
+      std::move(callback));
 }
 
 void CrostiniExportImport::ExportAfterSharing(

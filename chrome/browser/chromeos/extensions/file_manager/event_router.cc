@@ -1193,13 +1193,10 @@ void EventRouter::PopulateCrostiniEvent(
   event.entries.emplace_back(std::move(entry));
 }
 
-void EventRouter::OnShare(const std::string& vm_name,
-                          const base::FilePath& path,
-                          bool persist) {
-  if (persist) {
-    SendCrostiniEvent(file_manager_private::CROSTINI_EVENT_TYPE_SHARE, vm_name,
-                      path);
-  }
+void EventRouter::OnPersistedPathRegistered(const std::string& vm_name,
+                                            const base::FilePath& path) {
+  SendCrostiniEvent(file_manager_private::CROSTINI_EVENT_TYPE_SHARE, vm_name,
+                    path);
 }
 
 void EventRouter::OnUnshare(const std::string& vm_name,

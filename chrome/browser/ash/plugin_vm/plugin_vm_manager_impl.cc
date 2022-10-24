@@ -621,7 +621,7 @@ void PluginVmManagerImpl::OnDefaultSharedDirExists(const base::FilePath& dir,
   LOG_FUNCTION_CALL();
   if (exists) {
     guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
-        kPluginVmName, dir, false,
+        kPluginVmName, seneschal_server_handle_, dir,
         base::BindOnce([](const base::FilePath& dir, bool success,
                           const std::string& failure_reason) {
           if (!success) {

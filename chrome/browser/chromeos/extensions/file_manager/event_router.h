@@ -184,9 +184,8 @@ class EventRouter
   void OnFileSystemMountFailed() override;
 
   // guest_os::GuestOsSharePath::Observer overrides.
-  void OnShare(const std::string& vm_name,
-               const base::FilePath& path,
-               bool persist) override;
+  void OnPersistedPathRegistered(const std::string& vm_name,
+                                 const base::FilePath& path) override;
   void OnUnshare(const std::string& vm_name,
                  const base::FilePath& path) override;
 

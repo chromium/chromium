@@ -230,9 +230,16 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
     return;
   }
 
+  const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
+  if (!vm_info) {
+    LOG(WARNING) << "ARCVM not running, cannot share paths";
+    std::move(callback).Run(std::vector<GURL>());
+    return;
+  }
   guest_os::GuestOsSharePath::GetForProfile(
       ProfileManager::GetPrimaryUserProfile())
-      ->SharePaths(arc::kArcVmName, path_list, /*persist=*/false,
+      ->SharePaths(arc::kArcVmName, vm_info->seneschal_server_handle(),
+                   path_list,
                    base::BindOnce(
                        [](ConvertToContentUrlsAndShareCallback callback,
                           const std::vector<GURL>& content_urls, bool success,

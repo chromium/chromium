@@ -149,6 +149,13 @@ void LaunchApplication(
 
   auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
   const auto vm_name = registration.VmName();
+  auto vm_info =
+      crostini::CrostiniManager::GetForProfile(profile)->GetVmInfo(vm_name);
+  if (!vm_info) {
+    return OnLaunchFailed(app_id, std::move(callback),
+                          "VM not running: " + vm_name,
+                          CrostiniResult::SHARE_PATHS_FAILED);
+  }
 
   // Share any paths not in crostini.  The user will see the spinner while this
   // is happening.
@@ -178,7 +185,8 @@ void LaunchApplication(
   }
 
   share_path->SharePaths(
-      vm_name, std::move(paths_to_share), /*persist=*/false,
+      vm_name, vm_info->info.seneschal_server_handle(),
+      std::move(paths_to_share),
       base::BindOnce(OnSharePathForLaunchApplication, profile, app_id,
                      std::move(registration), display_id,
                      std::move(launch_args), std::move(callback)));

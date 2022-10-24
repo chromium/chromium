@@ -571,7 +571,7 @@ class CrostiniManager : public KeyedService,
 
   void UpdateVmState(std::string vm_name, VmState vm_state);
   bool IsVmRunning(std::string vm_name);
-  // Returns null if VM is not running.
+  // Returns absl::nullopt if VM is not running.
   absl::optional<VmInfo> GetVmInfo(std::string vm_name);
   void AddRunningVmForTesting(std::string vm_name);
   void AddStoppingVmForTesting(std::string vm_name);
@@ -671,7 +671,9 @@ class CrostiniManager : public KeyedService,
   // Callback for ConciergeClient::TremplinStartedSignal. Called after the
   // Tremplin service starts. Updates running containers list and then calls the
   // |callback| with true, indicating success.
-  void OnStartTremplin(std::string vm_name, BoolCallback callback);
+  void OnStartTremplin(std::string vm_name,
+                       uint32_t seneschal_server_handle,
+                       BoolCallback callback);
 
   // Callback for ConciergeClient::StopVm. Called after the Concierge
   // service method finishes.
