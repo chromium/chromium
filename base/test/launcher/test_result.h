@@ -83,6 +83,9 @@ struct TestResult {
   // See more in gtest_links.h.
   void AddLink(const std::string& name, const std::string& url);
 
+  // Add property in the xml output.
+  void AddProperty(const std::string& name, const std::string& value);
+
   // Returns true if the test has completed (i.e. the test binary exited
   // normally, possibly with an exit code indicating failure, but didn't crash
   // or time out in the middle of the test).
@@ -123,6 +126,9 @@ struct TestResult {
 
   // The key is link name.
   std::map<std::string, std::string> links;
+
+  // The key is property name.
+  std::map<std::string, std::string> properties;
 };
 
 }  // namespace base

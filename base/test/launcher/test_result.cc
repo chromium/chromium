@@ -103,9 +103,15 @@ std::string TestResult::GetTestCaseName() const {
 }
 
 void TestResult::AddLink(const std::string& name, const std::string& url) {
-  DCHECK(links.find(name) == links.end())
-      << name << " is already used as a link name. Ignoring...";
-  links[name] = url;
+  auto [it, inserted] = links.insert({name, url});
+  DCHECK(inserted) << name << " is already used as a link name. Ignoring...";
+}
+
+void TestResult::AddProperty(const std::string& name,
+                             const std::string& value) {
+  auto [it, inserted] = properties.insert({name, value});
+  DCHECK(inserted) << name
+                   << " is already used as a property name. Ignoring...";
 }
 
 }  // namespace base

@@ -508,6 +508,16 @@ bool TestResultsTracker::SaveSummaryAsJSON(
           }
           test_result_value.Set("links", std::move(links));
         }
+        if (!test_result.properties.empty()) {
+          Value::Dict properties;
+          for (const auto& property : test_result.properties) {
+            Value::Dict property_info;
+            property_info.Set("value", property.second);
+            properties.SetByDottedPath(property.first,
+                                       std::move(property_info));
+          }
+          test_result_value.Set("properties", std::move(properties));
+        }
 
         Value::List test_result_parts;
         for (const TestResultPart& result_part :
