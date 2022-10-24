@@ -81,11 +81,6 @@ function getURLEchoCookie() {
   return getServerURL('echoheader?Cookie');
 }
 
-function getHeaderValueFromResponseHeaders(responseHeaders, headerName) {
-  var responseHeadersObject = Object.fromEntries(responseHeaders.entries());
-  return responseHeadersObject[headerName];
-}
-
 // Shared test sections.
 function cancelThirdPartyExpected() {
     return [
@@ -603,9 +598,7 @@ let allTests = [
        }],
       chrome.test.callbackPass(function() {
         passCallback = chrome.test.callbackPass((response) => {
-          chrome.test.assertEq(
-              undefined,
-              getHeaderValueFromResponseHeaders(response.headers, headerName));
+          chrome.test.assertEq(undefined, response.headers.get(headerName));
         });
         fetch(getServerURL('echoheader?' + headerName)).then((response) => {
           passCallback(response);
@@ -624,9 +617,7 @@ let allTests = [
        }],
       chrome.test.callbackPass(function() {
         passCallback = chrome.test.callbackPass((response) => {
-          chrome.test.assertEq(
-              headerValue,
-              getHeaderValueFromResponseHeaders(response.headers, headerName));
+          chrome.test.assertEq(headerValue, response.headers.get(headerName));
         });
         fetch(getServerURL('echo')).then((response) => {
           passCallback(response);
@@ -646,9 +637,7 @@ let allTests = [
        }],
       chrome.test.callbackPass(function() {
         passCallback = chrome.test.callbackPass((response) => {
-          chrome.test.assertEq(
-              undefined,
-              getHeaderValueFromResponseHeaders(response.headers, headerName));
+          chrome.test.assertEq(undefined, response.headers.get(headerName));
         });
         fetch(getURLSetHeader()).then((response) => {
           passCallback(response);
