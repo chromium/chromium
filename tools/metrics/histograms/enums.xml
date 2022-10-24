@@ -104424,7 +104424,8 @@ Called by update_scheduler_enums.py.-->
   <int value="55" label="InjectedStyleSheet"/>
   <int value="56" label="MediaSessionImplOnServiceCreated"/>
   <int value="57" label="WebTransport"/>
-  <int value="58" label="Keepalive request"/>
+  <int value="58" label="Dummy"/>
+  <int value="59" label="Keepalive request"/>
 </enum>
 
 <enum name="WebShareMethod">
