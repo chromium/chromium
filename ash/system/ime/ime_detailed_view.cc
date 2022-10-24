@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -53,6 +54,11 @@ void IMEDetailedView::ResetImeListView() {
 void IMEDetailedView::CreateExtraTitleRowButtons() {
   if (ime_controller_->managed_by_policy()) {
     controlled_setting_icon_ = TrayPopupUtils::CreateMainImageView();
+    if (features::IsQsRevampEnabled()) {
+      // Match the size of the settings button. This size matches IconButton
+      // kSmall, but IconButton doesn't expose that value, so we inline it here.
+      controlled_setting_icon_->SetPreferredSize(gfx::Size(32, 32));
+    }
     controlled_setting_icon_->SetImage(gfx::CreateVectorIcon(
         kSystemMenuBusinessIcon,
         AshColorProvider::Get()->GetContentLayerColor(
