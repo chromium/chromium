@@ -184,15 +184,17 @@ TEST(PatchingTest, PuffDiffTest) {
       out_test_file("actual_puffin_app_v2_to_v1.puff");
   // Test patching v1 to v2:
   ASSERT_TRUE(base::DeleteFile(actual_patch_v1_to_v2_puff));
-  ASSERT_TRUE(PuffDiff(app_v1_crx.MaybeAsASCII(), app_v2_crx.MaybeAsASCII(),
-                       actual_patch_v1_to_v2_puff.MaybeAsASCII()));
+  ASSERT_EQ(PuffDiff(app_v1_crx.MaybeAsASCII(), app_v2_crx.MaybeAsASCII(),
+                     actual_patch_v1_to_v2_puff.MaybeAsASCII()),
+            Status::P_OK);
   EXPECT_TRUE(base::ContentsEqual(expected_patch_v1_to_v2_puff,
                                   actual_patch_v1_to_v2_puff));
 
   // Test patching v2 to v1:
   ASSERT_TRUE(base::DeleteFile(actual_patch_v2_to_v1_puff));
-  ASSERT_TRUE(PuffDiff(app_v2_crx.MaybeAsASCII(), app_v1_crx.MaybeAsASCII(),
-                       actual_patch_v2_to_v1_puff.MaybeAsASCII()));
+  ASSERT_EQ(PuffDiff(app_v2_crx.MaybeAsASCII(), app_v1_crx.MaybeAsASCII(),
+                     actual_patch_v2_to_v1_puff.MaybeAsASCII()),
+            Status::P_OK);
   EXPECT_TRUE(base::ContentsEqual(expected_patch_v2_to_v1_puff,
                                   actual_patch_v2_to_v1_puff));
 }

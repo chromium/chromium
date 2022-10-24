@@ -201,9 +201,9 @@ bool PuffDiff(const Buffer& src,
                   {puffin::CompressorType::kBrotli}, tmp_filepath, patch);
 }
 
-bool PuffDiff(const string& src_file_path,
-              const string& dest_file_path,
-              const string& output_patch_path) {
+Status PuffDiff(const string& src_file_path,
+                const string& dest_file_path,
+                const string& output_patch_path) {
   auto src_deflates_byte = vector<ByteExtent>();
   auto dst_deflates_byte = vector<ByteExtent>();
   auto src_deflates_bit = vector<BitExtent>();
@@ -214,47 +214,45 @@ bool PuffDiff(const string& src_file_path,
       FileStream::Open(src_file_path, true, false);
   if (!src_stream) {
     LOG(ERROR) << "Invalid source filepath";
-    return false;
+    return Status::P_READ_OPEN_ERROR;
   }
   puffin::UniqueStreamPtr dest_stream =
       FileStream::Open(dest_file_path, true, false);
   if (!dest_stream) {
     LOG(ERROR) << "Invalid destination filepath";
-    return false;
+    return Status::P_READ_OPEN_ERROR;
   }
 
   // Get Src Deflates.
   uint64_t src_stream_size = 0;
   if (!src_stream->GetSize(&src_stream_size)) {
     LOG(ERROR) << "Unable to get streamsize for file: " << src_file_path;
-    return false;
+    return Status::P_STREAM_ERROR;
   }
   Buffer src_data(src_stream_size);
   if (!src_stream->Read(src_data.data(), src_data.size())) {
     LOG(ERROR) << "Unable to read stream for file: " << src_file_path;
-    return false;
+    return Status::P_STREAM_ERROR;
   }
   if (!puffin::LocateDeflatesInZipArchive(src_data, &src_deflates_bit)) {
     LOG(ERROR) << "No zip deflates found for source filepath: "
                << src_file_path;
-    return false;
   }
 
   // Get Dest Deflates.
   uint64_t dest_stream_size = 0;
   if (!dest_stream->GetSize(&dest_stream_size)) {
     LOG(ERROR) << "Unable to get streamsize for file: " << dest_file_path;
-    return false;
+    return Status::P_STREAM_ERROR;
   }
   Buffer dest_data(dest_stream_size);
   if (!dest_stream->Read(dest_data.data(), dest_data.size())) {
     LOG(ERROR) << "Unable to read stream for file: " << dest_file_path;
-    return false;
+    return Status::P_STREAM_ERROR;
   }
   if (!puffin::LocateDeflatesInZipArchive(dest_data, &dst_deflates_bit)) {
     LOG(ERROR) << "No zip deflates for destination filepath: "
                << dest_file_path;
-    return false;
   }
 
   Buffer puffdiff_delta;
@@ -267,20 +265,20 @@ bool PuffDiff(const string& src_file_path,
                         puffin::PatchAlgorithm::kZucchini, "/tmp/patch.tmp",
                         &puffdiff_delta)) {
     LOG(ERROR) << "Unable to generate PuffDiff";
-    return false;
+    return Status::P_UNABLE_TO_GENERATE_PUFFPATCH;
   }
   LOG(INFO) << "patch_size: " << puffdiff_delta.size();
   puffin::UniqueStreamPtr patch_stream =
       FileStream::Open(output_patch_path, false, true);
   if (!patch_stream) {
     LOG(ERROR) << "Unable to open patch Stream";
-    return false;
+    return Status::P_STREAM_ERROR;
   }
   if (!patch_stream->Write(puffdiff_delta.data(), puffdiff_delta.size())) {
     LOG(ERROR) << "Unable to write to patch stream to patch filepath.";
-    return false;
+    return Status::P_WRITE_ERROR;
   }
-  return true;
+  return Status::P_OK;
 }
 
 }  // namespace puffin

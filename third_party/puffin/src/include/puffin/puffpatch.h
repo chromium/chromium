@@ -50,6 +50,8 @@ enum Status {
   P_SERIALIZATION_FAILED = 22,    //
   P_DESERIALIZATION_FAILED = 23,  //
   P_INPUT_NOT_RECOGNIZED = 24,    // Unrecognized input (not a crx)
+
+  P_UNABLE_TO_GENERATE_PUFFPATCH = 25,  // Generic failure generating patch.
 };
 
 // Applies the Puffin patch to deflate stream |src| to create deflate stream
