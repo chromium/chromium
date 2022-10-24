@@ -94,7 +94,12 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   };
 
   // Different kinds of unwinders that are used for stack sampling.
-  enum class UnwinderType { kUnknown, kCustomAndroid, kDefault };
+  enum class UnwinderType {
+    kUnknown,
+    kCustomAndroid,
+    kDefault,
+    kLibunwindstackUnwinderAndroid
+  };
 
   // This class will receive the sampling profiler stackframes and output them
   // to the chrome trace via an event. Exposed for testing.
@@ -187,7 +192,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   // be used to supply custom unwinders to be used during stack sampling.
   static std::unique_ptr<TracingSamplerProfiler> CreateOnMainThread(
       CoreUnwindersCallback core_unwinders_factory_function =
-          CoreUnwindersCallback());
+          CoreUnwindersCallback(),
+      UnwinderType unwinder_type = UnwinderType::kUnknown);
 
   TracingSamplerProfiler(const TracingSamplerProfiler&) = delete;
   TracingSamplerProfiler& operator=(const TracingSamplerProfiler&) = delete;
@@ -223,7 +229,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
   explicit TracingSamplerProfiler(
       base::SamplingProfilerThreadToken sampled_thread_token,
-      CoreUnwindersCallback core_unwinders_factory_function);
+      CoreUnwindersCallback core_unwinders_factory_function,
+      UnwinderType unwinder_type = UnwinderType::kUnknown);
   virtual ~TracingSamplerProfiler();
 
   // Sets a callback to create auxiliary unwinders, for handling additional,
@@ -254,6 +261,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   CoreUnwindersCallback core_unwinders_factory_function_;
   base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>
       aux_unwinder_factory_;
+  // To differentiate b/w different unwinders used for browser main
+  // thread sampling.
+  // TODO(crbug.com/1377364): Remove once we have single unwinder for browser
+  // main.
+  UnwinderType unwinder_type_;
 
   base::Lock lock_;
   std::unique_ptr<base::StackSamplingProfiler> profiler_;  // under |lock_|
