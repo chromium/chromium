@@ -430,8 +430,8 @@ void LocalStorageImpl::PurgeUnusedAreasIfNeeded() {
     return;
 
   // No purge is needed.
-  if (total_cache_size > kMaxLocalStorageCacheSize &&
-      areas_.size() > kMaxLocalStorageAreaCount && !is_low_end_device_) {
+  if (total_cache_size <= kMaxLocalStorageCacheSize &&
+      areas_.size() <= kMaxLocalStorageAreaCount && !is_low_end_device_) {
     return;
   }
 
