@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.mojoPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See
-// https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /**
  * @fileoverview Externs generated from namespace: mojoPrivate

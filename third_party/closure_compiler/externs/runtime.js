@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,9 @@ chrome.runtime.Port.prototype.sender;
  *   url: (string|undefined),
  *   nativeApplication: (string|undefined),
  *   tlsChannelId: (string|undefined),
- *   origin: (string|undefined)
+ *   origin: (string|undefined),
+ *   documentId: (string|undefined),
+ *   documentLifecycle: (string|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/runtime#type-MessageSender
  */
@@ -87,6 +89,7 @@ chrome.runtime.PlatformOs = {
   CROS: 'cros',
   LINUX: 'linux',
   OPENBSD: 'openbsd',
+  FUCHSIA: 'fuchsia',
 };
 
 /**
@@ -328,20 +331,20 @@ chrome.runtime.connectNative = function(application) {};
  * @param {{
  *   includeTlsChannelId: (boolean|undefined)
  * }=} options
- * @param {function(*): void=} responseCallback
+ * @param {function(*): void=} callback
  * @see https://developer.chrome.com/extensions/runtime#method-sendMessage
  */
-chrome.runtime.sendMessage = function(extensionId, message, options, responseCallback) {};
+chrome.runtime.sendMessage = function(extensionId, message, options, callback) {};
 
 /**
  * Send a single message to a native application.
  * @param {string} application The name of the native messaging host.
  * @param {Object} message The message that will be passed to the native
  *     messaging host.
- * @param {function(*): void=} responseCallback
+ * @param {function(*): void=} callback
  * @see https://developer.chrome.com/extensions/runtime#method-sendNativeMessage
  */
-chrome.runtime.sendNativeMessage = function(application, message, responseCallback) {};
+chrome.runtime.sendNativeMessage = function(application, message, callback) {};
 
 /**
  * Returns information about the current platform.

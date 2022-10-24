@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,6 +82,27 @@ chrome.virtualKeyboardPrivate.KeyboardConfig;
 chrome.virtualKeyboardPrivate.ContainerBehaviorOptions;
 
 /**
+ * @enum {string}
+ */
+chrome.virtualKeyboardPrivate.DisplayFormat = {
+  TEXT: 'text',
+  PNG: 'png',
+  HTML: 'html',
+  FILE: 'file',
+};
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   imageData: (string|undefined),
+ *   textData: (string|undefined),
+ *   displayFormat: !chrome.virtualKeyboardPrivate.DisplayFormat,
+ *   timeCopied: number
+ * }}
+ */
+chrome.virtualKeyboardPrivate.ClipboardItem;
+
+/**
  * Inserts text into the currently focused text field.
  * @param {string} text The text that will be inserted.
  * @param {function(): void=} callback Called when the insertion is completed.
@@ -130,9 +151,14 @@ chrome.virtualKeyboardPrivate.keyboardLoaded = function(callback) {};
 chrome.virtualKeyboardPrivate.getKeyboardConfig = function(callback) {};
 
 /**
- * Opens chrome://settings/languages page.
+ * Opens chrome://os-settings/osLanguages page.
  */
 chrome.virtualKeyboardPrivate.openSettings = function() {};
+
+/**
+ * Opens chrome://os-settings/osLanguages/smartInputs page.
+ */
+chrome.virtualKeyboardPrivate.openSuggestionSettings = function() {};
 
 /**
  * Sets the virtual keyboard container behavior
@@ -191,6 +217,28 @@ chrome.virtualKeyboardPrivate.setAreaToRemainOnScreen = function(bounds) {};
 chrome.virtualKeyboardPrivate.setWindowBoundsInScreen = function(bounds) {};
 
 /**
+ * Get the clipboard history
+ * @param {{
+ *   itemIds: (!Array<string>|undefined)
+ * }} options
+ * @param {function(!Array<!chrome.virtualKeyboardPrivate.ClipboardItem>): void}
+ *     callback Called when querying the ClipboardHistory is complete.
+ */
+chrome.virtualKeyboardPrivate.getClipboardHistory = function(options, callback) {};
+
+/**
+ * Pastes a clipboard item from the clipboard history.
+ * @param {string} itemId The unique id which identifies this clipboard item.
+ */
+chrome.virtualKeyboardPrivate.pasteClipboardItem = function(itemId) {};
+
+/**
+ * Deletes a clipboard item from the clipboard history.
+ * @param {string} itemId The unique id which identifies this clipboard item.
+ */
+chrome.virtualKeyboardPrivate.deleteClipboardItem = function(itemId) {};
+
+/**
  * This event is sent when virtual keyboard bounds changed and overscroll/resize
  * is enabled.
  * @type {!ChromeEvent}
@@ -210,3 +258,16 @@ chrome.virtualKeyboardPrivate.onKeyboardClosed;
  * @type {!ChromeEvent}
  */
 chrome.virtualKeyboardPrivate.onKeyboardConfigChanged;
+
+/**
+ * Fired when the list of items in the clipboard history changes.
+ * @type {!ChromeEvent}
+ */
+chrome.virtualKeyboardPrivate.onClipboardHistoryChanged;
+
+/**
+ * Fired when the data in a specific clipboard item is updated (mainly used for
+ * sending updated rendered html image).
+ * @type {!ChromeEvent}
+ */
+chrome.virtualKeyboardPrivate.onClipboardItemUpdated;

@@ -6,6 +6,8 @@ accessibility_private.json
 activity_log_private.json
 autofill_private.idl
 bookmark_manager_private.json
+bookmarks.json
+braille_display_private.idl
 chromeos_info_private.json
 command_line_private.json
 crash_report_private.idl
@@ -21,8 +23,12 @@ quick_unlock_private.idl
 resources_private.idl
 safe_browsing_private.idl
 settings_private.idl
+speech_recognition_private.idl
 system_private.json
+tab_groups.json
+tabs.json
 terminal_private.json
 tts.json
 users_private.idl
 webview_tag.json
+windows.json
