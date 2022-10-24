@@ -46,9 +46,10 @@ interface DiagnosticsService {
   // platform. This routine checks the battery's design capacity against inputs
   // configured in cros_config. If no configuration data is present in
   // cros_config, the routine will fall back to fleet-wide default values of
-  // [1000, 10000]. The routine will pass iff the design capacity of the battery
-  // read from the platform is inclusively within these bounds. This routine is
-  // only available if GetAvailableRoutines returned kBatteryCapactity.
+  // [1000, 10000]. The routine will pass if the design capacity of the battery
+  // read from the platform is inclusively within these bounds.
+  // The availability of this routine can be determined by checking that
+  // kBatteryCapacity is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -60,8 +61,9 @@ interface DiagnosticsService {
   // battery against inputs configured in cros_config. If no configuration data
   // is present in cros_config, the routine will fall back to fleet-wide default
   // values of 1000 for the maximum allowable cycle count and 50% for maximum
-  // battery wear percentage allowed. This routine is only available if
-  // GetAvailableRoutines returned kBatteryHealth.
+  // battery wear percentage allowed.
+  // The availability of this routine can be determined by checking that
+  // kBatteryHealth is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -70,8 +72,9 @@ interface DiagnosticsService {
 
   // Requests that the SmartctlCheck routine is created and started on the
   // platform. This routine checks available spare NVMe capacity against the
-  // threshold. This routine is only available if GetAvailableRoutines returned
-  // kSmartctlCheck.
+  // threshold.
+  // The availability of this routine can be determined by checking that
+  // kSmartctlCheck is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -81,8 +84,9 @@ interface DiagnosticsService {
   // Requests that the AcPower routine is created and started on the
   // platform. This routine checks the status of the power supply, and if
   // |expected_power_type| is specified, checks to see that
-  // |expected_power_type| matches the type reported by the power supply. This
-  // routine is only available if GetAvailableRoutines returned kAcPower.
+  // |expected_power_type| matches the type reported by the power supply.
+  // The availability of this routine can be determined by checking that
+  // kAcPower is returned by GetAvailableRoutines.
   //
   // The request:
   // * |expected_status| - whether or not the adapter is expected to be online.
@@ -98,8 +102,9 @@ interface DiagnosticsService {
 
   // Requests that the CPU cache routine is created and started on the
   // platform. This routine runs the stressapptest to test the CPU caches.
-  // The routine will pass if the stressapptest returns zero. This routine is
-  // only available if GetAvailableRoutines returned kCpuCache.
+  // The routine will pass if the stressapptest returns zero.
+  // The availability of this routine can be determined by checking that
+  // kCpuCache is returned by GetAvailableRoutines.
   //
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the CPU cache
@@ -114,8 +119,9 @@ interface DiagnosticsService {
 
   // Requests that the CPU stress routine is created and started on the
   // platform. This routine runs the stressapptest to stress test the CPU.
-  // The routine will pass if the stressapptest returns zero. This routine is
-  // only available if GetAvailableRoutines returned kCpuStress.
+  // The routine will pass if the stressapptest returns zero.
+  // The availability of this routine can be determined by checking that
+  // kCpuStress is returned by GetAvailableRoutines.
   //
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the CPU stress
@@ -133,6 +139,8 @@ interface DiagnosticsService {
   // operations by SSE instructions for a specified amount of time. The routine
   // will pass if the result values of the operations and known accurate result
   // are the same.
+  // The availability of this routine can be determined by checking that
+  // kFloatingPointAccuracy is returned by GetAvailableRoutines.
   //
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the floating-point
@@ -149,8 +157,9 @@ interface DiagnosticsService {
 
   // Requests that the NvmeWearLevel routine is created and started on the
   // platform. This routine examines wear level of NVMe against input
-  // threshold. This routine is only available if GetAvailableRoutines returned
-  // kNvmeWearLevel.
+  // threshold.
+  // The availability of this routine can be determined by checking that
+  // kNvmeWearLevel is returned by GetAvailableRoutines.
   //
   // The request:
   // * |wear_level_threshold| - threshold number in percentage which routine
@@ -164,8 +173,9 @@ interface DiagnosticsService {
 
   // Requests that the NvmeSelfTest routine is created and started on the
   // platform. This routine launches the NVMe self-test, a tool to perform
-  // necessary tests to observe the performance and the parameters. This routine
-  // is only available if GetAvailableRoutines returned kNvmeSelfTest.
+  // necessary tests to observe the performance and the parameters.
+  // The availability of this routine can be determined by checking that
+  // kNvmeSelfTest is returned by GetAvailableRoutines.
   //
   // The request:
   // * |nvme_self_test_type| - specifies the type of test for short period or
@@ -181,7 +191,8 @@ interface DiagnosticsService {
   // The routine will create a test file with md5 checksum, read the test file
   // either randomly or linearly, repeatedly for a dedicated duration. If the
   // md5 checksum of read back is validated, then the test will pass.
-  // This routine is only available if GetAvailableRoutines returned kDiskRead.
+  // The availability of this routine can be determined by checking that
+  // kDiskRead is returned by GetAvailableRoutines.
   //
   // The request:
   // * |type| - type of how disk reading is performed, either linear or random.
@@ -201,8 +212,9 @@ interface DiagnosticsService {
 
   // Requests that the PrimeSearch routine is created and started on the
   // platform. Calculate prime numbers and verifies the calculation repeatedly
-  // in a duration. This routine is only available if GetAvailableRoutines
-  // returned kPrimeSearch.
+  // in a duration.
+  // The availability of this routine can be determined by checking that
+  // kPrimeSearch is returned by GetAvailableRoutines.
   //
   // The request:
   // * |length_seconds| - length of time, in seconds, to run the PrimeSearch
@@ -217,8 +229,9 @@ interface DiagnosticsService {
 
   // Requests that the BatteryDischarge routine is created and started on the
   // platform. This routine checks the battery's discharge rate over a period of
-  // time. This routine is only available if GetAvailableRoutines returned
-  // kBatteryDischarge.
+  // time.
+  // The availability of this routine can be determined by checking that
+  // kBatteryDischarge is returned by GetAvailableRoutines.
   //
   // The request:
   // * |length_seconds| - length of time to run the routine for.
@@ -235,8 +248,9 @@ interface DiagnosticsService {
 
   // Requests that the BatteryCharge routine is created and started on the
   // platform. This routine checks the battery's charge rate over a period of
-  // time. This routine is only available if GetAvailableRoutines returned
-  // kBatteryCharge.
+  // time.
+  // The availability of this routine can be determined by checking that
+  // kBatteryCharge is returned by GetAvailableRoutines.
   //
   // The request:
   // * |length_seconds| - length of time to run the routine for.
@@ -251,8 +265,9 @@ interface DiagnosticsService {
       => (DiagnosticsRunRoutineResponse response);
 
   // Requests that the Memory routine is created and started on the platform.
-  // This routine checks that the device's memory is working correctly. This
-  // routine is only available if GetAvailableRoutines returned kMemory.
+  // This routine checks that the device's memory is working correctly.
+  // The availability of this routine can be determined by checking that
+  // kMemory is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -261,8 +276,8 @@ interface DiagnosticsService {
 
   // Requests that the LanConnectivity routine is created and started on the
   // platform. This routine checks whether the device is connected to a LAN.
-  // This routine is only available if GetAvailableRoutines returned
-  // kLanConnectivity.
+  // The availability of this routine can be determined by checking that
+  // kLanConnectivity is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -272,8 +287,9 @@ interface DiagnosticsService {
   // TODO(b/245293243): Rephrase to express sufficiency instead of necessity.
   // Requests that the DnsResolution routine is created and started on the
   // platform. This routine checks whether a DNS resolution can be completed
-  // successfully. This routine is only available if GetAvailableRoutines
-  // returned kDnsResolution.
+  // successfully.
+  // The availability of this routine can be determined by checking that
+  // kDnsResolution is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -282,8 +298,9 @@ interface DiagnosticsService {
   
   // Requests that the SignalStrength routine is created and started on the
   // platform. This routine checks whether there is an acceptable signal
-  // strength on wireless networks. This routine is only available if
-  // GetAvailableRoutines returned kSignalStrength.
+  // strength on wireless networks.
+  // The availability of this routine can be determined by checking that
+  // kSignalStrength is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -293,8 +310,9 @@ interface DiagnosticsService {
   // TODO(b/245293243): Rephrase to express sufficiency instead of necessity.
   // Requests that the GatewayCanBePinged routine is created and started on the
   // platform. This routine checks whether the gateway of connected networks is
-  // pingable. This routine is only available if GetAvailableRoutines returned
-  // kGatewayCanBePinged.
+  // pingable.
+  // The availability of this routine can be determined by checking that
+  // kGatewayCanBePinged is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
@@ -304,8 +322,9 @@ interface DiagnosticsService {
   // TODO(b/245293243): Rephrase to express sufficiency instead of necessity.
   // Requests that the DnsResolverPresent routine is created and started on the
   // platform. This routine checks whether a DNS resolver is available to the
-  // browser. This routine is only available if GetAvailableRoutines contains
-  // kDnsResolverPresent.
+  // browser.
+  // The availability of this routine can be determined by checking that
+  // kDnsResolverPresent is returned by GetAvailableRoutines.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
