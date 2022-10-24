@@ -428,7 +428,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
       override_registration_;
 
-  std::unique_ptr<net::EmbeddedTestServer> isolated_app_test_server_ = nullptr;
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_test_server_ =
+      nullptr;
   std::unique_ptr<base::RunLoop> window_controls_overlay_callback_for_testing_ =
       nullptr;
 

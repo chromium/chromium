@@ -270,14 +270,14 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .wco_not_enabled_title = u"Site A Bar",
       .icon_color = SK_ColorGREEN}},
     {Site::kIsolated,
-     {// This file actually lives in /webapps_integration/isolated_app/. We
+     {// This file actually lives in /webapps_integration/isolated_web_app/. We
       // serve this directory as root in a special test server to allow the
-      // isolated app to live at the root scope.
+      // Isolated Web App to live at the root scope.
       .relative_url = "/basic.html",
       // same note for this file
       .relative_manifest_id = "basic.html",
-      .app_name = "Isolated App",
-      .wco_not_enabled_title = u"Isolated App",
+      .app_name = "Isolated Web App",
+      .wco_not_enabled_title = u"Isolated Web App",
       .icon_color = SK_ColorGREEN}},
     {Site::kFileHandler,
      {.relative_url = "/webapps_integration/file_handler/basic.html",
@@ -786,10 +786,11 @@ WebAppIntegrationTestDriver::WebAppIntegrationTestDriver(TestDelegate* delegate)
 WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 
 void WebAppIntegrationTestDriver::SetUp() {
-  isolated_app_test_server_ = std::make_unique<net::EmbeddedTestServer>();
-  isolated_app_test_server_->AddDefaultHandlers(base::FilePath(
-      FILE_PATH_LITERAL("chrome/test/data/webapps_integration/isolated_app/")));
-  CHECK(isolated_app_test_server_->Start());
+  isolated_web_app_test_server_ = std::make_unique<net::EmbeddedTestServer>();
+  isolated_web_app_test_server_->AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL(
+          "chrome/test/data/webapps_integration/isolated_web_app/")));
+  CHECK(isolated_web_app_test_server_->Start());
 
   webapps::TestAppBannerManagerDesktop::SetUp();
 }
@@ -864,8 +865,8 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
     ASSERT_TRUE(override_registration_->shortcut_override->desktop.Delete());
 #endif
 
-  if (isolated_app_test_server_->Started()) {
-    CHECK(isolated_app_test_server_->ShutdownAndWaitUntilComplete());
+  if (isolated_web_app_test_server_->Started()) {
+    CHECK(isolated_web_app_test_server_->ShutdownAndWaitUntilComplete());
   }
   LOG(INFO)
       << "TearDownOnMainThread: Destroying shortcut override and waiting.";
@@ -3132,7 +3133,7 @@ PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
 const net::EmbeddedTestServer&
 WebAppIntegrationTestDriver::GetTestServerForSiteMode(Site site) const {
   if (site == Site::kIsolated) {
-    return *isolated_app_test_server_;
+    return *isolated_web_app_test_server_;
   }
 
   return *delegate_->EmbeddedTestServer();

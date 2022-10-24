@@ -14,7 +14,7 @@ using WebAppIntegration = WebAppIntegrationTest;
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationTest,
-    WindowModeSettingsIsNotAvailableForIsolatedAppsOnAppSettingsPage) {
+    WindowModeSettingsIsNotAvailableForIsolatedWebAppsOnAppSettingsPage) {
   helper_.InstallMenuOption(InstallableSite::kIsolated);
   helper_.OpenAppSettingsFromChromeApps(Site::kIsolated);
   helper_.CheckBrowserNavigationIsAppSettings(Site::kIsolated);
