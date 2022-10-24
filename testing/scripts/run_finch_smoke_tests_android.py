@@ -418,16 +418,19 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       ret = super(FinchTestCase, self).run_test()
       self.stop_browser()
 
-      # Run screen shot tests
-      pixel_tests_results_dict, pixel_tests_ret = self._run_pixel_tests()
-      ret |= pixel_tests_ret
-
-    self._include_variation_prefix(test_run_variation)
-    self.process_and_upload_results()
+      command_line_file = '%s-command-line' % self.product_name()
+      # Set the browser command line file
+      with flag_changer.CustomCommandLineFlags(
+          self._device, command_line_file, self.browser_command_line_args()):
+        # Run screen shot tests
+        pixel_tests_results_dict, pixel_tests_ret = self._run_pixel_tests()
+        ret |= pixel_tests_ret
 
     final_logcat_path = os.path.join(isolate_root_dir,
                                      self.layout_test_results_subdir,
                                      logcat_filename)
+
+    os.makedirs(os.path.dirname(final_logcat_path), exist_ok=True)
     shutil.move(os.path.join(isolate_root_dir, logcat_filename),
                 final_logcat_path)
 
@@ -436,18 +439,32 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       # Check in the logcat if the seed was loaded
       ret |= self._finch_seed_loaded(final_logcat_path, seed_loaded_result_dict)
 
-    with open(self.wpt_output, 'r') as test_harness_results:
-      test_harness_results_dict = json.load(test_harness_results)
-      for test_results_dict in (test_harness_results_dict,
-                                pixel_tests_results_dict,
-                                seed_loaded_result_dict):
-        _merge_results_dicts(
-            test_results_dict['tests'],
-            all_test_results_dict['tests'].setdefault(test_run_variation, {}))
+    test_harness_results_dict = {'num_failures_by_type': {}, 'tests': {}}
+    # If wpt tests are not run then the file path stored in self.wpt_output
+    # was not created. That is why this check exists.
+    if os.path.exists(self.wpt_output):
+      self.process_and_upload_results()
 
-        for result, count in test_results_dict['num_failures_by_type'].items():
-          all_test_results_dict['num_failures_by_type'].setdefault(result, 0)
-          all_test_results_dict['num_failures_by_type'][result] += count
+      with open(self.wpt_output, 'r') as test_harness_results:
+        test_harness_results_dict = json.load(test_harness_results)
+      # If there are wpt results then add the the test name prefix to the
+      # results metadata dictionary so that the test name prefix is added
+      # to the test name in test results UI.
+      test_harness_results_dict['metadata'] = {'test_name_prefix':
+                                               test_run_variation}
+      with open(self.wpt_output, 'w+') as test_results_file:
+        json.dump(test_harness_results_dict, test_results_file)
+
+    for test_results_dict in (test_harness_results_dict,
+                              pixel_tests_results_dict,
+                              seed_loaded_result_dict):
+       _merge_results_dicts(
+           test_results_dict['tests'],
+           all_test_results_dict['tests'].setdefault(test_run_variation, {}))
+
+       for result, count in test_results_dict['num_failures_by_type'].items():
+         all_test_results_dict['num_failures_by_type'].setdefault(result, 0)
+         all_test_results_dict['num_failures_by_type'][result] += count
 
     return ret
 
@@ -513,13 +530,6 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     # Compare screenshots with baselines stored in Skia Gold.
     return (pixel_tests_results_dict,
             self._compare_screenshots_with_baselines(pixel_tests_results_dict))
-
-  def _include_variation_prefix(self, test_run_variation):
-    with open(self.wpt_output, 'r') as test_results_file:
-      results = json.load(test_results_file)
-    results.setdefault('metadata', {})['test_name_prefix'] = test_run_variation
-    with open(self.wpt_output, 'w+') as test_results_file:
-      json.dump(results, test_results_file)
 
   def stop_browser(self):
     logger.info('Stopping package %s', self.browser_package_name)
