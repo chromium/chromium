@@ -31,14 +31,15 @@ CommerceTabHelper::~CommerceTabHelper() = default;
 void CommerceTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!shopping_service_ || navigation_context->IsSameDocument()) {
+  if (!shopping_service_ ||
+      previous_main_frame_url_ == navigation_context->GetUrl()) {
     return;
   }
 
   // Notify the service that we're no longer interested in a particular URL.
   shopping_service_->DidNavigateAway(web_wrapper_.get(),
                                      previous_main_frame_url_);
-  previous_main_frame_url_ = web_wrapper_->GetLastCommittedURL();
+  previous_main_frame_url_ = navigation_context->GetUrl();
 
   shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
 }
