@@ -33,7 +33,9 @@ void SetIsInputSourceCommandHebrewForTesting(bool is_command_hebrew) {
 
 bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   return [layout_id isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"] ||
-         [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"];
+         [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"] ||
+         [layout_id isEqualToString:@"com.apple.keylayout.Inuktitut-QWERTY"] ||
+         [layout_id isEqualToString:@"com.apple.keylayout.Cherokee-QWERTY"];
 }
 
 bool IsKeyboardLayoutDvorakRightOrLeft(NSString* layout_id) {

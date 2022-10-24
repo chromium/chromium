@@ -62,10 +62,14 @@ bool IsCommandlessCyrillicLayout(NSString* layoutId) {
 void ExpectKeyFiresItemEq(bool expected_result,
                           NSEvent* key,
                           NSMenuItem* item,
-                          bool compareCocoa) {
+                          NSString* layout_id,
+                          bool compare_cocoa) {
+  if (layout_id.length)
+    layout_id = [NSString stringWithFormat:@"\nLayout: %@", layout_id];
+
   EXPECT_EQ(expected_result, [item cr_firesForKeyEquivalentEvent:key])
       << key << '\n'
-      << item;
+      << item << layout_id;
 
   // Make sure that Cocoa does in fact agree with our expectations. However,
   // in some cases cocoa behaves weirdly (if you create e.g. a new event that
@@ -73,26 +77,29 @@ void ExpectKeyFiresItemEq(bool expected_result,
   // russion keyboard layout, the copy won't fire a menu item that has cmd-a as
   // key equivalent, even though the original event would) and isn't a good
   // oracle function.
-  if (compareCocoa) {
+  if (compare_cocoa) {
     base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"Menu!"]);
     [menu setAutoenablesItems:NO];
     EXPECT_FALSE([menu performKeyEquivalent:key]);
     [menu addItem:item];
-    EXPECT_EQ(expected_result, [menu performKeyEquivalent:key]) << key << '\n'
-                                                                << item;
+    EXPECT_EQ(expected_result, [menu performKeyEquivalent:key])
+        << key << '\n'
+        << item << layout_id;
   }
 }
 
 void ExpectKeyFiresItem(NSEvent* key,
                         NSMenuItem* item,
-                        bool compareCocoa = true) {
-  ExpectKeyFiresItemEq(true, key, item, compareCocoa);
+                        bool compare_cocoa = true,
+                        NSString* layout_id = @"") {
+  ExpectKeyFiresItemEq(true, key, item, layout_id, compare_cocoa);
 }
 
 void ExpectKeyDoesntFireItem(NSEvent* key,
                              NSMenuItem* item,
-                             bool compareCocoa = true) {
-  ExpectKeyFiresItemEq(false, key, item, compareCocoa);
+                             bool compare_cocoa = true,
+                             NSString* layout_id = @"") {
+  ExpectKeyFiresItemEq(false, key, item, layout_id, compare_cocoa);
 }
 
 TEST(NSMenuItemAdditionsTest, TestExtractsKeyEventModifierMask) {
@@ -582,9 +589,9 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
       // for numerical key> will always trigger tab switching. This causes
       // Chrome to match the behavior of Safari, and has been expected by users
       // of every other keyboard layout.
-      ExpectKeyDoesntFireItem(key, item, false);
+      ExpectKeyDoesntFireItem(key, item, false, layoutId);
     } else {
-      ExpectKeyFiresItem(key, item, false);
+      ExpectKeyFiresItem(key, item, false, layoutId);
     }
 
     if (IsKeyboardLayoutCommandQwerty(layoutId)) {
