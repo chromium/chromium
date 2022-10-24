@@ -133,6 +133,9 @@ class UserPerformanceTuningManager
   void SetTemporaryBatterySaverDisabledForSession(bool disabled);
   bool IsBatterySaverModeDisabledForSession() const;
 
+  // Returns true if High Efficiency mode is currently enabled.
+  bool IsHighEfficiencyModeActive() const;
+
   // Returns true if Battery Saver Mode interventions are active. If any state
   // transitions cause an observer notification, this is guaranteed to reflect
   // the *new* value when the observers are notified so the UI layer can make
