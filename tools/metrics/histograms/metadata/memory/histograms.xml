@@ -281,9 +281,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Active" units="MB"
-    expires_after="2023-02-26">
+    expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but only recorded when UIApplication.sharedApplication.applicationState is
@@ -292,9 +292,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Active.Over200MBWatermark"
-    enum="BooleanGreaterOrEqualThan200MB" expires_after="2022-11-20">
+    enum="BooleanGreaterOrEqualThan200MB" expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS when
     UIApplication.sharedApplication.applicationState is
@@ -308,9 +308,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
-    expires_after="2023-02-26">
+    expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but only recorded when UIApplication.sharedApplication.applicationState is
@@ -324,9 +324,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Inactive" units="MB"
-    expires_after="2022-11-20">
+    expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but only recorded when UIApplication.sharedApplication.applicationState is
@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Browser.MemoryFootprint.OnBackground" units="MiB"
     expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but recorded right after the app transitions into background. According to
