@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
@@ -215,34 +216,36 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
 }
 
 ReportingClient::ReportingClient()
-    : ReportQueueProvider(base::BindRepeating(
-          [](base::OnceCallback<void(
-                 StatusOr<scoped_refptr<StorageModuleInterface>>)>
-                 storage_created_cb) {
+    : ReportQueueProvider(
+          base::BindRepeating(
+              [](base::OnceCallback<void(
+                     StatusOr<scoped_refptr<StorageModuleInterface>>)>
+                     storage_created_cb) {
 #if BUILDFLAG(IS_CHROMEOS)
-            if (StorageSelector::is_use_missive()) {
-              StorageSelector::CreateMissiveStorageModule(
-                  std::move(storage_created_cb));
-              return;
-            }
+                if (StorageSelector::is_use_missive()) {
+                  StorageSelector::CreateMissiveStorageModule(
+                      std::move(storage_created_cb));
+                  return;
+                }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-            // Storage location in the local file system (if local storage is
-            // enabled).
-            base::FilePath reporting_path;
-            const auto res =
-                base::PathService::Get(chrome::DIR_USER_DATA, &reporting_path);
-            DCHECK(res) << "Could not retrieve base path";
+                // Storage location in the local file system (if local storage
+                // is enabled).
+                base::FilePath reporting_path;
+                const auto res = base::PathService::Get(chrome::DIR_USER_DATA,
+                                                        &reporting_path);
+                DCHECK(res) << "Could not retrieve base path";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-            reporting_path = reporting_path.Append("user");
+                reporting_path = reporting_path.Append("user");
 #endif
-            reporting_path = reporting_path.Append(kReportingDirectory);
-            CreateLocalStorageModule(
-                reporting_path, SignatureVerifier::VerificationKey(),
-                CompressionInformation::COMPRESSION_SNAPPY,
-                base::BindRepeating(&ReportingClient::AsyncStartUploader),
-                std::move(storage_created_cb));
-          })) {
+                reporting_path = reporting_path.Append(kReportingDirectory);
+                CreateLocalStorageModule(
+                    reporting_path, SignatureVerifier::VerificationKey(),
+                    CompressionInformation::COMPRESSION_SNAPPY,
+                    base::BindRepeating(&ReportingClient::AsyncStartUploader),
+                    std::move(storage_created_cb));
+              }),
+          base::ThreadTaskRunnerHandle::Get()) {
 }
 
 ReportingClient::~ReportingClient() = default;

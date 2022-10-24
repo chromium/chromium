@@ -98,14 +98,21 @@ BASE_FEATURE(kEncryptedReportingPipeline,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 ReportQueueProvider::ReportQueueProvider(
-    StorageModuleCreateCallback storage_create_cb)
+    StorageModuleCreateCallback storage_create_cb,
+    scoped_refptr<base::SequencedTaskRunner> seq_task_runner)
     : storage_create_cb_(storage_create_cb),
-      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+      sequenced_task_runner_(seq_task_runner) {}
 
-ReportQueueProvider::~ReportQueueProvider() = default;
+ReportQueueProvider::~ReportQueueProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Kill all remaining requests.
+  while (!create_request_queue_.empty()) {
+    auto& report_queue_request = create_request_queue_.front();
+    std::move(report_queue_request->release_create_cb())
+        .Run(Status(error::UNAVAILABLE, "ReportQueueProvider shut down"));
+    create_request_queue_.pop();
+  }
+}
 
 base::WeakPtr<ReportQueueProvider> ReportQueueProvider::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

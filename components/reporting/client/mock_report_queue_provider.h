@@ -72,7 +72,6 @@ class MockReportQueueProvider : public ReportQueueProvider {
       ReportQueueConfiguredCallback completion_cb) override;
 
   scoped_refptr<StorageModuleInterface> storage_;
-  const scoped_refptr<base::SequencedTaskRunner> test_sequenced_task_runner_;
   SEQUENCE_CHECKER(test_sequence_checker_);
 };
 

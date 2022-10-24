@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -102,7 +103,6 @@ class ReportQueueProvider {
   using ReportQueueConfiguredCallback = base::OnceCallback<void(
       StatusOr<std::unique_ptr<ReportQueueConfiguration>>)>;
 
-  explicit ReportQueueProvider(StorageModuleCreateCallback storage_create_cb);
   ReportQueueProvider(const ReportQueueProvider& other) = delete;
   ReportQueueProvider& operator=(const ReportQueueProvider& other) = delete;
   virtual ~ReportQueueProvider();
@@ -136,6 +136,10 @@ class ReportQueueProvider {
 
   // Storage module creator (can be substituted for testing purposes).
   StorageModuleCreateCallback storage_create_cb_;
+
+ protected:
+  ReportQueueProvider(StorageModuleCreateCallback storage_create_cb,
+                      scoped_refptr<base::SequencedTaskRunner> seq_task_runner);
 
  private:
   // Holds the creation request for a ReportQueue.
