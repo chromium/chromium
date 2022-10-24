@@ -152,6 +152,8 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   void set_supports_shared_image_swap_chain(bool support);
   void set_supports_gpu_memory_buffer_format(gfx::BufferFormat format,
                                              bool support);
+  void set_supports_texture_rg(bool support);
+
   // When set, MapBufferCHROMIUM will return NULL after this many times.
   void set_times_map_buffer_chromium_succeeds(int times) {
     times_map_buffer_chromium_succeeds_ = times;

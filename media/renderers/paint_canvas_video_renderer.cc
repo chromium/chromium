@@ -617,6 +617,17 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                                  plane_meta[VideoFrame::kUVPlane].stride,
                                  pixels, row_bytes, matrix, width, rows);
       break;
+    case PIXEL_FORMAT_P016LE:
+      libyuv::P016ToARGBMatrix(reinterpret_cast<const uint16_t*>(
+                                   plane_meta[VideoFrame::kYPlane].data),
+                               plane_meta[VideoFrame::kYPlane].stride,
+                               reinterpret_cast<const uint16_t*>(
+                                   plane_meta[VideoFrame::kUVPlane].data),
+                               plane_meta[VideoFrame::kUVPlane].stride, pixels,
+                               row_bytes, matrix, width, rows);
+      if (!OUTPUT_ARGB)
+        libyuv::ARGBToABGR(pixels, row_bytes, pixels, row_bytes, width, rows);
+      break;
 
     case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV422P9:
@@ -638,7 +649,6 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_MJPEG:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
-    case PIXEL_FORMAT_P016LE:
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_RGBAF16:

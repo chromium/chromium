@@ -201,6 +201,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
   const raw_ptr<viz::ContextProvider> context_provider_;
   const raw_ptr<viz::RasterContextProvider> raster_context_provider_;
   const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;

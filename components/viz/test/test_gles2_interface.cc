@@ -538,6 +538,10 @@ void TestGLES2Interface::set_supports_gpu_memory_buffer_format(
   }
 }
 
+void TestGLES2Interface::set_supports_texture_rg(bool support) {
+  test_capabilities_.texture_rg = support;
+}
+
 size_t TestGLES2Interface::NumTextures() const {
   return textures_.size();
 }

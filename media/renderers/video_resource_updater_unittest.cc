@@ -183,6 +183,26 @@ class VideoResourceUpdaterTest : public testing::Test {
     return video_frame;
   }
 
+  scoped_refptr<VideoFrame> CreateNV12TestFrame() {
+    const int kDimension = 10;
+    gfx::Size size(kDimension, kDimension);
+
+    scoped_refptr<VideoFrame> video_frame(VideoFrame::CreateFrame(
+        PIXEL_FORMAT_NV12, size, gfx::Rect(size), size, base::TimeDelta()));
+    EXPECT_TRUE(video_frame);
+    return video_frame;
+  }
+
+  scoped_refptr<VideoFrame> CreateP016TestFrame() {
+    const int kDimension = 10;
+    gfx::Size size(kDimension, kDimension);
+
+    scoped_refptr<VideoFrame> video_frame(VideoFrame::CreateFrame(
+        PIXEL_FORMAT_P016LE, size, gfx::Rect(size), size, base::TimeDelta()));
+    EXPECT_TRUE(video_frame);
+    return video_frame;
+  }
+
   void SetReleaseSyncToken(const gpu::SyncToken& sync_token) {
     release_sync_token_ = sync_token;
   }
@@ -278,6 +298,29 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrame) {
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
 }
 
+TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(CreateNV12TestFrame());
+  EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
+
+  // Use a different frame for this test since frames with the same unique_id()
+  // expect to use the same resources.
+  gl_->set_supports_texture_rg(true);
+  resources =
+      updater->CreateExternalResourcesFromVideoFrame(CreateNV12TestFrame());
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+}
+
+TEST_F(VideoResourceUpdaterTest, SoftwareFrameP016_NoR16Support) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(CreateP016TestFrame());
+  EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
+}
+
 TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   for (const auto& fmt : {PIXEL_FORMAT_XBGR, PIXEL_FORMAT_XRGB,
@@ -332,6 +375,14 @@ class VideoResourceUpdaterTestWithR16 : public VideoResourceUpdaterTest {
   }
 };
 
+TEST_F(VideoResourceUpdaterTestWithR16, SoftwareFrameP016) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(CreateP016TestFrame());
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+}
+
 TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   scoped_refptr<VideoFrame> video_frame = CreateTestHighBitFrame();
@@ -352,6 +403,24 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   EXPECT_EQ(VideoFrameResourceType::YUV, resources2.type);
   EXPECT_NEAR(resources2.multiplier * max_10bit_value, 1.0, 0.0001);
   EXPECT_NEAR(resources2.offset, 0.0, 0.1);
+}
+
+TEST_F(VideoResourceUpdaterTest, NV12FrameSoftwareCompositor) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForSoftware();
+  scoped_refptr<VideoFrame> video_frame = CreateNV12TestFrame();
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resources.type);
+}
+
+TEST_F(VideoResourceUpdaterTest, P016FrameSoftwareCompositor) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForSoftware();
+  scoped_refptr<VideoFrame> video_frame = CreateP016TestFrame();
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resources.type);
 }
 
 TEST_F(VideoResourceUpdaterTest, HighBitFrameSoftwareCompositor) {
@@ -407,6 +476,37 @@ TEST_F(VideoResourceUpdaterTest, ReuseResource) {
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
   EXPECT_EQ(3u, resources.resources.size());
   EXPECT_EQ(3u, resources.release_callbacks.size());
+  // The data should be reused so expect no texture uploads.
+  EXPECT_EQ(0, gl_->UploadCount());
+}
+
+TEST_F(VideoResourceUpdaterTest, ReuseResourceNV12) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  scoped_refptr<VideoFrame> video_frame = CreateNV12TestFrame();
+  video_frame->set_timestamp(base::Seconds(1234));
+  gl_->set_supports_texture_rg(true);
+
+  // Allocate the resources for a YUV video frame.
+  gl_->ResetUploadCount();
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  EXPECT_EQ(2u, resources.resources.size());
+  EXPECT_EQ(2u, resources.release_callbacks.size());
+  // Expect exactly three texture uploads, one for each plane.
+  EXPECT_EQ(2, gl_->UploadCount());
+
+  // Simulate the ResourceProvider releasing the resources back to the video
+  // updater.
+  for (auto& release_callback : resources.release_callbacks)
+    std::move(release_callback).Run(gpu::SyncToken(), false);
+
+  // Allocate resources for the same frame.
+  gl_->ResetUploadCount();
+  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  EXPECT_EQ(2u, resources.resources.size());
+  EXPECT_EQ(2u, resources.release_callbacks.size());
   // The data should be reused so expect no texture uploads.
   EXPECT_EQ(0, gl_->UploadCount());
 }
