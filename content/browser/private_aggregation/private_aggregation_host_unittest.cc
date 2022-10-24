@@ -120,7 +120,7 @@ TEST_F(PrivateAggregationHostTest,
               AggregatableReportSharedInfo::DebugMode::kDisabled,
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"0.1",
-              /*api_identifier=*/"private-aggregation"),
+              /*api_identifier=*/"fledge"),
           /*reporting_path=*/"/.well-known/private-aggregation/report-fledge");
   ASSERT_TRUE(expected_request);
 
@@ -128,7 +128,7 @@ TEST_F(PrivateAggregationHostTest,
       validated_request.value(), expected_request.value()));
 }
 
-TEST_F(PrivateAggregationHostTest, ReportingPath) {
+TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -168,6 +168,10 @@ TEST_F(PrivateAggregationHostTest, ReportingPath) {
             "/.well-known/private-aggregation/report-fledge");
   EXPECT_EQ(validated_requests[1]->reporting_path(),
             "/.well-known/private-aggregation/report-shared-storage");
+
+  EXPECT_EQ(validated_requests[0]->shared_info().api_identifier, "fledge");
+  EXPECT_EQ(validated_requests[1]->shared_info().api_identifier,
+            "shared-storage");
 }
 
 TEST_F(PrivateAggregationHostTest, DebugModeDetails_ReflectedInReport) {

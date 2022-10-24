@@ -138,7 +138,9 @@ void PrivateAggregationHost::SendHistogramReport(
           : AggregatableReportSharedInfo::DebugMode::kDisabled,
       /*additional_fields=*/base::Value::Dict(),
       /*api_version=*/kApiReportVersion,
-      /*api_identifier=*/kApiIdentifier);
+      /*api_identifier=*/
+      private_aggregation::GetApiIdentifier(
+          receiver_set_.current_context().api_for_budgeting));
 
   std::string reporting_path = private_aggregation::GetReportingPath(
       receiver_set_.current_context().api_for_budgeting,
