@@ -22,8 +22,8 @@ namespace blink {
 
 ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
   if (const LayoutObject* layout_object = target->GetLayoutObject()) {
-    if (auto* svg_graphics_element = DynamicTo<SVGGraphicsElement>(target)) {
-      PopulateFromSVGGraphicsElement(*svg_graphics_element);
+    if (layout_object->IsSVGChild()) {
+      PopulateFromSVGChild(*layout_object);
     } else if (const auto* layout_box = DynamicTo<LayoutBox>(*layout_object)) {
       PopulateFromLayoutBox(*layout_box);
     }
@@ -67,16 +67,20 @@ void ResizeObserverEntry::PopulateFromLayoutBox(const LayoutBox& layout_box) {
   device_pixel_content_box_size_.push_back(device_pixel_content_box_size);
 }
 
-void ResizeObserverEntry::PopulateFromSVGGraphicsElement(
-    SVGGraphicsElement& svg_graphics_element) {
-  const gfx::SizeF bounding_box_size = svg_graphics_element.GetBBox().size();
+void ResizeObserverEntry::PopulateFromSVGChild(
+    const LayoutObject& layout_object) {
+  DCHECK(layout_object.IsSVGChild());
+  auto* svg_graphics_element =
+      DynamicTo<SVGGraphicsElement>(layout_object.GetNode());
+  if (!svg_graphics_element)
+    return;
+  const gfx::SizeF bounding_box_size = svg_graphics_element->GetBBox().size();
   content_rect_ =
       DOMRectReadOnly::FromRectF(gfx::RectF(gfx::PointF(), bounding_box_size));
   ResizeObserverSize* size = ResizeObserverSize::Create(
       bounding_box_size.width(), bounding_box_size.height());
   content_box_size_.push_back(size);
   border_box_size_.push_back(size);
-  const LayoutObject& layout_object = *svg_graphics_element.GetLayoutObject();
   const ComputedStyle& style = layout_object.StyleRef();
   const LayoutSize scaled_bounding_box_size(
       gfx::ScaleSize(bounding_box_size, style.EffectiveZoom()));

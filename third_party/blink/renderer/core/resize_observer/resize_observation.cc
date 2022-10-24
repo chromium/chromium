@@ -18,11 +18,16 @@ namespace blink {
 
 namespace {
 
-// Given |box_option|, compute the appropriate size for an SVG element.
+// Given |box_option|, compute the appropriate size for an SVG element that
+// does not have an associated layout box.
 gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
-                                     SVGGraphicsElement& svg_graphics_element,
                                      const LayoutObject& layout_object) {
-  const gfx::SizeF bounding_box_size = svg_graphics_element.GetBBox().size();
+  DCHECK(layout_object.IsSVGChild());
+  auto* svg_graphics_element =
+      DynamicTo<SVGGraphicsElement>(layout_object.GetNode());
+  if (!svg_graphics_element)
+    return gfx::SizeF();
+  const gfx::SizeF bounding_box_size = svg_graphics_element->GetBBox().size();
   switch (box_option) {
     case ResizeObserverBoxOptions::kBorderBox:
     case ResizeObserverBoxOptions::kContentBox:
@@ -82,10 +87,8 @@ LayoutSize ResizeObservation::ComputeTargetSize() const {
   if (!target_ || !target_->GetLayoutObject())
     return LayoutSize();
   const LayoutObject& layout_object = *target_->GetLayoutObject();
-  if (auto* svg_graphics_element =
-          DynamicTo<SVGGraphicsElement>(target_.Get())) {
-    return LayoutSize(ComputeZoomAdjustedSVGBox(
-        observed_box_, *svg_graphics_element, layout_object));
+  if (layout_object.IsSVGChild()) {
+    return LayoutSize(ComputeZoomAdjustedSVGBox(observed_box_, layout_object));
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
     return LayoutSize(ResizeObserverUtilities::ComputeZoomAdjustedBox(

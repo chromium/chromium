@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS ResizeObserver implemented
-PASS guard
-FAIL test0: Root SVG resize observed assert_unreached: Timed out waiting for notification. (1000ms) Reached unreachable code
-FAIL test1: `foreignObject` SVG resize observed assert_unreached: Timed out waiting for notification. (1000ms) Reached unreachable code
-Harness: the test ran to completion.
-
