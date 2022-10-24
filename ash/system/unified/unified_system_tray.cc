@@ -274,11 +274,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   set_use_bounce_in_animation(false);
 
   ShelfConfig::Get()->AddObserver(this);
-
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
+  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   ShelfConfig::Get()->RemoveObserver(this);
 
   DestroyBubbles();

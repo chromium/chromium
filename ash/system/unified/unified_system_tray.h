@@ -306,9 +306,6 @@ class ASH_EXPORT UnifiedSystemTray
   // Records time the QS bubble was shown. Used for metrics.
   base::TimeTicks time_opened_;
 
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
-
   base::WeakPtrFactory<UnifiedSystemTray> weak_factory_{this};
 };
 
