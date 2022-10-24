@@ -22,7 +22,6 @@ import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVox} from '../chromevox.js';
 import {EventSourceState} from '../event_source.js';
 import {FocusBounds} from '../focus_bounds.js';
-import {LogStore} from '../logging/log_store.js';
 import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';
@@ -84,9 +83,11 @@ export class Output {
 
     // Store output rules.
     /** @private {!OutputFormatLogger} */
-    this.speechFormatLog_ = new OutputFormatLogger('enableSpeechLogging');
+    this.speechFormatLog_ =
+        new OutputFormatLogger('enableSpeechLogging', LogType.SPEECH_RULE);
     /** @private {!OutputFormatLogger} */
-    this.brailleFormatLog_ = new OutputFormatLogger('enableBrailleLogging');
+    this.brailleFormatLog_ =
+        new OutputFormatLogger('enableBrailleLogging', LogType.BRAILLE_RULE);
 
     /**
      * Current global options.
@@ -289,7 +290,7 @@ export class Output {
     this.formattedAncestors_ = new WeakSet();
     this.render_(
         range, prevRange, type, [] /*unused output*/,
-        new OutputFormatLogger('') /*unused log*/);
+        new OutputFormatLogger('', LogType.SPEECH_RULE) /*unused log*/);
     return this;
   }
 
@@ -551,10 +552,7 @@ export class Output {
         queueMode = QueueMode.QUEUE;
       }
     }
-    if (this.speechFormatLog_.str) {
-      LogStore.getInstance().writeTextLog(
-          this.speechFormatLog_.str, LogType.SPEECH_RULE);
-    }
+    this.speechFormatLog_.commitLogs();
 
     // Braille.
     if (this.brailleBuffer_.length) {
@@ -577,10 +575,7 @@ export class Output {
       const output = new NavBraille({text: buff, startIndex, endIndex});
 
       ChromeVox.braille.write(output);
-      if (this.brailleFormatLog_.str) {
-        LogStore.getInstance().writeTextLog(
-            this.brailleFormatLog_.str, LogType.BRAILLE_RULE);
-      }
+      this.brailleFormatLog_.commitLogs();
     }
 
     // Display.

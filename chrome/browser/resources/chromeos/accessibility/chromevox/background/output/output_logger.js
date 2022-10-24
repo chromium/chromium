@@ -5,26 +5,42 @@
 /**
  * @fileoverview Provides output logger.
  */
+import {LogType} from '../../common/log_types.js';
+import {LogStore} from '../logging/log_store.js';
 
 export class OutputFormatLogger {
   /**
    * @param {string} enableKey The key to enable logging in localStorage
+   * @param {!LogType} type
    */
-  constructor(enableKey) {
-    /** @type {string} */
-    this.str = '';
-    /** @type {function(): boolean} */
-    this.disableLogging = function() {
-      return localStorage[enableKey] !== 'true';
-    };
+  constructor(enableKey, type) {
+    /** @private {string} */
+    this.str_ = '';
+
+    /** @private {string} */
+    this.localStorageEnabledKey_ = enableKey;
+    /** @private {!LogType} */
+    this.logType_ = type;
+  }
+
+  /** @return {boolean} */
+  get loggingDisabled() {
+    return localStorage[this.localStorageEnabledKey_] !== 'true';
+  }
+
+  /** Sends the queued logs to the LogStore. */
+  commitLogs() {
+    if (this.str_) {
+      LogStore.getInstance().writeTextLog(this.str_, this.logType_);
+    }
   }
 
   /** @param {string} str */
   write(str) {
-    if (this.disableLogging()) {
+    if (this.loggingDisabled) {
       return;
     }
-    this.str += str;
+    this.str_ += str;
   }
 
   /**
@@ -32,59 +48,59 @@ export class OutputFormatLogger {
    * @param {string|undefined} value
    */
   writeTokenWithValue(token, value) {
-    if (this.disableLogging()) {
+    if (this.loggingDisabled) {
       return;
     }
     this.writeToken(token);
     if (value) {
-      this.str += value;
+      this.str_ += value;
     } else {
-      this.str += 'EMPTY';
+      this.str_ += 'EMPTY';
     }
-    this.str += '\n';
+    this.str_ += '\n';
   }
 
   /** @param {string} token */
   writeToken(token) {
-    if (this.disableLogging()) {
+    if (this.loggingDisabled) {
       return;
     }
-    this.str += '$' + token + ': ';
+    this.str_ += '$' + token + ': ';
   }
 
   /**
    * @param {OutputFormatLogger.Rule} rule
    */
   writeRule(rule) {
-    if (this.disableLogging()) {
+    if (this.loggingDisabled) {
       return;
     }
-    this.str += 'RULE: ';
-    this.str += rule.event + ' ' + rule.role;
+    this.str_ += 'RULE: ';
+    this.str_ += rule.event + ' ' + rule.role;
     if (rule.navigation) {
-      this.str += ' ' + rule.navigation;
+      this.str_ += ' ' + rule.navigation;
     }
     if (rule.output) {
-      this.str += ' ' + rule.output;
+      this.str_ += ' ' + rule.output;
     }
-    this.str += '\n';
+    this.str_ += '\n';
   }
 
   bufferClear() {
-    if (this.disableLogging()) {
+    if (this.loggingDisabled) {
       return;
     }
-    this.str += '\nBuffer is cleared.\n';
+    this.str_ += '\nBuffer is cleared.\n';
   }
 
   /** @param {string} errorMsg */
   writeError(errorMsg) {
-    if (this.disableLogging()) {
+    if (this.loggingDisabled) {
       return;
     }
-    this.str += 'ERROR with message: ';
-    this.str += errorMsg;
-    this.str += '\n';
+    this.str_ += 'ERROR with message: ';
+    this.str_ += errorMsg;
+    this.str_ += '\n';
   }
 }
 
