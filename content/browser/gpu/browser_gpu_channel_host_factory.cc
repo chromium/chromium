@@ -70,9 +70,12 @@ BrowserGpuChannelHostFactory* BrowserGpuChannelHostFactory::instance_ = nullptr;
 class BrowserGpuChannelHostFactory::EstablishRequest
     : public base::RefCountedThreadSafe<EstablishRequest> {
  public:
-  static scoped_refptr<EstablishRequest> Create(int gpu_client_id,
-                                                uint64_t gpu_client_tracing_id,
-                                                bool sync);
+  static scoped_refptr<EstablishRequest> Create(
+      int gpu_client_id,
+      uint64_t gpu_client_tracing_id,
+      bool sync,
+      std::vector<gpu::GpuChannelEstablishedCallback> established_callbacks);
+
   void Wait();
   void Cancel();
 
@@ -88,9 +91,14 @@ class BrowserGpuChannelHostFactory::EstablishRequest
     return gpu_channel_;
   }
 
+  bool finished() const { return finished_; }
+
  private:
   friend class base::RefCountedThreadSafe<EstablishRequest>;
-  EstablishRequest(int gpu_client_id, uint64_t gpu_client_tracing_id);
+  EstablishRequest(
+      int gpu_client_id,
+      uint64_t gpu_client_tracing_id,
+      std::vector<gpu::GpuChannelEstablishedCallback> established_callbacks);
   ~EstablishRequest() {}
   void RestartTimeout();
   // Note |sync| is only true if EstablishGpuChannelSync is being called. In
@@ -119,17 +127,20 @@ scoped_refptr<BrowserGpuChannelHostFactory::EstablishRequest>
 BrowserGpuChannelHostFactory::EstablishRequest::Create(
     int gpu_client_id,
     uint64_t gpu_client_tracing_id,
-    bool sync) {
-  scoped_refptr<EstablishRequest> establish_request =
-      new EstablishRequest(gpu_client_id, gpu_client_tracing_id);
+    bool sync,
+    std::vector<gpu::GpuChannelEstablishedCallback> established_callbacks) {
+  scoped_refptr<EstablishRequest> establish_request = new EstablishRequest(
+      gpu_client_id, gpu_client_tracing_id, std::move(established_callbacks));
   establish_request->Establish(sync);
   return establish_request;
 }
 
 BrowserGpuChannelHostFactory::EstablishRequest::EstablishRequest(
     int gpu_client_id,
-    uint64_t gpu_client_tracing_id)
-    : event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+    uint64_t gpu_client_tracing_id,
+    std::vector<gpu::GpuChannelEstablishedCallback> established_callbacks)
+    : established_callbacks_(std::move(established_callbacks)),
+      event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
              base::WaitableEvent::InitialState::NOT_SIGNALED),
       gpu_client_id_(gpu_client_id),
       gpu_client_tracing_id_(gpu_client_tracing_id),
@@ -349,25 +360,38 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
     pending_request_ = nullptr;
   }
 
-  if (!gpu_channel_.get() && !pending_request_.get()) {
+  if (pending_request_) {
+    DCHECK(callbacks.empty());
+    if (!callback.is_null())
+      pending_request_->AddCallback(std::move(callback));
+
+    return;
+  }
+
+  if (!callback.is_null())
+    callbacks.push_back(std::move(callback));
+
+  if (!gpu_channel_) {
     // We should only get here if the context was lost.
-    pending_request_ =
-        EstablishRequest::Create(gpu_client_id_, gpu_client_tracing_id_, sync);
+    DCHECK(!pending_request_);
+
+    scoped_refptr<EstablishRequest> request = EstablishRequest::Create(
+        gpu_client_id_, gpu_client_tracing_id_, sync, std::move(callbacks));
+
+    // If the establish request is a sync call, or the request fails
+    // immediately, it is already marked as finished at this point.
+    if (!request->finished())
+      pending_request_ = std::move(request);
+
     // Sync and timeouts aren't currently compatible, which is fine since sync
     // isn't used on Android while timeouts are only used on Android.
     if (!sync)
       RestartTimeout();
+
+    return;
   }
 
-  if (!callback.is_null()) {
-    if (gpu_channel_.get()) {
-      std::move(callback).Run(gpu_channel_);
-    } else {
-      DCHECK(pending_request_);
-      pending_request_->AddCallback(std::move(callback));
-    }
-  }
-
+  DCHECK(gpu_channel_);
   for (auto& cb : callbacks)
     std::move(cb).Run(gpu_channel_);
 }

@@ -276,7 +276,9 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void LogFrame(base::Value frame_data) override;
 #endif
 
-  const raw_ptr<Delegate> delegate_;
+  // Can be modified in tests by GpuHostImplTestApi.
+  raw_ptr<Delegate> delegate_;
+
   mojo::Remote<mojom::VizMain> viz_main_;
   const InitParams params_;
 

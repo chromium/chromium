@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/test/gpu_host_impl_test_api.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -87,6 +88,19 @@ class ContextTestBase : public content::ContentBrowserTest {
 
  private:
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;
+};
+
+class TestGpuHostImplDelegate
+    : public viz::GpuHostImplTestApi::HookDelegateBase {
+ public:
+  TestGpuHostImplDelegate() = default;
+  ~TestGpuHostImplDelegate() override = default;
+
+  TestGpuHostImplDelegate(const TestGpuHostImplDelegate&) = delete;
+  TestGpuHostImplDelegate& operator=(const TestGpuHostImplDelegate&) = delete;
+
+  // viz::GpuHostImpl::Delegate
+  bool GpuAccessAllowed() const override { return false; }
 };
 
 }  // namespace
@@ -340,5 +354,25 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   EXPECT_GE(id, 0);
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
+                       CallbackOnSynchronousFailure) {
+  // Ensure that there is no pending establish request.
+  EstablishAndWait();
+
+  viz::GpuHostImplTestApi test_api(GpuProcessHost::Get()->gpu_host());
+
+  // This delegate disallows GPU access, which will cause EstablishGpuChannel()
+  // to fail synchronously.
+  test_api.HookDelegate(std::make_unique<TestGpuHostImplDelegate>());
+
+  bool event = false;
+  GetFactory()->EstablishGpuChannel(
+      base::BindOnce(&BrowserGpuChannelHostFactoryTest::Signal,
+                     base::Unretained(this), &event));
+
+  // Expect that the callback has been called.
+  EXPECT_TRUE(event);
+}
 
 }  // namespace content
