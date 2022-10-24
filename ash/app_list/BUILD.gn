@@ -250,6 +250,7 @@ source_set("test_support") {
     ":app_list",
     "//base",
     "//ui/base",
+    "//ui/compositor:test_support",
     "//ui/events",
     "//ui/events:test_support",
     "//ui/gfx",

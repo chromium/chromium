@@ -1135,7 +1135,7 @@ TEST_P(AppListBubbleAndTabletTest,
   const gfx::Rect original_item_3_bounds =
       apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen();
 
-  // Move the folder item to the last position in the model.
+  // Move the folder item to the first position in the model.
   app_list_test_model_->RequestPositionUpdate(
       folder_id,
       app_list_test_model_->top_level_item_list()
@@ -2353,7 +2353,7 @@ TEST_F(PopulatedAppListTest,
 
   // After the drag is released, the item bounds should animate to their final
   // bounds.
-  EXPECT_TRUE(apps_grid_view_->IsAnimationRunningForTest());
+  EXPECT_TRUE(apps_grid_view_->IsItemAnimationRunning());
   for (int i = 0; i < kItemCount; ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_TRUE(item_view->layer()) << "at " << i;

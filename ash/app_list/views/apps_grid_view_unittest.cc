@@ -63,6 +63,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -73,7 +74,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/views/animation/bounds_animator.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -88,6 +89,11 @@ namespace test {
 namespace {
 
 constexpr size_t kMaxItemsInFolder = 48;
+
+gfx::RectF GetViewBoundsWithCurrentTransform(views::View* view) {
+  return view->layer()->transform().MapRect(
+      gfx::RectF(view->GetMirroredBounds()));
+}
 
 class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
  public:
@@ -778,6 +784,8 @@ TEST_F(AppsGridViewTest, RemoveSelectedLastApp) {
 // Tests that the item list changed without user operations; this happens on
 // active user switch. See https://crbug.com/980082.
 TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseCrash) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   const int cols = apps_grid_view_->cols();
   ASSERT_LE(0, cols);
   model_->PopulateApps(cols * 2);
@@ -839,6 +847,9 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 2,
                                      apps_grid_view_);
 
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   // Drag the current item to flip to the first page.
   gfx::Point point_in_page_flip_buffer =
       gfx::Point(paged_apps_grid_view_->bounds().width() / 2, 0);
@@ -884,11 +895,10 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
     // moving vertically should instead use a between rows animation, which is
     // purely horizontal.
     EXPECT_TRUE(apps_grid_view_->IsAnimatingView(item_view));
-    gfx::Rect target_bounds =
-        apps_grid_view_->bounds_animator_for_testing()->GetTargetBounds(
-            item_view);
-    EXPECT_EQ(item_view->bounds().y(), target_bounds.y());
-    EXPECT_NE(item_view->bounds().x(), target_bounds.x());
+    gfx::Rect current_bounds_in_animation =
+        gfx::ToRoundedRect(GetViewBoundsWithCurrentTransform(item_view));
+    EXPECT_EQ(current_bounds_in_animation.y(), item_view->bounds().y());
+    EXPECT_NE(current_bounds_in_animation.x(), item_view->bounds().x());
   }
 
   // End the drag and check that no more item layer copies remain.
@@ -950,11 +960,20 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   model_->PopulateApps(GetTilesPerPage(0));
   UpdateLayout();
 
+  // Use non-zero animations to test that animations are correct while in
+  // progress.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
   // Begin dragging the first item.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
                                      apps_grid_view_);
+
+  // Wait for cardified animations to complete before testing row change
+  // animations.
+  test_api_->WaitForItemMoveAnimationDone();
 
   // Move dragged item to the middle slot on the second row.
   gfx::Point to;
@@ -985,10 +1004,16 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   // The item in slot 5 should now be on animating into the first row position.
   EXPECT_EQ(item_view->bounds().y(), first_row_y);
   EXPECT_TRUE(apps_grid_view_->IsAnimatingView(item_view));
-  gfx::Rect target_bounds =
-      apps_grid_view_->bounds_animator_for_testing()->GetTargetBounds(
-          item_view);
-  EXPECT_GT(item_view->bounds().x(), target_bounds.x());
+  gfx::Rect target_bounds = GetItemRectOnCurrentPageAt(0, 4);
+  gfx::RectF current_bounds_in_animation =
+      GetViewBoundsWithCurrentTransform(item_view);
+
+  if (is_rtl_) {
+    EXPECT_LT(current_bounds_in_animation.x(), target_bounds.x());
+  } else {
+    EXPECT_GT(current_bounds_in_animation.x(), target_bounds.x());
+  }
+  EXPECT_EQ(current_bounds_in_animation.y(), first_row_y);
 
   // Update drag to move placeholder back to the first row.
   if (is_rtl_) {
@@ -996,6 +1021,13 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   } else {
     to = GetItemRectOnCurrentPageAt(0, 0).right_center();
   }
+
+  // TODO(crbug.com/1378052): Find a way to progress the animation some amount,
+  // and check that the starting bounds of the reversed animation is correct.
+  EXPECT_FALSE(item_view->GetTransform().IsIdentity());
+
+  // Move the drag to the first row, causing `item_view` to animate into
+  // the second row.
   UpdateDrag(AppsGridView::MOUSE, to, paged_apps_grid_view_, 5 /*steps*/);
 
   ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
@@ -1005,14 +1037,18 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   EXPECT_EQ(GridIndex(0, 1), paged_apps_grid_view_->reorder_placeholder());
 
   // The item in slot 5 should now be animating from first row to the second.
-  EXPECT_EQ(item_view->bounds().y(), second_row_y);
+  EXPECT_EQ(item_view->GetMirroredBounds().y(), second_row_y);
   EXPECT_TRUE(apps_grid_view_->IsAnimatingView(item_view));
 
   // Item should be moving from offscreen into target position on second row.
-  target_bounds =
-      apps_grid_view_->bounds_animator_for_testing()->GetTargetBounds(
-          item_view);
-  EXPECT_LT(item_view->bounds().x(), target_bounds.x());
+  target_bounds = GetItemRectOnCurrentPageAt(0, 5);
+  current_bounds_in_animation = GetViewBoundsWithCurrentTransform(item_view);
+
+  EXPECT_TRUE(item_view->GetTransform().IsIdentity());
+  EXPECT_EQ(target_bounds, item_view->GetMirroredBounds());
+  EXPECT_EQ(gfx::ToRoundedRect(current_bounds_in_animation), target_bounds);
+
+  EXPECT_EQ(current_bounds_in_animation.y(), second_row_y);
   EXPECT_EQ(target_bounds.y(), second_row_y);
   EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
@@ -3500,8 +3536,8 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
 
   AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(1);
 
-  // Verify that Item 2's bounds do not change after calling `EndDrag()`.
-  EXPECT_EQ(0, counter.bounds_change_count());
+  // Verify that Item 2's bounds change after calling `EndDrag()`.
+  EXPECT_EQ(1, counter.bounds_change_count());
 
   // The search box keeps focus after drags.
   EXPECT_TRUE(search_box_view_->search_box()->HasFocus());

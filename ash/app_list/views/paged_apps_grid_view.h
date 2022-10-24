@@ -190,10 +190,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Animates items to their ideal bounds when the reorder nudge gets removed.
   void AnimateOnNudgeRemoved();
 
-  bool GetBoundsAnimationForCardifiedStateInProgressForTest() {
-    return bounds_animation_for_cardified_state_in_progress_;
-  }
-
   // Set the callback that runs when cardified state has ended.
   void SetCardifiedStateEndedTestCallback(
       base::RepeatingClosure cardified_ended_callback);
@@ -256,8 +252,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
       views::AnimationSequenceBlock* animation_sequence,
       const gfx::Vector2d& translate_offset);
 
-  // Call OnBoundsAnimatorDone when all layer animations finish.
-  void MaybeCallOnBoundsAnimatorDone();
+  // Called when all cardified layer animations finish.
+  void OnCardifiedStateAnimationDone();
 
   // Called when app item animations are completed for ending cardified state.
   void OnCardifiedStateEnded();

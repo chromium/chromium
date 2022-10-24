@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_model_utils.h"
@@ -71,9 +70,6 @@ void ScrollableAppsGridView::SetMaxColumns(int max_cols) {
 void ScrollableAppsGridView::Layout() {
   if (ignore_layout())
     return;
-
-  if (bounds_animator()->IsAnimating())
-    bounds_animator()->Cancel();
 
   if (GetContentsBounds().IsEmpty())
     return;

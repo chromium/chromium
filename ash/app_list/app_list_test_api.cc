@@ -465,6 +465,9 @@ std::string AppListTestApi::CreateFolderWithApps(
   // Only create a folder if there are two or more apps.
   DCHECK_GE(apps.size(), 2u);
 
+  // Skip all item move animations during folder creation.
+  ScopedItemMoveAnimationDisabler disabler(GetTopLevelAppsGridView());
+
   AppListModel* model = GetAppListModel();
   // Create a folder using the first two apps, and add the others to the
   // folder iteratively.
@@ -472,9 +475,6 @@ std::string AppListTestApi::CreateFolderWithApps(
   // Return early if MergeItems failed.
   if (folder_id.empty())
     return "";
-
-  // Skip item move animations.
-  ScopedItemMoveAnimationDisabler disabler(GetTopLevelAppsGridView());
 
   for (size_t i = 2; i < apps.size(); ++i)
     model->MergeItems(folder_id, apps[i]);

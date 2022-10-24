@@ -675,11 +675,11 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
     // Make sure that no between rows animation is occurring by checking that
     // all items are animating upward vertically and not horizontally.
     EXPECT_TRUE(GetPagedAppsGridView()->IsAnimatingView(item_view));
-    gfx::Rect target_bounds =
-        GetPagedAppsGridView()->bounds_animator_for_testing()->GetTargetBounds(
-            item_view);
-    EXPECT_GT(item_view->bounds().y(), target_bounds.y());
-    EXPECT_EQ(item_view->bounds().x(), target_bounds.x());
+    gfx::RectF bounds(item_view->GetMirroredBounds());
+    bounds = item_view->layer()->transform().MapRect(bounds);
+    gfx::Rect current_bounds_in_animation = gfx::ToRoundedRect(bounds);
+    EXPECT_GT(current_bounds_in_animation.y(), item_view->bounds().y());
+    EXPECT_EQ(current_bounds_in_animation.x(), item_view->bounds().x());
   }
 
   // Verify that another row appears once the toast is closed.
@@ -756,8 +756,7 @@ TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
   for (size_t i = 0; i < view_model->view_size(); i++)
     EXPECT_FALSE(view_model->view_at(i)->layer());
 
-  EXPECT_FALSE(GetPagedAppsGridView()
-                   ->GetBoundsAnimationForCardifiedStateInProgressForTest());
+  EXPECT_FALSE(GetPagedAppsGridView()->IsItemAnimationRunning());
 }
 
 // Test the case of beginning an item drag and then immediately ending the drag.
@@ -800,8 +799,7 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
   // removed.
   for (size_t i = 0; i < view_model->view_size(); i++)
     EXPECT_FALSE(view_model->view_at(i)->layer());
-  EXPECT_FALSE(GetPagedAppsGridView()
-                   ->GetBoundsAnimationForCardifiedStateInProgressForTest());
+  EXPECT_FALSE(GetPagedAppsGridView()->IsItemAnimationRunning());
 
   // Now that cardified item animations are complete, make sure that
   // `OnCardifiedStateEnded()` is only called once.
@@ -857,8 +855,7 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
   // removed.
   for (size_t i = 0; i < view_model->view_size(); i++)
     EXPECT_FALSE(view_model->view_at(i)->layer());
-  EXPECT_FALSE(GetPagedAppsGridView()
-                   ->GetBoundsAnimationForCardifiedStateInProgressForTest());
+  EXPECT_FALSE(GetPagedAppsGridView()->IsItemAnimationRunning());
   EXPECT_FALSE(IsRowChangeAnimatorAnimating());
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
 
