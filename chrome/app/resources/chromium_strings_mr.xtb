@@ -63,6 +63,7 @@
 <translation id="2560420686485554789">फाइल डाउनलोड करण्यासाठी Chromium ला स्टोरेज ॲक्सेस हवा आहे</translation>
 <translation id="2572494885440352020">Chromium मदतनीस</translation>
 <translation id="2583187216237139145">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chromium डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Chromium वापरणे पुढे सुरू ठेवा</translation>
 <translation id="2648074677641340862">स्‍थापनेदरम्‍यान ऑपरेटिंग सिस्टीम एरर आली. कृपया Chromium पुन्‍हा डाउनलोड करा.</translation>
 <translation id="2661879430930417727">तुम्ही डिव्हाइस शेअर केल्यास, मित्रमैत्रिणी आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना हवे तसे Chromium सेट करू शकतात</translation>
 <translation id="2669853942967761236">Chromium ने ही संग्रहण फाइल ब्लॉक केली, कारण त्यामध्ये मालवेअर लपलेले असू शकते</translation>
@@ -104,6 +105,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">सध्याच्या Chromium प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="3412460710772753638">या डिव्हाइसवरील पासवर्ड मॅनेजर मध्ये</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{तुमच्या अ‍ॅडमिनिस्ट्रेटरने Chromium एका मिनिटापेक्षा जास्त कालावधीसाठी निष्क्रिय असल्यास, ते बंद होण्यासाठी कॉंफिगर केले आहे.}other{तुमच्या अ‍ॅडमिनिस्ट्रेटरने Chromium # मिनिटांपेक्षा जास्त कालावधीसाठी निष्क्रिय असल्यास, ते बंद होण्यासाठी कॉंफिगर केले आहे.}}</translation>
 <translation id="3430503420100763906">Chromium प्रोफाइल वापरून तुम्ही तुमच्या Chromium शी संबंधित सर्व गोष्टींची विभागणी करू शकता. मित्रमैत्रिणी आणि कुटुंबासाठी प्रोफाइल तयार करा किंवा त्यांची काम व मनोरंजन यामध्ये विभागणी करा.</translation>
 <translation id="347328004046849135">तुम्ही धोक्यात असलेल्या पासवर्डने साइन इन केल्यावर Chromium तुम्हाला सूचित करेल</translation>
 <translation id="3474745554856756813">हे या डिव्‍हाइस मधून <ph name="ITEMS_COUNT" /> आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chromium मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
@@ -185,6 +187,7 @@
 <translation id="538767207339317086">Chromium मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
 <translation id="5398878173008909840">Chromium ची नवीन आवृत्ती उपलब्ध आहे.</translation>
 <translation id="5405650547142096840">Chromium मधून काढा</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium will close now.}=1{Chromium एका सेकंदामध्ये बंद होईल.}other{Chromium # सेकंदांमध्ये बंद होईल.}}</translation>
 <translation id="5427571867875391349">तुमचा डीफॉल्ट ब्राउझर म्हणून Chromium सेट करा</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium बीटा</translation>
 <translation id="5473971139929175403">या Linux सिस्टीमवर Chromium सपोर्ट नसल्याने कदाचित ते योग्यरितीने काम करू शकत नाही</translation>
@@ -273,6 +276,7 @@
 <translation id="6940431691900807093">त्यानंतर, तुम्ही पाहता त्या जाहिराती पर्सनलाइझ करण्यासाठी, तुम्ही भेट देता ती साइट Chromium कडे तुमची स्वारस्ये पाहण्याची अनुमती मागू शकते. Chromium कमाल तीन स्वारस्ये शेअर करू शकते.</translation>
 <translation id="6964305034639999644">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
 <translation id="6978145336957848883">कमकुवत पासवर्ड ओळखणे सोपे असते. Chromium ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium बंद आहे</translation>
 <translation id="6985329841647292029">ChromiumOS अटी</translation>
 <translation id="6990124437352146030">या साइटसाठी Chromium ला तुमचा मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="7025789849649390912">इंस्टॉलेशन थांबवले</translation>

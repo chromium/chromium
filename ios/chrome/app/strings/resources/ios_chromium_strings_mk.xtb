@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Податоци од синхронизацијата на Chromium</translation>
 <translation id="1722370509450468186">Лозинката ќе се зачува во вашата сметка (<ph name="EMAIL" />)</translation>
 <translation id="1736662517232558588">Податоците на Chromium се избришани</translation>
+<translation id="177102542580335555">Добивате стандардна безбедносна заштита за овој профил на Chromium</translation>
 <translation id="1838412507805038478">Chromium потврди дека <ph name="ISSUER" /> го издал сертификатот за веб-сајтов.</translation>
 <translation id="1843424232666537147">Chromium има функции што помагаат во управувањето со интернет сообраќајот и со брзината на вчитување веб-страници.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Најавете се за да извадите максимум од Chromium.</translation>
 <translation id="4555020257205549924">Кога е вклучена функцијава, Chromium ќе нуди да преведува страници што се напишани на други јазици користејќи го „Преведи на Google“. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Сега може да го користите Chromium секогаш кога ќе допрете линкови во пораки, документи и други апликации.</translation>
+<translation id="4633738821577273991">Добијте „Подобрено безбедно прелистување“ и за овој профил на Chromium</translation>
 <translation id="4654936625574199632">За да се подобри апликацијата, Chromium испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Вклучете го скенерот на Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> управува со вашата сметка, па податоците од Chromium ќе се избришат од уредов</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Да се избришат податоците на Chromium од уредов?</translation>
 <translation id="8240981428553046115">Chromium не може да провери дали има ажурирања. Обидете се повторно подоцна.</translation>
 <translation id="8308172444429103994">Совет за Chromium. Најавувајте се побрзо со бирање на зачуваната лозинка најгоре на тастатурата.</translation>
+<translation id="8409374867500149834">Ја имате најсилната безбедност на Chromium против штетни веб-сајтови</translation>
 <translation id="858114650497379505">Може да ги користите лозинките што сте ги зачувале во „Управникот со лозинки“ во други апликации на вашиот iPhone.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
 <translation id="865600487977764604">Ве заштитува на Chromium и може да се користи за да ја подобри вашата безбедност на други апликации на Google кога сте најавени.</translation>

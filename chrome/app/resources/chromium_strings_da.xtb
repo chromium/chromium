@@ -62,6 +62,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2560420686485554789">Chromium skal have lageradgang for at downloade filer</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">Alle Chromium-data, der genereres ved brug af denne profil (f.eks. oprettelse af bogmærker, historik, adgangskoder og andre indstillinger) kan fjernes af arbejdsprofilens administrator. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="2648074677641340862">Der opstod en fejl i operativsystemet under installationen. Download Chromium igen.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chromium hver især</translation>
 <translation id="2669853942967761236">Chromium har blokeret denne arkivfil, fordi den kan indeholde malware</translation>
@@ -103,6 +104,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
 <translation id="3412460710772753638">I Adgangskodeadministrator på denne enhed</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Din administrator har konfigureret Chromium til at lukke, hvis det er inaktivt i mere end 1 minut.}one{Din administrator har konfigureret Chromium til at lukke, hvis det er inaktivt i mere end # minut.}other{Din administrator har konfigureret Chromium til at lukke, hvis det er inaktivt i mere end # minutter.}}</translation>
 <translation id="3430503420100763906">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Opret profiler til dine venner og din familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="347328004046849135">Chromium giver dig besked, når du logger ind med en kompromitteret adgangskode</translation>
 <translation id="3474745554856756813">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
@@ -184,6 +186,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="538767207339317086">Tillad login via Chromium</translation>
 <translation id="5398878173008909840">Der er en ny version af Chromium til rådighed.</translation>
 <translation id="5405650547142096840">Fjern fra Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium lukker nu.}=1{Chromium lukkes om 1 sekund.}one{Chromium lukker om # sekund.}other{Chromium lukker om # sekunder.}}</translation>
 <translation id="5427571867875391349">Angiv Chromium som din standardbrowser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium beta</translation>
 <translation id="5473971139929175403">Chromium fungerer muligvis ikke korrekt, da det ikke længere understøttes af denne Linux-distribution</translation>
@@ -272,6 +275,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6940431691900807093">Et website, du besøger, kan på et senere tidspunkt anmode Chromium om at se dine interesser med henblik på at tilpasse de annoncer, du får vist. Chromium kan dele op til 3 interesser.</translation>
 <translation id="6964305034639999644">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="6978145336957848883">Svage adgangskoder er nemme at gætte. Få Chromium <ph name="BEGIN_LINK" />til at oprette og huske stærke adgangskoder for dig<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium er inaktivt</translation>
 <translation id="6985329841647292029">Vilkår for Chromium OS</translation>
 <translation id="6990124437352146030">Chromium skal have tilladelse til at bruge din mikrofon på dette website</translation>
 <translation id="7025789849649390912">Installationen blev afbrudt.</translation>

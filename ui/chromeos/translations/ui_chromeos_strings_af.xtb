@@ -124,7 +124,6 @@
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2084108471225856927">Toestelinstellings</translation>
 <translation id="2084809735218147718">Persoon sê dankie in gebaretaal</translation>
-<translation id="2085470240340828803">'n Lêer met die naam "<ph name="FILENAME" />" bestaan reeds. Wat wil jy doen?</translation>
 <translation id="2088690981887365033">VPN-netwerk</translation>
 <translation id="2122305276694332719">As jy outomaties aan 'n versteekte netwerk koppel, laat dit ander mense toe om jou toestel en van jou netwerkinstellings te sien. Dit word nie aanbeveel nie.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -652,6 +651,7 @@
 <translation id="6495925982925244349">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="649877868557234318">Onttrek tans <ph name="FILE_NAME" /> na <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Weier instaanbedienerinstellings vir gedeelde netwerke</translation>
+<translation id="6503285896705205014">Administrateursbeleid verhoed dat <ph name="COUNT" /> lêers gekopieer kan word</translation>
 <translation id="6509122719576673235">Noors</translation>
 <translation id="6528513914570774834">Laat ander gebruikers van hierdie toestel toe om hierdie netwerk te gebruik</translation>
 <translation id="653019979737152879">Sinkroniseer tans <ph name="FILE_NAME" /> …</translation>
@@ -754,6 +754,7 @@
 <translation id="7357762654218998920">Hierdie lêertipe word nie gesteun nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome-bedryfstelsel oop te maak.</translation>
 <translation id="7359359531237882347">Kopieer tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
 <translation id="7375951387215729722">Lêerlys is volgens <ph name="COLUMN_NAME" /> in dalende volgorde gerangskik.</translation>
+<translation id="7377161162143020057">Administrateursbeleid verhoed dat hierdie lêer gekopieer kan word</translation>
 <translation id="7402503521691663770">Chrome OS Flex-toestelle</translation>
 <translation id="7408870451288633753">Tsjeggies</translation>
 <translation id="7417453074306512035">Etiopiese sleutelbord</translation>

@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Дані синхронізації Chromium</translation>
 <translation id="1722370509450468186">Ваш пароль буде збережено в обліковому записі (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Дані Chromium стерто</translation>
+<translation id="177102542580335555">Ви ввімкнули стандартний режим безпеки для цього профілю Chromium</translation>
 <translation id="1838412507805038478">Chromium підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">У Chromium є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Увійдіть, щоб користуватися всіма можливостями Chromium.</translation>
 <translation id="4555020257205549924">Якщо ввімкнути цю функцію, Chromium пропонуватиме перекласти сторінки, написані іншими мовами, за допомогою Перекладача Google. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Тепер ви можете відкривати в Chromium посилання з повідомлень, документів та інших додатків.</translation>
+<translation id="4633738821577273991">Увімкніть Безпечний перегляд із розширеним захистом і для цього профілю Chromium</translation>
 <translation id="4654936625574199632">Щоб покращити додаток, Chromium надсилає в Google дані про використання та збої. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Увімкніть сканер у Chromium</translation>
 <translation id="4736424910885271643">Ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, тож дані Chromium буде видалено з цього пристрою</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Видалити дані Chromium із цього пристрою?</translation>
 <translation id="8240981428553046115">Веб-переглядачу Chromium не вдалося перевірити наявність оновлень. Повторіть спробу пізніше.</translation>
 <translation id="8308172444429103994">Порада щодо Chromium: ви можете швидше входити в обліковий запис, вибравши збережений пароль угорі клавіатури.</translation>
+<translation id="8409374867500149834">Ви ввімкнули найвищий рівень захисту Chromium від небезпечних веб-сайтів</translation>
 <translation id="858114650497379505">Ви можете використовувати паролі, збережені в Менеджері паролів, в інших додатках на iPhone.</translation>
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
 <translation id="865600487977764604">Захищає вас у Chromium і може покращувати безпеку в інших додатках Google після того, як ви ввійшли в обліковий запис.</translation>

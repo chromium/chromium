@@ -26,6 +26,7 @@
 <translation id="1161762950103988776">Перехід</translation>
 <translation id="1164857107703583584">Команди переходу полегшують навігацію веб-сторінкою.</translation>
 <translation id="1175914831232945926">Цифри</translation>
+<translation id="1181003590763099524">перемістити на початок</translation>
 <translation id="1188858454923323853">додатково</translation>
 <translation id="1189258430971676908">Практика: спадні списки</translation>
 <translation id="1195238899008218998">Післямова</translation>
@@ -326,6 +327,7 @@
 <translation id="309749186376891736">Курсор переміщення</translation>
 <translation id="3103579948980282461">Помірний фіолетово-червоний</translation>
 <translation id="3104705064753753826">вікно сповіщення</translation>
+<translation id="3105857328626674463">виділити попереднє слово</translation>
 <translation id="3109724472072898302">Згорнуто</translation>
 <translation id="311015743332597320">Проведіть чотирма пальцями праворуч</translation>
 <translation id="3112457281078985179">Щоб увімкнути чи вимкнути ChromeVox, натисніть комбінацію клавіш Control+Alt+Z.</translation>
@@ -354,6 +356,7 @@
 <translation id="3241052487511142956">Попереднє натиснуте посилання</translation>
 <translation id="3241638166094654466">Клітинок у кожному рядку:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">перейти в кінець</translation>
 <translation id="3260949043575829030">Попередній схожий елемент</translation>
 <translation id="3270069636408109001">Немає наступної таблиці</translation>
 <translation id="3273791280096244679">Зберегти мітку</translation>
@@ -945,6 +948,7 @@
 <translation id="743783356331413498">Приклад</translation>
 <translation id="7439060726180460871">Каталог</translation>
 <translation id="744163271241493234">пароль</translation>
+<translation id="7443479558101073378">виділити наступне слово</translation>
 <translation id="7465123027577412805">Використовувати природний голос?</translation>
 <translation id="7491962110804786152">вкладка</translation>
 <translation id="7492497529767769458">Перейти до наступного розділу. Приклади: "Панель статусу" або "Панель запуску".</translation>

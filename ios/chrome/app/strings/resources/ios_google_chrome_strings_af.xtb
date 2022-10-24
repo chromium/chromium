@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Stel Chrome as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="1504372625950710826">Chrome kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="1511320244449497906">Jy is aangemeld en sinkroniseer tans jou data met ’n rekening wat deur <ph name="DOMAIN" /> bestuur word. Die administrateur kan nou gebruikerbeleide spesifiek vir dié rekening stel, wat die gedrag van Chrome kan verander.</translation>
+<translation id="1554731936187952550">Jy het Chrome se sterkste sekuriteit teen skadelike webwerwe</translation>
 <translation id="1682483655351012182">Sinkroniseer jou Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Hierdie rekening en enige ongstoorde data sal uit Chrome en ander Google-programme op hierdie toestel verwyder word.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome spaar jou tyd deur jou rekeninge na die web te bring. Jy kan rekeninge in instellings byvoeg of verwyder.</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3345341804167540816">Gebruik Chrome oral</translation>
+<translation id="3503014945441706099">Kry Verbeterde Veiligblaai ook vir hierdie Chrome-profiel</translation>
 <translation id="3522659714780527202">Skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chrome gebruik</translation>
 <translation id="3533694711092285624">Geen gestoorde wagwoorde nie. Chrome kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="3641179212828090796">Gebruik die wagwoord wat jy in Chrome gestoor het om vinniger aan te meld</translation>
@@ -137,6 +139,7 @@ Dinge om in ag te neem:
   • As Chrome omval, kan besonderhede oor die omval sekere persoonlike inligting insluit.
 
   • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Jy kry tans standaardsekuriteitbeskerming vir hierdie Chrome-profiel</translation>
 <translation id="9112744793181547300">Stel Chrome as verstek?</translation>
 <translation id="9122931302567044771">Dit beteken dat Chrome elke keer die rekenaarwerf sal versoek.</translation>
 </translationbundle>
