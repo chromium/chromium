@@ -17,6 +17,10 @@
 
 class FastCheckoutExternalActionDelegate;
 
+namespace autofill {
+class LogManager;
+}
+
 namespace autofill_assistant {
 class RuntimeManager;
 }
@@ -117,6 +121,9 @@ class FastCheckoutClientImpl
 
   // Returns true if fast checkout should run, e.g. if the feature is enabled.
   bool ShouldRun(bool script_supports_consentless_execution);
+
+  // Returns the Autofill log manager if available.
+  autofill::LogManager* GetAutofillLogManager();
 
   // Delegate for the surface being shown.
   base::WeakPtr<autofill::FastCheckoutDelegate> delegate_;

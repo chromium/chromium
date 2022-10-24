@@ -12,8 +12,10 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 
 namespace autofill {
 
@@ -61,6 +63,14 @@ void AddressFormEventLogger::OnDidFillSuggestion(
 
   ++form_interaction_counts_.autofill_fills;
   UpdateFlowId();
+
+  if (autofill_assistant_intent() ==
+      autofill_assistant::AutofillAssistantIntent::CHROME_FAST_CHECKOUT) {
+    LOG_AF(client_->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "address form with signature " << form.FormSignatureAsStr()
+        << " was autofilled during a Fast Checkout run.";
+  }
 }
 
 void AddressFormEventLogger::OnDidSeeFillableDynamicForm(

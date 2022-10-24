@@ -353,6 +353,7 @@ function setUpDownload(moduleName) {
 // Sets up the top bar with checkboxes to show/hide the different sorts of log
 // event types, a checkbox to enable/disable autoscroll.
 function setUpLogDisplayConfig() {
+  const FAST_CHECKOUT = 'FastCheckout';
   const SCOPES = [
     'Context',
     'Parsing',
@@ -363,7 +364,11 @@ function setUpLogDisplayConfig() {
     'Metrics',
     'AddressProfileFormImport',
     'WebsiteModifiedFieldValue',
+    FAST_CHECKOUT,
   ];
+  const DEFAULT_UNCHECKED_SCOPES = new Set([
+    FAST_CHECKOUT,
+  ]);
   const logDiv = document.getElementById('log-entries');
   const autoScrollInput = document.getElementById('enable-autoscroll');
   const checkboxPlaceholder = document.getElementById('checkbox-placeholder');
@@ -380,7 +385,12 @@ function setUpLogDisplayConfig() {
     const input = document.createElement('input');
     input.setAttribute('type', 'checkbox');
     input.setAttribute('id', `checkbox-${scope}`);
-    input.checked = getUrlHashParam(scope) !== 'n';
+    const urlHashParam = getUrlHashParam(scope);
+    if (DEFAULT_UNCHECKED_SCOPES.has(scope) && urlHashParam === undefined) {
+      input.checked = false;
+    } else {
+      input.checked = getUrlHashParam(scope) !== 'n';
+    }
     function changeHandler() {
       setUrlHashParam(scope, input.checked ? 'y' : 'n');
       const cls = `hide-${scope}`;

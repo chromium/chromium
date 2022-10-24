@@ -8,6 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 
 namespace autofill {
 
@@ -26,19 +30,37 @@ FastCheckoutDelegateImpl::~FastCheckoutDelegateImpl() {
 bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     const FormData& form,
     const FormFieldData& field) {
+#if BUILDFLAG(IS_ANDROID)
+  LOG_AF(manager_->client()->GetLogManager())
+      << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+      << "Start of trying to trigger Fast Checkout.";
+#endif
+
   // Trigger only on supported platforms.
-  if (!manager_->client()->IsFastCheckoutSupported())
+  if (!manager_->client()->IsFastCheckoutSupported()) {
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "not triggered because it is not supported.";
     return false;
+  }
 
   // Trigger only if the form is a trigger form for FC.
-  if (!manager_->client()->IsFastCheckoutTriggerForm(form, field))
+  if (!manager_->client()->IsFastCheckoutTriggerForm(form, field)) {
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "not triggered because `form` is not a trigger form.";
     return false;
+  }
 
   // Do not trigger if `form.main_frame_origin` requires consent but user has
   // consentless enabled.
   if (!manager_->client()->FastCheckoutScriptSupportsConsentlessExecution(
           form.main_frame_origin) &&
       manager_->client()->FastCheckoutClientSupportsConsentlessExecution()) {
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "not triggered because `form.main_frame_origin` "
+           "requires consent but user has consentless enabled.";
     return false;
   }
 
@@ -49,6 +71,9 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     base::UmaHistogramEnumeration(
         kUmaKeyFastCheckoutTriggerOutcome,
         FastCheckoutTriggerOutcome::kFailureShownBefore);
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "not triggered because it was shown before.";
     return false;
   }
 
@@ -57,6 +82,9 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     base::UmaHistogramEnumeration(
         kUmaKeyFastCheckoutTriggerOutcome,
         FastCheckoutTriggerOutcome::kFailureFieldNotFocusable);
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "not triggered because field was not focusable.";
     return false;
   }
 
@@ -65,6 +93,9 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     base::UmaHistogramEnumeration(
         kUmaKeyFastCheckoutTriggerOutcome,
         FastCheckoutTriggerOutcome::kFailureFieldNotEmpty);
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "not triggered because field was not empty.";
     return false;
   }
 
@@ -73,18 +104,28 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     base::UmaHistogramEnumeration(
         kUmaKeyFastCheckoutTriggerOutcome,
         FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi);
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "not triggered because Autofill UI cannot be shown.";
     return false;
   }
 
   // Finally try showing the surface.
-  if (!manager_->client()->ShowFastCheckout(GetWeakPtr()))
+  if (!manager_->client()->ShowFastCheckout(GetWeakPtr())) {
+    LOG_AF(manager_->client()->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "An error occurred while trying to show the Fast Checkout UI.";
     return false;
+  }
 
   fast_checkout_state_ = FastCheckoutState::kIsShowing;
   manager_->client()->HideAutofillPopup(
       PopupHidingReason::kOverlappingWithFastCheckoutSurface);
   base::UmaHistogramEnumeration(kUmaKeyFastCheckoutTriggerOutcome,
                                 FastCheckoutTriggerOutcome::kSuccess);
+  LOG_AF(manager_->client()->GetLogManager())
+      << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+      << "was triggered successfully.";
   return true;
 }
 

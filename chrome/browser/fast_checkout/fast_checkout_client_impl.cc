@@ -18,6 +18,10 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/fast_checkout_delegate.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/external_action_util.h"
 #include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
@@ -110,8 +114,13 @@ bool FastCheckoutClientImpl::Start(
     base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
     const GURL& url,
     bool script_supports_consentless_execution) {
-  if (!ShouldRun(script_supports_consentless_execution))
+  if (!ShouldRun(script_supports_consentless_execution)) {
+    LOG_AF(GetAutofillLogManager()) << autofill::LoggingScope::kFastCheckout
+                                    << autofill::LogMessage::kFastCheckout
+                                    << "not triggered because "
+                                       "`ShouldRun()` returned `false`.";
     return false;
+  }
 
   bool run_consentless =
       features::kFastCheckoutConsentlessExecutionParam.Get() &&
@@ -141,8 +150,13 @@ bool FastCheckoutClientImpl::Start(
 
 bool FastCheckoutClientImpl::ShouldRun(
     bool script_supports_consentless_execution) {
-  if (!base::FeatureList::IsEnabled(features::kFastCheckout))
+  if (!base::FeatureList::IsEnabled(features::kFastCheckout)) {
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout
+        << "not triggered because FastCheckout flag is disabled.";
     return false;
+  }
 
   bool client_supports_consentless_execution =
       features::kFastCheckoutConsentlessExecutionParam.Get();
@@ -150,16 +164,33 @@ bool FastCheckoutClientImpl::ShouldRun(
   // The run requires consent (`script_supports_consentless_execution == false`)
   // but the client is consentless.
   if (!script_supports_consentless_execution &&
-      client_supports_consentless_execution)
+      client_supports_consentless_execution) {
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout
+        << "not triggered because the script requires consent but the client "
+           "is consent-less.";
     return false;
+  }
 
-  if (is_running_)
+  if (is_running_) {
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout
+        << "not triggered because Fast Checkout is already running.";
     return false;
+  }
 
   // Client requires consent and has declined onboarding previously.
   if (fast_checkout_prefs_.IsOnboardingDeclined() &&
-      !client_supports_consentless_execution)
+      !client_supports_consentless_execution) {
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout
+        << "not triggered because the client requires consent and has declined "
+           "onboarding previously.";
     return false;
+  }
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
   DCHECK(pdm);
@@ -168,6 +199,11 @@ bool FastCheckoutClientImpl::ShouldRun(
     base::UmaHistogramEnumeration(
         autofill::kUmaKeyFastCheckoutTriggerOutcome,
         autofill::FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile);
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout
+        << "not triggered because the client does not have at least one valid "
+           "Autofill profile stored.";
     return false;
   }
   // Trigger only if there is at least 1 complete valid credit card on file.
@@ -175,6 +211,11 @@ bool FastCheckoutClientImpl::ShouldRun(
     base::UmaHistogramEnumeration(
         autofill::kUmaKeyFastCheckoutTriggerOutcome,
         autofill::FastCheckoutTriggerOutcome::kFailureNoValidCreditCard);
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout
+        << "not triggered because the client does not have at least one "
+           "valid Autofill credit card stored.";
     return false;
   }
 
@@ -221,12 +262,22 @@ void FastCheckoutClientImpl::OnRunComplete(
     fast_checkout_prefs_.DeclineOnboarding();
     base::UmaHistogramEnumeration(kUmaKeyFastCheckoutRunOutcome,
                                   FastCheckoutRunOutcome::kOnboardingDeclined);
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout
+        << "run failed because onboarding was rejected.";
   } else if (result.success) {
     base::UmaHistogramEnumeration(kUmaKeyFastCheckoutRunOutcome,
                                   FastCheckoutRunOutcome::kSuccess);
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout << "run was successful.";
   } else {
     base::UmaHistogramEnumeration(kUmaKeyFastCheckoutRunOutcome,
                                   FastCheckoutRunOutcome::kFail);
+    LOG_AF(GetAutofillLogManager())
+        << autofill::LoggingScope::kFastCheckout
+        << autofill::LogMessage::kFastCheckout << "run failed.";
   }
 
   OnHidden();
@@ -317,6 +368,19 @@ void FastCheckoutClientImpl::OnPersonalDataChanged() {
   } else {
     ShowFastCheckoutUI();
   }
+}
+
+autofill::LogManager* FastCheckoutClientImpl::GetAutofillLogManager() {
+  if (!delegate_)
+    return nullptr;
+
+  autofill::ContentAutofillDriver* driver =
+      static_cast<autofill::ContentAutofillDriver*>(delegate_->GetDriver());
+
+  if (!driver)
+    return nullptr;
+
+  return driver->autofill_manager()->client()->GetLogManager();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FastCheckoutClientImpl);

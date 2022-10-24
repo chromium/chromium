@@ -24,7 +24,9 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/fast_checkout_delegate.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
@@ -273,6 +275,15 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
     // Prepare the RunTimeManager.
     test_client_->InjectRunTimeManagerForTesting(mock_runtime_manager_.get());
+
+    // Set AutofillManager on AutofillDriver.
+    auto test_autofill_client =
+        std::make_unique<autofill::TestAutofillClient>();
+    auto test_browser_autofill_manager =
+        std::make_unique<autofill::TestBrowserAutofillManager>(
+            autofill_driver_.get(), test_autofill_client.release());
+    autofill_driver_->set_autofill_manager(
+        std::move(test_browser_autofill_manager));
   }
 
   autofill::TestPersonalDataManager* personal_data_manager() {

@@ -12,11 +12,14 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill {
@@ -176,6 +179,14 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
 
   ++form_interaction_counts_.autofill_fills;
   UpdateFlowId();
+
+  if (autofill_assistant_intent() ==
+      autofill_assistant::AutofillAssistantIntent::CHROME_FAST_CHECKOUT) {
+    LOG_AF(client_->GetLogManager())
+        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
+        << "credit card form with signature " << form.FormSignatureAsStr()
+        << " was autofilled during a Fast Checkout run.";
+  }
 }
 
 void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptShown(

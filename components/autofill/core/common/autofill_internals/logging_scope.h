@@ -38,7 +38,9 @@ class LogBuffer;
   /* Whether or not card upload was offered to the user. */            \
   T(CardUploadDecision)                                                \
   /* The website modified a field */                                   \
-  T(WebsiteModifiedFieldValue)
+  T(WebsiteModifiedFieldValue)                                         \
+  /* Chrome Fast Checkout run. */                                      \
+  T(FastCheckout)
 
 // Define a bunch of logging scopes: kContext, kParsing, ...
 #define AUTOFILL_TEMPLATE(NAME) k##NAME,

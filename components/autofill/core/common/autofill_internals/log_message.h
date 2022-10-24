@@ -58,7 +58,8 @@ class LogBuffer;
   T(ProcessingServerData, "Processing server data.")                           \
   T(JavaScriptChangedAutofilledValue,                                          \
     "JavaScript set value of autofilled "                                      \
-    "field: ")
+    "field: ")                                                                 \
+  T(FastCheckout, "Fast Checkout: ")
 
 // Log messages for chrome://autofill-internals.
 
