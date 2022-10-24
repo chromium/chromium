@@ -104,8 +104,10 @@ vars = {
   # restricted to Googlers only.
   'checkout_chromium_fsc_test_dependencies': False,
 
-  # By default, src-internal checks out //clank.
-  'checkout_clank_via_src_internal': True,
+  # By default, check out //clank in chromium instead of src-internal. This is
+  # part of an internal migration (see http://go/clank>src) and will be removed
+  # after the migration completes. See https://crbug.com/1315715 for context.
+  'checkout_clank_via_src_internal': False,
 
   # By default, do not check out Google Benchmark. The library is only used by a
   # few specialized benchmarks that most developers do not interact with. Will
@@ -4995,7 +4997,7 @@ recursedeps = [
   'src/third_party/vulkan-deps',
   # src-internal has its own DEPS file to pull additional internal repos
   'src-internal',
-  # clank has its own DEPS file. This needs to be enabled only when it is
-  # removed from src-internal's recursedeps.
-  #'src/clank',
+  # clank has its own DEPS file, does not need to be in trybot_analyze_config
+  # since the roller does not run tests.
+  'src/clank',
 ]
