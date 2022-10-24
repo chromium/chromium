@@ -349,8 +349,14 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // token for this fragment nevertheless, so that we re-enter, descend and
   // resume at the broken children in the next fragmentainer.
   bool HasChildBreakInside() const {
-    if (!child_break_tokens_.empty())
-      return true;
+    if (!child_break_tokens_.empty()) {
+      for (const NGBreakToken* child_token : child_break_tokens_) {
+        const auto* block_child_token =
+            DynamicTo<NGBlockBreakToken>(child_token);
+        if (!block_child_token || !block_child_token->IsRepeated())
+          return true;
+      }
+    }
     // Inline nodes produce a "finished" trailing break token even if we don't
     // need to block-fragment.
     if (last_inline_break_token_)

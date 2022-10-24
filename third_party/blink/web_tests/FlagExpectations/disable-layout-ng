@@ -368,6 +368,7 @@ crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/abspos-in-mo
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/abspos-uncontained-text.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/abspos-uncontained.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/block-in-inline.tentative.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/break-avoidance-in-bottom-caption.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/captions.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/footer.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/header-after-break.tentative.html [ Failure ]
