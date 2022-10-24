@@ -24,7 +24,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
-    enum="BooleanToggled" expires_after="2022-10-29">
+    enum="BooleanToggled" expires_after="2023-10-16">
   <owner>josiahk@chromium.org</owner>
   <owner>chromium-accessibility@chromium.org</owner>
   <summary>
@@ -35,7 +35,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierMouseFollowingMode"
-    enum="MagnifierMouseFollowingMode" expires_after="2022-12-13">
+    enum="MagnifierMouseFollowingMode" expires_after="2023-10-16">
   <owner>josiahk@chromium.org</owner>
   <owner>chromium-accessibility@chromium.org</owner>
   <summary>
