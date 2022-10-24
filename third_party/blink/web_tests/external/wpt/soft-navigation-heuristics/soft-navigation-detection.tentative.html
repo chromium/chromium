@@ -15,18 +15,12 @@
   </main>
   <script>
     const link = document.getElementById("link");
-    test_soft_navigation(async json => {
-      // Add the content to the main element
-      const main = document.getElementById("main");
-      const img = new Image();
-      img.src = json["image"];
-      await new Promise(resolve => {
-        img.onload = resolve;
-      });
-      main.appendChild(img);
-    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
-       /*clicks=*/1, ()=>{},
-       "Test that a soft navigation is detected");
+    testSoftNavigation({
+      addContent: async () => {
+        await addImageToMain();
+      },
+      link: link,
+      test: "Test that a soft navigation is detected"});
   </script>
 </body>
 </html>

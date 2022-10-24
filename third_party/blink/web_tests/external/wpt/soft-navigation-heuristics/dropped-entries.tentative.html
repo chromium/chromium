@@ -17,22 +17,17 @@
   <script>
     const link = document.getElementById("link");
 
-    test_soft_navigation(async json => {
-      // Add the content to the main element
-      const main = document.getElementById("main");
-      const img = new Image();
-      const loaded = new Promise(resolve => {
-        img.onload = resolve;
-      });
-      img.src = json["image"] + "?" + Math.random();
-      await loaded;
-      main.appendChild(img);
-    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
-       /*clicks=*/52, (entries, options)=>{assert_equals(
-         options['droppedEntriesCount'], 2);
-       },
-       "Test that a soft navigation is detected when the click is done "
-       + "on a custom element.");
+    testSoftNavigation({
+      addContent: async () => {
+        await addImageToMain();
+      },
+      link: link,
+      clicks: 52,
+      extraValidations: (entries, options)=>{
+        assert_equals(options['droppedEntriesCount'], 2);
+      },
+      test: "Test that a soft navigation is detected when the click is done "
+        + "on a custom element."});
   </script>
 </body>
 </html>

@@ -29,17 +29,17 @@
   </main>
   <script>
     const link = document.getElementById("link");
-    test_soft_navigation(json => {
-      // Add the content to the main element
-      const main = document.getElementById("main");
-      const spa_content = document.createElement("div", {is: "spa-content"});
-      const content = document.createTextNode(json["content"]);
-      spa_content.appendChild(content);
-      main.appendChild(spa_content);
-    }, link, /*push_state=*/null,
-       /*clicks=*/1, ()=>{},
-       "Test that a soft navigation is detected when the click is done  "
-       + "on a custom element.");
+    testSoftNavigation({
+      addContent: () => {
+        const main = document.getElementById("main");
+        const spaContent = document.createElement("div", {is: "spa-content"});
+        const content = document.createTextNode("Lorem Ipsum");
+        spaContent.appendChild(content);
+        main.appendChild(spaContent);
+      },
+      link: link,
+      test: "Test that a soft navigation is detected when the click is done  "
+        + "on a custom element."});
   </script>
 </body>
 </html>

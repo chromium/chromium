@@ -15,16 +15,14 @@
   </main>
   <script>
     const link = document.getElementById("link");
-    test_soft_navigation(json => {
-      // Add the content to the main element
-      const main = document.getElementById("main");
-      const div = document.createElement("div");
-      const content = document.createTextNode(json["content"]);
-      div.appendChild(content);
-      main.appendChild(div);
-    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
-       /*clicks=*/1, ()=>{},
-       "Test that a soft navigation is detected", /*push_url=*/false);
+    testSoftNavigation({
+      addContent: () => {
+        addTextToDivOnMain();
+      },
+      link: link,
+      pushUrl: false,
+      test: "Test that a soft navigation is detected when a URL is not passed"
+        + " to the history API."});
   </script>
 </body>
 </html>

@@ -16,24 +16,17 @@
     </div>
   </main>
   <script>
-    (async () => {
-      // Push state a couple of times
-      history.pushState({}, "", "foobar.html");
-      history.pushState({}, "", "another_one.html");
-      const link = document.getElementById("link");
-      test_soft_navigation(async json => {
-        // Add the content to the main element
-        const main = document.getElementById("main");
-        main.removeChild(document.getElementsByTagName("div")[0]);
-        const div = document.createElement("div");
-        const text = document.createTextNode(json["content"]);
-        div.appendChild(text);
-        div.style="font-size: 3em";
-        main.appendChild(div);
-      }, link, /*push_state=*/url=>{history.back()},
-         /*clicks=*/1, ()=>{},
-         "`history.back() properly works with SoftNavigationHeuristics");
-    })();
+    // Push state a couple of times
+    history.pushState({}, "", "foobar.html");
+    history.pushState({}, "", "anotherOne.html");
+    const link = document.getElementById("link");
+    testSoftNavigation({
+      addContent: () => {
+        addTextToDivOnMain();
+      },
+      link: link,
+      pushState: url=>{history.back()},
+      test: "`history.back() properly works with SoftNavigationHeuristics"});
   </script>
 </body>
 </html>

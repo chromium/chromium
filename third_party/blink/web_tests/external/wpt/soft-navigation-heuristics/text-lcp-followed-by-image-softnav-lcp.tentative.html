@@ -17,20 +17,15 @@
   </main>
   <script>
     const link = document.getElementById("link");
-    test_soft_navigation(async json => {
-      // Add the content to the main element
-      const main = document.getElementById("main");
-      main.removeChild(document.getElementsByTagName("div")[0]);
-      const img = new Image();
-      img.src = json["image"];
-      await new Promise(resolve => {
-        img.onload = resolve;
-      });
-      main.appendChild(img);
-    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
-       /*clicks=*/1, ()=>{},
-       "Test that a text LCP followup by a smaller soft navigation image LCP"
-       + " properly queues an LCP entry");
+    testSoftNavigation({
+      addContent: async () => {
+        const main = document.getElementById("main");
+        main.removeChild(document.getElementsByTagName("div")[0]);
+        await addImageToMain();
+      },
+      link: link,
+      test: "Test that a text LCP followup by a smaller soft navigation image"
+        + " LCP properly queues an LCP entry"});
   </script>
 </body>
 </html>
