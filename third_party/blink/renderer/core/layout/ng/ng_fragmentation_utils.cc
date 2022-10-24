@@ -749,10 +749,6 @@ void BreakBeforeChild(const NGConstraintSpace& space,
                            builder, block_size_override);
   }
 
-  // If the fragmentainer block-size is unknown, we have no reason to insert
-  // soft breaks.
-  DCHECK(is_forced_break || space.HasKnownFragmentainerBlockSize());
-
   if (layout_result && space.ShouldPropagateChildBreakValues() &&
       !is_forced_break)
     builder->PropagateChildBreakValues(*layout_result, flex_column_break_after);

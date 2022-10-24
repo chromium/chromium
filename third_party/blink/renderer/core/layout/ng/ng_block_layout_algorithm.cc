@@ -2432,10 +2432,6 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   // child, or before an earlier sibling, if there's a more appealing breakpoint
   // there.
 
-  // If we decided to insert a soft break, we have to know the fragmentainer
-  // block-size.
-  DCHECK(ConstraintSpace().HasKnownFragmentainerBlockSize());
-
   // Handle line boxes - propagate space shortage and attempt to honor orphans
   // and widows (or detect violations). Skip this part if we didn't produce a
   // fragment (status != kSuccess). The latter happens with BR clear=all if we
