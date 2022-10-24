@@ -13,7 +13,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -160,11 +159,6 @@ CandidateView::CandidateView(PressedCallback callback,
     infolist_icon_ = AddChildView(std::make_unique<views::View>());
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
 void CandidateView::GetPreferredWidths(int* shortcut_width,
