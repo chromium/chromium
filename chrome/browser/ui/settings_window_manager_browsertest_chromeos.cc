@@ -26,6 +26,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -63,12 +64,6 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
   ~SettingsWindowManagerTest() override = default;
 
-  void ShowSettingsForProfile(Profile* profile) {
-    settings_manager_->ShowChromePageForProfile(
-        profile, GURL(chrome::kChromeUISettingsURL),
-        display::kInvalidDisplayId);
-  }
-
   void CloseNonDefaultBrowsers() {
     std::list<Browser*> browsers_to_close;
     for (auto* b : *BrowserList::GetInstance()) {
@@ -81,13 +76,21 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
     }
   }
 
+  void ShowOSSettings() {
+    ui_test_utils::BrowserChangeObserver browser_opened(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    settings_manager_->ShowOSSettings(browser()->profile());
+    browser_opened.Wait();
+  }
+
  protected:
   chrome::SettingsWindowManager* settings_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
   // Open a settings window.
-  settings_manager_->ShowOSSettings(browser()->profile());
+  ShowOSSettings();
+
   Browser* settings_browser =
       settings_manager_->FindBrowserForProfile(browser()->profile());
   ASSERT_TRUE(settings_browser);
@@ -118,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
   EXPECT_FALSE(settings_manager_->FindBrowserForProfile(browser()->profile()));
 
   // Open a new settings window.
-  settings_manager_->ShowOSSettings(browser()->profile());
+  ShowOSSettings();
   Browser* settings_browser2 =
       settings_manager_->FindBrowserForProfile(browser()->profile());
   ASSERT_TRUE(settings_browser2);
@@ -135,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenChromePages) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Settings should open a new browser window.
-  settings_manager_->ShowOSSettings(browser()->profile());
+  ShowOSSettings();
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // About should reuse the existing Settings window.
@@ -168,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // OS settings opens in a new window.
-  settings_manager_->ShowOSSettings(browser()->profile());
+  ShowOSSettings();
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
