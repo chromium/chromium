@@ -160,6 +160,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private View mToolbarCoordinator;
     private int mToolbarColor;
     private Runnable mPositionUpdater;
+    private Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
 
     // Window attributes backed up for HTML fullscreen mode.
@@ -293,10 +294,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mPositionUpdater.run();
     }
 
-    public void onShowSoftInput() {
-        if (isFullHeight() || mStatus != HeightStatus.INITIAL_HEIGHT) return;
+    public void onShowSoftInput(Runnable softKeyboardRunnable) {
+        // Expands to full height to avoid the tab being hidden by the soft keyboard.
+        // Necessary only if we're at the initial height status.
+        if (isFullHeight() || mStatus != HeightStatus.INITIAL_HEIGHT) {
+            softKeyboardRunnable.run();
+            return;
+        }
+        mSoftKeyboardRunnable = softKeyboardRunnable;
 
-        // Expands to full height.
         int start = mActivity.getWindow().getAttributes().y;
         int end = getFullyExpandedYWithAdjustment();
         mAnimator.setIntValues(start, end);
@@ -708,22 +714,32 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         hideSpinnerView();
         if (mWindowAboveNavbar) {
             showNavbarButtons(true);
-            new Handler().postDelayed(() -> {
+            if (mAlwaysShowNavbarButtons) {
+                finishResizing();
+            } else {
                 // Give a small delay in restoring the window to avoid the flashing artifact
                 // at the navigation bar area.
-                Window window = mActivity.getWindow();
-                window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-                positionAtHeight(mDisplayHeight - window.getAttributes().y);
-                maybeInvokeResizeCallback();
-                mStatus = mTargetStatus;
-            }, NAVBAR_BUTTON_RESTORE_DELAY_MS);
+                new Handler().postDelayed(this::finishResizing, NAVBAR_BUTTON_RESTORE_DELAY_MS);
 
-            // Temporarily disables user input until the window is restored.
-            mTargetStatus = mStatus;
-            mStatus = HeightStatus.TRANSITION;
+                // Temporarily disables user input until the window is restored.
+                mTargetStatus = mStatus;
+                mStatus = HeightStatus.TRANSITION;
+            }
         } else {
             updateNavbarVisibility(true);
         }
+        if (mSoftKeyboardRunnable != null) {
+            mSoftKeyboardRunnable.run();
+            mSoftKeyboardRunnable = null;
+        }
+    }
+
+    private void finishResizing() {
+        Window window = mActivity.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        positionAtHeight(mDisplayHeight - window.getAttributes().y);
+        maybeInvokeResizeCallback();
+        mStatus = mTargetStatus;
     }
 
     private void hideSpinnerView() {

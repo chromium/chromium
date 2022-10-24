@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.BooleanSupplier;
@@ -203,7 +204,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
         if (mIntentDataProvider.get().isPartialHeightCustomTab()) {
-            Runnable softInputCallback =
+            Callback<Runnable> softInputCallback =
                     ((PartialCustomTabHeightStrategy) mCustomTabHeightStrategy)::onShowSoftInput;
             mTabController.get().registerTabObserver(
                     new PartialCustomTabTabObserver(softInputCallback));

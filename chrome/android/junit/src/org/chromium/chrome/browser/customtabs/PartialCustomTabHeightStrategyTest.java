@@ -802,7 +802,7 @@ public class PartialCustomTabHeightStrategyTest {
         assertEquals(1, mAttributeResults.size());
         assertTabIsAtInitialPos(mAttributeResults.get(0));
 
-        strategy.onShowSoftInput();
+        strategy.onShowSoftInput(() -> {});
         shadowOf(Looper.getMainLooper()).idle();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 

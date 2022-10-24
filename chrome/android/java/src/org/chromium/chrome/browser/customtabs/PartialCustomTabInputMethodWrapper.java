@@ -10,6 +10,7 @@ import android.os.ResultReceiver;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
 
+import org.chromium.base.Callback;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
@@ -20,16 +21,12 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWrapper {
     private InputMethodManagerWrapper mWrapper;
-    private Runnable mShowSoftKeyInputCallback;
+    private Callback<Runnable> mShowSoftKeyInputCallback;
 
     public PartialCustomTabInputMethodWrapper(
-            Context context, WindowAndroid window, Runnable softKeyInputCallback) {
+            Context context, WindowAndroid window, Callback<Runnable> softKeyInputCallback) {
         mWrapper = ImeAdapter.createDefaultInputMethodManagerWrapper(context, window, null);
         mShowSoftKeyInputCallback = softKeyInputCallback;
-    }
-
-    void setShowSoftKeyInputCallback(Runnable callback) {
-        mShowSoftKeyInputCallback = callback;
     }
 
     @Override
@@ -39,8 +36,8 @@ public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWra
 
     @Override
     public void showSoftInput(View view, int flags, ResultReceiver resultReceiver) {
-        mWrapper.showSoftInput(view, flags, resultReceiver);
-        mShowSoftKeyInputCallback.run();
+        mShowSoftKeyInputCallback.onResult(
+                () -> mWrapper.showSoftInput(view, flags, resultReceiver));
     }
 
     @Override
