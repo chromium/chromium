@@ -157,8 +157,10 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
 
+  capabilities_.renderer_allocates_images =
+      ::features::ShouldRendererAllocateImages();
+
 #if BUILDFLAG(IS_ANDROID)
-  capabilities_.renderer_allocates_images = true;
   if (::features::IncreaseBufferCountForHighFrameRate()) {
     capabilities_.number_of_buffers = 5;
   }
