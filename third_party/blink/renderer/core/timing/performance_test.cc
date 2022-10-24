@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
+#include <algorithm>
+
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -92,11 +95,8 @@ class PerformanceTest : public PageTestBase {
 
   void CheckBackForwardCacheRestoration(PerformanceEntryVector entries) {
     // Expect there are 2 back forward cache restoration entries.
-    EXPECT_EQ(2, std::count_if(entries.begin(), entries.end(),
-                               [](const PerformanceEntry* e) -> bool {
-                                 return e->entryType() ==
-                                        "back-forward-cache-restoration";
-                               }));
+    EXPECT_EQ(2, base::ranges::count(entries, "back-forward-cache-restoration",
+                                     &PerformanceEntry::entryType));
 
     // Retain only back forward cache restoration entries.
     entries.erase(std::remove_if(entries.begin(), entries.end(),

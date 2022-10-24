@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
-#include <algorithm>
 #include <iterator>
 #include <numeric>
+
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
@@ -259,12 +260,11 @@ struct ShapeResultView::InitData {
   template <typename ShapeResultType>
   static unsigned CountRunInfoParts(const ShapeResultType& result,
                                     const Segment& segment) {
-    return static_cast<unsigned>(
-        std::count_if(result.RunsOrParts().begin(), result.RunsOrParts().end(),
-                      [&result, &segment](const auto& run_or_part) {
-                        return RunInfoPart::ComputeStartEnd(*run_or_part.get(),
-                                                            result, segment);
-                      }));
+    return static_cast<unsigned>(base::ranges::count_if(
+        result.RunsOrParts(), [&result, &segment](const auto& run_or_part) {
+          return !!RunInfoPart::ComputeStartEnd(*run_or_part.get(), result,
+                                                segment);
+        }));
   }
 };
 

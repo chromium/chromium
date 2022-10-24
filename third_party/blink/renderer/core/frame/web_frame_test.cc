@@ -34,6 +34,7 @@
 #include <tuple>
 
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
@@ -467,10 +468,9 @@ class WebFrameTest : public testing::Test {
     for (Node& node : range.Nodes()) {
       const DocumentMarkerVector& markers_in_node =
           document->Markers().MarkersFor(To<Text>(node), marker_types);
-      node_count += std::count_if(
-          markers_in_node.begin(), markers_in_node.end(),
-          [start_offset, end_offset, &node, &start_container,
-           &end_container](const DocumentMarker* marker) {
+      node_count += base::ranges::count_if(
+          markers_in_node, [start_offset, end_offset, &node, &start_container,
+                            &end_container](const DocumentMarker* marker) {
             if (node == start_container && marker->EndOffset() <= start_offset)
               return false;
             if (node == end_container && marker->StartOffset() >= end_offset)

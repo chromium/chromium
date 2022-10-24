@@ -313,11 +313,11 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
                              return !info.middle && !info.text_length_resolved;
                            });
     // 2.4.3. Let n = n + number of resolved descendant nodes − 1.
-    n += std::count_if(resolved_descendant_node_starts.begin(),
-                       resolved_descendant_node_starts.end(),
-                       [i, j_plus_1](const auto& start_index) {
-                         return i <= start_index && start_index < j_plus_1;
-                       }) -
+    n += base::ranges::count_if(resolved_descendant_node_starts,
+                                [i, j_plus_1](const auto& start_index) {
+                                  return i <= start_index &&
+                                         start_index < j_plus_1;
+                                }) -
          1;
     // 2.4.4. Find the per-character adjustment small-delta = delta/n.
     float character_delta = n != 0 ? delta / n : delta;

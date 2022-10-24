@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/lazy_load_frame_observer.h"
 
-#include <algorithm>
 #include <memory>
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -579,9 +579,8 @@ TEST_P(LazyLoadFramesParamsTest, AboutBlankChildFrameNavigation) {
   test::RunPendingTasks();
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-  EXPECT_EQ(1, static_cast<int>(std::count(ConsoleMessages().begin(),
-                                           ConsoleMessages().end(),
-                                           "child frame element onload")));
+  EXPECT_EQ(1, static_cast<int>(base::ranges::count(
+                   ConsoleMessages(), "child frame element onload")));
 
   if (RuntimeEnabledFeatures::LazyFrameLoadingEnabled()) {
     // If LazyFrameLoading is enabled, then scroll down near the child frame to
@@ -598,9 +597,8 @@ TEST_P(LazyLoadFramesParamsTest, AboutBlankChildFrameNavigation) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(2, static_cast<int>(std::count(ConsoleMessages().begin(),
-                                           ConsoleMessages().end(),
-                                           "child frame element onload")));
+  EXPECT_EQ(2, static_cast<int>(base::ranges::count(
+                   ConsoleMessages(), "child frame element onload")));
 
   ExpectVisibleLoadTimeHistogramSamplesIfApplicable(0, 0);
   histogram_tester()->ExpectTotalCount(
