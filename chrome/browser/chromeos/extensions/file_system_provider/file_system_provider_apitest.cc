@@ -423,6 +423,18 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, GetMetadata) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, MimeType) {
+  // Install a Chrome app that handles our custom MIME type.
+  LoadExtension(test_data_dir_.AppendASCII(
+                    "file_system_provider/service_worker/mime_type/app"),
+                {.allow_in_incognito = true});
+
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/mime_type",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Mount) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/mount",
                                {.extension_url = "test.html"},

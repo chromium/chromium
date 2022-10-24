@@ -11,8 +11,9 @@ import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_prov
 export async function promisifyWithLastError(fn, ...args) {
   return new Promise((resolve, reject) => {
     fn(...args, (result) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
+      const error = chrome.runtime.lastError;
+      if (error) {
+        reject(new Error(error.message));
       } else {
         resolve(result);
       }

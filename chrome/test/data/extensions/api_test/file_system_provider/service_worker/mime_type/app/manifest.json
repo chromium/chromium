@@ -1,0 +1,25 @@
+{
+  // chrome-extension://gfnblenhaahcnmfdbebgincjohfkbnch
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0b1LCxB5JC35WfAxAx/R4f9xWh6ZP3HwGHX+4XM5yZlI0+xtMN6B5Q2oy0+AIVtkgsKdFDJlaNBmfx0VUQnJA7aoXugxgbM/VtNqDYOg4OSiDgtyRaBWTzbE7/VFkkA4JzkKnTGZKNJSJvT3zS13dZ0xi20N0zgsUhnFk6WQj7nFeT4mjlMRdHe7tg5kim/+KxtQZGany6H+tlKgK1JjK6AMEuKCQ1nRXuhmOpm1hMk+1Iv94HjeESwtlYbch/ksF02yjc/n09ce04u5yWgz76IouxS7685rQlkGfVLLWeBfRS3UEVtVuFg3SpaVeBP2V4HaG/FeV15etyU9THGPHwIDAQAB",
+  "name": "Test Chrome app for chrome.fileSystemProvider.onGetMetadataRequested MIME types test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Chrome app that handles files.",
+  "permissions": [
+    {
+      "fileSystem": ["requestFileSystem", "write"]
+    }
+  ],
+  "file_handlers": {
+    "magic_handler": {
+      "types": ["text/secret-testing-mime-type"]
+    }
+  },
+  "app": {
+    "background": {
+      "scripts": [
+        "main.js"
+      ]
+    }
+  }
+}
