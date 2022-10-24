@@ -40,25 +40,9 @@ void DeskSwitchAnimationWaiter::Wait() {
   EXPECT_FALSE(controller->AreDesksBeingModified());
 }
 
-void DeskSwitchAnimationWaiter::OnDeskAdded(const Desk* desk) {}
-
-void DeskSwitchAnimationWaiter::OnDeskRemoved(const Desk* desk) {}
-
-void DeskSwitchAnimationWaiter::OnDeskReordered(int old_index, int new_index) {}
-
-void DeskSwitchAnimationWaiter::OnDeskActivationChanged(
-    const Desk* activated,
-    const Desk* deactivated) {}
-
-void DeskSwitchAnimationWaiter::OnDeskSwitchAnimationLaunching() {}
-
 void DeskSwitchAnimationWaiter::OnDeskSwitchAnimationFinished() {
   run_loop_.Quit();
 }
-
-void DeskSwitchAnimationWaiter::OnDeskNameChanged(
-    const Desk* desk,
-    const std::u16string& new_name) {}
 
 void ActivateDesk(const Desk* desk) {
   ASSERT_FALSE(desk->is_active());

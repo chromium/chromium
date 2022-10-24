@@ -72,31 +72,31 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
     // Called when |desk| has been created and added to
     // `DesksController::desks_`. It's important to note that `desk` can be
     // added at any position in `DesksController::desks_`.
-    virtual void OnDeskAdded(const Desk* desk) = 0;
+    virtual void OnDeskAdded(const Desk* desk) {}
 
     // Called when |desk| has been removed from `DesksController::desks_`.
     // However |desk| is kept alive temporarily and will be destroyed after all
     // observers have been notified with this.
-    virtual void OnDeskRemoved(const Desk* desk) = 0;
+    virtual void OnDeskRemoved(const Desk* desk) {}
 
     // Called when the desk at |old_index| is reordered to |new_index|.
-    virtual void OnDeskReordered(int old_index, int new_index) = 0;
+    virtual void OnDeskReordered(int old_index, int new_index) {}
 
     // Called when the |activated| desk gains activation from the |deactivated|
     // desk.
     virtual void OnDeskActivationChanged(const Desk* activated,
-                                         const Desk* deactivated) = 0;
+                                         const Desk* deactivated) {}
 
     // Called when the desk switch animations is launching.
-    virtual void OnDeskSwitchAnimationLaunching() = 0;
+    virtual void OnDeskSwitchAnimationLaunching() {}
 
     // Called when the desk switch animations on all root windows finish.
-    virtual void OnDeskSwitchAnimationFinished() = 0;
+    virtual void OnDeskSwitchAnimationFinished() {}
 
     // Called when the desk's name is changed, including when the name is set on
     // a newly created desk if we are not using name user nudges.
     virtual void OnDeskNameChanged(const Desk* desk,
-                                   const std::u16string& new_name) = 0;
+                                   const std::u16string& new_name) {}
 
    protected:
     virtual ~Observer() = default;

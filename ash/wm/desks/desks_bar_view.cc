@@ -919,10 +919,6 @@ void DesksBarView::OnDeskActivationChanged(const Desk* activated,
   }
 }
 
-void DesksBarView::OnDeskSwitchAnimationLaunching() {}
-
-void DesksBarView::OnDeskSwitchAnimationFinished() {}
-
 void DesksBarView::OnDeskNameChanged(const Desk* desk,
                                      const std::u16string& new_name) {
   MaybeUpdateCombineDesksTooltips();

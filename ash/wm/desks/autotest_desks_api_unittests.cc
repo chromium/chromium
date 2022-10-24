@@ -30,17 +30,10 @@ class TestDesksActivationObserver : public DesksController::Observer {
   void set_activation_changes(int val) { activation_changes_ = val; }
 
   // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override {}
-  void OnDeskRemoved(const Desk* desk) override {}
-  void OnDeskReordered(int old_index, int new_index) override {}
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override {
     ++activation_changes_;
   }
-  void OnDeskSwitchAnimationLaunching() override {}
-  void OnDeskSwitchAnimationFinished() override {}
-  void OnDeskNameChanged(const Desk* desk,
-                         const std::u16string& new_name) override {}
 
  private:
   int activation_changes_ = 0;

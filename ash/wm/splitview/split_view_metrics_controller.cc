@@ -378,11 +378,6 @@ void SplitViewMetricsController::OnWindowActivated(ActivationReason reason,
   MaybeStartOrEndRecordBothSnappedClamshellSplitView();
 }
 
-void SplitViewMetricsController::OnDeskAdded(const Desk* desk) {}
-void SplitViewMetricsController::OnDeskRemoved(const Desk* desk) {}
-void SplitViewMetricsController::OnDeskReordered(int old_index, int new_index) {
-}
-
 void SplitViewMetricsController::OnDeskActivationChanged(
     const Desk* activated,
     const Desk* deactivated) {
@@ -395,12 +390,6 @@ void SplitViewMetricsController::OnDeskActivationChanged(
   // on both sides.
   MaybeStartOrEndRecordBothSnappedClamshellSplitView();
 }
-
-void SplitViewMetricsController::OnDeskSwitchAnimationLaunching() {}
-void SplitViewMetricsController::OnDeskSwitchAnimationFinished() {}
-void SplitViewMetricsController::OnDeskNameChanged(
-    const Desk* desk,
-    const std::u16string& new_name) {}
 
 void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   int32_t* activation_index =

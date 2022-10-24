@@ -37,18 +37,10 @@ class DeskAnimationObserver : public DesksController::Observer {
   DeskAnimationObserver& operator=(const DeskAnimationObserver& rhs) = delete;
 
   // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override {}
-  void OnDeskRemoved(const Desk* desk) override {}
-  void OnDeskReordered(int old_index, int new_index) override {}
-  void OnDeskActivationChanged(const Desk* activated,
-                               const Desk* deactivated) override {}
-  void OnDeskSwitchAnimationLaunching() override {}
   void OnDeskSwitchAnimationFinished() override {
     std::move(on_desk_animation_complete_).Run();
     delete this;
   }
-  void OnDeskNameChanged(const Desk* desk,
-                         const std::u16string& new_name) override {}
 
  private:
   base::OnceClosure on_desk_animation_complete_;
@@ -103,9 +95,6 @@ class ChainedDeskAnimationObserver : public ui::LayerAnimationObserver,
   }
 
   // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override {}
-  void OnDeskRemoved(const Desk* desk) override {}
-  void OnDeskReordered(int old_index, int new_index) override {}
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override {
     // The first activation changed happens when the initial ending screenshot
@@ -120,13 +109,10 @@ class ChainedDeskAnimationObserver : public ui::LayerAnimationObserver,
                            ->GetAnimationLayerForTesting();
     animation_layer_->GetAnimator()->AddObserver(this);
   }
-  void OnDeskSwitchAnimationLaunching() override {}
   void OnDeskSwitchAnimationFinished() override {
     std::move(on_desk_animation_complete_).Run();
     delete this;
   }
-  void OnDeskNameChanged(const Desk* desk,
-                         const std::u16string& new_name) override {}
 
  private:
   const bool going_left_;

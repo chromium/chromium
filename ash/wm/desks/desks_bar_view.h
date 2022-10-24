@@ -169,8 +169,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   void OnDeskReordered(int old_index, int new_index) override;
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
-  void OnDeskSwitchAnimationLaunching() override;
-  void OnDeskSwitchAnimationFinished() override;
   void OnDeskNameChanged(const Desk* desk,
                          const std::u16string& new_name) override;
 
