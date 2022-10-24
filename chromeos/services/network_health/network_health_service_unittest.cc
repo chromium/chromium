@@ -144,14 +144,16 @@ class NetworkHealthServiceTest : public ::testing::Test {
     return nullptr;
   }
 
-  void ValidateNetworkState(
+  const network_health::mojom::NetworkPtr ValidateNetworkState(
       network_config::mojom::NetworkType type,
       network_health::mojom::NetworkState expected_state) {
     task_environment_.RunUntilIdle();
 
-    const auto network_health_state = GetNetworkHealthStateByType(type);
-    ASSERT_TRUE(network_health_state);
-    ASSERT_EQ(expected_state, network_health_state->state);
+    const network_health::mojom::NetworkPtr network_health_state =
+        GetNetworkHealthStateByType(type);
+    CHECK(network_health_state);
+    EXPECT_EQ(expected_state, network_health_state->state);
+    return network_health_state->Clone();
   }
 
   void ValidateNetworkName(network_config::mojom::NetworkType type,
@@ -237,7 +239,7 @@ TEST_F(NetworkHealthServiceTest, NetworkStateConnecting) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
-      ->AddService(kWifiDevicePath, kWifiGuid, kWifiServiceName,
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
                    shill::kTypeWifi, shill::kStateAssociation, true);
 
   ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
@@ -248,18 +250,26 @@ TEST_F(NetworkHealthServiceTest, NetworkStateRedirectFound) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
-      ->AddService(kWifiDevicePath, kWifiGuid, kWifiServiceName,
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
                    shill::kTypeWifi, shill::kStateRedirectFound, true);
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kProbeUrlProperty,
+      base::Value("http://foo.com"));
 
-  ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
-                       network_health::mojom::NetworkState::kPortal);
+  const network_health::mojom::NetworkPtr network_health_state =
+      ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
+                           network_health::mojom::NetworkState::kPortal);
+  EXPECT_EQ(network_health_state->portal_state,
+            network_config::mojom::PortalState::kPortal);
+  ASSERT_TRUE(network_health_state->portal_probe_url);
+  EXPECT_EQ(network_health_state->portal_probe_url->spec(), "http://foo.com/");
 }
 
 TEST_F(NetworkHealthServiceTest, NetworkStateConnected) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
-      ->AddService(kWifiDevicePath, kWifiGuid, kWifiServiceName,
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
                    shill::kTypeWifi, shill::kStateReady, true);
 
   ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
@@ -270,7 +280,7 @@ TEST_F(NetworkHealthServiceTest, OneWifiNetworkConnected) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
-      ->AddService(kWifiDevicePath, kWifiGuid, kWifiServiceName,
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
                    shill::kTypeWifi, shill::kStateOnline, true);
 
   ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
@@ -286,7 +296,7 @@ TEST_F(NetworkHealthServiceTest, MultiWifiNetwork) {
     std::string idx = base::NumberToString(i);
     cros_network_config_test_helper_.network_state_helper()
         .service_test()
-        ->AddService(kWifiDevicePath + idx, kWifiGuid + idx,
+        ->AddService(kWifiServicePath + idx, kWifiGuid + idx,
                      kWifiServiceName + idx, shill::kTypeWifi,
                      shill::kStateIdle, true);
   }

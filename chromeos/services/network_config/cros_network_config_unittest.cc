@@ -40,6 +40,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
+#include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -906,6 +907,7 @@ TEST_F(CrosNetworkConfigTest, PortalState) {
   ASSERT_TRUE(network);
   EXPECT_EQ(mojom::ConnectionStateType::kOnline, network->connection_state);
   EXPECT_EQ(mojom::PortalState::kOnline, network->portal_state);
+  EXPECT_FALSE(network->portal_probe_url);
 
   helper()->ConfigureService(
       R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "portal-suspected",
@@ -914,14 +916,19 @@ TEST_F(CrosNetworkConfigTest, PortalState) {
   ASSERT_TRUE(network);
   EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
   EXPECT_EQ(mojom::PortalState::kPortalSuspected, network->portal_state);
+  ASSERT_TRUE(network->portal_probe_url);
+  EXPECT_EQ(captive_portal::CaptivePortalDetector::kDefaultURL,
+            *network->portal_probe_url);
 
   helper()->ConfigureService(
       R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "redirect-found",
-          "Strength": 90, "AutoConnect": true})");
+          "Strength": 90, "AutoConnect": true, "ProbeUrl": "http://foo.com"})");
   network = GetNetworkState("wifi1_guid");
   ASSERT_TRUE(network);
   EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
   EXPECT_EQ(mojom::PortalState::kPortal, network->portal_state);
+  ASSERT_TRUE(network->portal_probe_url);
+  EXPECT_EQ("http://foo.com/", network->portal_probe_url->spec());
 
   helper()->ConfigureService(
       R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "no-connectivity",
@@ -930,6 +937,7 @@ TEST_F(CrosNetworkConfigTest, PortalState) {
   ASSERT_TRUE(network);
   EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
   EXPECT_EQ(mojom::PortalState::kNoInternet, network->portal_state);
+  EXPECT_FALSE(network->portal_probe_url);
 
   helper()->ConfigureService(
       R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "portal-suspected",

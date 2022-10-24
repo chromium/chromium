@@ -15,6 +15,7 @@ module chromeos.network_config.mojom;
 import "chromeos/services/network_config/public/mojom/network_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/ip_address.mojom";
+import "url/mojom/url.mojom";
 
 // Activation state for Cellular networks.
 enum ActivationStateType {
@@ -262,8 +263,11 @@ struct NetworkStateProperties {
   string guid;
   // The human readable name of the network, e.g. WiFi SSID or network type.
   string name;
-  // The captive portal state when connectionState == kPortal.
+  // The captive portal state when connection_state == kPortal.
   PortalState portal_state = kUnknown;
+  // The URL used to identify a captive portal state, set when portal_state is
+  // kPortal, kPortalSuspected, or kProxyAuthRequired.
+  url.mojom.Url? portal_probe_url;
   // The relative priority of the network. Larger values have higher priority.
   int32 priority;
   // The proxy mode affecting this network. Includes any settings that affect

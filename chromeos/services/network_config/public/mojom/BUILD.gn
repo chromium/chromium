@@ -17,6 +17,7 @@ mojom("mojom") {
     ":network_types",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_ip_address",
+    "//url/mojom:url_mojom_gurl",
   ]
 
   cpp_typemaps = [

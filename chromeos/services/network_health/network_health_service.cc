@@ -80,6 +80,7 @@ mojom::NetworkPtr CreateNetwork(
     net->name = net_prop->name;
     net->guid = net_prop->guid;
     net->portal_state = net_prop->portal_state;
+    net->portal_probe_url = net_prop->portal_probe_url;
     if (network_config::NetworkTypeMatchesType(
             net_prop->type, network_config::mojom::NetworkType::kWireless)) {
       net->signal_strength = network_health::mojom::UInt32Value::New(

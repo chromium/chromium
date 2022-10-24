@@ -43,6 +43,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config_mojom_traits.h"
+#include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
 #include "components/user_manager/user_manager.h"
@@ -302,6 +303,28 @@ mojom::PortalState GetMojoPortalState(
   return mojom::PortalState::kUnknown;
 }
 
+absl::optional<GURL> GetPortalProbeUrl(const NetworkState* network) {
+  switch (network->GetPortalState()) {
+    case NetworkState::PortalState::kUnknown:
+      [[fallthrough]];
+    case NetworkState::PortalState::kOnline:
+      return absl::nullopt;
+    case NetworkState::PortalState::kPortalSuspected:
+      [[fallthrough]];
+    case NetworkState::PortalState::kPortal:
+      [[fallthrough]];
+    case NetworkState::PortalState::kProxyAuthRequired: {
+      const GURL& probe_url = network->probe_url();
+      if (probe_url.is_valid())
+        return probe_url;
+      else
+        return GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+    }
+    case NetworkState::PortalState::kNoInternet:
+      return absl::nullopt;
+  }
+}
+
 mojom::OncSource GetMojoOncSource(const NetworkState* network) {
   ::onc::ONCSource source = network->onc_source();
   switch (source) {
@@ -379,6 +402,7 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   result->name =
       network_name_util::GetNetworkName(cellular_esim_profile_handler, network);
   result->portal_state = GetMojoPortalState(network->GetPortalState());
+  result->portal_probe_url = GetPortalProbeUrl(network);
   result->priority = network->priority();
   result->prohibited_by_policy = network->blocked_by_policy();
   result->source = GetMojoOncSource(network);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 // API intended for retrieving a snapshot of the network health state. Returns
 // properties of any available network technologies and any connected or
@@ -11,6 +11,7 @@
 module chromeos.network_health.mojom;
 
 import "chromeos/services/network_config/public/mojom/network_types.mojom";
+import "url/mojom/url.mojom";
 
 [Stable, Extensible]
 enum NetworkState {
@@ -88,6 +89,9 @@ struct Network {
   // The statistics of the signal strength for wireless networks over a 15
   // minute period. See SignalStrengthStats for more details.
   [MinVersion=1] SignalStrengthStats? signal_strength_stats;
+  // The URL used to identify a captive portal state, set when portal_state is
+  // kPortal, kPortalSuspected, or kProxyAuthRequired.
+  [MinVersion=3] url.mojom.Url? portal_probe_url;
 };
 
 // Aggregate structure for all of the network health state.
