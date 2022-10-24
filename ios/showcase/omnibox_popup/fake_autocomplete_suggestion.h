@@ -27,6 +27,8 @@
 @property(nonatomic) id<OmniboxPedal, OmniboxIcon> pedal;
 @property(nonatomic) BOOL isTailSuggestion;
 @property(nonatomic, readonly) NSString* commonPrefix;
+@property(nonatomic, strong) NSNumber* suggestionGroupId;
+@property(nonatomic, strong) NSNumber* suggestionSectionId;
 
 @property(nonatomic) NSAttributedString* omniboxPreviewText;
 @property(nonatomic) UIImage* matchTypeIcon;

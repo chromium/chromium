@@ -22,6 +22,8 @@ struct AutocompleteMatch;
 
 // The pedal data for the underlying match.
 @property(nonatomic, strong) OmniboxPedalData* pedalData;
+// From <AutocompleteSuggestion>, redefined as readwrite.
+@property(nonatomic, strong) NSNumber* suggestionSectionId;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match
     NS_DESIGNATED_INITIALIZER;

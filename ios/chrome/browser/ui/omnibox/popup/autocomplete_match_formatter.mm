@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/omnibox/browser/suggestion_answer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
@@ -46,6 +47,7 @@ UIColor* DimColorIncognito() {
 @implementation AutocompleteMatchFormatter {
   AutocompleteMatch _match;
 }
+@synthesize suggestionSectionId;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match {
   self = [super init];
@@ -152,6 +154,15 @@ UIColor* DimColorIncognito() {
     return 1;
 }
 
+- (NSNumber*)suggestionGroupId {
+  if (!_match.suggestion_group_id.has_value()) {
+    return nil;
+  }
+
+  return [NSNumber
+      numberWithInt:static_cast<int>(_match.suggestion_group_id.value())];
+}
+
 - (NSAttributedString*)text {
   if (self.hasAnswer) {
     if (!_match.answer->IsExceptedFromLineReversal()) {
@@ -228,13 +239,9 @@ UIColor* DimColorIncognito() {
 }
 
 - (BOOL)isClipboardMatch {
-  if (base::FeatureList::IsEnabled(kOmniboxPasteButton)) {
-    return _match.type == AutocompleteMatchType::CLIPBOARD_URL ||
-           _match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
-           _match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
-  } else {
-    return NO;
-  }
+  return _match.type == AutocompleteMatchType::CLIPBOARD_URL ||
+         _match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
+         _match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
 }
 
 - (id<OmniboxPedal>)pedal {

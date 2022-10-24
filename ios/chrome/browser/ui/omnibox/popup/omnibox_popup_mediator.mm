@@ -296,7 +296,8 @@ const CGFloat kOmniboxIconSize = 16;
 #pragma mark - Private methods
 
 // Wraps `match` with AutocompleteMatchFormatter.
-- (id<AutocompleteSuggestion>)wrapMatch:(const AutocompleteMatch&)match {
+- (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
+                              fromResult:(const AutocompleteResult&)result {
   AutocompleteMatchFormatter* formatter =
       [AutocompleteMatchFormatter formatterWithMatch:match];
   formatter.starred = _delegate->IsStarredMatch(match);
@@ -304,108 +305,143 @@ const CGFloat kOmniboxIconSize = 16;
   formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
   formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
                                                  incognito:_incognito];
+
+  if (formatter.suggestionGroupId) {
+    omnibox::GroupId groupId =
+        static_cast<omnibox::GroupId>(formatter.suggestionGroupId.intValue);
+    omnibox::GroupSection sectionId =
+        result.GetSectionForSuggestionGroup(groupId);
+    formatter.suggestionSectionId =
+        [NSNumber numberWithInt:static_cast<int>(sectionId)];
+  }
+
   return formatter;
 }
 
-// Extracts carousel items from AutocompleteMatch of type TILE_NAVSUGGEST.
-- (id<AutocompleteSuggestionGroup>)extractTiles:
-    (const AutocompleteMatch&)match {
-  DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
-  DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
-
-  NSMutableArray<id<AutocompleteSuggestion>>* wrappedTiles =
+/// Extract normal (non-tile) matches from `autocompleteResult`.
+- (NSMutableArray<id<AutocompleteSuggestion>>*)extractMatches:
+    (const AutocompleteResult&)autocompleteResult {
+  NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
       [[NSMutableArray alloc] init];
+  for (size_t i = 0; i < _currentResult.size(); i++) {
+    const AutocompleteMatch& match =
+        ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
 
-  for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
-    AutocompleteMatch tileMatch = AutocompleteMatch(match);
-    // TODO(crbug.com/1363546): replace with a new wrapper.
-    tileMatch.destination_url = tile.url;
-    tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
-    tileMatch.description = tile.title;
-    [wrappedTiles addObject:[self wrapMatch:tileMatch]];
+    if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
+      DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
+      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+      for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
+        AutocompleteMatch tileMatch = AutocompleteMatch(match);
+        // TODO(crbug.com/1363546): replace with a new wrapper.
+        tileMatch.destination_url = tile.url;
+        tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
+        tileMatch.description = tile.title;
+        AutocompleteMatchFormatter* formatter =
+            [self wrapMatch:tileMatch fromResult:autocompleteResult];
+        [wrappedMatches addObject:formatter];
+      }
+    } else {
+      [wrappedMatches addObject:[self wrapMatch:match
+                                     fromResult:autocompleteResult]];
+    }
   }
 
-  id<AutocompleteSuggestionGroup> tileGroup = [AutocompleteSuggestionGroupImpl
-      groupWithTitle:nil
-         suggestions:wrappedTiles
-        displayStyle:SuggestionGroupDisplayStyleCarousel];
+  return wrappedMatches;
+}
 
-  return tileGroup;
+/// Take a list of suggestions and break it into groups determined by sectionId
+/// field. Use `headerMap` to extract group names.
+- (NSArray<id<AutocompleteSuggestionGroup>>*)
+            groupSuggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+    usingACResultAsHeaderMap:(const AutocompleteResult&)headerMap {
+  __block NSMutableArray<id<AutocompleteSuggestion>>* currentGroup =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
+      [[NSMutableArray alloc] init];
+
+  if (suggestions.count == 0) {
+    return @[];
+  }
+
+  id<AutocompleteSuggestion> firstSuggestion = suggestions.firstObject;
+
+  __block NSNumber* currentSectionId = firstSuggestion.suggestionSectionId;
+  __block NSNumber* currentGroupId = firstSuggestion.suggestionGroupId;
+
+  [currentGroup addObject:firstSuggestion];
+
+  void (^startNewGroup)() = ^{
+    if (currentGroup.count == 0) {
+      return;
+    }
+
+    NSString* groupTitle =
+        currentGroupId
+            ? base::SysUTF16ToNSString(headerMap.GetHeaderForSuggestionGroup(
+                  static_cast<omnibox::GroupId>([currentGroupId intValue])))
+            : nil;
+    SuggestionGroupDisplayStyle displayStyle =
+        SuggestionGroupDisplayStyleDefault;
+    if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+      if (currentSectionId &&
+          static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
+              omnibox::SECTION_MOBILE_MOST_VISITED) {
+        displayStyle = SuggestionGroupDisplayStyleCarousel;
+      }
+    }
+    [groups addObject:[AutocompleteSuggestionGroupImpl
+                          groupWithTitle:groupTitle
+                             suggestions:currentGroup
+                            displayStyle:displayStyle]];
+    currentGroup = [[NSMutableArray alloc] init];
+  };
+
+  for (NSUInteger i = 1; i < suggestions.count; i++) {
+    id<AutocompleteSuggestion> suggestion = suggestions[i];
+    if ((!suggestion.suggestionSectionId && !currentSectionId) ||
+        [suggestion.suggestionSectionId isEqual:currentSectionId]) {
+      [currentGroup addObject:suggestion];
+    } else {
+      startNewGroup();
+      currentGroupId = suggestion.suggestionGroupId;
+      currentSectionId = suggestion.suggestionSectionId;
+      [currentGroup addObject:suggestion];
+    }
+  }
+  startNewGroup();
+
+  return groups;
 }
 
 // Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
 // AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
-  id<AutocompleteSuggestionGroup> tileGroup = nil;
-
   NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
       [[NSMutableArray alloc] init];
-  NSMutableArray<id<AutocompleteSuggestion>>* currentGroup =
-      [[NSMutableArray alloc] init];
-  NSMutableArray<id<AutocompleteSuggestion>>* allSuggestions =
-      [[NSMutableArray alloc] init];
 
-  absl::optional<omnibox::GroupId> currentGroupId = absl::nullopt;
+  // Group the suggestions by the section Id.
+  NSMutableArray<id<AutocompleteSuggestion>>* allMatches =
+      [self extractMatches:_currentResult];
+  NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
+      [self groupSuggestions:allMatches
+          usingACResultAsHeaderMap:_currentResult];
+  [groups addObjectsFromArray:allGroups];
 
-  size_t size = _currentResult.size();
-  for (size_t i = 0; i < size; i++) {
-    const AutocompleteMatch& match =
-        ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
-    if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
-      DCHECK(!tileGroup) << "There should be only one TILE_NAVSUGGEST";
-      tileGroup = [self extractTiles:match];
-      continue;
-    }
+  // Before inserting pedals above all, back up non-pedal suggestions for
+  // debouncing.
+  self.nonPedalSuggestions = groups;
 
-    if (match.suggestion_group_id != currentGroupId) {
-      if (currentGroup.count > 0) {
-        NSString* groupTitle =
-            currentGroupId.has_value()
-                ? base::SysUTF16ToNSString(
-                      _currentResult.GetHeaderForSuggestionGroup(
-                          currentGroupId.value()))
-                : nil;
-        id<AutocompleteSuggestionGroup> suggestionGroup =
-            [AutocompleteSuggestionGroupImpl groupWithTitle:groupTitle
-                                                suggestions:currentGroup];
-
-        [groups addObject:suggestionGroup];
-        currentGroup = [[NSMutableArray alloc] init];
-      }
-
-      currentGroupId = match.suggestion_group_id;
-    }
-
-    id<AutocompleteSuggestion> wrappedMatch = [self wrapMatch:match];
-    [currentGroup addObject:wrappedMatch];
-    [allSuggestions addObject:wrappedMatch];
-  }
-
-  NSString* groupTitle =
-      currentGroupId.has_value()
-          ? base::SysUTF16ToNSString(_currentResult.GetHeaderForSuggestionGroup(
-                currentGroupId.value()))
-          : nil;
-  id<AutocompleteSuggestionGroup> suggestionGroup =
-      [AutocompleteSuggestionGroupImpl groupWithTitle:groupTitle
-                                          suggestions:currentGroup];
-
-  [groups addObject:suggestionGroup];
-  if (tileGroup) {
-    [groups insertObject:tileGroup atIndex:0];
-  }
-
-  NSMutableArray<id<AutocompleteSuggestionGroup>>* nonPedalGroups =
-      [groups copy];
-  self.nonPedalSuggestions = nonPedalGroups;
+  // Get pedals, if any. They go at the very top of the list.
   id<AutocompleteSuggestionGroup> pedalGroup =
-      [self.pedalSectionExtractor extractPedals:allSuggestions];
-
+      [self.pedalSectionExtractor extractPedals:allMatches];
   if (pedalGroup) {
     [groups insertObject:pedalGroup atIndex:0];
   }
 
-  self.preselectedGroupIndex = [groups indexOfObject:suggestionGroup];
+  // Preselect the verbatim match. It's the top match, unless we inserted pedals
+  // and pushed it one section down.
+  self.preselectedGroupIndex = pedalGroup ? MIN(1, groups.count) : 0;
+
   return groups;
 }
 

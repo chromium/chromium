@@ -76,6 +76,8 @@ extension PopupMatch {
     let supportsDeletion: Bool
     let icon: OmniboxIcon?
     let pedal: (OmniboxIcon & OmniboxPedal)?
+    let suggestionGroupId: NSNumber? = 0
+    let suggestionSectionId: NSNumber? = 0
 
     let hasAnswer: Bool
     let isURL = false

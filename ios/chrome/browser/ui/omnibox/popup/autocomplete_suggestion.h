@@ -34,6 +34,11 @@
 // Suggested number of lines to format `detailText`.
 @property(nonatomic, readonly) NSInteger numberOfLines;
 
+// Either nil or NSNumber-wrapped omnibox::GroupId.
+@property(nonatomic, readonly, strong) NSNumber* suggestionGroupId;
+// Either nil or NSNumber-wrapped omnibox::GroupSection.
+@property(nonatomic, readonly, strong) NSNumber* suggestionSectionId;
+
 // Text to use in the omnibox when the suggestion is highlighted.
 // Effectively an accessor for fill_into_edit.
 @property(nonatomic, readonly) NSAttributedString* omniboxPreviewText;

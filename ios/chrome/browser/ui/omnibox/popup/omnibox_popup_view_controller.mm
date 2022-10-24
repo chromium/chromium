@@ -53,6 +53,11 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 const CGFloat kMinTileFaviconSize = 32.0f;
 // Maximum size of the fetched favicon for tiles.
 const CGFloat kMaxTileFaviconSize = 48.0f;
+
+// Bottom padding for table view headers, variation 2.
+const CGFloat kHeaderPaddingBottomVariation2 = 10.0f;
+// Leading, trailing, and top padding for table view headers, variation 2.
+const CGFloat kHeaderPaddingVariation2 = 2.0f;
 }  // namespace
 
 @interface OmniboxPopupViewController () <UITableViewDataSource,
@@ -236,6 +241,10 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 
   [self.tableView registerClass:[OmniboxPopupRowCell class]
          forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+  [self.tableView registerClass:[UITableViewHeaderFooterView class]
+      forHeaderFooterViewReuseIdentifier:NSStringFromClass(
+                                             [UITableViewHeaderFooterView
+                                                 class])];
   self.shouldUpdateVisibleSuggestionCount = YES;
 
   if (@available(iOS 15.0, *)) {
@@ -545,7 +554,8 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
       !base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     return FLT_MIN;
   }
-  return self.currentResult[section].title ? 29.0f : FLT_MIN;
+  return self.currentResult[section].title ? UITableViewAutomaticDimension
+                                           : FLT_MIN;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -575,6 +585,10 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
     return [[UIView alloc] init];
   }
 
+  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+    return nil;
+  }
+
   UIView* footer = [[UIView alloc] init];
   footer.backgroundColor = tableView.backgroundColor;
   UIView* hairline = [[UIView alloc]
@@ -587,11 +601,6 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
   hairline.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
   return footer;
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForHeaderInSection:(NSInteger)section {
-  return nil;
 }
 
 #pragma mark - Table view data source
@@ -650,9 +659,31 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
   return UITableViewAutomaticDimension;
 }
 
-- (NSString*)tableView:(UITableView*)tableView
-    titleForHeaderInSection:(NSInteger)section {
-  return self.currentResult[section].title;
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  NSString* title = self.currentResult[section].title;
+  if (!title) {
+    return nil;
+  }
+
+  UITableViewHeaderFooterView* header =
+      [tableView dequeueReusableHeaderFooterViewWithIdentifier:
+                     NSStringFromClass([UITableViewHeaderFooterView class])];
+
+  UIListContentConfiguration* contentConfiguration =
+      header.defaultContentConfiguration;
+
+  contentConfiguration.text = title;
+  contentConfiguration.textProperties.font =
+      [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+  contentConfiguration.textProperties.transform =
+      UIListContentTextTransformUppercase;
+  contentConfiguration.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      kHeaderPaddingVariation2, kHeaderPaddingVariation2,
+      kHeaderPaddingBottomVariation2, kHeaderPaddingVariation2);
+
+  header.contentConfiguration = contentConfiguration;
+  return header;
 }
 
 // Customize the appearance of table view cells.

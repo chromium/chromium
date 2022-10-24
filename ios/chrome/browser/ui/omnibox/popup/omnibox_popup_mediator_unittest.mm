@@ -201,15 +201,12 @@ TEST_F(OmniboxPopupMediatorTest, Init) {
   EXPECT_TRUE(mediator_);
 }
 
-// Tests that update matches with no matches returns one suggestion group with
-// zero suggestions.
+// Tests that update matches with no matches returns no suggestion groups.
 TEST_F(OmniboxPopupMediatorTest, UpdateMatchesEmpty) {
   SetVisibleSuggestionCount(0);
   AutocompleteResult empty_results = AutocompleteResult();
   [mediator_ updateMatches:empty_results];
-  EXPECT_EQ(1ul, resultConsumerGroups_.count);
-  EXPECT_EQ(0ul,
-            resultConsumerGroups_[resultConsumerGroupIndex_].suggestions.count);
+  EXPECT_EQ(0ul, resultConsumerGroups_.count);
 }
 
 // Tests that the number of suggestions matches the number of matches.

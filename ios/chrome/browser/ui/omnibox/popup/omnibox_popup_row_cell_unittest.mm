@@ -33,6 +33,8 @@
 @property(nonatomic, strong) UIImage* matchTypeIcon;
 @property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
 @property(nonatomic, strong) CrURL* destinationUrl;
+@property(nonatomic, strong) NSNumber* suggestionGroupId;
+@property(nonatomic, strong) NSNumber* suggestionSectionId;
 @end
 
 @implementation FakeAutocompleteMatch

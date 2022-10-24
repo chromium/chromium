@@ -45,6 +45,12 @@
 - (BOOL)isClipboardMatch {
   return NO;
 }
+- (NSNumber*)suggestionGroupId {
+  return nil;
+}
+- (NSNumber*)suggestionSectionId {
+  return nil;
+}
 - (BOOL)isTailSuggestion {
   return NO;
 }
