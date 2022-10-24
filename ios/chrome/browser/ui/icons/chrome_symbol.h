@@ -11,7 +11,6 @@
 
 // Custom symbol names.
 extern NSString* const kArrowClockWiseSymbol;
-extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kCameraSymbol;
@@ -27,14 +26,10 @@ extern NSString* const kLanguageSymbol;
 extern NSString* const kPasswordSymbol;
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
-extern NSString* const kIncognitoCircleFilliOS14Symbol;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kGoogleShieldSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kShieldSymbol;
-
-// Custom symbol names which can be configured a "palette".
-extern NSString* const kIncognitoCircleFillSymbol;
 
 // Default symbol names.
 extern NSString* const kCreditCardSymbol;
@@ -43,9 +38,6 @@ extern NSString* const kMicrophoneSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
 extern NSString* const kPinSymbol;
 extern NSString* const kPinFillSymbol;
-extern NSString* const kIPhoneSymbol;
-extern NSString* const kIPadSymbol;
-extern NSString* const kLaptopSymbol;
 extern NSString* const kSettingsSymbol;
 extern NSString* const kSettingsFilledSymbol;
 extern NSString* const kShareSymbol;
@@ -75,6 +67,12 @@ extern NSString* const kForwardSymbol;
 extern NSString* const kPersonFillSymbol;
 extern NSString* const kMailFillSymbol;
 extern NSString* const kPhoneFillSymbol;
+
+// Names of the default symbol being non-monochrome by default. When using them,
+// you probably want to set their color to monochrome.
+extern NSString* const kIPhoneSymbol;
+extern NSString* const kIPadSymbol;
+extern NSString* const kLaptopSymbol;
 
 // The corner radius of the symbol with a colorful background.
 extern const CGFloat kColorfulBackgroundSymbolCornerRadius;
@@ -107,17 +105,17 @@ UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbol_name,
 UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
                                            CGFloat point_size);
 
-// Returns a custom symbol named `symbol_name`, configured with the default
-// configuration and the given `point_size`.
-UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size);
+// Returns the given `symbol`, making sure that it is preferring the monochrome
+// version.
+UIImage* MakeSymbolMonochrome(UIImage* symbol);
 
-// Returns a custom symbol named `symbol_name` configured with `point_size`,
-// `weight`, `scale` and set the "Palette" configuration for `colors`.
-UIImage* CustomPaletteSymbol(NSString* symbol_name,
-                             CGFloat point_size,
-                             UIImageSymbolWeight weight,
-                             UIImageSymbolScale scale,
-                             NSArray<UIColor*>* colors)
+// Returns the given `symbol`, making sure that it is preferring the multicolor
+// version.
+UIImage* MakeSymbolMulticolor(UIImage* symbol);
+
+// Returns the given `symbol`, with a "Palette" of `colors`.
+UIImage* ConfigureSymbolWithPaletteColors(UIImage* symbol,
+                                          NSArray<UIColor*>* colors)
     API_AVAILABLE(ios(15.0));
 
 // Returns YES if the kUseSFSymbols flag is enabled.

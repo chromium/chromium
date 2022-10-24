@@ -35,8 +35,8 @@ BrandedNavigationItemTitleView* CreatePasswordManagerTitleView(
 
   title_view.title = title;
 
-  title_view.imageLogo = CustomMulticolorSymbol(
-      /*symbolName=*/kLogoSymbolName, /*pointSize=*/kSymbolPointSize);
+  title_view.imageLogo = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kLogoSymbolName, kSymbolPointSize));
 
   title_view.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_MANAGER_TITLE_VIEW_ACCESSIBILITY_LABEL);

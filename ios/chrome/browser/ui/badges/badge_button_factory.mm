@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
 #import "ios/chrome/browser/ui/badges/badge_overflow_menu_util.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/incognito_symbol.h"
 #import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -157,12 +158,10 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
   if (UseSymbols()) {
     UIImage* image;
     if (@available(iOS 15, *)) {
-      image = CustomPaletteSymbol(
-          kIncognitoCircleFillSymbol, kSymbolIncognitoPointSize,
-          UIImageSymbolWeightMedium, UIImageSymbolScaleMedium, @[
-            [UIColor colorNamed:kGrey400Color],
-            [UIColor colorNamed:kGrey100Color]
-          ]);
+      image = ConfigureSymbolWithPaletteColors(
+          CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
+                                    kSymbolIncognitoPointSize),
+          SmallIncognitoColorsPalette());
     } else {
       image = [[UIImage imageNamed:@"incognito_badge_ios14"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
