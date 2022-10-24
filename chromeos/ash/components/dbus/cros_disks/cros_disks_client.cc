@@ -108,12 +108,16 @@ MountError CrosDisksMountErrorToChromeMountError(
     case cros_disks::MOUNT_ERROR_MOUNT_PROGRAM_FAILED:
       return MountError::kMountProgramFailed;
     case cros_disks::MOUNT_ERROR_INVALID_DEVICE_PATH:
+    case cros_disks::MOUNT_ERROR_INVALID_DEVICE_PATH_EX:
       return MountError::kInvalidDevicePath;
     case cros_disks::MOUNT_ERROR_UNKNOWN_FILESYSTEM:
+    case cros_disks::MOUNT_ERROR_UNKNOWN_FILESYSTEM_EX:
       return MountError::kUnknownFilesystem;
     case cros_disks::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM:
+    case cros_disks::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM_EX:
       return MountError::kUnsupportedFilesystem;
     case cros_disks::MOUNT_ERROR_INVALID_ARCHIVE:
+    case cros_disks::MOUNT_ERROR_INVALID_ARCHIVE_EX:
       return MountError::kInvalidArchive;
     case cros_disks::MOUNT_ERROR_NEED_PASSWORD:
     case cros_disks::MOUNT_ERROR_NEED_PASSWORD_EX:
