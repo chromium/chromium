@@ -636,6 +636,7 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
                                : pagination_model_.selected_page());
 
   if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
+    apps_container_view_->Layout();
     last_target_view_state_ = target_view_state;
     target_page_for_last_view_state_update_ = target_page;
     return;

@@ -205,9 +205,10 @@ class ASH_EXPORT AppListPresenterImpl
   // Called when the reorder animation completes.
   void OnAppListReorderAnimationDone();
 
-  // Called when the tablet to clamshell transition animation completes.
-  // Hides the `AppListView`'s window if target opacity is zero.
-  void OnTabletToClamshellTransitionAnimationDone();
+  // Called when the tablet <-> clamshell transition animation completes.
+  // Hides the `AppListView`'s window if `target_visibility == false`.
+  void OnTabletToClamshellTransitionAnimationDone(bool target_visibility,
+                                                  bool aborted);
 
   // Owns |this|.
   AppListControllerImpl* const controller_;
