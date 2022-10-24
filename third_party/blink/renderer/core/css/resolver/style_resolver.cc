@@ -1076,15 +1076,19 @@ void StyleResolver::InitStyleAndApplyInheritance(
   state.Style()->SetStyleType(style_request.pseudo_id);
   state.Style()->SetPseudoArgument(style_request.pseudo_argument);
 
-  // For highlight inheritance, propagate link visitedness and forced-colors
-  // status from the originating element, even if we have no parent highlight
-  // ComputedStyle we can inherit from.
+  // For highlight inheritance, propagate link visitedness, forced-colors
+  // status, and font properties (for font- or glyph-relative offsets in
+  // ‘text-shadow’) from the originating element, even if we have no parent
+  // highlight ComputedStyle we can inherit from.
   if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
     state.Style()->SetInsideLink(state.ElementLinkState());
     state.Style()->SetInForcedColorsMode(
         style_request.originating_element_style->InForcedColorsMode());
     state.Style()->SetForcedColorAdjust(
         style_request.originating_element_style->ForcedColorAdjust());
+    state.Style()->SetFont(style_request.originating_element_style->GetFont());
+    state.Style()->SetLineHeight(
+        style_request.originating_element_style->LineHeight());
   }
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
