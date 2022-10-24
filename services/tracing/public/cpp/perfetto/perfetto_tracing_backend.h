@@ -13,7 +13,11 @@ namespace tracing {
 namespace mojom {
 class ConsumerHost;
 class PerfettoService;
+class TracingService;
 }  // namespace mojom
+
+class ProducerEndpoint;
+class ConsumerEndpoint;
 
 // The Perfetto tracing backend mediates between the Perfetto client library and
 // the mojo-based tracing service. It allows any process to emit trace data
@@ -33,24 +37,15 @@ class PerfettoService;
 //                       :                       :
 class PerfettoTracingBackend : public perfetto::TracingBackend {
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate();
-
-    // Called to establish a consumer connection to the tracing service. The
-    // callback may be called on an arbitrary sequence.
-    virtual void CreateConsumerConnection(
-        base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>) = 0;
-
-    // Called to establish a producer connection to the tracing service. The
-    // callback may be called on an arbitrary sequence.
-    virtual void CreateProducerConnection(
-        base::OnceCallback<
-            void(mojo::PendingRemote<mojom::PerfettoService>)>) = 0;
-  };
-
-  explicit PerfettoTracingBackend(Delegate&);
+  PerfettoTracingBackend();
   ~PerfettoTracingBackend() override;
+
+  void OnProducerConnected(
+      mojo::PendingRemote<mojom::PerfettoService> perfetto_service);
+
+  using ConsumerConnectionFactory = mojom::TracingService& (*)();
+  void SetConsumerConnectionFactory(ConsumerConnectionFactory,
+                                    scoped_refptr<base::SequencedTaskRunner>);
 
   // perfetto::TracingBackend implementation:
   std::unique_ptr<perfetto::ProducerEndpoint> ConnectProducer(
@@ -59,7 +54,19 @@ class PerfettoTracingBackend : public perfetto::TracingBackend {
       const ConnectConsumerArgs&) override;
 
  private:
-  Delegate& delegate_;
+  void BindProducerConnectionIfNecessary();
+  void CreateConsumerConnection();
+
+  SEQUENCE_CHECKER(muxer_sequence_checker_);
+  base::Lock task_runner_lock_;
+  base::WeakPtr<ProducerEndpoint> producer_endpoint_;
+  base::WeakPtr<ConsumerEndpoint> consumer_endpoint_;
+  perfetto::base::TaskRunner* muxer_task_runner_ = nullptr;
+  mojo::PendingRemote<mojom::PerfettoService> perfetto_service_;
+  mojo::PendingRemote<mojom::ConsumerHost> consumer_host_remote_;
+
+  scoped_refptr<base::SequencedTaskRunner> consumer_connection_task_runner_;
+  ConsumerConnectionFactory consumer_connection_factory_;
 };
 
 }  // namespace tracing

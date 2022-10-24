@@ -196,7 +196,7 @@ PerfettoTracedProcess* PerfettoTracedProcess::Get() {
 PerfettoTracedProcess::PerfettoTracedProcess()
     : producer_client_(std::make_unique<ProducerClient>(GetTaskRunner())),
       platform_(std::make_unique<base::tracing::PerfettoPlatform>()),
-      tracing_backend_(std::make_unique<PerfettoTracingBackend>(*this)) {
+      tracing_backend_(std::make_unique<PerfettoTracingBackend>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -205,15 +205,13 @@ PerfettoTracedProcess::~PerfettoTracedProcess() {}
 void PerfettoTracedProcess::SetConsumerConnectionFactory(
     ConsumerConnectionFactory factory,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  consumer_connection_factory_ = factory;
-  consumer_connection_task_runner_ = task_runner;
+  tracing_backend_->SetConsumerConnectionFactory(factory, task_runner);
 }
 
 void PerfettoTracedProcess::ConnectProducer(
     mojo::PendingRemote<mojom::PerfettoService> perfetto_service) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  DCHECK(pending_producer_callback_);
-  std::move(pending_producer_callback_).Run(std::move(perfetto_service));
+  tracing_backend_->OnProducerConnected(std::move(perfetto_service));
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   producer_client_->Connect(std::move(perfetto_service));
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -240,61 +238,6 @@ PerfettoTracedProcess::SetSystemProducerForTesting(
   auto old_for_testing = std::move(system_producer_);
   system_producer_ = std::move(producer);
   return old_for_testing;
-}
-
-void PerfettoTracedProcess::CreateProducerConnection(
-    base::OnceCallback<void(mojo::PendingRemote<mojom::PerfettoService>)>
-        callback) {
-  // This is called on Perfetto's internal TracingMuxerImpl thread, so we need
-  // to hop over to the tracing sequence.
-  GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::OnceCallback<void(
-                 mojo::PendingRemote<mojom::PerfettoService>)> callback) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(
-                PerfettoTracedProcess::Get()->sequence_checker_);
-            // Perfetto will attempt to create the producer connection as soon
-            // as the client library is initialized, which is before we have a a
-            // connection to the tracing service. Store the connection callback
-            // until ConnectProducer() is called.
-            // DCHECK(!pending_producer_callback_);
-            PerfettoTracedProcess::Get()->pending_producer_callback_ =
-                std::move(callback);
-          },
-          std::move(callback)));
-}
-
-void PerfettoTracedProcess::CreateConsumerConnection(
-    base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>
-        callback) {
-  // This is called on Perfetto's internal TracingMuxerImpl thread, so we need
-  // to hop over to the tracing sequence.
-  GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>
-                 callback) {
-            auto* self = PerfettoTracedProcess::Get();
-            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-            self->consumer_connection_task_runner_->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](ConsumerConnectionFactory factory,
-                       base::OnceCallback<void(
-                           mojo::PendingRemote<mojom::ConsumerHost>)>
-                           callback) {
-                      auto& tracing_service = factory();
-                      mojo::PendingRemote<mojom::ConsumerHost>
-                          consumer_host_remote;
-                      tracing_service.BindConsumerHost(
-                          consumer_host_remote
-                              .InitWithNewPipeAndPassReceiver());
-                      std::move(callback).Run(std::move(consumer_host_remote));
-                    },
-                    self->consumer_connection_factory_, std::move(callback)));
-          },
-          std::move(callback)));
 }
 
 // We never destroy the taskrunner as we may need it for cleanup

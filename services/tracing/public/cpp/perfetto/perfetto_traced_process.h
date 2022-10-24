@@ -50,8 +50,7 @@ class SystemProducer;
 // * Construct the new implementation when requested to
 //   in PerfettoProducer::StartDataSource.
 class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
-    : public PerfettoTracingBackend::Delegate,
-      public perfetto::TracingPolicy {
+    : public perfetto::TracingPolicy {
  public:
   // If not noted otherwise, a DataSourceBase's methods are only called on
   // PerfettoTracedProcess::GetTaskRunner()'s sequence.
@@ -272,14 +271,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     return platform_.get();
   }
 
-  // PerfettoTracingBackend::Delegate implementation.
-  void CreateProducerConnection(
-      base::OnceCallback<void(mojo::PendingRemote<mojom::PerfettoService>)>)
-      override;
-  void CreateConsumerConnection(
-      base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>)
-      override;
-
   // Indicate that startup tracing will need to start when thread pool becomes
   // available. This is used in Perfetto client library build, because currently
   // it requires a threadpool to run tracing tasks.
@@ -334,12 +325,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Platform implementation for the Perfetto client library.
   std::unique_ptr<base::tracing::PerfettoPlatform> platform_;
   std::unique_ptr<PerfettoTracingBackend> tracing_backend_;
-
-  scoped_refptr<base::SequencedTaskRunner> consumer_connection_task_runner_;
-  ConsumerConnectionFactory consumer_connection_factory_;
-
-  base::OnceCallback<void(mojo::PendingRemote<mojom::PerfettoService>)>
-      pending_producer_callback_;
 
   bool startup_tracing_needed_ = false;
   perfetto::TraceConfig saved_config_;
