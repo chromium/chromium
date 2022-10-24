@@ -151,8 +151,29 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--binary-arg=--force-fieldtrial-params='
             'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
             '--run-info=%s' % self._tmp_dir,
-            '--run-by-dir=0',
         ])
+        if self.options.use_upstream_wpt:
+            # when running with upstream, the goal is to get wpt report that can
+            # be uploaded to wpt.fyi. We do not really cares if tests failed or
+            # not. Add '--no-fail-on-unexpected' so that the overall result is
+            # success. Add '--no-restart-on-unexpected' to speed up the test. On
+            # Android side, we are always running with one emulator or worker,
+            # so do not add '--run-by-dir=0'
+            rest_args.extend([
+                '--no-fail-on-unexpected',
+                '--no-restart-on-unexpected',
+            ])
+        else:
+            # By default, wpt will treat unexpected passes as errors, so we
+            # disable that to be consistent with Chromium CI. Add
+            # '--run-by-dir=0' so that tests can be more evenly distributed
+            # among workers.
+            rest_args.extend([
+                '--no-fail-on-unexpected-pass',
+                '--no-restart-on-new-group',
+                '--run-by-dir=0',
+            ])
+
         rest_args.extend(self.product.wpt_args)
 
         if self.options.headless:

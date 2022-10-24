@@ -299,9 +299,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
         rest_args = list(self._wpt_run_args)
         rest_args.extend([
-            # By default, wpt will treat unexpected passes as errors, so we
-            # disable that to be consistent with Chromium CI.
-            '--no-fail-on-unexpected-pass',
             '--no-pause-after-test',
             '--no-capture-stdio',
             '--no-manifest-download',
