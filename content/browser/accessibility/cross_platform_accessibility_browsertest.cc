@@ -1779,8 +1779,10 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(first_button, root_accessibility_manager->GetFocus());
 }
 
-IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       IFrameContentHadFocus_ThenRootDocumentGainedFocus) {
+IN_PROC_BROWSER_TEST_F(
+    CrossPlatformAccessibilityBrowserTest,
+    // TODO(crbug.com/1377745): Re-enable this test
+    DISABLED_IFrameContentHadFocus_ThenRootDocumentGainedFocus) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/html/iframe-padding.html");
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
