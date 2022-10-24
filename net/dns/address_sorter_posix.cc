@@ -286,22 +286,6 @@ class AddressSorterPosix::SortContext {
       return;
     }
 
-    AddressSorterPosix::SourceAddressInfo& src_info =
-        sorter_->source_map_[src.address()];
-    if (src_info.scope == AddressSorterPosix::SCOPE_UNDEFINED) {
-      // If |source_info_| is out of date, |src| might be missing, but we still
-      // want to sort, even though the HostCache will be cleared soon.
-      sorter_->FillPolicy(src.address(), &src_info);
-    }
-    sort_list_[info_index].src = &src_info;
-
-    if (sort_list_[info_index].endpoint.address().size() ==
-        src.address().size()) {
-      sort_list_[info_index].common_prefix_length =
-          std::min(CommonPrefixLength(sort_list_[info_index].endpoint.address(),
-                                      src.address()),
-                   sort_list_[info_index].src->prefix_length);
-    }
     MaybeFinishSort();
   }
 
@@ -314,6 +298,24 @@ class AddressSorterPosix::SortContext {
       return;
     }
     base::EraseIf(sort_list_, [](auto& element) { return element.failed; });
+    for (auto& info : sort_list_) {
+      IPEndPoint src;
+      info.socket->GetLocalAddress(&src);
+      AddressSorterPosix::SourceAddressInfo& src_info =
+          sorter_->source_map_[src.address()];
+      if (src_info.scope == AddressSorterPosix::SCOPE_UNDEFINED) {
+        // If |source_info_| is out of date, |src| might be missing, but we
+        // still want to sort, even though the HostCache will be cleared soon.
+        sorter_->FillPolicy(src.address(), &src_info);
+      }
+      info.src = &src_info;
+
+      if (info.endpoint.address().size() == src.address().size()) {
+        info.common_prefix_length =
+            std::min(CommonPrefixLength(info.endpoint.address(), src.address()),
+                     info.src->prefix_length);
+      }
+    }
     std::stable_sort(sort_list_.begin(), sort_list_.end(), CompareDestinations);
 
     std::vector<IPEndPoint> sorted_result;
