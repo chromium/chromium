@@ -159,8 +159,8 @@ SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
     : delegator_(delegator) {
-  DCHECK(native_window);
-  DCHECK(delegator);
+  CHECK(native_window);
+  CHECK(delegator);
   SetID(SHARESHEET_BUBBLE_VIEW_ID);
   // We set the dialog role because views::BubbleDialogDelegate defaults this to
   // an alert dialog. This would make screen readers announce all of this dialog
@@ -170,7 +170,9 @@ SharesheetBubbleView::SharesheetBubbleView(
   set_parent_window(native_window);
   views::Widget* const widget =
       views::Widget::GetWidgetForNativeWindow(native_window);
+  CHECK(widget);
   parent_view_ = widget->GetRootView();
+  CHECK(this);
   parent_widget_observer_ =
       std::make_unique<SharesheetParentWidgetObserver>(this, widget);
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
