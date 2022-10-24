@@ -80,6 +80,11 @@ constexpr char kExampleUrl2[] = "https://example2.com/";
 constexpr char kExampleUrl3[] = "https://example3.com/";
 constexpr char kExampleUrl4[] = "https://example4.com/";
 
+constexpr char kExampleSourcePattern1[] = "example1.com";
+constexpr char kExampleSourcePattern2[] = "example2.com";
+constexpr char kExampleSourcePattern3[] = "example3.com";
+constexpr char kExampleSourcePattern4[] = "example4.com";
+
 constexpr ino_t kInode1 = 1;
 constexpr ino_t kInode2 = 2;
 constexpr ino_t kInode3 = 3;
@@ -108,6 +113,36 @@ struct FilesTransferInfo {
   std::vector<ino_t> file_inodes;
   std::vector<std::string> file_sources;
   std::vector<std::string> file_paths;
+};
+
+// Support data structure used by `DlpFilesUrlDestinationTest`.
+struct DlpFilesUrlDestinationTestInfo {
+  struct File {
+    File(ino64_t inode,
+         std::string source_url,
+         std::string source_pattern,
+         bool is_restricted)
+        : inode(inode),
+          source_url(source_url),
+          source_pattern(source_pattern),
+          is_restricted(is_restricted) {}
+    ino64_t inode;
+    std::string source_url;
+    std::string source_pattern;
+    bool is_restricted;
+  };
+  DlpFilesUrlDestinationTestInfo(std::vector<File> files,
+                                 std::string destination_url,
+                                 std::string destination_pattern,
+                                 MockDlpRulesManager::Level level)
+      : files(files),
+        destination_url(destination_url),
+        destination_pattern(destination_pattern),
+        level(level) {}
+  std::vector<File> files;
+  std::string destination_url;
+  std::string destination_pattern;
+  MockDlpRulesManager::Level level;
 };
 
 using MockIsFilesTransferRestrictedCallback = testing::StrictMock<
@@ -659,29 +694,36 @@ TEST_F(DlpFilesControllerTest, DownloadToLocalAllowed) {
 
 TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleUrl2),
-                         testing::Return(DlpRulesManager::Level::kReport)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl3),
-                               testing::Return(DlpRulesManager::Level::kWarn)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl4),
-                               testing::Return(DlpRulesManager::Level::kAllow)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleUrl2),
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern2),
                          testing::Return(DlpRulesManager::Level::kReport)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl3),
-                               testing::Return(DlpRulesManager::Level::kWarn)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleUrl2),
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern3),
+                         testing::Return(DlpRulesManager::Level::kWarn)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern4),
+                         testing::Return(DlpRulesManager::Level::kAllow)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern2),
                          testing::Return(DlpRulesManager::Level::kReport)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kWarn)));
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern3),
+                         testing::Return(DlpRulesManager::Level::kWarn)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern2),
+                         testing::Return(DlpRulesManager::Level::kReport)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kWarn)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager).Times(testing::AnyNumber());
 
@@ -696,22 +738,23 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   const auto file4 = DlpFilesController::FileDaemonInfo(
       kInode4, base::FilePath(kFilePath4), kExampleUrl4);
 
-  auto CreateEvent = [](const std::string& src, DlpRulesManager::Level level,
+  auto CreateEvent = [](const std::string& src_pattern,
+                        DlpRulesManager::Level level,
                         const std::string& filename) {
     auto event_builder = DlpPolicyEventBuilder::Event(
-        src, DlpRulesManager::Restriction::kFiles, level);
+        src_pattern, DlpRulesManager::Restriction::kFiles, level);
     event_builder->SetDestinationComponent(
         DlpRulesManager::Component::kUnknownComponent);
     event_builder->SetContentName(filename);
     return event_builder->Create();
   };
 
-  const auto event1 =
-      CreateEvent(kExampleUrl1, DlpRulesManager::Level::kBlock, kFilePath1);
-  const auto event2 =
-      CreateEvent(kExampleUrl2, DlpRulesManager::Level::kReport, kFilePath2);
-  const auto event3 =
-      CreateEvent(kExampleUrl3, DlpRulesManager::Level::kWarn, kFilePath3);
+  const auto event1 = CreateEvent(kExampleSourcePattern1,
+                                  DlpRulesManager::Level::kBlock, kFilePath1);
+  const auto event2 = CreateEvent(kExampleSourcePattern2,
+                                  DlpRulesManager::Level::kReport, kFilePath2);
+  const auto event3 = CreateEvent(kExampleSourcePattern3,
+                                  DlpRulesManager::Level::kWarn, kFilePath3);
 
   base::TimeDelta cooldown_time =
       event_storage_->GetDeduplicationCooldownForTesting();
@@ -770,42 +813,53 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsFilesTransferRestricted) {
       kInode2, base::FilePath(kFilePath2), kExampleUrl2);
 
   const std::string dst_url = "https://wetransfer.com/";
+  const std::string dst_pattern = "wetransfer.com";
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(dst_url),
-                               testing::Return(DlpRulesManager::Level::kAllow)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(dst_url),
-                               testing::Return(DlpRulesManager::Level::kAllow)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                         testing::SetArgPointee<4>(dst_url),
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(dst_pattern),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::SetArgPointee<4>(dst_pattern),
+                         testing::Return(DlpRulesManager::Level::kAllow)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(dst_pattern),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::SetArgPointee<4>(dst_pattern),
+                         testing::Return(DlpRulesManager::Level::kAllow)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(dst_pattern),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::SetArgPointee<4>(dst_pattern),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::Return(DlpRulesManager::Level::kAllow)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::Return(DlpRulesManager::Level::kAllow)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::Return(DlpRulesManager::Level::kAllow)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::Return(DlpRulesManager::Level::kAllow)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
@@ -834,11 +888,11 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsFilesTransferRestricted) {
   EXPECT_CALL(cb, Run(disallowed_files)).Times(::testing::AnyNumber());
 
   auto event_builder = DlpPolicyEventBuilder::Event(
-      kExampleUrl1, DlpRulesManager::Restriction::kFiles,
+      kExampleSourcePattern1, DlpRulesManager::Restriction::kFiles,
       DlpRulesManager::Level::kBlock);
   event_builder->SetContentName(kFilePath1);
 
-  event_builder->SetDestinationPattern(dst_url);
+  event_builder->SetDestinationPattern(dst_pattern);
   const auto event1 = event_builder->Create();
 
   event_builder->SetDestinationComponent(DlpRulesManager::Component::kUsb);
@@ -881,19 +935,21 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnMixedCalls) {
       kInode2, base::FilePath(kFilePath2), kExampleUrl2);
 
   const std::string dst_url = "https://wetransfer.com/";
+  const std::string dst_pattern = "wetransfer.com";
 
   EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleUrl1),
+          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::SetArgPointee<4>(dst_url),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                         testing::SetArgPointee<4>(dst_url),
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(dst_pattern),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::SetArgPointee<4>(dst_pattern),
                          testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
@@ -907,10 +963,10 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnMixedCalls) {
   EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
 
   auto event_builder = DlpPolicyEventBuilder::Event(
-      kExampleUrl1, DlpRulesManager::Restriction::kFiles,
+      kExampleSourcePattern1, DlpRulesManager::Restriction::kFiles,
       DlpRulesManager::Level::kBlock);
   event_builder->SetContentName(kFilePath1);
-  event_builder->SetDestinationPattern(dst_url);
+  event_builder->SetDestinationPattern(dst_pattern);
   const auto event = event_builder->Create();
 
   // Report a single `event` after this call
@@ -1126,12 +1182,14 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, expected_component, _, _))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kBlock)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::Return(DlpRulesManager::Level::kAllow)))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl3),
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::Return(DlpRulesManager::Level::kAllow)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern3),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
@@ -1148,11 +1206,11 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
 
   ASSERT_EQ(events.size(), 2u);
   EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kExampleUrl1, expected_component,
+                             kExampleSourcePattern1, expected_component,
                              DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kBlock)));
   EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kExampleUrl3, expected_component,
+                             kExampleSourcePattern3, expected_component,
                              DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kBlock)));
 
@@ -1174,7 +1232,7 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, expected_component, _, _))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
@@ -1189,87 +1247,105 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
 
   ASSERT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kExampleUrl1, expected_component,
+                             kExampleSourcePattern1, expected_component,
                              DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kBlock)));
 }
 
 class DlpFilesUrlDestinationTest
     : public DlpFilesControllerTest,
-      public ::testing::WithParamInterface<
-          std::tuple<std::vector<std::pair<ino_t, std::string>>,
-                     std::string,
-                     DlpRulesManager::Level,
-                     std::vector<std::pair<ino_t, std::string>>>> {};
+      public ::testing::WithParamInterface<DlpFilesUrlDestinationTestInfo> {};
 INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesUrlDestinationTest,
     ::testing::Values(
-        std::make_tuple(std::vector<std::pair<ino_t, std::string>>(
-                            {{kInode1, kExampleUrl1},
-                             {kInode2, kExampleUrl2},
-                             {kInode3, kExampleUrl3}}),
-                        "https://wetransfer.com/",
-                        DlpRulesManager::Level::kBlock,
-                        std::vector<std::pair<ino_t, std::string>>(
-                            {{kInode1, kExampleUrl1},
-                             {kInode3, kExampleUrl3}})),
-        std::make_tuple(std::vector<std::pair<ino_t, std::string>>(
-                            {{kInode1, kExampleUrl1},
-                             {kInode2, kExampleUrl2},
-                             {kInode3, kExampleUrl3}}),
-                        "https://drive.google.com/",
-                        DlpRulesManager::Level::kAllow,
-                        std::vector<std::pair<ino_t, std::string>>({}))));
+        DlpFilesUrlDestinationTestInfo(
+            {{DlpFilesUrlDestinationTestInfo::File(kInode1,
+                                                   kExampleUrl1,
+                                                   kExampleSourcePattern1,
+                                                   true)},
+             {DlpFilesUrlDestinationTestInfo::File(kInode2,
+                                                   kExampleUrl2,
+                                                   kExampleSourcePattern2,
+                                                   false)},
+             {DlpFilesUrlDestinationTestInfo::File(kInode3,
+                                                   kExampleUrl3,
+                                                   kExampleSourcePattern3,
+                                                   true)}},
+            "https://wetransfer.com/",
+            "wetransfer.com",
+            DlpRulesManager::Level::kBlock),
+        DlpFilesUrlDestinationTestInfo(
+            {{DlpFilesUrlDestinationTestInfo::File(kInode1,
+                                                   kExampleUrl1,
+                                                   kExampleSourcePattern1,
+                                                   false)},
+             {DlpFilesUrlDestinationTestInfo::File(kInode2,
+                                                   kExampleUrl2,
+                                                   kExampleSourcePattern2,
+                                                   false)},
+             {DlpFilesUrlDestinationTestInfo::File(kInode3,
+                                                   kExampleUrl3,
+                                                   kExampleSourcePattern3,
+                                                   false)}},
+            "https://drive.google.com/",
+            "google.com",
+            DlpRulesManager::Level::kAllow)));
 
 TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
-  auto [transferred_data, dst, confidential_files_restriction_level,
-        disallowed_data] = GetParam();
+  auto param = GetParam();
 
   const auto histogram_tester = base::HistogramTester();
 
   std::vector<DlpFilesController::FileDaemonInfo> transferred_files;
   std::vector<DlpFilesController::FileDaemonInfo> disallowed_files;
-  for (const auto& [inode, src] : transferred_data)
-    transferred_files.emplace_back(inode, base::FilePath(), src);
-  for (const auto& [inode, src] : disallowed_data)
-    disallowed_files.emplace_back(inode, base::FilePath(), src);
-
-  MockIsFilesTransferRestrictedCallback cb;
-  EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
+  std::vector<std::string> disallowed_source_patterns;
+  for (const auto& file : param.files) {
+    transferred_files.emplace_back(file.inode, base::FilePath(),
+                                   file.source_url);
+    if (file.is_restricted) {
+      disallowed_files.emplace_back(file.inode, base::FilePath(),
+                                    file.source_url);
+      disallowed_source_patterns.emplace_back(file.source_pattern);
+    }
+  }
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                         testing::SetArgPointee<4>(dst),
-                         testing::Return(confidential_files_restriction_level)))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl2),
-                               testing::SetArgPointee<4>(dst),
-                               testing::Return(DlpRulesManager::Level::kAllow)))
-      .WillOnce(testing::DoAll(
-          testing::SetArgPointee<3>(kExampleUrl3),
-          testing::SetArgPointee<4>(dst),
-          testing::Return(confidential_files_restriction_level)));
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(param.destination_pattern),
+                         testing::Return(param.level)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern2),
+                         testing::SetArgPointee<4>(param.destination_pattern),
+                         testing::Return(DlpRulesManager::Level::kAllow)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern3),
+                         testing::SetArgPointee<4>(param.destination_pattern),
+                         testing::Return(param.level)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
       .Times(::testing::AnyNumber());
 
+  MockIsFilesTransferRestrictedCallback cb;
+  EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
+
   files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFilesController::DlpFileDestination(dst),
+      transferred_files,
+      DlpFilesController::DlpFileDestination(param.destination_url),
       DlpFilesController::FileAction::kDownload, cb.Get());
 
   ASSERT_EQ(events.size(), disallowed_files.size());
   for (size_t i = 0u; i < disallowed_files.size(); ++i) {
-    EXPECT_THAT(events[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                               disallowed_files[i].source_url.spec(), dst,
-                               DlpRulesManager::Restriction::kFiles,
-                               confidential_files_restriction_level)));
+    EXPECT_THAT(events[i],
+                IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                    disallowed_source_patterns[i], param.destination_pattern,
+                    DlpRulesManager::Restriction::kFiles, param.level)));
   }
 
-  int blocked_downloads =
-      confidential_files_restriction_level == DlpRulesManager::Level::kBlock
-          ? disallowed_files.size()
-          : 0;
+  int blocked_downloads = param.level == DlpRulesManager::Level::kBlock
+                              ? disallowed_files.size()
+                              : 0;
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
@@ -1314,8 +1390,9 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<3>(kExampleUrl1),
-                               testing::Return(DlpRulesManager::Level::kWarn)));
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::Return(DlpRulesManager::Level::kWarn)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
       .Times(::testing::AnyNumber());
@@ -1329,14 +1406,15 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
                                             cb.Get());
 
   ASSERT_EQ(events.size(), 1u + (choice_result ? 1 : 0));
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                             kExampleUrl1, DlpRulesManager::Component::kUsb,
-                             DlpRulesManager::Restriction::kFiles,
-                             DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(events[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kExampleSourcePattern1, DlpRulesManager::Component::kUsb,
+                  DlpRulesManager::Restriction::kFiles,
+                  DlpRulesManager::Level::kWarn)));
   if (choice_result) {
     EXPECT_THAT(events[1],
                 IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                    kExampleUrl1, DlpRulesManager::Component::kUsb,
+                    kExampleSourcePattern1, DlpRulesManager::Component::kUsb,
                     DlpRulesManager::Restriction::kFiles)));
   }
 
@@ -1443,13 +1521,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
-      .WillRepeatedly([](const GURL& source,
-                         const DlpRulesManager::Component& destination,
-                         DlpRulesManager::Restriction restriction,
-                         std::string* out_source_pattern) {
-        *out_source_pattern = source.spec();
-        return DlpRulesManager::Level::kWarn;
-      });
+      .WillRepeatedly(testing::Return(DlpRulesManager::Level::kWarn));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
       .Times(::testing::AnyNumber());
