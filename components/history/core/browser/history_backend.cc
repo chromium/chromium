@@ -31,9 +31,8 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,6 +41,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/favicon/core/favicon_backend.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
@@ -1032,7 +1032,7 @@ void HistoryBackend::InitImpl(
   db_->set_error_callback(base::BindRepeating(
       &HistoryBackend::DatabaseErrorCallback, base::Unretained(this)));
 
-  db_diagnostics_.clear();
+  diagnostics_string_.clear();
   sql::InitStatus status = db_->Init(history_name);
   switch (status) {
     case sql::INIT_OK:
@@ -1052,8 +1052,8 @@ void HistoryBackend::InitImpl(
       [[fallthrough]];
     }
     case sql::INIT_TOO_NEW: {
-      db_diagnostics_ += sql::GetCorruptFileDiagnosticsInfo(history_name);
-      delegate_->NotifyProfileError(status, db_diagnostics_);
+      diagnostics_string_ += sql::GetCorruptFileDiagnosticsInfo(history_name);
+      delegate_->NotifyProfileError(status, diagnostics_string_);
       db_.reset();
       return;
     }
@@ -2789,6 +2789,17 @@ void HistoryBackend::CommitSingletonTransactionIfItExists() {
     CHECK_EQ(db_->transaction_nesting(), 0)
         << "Someone left a transaction open.";
   } else {
+    // These diagnostic codes don't contain PII, and have already been cleared
+    // by Privacy to be used for error telemetry.
+    static crash_reporter::CrashKeyString<8> error_code_key(
+        "sql_diagnostics_error_code");
+    error_code_key.Set(base::NumberToString(diagnostics_.error_code));
+    static crash_reporter::CrashKeyString<8> version_key(
+        "sql_diagnostics_version");
+    version_key.Set(base::NumberToString(diagnostics_.version));
+    static crash_reporter::CrashKeyString<256> error_message_key(
+        "sql_diagnostics_error_message");
+    error_message_key.Set(diagnostics_.error_message);
     // TODO(crbug.com/1321483): Remove DumpWithoutCrashing after fixing
     // transaction related bugs in History.
     base::debug::DumpWithoutCrashing();
@@ -2973,19 +2984,18 @@ void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
   constexpr char kHistoryDatabaseSqliteErrorUma[] =
       "History.DatabaseSqliteError";
   if (sql::ToSqliteResultCode(error) == sql::SqliteResultCode::kError) {
-    sql::DatabaseDiagnostics diagnostics;
-    db_diagnostics_ = db_->GetDiagnosticInfo(error, stmt, &diagnostics);
+    diagnostics_string_ = db_->GetDiagnosticInfo(error, stmt, &diagnostics_);
     TRACE_EVENT_INSTANT(
         "history", "HistoryBackend::DatabaseErrorCallback",
         perfetto::protos::pbzero::ChromeTrackEvent::kSqlDiagnostics,
-        diagnostics);
+        diagnostics_);
 
     // Record UMA at the end because we want to use PREEMPTIVE_TRACING_MODE.
     sql::UmaHistogramSqliteResult(kHistoryDatabaseSqliteErrorUma, error);
   } else if (!scheduled_kill_db_ && sql::IsErrorCatastrophic(error)) {
     scheduled_kill_db_ = true;
 
-    db_diagnostics_ = db_->GetDiagnosticInfo(error, stmt);
+    diagnostics_string_ = db_->GetDiagnosticInfo(error, stmt, &diagnostics_);
 
     // Don't just do the close/delete here, as we are being called by `db` and
     // that seems dangerous.

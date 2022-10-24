@@ -110,6 +110,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/crash/core/common:crash_key",
     "//components/database_utils",
     "//components/favicon/core:database",
     "//components/favicon_base",

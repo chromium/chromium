@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/crash/core/common/crash_key.h",
   "+components/database_utils",
   "+components/favicon/core/favicon_backend.h",
   "+components/favicon/core/favicon_backend_delegate.h",

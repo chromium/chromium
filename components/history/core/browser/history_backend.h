@@ -987,7 +987,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Contains diagnostic information about the sql database that is non-empty
   // when a catastrophic error occurs.
-  std::string db_diagnostics_;
+  std::string diagnostics_string_;
+  sql::DatabaseDiagnostics diagnostics_;
 
   // List of observers
   base::ObserverList<HistoryBackendObserver>::Unchecked observers_;
