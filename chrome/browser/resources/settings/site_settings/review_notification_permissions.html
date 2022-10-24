@@ -36,6 +36,10 @@
     margin-inline-start: 32px;
   }
 
+  paper-tooltip::part(tooltip) {
+    min-width: 0;
+  }
+
   iron-icon[icon='settings:notifications-none'] {
     background-color: var(--google-blue-50);
     fill: var(--google-blue-600);
@@ -84,8 +88,7 @@
         </div>
         <cr-icon-button iron-icon="cr20:block" id="block"
             on-click="onBlockNotificationPermissionClick_"
-            aria-label="[[getAriaLabelText_(
-                actionsEnum_.BLOCK, lastOrigin_)]]"
+            aria-label="[[getAriaLabelText_(actionsEnum_.BLOCK, lastOrigin_)]]"
             focus-row-control focus-type="show-detail"
             on-pointerenter="onShowTooltip_" actionable></cr-icon-button>
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
