@@ -481,6 +481,9 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         '--ash-ready-file-path=%s' % ash_ready_file,
         '--wayland-server-socket=%s' % ash_wayland_socket_name,
     ]
+    if '--enable-pixel-output-in-tests' not in forward_args:
+      ash_cmd.append('--disable-gl-drawing-for-tests')
+
     if enable_mojo_crosapi:
       ash_cmd.append(lacros_mojo_socket_arg)
 

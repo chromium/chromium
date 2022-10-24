@@ -66,10 +66,9 @@ class TestRunnerTest(unittest.TestCase):
       self.assertFalse(mock_download.called)
 
   @parameterized.expand([
-      'browser_tests',
-      'components_browsertests',
-      'content_browsertests',
+      'browser_tests', 'components_browsertests', 'content_browsertests',
       'lacros_chrome_browsertests',
+      'browser_tests --enable-pixel-output-in-tests'
   ])
   @mock.patch.object(os,
                      'listdir',
@@ -89,7 +88,9 @@ class TestRunnerTest(unittest.TestCase):
   # Tests that the test runner downloads and spawns ash-chrome if ash-chrome is
   # required.
   def test_require_ash_chrome(self, command, mock_popen, mock_download, *_):
-    args = ['script_name', 'test', command]
+    command_parts = command.split()
+    args = ['script_name', 'test']
+    args.extend(command_parts)
     with mock.patch.object(sys, 'argv', args):
       test_runner.Main()
       mock_download.assert_called_with('793554')
@@ -108,6 +109,8 @@ class TestRunnerTest(unittest.TestCase):
           '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt',
           '--wayland-server-socket=wayland-exo',
       ]
+      if '--enable-pixel-output-in-tests' not in command_parts:
+        expected_ash_chrome_args.append('--disable-gl-drawing-for-tests')
       if command == 'lacros_chrome_browsertests':
         expected_ash_chrome_args.append(
             '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock')
@@ -123,7 +126,7 @@ class TestRunnerTest(unittest.TestCase):
             '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock',
         ], test_args)
       else:
-        self.assertListEqual([command], [test_args[0]])
+        self.assertListEqual(test_args[:len(command_parts)], command_parts)
 
       test_env = mock_popen.call_args_list[1][1].get('env', {})
       self.assertDictEqual(
