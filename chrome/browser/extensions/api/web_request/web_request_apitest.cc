@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 }
 
 class ExtensionDevToolsProtocolTest
-    : public ExtensionWebRequestApiTest,
+    : public ExtensionWebRequestApiTestWithContextType,
       public content::TestDevToolsProtocolClient {
  protected:
   void Attach() { AttachToWebContents(web_contents()); }
@@ -543,7 +543,15 @@ class ExtensionDevToolsProtocolTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionDevToolsProtocolTest,
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionDevToolsProtocolTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionDevToolsProtocolTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
                        HeaderOverriddenByExtension) {
   Attach();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -602,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDevToolsProtocolTest,
   ASSERT_EQ(*cookie_value, "cookieValue");
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionDevToolsProtocolTest,
+IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
                        HeaderOverrideViaProtocolAllowedByExtension) {
   Attach();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -722,7 +730,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestTypes) {
 #else
 #define MAYBE_WebRequestTestOSDD WebRequestTestOSDD
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebRequestTestOSDD) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       MAYBE_WebRequestTestOSDD) {
   // An OSDD request is only generated when a main frame at is loaded at /, so
   // serve osdd/index.html from the root of the test server:
   embedded_test_server()->ServeFilesFromDirectory(
