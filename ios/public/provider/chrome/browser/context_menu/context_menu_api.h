@@ -7,8 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/files/file_path.h"
+#import "base/values.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
 
@@ -49,6 +52,14 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
     NSTextCheckingResult* match,
     NSString* text,
     UIViewController* presenting_view_controller);
+
+// Returns a full set of intents of `handled_types`, located inside `text`. The
+// `model_path` for the give web state should be passed in if a detection by
+// model is required. (Note that some flags might still not allow it.)
+absl::optional<base::Value> ExtractDataElementsFromText(
+    const std::string& text,
+    NSTextCheckingType handled_types,
+    const base::FilePath& model_path);
 
 }  // namespace provider
 }  // namespace ios

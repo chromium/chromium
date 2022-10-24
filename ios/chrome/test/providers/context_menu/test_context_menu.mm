@@ -31,5 +31,12 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
   return nil;
 }
 
+absl::optional<base::Value> ExtractDataElementsFromText(
+    const std::string& text,
+    NSTextCheckingType handled_types,
+    const base::FilePath& model_path) {
+  return absl::nullopt;
+}
+
 }  // namespace provider
 }  // namespace ios
