@@ -5,14 +5,15 @@
 #include "components/services/screen_ai/screen_ai_service_impl.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
@@ -26,62 +27,121 @@ namespace screen_ai {
 
 namespace {
 
-std::string MakeString(const char* content, uint32_t length) {
-  DCHECK(content);
-  DCHECK(length);
+std::vector<char> LoadModelFile(base::File& model_file) {
+  std::vector<char> buffer;
+  int64_t length = model_file.GetLength();
+  if (length < 0) {
+    VLOG(0) << "Could not query Screen AI model file's length.";
+    return buffer;
+  }
 
-  std::string output;
-  memcpy(base::WriteInto(&output, length + 1), content, length);
-  output[length] = 0;
-  return output;
+  buffer.resize(length);
+  if (model_file.Read(0, buffer.data(), length) != length) {
+    buffer.clear();
+    VLOG(0) << "Could not read Screen AI model file's content.";
+  }
+
+  return buffer;
 }
 
 }  // namespace
+
+void LibraryFunctions::LoadFunctions(base::ScopedNativeLibrary& library) {
+  // General functions.
+  get_library_version_ = reinterpret_cast<GetLibraryVersion>(
+      library.GetFunctionPointer("GetLibraryVersion"));
+  DCHECK(get_library_version_);
+  enable_debug_mode_ = reinterpret_cast<EnableDebugMode>(
+      library.GetFunctionPointer("EnableDebugMode"));
+  DCHECK(enable_debug_mode_);
+
+  // Main Content Extraction functions.
+  init_main_content_extraction_ = reinterpret_cast<InitMainContentExtraction>(
+      library.GetFunctionPointer("InitMainContentExtraction"));
+  DCHECK(init_main_content_extraction_);
+  extract_main_content_ = reinterpret_cast<ExtractMainContent>(
+      library.GetFunctionPointer("ExtractMainContent"));
+  DCHECK(extract_main_content_);
+
+// Visual Annotation functions.
+// TODO(https://crbug.com/1278249): Enable when ScreenAI is supported on
+// Windows.
+#if !BUILDFLAG(IS_WIN)
+  init_visual_annotation_ = reinterpret_cast<InitVisualAnnotations>(
+      library.GetFunctionPointer("InitVisualAnnotations"));
+  DCHECK(init_visual_annotation_);
+  annotate_ =
+      reinterpret_cast<Annotate>(library.GetFunctionPointer("Annotate"));
+  DCHECK(annotate_);
+#endif  // !BUILDFLAG(IS_WIN)
+}
 
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
+void ScreenAIService::LoadLibrary(base::File model_config,
+                                  base::File model_tflite,
+                                  const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
-  init_function_ =
-      reinterpret_cast<InitFunction>(library_.GetFunctionPointer("Init"));
-  extract_main_content_function_ = reinterpret_cast<ExtractMainContentFunction>(
-      library_.GetFunctionPointer("ExtractMainContent"));
-  DCHECK(init_function_ && extract_main_content_function_);
-// TODO(https://crbug.com/1278249): Enable when ScreenAI is supported on
-// Windows.
+  library_functions_.LoadFunctions(library_);
+  if (features::IsScreenAIDebugModeEnabled())
+    CallEnableDebugMode();
+  bool init_ok = true;
 #if !BUILDFLAG(IS_WIN)
-  annotate_function_ = reinterpret_cast<AnnotateFunction>(
-      library_.GetFunctionPointer("Annotate"));
-  DCHECK(annotate_function_);
+  if (features::IsPdfOcrEnabled() ||
+      features::IsScreenAIVisualAnnotationsEnabled()) {
+    if (!CallInitVisualAnnotationsFunction(library_path.DirName())) {
+      init_ok = false;
+      // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
+    }
+  }
 #endif
 
-  if (!CallLibraryInitFunction(library_path.DirName())) {
-    // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
+  if (init_ok && features::IsReadAnythingWithScreen2xEnabled()) {
+    if (!CallInitMainContentExtractionFunction(model_config, model_tflite)) {
+      // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
+      init_ok = false;
+    }
+  }
+
+  if (!init_ok) {
     VLOG(0) << "Screen AI library initialization failed.";
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
 }
 
+ScreenAIService::~ScreenAIService() = default;
+
 NO_SANITIZE("cfi-icall")
-bool ScreenAIService::CallLibraryInitFunction(
-    const base::FilePath& models_path) {
-  bool init_main_content_extraction =
-      features::IsReadAnythingWithScreen2xEnabled();
-  bool init_visual_annotations;
+bool ScreenAIService::CallInitVisualAnnotationsFunction(
+    const base::FilePath& models_folder) {
 #if BUILDFLAG(IS_WIN)
-  init_visual_annotations = false;
+  return false;
 #else
-  init_visual_annotations = features::IsScreenAIVisualAnnotationsEnabled() ||
-                            features::IsPdfOcrEnabled();
+  return library_functions_.init_visual_annotation_(
+      models_folder.MaybeAsASCII().c_str());
 #endif
-  return init_function_(init_visual_annotations, init_main_content_extraction,
-                        features::IsScreenAIDebugModeEnabled(),
-                        models_path.MaybeAsASCII().c_str());
 }
 
-ScreenAIService::~ScreenAIService() = default;
+NO_SANITIZE("cfi-icall")
+bool ScreenAIService::CallInitMainContentExtractionFunction(
+    base::File& model_config_file,
+    base::File& model_tflite_file) {
+  std::vector<char> model_config = LoadModelFile(model_config_file);
+  std::vector<char> model_tflite = LoadModelFile(model_tflite_file);
+  if (model_config.empty() || model_tflite.empty())
+    return false;
+
+  return library_functions_.init_main_content_extraction_(
+      model_config.data(), model_config.size(), model_tflite.data(),
+      model_tflite.size());
+}
+
+NO_SANITIZE("cfi-icall")
+void ScreenAIService::CallEnableDebugMode() {
+  library_functions_.enable_debug_mode_();
+}
 
 void ScreenAIService::BindAnnotator(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) {
@@ -119,8 +179,8 @@ void ScreenAIService::Annotate(const SkBitmap& image,
     return;
   }
 
-  std::string proto_as_string =
-      MakeString(annotation_proto, annotation_proto_length);
+  std::string proto_as_string;
+  proto_as_string.assign(annotation_proto, annotation_proto_length);
   delete annotation_proto;
 
   gfx::Rect image_rect(image.width(), image.height());
@@ -152,8 +212,9 @@ bool ScreenAIService::CallLibraryAnnotateFunction(
   NOTIMPLEMENTED();
   return false;
 #else
-  DCHECK(annotate_function_);
-  return annotate_function_(image, annotation_proto, annotation_proto_length);
+  DCHECK(library_functions_.annotate_);
+  return library_functions_.annotate_(image, annotation_proto,
+                                      annotation_proto_length);
 #endif
 }
 
@@ -188,8 +249,8 @@ bool ScreenAIService::CallLibraryExtractMainContentFunction(
     const uint32_t serialized_snapshot_length,
     int32_t*& node_ids,
     uint32_t& nodes_count) {
-  DCHECK(extract_main_content_function_);
-  return extract_main_content_function_(
+  DCHECK(library_functions_.extract_main_content_);
+  return library_functions_.extract_main_content_(
       serialized_snapshot, serialized_snapshot_length, node_ids, nodes_count);
 }
 

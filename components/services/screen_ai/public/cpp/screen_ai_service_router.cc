@@ -4,6 +4,8 @@
 
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "content/public/browser/service_process_host.h"
@@ -59,8 +61,16 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
           .WithDisplayName("Screen AI Service")
           .Pass());
 
-  if (screen_ai_service_.is_bound())
-    screen_ai_service_->LoadLibrary(library_path);
+  if (screen_ai_service_.is_bound()) {
+    screen_ai::ComponentModelFiles* model_files =
+        ScreenAIInstallState::GetInstance()->GetComponentModelFiles();
+    DCHECK(model_files);
+    DCHECK(model_files->screen2x_model_config_.IsValid());
+    DCHECK(model_files->screen2x_model_.IsValid());
+    screen_ai_service_->LoadLibrary(
+        std::move(model_files->screen2x_model_config_),
+        std::move(model_files->screen2x_model_), library_path);
+  }
 }
 
 }  // namespace screen_ai

@@ -20,8 +20,7 @@ class ScreenAIInstallStateTest : public testing::Test,
   void MakeComponentReady() {
     // The passed file path is not used and just indicates that the component
     // exists.
-    ScreenAIInstallState::GetInstance()->SetComponentReady(
-        base::FilePath(FILE_PATH_LITERAL("tmp")));
+    ScreenAIInstallState::GetInstance()->SetComponentReady();
   }
 
   void ComponentReady() override { component_ready_received_ = true; }

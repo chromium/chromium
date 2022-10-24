@@ -5,6 +5,7 @@
 module screen_ai.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
@@ -58,9 +59,15 @@ interface Screen2xMainContentExtractor {
 [ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
 interface ScreenAIService {
   // Triggers the service to load and initialize the Screen AI library at
-  // |library_path|. This should be called from the browser process and be
-  // eventually replaced by passing file handles.
-  LoadLibrary(mojo_base.mojom.FilePath library_path);
+  // |library_path|. |screen2x_model_config| and |screen2x_model| are already
+  // open file handles to Screen2x model files. The rest of model files are
+  // read from |library_path| folder.
+  // This should be called from the browser process.
+  // TODO(https://crbug.com/1278249): Read all model files from file handles.
+  LoadLibrary(
+    mojo_base.mojom.ReadOnlyFile screen2x_model_config,
+    mojo_base.mojom.ReadOnlyFile screen2x_model,
+    mojo_base.mojom.FilePath library_path);
 
   // Binds a new annotator to the service.
   BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);

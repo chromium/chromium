@@ -2498,10 +2498,10 @@ class PdfOcrContextMenuBrowserTest : public PdfPluginContextMenuBrowserTest,
       scoped_feature_list_.InitAndDisableFeature(features::kPdfOcr);
     accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(
         IsScreenReaderEnabled());
-    screen_ai::ScreenAIInstallState::GetInstance()
-        ->set_component_ready_for_testing(
-            IsComponentReady() ? base::FilePath(FILE_PATH_LITERAL("tmp"))
-                               : base::FilePath());
+    if (IsComponentReady()) {
+      screen_ai::ScreenAIInstallState::GetInstance()
+          ->set_component_ready_for_testing();
+    }
   }
 
   PdfOcrContextMenuBrowserTest(const PdfOcrContextMenuBrowserTest&) = delete;

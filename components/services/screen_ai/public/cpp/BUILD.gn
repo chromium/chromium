@@ -8,7 +8,11 @@ source_set("screen_ai_install_state") {
     "screen_ai_install_state.h",
   ]
 
-  deps = [ "//base/" ]
+  deps = [
+    ":utilities",
+    "//base/",
+    "//content/public/browser",
+  ]
 }
 
 source_set("screen_ai_service_router_factory") {
