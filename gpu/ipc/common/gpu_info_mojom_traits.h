@@ -385,6 +385,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
   static const gpu::OverlayInfo& overlay_info(const gpu::GPUInfo& input) {
     return input.overlay_info;
   }
+
+  static bool shared_image_d3d(const gpu::GPUInfo& input) {
+    return input.shared_image_d3d;
+  }
 #endif
   static const gpu::VideoDecodeAcceleratorSupportedProfiles&
   video_decode_accelerator_supported_profiles(const gpu::GPUInfo& input) {

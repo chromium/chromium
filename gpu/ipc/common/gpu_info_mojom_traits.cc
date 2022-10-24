@@ -444,6 +444,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
 #if BUILDFLAG(IS_WIN)
   out->d3d12_feature_level = data.d3d12_feature_level();
   out->vulkan_version = data.vulkan_version();
+  out->shared_image_d3d = data.shared_image_d3d();
 #endif
 
   return data.ReadInitializationTime(&out->initialization_time) &&

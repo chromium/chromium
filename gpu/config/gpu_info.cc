@@ -330,6 +330,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     uint32_t d3d12_feature_level;
     uint32_t vulkan_version;
     OverlayInfo overlay_info;
+    bool shared_image_d3d;
 #endif
 
     VideoDecodeAcceleratorSupportedProfiles
@@ -404,6 +405,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
                         gpu::D3DFeatureLevelToString(d3d12_feature_level));
   enumerator->AddString("vulkanVersion",
                         gpu::VulkanVersionToString(vulkan_version));
+  enumerator->AddBool("supportsD3dSharedImages", shared_image_d3d);
 #endif
   for (const auto& profile : video_decode_accelerator_supported_profiles)
     EnumerateVideoDecodeAcceleratorSupportedProfile(profile, enumerator);

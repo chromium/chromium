@@ -444,6 +444,9 @@ struct GPU_EXPORT GPUInfo {
 
   // The GPU hardware overlay info.
   OverlayInfo overlay_info;
+
+  // Are d3d shared images supported.
+  bool shared_image_d3d = false;
 #endif
   VideoDecodeAcceleratorSupportedProfiles
       video_decode_accelerator_supported_profiles;
