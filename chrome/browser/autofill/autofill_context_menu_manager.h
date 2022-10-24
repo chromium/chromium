@@ -100,24 +100,47 @@ class AutofillContextMenuManager {
   }
 
  private:
-  // Adds address items to the context menu.
-  void AppendAddressItems(std::vector<std::pair<CommandId, ContextMenuItem>>&
-                              item_details_added_to_context_menu);
+  // The "Title" refers to the description of the address and credit cards
+  // respectively that is shown in the context menu.
+  using AddressesWithTitle = base::flat_map<std::u16string, AutofillProfile*>;
+  using CreditCardProfilesWithTitle =
+      base::flat_map<std::u16string, CreditCard*>;
 
-  // Adds credit card items to the context menu.
-  void AppendCreditCardItems(std::vector<std::pair<CommandId, ContextMenuItem>>&
-                                 item_details_added_to_context_menu);
+  // Used to define the order in which the data is added to the context menu.
+  struct FieldsToShow {
+    // Denotes whether the item type is a submenu, separator or a text.
+    ui::MenuModel::ItemType item_type;
+    // Denotes the `ServerFieldType` pertaining to the row to be added to the
+    // menu.
+    ServerFieldType field_type;
+  };
 
   // Fetches value from `profile_or_credit_card` based on the type from
   // `field_types_to_show` and adds them to the `menu_model`.
   bool CreateSubMenuWithData(
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      base::span<const ServerFieldType> field_types_to_show,
+      base::span<const FieldsToShow> field_types_to_show,
       ui::SimpleMenuModel* menu_model,
       std::vector<std::pair<CommandId, ContextMenuItem>>&
           item_details_added_to_context_menu,
       SubMenuType sub_menu_type);
+
+  // Depending on the type `T` it adds a address menu with all the addresses or
+  // the credit card menu with the credit card data to the context menu.
+  void AddAddressOrCreditCardItems(
+      std::vector<std::pair<CommandId, ContextMenuItem>>&
+          detail_items_added_to_context_menu,
+      absl::variant<AddressesWithTitle, CreditCardProfilesWithTitle>
+          addresses_or_credit_cards,
+      bool is_address_menu);
+
+  // Returns a map of the addresses along with the title to be shown in the
+  // context menu.
+  AddressesWithTitle GetAddressProfilesWithTitle();
+  // Returns a map of the credit cards along with the title to be shown in the
+  // context menu.
+  CreditCardProfilesWithTitle GetCreditCardProfilesWithTitle();
 
   // Returns a description for the given `profile`.
   std::u16string GetProfileDescription(const AutofillProfile& profile);
