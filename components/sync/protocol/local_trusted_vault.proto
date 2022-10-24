@@ -9,6 +9,12 @@ option optimize_for = LITE_RUNTIME;
 option java_package = "sync_pb";
 package sync_pb;
 
+enum DegradedRecoverabilityValue {
+  kUnknown = 0;
+  kNotDegraded = 1;
+  kDegraded = 2;
+}
+
 message LocalTrustedVaultKey {
   // The actual key.
   optional bytes key_material = 1;
@@ -41,12 +47,14 @@ message LocalDeviceRegistrationInfo {
 }
 
 message LocalTrustedVaultDegradedRecoverabilityState {
-  // Indicates whether the recoverability is degraded.
-  optional bool is_recoverability_degraded = 1;
+  reserved 1;
 
   // The time (in milliseconds since UNIX epoch) at which last refreshing
   // request was sent.
   optional int64 last_refresh_time_millis_since_unix_epoch = 2;
+
+  // Indicates whether the recoverability is degraded.
+  optional DegradedRecoverabilityValue degraded_recoverability_value = 3;
 }
 
 message LocalTrustedVaultPerUser {

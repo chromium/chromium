@@ -29,12 +29,13 @@ base::TimeDelta ComputeTimeUntilNextRefresh(
 }
 
 sync_pb::LocalTrustedVaultDegradedRecoverabilityState
-MakeDegradedRecoverabilityState(bool is_recoverability_degraded,
-                                const base::Time& last_refresh_time) {
+MakeDegradedRecoverabilityState(
+    sync_pb::DegradedRecoverabilityValue degraded_recoverability_value,
+    const base::Time& last_refresh_time) {
   sync_pb::LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state;
-  degraded_recoverability_state.set_is_recoverability_degraded(
-      is_recoverability_degraded);
+  degraded_recoverability_state.set_degraded_recoverability_value(
+      degraded_recoverability_value);
   degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
       syncer::TimeToProtoTime(last_refresh_time));
   return degraded_recoverability_state;
@@ -59,9 +60,8 @@ TrustedVaultDegradedRecoverabilityHandler::
   short_degraded_recoverability_refresh_period_ =
       kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
   current_refresh_period_ = long_degraded_recoverability_refresh_period_;
-  // TODO(crbug.com/1247990): Handle the nullopt value after introducing it.
-  is_recoverability_degraded_ =
-      degraded_recoverability_state.is_recoverability_degraded();
+  degraded_recoverability_value_ =
+      degraded_recoverability_state.degraded_recoverability_value();
   base::Time last_refresh_time =
       ProtoTimeToTime(degraded_recoverability_state
                           .last_refresh_time_millis_since_unix_epoch());
@@ -118,24 +118,27 @@ void TrustedVaultDegradedRecoverabilityHandler::Refresh() {
 void TrustedVaultDegradedRecoverabilityHandler::
     OnRecoverabilityIsDegradedDownloaded(
         TrustedVaultRecoverabilityStatus status) {
-  bool old_is_recoverability_degraded = is_recoverability_degraded_;
+  sync_pb::DegradedRecoverabilityValue old_degraded_recoverability_value =
+      degraded_recoverability_value_;
   switch (status) {
     case TrustedVaultRecoverabilityStatus::kDegraded:
-      is_recoverability_degraded_ = true;
+      degraded_recoverability_value_ =
+          sync_pb::DegradedRecoverabilityValue::kDegraded;
       break;
     case TrustedVaultRecoverabilityStatus::kNotDegraded:
-      is_recoverability_degraded_ = false;
+      degraded_recoverability_value_ =
+          sync_pb::DegradedRecoverabilityValue::kNotDegraded;
       break;
     case TrustedVaultRecoverabilityStatus::kError:
       // TODO(crbug.com/1247990): To be handled.
       break;
   }
-  if (is_recoverability_degraded_ != old_is_recoverability_degraded) {
+  if (degraded_recoverability_value_ != old_degraded_recoverability_value) {
     delegate_->OnDegradedRecoverabilityChanged();
   }
   last_refresh_time_ = base::TimeTicks::Now();
   delegate_->WriteDegradedRecoverabilityState(MakeDegradedRecoverabilityState(
-      is_recoverability_degraded_, base::Time::Now()));
+      degraded_recoverability_value_, base::Time::Now()));
   next_refresh_timer_.Start(
       FROM_HERE, current_refresh_period_, this,
       &TrustedVaultDegradedRecoverabilityHandler::Refresh);

@@ -50,8 +50,8 @@ using testing::SaveArg;
 MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
   const sync_pb::LocalTrustedVaultDegradedRecoverabilityState& given_state =
       arg;
-  return given_state.is_recoverability_degraded() ==
-             expected_state.is_recoverability_degraded() &&
+  return given_state.degraded_recoverability_value() ==
+             expected_state.degraded_recoverability_value() &&
          given_state.last_refresh_time_millis_since_unix_epoch() ==
              expected_state.last_refresh_time_millis_since_unix_epoch();
 }
@@ -303,7 +303,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                /*has_persistent_auth_error=*/false);
   sync_pb::LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state;
-  degraded_recoverability_state.set_is_recoverability_degraded(true);
+  degraded_recoverability_state.set_degraded_recoverability_value(
+      sync_pb::DegradedRecoverabilityValue::kDegraded);
   degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
       123);
   backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
@@ -328,7 +329,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFindTheRecoverabilityDegraded) {
                                /*has_persistent_auth_error=*/false);
   sync_pb::LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state;
-  degraded_recoverability_state.set_is_recoverability_degraded(true);
+  degraded_recoverability_state.set_degraded_recoverability_value(
+      sync_pb::DegradedRecoverabilityValue::kDegraded);
   backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
   base::MockCallback<base::OnceCallback<void(bool)>> cb;
   EXPECT_CALL(cb, Run(true));

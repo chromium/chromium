@@ -606,14 +606,13 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
         FindUserVault(account_info.gaia);
     if (!per_user_vault) {
       // If the account does not exist, then the recoverability state is
-      // unknown.
-      // TODO(crbug.com/1247990): Pass optional value with nullopt indicating
-      // that value is not yet known.
+      // unknown, false will be passed in this case.
       std::move(cb).Run(false);
       return;
     }
     std::move(cb).Run(per_user_vault->degraded_recoverability_state()
-                          .is_recoverability_degraded());
+                          .degraded_recoverability_value() ==
+                      sync_pb::DegradedRecoverabilityValue::kDegraded);
     return;
   }
   ongoing_get_recoverability_request_ =
