@@ -501,10 +501,8 @@ const char kChromeAppsDeprecationLearnMoreURL[] =
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// TODO(b/1339340): add help center link when help center link is created.
 const char kChromeRootStoreSettingsHelpCenterURL[] =
-    "https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/"
-    "chrome_root_store/root_store.md";
+    "https://support.google.com/chrome?p=root_store";
 #endif
 
 }  // namespace chrome
