@@ -238,7 +238,9 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests that selecting sign-out and clear data from a non-managed user account
 // clears the user's synced data.
-- (void)testSignOutAndClearDataFromNonManagedAccountClearsData {
+// TODO(crbug.com/1377798): fails on iPhone SE because the screen is too small
+// to present both the prompt to select and account and the background view.
+- (void)DISABLED_testSignOutAndClearDataFromNonManagedAccountClearsData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
@@ -262,7 +264,9 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 }
 
 // Tests that signing out from a managed user account clears the user's data.
-- (void)testsSignOutFromManagedAccount {
+// TODO(crbug.com/1377800): fails on iPhone SE because the screen is too small
+// to present both the prompt to select and account and the background view.
+- (void)DISABLED_testsSignOutFromManagedAccount {
   // Sign In `fakeManagedIdentity`.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
