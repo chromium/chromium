@@ -849,9 +849,30 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
     ukm::SourceId source_id) {
   const auto& resource_data = aggregate_frame_data_->resource_data();
 
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+
+  // AdPageLoadCustomSampling2 is recorded on all pages
+  ukm::builders::AdPageLoadCustomSampling2 custom_sampling_builder(source_id);
+
+  page_ad_density_tracker_.Finalize();
+
+  UnivariateStats::DistributionMoments moments =
+      page_ad_density_tracker_.GetAdDensityByAreaStats();
+
+  custom_sampling_builder.SetAverageViewportAdDensity(
+      std::llround(moments.mean));
+  custom_sampling_builder.SetVarianceViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.variance));
+  custom_sampling_builder.SetSkewnessViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.skewness));
+  custom_sampling_builder.SetKurtosisViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.excess_kurtosis));
+  custom_sampling_builder.Record(ukm_recorder->Get());
+
   // Only records histograms on pages that have some ad bytes.
   if (resource_data.ad_bytes() == 0)
     return;
+
   PAGE_BYTES_HISTOGRAM("PageLoad.Clients.Ads.Resources.Bytes.Ads2",
                        resource_data.ad_network_bytes());
 
@@ -872,7 +893,6 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
       page_ad_density_tracker_.MaxPageAdDensityByArea() != -1 &&
           page_ad_density_tracker_.MaxPageAdDensityByHeight() != -1);
 
-  auto* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::AdPageLoad builder(source_id);
   builder.SetTotalBytes(resource_data.network_bytes() >> 10)
       .SetAdBytes(resource_data.ad_network_bytes() >> 10)
@@ -893,24 +913,6 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
   builder.SetAdCpuTime(
       aggregate_frame_data_->total_ad_cpu_usage().InMilliseconds());
   builder.Record(ukm_recorder->Get());
-
-  // Record custom sampling metrics.
-  ukm::builders::AdPageLoadCustomSampling custom_sampling_builder(source_id);
-
-  page_ad_density_tracker_.Finalize();
-
-  UnivariateStats::DistributionMoments moments =
-      page_ad_density_tracker_.GetAdDensityByAreaStats();
-
-  custom_sampling_builder.SetAverageViewportAdDensity(
-      std::llround(moments.mean));
-  custom_sampling_builder.SetVarianceViewportAdDensity(
-      GetExponentialBucketForDistributionMoment(moments.variance));
-  custom_sampling_builder.SetSkewnessViewportAdDensity(
-      GetExponentialBucketForDistributionMoment(moments.skewness));
-  custom_sampling_builder.SetKurtosisViewportAdDensity(
-      GetExponentialBucketForDistributionMoment(moments.excess_kurtosis));
-  custom_sampling_builder.Record(ukm_recorder->Get());
 }
 
 void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {

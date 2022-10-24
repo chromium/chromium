@@ -453,14 +453,68 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="AdPageLoadCustomSampling" singular="True">
+  <obsolete>
+    Removed 2022/10 in favor of AdPageLoadCustomSampling2
+  </obsolete>
   <owner>yaoxia@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Recorded when a page has loaded non-zero ad bytes, and the page is being
-    destroyed/navigated or when the app enters the background on mobile. This is
-    separate from the `AdPageLoad` event to allow a potentially different
-    sampling.
+    destroyed/navigated away or when the app enters the background on mobile.
+    This is separate from the `AdPageLoad` event to allow a potentially
+    different sampling.
+  </summary>
+  <metric name="AverageViewportAdDensity">
+    <summary>
+      The estimated average viewport ad density. Each density value is
+      calculated as the area of ads within the viewport * 100 / viewport area,
+      where each overlapping area is counted once. And this returns the average
+      of the densities accumulated over the page load time rounded to the
+      nearest integer.
+    </summary>
+  </metric>
+  <metric name="KurtosisViewportAdDensity">
+    <summary>
+      The estimated kurtosis of the viewport ad density. Each density value is
+      calculated as the area of ads within the viewport * 100 / viewport area,
+      where each overlapping area is counted once. And this returns the kurtosis
+      of the densities accumulated over the page load time rounded to the
+      nearest exponential bucket integer with bucket spacing 1.3. For negative
+      values, the bucketing will be taken on its magnitude part.
+    </summary>
+  </metric>
+  <metric name="SkewnessViewportAdDensity">
+    <summary>
+      The estimated skewness of the viewport ad density. Each density value is
+      calculated as the area of ads within the viewport * 100 / viewport area,
+      where each overlapping area is counted once. And this returns the skewness
+      of the densities accumulated over the page load time rounded to the
+      nearest exponential bucket integer with bucket spacing 1.3. For negative
+      values, the bucketing will be taken on its magnitude part.
+    </summary>
+  </metric>
+  <metric name="VarianceViewportAdDensity">
+    <summary>
+      The estimated variance of the viewport ad density. Each density value is
+      calculated as the area of ads within the viewport * 100 / viewport area,
+      where each overlapping area is counted once. And this returns the variance
+      of the densities accumulated over the page load time rounded to the
+      nearest exponential bucket integer with bucket spacing 1.3. For negative
+      values, the bucketing will be taken on its magnitude part.
+    </summary>
+  </metric>
+</event>
+
+<event name="AdPageLoadCustomSampling2" singular="True">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Recorded when the page is being destroyed/navigated away or when the app
+    enters the background on mobile. This is separate from the `AdPageLoad`
+    event to allow it to be recorded on all pages (i.e. not only pages that have
+    loaded non-zero ad byte), and to allow a potentially different sampling.
   </summary>
   <metric name="AverageViewportAdDensity">
     <summary>
