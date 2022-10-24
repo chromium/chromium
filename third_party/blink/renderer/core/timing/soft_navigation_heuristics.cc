@@ -85,6 +85,7 @@ void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
   scheduler->GetTaskAttributionTracker()->RegisterObserver(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
   user_click_timestamp_ = base::TimeTicks::Now();
+  TRACE_EVENT0("scheduler", "SoftNavigationHeuristics::UserInitiatedClick");
 }
 
 bool SoftNavigationHeuristics::IsCurrentTaskDescendantOfClickEventHandler(
@@ -110,6 +111,7 @@ void SoftNavigationHeuristics::ClickEventEnded(ScriptState* script_state) {
   DCHECK(scheduler);
   scheduler->GetTaskAttributionTracker()->UnregisterObserver();
   CheckAndReportSoftNavigation(script_state);
+  TRACE_EVENT0("scheduler", "SoftNavigationHeuristics::ClickEventEnded");
 }
 
 bool SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(
@@ -133,14 +135,21 @@ bool SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(
 void SoftNavigationHeuristics::SawURLChange(ScriptState* script_state,
                                             const String& url,
                                             bool skip_descendant_check) {
+  bool descendant = true;
   if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange, url,
                                    skip_descendant_check)) {
     ResetHeuristic();
+    descendant = false;
   }
+  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::SawURLChange",
+               "descendant", descendant);
 }
 
 void SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
-  SetFlagIfDescendantAndCheck(script_state, FlagType::kMainModification);
+  bool descendant =
+      SetFlagIfDescendantAndCheck(script_state, FlagType::kMainModification);
+  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedMain",
+               "descendant", descendant);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
@@ -189,7 +198,8 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   ResetHeuristic();
   LogToConsole(frame, mojom::blink::ConsoleMessageLevel::kInfo,
                String("A soft navigation has been detected."));
-  // TODO(yoav): trace event as well.
+  TRACE_EVENT0("scheduler",
+               "SoftNavigationHeuristics soft navigation detected");
   if (LocalFrameClient* frame_client = frame->Client()) {
     // This notifies UKM about this soft navigation.
     frame_client->DidObserveSoftNavigation(soft_navigation_count_);
@@ -218,6 +228,8 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
     const scheduler::TaskAttributionId& task_id) {
   // We're inside a click event handler, so need to add this task to the set of
   // potential soft navigation root tasks.
+  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::OnCreateTaskScope",
+               "task_id", task_id.value());
   potential_soft_navigation_task_ids_.insert(task_id.value());
 }
 
