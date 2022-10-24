@@ -10466,6 +10466,52 @@
             ]
         }
     ],
+    "TFLiteModelPerformance": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "XNNPACKEnabled_2Threads_20220921",
+                    "params": {
+                        "OPTIMIZATION_TARGET_LANGUAGE_DETECTION": "2",
+                        "OPTIMIZATION_TARGET_PAGE_TOPICS_V2": "2",
+                        "PageTopics": "true"
+                    },
+                    "enable_features": [
+                        "OptGuideEnableXNNPACKDelegateWithTFLite",
+                        "PageContentAnnotationsValidation"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "XNNPACKDisabled_2Threads_20220921",
+                    "params": {
+                        "OPTIMIZATION_TARGET_LANGUAGE_DETECTION": "2",
+                        "OPTIMIZATION_TARGET_PAGE_TOPICS_V2": "2",
+                        "PageTopics": "true"
+                    },
+                    "enable_features": [
+                        "PageContentAnnotationsValidation"
+                    ],
+                    "disable_features": [
+                        "OptGuideEnableXNNPACKDelegateWithTFLite"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabAudioMuting": [
         {
             "platforms": [
