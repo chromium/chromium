@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.components.autofill_assistant.AssistantTags;
 import org.chromium.components.autofill_assistant.R;
 
 /**
@@ -143,7 +144,13 @@ public class AssistantActionsCarouselCoordinator {
             int right = getWidth() - getPaddingRight();
 
             // Layout all child views but the last one from right to left.
-            for (int i = 0; i < getChildCount() - 1; i++) {
+
+            // If the only chip is the DONE chip, it should be right-aligned. In all other cases,
+            // the last chip, which by convention is the close/cancel chip, should be the
+            // left-most chip.
+            boolean isSingleDoneChip =
+                    getChildCount() == 1 && getChildAt(0).getTag() == AssistantTags.DONE_CHIP;
+            for (int i = 0; i < (isSingleDoneChip ? getChildCount() : getChildCount() - 1); i++) {
                 View child = getChildAt(i);
                 int width = mOrientationHelper.getDecoratedMeasurement(child);
                 int height = mOrientationHelper.getDecoratedMeasurementInOther(child);
@@ -154,14 +161,13 @@ public class AssistantActionsCarouselCoordinator {
                 right = left;
             }
 
+            if (isSingleDoneChip) {
+                return;
+            }
+
             // Layout last child on the left. We need to layout this one after the others such that
             // it sits on top of them when scrolling.
             int left = getPaddingLeft();
-            if (itemCount == 1) {
-                // Center it using extra available space.
-                left += extraWidth / 2;
-            }
-
             View firstChild = getChildAt(getChildCount() - 1);
             right = left + mOrientationHelper.getDecoratedMeasurement(firstChild);
             int bottom = top + mOrientationHelper.getDecoratedMeasurementInOther(firstChild);

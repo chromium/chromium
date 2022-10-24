@@ -40,6 +40,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
 import org.chromium.components.autofill_assistant.carousel.AssistantCarouselModel;
 import org.chromium.components.autofill_assistant.carousel.AssistantChip;
+import org.chromium.components.autofill_assistant.carousel.AssistantChip.Icon;
 import org.chromium.components.autofill_assistant.carousel.AssistantChip.NativeChipType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -191,6 +192,8 @@ public class AutofillAssistantActionsCarouselUiTest {
                 NativeChipType.CLOSE_ACTION, AssistantChip.Icon.CLEAR, "", false, true, true, "");
         AssistantChip cancel = AssistantChip.createHairlineAssistantChip(
                 NativeChipType.CANCEL_ACTION, AssistantChip.Icon.CLEAR, "", false, true, true, "");
+        AssistantChip done = AssistantChip.createHairlineAssistantChip(
+                NativeChipType.DONE_ACTION, Icon.DONE, "", false, true, true, "");
 
         // This counts are in an array so that they can be edited in the observer.
         final int added_index = 0;
@@ -243,6 +246,14 @@ public class AutofillAssistantActionsCarouselUiTest {
         assertThat(counts[added_index], is(1));
         assertThat(counts[changed_index], is(1));
         assertThat(coordinator.getView().getAdapter().getItemCount(), is(1));
+
+        // Close and done are different, so replacing close with done should remove close and
+        // add done.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantCarouselModel.CHIPS, Collections.singletonList(done));
+        });
+        assertThat(counts[changed_index], is(1));
+        assertThat(counts[added_index], is(2));
     }
 
     /**

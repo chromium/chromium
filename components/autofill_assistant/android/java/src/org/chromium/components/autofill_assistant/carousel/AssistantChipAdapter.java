@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListUpdateCallback;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.components.autofill_assistant.AssistantTags;
+import org.chromium.components.autofill_assistant.carousel.AssistantChip.NativeChipType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +100,9 @@ public class AssistantChipAdapter extends RecyclerView.Adapter<AssistantChipView
 
     @Override
     public void onBindViewHolder(@NonNull AssistantChipViewHolder viewHolder, int position) {
+        if (mChips.get(position).getNativeType() == NativeChipType.DONE_ACTION) {
+            viewHolder.getView().setTag(AssistantTags.DONE_CHIP);
+        }
         viewHolder.bind(mChips.get(position));
     }
 

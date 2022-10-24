@@ -202,10 +202,6 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
         outRect.top = mVerticalSpacing;
         outRect.bottom = mVerticalSpacing;
 
-        if (state.getItemCount() <= 1) {
-            return;
-        }
-
         int position = parent.getChildAdapterPosition(view);
 
         // If old position != NO_POSITION, it means the carousel is being animated and we should
