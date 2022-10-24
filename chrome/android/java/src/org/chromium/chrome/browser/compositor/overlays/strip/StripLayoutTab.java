@@ -465,6 +465,21 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
+     * @param foreground Whether or not this tab is a foreground tab.
+     * @return The fraction (from 0.f to 1.f) of how opaque the tab should be.
+     */
+    public float getOpacity(boolean foreground) {
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            if (foreground) {
+                return 1.0f;
+            } else {
+                return 0.0f;
+            }
+        }
+        return 1.0f;
+    }
+
+    /**
      * @param offsetX How far to offset the tab content (favicons and title).
      */
     public void setContentOffsetX(float offsetX) {

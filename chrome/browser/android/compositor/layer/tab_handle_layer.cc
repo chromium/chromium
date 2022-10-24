@@ -41,10 +41,13 @@ void TabHandleLayer::SetProperties(
     float close_button_alpha,
     bool is_loading,
     float spinner_rotation,
-    float brightness) {
-  if (brightness != brightness_ || foreground != foreground_) {
+    float brightness,
+    float opacity) {
+  if (brightness != brightness_ || foreground != foreground_ ||
+      opacity != opacity_) {
     brightness_ = brightness;
     foreground_ = foreground;
+    opacity_ = opacity;
     cc::FilterOperations filters;
     if (brightness_ != 1.0f && !foreground_)
       filters.Append(cc::FilterOperation::CreateBrightnessFilter(brightness_));
@@ -109,6 +112,7 @@ void TabHandleLayer::SetProperties(
   decoration_tab_->SetBounds(tab_bounds);
   decoration_tab_->SetBorder(
       tab_handle_resource->Border(decoration_tab_->bounds()));
+  decoration_tab_->SetOpacity(opacity_);
 
   tab_outline_->SetUIResourceId(
       tab_handle_outline_resource->ui_resource()->id());
@@ -194,7 +198,10 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       brightness_(1.0f),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);
-  tab_outline_->SetIsDrawable(true);
+  // Show tab outline when TabStripRedesign is NOT enabled
+  if (!base::FeatureList::IsEnabled(chrome::android::kTabStripRedesign)) {
+    tab_outline_->SetIsDrawable(true);
+  }
   layer_->AddChild(decoration_tab_);
   layer_->AddChild(tab_outline_);
   layer_->AddChild(close_button_);

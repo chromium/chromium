@@ -48,7 +48,8 @@ class TabHandleLayer : public Layer {
                      float close_button_alpha,
                      bool is_loading,
                      float spinner_rotation,
-                     float brightness);
+                     float brightness,
+                     float opacity);
   scoped_refptr<cc::Layer> layer() override;
 
  protected:
@@ -65,6 +66,7 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::Layer> title_layer_;
 
   float brightness_;
+  float opacity_;
   bool foreground_;
 };
 
