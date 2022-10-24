@@ -359,6 +359,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripStacker.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabLoadTracker.java",
   "java/src/org/chromium/chrome/browser/compositor/resources/StaticResourcePreloads.java",
+  "java/src/org/chromium/chrome/browser/compositor/resources/SystemResourcePreloads.java",
   "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",
   "java/src/org/chromium/chrome/browser/compositor/scene_layer/StaticTabSceneLayer.java",
   "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabListSceneLayer.java",
