@@ -37,6 +37,19 @@ bool operator<=(const Unsortable& lhs, const Unsortable& rhs) = delete;
 bool operator>(const Unsortable& lhs, const Unsortable& rhs) = delete;
 bool operator>=(const Unsortable& lhs, const Unsortable& rhs) = delete;
 
+class ImplicitInt {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ImplicitInt(int data) : data_(data) {}
+
+ private:
+  friend bool operator<(const ImplicitInt& lhs, const ImplicitInt& rhs) {
+    return lhs.data_ < rhs.data_;
+  }
+
+  int data_;
+};
+
 }  // namespace
 
 TEST(FlatMap, IncompleteType) {
@@ -410,6 +423,8 @@ TEST(FlatMap, UsingTransparentCompare) {
   m1.count(x);
   m.find(x);
   m1.find(x);
+  m.contains(x);
+  m1.contains(x);
   m.equal_range(x);
   m1.equal_range(x);
   m.lower_bound(x);
@@ -423,6 +438,27 @@ TEST(FlatMap, UsingTransparentCompare) {
   m.emplace(ExplicitInt(1), 0);
   m.erase(m.begin());
   m.erase(m.cbegin());
+}
+
+TEST(FlatMap, UsingInitializerList) {
+  base::flat_map<ImplicitInt, int> m;
+  const auto& m1 = m;
+
+  // Check if the calls can be resolved. Correctness is checked in flat_tree
+  // tests.
+  m.count({1});
+  m1.count({2});
+  m.find({3});
+  m1.find({4});
+  m.contains({5});
+  m1.contains({6});
+  m.equal_range({7});
+  m1.equal_range({8});
+  m.lower_bound({9});
+  m1.lower_bound({10});
+  m.upper_bound({11});
+  m1.upper_bound({12});
+  m.erase({13});
 }
 
 }  // namespace base

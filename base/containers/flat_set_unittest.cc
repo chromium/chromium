@@ -19,6 +19,23 @@ using ::testing::ElementsAre;
 
 namespace base {
 
+namespace {
+
+class ImplicitInt {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ImplicitInt(int data) : data_(data) {}
+
+ private:
+  friend bool operator<(const ImplicitInt& lhs, const ImplicitInt& rhs) {
+    return lhs.data_ < rhs.data_;
+  }
+
+  int data_;
+};
+
+}  // namespace
+
 TEST(FlatSet, IncompleteType) {
   struct A {
     using Set = flat_set<A>;
@@ -100,6 +117,8 @@ TEST(FlatSet, UsingTransparentCompare) {
   s1.count(x);
   s.find(x);
   s1.find(x);
+  s.contains(x);
+  s1.contains(x);
   s.equal_range(x);
   s1.equal_range(x);
   s.lower_bound(x);
@@ -113,6 +132,27 @@ TEST(FlatSet, UsingTransparentCompare) {
   s.emplace(1);
   s.erase(s.begin());
   s.erase(s.cbegin());
+}
+
+TEST(FlatSet, UsingInitializerList) {
+  base::flat_set<ImplicitInt> s;
+  const auto& s1 = s;
+
+  // Check if the calls can be resolved. Correctness is checked in flat_tree
+  // tests.
+  s.count({1});
+  s1.count({2});
+  s.find({3});
+  s1.find({4});
+  s.contains({5});
+  s1.contains({6});
+  s.equal_range({7});
+  s1.equal_range({8});
+  s.lower_bound({9});
+  s1.lower_bound({10});
+  s.upper_bound({11});
+  s1.upper_bound({12});
+  s.erase({13});
 }
 
 }  // namespace base
