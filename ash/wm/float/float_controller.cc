@@ -8,21 +8,15 @@
 #include <cstddef>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/color_util.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/scoped_window_tucker.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -30,42 +24,14 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
-#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/animation/animation_builder.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/widget/unique_widget_ptr.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
-
-constexpr int kTuckHandleWidth = 20;
-constexpr int kTuckHandleHeight = 92;
-
-// The distance from the edge of the tucked window to the edge of the screen
-// during the bounce.
-constexpr int kTuckOffscreenPaddingDp = 20;
-
-// The duration for the tucked window to slide offscreen during the bounce.
-constexpr base::TimeDelta kTuckWindowBounceStartDuration =
-    base::Milliseconds(400);
-
-// The duration for the tucked window to bounce back to the edge of the screen.
-constexpr base::TimeDelta kTuckWindowBounceEndDuration =
-    base::Milliseconds(533);
 
 // Disables the window's position auto management and returns its original
 // value.
@@ -108,157 +74,6 @@ void ShowFloatedWindow(aura::Window* floated_window) {
 }
 
 }  // namespace
-
-// -----------------------------------------------------------------------------
-// FloatController::TuckHandle:
-
-// Represents a tuck handle that untucks floated windows from offscreen.
-class FloatController::TuckHandle : public views::Button {
- public:
-  TuckHandle(base::RepeatingClosure callback, bool left)
-      : views::Button(callback), left_(left) {
-    SetFlipCanvasOnPaintForRTLUI(false);
-    SetFocusBehavior(FocusBehavior::NEVER);
-  }
-  TuckHandle(const TuckHandle&) = delete;
-  TuckHandle& operator=(const TuckHandle&) = delete;
-  ~TuckHandle() override = default;
-
-  // views::Button:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    SchedulePaint();
-  }
-
-  void PaintButtonContents(gfx::Canvas* canvas) override {
-    // Flip the canvas horizontally for `left` tuck handle.
-    if (left_) {
-      canvas->Translate(gfx::Vector2d(width(), 0));
-      canvas->Scale(-1, 1);
-    }
-
-    // We draw two icons on top of each other because we need separate themeing
-    // on different parts which is not supported by `VectorIcon`.
-    const SkColor container_color = ColorUtil::GetSecondToneColor(
-        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-            ? SK_ColorWHITE
-            : SK_ColorBLACK);
-    const gfx::ImageSkia& tuck_container = gfx::CreateVectorIcon(
-        kTuckHandleContainerIcon, kTuckHandleWidth, container_color);
-    canvas->DrawImageInt(tuck_container, 0, 0);
-
-    const gfx::ImageSkia& tuck_icon = gfx::CreateVectorIcon(
-        kTuckHandleChevronIcon, kTuckHandleWidth, SK_ColorWHITE);
-    canvas->DrawImageInt(tuck_icon, 0, 0);
-  }
-
- private:
-  // Whether the tuck handle is on the left or right edge of the screen. A left
-  // tuck handle will have the chevron arrow pointing right and vice versa.
-  const bool left_;
-};
-
-// Scoped class which makes modifications while a window is tucked. It owns a
-// tuck handle widget that will bring the hidden window back onscreen.
-class FloatController::ScopedWindowTucker {
- public:
-  // Creates an instance for `window` where `left` is the side of the screen
-  // that the tuck handle is on.
-  ScopedWindowTucker(aura::Window* window, bool left) : window_(window) {
-    DCHECK(window_);
-
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-    params.activatable = views::Widget::InitParams::Activatable::kYes;
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-    params.parent =
-        window_->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
-    params.init_properties_container.SetProperty(kHideInOverviewKey, true);
-    params.init_properties_container.SetProperty(kForceVisibleInMiniViewKey,
-                                                 false);
-    params.name = "TuckHandleWidget";
-    tuck_handle_widget_->Init(std::move(params));
-
-    tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(
-        base::BindRepeating(&ScopedWindowTucker::OnButtonPressed,
-                            base::Unretained(this)),
-        left));
-    tuck_handle_widget_->Show();
-  }
-  ScopedWindowTucker(const ScopedWindowTucker&) = delete;
-  ScopedWindowTucker& operator=(const ScopedWindowTucker&) = delete;
-  ~ScopedWindowTucker() = default;
-
-  views::Widget* tuck_handle_widget() { return tuck_handle_widget_.get(); }
-
-  void AnimateTuck(bool left) {
-    // The final window bounds will be aligned with the edge of the screen.
-    const gfx::Rect target_bounds =
-        Shell::Get()->float_controller()->GetPreferredFloatWindowTabletBounds(
-            window_);
-
-    const gfx::Rect initial_bounds(window_->bounds());
-
-    // Set the final tucked bounds after the animation.
-    // TODO(sammiequon): Consider checking parent layout manager and minimum
-    // size in `TabletModeWindowState` instead of using `SetBounds` directly.
-    window_->SetBounds(target_bounds);
-
-    // Align the tuck handle with the window.
-    aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
-    const gfx::Point tuck_handle_origin =
-        left ? target_bounds.right_center() -
-                   gfx::Vector2d(0, kTuckHandleHeight / 2)
-             : target_bounds.left_center() -
-                   gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
-    const gfx::Rect tuck_handle_bounds(
-        tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight));
-    tuck_handle->SetBounds(tuck_handle_bounds);
-    tuck_handle->layer()->SetOpacity(1.f);
-
-    // Set the window back to its initial floated bounds.
-    const gfx::Transform initial_transform =
-        gfx::Transform::MakeTranslation(initial_bounds.x() - target_bounds.x(),
-                                        initial_bounds.y() - target_bounds.y());
-
-    // Set the transform during the bounce.
-    const gfx::Transform offset_transform = gfx::Transform::MakeTranslation(
-        left ? -kTuckOffscreenPaddingDp : kTuckOffscreenPaddingDp, 0);
-
-    views::AnimationBuilder()
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(base::TimeDelta())
-        .SetTransform(window_, initial_transform)
-        .SetTransform(tuck_handle, initial_transform)
-        .Then()
-        .SetDuration(kTuckWindowBounceStartDuration)
-        .SetTransform(window_, offset_transform,
-                      gfx::Tween::ACCEL_30_DECEL_20_85)
-        .SetTransform(tuck_handle, offset_transform,
-                      gfx::Tween::ACCEL_30_DECEL_20_85)
-        .Then()
-        .SetDuration(kTuckWindowBounceEndDuration)
-        .SetTransform(window_, gfx::Transform(), gfx::Tween::ACCEL_20_DECEL_100)
-        .SetTransform(tuck_handle, gfx::Transform(),
-                      gfx::Tween::ACCEL_20_DECEL_100);
-  }
-
-  void OnButtonPressed() {
-    // Untuck the window, which sets the window bounds back onscreen.
-    // Destroys `this`.
-    Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(
-        window_);
-  }
-
- private:
-  // The window that is being tucked. Will be tucked and untucked by the tuck
-  // handle.
-  aura::Window* window_;
-
-  views::UniqueWidgetPtr tuck_handle_widget_ =
-      std::make_unique<views::Widget>();
-};
 
 // -----------------------------------------------------------------------------
 // FloatedWindowInfo:

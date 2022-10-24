@@ -970,6 +970,7 @@ TEST_F(TabletWindowFloatTest, UntuckWindowOnExitTabletMode) {
   // Fling to tuck the window in the bottom right.
   auto* float_controller = Shell::Get()->float_controller();
   FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
   ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
 
   // Tests that after we exit tablet mode, the window is untucked and fully

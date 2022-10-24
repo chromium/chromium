@@ -136,8 +136,6 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
  private:
   class FloatedWindowInfo;
-  class ScopedWindowTucker;
-  class TuckHandle;
   friend class DefaultState;
   friend class TabletModeWindowState;
   friend class WindowFloatTest;
