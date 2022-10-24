@@ -17,7 +17,7 @@
 namespace views {
 
 class Label;
-class Tab;
+class TabbedPaneTab;
 class TabbedPaneListener;
 class TabStrip;
 
@@ -88,7 +88,7 @@ class VIEWS_EXPORT TabbedPane : public View {
   void SelectTabAt(size_t index, bool animate = true);
 
   // Selects |tab| (the tabstrip view, not its content) if it is valid.
-  void SelectTab(Tab* tab, bool animate = true);
+  void SelectTab(TabbedPaneTab* tab, bool animate = true);
 
   // Gets the orientation of the tab alignment.
   Orientation GetOrientation() const;
@@ -97,11 +97,11 @@ class VIEWS_EXPORT TabbedPane : public View {
   TabStripStyle GetStyle() const;
 
   // Returns the tab at the given index.
-  Tab* GetTabAt(size_t index);
+  TabbedPaneTab* GetTabAt(size_t index);
 
  private:
   friend class FocusTraversalTest;
-  friend class Tab;
+  friend class TabbedPaneTab;
   friend class TabStrip;
   friend class test::TabbedPaneWithWidgetTest;
   friend class test::TabbedPaneAccessibilityMacTest;
@@ -113,10 +113,11 @@ class VIEWS_EXPORT TabbedPane : public View {
                       const std::u16string& title,
                       std::unique_ptr<View> contents);
 
-  // Get the Tab (the tabstrip view, not its content) at the selected index.
-  Tab* GetSelectedTab();
+  // Get the TabbedPaneTab (the tabstrip view, not its content) at the selected
+  // index.
+  TabbedPaneTab* GetSelectedTab();
 
-  // Returns the content View of the currently selected Tab.
+  // Returns the content View of the currently selected TabbedPaneTab.
   View* GetSelectedTabContentView();
 
   // Moves the selection by |delta| tabs, where negative delta means leftwards
@@ -133,22 +134,24 @@ class VIEWS_EXPORT TabbedPane : public View {
   raw_ptr<TabbedPaneListener> listener_ = nullptr;
 
   // The tab strip and contents container. The child indices of these members
-  // correspond to match each Tab with its respective content View.
+  // correspond to match each TabbedPaneTab with its respective content View.
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<View> contents_ = nullptr;
 };
 
 // The tab view shown in the tab strip.
-class VIEWS_EXPORT Tab : public View {
+class VIEWS_EXPORT TabbedPaneTab : public View {
  public:
-  METADATA_HEADER(Tab);
+  METADATA_HEADER(TabbedPaneTab);
 
-  Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents);
+  TabbedPaneTab(TabbedPane* tabbed_pane,
+                const std::u16string& title,
+                View* contents);
 
-  Tab(const Tab&) = delete;
-  Tab& operator=(const Tab&) = delete;
+  TabbedPaneTab(const TabbedPaneTab&) = delete;
+  TabbedPaneTab& operator=(const TabbedPaneTab&) = delete;
 
-  ~Tab() override;
+  ~TabbedPaneTab() override;
 
   View* contents() const { return contents_; }
 
@@ -220,11 +223,13 @@ class TabStrip : public View, public gfx::AnimationDelegate {
   // Called by TabStrip when the selected tab changes. This function is only
   // called if |from_tab| is not null, i.e., there was a previously selected
   // tab.
-  void OnSelectedTabChanged(Tab* from_tab, Tab* to_tab, bool animate = true);
+  void OnSelectedTabChanged(TabbedPaneTab* from_tab,
+                            TabbedPaneTab* to_tab,
+                            bool animate = true);
 
-  Tab* GetSelectedTab() const;
-  Tab* GetTabAtDeltaFromSelected(int delta) const;
-  Tab* GetTabAtIndex(size_t index) const;
+  TabbedPaneTab* GetSelectedTab() const;
+  TabbedPaneTab* GetTabAtDeltaFromSelected(int delta) const;
+  TabbedPaneTab* GetTabAtIndex(size_t index) const;
   size_t GetSelectedTabIndex() const;
 
   TabbedPane::Orientation GetOrientation() const;

@@ -218,16 +218,16 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
           GetCurrentTranslateBubble()))
       // V1.Verify that by default the Translate bubble’s source language
       // tab is selected and highlighted.
-      .AddStep(ui::InteractionSequence::StepBuilder()
-                   .SetElementID(TranslateBubbleView::kSourceLanguageTab)
-                   .SetStartCallback(
-                       base::BindOnce([](ui::InteractionSequence*,
-                                         ui::TrackedElement* element) {
-                         auto* source_tab =
-                             static_cast<views::Tab*>(ElementToView(element));
-                         EXPECT_TRUE(source_tab->selected());
-                       }))
-                   .Build())
+      .AddStep(
+          ui::InteractionSequence::StepBuilder()
+              .SetElementID(TranslateBubbleView::kSourceLanguageTab)
+              .SetStartCallback(base::BindOnce([](ui::InteractionSequence*,
+                                                  ui::TrackedElement* element) {
+                auto* source_tab =
+                    static_cast<views::TabbedPaneTab*>(ElementToView(element));
+                EXPECT_TRUE(source_tab->selected());
+              }))
+              .Build())
       // P2.To translate the page,tap the target language tab.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageTab)
@@ -241,8 +241,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
                        [this](ui::InteractionSequence*,
                               ui::TrackedElement* element) {
                          WaitForPageTranslated(true);
-                         auto* target_tab =
-                             static_cast<views::Tab*>(ElementToView(element));
+                         auto* target_tab = static_cast<views::TabbedPaneTab*>(
+                             ElementToView(element));
                          EXPECT_TRUE(target_tab->selected());
                        }))
                    .Build())
@@ -261,8 +261,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
                        [this](ui::InteractionSequence*,
                               ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
-                         auto* source_tab =
-                             static_cast<views::Tab*>(ElementToView(element));
+                         auto* source_tab = static_cast<views::TabbedPaneTab*>(
+                             ElementToView(element));
                          EXPECT_TRUE(source_tab->selected());
                        }))
                    .Build())
@@ -348,8 +348,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
               .SetStartCallback(base::BindLambdaForTesting(
                   [&](ui::InteractionSequence*, ui::TrackedElement* element) {
                     WaitForPageTranslated(true);
-                    auto* target_tab =
-                        static_cast<views::Tab*>(ElementToView(element));
+                    auto* target_tab = static_cast<views::TabbedPaneTab*>(
+                        ElementToView(element));
                     EXPECT_EQ(target_tab->GetTitleText(),
                               GetCurrentTranslateBubble()
                                   ->model()
@@ -370,8 +370,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
                        [this](ui::InteractionSequence*,
                               ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
-                         auto* source_tab =
-                             static_cast<views::Tab*>(ElementToView(element));
+                         auto* source_tab = static_cast<views::TabbedPaneTab*>(
+                             ElementToView(element));
                          EXPECT_TRUE(source_tab->selected());
                        }))
                    .Build())
@@ -447,19 +447,20 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
               .SetStartCallback(base::BindLambdaForTesting(
                   [&](ui::InteractionSequence*, ui::TrackedElement* element) {
                     WaitForPageTranslated(true);
-                    auto* source_tab =
-                        static_cast<views::Tab*>(ElementToView(element));
+                    auto* source_tab = static_cast<views::TabbedPaneTab*>(
+                        ElementToView(element));
                     EXPECT_EQ(source_tab->GetTitleText(),
                               GetCurrentTranslateBubble()
                                   ->model()
                                   ->GetSourceLanguageNameAt(1));
                     EXPECT_TRUE(!source_tab->selected());
 
-                    auto* target_tab = static_cast<views::Tab*>(ElementToView(
-                        ui::ElementTracker::GetElementTracker()
-                            ->GetFirstMatchingElement(
-                                TranslateBubbleView::kTargetLanguageTab,
-                                element->context())));
+                    auto* target_tab =
+                        static_cast<views::TabbedPaneTab*>(ElementToView(
+                            ui::ElementTracker::GetElementTracker()
+                                ->GetFirstMatchingElement(
+                                    TranslateBubbleView::kTargetLanguageTab,
+                                    element->context())));
                     EXPECT_TRUE(target_tab->selected());
                   }))
               .Build())
@@ -479,8 +480,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
                        [this](ui::InteractionSequence*,
                               ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
-                         auto* source_tab =
-                             static_cast<views::Tab*>(ElementToView(element));
+                         auto* source_tab = static_cast<views::TabbedPaneTab*>(
+                             ElementToView(element));
                          EXPECT_TRUE(source_tab->selected());
                        }))
                    .Build())
@@ -531,8 +532,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
                        [&](ui::InteractionSequence*,
                            ui::TrackedElement* element) {
                          WaitForPageTranslated(true);
-                         auto* target_tab =
-                             static_cast<views::Tab*>(ElementToView(element));
+                         auto* target_tab = static_cast<views::TabbedPaneTab*>(
+                             ElementToView(element));
                          EXPECT_TRUE(target_tab->selected());
 
                          // P3.Turn off the network.
@@ -555,8 +556,8 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
                        [this](ui::InteractionSequence*,
                               ui::TrackedElement* element) {
                          WaitForPageTranslated(false);
-                         auto* source_tab =
-                             static_cast<views::Tab*>(ElementToView(element));
+                         auto* source_tab = static_cast<views::TabbedPaneTab*>(
+                             ElementToView(element));
                          EXPECT_TRUE(source_tab->selected());
                        }))
                    .Build())

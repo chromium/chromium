@@ -75,8 +75,9 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
     WidgetTest::TearDown();
   }
 
-  Tab* GetTabAt(size_t index) {
-    return static_cast<Tab*>(tabbed_pane_->tab_strip_->children()[index]);
+  TabbedPaneTab* GetTabAt(size_t index) {
+    return static_cast<TabbedPaneTab*>(
+        tabbed_pane_->tab_strip_->children()[index]);
   }
 
   id<NSAccessibility> A11yElementAtPoint(const gfx::Point& point) {

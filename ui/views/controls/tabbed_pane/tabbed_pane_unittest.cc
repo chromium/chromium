@@ -134,8 +134,9 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
   }
 
  protected:
-  Tab* GetTabAt(size_t index) {
-    return static_cast<Tab*>(tabbed_pane_->tab_strip_->children()[index]);
+  TabbedPaneTab* GetTabAt(size_t index) {
+    return static_cast<TabbedPaneTab*>(
+        tabbed_pane_->tab_strip_->children()[index]);
   }
 
   View* GetSelectedTabContentView() {
@@ -255,7 +256,7 @@ TEST_F(TabbedPaneWithWidgetTest, SelectTabWithAccessibleAction) {
   for (size_t i = 0; i < kNumTabs; ++i) {
     ui::AXNodeData data;
     GetTabAt(i)->GetAccessibleNodeData(&data);
-    SCOPED_TRACE(testing::Message() << "Tab at index: " << i);
+    SCOPED_TRACE(testing::Message() << "TabbedPaneTab at index: " << i);
     EXPECT_EQ(ax::mojom::Role::kTab, data.role);
     EXPECT_EQ(DefaultTabTitle(),
               data.GetString16Attribute(ax::mojom::StringAttribute::kName));
