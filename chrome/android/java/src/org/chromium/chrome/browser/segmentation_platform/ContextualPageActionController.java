@@ -47,6 +47,13 @@ public class ContextualPageActionController {
          *         signals.
          */
         void getAction(Tab tab, SignalAccumulator signalAccumulator);
+
+        /**
+         * Called when any contextual page action is shown.
+         * @param tab The current tab for which the action was shown.
+         * @param action Enum value of the action shown.
+         */
+        default void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action){};
     }
 
     private final ObservableSupplier<Profile> mProfileSupplier;
@@ -166,6 +173,10 @@ public class ContextualPageActionController {
     }
 
     private void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
+        for (ActionProvider actionProvider : mActionProviders) {
+            actionProvider.onActionShown(mTabSupplier.get(), action);
+        }
+
         // TODO(crbug/1373891): Add logic to inform reader mode backend.
         mAdaptiveToolbarButtonController.showDynamicAction(action);
     }

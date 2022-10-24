@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.segmentation_platform;
 
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 
 /** Provides reader mode signal for showing contextual page action for a given tab. */
 public class ReaderModeActionProvider implements ContextualPageActionController.ActionProvider {
@@ -35,6 +38,15 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         tabDistillabilityProvider.addObserver(distillabilityObserver);
     }
 
+    @Override
+    public void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {
+        if (action == AdaptiveToolbarButtonVariant.READER_MODE) {
+            tab.getUserDataHost()
+                    .getUserData(ReaderModeManager.USER_DATA_KEY)
+                    .setReaderModeUiShown();
+        }
+    }
+
     private void notifyActionAvailable(boolean isDistillable, boolean isMobileOptimized, Tab tab,
             SignalAccumulator signalAccumulator) {
         // TODO(shaktisahu): Can we merge these into a single method call?
@@ -51,11 +63,17 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
         if (usingRequestDesktopSite) return true;
 
+        if (AdaptiveToolbarFeatures.isReaderModeRateLimited()
+                && tab.getUserDataHost()
+                           .getUserData(ReaderModeManager.USER_DATA_KEY)
+                           .isReaderModeUiRateLimited()) {
+            return true;
+        }
+
         if (isMobileOptimized && DomDistillerTabUtils.shouldExcludeMobileFriendly(tab)) {
             return true;
         }
 
-        // TODO(crbug/1373891): Add rate limiting logic for muted sites.
         return false;
     }
 }
