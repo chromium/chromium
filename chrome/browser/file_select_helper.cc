@@ -317,8 +317,8 @@ void FileSelectHelper::ConvertToFileChooserFileInfoList(
     storage::FileSystemContext* file_system_context =
         profile_->GetStoragePartition(site_instance)->GetFileSystemContext();
     file_manager::util::ConvertSelectedFileInfoListToFileChooserFileInfoList(
-        file_system_context, site_instance->GetSiteURL(), files,
-        base::BindOnce(&FileSelectHelper::CheckIfPolicyAllowed, this));
+        file_system_context, render_frame_host_->GetLastCommittedOrigin(),
+        files, base::BindOnce(&FileSelectHelper::CheckIfPolicyAllowed, this));
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

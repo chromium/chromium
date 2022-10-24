@@ -77,7 +77,7 @@ class URLHelper {
     // Obtain the file system URL.
     isolated_file_system_ =
         file_manager::util::CreateIsolatedURLFromVirtualPath(
-            *context, /* empty origin */ GURL(), virtual_path);
+            *context, url::Origin(), virtual_path);
 
     // Check if the obtained path providing external file URL or not.
     if (!isolated_file_system_.url.is_valid()) {

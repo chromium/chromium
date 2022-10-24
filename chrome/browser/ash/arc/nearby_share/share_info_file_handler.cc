@@ -77,7 +77,7 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemURLAndHandle(
   DCHECK(!virtual_path.empty());
   // Obtain the file system URL.
   return file_manager::util::CreateIsolatedURLFromVirtualPath(
-      context, /* empty origin */ GURL(), virtual_path);
+      context, url::Origin(), virtual_path);
 }
 
 std::string StripPathComponents(const std::string& file_name) {

@@ -264,7 +264,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
 
   ConvertSelectedFileInfoListToFileChooserFileInfoListImpl(
       storage::FileSystemContext* context,
-      const GURL& origin,
+      const url::Origin& origin,
       const SelectedFileInfoList& selected_info_list,
       FileChooserFileInfoListCallback callback)
       : context_(context), callback_(std::move(callback)) {
@@ -591,7 +591,7 @@ void ConvertFileDefinitionToEntryDefinition(
 
 void ConvertSelectedFileInfoListToFileChooserFileInfoList(
     storage::FileSystemContext* context,
-    const GURL& origin,
+    const url::Origin& origin,
     const SelectedFileInfoList& selected_info_list,
     FileChooserFileInfoListCallback callback) {
   // The object deletes itself.
@@ -661,12 +661,12 @@ void GetMetadataForPath(
 
 FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
     const storage::FileSystemContext& context,
-    const GURL& origin,
+    const url::Origin& origin,
     const base::FilePath& virtual_path) {
   const storage::FileSystemURL original_url =
-      context.CreateCrackedFileSystemURL(
-          blink::StorageKey(url::Origin::Create(origin)),
-          storage::kFileSystemTypeExternal, virtual_path);
+      context.CreateCrackedFileSystemURL(blink::StorageKey(origin),
+                                         storage::kFileSystemTypeExternal,
+                                         virtual_path);
 
   std::string register_name;
   storage::IsolatedContext::ScopedFSHandle file_system =
@@ -674,8 +674,7 @@ FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
           original_url.type(), original_url.filesystem_id(),
           original_url.path(), &register_name);
   storage::FileSystemURL isolated_url = context.CreateCrackedFileSystemURL(
-      blink::StorageKey(url::Origin::Create(origin)),
-      storage::kFileSystemTypeIsolated,
+      blink::StorageKey(origin), storage::kFileSystemTypeIsolated,
       base::FilePath(file_system.id()).Append(register_name));
   return {isolated_url, file_system};
 }

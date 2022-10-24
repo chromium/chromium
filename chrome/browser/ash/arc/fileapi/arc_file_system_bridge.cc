@@ -96,8 +96,7 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemURL(
     const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return file_manager::util::CreateIsolatedURLFromVirtualPath(
-      context, /* empty origin */ GURL(),
-      chromeos::ExternalFileURLToVirtualPath(url));
+      context, url::Origin(), chromeos::ExternalFileURLToVirtualPath(url));
 }
 
 // Retrieves file's metadata on the IO thread, and runs the callback on the UI

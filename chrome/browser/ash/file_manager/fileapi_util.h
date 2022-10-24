@@ -155,7 +155,7 @@ void ConvertFileDefinitionListToEntryDefinitionList(
 // Converts SelectedFileInfoList into FileChooserFileInfoList.
 void ConvertSelectedFileInfoListToFileChooserFileInfoList(
     storage::FileSystemContext* context,
-    const GURL& origin,
+    const url::Origin& origin,
     const SelectedFileInfoList& selected_info_list,
     FileChooserFileInfoListCallback callback);
 
@@ -191,7 +191,7 @@ struct FileSystemURLAndHandle {
 // external file system.
 FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
     const storage::FileSystemContext& context,
-    const GURL& origin,
+    const url::Origin& origin,
     const base::FilePath& virtual_path);
 
 // Given a |destination_folder| and a |filename|, returns a suitable path inside

@@ -252,7 +252,8 @@ TEST_F(FileManagerFileAPIUtilTest,
   // Run the test target.
   FileChooserFileInfoList result;
   ConvertSelectedFileInfoListToFileChooserFileInfoList(
-      context, GURL("http://example.com"), selected_info_list,
+      context, url::Origin::Create(GURL("http://example.com")),
+      selected_info_list,
       base::BindOnce(&PassFileChooserFileInfoList, &result));
   content::RunAllTasksUntilIdle();
 
