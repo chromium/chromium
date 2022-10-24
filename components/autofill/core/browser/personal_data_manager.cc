@@ -773,14 +773,25 @@ AutofillProfile* PersonalDataManager::GetProfileFromProfilesByGUID(
   return iter != profiles.end() ? *iter : nullptr;
 }
 
-void PersonalDataManager::AddIBAN(const IBAN& iban) {
+std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
   if (!IsAutofillIBANEnabled())
-    return;
+    return std::string();
 
+  // Early exit if `is_off_the_record_` is true, or an IBAN which has the same
+  // guid exists in `local_ibans_`, or fail to get local database.
   if (is_off_the_record_ || FindByGUID(local_ibans_, iban.guid()) ||
-      !database_helper_->GetLocalDatabase() ||
-      FindByContents(local_ibans_, iban)) {
-    return;
+      !database_helper_->GetLocalDatabase()) {
+    return std::string();
+  }
+
+  // Search through `local_ibans_` to ensure no IBAN that already saved has the
+  // same value with `iban`, because we do not want to add two IBANs with the
+  // same account number.
+  if (base::ranges::any_of(
+          local_ibans_, [&iban](const std::unique_ptr<IBAN>& iban_from_list) {
+            return iban.value().compare(iban_from_list->value()) == 0;
+          })) {
+    return std::string();
   }
 
   // Add the new iban to the web database.
@@ -788,34 +799,23 @@ void PersonalDataManager::AddIBAN(const IBAN& iban) {
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
+  return iban.guid();
 }
 
-void PersonalDataManager::UpdateIBAN(const IBAN& iban) {
+std::string PersonalDataManager::UpdateIBAN(const IBAN& iban) {
   DCHECK_EQ(IBAN::LOCAL_IBAN, iban.record_type());
-  if (is_off_the_record_) {
-    return;
-  }
-  IBAN* existing_iban = GetIBANByGUID(iban.guid());
-  if (!existing_iban) {
-    return;
-  }
+  if (is_off_the_record_)
+    return std::string();
 
-  // Do not overwrite iban if it's existed already.
-  if (existing_iban->Compare(iban) == 0) {
-    return;
-  }
-
-  // Update the cached version.
-  *existing_iban = iban;
-  if (!database_helper_->GetLocalDatabase()) {
-    return;
-  }
+  if (!database_helper_->GetLocalDatabase())
+    return std::string();
 
   // Make the update.
   database_helper_->GetLocalDatabase()->UpdateIBAN(iban);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
+  return iban.guid();
 }
 
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
@@ -1886,6 +1886,14 @@ std::string PersonalDataManager::OnAcceptedLocalCreditCardSave(
   return SaveImportedCreditCard(imported_card);
 }
 
+std::string PersonalDataManager::OnAcceptedLocalIBANSave(IBAN& imported_iban) {
+  DCHECK(!imported_iban.value().empty());
+  if (is_off_the_record_)
+    return std::string();
+
+  return SaveImportedIBAN(imported_iban);
+}
+
 std::string PersonalDataManager::SaveImportedCreditCard(
     const CreditCard& imported_card) {
   // Set to true if |imported_card| is merged into the credit card list.
@@ -1913,6 +1921,22 @@ std::string PersonalDataManager::SaveImportedCreditCard(
   OnCreditCardSaved(/*is_local_card=*/true);
 
   return guid;
+}
+
+std::string PersonalDataManager::SaveImportedIBAN(IBAN& imported_iban) {
+  // If an existing IBAN is found, call `UpdateIBAN()`, otherwise, `AddIBAN()`.
+  // `local_ibans_` will be in sync with the local web database as of
+  // `Refresh()` which will be called by both `UpdateIBAN()` and `AddIBAN()`.
+  for (auto& iban : local_ibans_) {
+    if (iban->value().compare(imported_iban.value()) == 0) {
+      // Set the GUID of the IBAN to the one that matches it in
+      // `local_ibans_` so that UpdateIBAN() will be able to update the
+      // specific IBAN.
+      imported_iban.set_guid(iban->guid());
+      return UpdateIBAN(imported_iban);
+    }
+  }
+  return AddIBAN(imported_iban);
 }
 
 void PersonalDataManager::LogStoredProfileMetrics() const {

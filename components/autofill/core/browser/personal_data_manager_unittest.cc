@@ -836,15 +836,23 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
   iban1.set_value(u"DE91 1000 0000 0123 4567 89");
   iban1.set_nickname(u"Nickname 1");
 
+  IBAN iban1_1 = iban1;
+  iban1_1.set_nickname(u"Nickname 1_1");
+
   IBAN iban2(base::GenerateGUID());
   iban2.set_value(u"ES79 2100 0813 6101 2345 6789");
   iban2.set_nickname(u"Nickname 2");
 
-  // Add two test IBANs to the database.
+  // Add two test IBANs to the database. `iban1_1` has the same value
+  // as `iban1` but with a different nickname. Verify that only `iban1` is
+  // added.
   personal_data_->AddIBAN(iban0);
-  personal_data_->AddIBAN(iban1);
-
   WaitForOnPersonalDataChanged();
+
+  personal_data_->AddIBAN(iban1);
+  WaitForOnPersonalDataChanged();
+
+  personal_data_->AddIBAN(iban1_1);
 
   std::vector<IBAN*> ibans;
   ibans.push_back(&iban0);
@@ -882,6 +890,106 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
   ibans.push_back(&iban0);
   ibans.push_back(&iban2);
   ExpectSameElements(ibans, personal_data_->GetIBANs());
+}
+
+// Ensure that new IBANs can be updated and saved via
+// `OnAcceptedLocalIBANSave()`.
+TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
+  prefs::SetAutofillIBANEnabled(prefs_.get(), true);
+
+  // Start with a new IBAN.
+  IBAN iban0(base::GenerateGUID());
+  iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban0.set_nickname(u"Nickname 0");
+  // Add the IBAN to the database.
+  personal_data_->OnAcceptedLocalIBANSave(iban0);
+
+  // Make sure everything is set up correctly.
+  WaitForOnPersonalDataChanged();
+  EXPECT_EQ(1U, personal_data_->GetIBANs().size());
+
+  // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
+  // the new IBAN is saved.
+  IBAN iban1(base::GenerateGUID());
+  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban1.set_nickname(u"Nickname 1");
+  personal_data_->OnAcceptedLocalIBANSave(iban1);
+  WaitForOnPersonalDataChanged();
+
+  // Expect that the new IBAN is added.
+  ASSERT_EQ(2U, personal_data_->GetIBANs().size());
+
+  std::vector<IBAN*> ibans;
+  ibans.push_back(&iban0);
+  ibans.push_back(&iban1);
+  // Verify that we've loaded the IBAN from the web database.
+  ExpectSameElements(ibans, personal_data_->GetIBANs());
+
+  // Creates a new `iban2` which has the same value as `iban0` but with
+  // different nickname and call `OnAcceptedLocalIBANSave()`.
+  IBAN iban2(base::GenerateGUID());
+  iban2.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban2.set_nickname(u"Nickname 2");
+  personal_data_->OnAcceptedLocalIBANSave(iban2);
+  WaitForOnPersonalDataChanged();
+  // Updates the nickname for `iban1` and call `OnAcceptedLocalIBANSave()`.
+  iban1.set_nickname(u"Nickname 1 updated");
+  personal_data_->OnAcceptedLocalIBANSave(iban1);
+  WaitForOnPersonalDataChanged();
+
+  ibans.clear();
+  ibans.push_back(&iban1);
+  ibans.push_back(&iban2);
+  // Expect that the existing IBANs are updated.
+  ASSERT_EQ(2U, personal_data_->GetIBANs().size());
+
+  // Verify that we've loaded the IBANs from the web database.
+  ExpectSameElements(ibans, personal_data_->GetIBANs());
+
+  // Call `OnAcceptedLocalIBANSave()` with the same iban1, verify that nothing
+  // changes.
+  personal_data_->OnAcceptedLocalIBANSave(iban1);
+  ExpectSameElements(ibans, personal_data_->GetIBANs());
+
+  // Reset the PersonalDataManager. This tests that the IBANs are persisted
+  // in the local web database even if the browser is re-loaded, ensuring that
+  // the user can load the IBANs from the local web database on browser startup.
+  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ExpectSameElements(ibans, personal_data_->GetIBANs());
+}
+
+// Ensure that new IBAN cannot be updated nor saved via
+// `OnAcceptedLocalIBANSave()` if `is_off_the_record_` is true.
+TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
+  personal_data_->set_is_off_the_record_for_testing(true);
+  prefs::SetAutofillIBANEnabled(prefs_.get(), true);
+
+  // Start with a new IBAN.
+  IBAN iban0(base::GenerateGUID());
+  iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban0.set_nickname(u"Nickname 0");
+
+  // Add the IBAN to the database.
+  personal_data_->AddIBAN(iban0);
+
+  // Verify the new IBAN is not saved.
+  EXPECT_TRUE(personal_data_->GetIBANs().empty());
+
+  // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
+  // the new IBAN is not saved.
+  IBAN iban1(base::GenerateGUID());
+  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban1.set_nickname(u"Nickname 1");
+  personal_data_->OnAcceptedLocalIBANSave(iban1);
+
+  EXPECT_TRUE(personal_data_->GetIBANs().empty());
+
+  // Updates the nickname for `iban1` and call `OnAcceptedLocalIBANSave()`,
+  // verify that nothing happens.
+  iban1.set_nickname(u"Nickname 0 updated");
+  personal_data_->OnAcceptedLocalIBANSave(iban1);
+
+  EXPECT_TRUE(personal_data_->GetIBANs().empty());
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
