@@ -35,20 +35,67 @@ class OverflowViewTest : public testing::Test {
     overflow_view_ = nullptr;
   }
 
-  void Init(const gfx::Size& primary_minimum_size,
-            const gfx::Size& primary_preferred_size,
-            const gfx::Size& indicator_minimum_size,
-            const gfx::Size& indicator_preferred_size) {
+  std::unique_ptr<views::StaticSizedView> CreateIndicator(
+      const gfx::Size& indicator_minimum_size,
+      const gfx::Size& indicator_preferred_size) {
+    auto indicator_view =
+        std::make_unique<views::StaticSizedView>(indicator_preferred_size);
+    indicator_view->set_minimum_size(indicator_minimum_size);
+    return indicator_view;
+  }
+
+  void InitWithPrefix(const gfx::Size& primary_minimum_size,
+                      const gfx::Size& primary_preferred_size,
+                      const gfx::Size& prefix_indicator_minimum_size,
+                      const gfx::Size& prefix_indicator_preferred_size) {
     auto primary_view =
         std::make_unique<views::StaticSizedView>(primary_preferred_size);
     primary_view->set_minimum_size(primary_minimum_size);
     primary_view_ = primary_view.get();
-    auto indicator_view =
-        std::make_unique<views::StaticSizedView>(indicator_preferred_size);
-    indicator_view->set_minimum_size(indicator_minimum_size);
-    indicator_view_ = indicator_view.get();
+    auto prefix_indicator_view = CreateIndicator(
+        prefix_indicator_minimum_size, prefix_indicator_preferred_size);
+    prefix_indicator_view_ = prefix_indicator_view.get();
     overflow_view_ = parent_view_->AddChildView(std::make_unique<OverflowView>(
-        std::move(primary_view), std::move(indicator_view)));
+        std::move(primary_view), std::move(prefix_indicator_view), nullptr));
+  }
+
+  void InitWithPostfix(const gfx::Size& primary_minimum_size,
+                       const gfx::Size& primary_preferred_size,
+                       const gfx::Size& postfix_indicator_minimum_size,
+                       const gfx::Size& postfix_indicator_preferred_size) {
+    auto primary_view =
+        std::make_unique<views::StaticSizedView>(primary_preferred_size);
+    primary_view->set_minimum_size(primary_minimum_size);
+    primary_view_ = primary_view.get();
+    auto postfix_indicator_view = CreateIndicator(
+        postfix_indicator_minimum_size, postfix_indicator_preferred_size);
+    postfix_indicator_view_ = postfix_indicator_view.get();
+    overflow_view_ = parent_view_->AddChildView(std::make_unique<OverflowView>(
+        std::move(primary_view), std::move(postfix_indicator_view)));
+  }
+
+  void InitWithPrefixAndPostfix(
+      const gfx::Size& primary_minimum_size,
+      const gfx::Size& primary_preferred_size,
+      const gfx::Size& prefix_indicator_minimum_size,
+      const gfx::Size& prefix_indicator_preferred_size,
+      const gfx::Size& postfix_indicator_minimum_size,
+      const gfx::Size& postfix_indicator_preferred_size) {
+    auto primary_view =
+        std::make_unique<views::StaticSizedView>(primary_preferred_size);
+    primary_view->set_minimum_size(primary_minimum_size);
+    primary_view_ = primary_view.get();
+
+    auto prefix_indicator_view = CreateIndicator(
+        prefix_indicator_minimum_size, prefix_indicator_preferred_size);
+    prefix_indicator_view_ = prefix_indicator_view.get();
+    auto postfix_indicator_view = CreateIndicator(
+        postfix_indicator_minimum_size, postfix_indicator_preferred_size);
+    postfix_indicator_view_ = postfix_indicator_view.get();
+
+    overflow_view_ = parent_view_->AddChildView(std::make_unique<OverflowView>(
+        std::move(primary_view), std::move(prefix_indicator_view),
+        std::move(postfix_indicator_view)));
   }
 
  protected:
@@ -105,7 +152,8 @@ class OverflowViewTest : public testing::Test {
   std::unique_ptr<views::View> parent_view_;
   raw_ptr<OverflowView> overflow_view_ = nullptr;
   raw_ptr<views::StaticSizedView> primary_view_ = nullptr;
-  raw_ptr<views::StaticSizedView> indicator_view_ = nullptr;
+  raw_ptr<views::StaticSizedView> prefix_indicator_view_ = nullptr;
+  raw_ptr<views::StaticSizedView> postfix_indicator_view_ = nullptr;
 };
 
 constexpr gfx::Size OverflowViewTest::kDefaultParentSize;
@@ -115,7 +163,7 @@ constexpr gfx::Size OverflowViewTest::kPreferredSize2;
 constexpr gfx::Size OverflowViewTest::kMinimumSize2;
 
 TEST_F(OverflowViewTest, SizesNoFlexRules) {
-  Init(kMinimumSize, kPreferredSize, kMinimumSize2, kPreferredSize2);
+  InitWithPostfix(kMinimumSize, kPreferredSize, kMinimumSize2, kPreferredSize2);
   const gfx::Size expected_min(
       std::min(kMinimumSize2.width(), kMinimumSize.width()),
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
@@ -124,7 +172,7 @@ TEST_F(OverflowViewTest, SizesNoFlexRules) {
 }
 
 TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLarger) {
-  Init(kMinimumSize2, kPreferredSize2, kMinimumSize, kPreferredSize);
+  InitWithPostfix(kMinimumSize2, kPreferredSize2, kMinimumSize, kPreferredSize);
   const gfx::Size expected_min(
       std::min(kMinimumSize2.width(), kMinimumSize.width()),
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
@@ -134,7 +182,7 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLarger) {
 }
 
 TEST_F(OverflowViewTest, SizesNoFlexRulesVertical) {
-  Init(kMinimumSize, kPreferredSize, kMinimumSize2, kPreferredSize2);
+  InitWithPostfix(kMinimumSize, kPreferredSize, kMinimumSize2, kPreferredSize2);
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
   const gfx::Size expected_min(
       std::max(kMinimumSize.width(), kMinimumSize2.width()),
@@ -144,7 +192,7 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesVertical) {
 }
 
 TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLargerVertical) {
-  Init(kMinimumSize2, kPreferredSize2, kMinimumSize, kPreferredSize);
+  InitWithPostfix(kMinimumSize2, kPreferredSize2, kMinimumSize, kPreferredSize);
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
   const gfx::Size expected_min(
       std::max(kMinimumSize.width(), kMinimumSize2.width()),
@@ -159,11 +207,7 @@ class OverflowViewLayoutTest : public OverflowViewTest {
   OverflowViewLayoutTest() = default;
   ~OverflowViewLayoutTest() override = default;
 
-  void SetUp() override {
-    OverflowViewTest::SetUp();
-    Init(kPrimaryMinimumSize, kPrimaryPreferredSize, kIndicatorMinimumSize,
-         kIndicatorPreferredSize);
-  }
+  void SetUp() override { OverflowViewTest::SetUp(); }
 
   void Resize(gfx::Size size) {
     parent_view_->SetSize(size);
@@ -173,9 +217,13 @@ class OverflowViewLayoutTest : public OverflowViewTest {
   void SizeToPreferredSize() { parent_view_->SizeToPreferredSize(); }
 
   gfx::Rect primary_bounds() const { return primary_view_->bounds(); }
-  gfx::Rect indicator_bounds() const { return indicator_view_->bounds(); }
+  gfx::Rect indicator_bounds() const {
+    return postfix_indicator_view_->bounds();
+  }
   bool primary_visible() const { return primary_view_->GetVisible(); }
-  bool indicator_visible() const { return indicator_view_->GetVisible(); }
+  bool indicator_visible() const {
+    return postfix_indicator_view_->GetVisible();
+  }
 
  protected:
   static constexpr gfx::Size kPrimaryMinimumSize{80, 20};
@@ -215,13 +263,17 @@ constexpr gfx::Size OverflowViewLayoutTest::kIndicatorMinimumSize;
 constexpr gfx::Size OverflowViewLayoutTest::kIndicatorPreferredSize;
 
 TEST_F(OverflowViewLayoutTest, SizeToPreferredSizeIndicatorSmallerThanPrimary) {
-  indicator_view_->SetPreferredSize(kIndicatorMinimumSize);
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
+  postfix_indicator_view_->SetPreferredSize(kIndicatorMinimumSize);
   SizeToPreferredSize();
   EXPECT_EQ(gfx::Rect(kPrimaryPreferredSize), primary_bounds());
   EXPECT_FALSE(indicator_visible());
 }
 
 TEST_F(OverflowViewLayoutTest, SizeToPreferredSizeIndicatorLargerThanPrimary) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   SizeToPreferredSize();
   gfx::Size expected = kPrimaryPreferredSize;
   EXPECT_EQ(gfx::Rect(expected), primary_bounds());
@@ -229,6 +281,8 @@ TEST_F(OverflowViewLayoutTest, SizeToPreferredSizeIndicatorLargerThanPrimary) {
 }
 
 TEST_F(OverflowViewLayoutTest, ScaleToMinimum) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   // Since default cross-axis alignment is stretch, the view should fill the
   // space even if it's larger than the preferred size.
   gfx::Size size = kPrimaryPreferredSize;
@@ -259,6 +313,8 @@ TEST_F(OverflowViewLayoutTest, ScaleToMinimum) {
 }
 
 TEST_F(OverflowViewLayoutTest, Alignment) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   gfx::Size size = kPrimaryPreferredSize;
   size.Enlarge(0, 10);
   Resize(size);
@@ -304,6 +360,8 @@ TEST_F(OverflowViewLayoutTest, Alignment) {
 }
 
 TEST_F(OverflowViewLayoutTest, ScaleToMinimumVertical) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
 
   gfx::Size size = kPrimaryPreferredSize;
@@ -334,6 +392,8 @@ TEST_F(OverflowViewLayoutTest, ScaleToMinimumVertical) {
 }
 
 TEST_F(OverflowViewLayoutTest, AlignmentVertical) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
 
   gfx::Size size = kPrimaryPreferredSize;
@@ -380,6 +440,8 @@ TEST_F(OverflowViewLayoutTest, AlignmentVertical) {
 }
 
 TEST_F(OverflowViewLayoutTest, PrimaryOnlyRespectsFlexRule) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   primary_view_->SetProperty(views::kFlexBehaviorKey,
                              views::FlexSpecification(base::BindRepeating(
                                  &OverflowViewTest::StepwiseFlexRule)));
@@ -421,6 +483,8 @@ TEST_F(OverflowViewLayoutTest, PrimaryOnlyRespectsFlexRule) {
 }
 
 TEST_F(OverflowViewLayoutTest, HorizontalOverflow) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
   // The primary view should start at the preferred size and scale down until it
@@ -429,27 +493,27 @@ TEST_F(OverflowViewLayoutTest, HorizontalOverflow) {
   size.Enlarge(10, 0);
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_FALSE(indicator_view_->GetVisible());
+  EXPECT_FALSE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(kPrimaryPreferredSize), primary_bounds());
 
   size = kPrimaryPreferredSize;
   size.Enlarge(-10, 0);
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_FALSE(indicator_view_->GetVisible());
+  EXPECT_FALSE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(size), primary_bounds());
 
   size = kPrimaryMinimumSize;
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_FALSE(indicator_view_->GetVisible());
+  EXPECT_FALSE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(size), primary_bounds());
 
   // Below minimum size, the indicator will be displayed.
   size.Enlarge(-5, 0);
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_TRUE(indicator_view_->GetVisible());
+  EXPECT_TRUE(postfix_indicator_view_->GetVisible());
   const gfx::Rect expected_indicator{
       size.width() - kIndicatorPreferredSize.width(), 0,
       kIndicatorPreferredSize.width(), size.height()};
@@ -463,19 +527,21 @@ TEST_F(OverflowViewLayoutTest, HorizontalOverflow) {
   size = kIndicatorMinimumSize;
   Resize(size);
   EXPECT_FALSE(primary_view_->GetVisible());
-  EXPECT_TRUE(indicator_view_->GetVisible());
+  EXPECT_TRUE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(size), indicator_bounds());
 }
 
 TEST_F(OverflowViewLayoutTest, VerticalOverflow) {
+  InitWithPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                  kIndicatorMinimumSize, kIndicatorPreferredSize);
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
   overflow_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   const views::FlexRule flex_rule =
       base::BindRepeating(&OverflowViewLayoutTest::TransposingFlexRule);
   primary_view_->SetProperty(views::kFlexBehaviorKey,
                              views::FlexSpecification(flex_rule));
-  indicator_view_->SetProperty(views::kFlexBehaviorKey,
-                               views::FlexSpecification(flex_rule));
+  postfix_indicator_view_->SetProperty(views::kFlexBehaviorKey,
+                                       views::FlexSpecification(flex_rule));
 
   const gfx::Size primary_preferred = Transpose(kPrimaryPreferredSize);
   const gfx::Size primary_minimum = Transpose(kPrimaryMinimumSize);
@@ -488,27 +554,27 @@ TEST_F(OverflowViewLayoutTest, VerticalOverflow) {
   size.Enlarge(0, 10);
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_FALSE(indicator_view_->GetVisible());
+  EXPECT_FALSE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(primary_preferred), primary_bounds());
 
   size = primary_preferred;
   size.Enlarge(0, -10);
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_FALSE(indicator_view_->GetVisible());
+  EXPECT_FALSE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(size), primary_bounds());
 
   size = primary_minimum;
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_FALSE(indicator_view_->GetVisible());
+  EXPECT_FALSE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(size), primary_bounds());
 
   // Below minimum size, the indicator will be displayed.
   size.Enlarge(0, -5);
   Resize(size);
   EXPECT_TRUE(primary_view_->GetVisible());
-  EXPECT_TRUE(indicator_view_->GetVisible());
+  EXPECT_TRUE(postfix_indicator_view_->GetVisible());
   const gfx::Rect expected_indicator{
       0, size.height() - indicator_preferred.height(), size.width(),
       indicator_preferred.height()};
@@ -520,6 +586,31 @@ TEST_F(OverflowViewLayoutTest, VerticalOverflow) {
   size = indicator_minimum;
   Resize(size);
   EXPECT_FALSE(primary_view_->GetVisible());
-  EXPECT_TRUE(indicator_view_->GetVisible());
+  EXPECT_TRUE(postfix_indicator_view_->GetVisible());
   EXPECT_EQ(gfx::Rect(size), indicator_bounds());
+}
+
+TEST_F(OverflowViewLayoutTest, PrefixAndPostfixDisplayed) {
+  InitWithPrefixAndPostfix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                           kIndicatorMinimumSize, kIndicatorPreferredSize,
+                           kIndicatorMinimumSize, kIndicatorPreferredSize);
+
+  gfx::Size size = kPrimaryMinimumSize;
+  size.Enlarge(-5, 0);
+  Resize(size);
+
+  EXPECT_TRUE(prefix_indicator_view_ && prefix_indicator_view_->GetVisible());
+  EXPECT_TRUE(postfix_indicator_view_ && postfix_indicator_view_->GetVisible());
+}
+
+TEST_F(OverflowViewLayoutTest, PrefixOnlyDisplayed) {
+  InitWithPrefix(kPrimaryMinimumSize, kPrimaryPreferredSize,
+                 kIndicatorMinimumSize, kIndicatorPreferredSize);
+
+  gfx::Size size = kPrimaryMinimumSize;
+  size.Enlarge(-5, 0);
+  Resize(size);
+
+  EXPECT_TRUE(prefix_indicator_view_ && prefix_indicator_view_->GetVisible());
+  EXPECT_FALSE(postfix_indicator_view_);
 }

@@ -167,6 +167,12 @@ BASE_FEATURE(kScrollableTabStrip,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 
+// Enables buttons when scrolling the tabstrip https://crbug.com/951078
+BASE_FEATURE(kTabScrollingButtonPosition,
+             "TabScrollingButtonPosition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kTabScrollingButtonPositionParameterName[] = "buttonPosition";
+
 // Splits pinned and unpinned tabs into separate TabStrips.
 // https://crbug.com/1346019
 BASE_FEATURE(kSplitTabStrip,

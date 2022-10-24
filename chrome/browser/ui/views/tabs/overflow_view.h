@@ -34,10 +34,15 @@
 //
 // TODO(dfried): If this turns out to be usable in multiple places, move to
 // ui/views/layout.
+// If there are 2 indicator views defined, then the first goes on the left and
+// the the second goes on the right, else only the right gets filled.
 class OverflowView : public views::View {
  public:
   OverflowView(std::unique_ptr<views::View> primary_view,
-               std::unique_ptr<views::View> indicator_view);
+               std::unique_ptr<views::View> prefix_indicator_view,
+               std::unique_ptr<views::View> postfix_indicator_view);
+  OverflowView(std::unique_ptr<views::View> primary_view,
+               std::unique_ptr<views::View> postfix_indicator_view);
   ~OverflowView() override;
 
   void SetOrientation(views::LayoutOrientation orientation);
@@ -70,7 +75,11 @@ class OverflowView : public views::View {
 
   // The overflow indicator view to be displayed if the primary view will
   // receive less than its minimum size along the main axis.
-  raw_ptr<views::View> indicator_view_ = nullptr;
+  raw_ptr<views::View> prefix_indicator_view_ = nullptr;
+
+  // The overflow indicator view to be displayed if the primary view will
+  // receive less than its minimum size along the main axis.
+  raw_ptr<views::View> postfix_indicator_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_OVERFLOW_VIEW_H_

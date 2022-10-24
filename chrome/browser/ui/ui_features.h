@@ -66,6 +66,9 @@ extern const char kMinimumTabWidthFeatureParameterName[];
 
 BASE_DECLARE_FEATURE(kSplitTabStrip);
 
+BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
+extern const char kTabScrollingButtonPositionParameterName[];
+
 // TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
 BASE_DECLARE_FEATURE(kSidePanelImprovedClobbering);

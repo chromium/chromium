@@ -6532,6 +6532,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "tab-scrolling-button-position",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "tab-search-fuzzy-search",
     "owners": [ "yuhengh", "chrome-cros@google.com" ],
     "expiry_milestone": 110

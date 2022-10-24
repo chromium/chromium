@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
+#include <memory>
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,6 +26,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 
 namespace {
 // Define a custom FlexRule for |scroll_view_|. Equivalent to using a
@@ -141,6 +144,13 @@ class TabStripContainerOverflowIndicator : public views::View {
 BEGIN_METADATA(TabStripContainerOverflowIndicator, views::View)
 END_METADATA
 
+// Must be kept the same as kTabScrollingButtonPositionVariations values
+enum ScrollButtonPositionType {
+  kJoinedButtonsRight = 0,
+  kJoinedButtonsLeft = 1,
+  kSplitButtons = 2
+};
+
 }  // namespace
 
 TabStripScrollContainer::TabStripScrollContainer(
@@ -190,36 +200,69 @@ TabStripScrollContainer::TabStripScrollContainer(
       base::BindRepeating(&TabStripScrollContainer::OnContentsScrolledCallback,
                           base::Unretained(this)));
 
-  std::unique_ptr<views::View> scroll_button_container =
-      std::make_unique<views::View>();
-  views::FlexLayout* scroll_button_layout =
-      scroll_button_container->SetLayoutManager(
-          std::make_unique<views::FlexLayout>());
-  scroll_button_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  if (!base::FeatureList::IsEnabled(features::kTabScrollingButtonPosition)) {
+    leading_scroll_button_ = nullptr;
+    trailing_scroll_button_ = nullptr;
+    overflow_view_ = AddChildView(
+        std::make_unique<OverflowView>(std::move(scroll_view), nullptr));
+    return;
+  }
 
-  leading_scroll_button_ =
-      scroll_button_container->AddChildView(CreateScrollButton(
+  int scroll_button_strategy = base::GetFieldTrialParamByFeatureAsInt(
+      features::kTabScrollingButtonPosition,
+      features::kTabScrollingButtonPositionParameterName, 0);
+
+  std::unique_ptr<views::ImageButton> leading_scroll_button =
+      CreateScrollButton(
           base::BindRepeating(&TabStripScrollContainer::ScrollTowardsLeadingTab,
-                              base::Unretained(this))));
-  leading_scroll_button_->SetAccessibleName(
+                              base::Unretained(this)));
+  leading_scroll_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_LEADING));
-  trailing_scroll_button_ = scroll_button_container->AddChildView(
+
+  std::unique_ptr<views::ImageButton> trailing_scroll_button =
       CreateScrollButton(base::BindRepeating(
           &TabStripScrollContainer::ScrollTowardsTrailingTab,
-          base::Unretained(this))));
-  trailing_scroll_button_->SetAccessibleName(
+          base::Unretained(this)));
+  trailing_scroll_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_TRAILING));
 
   // The space in dips between the scroll buttons and the NTB.
   constexpr int kScrollButtonsTrailingMargin = 8;
-  trailing_scroll_button_->SetProperty(
+  trailing_scroll_button->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, 0, 0, kScrollButtonsTrailingMargin));
 
-  // The default layout orientation (kHorizontal) and cross axis alignment
-  // (kStretch) work for our use case.
-  overflow_view_ = AddChildView(std::make_unique<OverflowView>(
-      std::move(scroll_view), std::move(scroll_button_container)));
+  leading_scroll_button_ = leading_scroll_button.get();
+  trailing_scroll_button_ = trailing_scroll_button.get();
+
+  switch (scroll_button_strategy) {
+    case ScrollButtonPositionType::kJoinedButtonsLeft:
+    case ScrollButtonPositionType::kJoinedButtonsRight: {
+      std::unique_ptr<views::View> scroll_button_container =
+          std::make_unique<views::View>();
+      views::FlexLayout* scroll_button_layout =
+          scroll_button_container->SetLayoutManager(
+              std::make_unique<views::FlexLayout>());
+      scroll_button_layout->SetOrientation(
+          views::LayoutOrientation::kHorizontal);
+      scroll_button_container->AddChildView(std::move(leading_scroll_button));
+      scroll_button_container->AddChildView(std::move(trailing_scroll_button));
+      overflow_view_ = AddChildView(std::make_unique<OverflowView>(
+          std::move(scroll_view),
+          scroll_button_strategy == ScrollButtonPositionType::kJoinedButtonsLeft
+              ? std::move(scroll_button_container)
+              : nullptr,
+          scroll_button_strategy ==
+                  ScrollButtonPositionType::kJoinedButtonsRight
+              ? std::move(scroll_button_container)
+              : nullptr));
+    } break;
+    case ScrollButtonPositionType::kSplitButtons:
+      overflow_view_ = AddChildView(std::make_unique<OverflowView>(
+          std::move(scroll_view), std::move(leading_scroll_button),
+          std::move(trailing_scroll_button)));
+      break;
+  }
 }
 
 TabStripScrollContainer::~TabStripScrollContainer() = default;
@@ -267,12 +310,16 @@ void TabStripScrollContainer::FrameColorsChanged() {
       tab_strip_->GetTabForegroundColor(TabActive::kInactive);
   /* Use placeholder color for disabled state because these buttons should
      never be disabled (they are hidden when the tab strip is not full) */
-  views::SetImageFromVectorIconWithColor(leading_scroll_button_,
-                                         kLeadingScrollIcon, foreground_color,
-                                         gfx::kPlaceholderColor);
-  views::SetImageFromVectorIconWithColor(trailing_scroll_button_,
-                                         kTrailingScrollIcon, foreground_color,
-                                         gfx::kPlaceholderColor);
+  if (leading_scroll_button_) {
+    views::SetImageFromVectorIconWithColor(leading_scroll_button_,
+                                           kLeadingScrollIcon, foreground_color,
+                                           gfx::kPlaceholderColor);
+  }
+  if (trailing_scroll_button_) {
+    views::SetImageFromVectorIconWithColor(
+        trailing_scroll_button_, kTrailingScrollIcon, foreground_color,
+        gfx::kPlaceholderColor);
+  }
   left_overflow_indicator_->SchedulePaint();
   right_overflow_indicator_->SchedulePaint();
 }
@@ -284,13 +331,15 @@ bool TabStripScrollContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
     return gfx::ToEnclosingRect(rect_in_target_coords_f);
   };
 
-  if (leading_scroll_button_->GetLocalBounds().Intersects(
+  if (leading_scroll_button_ &&
+      leading_scroll_button_->GetLocalBounds().Intersects(
           get_target_rect(leading_scroll_button_))) {
     return !leading_scroll_button_->HitTestRect(
         get_target_rect(leading_scroll_button_));
   }
 
-  if (trailing_scroll_button_->GetLocalBounds().Intersects(
+  if (trailing_scroll_button_ &&
+      trailing_scroll_button_->GetLocalBounds().Intersects(
           get_target_rect(trailing_scroll_button_))) {
     return !trailing_scroll_button_->HitTestRect(
         get_target_rect(trailing_scroll_button_));

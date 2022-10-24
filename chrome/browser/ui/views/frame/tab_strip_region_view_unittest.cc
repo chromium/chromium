@@ -34,8 +34,10 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
     if (has_scrolling) {
-      scoped_feature_list_.InitWithFeatures({features::kScrollableTabStrip},
-                                            {});
+      scoped_feature_list_.InitWithFeatures(
+          {features::kScrollableTabStrip,
+           features::kTabScrollingButtonPosition},
+          {});
     } else {
       scoped_feature_list_.InitWithFeatures({},
                                             {features::kScrollableTabStrip});

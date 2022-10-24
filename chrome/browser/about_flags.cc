@@ -1638,6 +1638,21 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      std::size(kMinimumTabWidthSettingFull), nullptr}};
 
+const FeatureEntry::FeatureParam kTabScrollingButtonPositionRight[] = {
+    {features::kTabScrollingButtonPositionParameterName, "0"}};
+const FeatureEntry::FeatureParam kTabScrollingButtonPositionLeft[] = {
+    {features::kTabScrollingButtonPositionParameterName, "1"}};
+const FeatureEntry::FeatureParam kTabScrollingButtonPositionSplit[] = {
+    {features::kTabScrollingButtonPositionParameterName, "2"}};
+
+const FeatureEntry::FeatureVariation kTabScrollingButtonPositionVariations[] = {
+    {" - to the right of the tabstrip", kTabScrollingButtonPositionRight,
+     std::size(kTabScrollingButtonPositionRight), nullptr},
+    {" - to the left of the tabstrip", kTabScrollingButtonPositionLeft,
+     std::size(kTabScrollingButtonPositionLeft), nullptr},
+    {" - on both sides of the tabstrip", kTabScrollingButtonPositionSplit,
+     std::size(kTabScrollingButtonPositionSplit), nullptr}};
+
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdSmall[] = {
     {features::kTabSearchSearchThresholdName, "0.3"}};
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdMedium[] = {
@@ -6010,6 +6025,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStrip,
                                     kTabScrollingVariations,
                                     "TabScrolling")},
+
+    {flag_descriptions::kTabScrollingButtonPositionFlagId,
+     flag_descriptions::kTabScrollingButtonPositionName,
+     flag_descriptions::kTabScrollingButtonPositionDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabScrollingButtonPosition,
+                                    kTabScrollingButtonPositionVariations,
+                                    "TabScrollingButtonPosition")},
 
     {"split-tabstrip", flag_descriptions::kSplitTabStripName,
      flag_descriptions::kSplitTabStripDescription, kOsDesktop,
