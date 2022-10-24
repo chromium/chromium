@@ -119,7 +119,6 @@ content::MediaStreamRequest CreateMediaStreamRequest(
 // These tests are for Ash-only features.
 // Other features should be tested in dlp_content_manager_browsertest.cc or
 // dlp_content_manager_lacros_browsertest.cc.
-// TODO(crbug.com/1322094): Add tests for OnWindowTitleChanged().
 class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
  public:
   DlpContentManagerAshBrowserTest() = default;
@@ -872,8 +871,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
 }
 
-// TODO(crbug.com/1306311): Create browser tests for share-this-tab-instead
-// button.
 class DlpContentManagerAshScreenShareBrowserTest
     : public DlpContentManagerAshBrowserTest {
  protected:
