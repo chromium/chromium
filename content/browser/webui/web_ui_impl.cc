@@ -109,7 +109,7 @@ void WebUIImpl::Send(const std::string& message, base::Value::List args) {
 
   if (base::EndsWith(message, "RequiringGesture",
                      base::CompareCase::SENSITIVE) &&
-      !web_contents_->HasRecentInteractiveInputEvent()) {
+      !web_contents_->HasRecentInteraction()) {
     LOG(ERROR) << message << " received without recent user interaction";
     return;
   }

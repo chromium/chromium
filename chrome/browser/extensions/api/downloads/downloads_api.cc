@@ -1447,7 +1447,7 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   // Extensions with debugger permission could fake user gestures and should
   // not be trusted.
   if (GetSenderWebContents() &&
-      GetSenderWebContents()->HasRecentInteractiveInputEvent() &&
+      GetSenderWebContents()->HasRecentInteraction() &&
       !extension()->permissions_data()->HasAPIPermission(
           APIPermissionID::kDebugger)) {
     download_item->OpenDownload();

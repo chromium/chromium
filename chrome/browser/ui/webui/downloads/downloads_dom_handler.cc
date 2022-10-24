@@ -128,7 +128,7 @@ void DownloadsDOMHandler::GetDownloads(
 }
 
 void DownloadsDOMHandler::OpenFileRequiringGesture(const std::string& id) {
-  if (!GetWebUIWebContents()->HasRecentInteractiveInputEvent()) {
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
     LOG(ERROR) << "OpenFileRequiringGesture received without recent "
                   "user interaction";
     return;
@@ -166,7 +166,7 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
 }
 
 void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
-  if (!GetWebUIWebContents()->HasRecentInteractiveInputEvent()) {
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
     LOG(ERROR) << "SaveDangerousRequiringGesture received without recent "
                   "user interaction";
     return;
@@ -344,7 +344,7 @@ void DownloadsDOMHandler::RemoveDownloads(const DownloadVector& to_remove) {
 }
 
 void DownloadsDOMHandler::OpenDownloadsFolderRequiringGesture() {
-  if (!GetWebUIWebContents()->HasRecentInteractiveInputEvent()) {
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
     LOG(ERROR) << "OpenDownloadsFolderRequiringGesture received without recent "
                   "user interaction";
     return;
@@ -362,7 +362,7 @@ void DownloadsDOMHandler::OpenDownloadsFolderRequiringGesture() {
 
 void DownloadsDOMHandler::OpenDuringScanningRequiringGesture(
     const std::string& id) {
-  if (!GetWebUIWebContents()->HasRecentInteractiveInputEvent()) {
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
     LOG(ERROR) << "OpenDownloadsFolderRequiringGesture received without recent "
                   "user interaction";
     return;
@@ -381,7 +381,7 @@ void DownloadsDOMHandler::OpenDuringScanningRequiringGesture(
 
 void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
     const std::string& id) {
-  if (!GetWebUIWebContents()->HasRecentInteractiveInputEvent()) {
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
     LOG(ERROR) << __func__ << " received without recent user interaction";
     return;
   }
