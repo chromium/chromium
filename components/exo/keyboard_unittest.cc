@@ -48,6 +48,7 @@ constexpr uint32_t kShiftMask = 1 << 0;
 constexpr uint32_t kControlMask = 1 << 2;
 constexpr uint32_t kAltMask = 1 << 3;
 constexpr uint32_t kNumLockMask = 1 << 4;
+constexpr uint32_t kCommandMask = 1 << 6;
 
 using KeyboardTest = test::ExoTestBase;
 
@@ -1247,6 +1248,98 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::US_W, false));
   generator.ReleaseKey(ui::VKEY_W, 0);
+  // Verify before destroying keyboard to make sure the expected call
+  // is made on the methods above, rather than in the destructor.
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
+
+TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
+  std::unique_ptr<Surface> surface(new Surface());
+  auto shell_surface = std::make_unique<TestShellSurface>(surface.get());
+  gfx::Size buffer_size(10, 10);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  // Set lacros attribute now for testing. This can be removed, when
+  // all clients are migrated into this model.
+  surface->window()->SetProperty(aura::client::kAppType,
+                                 static_cast<int>(ash::AppType::LACROS));
+
+  // Register accelerator to be triggered.
+  ui::TestAcceleratorTarget accelerator_target;
+  {
+    ui::Accelerator accelerator(ui::VKEY_LWIN, 0,
+                                ui::Accelerator::KeyState::RELEASED);
+    ash::AcceleratorControllerImpl* controller =
+        ash::Shell::Get()->accelerator_controller();
+    controller->Register({accelerator}, &accelerator_target);
+  }
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  keyboard.SetNeedKeyboardKeyAcks(true);
+
+  // Press SEARCH key.
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
+                                 kCommandMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardKey(testing::_, ui::DomCode::META_LEFT, true))
+      .WillOnce(testing::Return(1));
+
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::META_LEFT);
+  generator.PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  // SEARCH key can be used as a modifier, so it is handled in release event.
+  // Thus accelerator handler should not be triggered.
+  EXPECT_EQ(0, accelerator_target.accelerator_count());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // Send ack for the key press as if it was not handled.
+  keyboard.AckKeyboardKey(1, false /* handled */);
+
+  // Wait until |ProcessExpiredPendingKeyAcks| is fired.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
+  run_loop.Run();
+  base::RunLoop().RunUntilIdle();
+
+  // Release the key and reset modifier_flags.
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardKey(testing::_, ui::DomCode::META_LEFT, false))
+      .WillOnce(testing::Return(2));
+  generator.ReleaseKey(ui::VKEY_LWIN, 0);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+  // Now the accelerator should be handled.
+  EXPECT_EQ(1, accelerator_target.accelerator_count());
+
+  // Then, on ack key, even if application does not process the key event,
+  // accelerator key should not be handled (because it is already done).
+  keyboard.AckKeyboardKey(2, false /* handled */);
+  EXPECT_EQ(1, accelerator_target.accelerator_count());
+
   // Verify before destroying keyboard to make sure the expected call
   // is made on the methods above, rather than in the destructor.
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
