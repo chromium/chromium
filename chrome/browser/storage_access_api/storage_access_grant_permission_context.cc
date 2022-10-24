@@ -333,8 +333,19 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   // This permission was allowed so store it either ephemerally or more
   // permanently depending on if the allow came from a prompt or automatic
   // grant.
-  settings_map->SetContentSettingDefaultScope(
-      requesting_origin, embedding_origin, ContentSettingsType::STORAGE_ACCESS,
+  const net::SchemefulSite embedding_site(embedding_origin);
+  const GURL embedding_site_as_url = embedding_site.GetURL();
+  ContentSettingsPattern secondary_site_pattern =
+      ContentSettingsPattern::CreateBuilder()
+          ->WithScheme(embedding_site_as_url.scheme())
+          ->WithDomainWildcard()
+          ->WithHost(embedding_site_as_url.host())
+          ->WithPathWildcard()
+          ->WithPortWildcard()
+          ->Build();
+  settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
+      secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
       content_setting, implicit_result ? ephemeral_grant : durable_grant);
 
   ContentSettingsForOneType grants;

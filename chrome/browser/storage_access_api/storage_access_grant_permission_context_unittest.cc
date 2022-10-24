@@ -13,6 +13,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,8 +28,17 @@ GURL GetTopLevelURL() {
   return GURL("https://embedder.example.com");
 }
 
+GURL GetDummyEmbeddingUrlWithSubdomain() {
+  return GURL("https://subdomain.example_embedder_1.com");
+}
+
 GURL GetRequesterURL() {
   return GURL("https://requester.example.com");
+}
+
+GURL GetDummyEmbeddingUrl(int dummy_id) {
+  return GURL(std::string(url::kHttpsScheme) + "://example_embedder_" +
+              base::NumberToString(dummy_id) + ".com");
 }
 
 void SaveResult(ContentSetting* content_setting_result,
@@ -93,13 +103,9 @@ class StorageAccessGrantPermissionContextTest
     for (int grant_id = 0;
          grant_id < net::features::kStorageAccessAPIDefaultImplicitGrantLimit;
          grant_id++) {
-      const GURL embedding_origin(std::string(url::kHttpsScheme) +
-                                  "://example_embedder_" +
-                                  base::NumberToString(grant_id) + ".com");
-
       ContentSetting result = CONTENT_SETTING_DEFAULT;
       permission_context.DecidePermissionForTesting(
-          fake_id, requesting_origin, embedding_origin,
+          fake_id, requesting_origin, GetDummyEmbeddingUrl(grant_id),
           /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
       base::RunLoop().RunUntilIdle();
 
@@ -304,6 +310,46 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
   histogram_tester().ExpectBucketCount(
       kPromptResultHistogram,
       /*sample=*/permissions::PermissionAction::DISMISSED, 1);
+}
+
+// Validate that each the implicit grant limit is scoped by top-level site.
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
+       ImplicitGrantLimitSiteScoping) {
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
+
+  StorageAccessGrantPermissionContext permission_context(profile());
+
+  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  ContentSetting result = CONTENT_SETTING_DEFAULT;
+
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GetDummyEmbeddingUrlWithSubdomain());
+
+  // Although the grants are exhausted, another request from a top-level origin
+  // that is same site with an existing grant should still be auto-granted. The
+  // call is to `RequestPermission`, which checks for existing grants, while
+  // `DecidePermission` does not.
+  permission_context.RequestPermission(CreateFakeID(), GetRequesterURL(), true,
+                                       base::BindOnce(&SaveResult, &result));
+  base::RunLoop().RunUntilIdle();
+
+  int implicit_grant_limit =
+      net::features::kStorageAccessAPIDefaultImplicitGrantLimit;
+
+  // We should have no prompts still and our latest result should be an allow.
+  EXPECT_FALSE(manager->IsRequestInProgress());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, result);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram, RequestOutcome::kGrantedByAllowance),
+            implicit_grant_limit);
+
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram,
+                                      implicit_grant_limit);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, implicit_grant_limit);
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
