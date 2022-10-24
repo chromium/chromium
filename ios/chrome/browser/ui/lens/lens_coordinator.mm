@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -17,12 +18,14 @@
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/lens/lens_modal_animator.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -109,6 +112,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   self.lensWebPageLoadTriggeredFromInputSelection = NO;
   self.transitionAnimator = [[LensModalAnimator alloc] init];
   _webStateListObservation->Observe(browser->GetWebStateList());
+  [self updateLensAvailibilityForExtensions];
 }
 
 - (void)stop {
@@ -336,6 +340,19 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   if (_loadingWebState) {
     _webStateObservation->Observe(_loadingWebState);
   }
+}
+
+// Sets the visibility of the Lens replacement for the QR code scanner in the
+// home screen widget.
+- (void)updateLensAvailibilityForExtensions {
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  NSString* enableLensInWidgetKey =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupEnableLensInWidget);
+
+  const bool enableLensInWidget =
+      ios::provider::IsLensSupported() &&
+      base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget);
+  [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
 }
 
 @end

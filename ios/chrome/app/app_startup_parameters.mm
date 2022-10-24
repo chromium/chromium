@@ -78,6 +78,9 @@
     case START_QR_CODE_SCANNER:
       [description appendString:@", should launch QR scanner"];
       break;
+    case START_LENS:
+      [description appendString:@", should launch Lens"];
+      break;
     case START_VOICE_SEARCH:
       [description appendString:@", should launch voice search"];
       break;

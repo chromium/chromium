@@ -33,6 +33,7 @@ if (ios_enable_widget_kit_extension) {
     sources = [
       "user_defaults_widget_store.swift",
       "widget_metrics_logger.swift",
+      "widget_timelines_updater.swift",
     ]
 
     frameworks = [

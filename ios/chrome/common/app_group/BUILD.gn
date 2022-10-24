@@ -18,8 +18,24 @@ source_set("app_group") {
   ]
 
   deps = [
+    ":helper",
     "//base",
     "//components/version_info",
+    "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
+  ]
+}
+
+# This target will be included into application extensions and the list
+# of its dependencies must be kept as short as possible.
+source_set("helper") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "app_group_helper.h",
+    "app_group_helper.mm",
+  ]
+
+  deps = [
+    "//base",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
   ]
 }

@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
@@ -100,6 +101,7 @@
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
@@ -2211,6 +2213,10 @@ bool IsSigninForcedByPolicy() {
       return ^{
         [weakSelf startQRCodeScanner];
       };
+    case START_LENS:
+      return ^{
+        [weakSelf startLens];
+      };
     case FOCUS_OMNIBOX:
       return ^{
         [weakSelf focusOmnibox];
@@ -2246,6 +2252,16 @@ bool IsSigninForcedByPolicy() {
   id<QRScannerCommands> QRHandler = HandlerForProtocol(
       self.currentInterface.browser->GetCommandDispatcher(), QRScannerCommands);
   [QRHandler showQRScanner];
+}
+
+- (void)startLens {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+  id<LensCommands> lensHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), LensCommands);
+  [lensHandler
+      openInputSelectionForEntrypoint:LensEntrypoint::HomeScreenWidget];
 }
 
 - (void)focusOmnibox {

@@ -256,6 +256,9 @@ all other OS specific variables will be false.
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL" desc="Accessibility label for the QR scan action in the quick actions widget" meaning="Accessibility label for the QR search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Scan QR Code
       </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_LENS_A11Y_LABEL" desc="Accessibility label for the Lens action in the quick actions widget" meaning="Accessibility label for the Lens action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
+        Lens
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_VOICE_SEARCH_A11Y_LABEL" desc="Accessibility label for the Voice Search action in the quick actions widget" meaning="Accessibility label for the voice search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Voice Search
       </message>

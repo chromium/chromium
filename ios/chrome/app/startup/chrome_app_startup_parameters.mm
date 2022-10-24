@@ -63,6 +63,8 @@ NSString* const kWidgetKitActionIncognito = @"/incognito";
 NSString* const kWidgetKitActionVoiceSearch = @"/voicesearch";
 // Path for QR Reader action.
 NSString* const kWidgetKitActionQRReader = @"/qrreader";
+// Path for Lens action.
+NSString* const kWidgetKitActionLens = @"/lens";
 // Path for Game action.
 NSString* const kWidgetKitActionGame = @"/game";
 
@@ -107,6 +109,7 @@ enum SearchExtensionAction {
   ACTION_OPEN_URL,
   ACTION_SEARCH_TEXT,
   ACTION_SEARCH_IMAGE,
+  ACTION_LENS,
   SEARCH_EXTENSION_ACTION_COUNT,
 };
 
@@ -124,7 +127,8 @@ enum class WidgetKitExtensionAction {
   ACTION_LOCKSCREEN_LAUNCHER_INCOGNITO = 7,
   ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH = 8,
   ACTION_LOCKSCREEN_LAUNCHER_GAME = 9,
-  kMaxValue = ACTION_LOCKSCREEN_LAUNCHER_GAME,
+  ACTION_QUICK_ACTIONS_LENS = 10,
+  kMaxValue = ACTION_QUICK_ACTIONS_LENS,
 };
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
@@ -212,6 +216,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       command = app_group::kChromeAppGroupVoiceSearchCommand;
     } else if ([completeURL.path isEqual:kWidgetKitActionQRReader]) {
       command = app_group::kChromeAppGroupQRScannerCommand;
+    } else if ([completeURL.path isEqual:kWidgetKitActionLens]) {
+      command = app_group::kChromeAppGroupLensCommand;
     } else if ([completeURL.path isEqual:kWidgetKitActionGame]) {
       if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
         LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
@@ -555,6 +561,18 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     action = ACTION_NEW_QR_CODE_SEARCH;
   }
 
+  if ([command isEqualToString:base::SysUTF8ToNSString(
+                                   app_group::kChromeAppGroupLensCommand)]) {
+    params = [[ChromeAppStartupParameters alloc]
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appId
+            secureSourceApp:secureSourceApp
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
+    [params setPostOpeningAction:START_LENS];
+    action = ACTION_LENS;
+  }
+
   if ([command isEqualToString:
                    base::SysUTF8ToNSString(
                        app_group::kChromeAppGroupIncognitoSearchCommand)]) {
@@ -604,6 +622,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       case ACTION_NEW_QR_CODE_SEARCH:
         LogWidgetKitAction(
             WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_QR_READER);
+        break;
+
+      case ACTION_LENS:
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_LENS);
         break;
 
       case ACTION_NEW_INCOGNITO_SEARCH:

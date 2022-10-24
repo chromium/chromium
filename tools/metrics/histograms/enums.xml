@@ -53037,6 +53037,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="Open URL"/>
   <int value="6" label="Search Text"/>
   <int value="7" label="Search Image"/>
+  <int value="8" label="Search Image with Lens"/>
 </enum>
 
 <enum name="IOSSessionMigration">
@@ -53147,6 +53148,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="7" label="Lockscreen Launcher Widget - Incognito"/>
   <int value="8" label="Lockscreen Launcher Widget - Voice Search"/>
   <int value="9" label="Lockscreen Launcher Widget - Dino Game"/>
+  <int value="10" label="Quick Actions Widget - Lens"/>
 </enum>
 
 <enum name="IOSWidgetKitExtensionKind">

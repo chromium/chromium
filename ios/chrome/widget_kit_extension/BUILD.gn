@@ -44,6 +44,7 @@ swift_source_set("widget_kit_extension_swift") {
     "search_widget.swift",
     "widget_constants.swift",
   ]
+  bridge_header = "widget_kit_swift_bridge.h"
 
   deps = [
     ":system_strings",
@@ -57,11 +58,13 @@ swift_source_set("widget_kit_extension_swift") {
     "resources:widget_dino_background",
     "resources:widget_dino_background_placeholder",
     "resources:widget_incognito_icon",
+    "resources:widget_lens_icon",
     "resources:widget_qr_icon",
     "resources:widget_search_bar_color",
     "resources:widget_separator_color",
     "resources:widget_text_color",
     "resources:widget_voice_search_icon",
+    "//ios/chrome/common/app_group:helper",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

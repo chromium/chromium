@@ -3448,6 +3448,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ApplicationShortcut.LensPressedFromHomeScreenWidget">
+  <owner>schechter@google.com</owner>
+  <owner>hujasonx@google.com</owner>
+  <description>
+    User tapped the Lens icon in the quick actions home screen widget for Chrome
+    for iOS.
+  </description>
+</action>
+
 <action name="ApplicationShortcut.NewIncognitoSearchPressed">
   <owner>pschaffner@chromium.org</owner>
   <description>

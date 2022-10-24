@@ -79,6 +79,9 @@ extern const char kChromeAppGroupIncognitoSearchCommand[];
 // The command to open the QR Code scanner.
 extern const char kChromeAppGroupQRScannerCommand[];
 
+// The command to open Lens.
+extern const char kChromeAppGroupLensCommand[];
+
 // The key in kChromeAppGroupCommandPreference containing a NSDate at which
 // `kChromeAppGroupCommandAppPreference` issued the command.
 extern const char kChromeAppGroupCommandTimePreference[];
@@ -98,6 +101,15 @@ extern const char kChromeAppGroupCommandIndexPreference[];
 // The key of a preference containing whether the current default search engine
 // supports Search by Image.
 extern const char kChromeAppGroupSupportsSearchByImage[];
+
+// The key of a preference containing whether Google is the default search
+// engine.
+extern const char kChromeAppGroupIsGoogleDefaultSearchEngine[];
+
+// The key of a preference containing whether the home screen widget should show
+// a shortcut to Lens instead of the QR scanner if Google is the default search
+// provider.
+extern const char kChromeAppGroupEnableLensInWidget[];
 
 // The key of a preference containing Chrome client ID reported in the metrics
 // client ID. If the user does not opt in, this value must be cleared from the

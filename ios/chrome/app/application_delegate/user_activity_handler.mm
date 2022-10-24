@@ -54,6 +54,7 @@ NSString* const kShortcutNewSearch = @"OpenNewSearch";
 NSString* const kShortcutNewIncognitoSearch = @"OpenIncognitoSearch";
 NSString* const kShortcutVoiceSearch = @"OpenVoiceSearch";
 NSString* const kShortcutQRScanner = @"OpenQRScanner";
+NSString* const kShortcutLens = @"OpenLens";
 
 // Constants for Siri shortcut.
 NSString* const kSiriShortcutOpenInChrome = @"OpenInChromeIntent";
@@ -78,6 +79,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       [activityType isEqualToString:kShortcutNewSearch] ||
       [activityType isEqualToString:kShortcutVoiceSearch] ||
       [activityType isEqualToString:kShortcutQRScanner] ||
+      [activityType isEqualToString:kShortcutLens] ||
       [activityType isEqualToString:kSiriShortcutSearchInChrome]) {
     return @[ kRegularMode, kIncognitoMode ];
   } else if ([activityType isEqualToString:kSiriShortcutOpenInChrome]) {
@@ -617,6 +619,14 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     base::RecordAction(
         UserMetricsAction("ApplicationShortcut.ScanQRCodePressed"));
     startupParams.postOpeningAction = START_QR_CODE_SCANNER;
+    connectionInformation.startupParameters = startupParams;
+    return YES;
+  } else if ([shortcutItem.type isEqualToString:kShortcutLens]) {
+    // Use a specific action id, as other Lens startup entry points may be added
+    // in the future (e.g. Spotlight).
+    base::RecordAction(UserMetricsAction(
+        "ApplicationShortcut.LensPressedFromHomeScreenWidget"));
+    startupParams.postOpeningAction = START_LENS;
     connectionInformation.startupParameters = startupParams;
     return YES;
   }

@@ -394,6 +394,24 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitQRReader) {
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 5, 1);
 }
 
+// Tests that quick actions widget Lens url is parsed correctly, and the
+// right metric is recorded.
+TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitLens) {
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:@"chromewidgetkit://quick-actions-widget/lens"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, START_LENS);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 10, 1);
+}
+
 // Tests that dino widget game url is parsed correctly, and the right metric is
 // recorded.
 TEST_F(AppStartupParametersTest, ParseDinoWidgetKit) {

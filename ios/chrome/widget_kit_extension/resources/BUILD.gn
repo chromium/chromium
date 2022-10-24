@@ -97,6 +97,18 @@ imageset("widget_qr_icon") {
   ]
 }
 
+imageset("widget_lens_icon") {
+  sources = [
+    "widget_lens_icon.imageset/Contents.json",
+    "widget_lens_icon.imageset/widget_lens_icon_dark.png",
+    "widget_lens_icon.imageset/widget_lens_icon_dark@2x.png",
+    "widget_lens_icon.imageset/widget_lens_icon_dark@3x.png",
+    "widget_lens_icon.imageset/widget_lens_icon_light.png",
+    "widget_lens_icon.imageset/widget_lens_icon_light@2x.png",
+    "widget_lens_icon.imageset/widget_lens_icon_light@3x.png",
+  ]
+}
+
 imageset("widget_voice_search_icon") {
   sources = [
     "widget_voice_search_icon.imageset/Contents.json",

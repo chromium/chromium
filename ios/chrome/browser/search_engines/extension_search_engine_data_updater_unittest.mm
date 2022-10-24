@@ -21,7 +21,9 @@ class ExtensionSearchEngineDataUpdaterTest : public PlatformTest {
  protected:
   ExtensionSearchEngineDataUpdaterTest()
       : search_by_image_key_(base::SysUTF8ToNSString(
-            app_group::kChromeAppGroupSupportsSearchByImage)) {}
+            app_group::kChromeAppGroupSupportsSearchByImage)),
+        is_google_key_(base::SysUTF8ToNSString(
+            app_group::kChromeAppGroupIsGoogleDefaultSearchEngine)) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -40,11 +42,17 @@ class ExtensionSearchEngineDataUpdaterTest : public PlatformTest {
     return [shared_defaults boolForKey:search_by_image_key_];
   }
 
+  bool StoredIsGoogleDefaultSearchEngine() {
+    NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+    return [shared_defaults boolForKey:is_google_key_];
+  }
+
   std::unique_ptr<TemplateURLService> template_url_service_;
 
  private:
   std::unique_ptr<ExtensionSearchEngineDataUpdater> observer_;
   NSString* search_by_image_key_;
+  NSString* is_google_key_;
 };
 
 TEST_F(ExtensionSearchEngineDataUpdaterTest, AddSupportedSearchEngine) {
@@ -74,4 +82,22 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddUnsupportedSearchEngine) {
       &unsupported_template_url);
 
   ASSERT_FALSE(StoredSupportsSearchByImage());
+}
+
+TEST_F(ExtensionSearchEngineDataUpdaterTest, AddGoogleSearchEngine) {
+  ASSERT_FALSE(StoredSupportsSearchByImage());
+
+  TemplateURLData google_template_url_data(
+      u" shortname ", u" keyword ", "https://google.com", base::StringPiece(),
+      base::StringPiece(), base::StringPiece(), base::StringPiece(),
+      base::StringPiece(), base::StringPiece(), base::StringPiece(),
+      base::StringPiece(), base::StringPiece(), base::StringPiece(),
+      base::StringPiece(), base::StringPiece(), base::StringPiece(),
+      base::StringPiece16(), base::ListValue(), false, false, 0);
+  TemplateURL google_template_url(google_template_url_data);
+
+  template_url_service_->SetUserSelectedDefaultSearchProvider(
+      &google_template_url);
+
+  ASSERT_TRUE(StoredIsGoogleDefaultSearchEngine());
 }

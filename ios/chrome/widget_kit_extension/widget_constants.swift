@@ -17,6 +17,10 @@ struct WidgetConstants {
       URL(string: "chromewidgetkit://quick-actions-widget/voicesearch")!
     static let qrCodeUrl =
       URL(string: "chromewidgetkit://quick-actions-widget/qrreader")!
+    static let lensUrl =
+      URL(string: "chromewidgetkit://quick-actions-widget/lens")!
+    static let isGoogleDefaultSearchEngineKey = "isGoogleDefaultSearchEngine"
+    static let enableLensInWidgetKey = "enableLensInWidget"
   }
   struct DinoGameWidget {
     static let url = URL(string: "chromewidgetkit://dino-game-widget/game")!
