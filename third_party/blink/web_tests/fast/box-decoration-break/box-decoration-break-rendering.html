@@ -5,7 +5,6 @@
     <style type="text/css">
     body {
         width:  360px;
-        font: monospace 10px;
     }
     span {
         display: block;
@@ -30,8 +29,10 @@
     </head>
     <body>
     <h1>Box-decoration-break: slice</h1>
-    <span id="slice">This long word should break in a new line : <highlight>veryveryveryveryveryveryvery-<br>-longword</highlight>. box-decoration-break is set to cloned,
-    so the right edge of the previous line is cut, and the left edge of the highlight in this line is cut too.</span>
+    <div style="line-height:40px;">
+      <span id="slice">This long word should break in a new line : <highlight>veryveryveryveryveryveryvery-<br>-longword</highlight>. box-decoration-break is set to cloned,
+        so the right edge of the previous line is cut, and the left edge of the highlight in this line is cut too.</span>
+    </div>
     <h1>Box-decoration-break: clone</h1>
     <span id="clone">This long word should break in a new line : <highlight>veryveryveryveryveryveryvery-<br>-longword</highlight>. box-decoration-break is set to cloned,
     so the right edge of the previous line is similar as its left edge, and the left edge of the highlight in this line is similar as its right one. </span>

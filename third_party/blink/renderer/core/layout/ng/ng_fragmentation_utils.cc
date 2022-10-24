@@ -571,6 +571,11 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
       // in order to write offsets correctly back to legacy layout.
       builder->SetConsumedBlockSize(previously_consumed_block_size +
                                     std::max(final_block_size, space_left));
+    } else {
+      // If we're not at the end, it means that block-end border and shadow
+      // should be omitted.
+      sides.block_end = false;
+      builder->SetSidesToInclude(sides);
     }
 
     return NGBreakStatus::kContinue;
