@@ -148,8 +148,7 @@ Transform ApproxIdentityMatrix(double error) {
                              error, error, error, 1.0 - error);  // col3
 }
 
-#define ERROR_THRESHOLD 1e-7
-#define LOOSE_ERROR_THRESHOLD 1e-7
+constexpr double kErrorThreshold = 1e-7;
 
 TEST(XFormTest, Equality) {
   Transform lhs, interpolated;
@@ -957,13 +956,13 @@ TEST(XFormTest, VerifyBlendForSkew) {
   to = Transform();
   to.Skew(0.0, 45.0);
   to.Blend(from, 1.0);
-  EXPECT_ROW1_NEAR(1.0, 0.0, 0.0, 0.0, to, LOOSE_ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(1.0, 1.0, 0.0, 0.0, to, LOOSE_ERROR_THRESHOLD);
+  EXPECT_ROW1_NEAR(1.0, 0.0, 0.0, 0.0, to, kErrorThreshold);
+  EXPECT_ROW2_NEAR(1.0, 1.0, 0.0, 0.0, to, kErrorThreshold);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, to);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 }
 
-TEST(XFormTest, VerifyBlendForRotationAboutX) {
+TEST(XFormTest, BlendForRotationAboutX) {
   // Even though.Blending uses quaternions, axis-aligned rotations should.
   // Blend the same with quaternions or Euler angles. So we can test
   // rotation.Blending by comparing against manually specified matrices from
@@ -982,34 +981,34 @@ TEST(XFormTest, VerifyBlendForRotationAboutX) {
   to = Transform();
   to.RotateAbout(Vector3dF(1.0, 0.0, 0.0), 90.0);
   to.Blend(from, 0.25);
-  EXPECT_ROW1_NEAR(1.0, 0.0, 0.0, 0.0, to, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(1.0, 0.0, 0.0, 0.0, to);
   EXPECT_ROW2_NEAR(0.0, std::cos(expectedRotationAngle),
-                   -std::sin(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
+                   -std::sin(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW3_NEAR(0.0, std::sin(expectedRotationAngle),
-                   std::cos(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
+                   std::cos(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
   expectedRotationAngle = gfx::DegToRad(45.0);
   to = Transform();
   to.RotateAbout(Vector3dF(1.0, 0.0, 0.0), 90.0);
   to.Blend(from, 0.5);
-  EXPECT_ROW1_NEAR(1.0, 0.0, 0.0, 0.0, to, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(1.0, 0.0, 0.0, 0.0, to);
   EXPECT_ROW2_NEAR(0.0, std::cos(expectedRotationAngle),
-                   -std::sin(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
+                   -std::sin(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW3_NEAR(0.0, std::sin(expectedRotationAngle),
-                   std::cos(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
+                   std::cos(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
   to = Transform();
   to.RotateAbout(Vector3dF(1.0, 0.0, 0.0), 90.0);
   to.Blend(from, 1.0);
-  EXPECT_ROW1_NEAR(1.0, 0.0, 0.0, 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(0.0, 0.0, -1.0, 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, 1.0, 0.0, 0.0, to, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(1.0, 0.0, 0.0, 0.0, to);
+  EXPECT_ROW2_NEAR(0.0, 0.0, -1.0, 0.0, to, kErrorThreshold);
+  EXPECT_ROW3_NEAR(0.0, 1.0, 0.0, 0.0, to, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 }
 
-TEST(XFormTest, VerifyBlendForRotationAboutY) {
+TEST(XFormTest, BlendForRotationAboutY) {
   Transform from;
   from.RotateAbout(Vector3dF(0.0, 1.0, 0.0), 0.0);
 
@@ -1024,10 +1023,10 @@ TEST(XFormTest, VerifyBlendForRotationAboutY) {
   to.RotateAbout(Vector3dF(0.0, 1.0, 0.0), 90.0);
   to.Blend(from, 0.25);
   EXPECT_ROW1_NEAR(std::cos(expectedRotationAngle), 0.0,
-                   std::sin(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(0.0, 1.0, 0.0, 0.0, to, ERROR_THRESHOLD);
+                   std::sin(expectedRotationAngle), 0.0, to, kErrorThreshold);
+  EXPECT_ROW2_EQ(0.0, 1.0, 0.0, 0.0, to);
   EXPECT_ROW3_NEAR(-std::sin(expectedRotationAngle), 0.0,
-                   std::cos(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
+                   std::cos(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
   expectedRotationAngle = gfx::DegToRad(45.0);
@@ -1035,22 +1034,22 @@ TEST(XFormTest, VerifyBlendForRotationAboutY) {
   to.RotateAbout(Vector3dF(0.0, 1.0, 0.0), 90.0);
   to.Blend(from, 0.5);
   EXPECT_ROW1_NEAR(std::cos(expectedRotationAngle), 0.0,
-                   std::sin(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(0.0, 1.0, 0.0, 0.0, to, ERROR_THRESHOLD);
+                   std::sin(expectedRotationAngle), 0.0, to, kErrorThreshold);
+  EXPECT_ROW2_EQ(0.0, 1.0, 0.0, 0.0, to);
   EXPECT_ROW3_NEAR(-std::sin(expectedRotationAngle), 0.0,
-                   std::cos(expectedRotationAngle), 0.0, to, ERROR_THRESHOLD);
+                   std::cos(expectedRotationAngle), 0.0, to, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
   to = Transform();
   to.RotateAbout(Vector3dF(0.0, 1.0, 0.0), 90.0);
   to.Blend(from, 1.0);
-  EXPECT_ROW1_NEAR(0.0, 0.0, 1.0, 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(0.0, 1.0, 0.0, 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(-1.0, 0.0, 0.0, 0.0, to, ERROR_THRESHOLD);
+  EXPECT_ROW1_NEAR(0.0, 0.0, 1.0, 0.0, to, kErrorThreshold);
+  EXPECT_ROW2_EQ(0.0, 1.0, 0.0, 0.0, to);
+  EXPECT_ROW3_NEAR(-1.0, 0.0, 0.0, 0.0, to, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 }
 
-TEST(XFormTest, VerifyBlendForRotationAboutZ) {
+TEST(XFormTest, BlendForRotationAboutZ) {
   Transform from;
   from.RotateAbout(Vector3dF(0.0, 0.0, 1.0), 0.0);
 
@@ -1066,11 +1065,11 @@ TEST(XFormTest, VerifyBlendForRotationAboutZ) {
   to.Blend(from, 0.25);
   EXPECT_ROW1_NEAR(std::cos(expectedRotationAngle),
                    -std::sin(expectedRotationAngle), 0.0, 0.0, to,
-                   ERROR_THRESHOLD);
+                   kErrorThreshold);
   EXPECT_ROW2_NEAR(std::sin(expectedRotationAngle),
                    std::cos(expectedRotationAngle), 0.0, 0.0, to,
-                   ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, 0.0, 1.0, 0.0, to, ERROR_THRESHOLD);
+                   kErrorThreshold);
+  EXPECT_ROW3_EQ(0.0, 0.0, 1.0, 0.0, to);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
   expectedRotationAngle = gfx::DegToRad(45.0);
@@ -1079,19 +1078,19 @@ TEST(XFormTest, VerifyBlendForRotationAboutZ) {
   to.Blend(from, 0.5);
   EXPECT_ROW1_NEAR(std::cos(expectedRotationAngle),
                    -std::sin(expectedRotationAngle), 0.0, 0.0, to,
-                   ERROR_THRESHOLD);
+                   kErrorThreshold);
   EXPECT_ROW2_NEAR(std::sin(expectedRotationAngle),
                    std::cos(expectedRotationAngle), 0.0, 0.0, to,
-                   ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, 0.0, 1.0, 0.0, to, ERROR_THRESHOLD);
+                   kErrorThreshold);
+  EXPECT_ROW3_EQ(0.0, 0.0, 1.0, 0.0, to);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 
   to = Transform();
   to.RotateAbout(Vector3dF(0.0, 0.0, 1.0), 90.0);
   to.Blend(from, 1.0);
-  EXPECT_ROW1_NEAR(0.0, -1.0, 0.0, 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(1.0, 0.0, 0.0, 0.0, to, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, 0.0, 1.0, 0.0, to, ERROR_THRESHOLD);
+  EXPECT_ROW1_NEAR(0.0, -1.0, 0.0, 0.0, to, kErrorThreshold);
+  EXPECT_ROW2_NEAR(1.0, 0.0, 0.0, 0.0, to, kErrorThreshold);
+  EXPECT_ROW3_EQ(0.0, 0.0, 1.0, 0.0, to);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, to);
 }
 
@@ -1761,11 +1760,11 @@ TEST(XFormTest, verifyPostScale3d) {
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 }
 
-TEST(XFormTest, verifyRotate) {
+TEST(XFormTest, Rotate) {
   Transform A;
   A.Rotate(90.0);
-  EXPECT_ROW1_NEAR(0.0, -1.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(1.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, -1.0, 0.0, 0.0, A);
+  EXPECT_ROW2_EQ(1.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
@@ -1773,13 +1772,13 @@ TEST(XFormTest, verifyRotate) {
   A.MakeIdentity();
   A.Scale3d(6.0, 7.0, 8.0);
   A.Rotate(90.0);
-  EXPECT_ROW1_NEAR(0.0, -6.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(7.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, -6.0, 0.0, 0.0, A);
+  EXPECT_ROW2_EQ(7.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 8.0f, 0.0f, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 }
 
-TEST(XFormTest, verifyRotateAboutXAxis) {
+TEST(XFormTest, RotateAboutXAxis) {
   Transform A;
   double sin45 = 0.5 * sqrt(2.0);
   double cos45 = sin45;
@@ -1787,28 +1786,28 @@ TEST(XFormTest, verifyRotateAboutXAxis) {
   A.MakeIdentity();
   A.RotateAboutXAxis(90.0);
   EXPECT_ROW1_EQ(1.0f, 0.0f, 0.0f, 0.0f, A);
-  EXPECT_ROW2_NEAR(0.0, 0.0, -1.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, 1.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW2_EQ(0.0, 0.0, -1.0, 0.0, A);
+  EXPECT_ROW3_EQ(0.0, 1.0, 0.0, 0.0, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
   A.MakeIdentity();
   A.RotateAboutXAxis(45.0);
   EXPECT_ROW1_EQ(1.0f, 0.0f, 0.0f, 0.0f, A);
-  EXPECT_ROW2_NEAR(0.0, cos45, -sin45, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, sin45, cos45, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW2_NEAR(0.0, cos45, -sin45, 0.0, A, kErrorThreshold);
+  EXPECT_ROW3_NEAR(0.0, sin45, cos45, 0.0, A, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
   // Verify that RotateAboutXAxis(angle) post-multiplies the existing matrix.
   A.MakeIdentity();
   A.Scale3d(6.0, 7.0, 8.0);
   A.RotateAboutXAxis(90.0);
-  EXPECT_ROW1_NEAR(6.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(0.0, 0.0, -7.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, 8.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(6.0, 0.0, 0.0, 0.0, A);
+  EXPECT_ROW2_EQ(0.0, 0.0, -7.0, 0.0, A);
+  EXPECT_ROW3_EQ(0.0, 8.0, 0.0, 0.0, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 }
 
-TEST(XFormTest, verifyRotateAboutYAxis) {
+TEST(XFormTest, RotateAboutYAxis) {
   Transform A;
   double sin45 = 0.5 * sqrt(2.0);
   double cos45 = sin45;
@@ -1817,44 +1816,44 @@ TEST(XFormTest, verifyRotateAboutYAxis) {
   // about x axis or z axis.
   A.MakeIdentity();
   A.RotateAboutYAxis(90.0);
-  EXPECT_ROW1_NEAR(0.0, 0.0, 1.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, 0.0, 1.0, 0.0, A);
   EXPECT_ROW2_EQ(0.0f, 1.0f, 0.0f, 0.0f, A);
-  EXPECT_ROW3_NEAR(-1.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW3_EQ(-1.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
   A.MakeIdentity();
   A.RotateAboutYAxis(45.0);
-  EXPECT_ROW1_NEAR(cos45, 0.0, sin45, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_NEAR(cos45, 0.0, sin45, 0.0, A, kErrorThreshold);
   EXPECT_ROW2_EQ(0.0f, 1.0f, 0.0f, 0.0f, A);
-  EXPECT_ROW3_NEAR(-sin45, 0.0, cos45, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW3_NEAR(-sin45, 0.0, cos45, 0.0, A, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
   // Verify that RotateAboutYAxis(angle) post-multiplies the existing matrix.
   A.MakeIdentity();
   A.Scale3d(6.0, 7.0, 8.0);
   A.RotateAboutYAxis(90.0);
-  EXPECT_ROW1_NEAR(0.0, 0.0, 6.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(0.0, 7.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(-8.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, 0.0, 6.0, 0.0, A);
+  EXPECT_ROW2_EQ(0.0, 7.0, 0.0, 0.0, A);
+  EXPECT_ROW3_EQ(-8.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 }
 
-TEST(XFormTest, verifyRotateAboutZAxis) {
+TEST(XFormTest, RotateAboutZAxis) {
   Transform A;
   double sin45 = 0.5 * sqrt(2.0);
   double cos45 = sin45;
 
   A.MakeIdentity();
   A.RotateAboutZAxis(90.0);
-  EXPECT_ROW1_NEAR(0.0, -1.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(1.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, -1.0, 0.0, 0.0, A);
+  EXPECT_ROW2_EQ(1.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
   A.MakeIdentity();
   A.RotateAboutZAxis(45.0);
-  EXPECT_ROW1_NEAR(cos45, -sin45, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(sin45, cos45, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_NEAR(cos45, -sin45, 0.0, 0.0, A, kErrorThreshold);
+  EXPECT_ROW2_NEAR(sin45, cos45, 0.0, 0.0, A, kErrorThreshold);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
@@ -1862,20 +1861,20 @@ TEST(XFormTest, verifyRotateAboutZAxis) {
   A.MakeIdentity();
   A.Scale3d(6.0, 7.0, 8.0);
   A.RotateAboutZAxis(90.0);
-  EXPECT_ROW1_NEAR(0.0, -6.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(7.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, -6.0, 0.0, 0.0, A);
+  EXPECT_ROW2_EQ(7.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 8.0f, 0.0f, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 }
 
-TEST(XFormTest, verifyRotateAboutForAlignedAxes) {
+TEST(XFormTest, RotateAboutForAlignedAxes) {
   Transform A;
 
   // Check rotation about z-axis
   A.MakeIdentity();
   A.RotateAbout(Vector3dF(0.0, 0.0, 1.0), 90.0);
-  EXPECT_ROW1_NEAR(0.0, -1.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(1.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, -1.0, 0.0, 0.0, A);
+  EXPECT_ROW2_EQ(1.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
@@ -1883,25 +1882,25 @@ TEST(XFormTest, verifyRotateAboutForAlignedAxes) {
   A.MakeIdentity();
   A.RotateAbout(Vector3dF(1.0, 0.0, 0.0), 90.0);
   EXPECT_ROW1_EQ(1.0f, 0.0f, 0.0f, 0.0f, A);
-  EXPECT_ROW2_NEAR(0.0, 0.0, -1.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW3_NEAR(0.0, 1.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW2_EQ(0.0, 0.0, -1.0, 0.0, A);
+  EXPECT_ROW3_EQ(0.0, 1.0, 0.0, 0.0, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
   // Check rotation about y-axis. Note carefully, the expected pattern is
   // inverted compared to rotating about x axis or z axis.
   A.MakeIdentity();
   A.RotateAbout(Vector3dF(0.0, 1.0, 0.0), 90.0);
-  EXPECT_ROW1_NEAR(0.0, 0.0, 1.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, 0.0, 1.0, 0.0, A);
   EXPECT_ROW2_EQ(0.0f, 1.0f, 0.0f, 0.0f, A);
-  EXPECT_ROW3_NEAR(-1.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW3_EQ(-1.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 
   // Verify that rotate3d(axis, angle) post-multiplies the existing matrix.
   A.MakeIdentity();
   A.Scale3d(6.0, 7.0, 8.0);
   A.RotateAboutZAxis(90.0);
-  EXPECT_ROW1_NEAR(0.0, -6.0, 0.0, 0.0, A, ERROR_THRESHOLD);
-  EXPECT_ROW2_NEAR(7.0, 0.0, 0.0, 0.0, A, ERROR_THRESHOLD);
+  EXPECT_ROW1_EQ(0.0, -6.0, 0.0, 0.0, A);
+  EXPECT_ROW2_EQ(7.0, 0.0, 0.0, 0.0, A);
   EXPECT_ROW3_EQ(0.0f, 0.0f, 8.0f, 0.0f, A);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 }
@@ -1911,11 +1910,11 @@ TEST(XFormTest, verifyRotateAboutForArbitraryAxis) {
   Transform A;
   A.RotateAbout(Vector3dF(1.0, 1.0, 1.0), 90.0);
   EXPECT_ROW1_NEAR(0.3333333333333334258519187, -0.2440169358562924717404030,
-                   0.9106836025229592124219380, 0.0, A, ERROR_THRESHOLD);
+                   0.9106836025229592124219380, 0.0, A, kErrorThreshold);
   EXPECT_ROW2_NEAR(0.9106836025229592124219380, 0.3333333333333334258519187,
-                   -0.2440169358562924717404030, 0.0, A, ERROR_THRESHOLD);
+                   -0.2440169358562924717404030, 0.0, A, kErrorThreshold);
   EXPECT_ROW3_NEAR(-0.2440169358562924717404030, 0.9106836025229592124219380,
-                   0.3333333333333334258519187, 0.0, A, ERROR_THRESHOLD);
+                   0.3333333333333334258519187, 0.0, A, kErrorThreshold);
   EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, A);
 }
 
@@ -2544,44 +2543,44 @@ static bool EmpiricallyPreserves2dAxisAlignment(const Transform& transform) {
 
 TEST(XFormTest, Preserves2dAxisAlignment) {
   static const struct TestCase {
-    SkScalar a;  // row 1, column 1
-    SkScalar b;  // row 1, column 2
-    SkScalar c;  // row 2, column 1
-    SkScalar d;  // row 2, column 2
+    double a;  // row 1, column 1
+    double b;  // row 1, column 2
+    double c;  // row 2, column 1
+    double d;  // row 2, column 2
     bool expected;
     bool degenerate;
   } test_cases[] = {
       // clang-format off
-      { 3.f, 0.f,
-        0.f, 4.f, true, false },  // basic case
-      { 0.f, 4.f,
-        3.f, 0.f, true, false },  // rotate by 90
-      { 0.f, 0.f,
-        0.f, 4.f, true, true },   // degenerate x
-      { 3.f, 0.f,
-        0.f, 0.f, true, true },   // degenerate y
-      { 0.f, 0.f,
-        3.f, 0.f, true, true },   // degenerate x + rotate by 90
-      { 0.f, 4.f,
-        0.f, 0.f, true, true },   // degenerate y + rotate by 90
-      { 3.f, 4.f,
-        0.f, 0.f, false, true },
-      { 0.f, 0.f,
-        3.f, 4.f, false, true },
-      { 0.f, 3.f,
-        0.f, 4.f, false, true },
-      { 3.f, 0.f,
-        4.f, 0.f, false, true },
-      { 3.f, 4.f,
-        5.f, 0.f, false, false },
-      { 3.f, 4.f,
-        0.f, 5.f, false, false },
-      { 3.f, 0.f,
-        4.f, 5.f, false, false },
-      { 0.f, 3.f,
-        4.f, 5.f, false, false },
-      { 2.f, 3.f,
-        4.f, 5.f, false, false },
+      { 3.0, 0.0,
+        0.0, 4.0, true, false },  // basic case
+      { 0.0, 4.0,
+        3.0, 0.0, true, false },  // rotate by 90
+      { 0.0, 0.0,
+        0.0, 4.0, true, true },   // degenerate x
+      { 3.0, 0.0,
+        0.0, 0.0, true, true },   // degenerate y
+      { 0.0, 0.0,
+        3.0, 0.0, true, true },   // degenerate x + rotate by 90
+      { 0.0, 4.0,
+        0.0, 0.0, true, true },   // degenerate y + rotate by 90
+      { 3.0, 4.0,
+        0.0, 0.0, false, true },
+      { 0.0, 0.0,
+        3.0, 4.0, false, true },
+      { 0.0, 3.0,
+        0.0, 4.0, false, true },
+      { 3.0, 0.0,
+        4.0, 0.0, false, true },
+      { 3.0, 4.0,
+        5.0, 0.0, false, false },
+      { 3.0, 4.0,
+        0.0, 5.0, false, false },
+      { 3.0, 0.0,
+        4.0, 5.0, false, false },
+      { 0.0, 3.0,
+        4.0, 5.0, false, false },
+      { 2.0, 3.0,
+        4.0, 5.0, false, false },
       // clang-format on
   };
 
@@ -2670,52 +2669,53 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
 
   // Try a few more practical situations to check precision
   transform.MakeIdentity();
-  transform.RotateAboutZAxis(90.0);
+  constexpr double kNear90Degrees = 90.0 + kErrorThreshold / 2;
+  transform.RotateAboutZAxis(kNear90Degrees);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
-  transform.RotateAboutZAxis(180.0);
+  transform.RotateAboutZAxis(kNear90Degrees * 2);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
-  transform.RotateAboutZAxis(270.0);
+  transform.RotateAboutZAxis(kNear90Degrees * 3);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
-  transform.RotateAboutYAxis(90.0);
+  transform.RotateAboutYAxis(kNear90Degrees);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
-  transform.RotateAboutXAxis(90.0);
+  transform.RotateAboutXAxis(kNear90Degrees);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
-  transform.RotateAboutZAxis(90.0);
-  transform.RotateAboutYAxis(90.0);
+  transform.RotateAboutZAxis(kNear90Degrees);
+  transform.RotateAboutYAxis(kNear90Degrees);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
-  transform.RotateAboutZAxis(90.0);
-  transform.RotateAboutXAxis(90.0);
+  transform.RotateAboutZAxis(kNear90Degrees);
+  transform.RotateAboutXAxis(kNear90Degrees);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
-  transform.RotateAboutYAxis(90.0);
-  transform.RotateAboutZAxis(90.0);
+  transform.RotateAboutYAxis(kNear90Degrees);
+  transform.RotateAboutZAxis(kNear90Degrees);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
   EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
@@ -2954,6 +2954,39 @@ TEST(XFormTest, Make90NRotation) {
   EXPECT_TRUE(t4.IsIdentity());
   t2.PreConcat(t2);
   EXPECT_TRUE(t2.IsIdentity());
+}
+
+TEST(XFormTest, Rotate90NDegrees) {
+  Transform t1;
+  t1.Rotate(90);
+  EXPECT_EQ(Transform::Make90degRotation(), t1);
+
+  Transform t2;
+  t2.Rotate(180);
+  EXPECT_EQ(Transform::Make180degRotation(), t2);
+
+  Transform t3;
+  t3.Rotate(270);
+  EXPECT_EQ(Transform::Make270degRotation(), t3);
+
+  Transform t4;
+  t4.Rotate(360);
+  EXPECT_EQ(Transform(), t4);
+  t4.Rotate(-270);
+  EXPECT_EQ(t1, t4);
+  t4.Rotate(-180);
+  EXPECT_EQ(t3, t4);
+  t4.Rotate(270);
+  EXPECT_EQ(t2, t4);
+
+  t1.Rotate(-90);
+  t2.Rotate(180);
+  t3.Rotate(-270);
+  t4.Rotate(-180);
+  EXPECT_TRUE(t1.IsIdentity());
+  EXPECT_TRUE(t2.IsIdentity());
+  EXPECT_TRUE(t3.IsIdentity());
+  EXPECT_TRUE(t4.IsIdentity());
 }
 
 TEST(XFormTest, MapPoint) {

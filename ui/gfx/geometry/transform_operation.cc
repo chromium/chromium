@@ -25,6 +25,13 @@ const SkScalar kAngleEpsilon = 1e-4f;
 namespace gfx {
 
 bool TransformOperation::IsIdentity() const {
+  if (type == TRANSFORM_OPERATION_ROTATE) {
+    // We can't use matrix.IsIdentity() because rotate(n*360) is not identity,
+    // but the matrix is identity.
+    return rotate.angle == 0 ||
+           // Rotation with zero length axis is treated as identity.
+           (rotate.axis.x == 0 && rotate.axis.y == 0 && rotate.axis.z == 0);
+  }
   return matrix.IsIdentity();
 }
 
@@ -33,15 +40,18 @@ static bool IsOperationIdentity(const TransformOperation* operation) {
 }
 
 static bool ShareSameAxis(const TransformOperation* from,
+                          bool is_identity_from,
                           const TransformOperation* to,
+                          bool is_identity_to,
                           SkScalar* axis_x,
                           SkScalar* axis_y,
                           SkScalar* axis_z,
                           SkScalar* angle_from) {
-  if (IsOperationIdentity(from) && IsOperationIdentity(to))
-    return false;
+  DCHECK_EQ(is_identity_from, IsOperationIdentity(from));
+  DCHECK_EQ(is_identity_to, IsOperationIdentity(to));
+  DCHECK(!is_identity_from || !is_identity_to);
 
-  if (IsOperationIdentity(from) && !IsOperationIdentity(to)) {
+  if (is_identity_from && !is_identity_to) {
     *axis_x = to->rotate.axis.x;
     *axis_y = to->rotate.axis.y;
     *axis_z = to->rotate.axis.z;
@@ -49,7 +59,7 @@ static bool ShareSameAxis(const TransformOperation* from,
     return true;
   }
 
-  if (!IsOperationIdentity(from) && IsOperationIdentity(to)) {
+  if (!is_identity_from && is_identity_to) {
     *axis_x = from->rotate.axis.x;
     *axis_y = from->rotate.axis.y;
     *axis_z = from->rotate.axis.z;
@@ -175,12 +185,14 @@ bool TransformOperation::BlendTransformOperations(
     const TransformOperation* to,
     SkScalar progress,
     TransformOperation* result) {
-  if (IsOperationIdentity(from) && IsOperationIdentity(to))
+  bool is_identity_from = IsOperationIdentity(from);
+  bool is_identity_to = IsOperationIdentity(to);
+  if (is_identity_from && is_identity_to)
     return true;
 
   TransformOperation::Type interpolation_type =
       TransformOperation::TRANSFORM_OPERATION_IDENTITY;
-  if (IsOperationIdentity(to))
+  if (is_identity_to)
     interpolation_type = from->type;
   else
     interpolation_type = to->type;
@@ -188,12 +200,12 @@ bool TransformOperation::BlendTransformOperations(
 
   switch (interpolation_type) {
     case TransformOperation::TRANSFORM_OPERATION_TRANSLATE: {
-      SkScalar from_x = IsOperationIdentity(from) ? 0 : from->translate.x;
-      SkScalar from_y = IsOperationIdentity(from) ? 0 : from->translate.y;
-      SkScalar from_z = IsOperationIdentity(from) ? 0 : from->translate.z;
-      SkScalar to_x = IsOperationIdentity(to) ? 0 : to->translate.x;
-      SkScalar to_y = IsOperationIdentity(to) ? 0 : to->translate.y;
-      SkScalar to_z = IsOperationIdentity(to) ? 0 : to->translate.z;
+      SkScalar from_x = is_identity_from ? 0 : from->translate.x;
+      SkScalar from_y = is_identity_from ? 0 : from->translate.y;
+      SkScalar from_z = is_identity_from ? 0 : from->translate.z;
+      SkScalar to_x = is_identity_to ? 0 : to->translate.x;
+      SkScalar to_y = is_identity_to ? 0 : to->translate.y;
+      SkScalar to_z = is_identity_to ? 0 : to->translate.z;
       result->translate.x = BlendSkScalars(from_x, to_x, progress),
       result->translate.y = BlendSkScalars(from_y, to_y, progress),
       result->translate.z = BlendSkScalars(from_z, to_z, progress),
@@ -205,18 +217,19 @@ bool TransformOperation::BlendTransformOperations(
       SkScalar axis_y = 0;
       SkScalar axis_z = 1;
       SkScalar from_angle = 0;
-      SkScalar to_angle = IsOperationIdentity(to) ? 0 : to->rotate.angle;
-      if (ShareSameAxis(from, to, &axis_x, &axis_y, &axis_z, &from_angle)) {
+      SkScalar to_angle = is_identity_to ? 0 : to->rotate.angle;
+      if (ShareSameAxis(from, is_identity_from, to, is_identity_to, &axis_x,
+                        &axis_y, &axis_z, &from_angle)) {
         result->rotate.axis.x = axis_x;
         result->rotate.axis.y = axis_y;
         result->rotate.axis.z = axis_z;
         result->rotate.angle = BlendSkScalars(from_angle, to_angle, progress);
         result->Bake();
       } else {
-        if (!IsOperationIdentity(to))
+        if (!is_identity_to)
           result->matrix = to->matrix;
         gfx::Transform from_matrix;
-        if (!IsOperationIdentity(from))
+        if (!is_identity_from)
           from_matrix = from->matrix;
         if (!result->matrix.Blend(from_matrix, progress))
           return false;
@@ -224,12 +237,12 @@ bool TransformOperation::BlendTransformOperations(
       break;
     }
     case TransformOperation::TRANSFORM_OPERATION_SCALE: {
-      SkScalar from_x = IsOperationIdentity(from) ? 1 : from->scale.x;
-      SkScalar from_y = IsOperationIdentity(from) ? 1 : from->scale.y;
-      SkScalar from_z = IsOperationIdentity(from) ? 1 : from->scale.z;
-      SkScalar to_x = IsOperationIdentity(to) ? 1 : to->scale.x;
-      SkScalar to_y = IsOperationIdentity(to) ? 1 : to->scale.y;
-      SkScalar to_z = IsOperationIdentity(to) ? 1 : to->scale.z;
+      SkScalar from_x = is_identity_from ? 1 : from->scale.x;
+      SkScalar from_y = is_identity_from ? 1 : from->scale.y;
+      SkScalar from_z = is_identity_from ? 1 : from->scale.z;
+      SkScalar to_x = is_identity_to ? 1 : to->scale.x;
+      SkScalar to_y = is_identity_to ? 1 : to->scale.y;
+      SkScalar to_z = is_identity_to ? 1 : to->scale.z;
       result->scale.x = BlendSkScalars(from_x, to_x, progress);
       result->scale.y = BlendSkScalars(from_y, to_y, progress);
       result->scale.z = BlendSkScalars(from_z, to_z, progress);
@@ -239,10 +252,10 @@ bool TransformOperation::BlendTransformOperations(
     case TransformOperation::TRANSFORM_OPERATION_SKEWX:
     case TransformOperation::TRANSFORM_OPERATION_SKEWY:
     case TransformOperation::TRANSFORM_OPERATION_SKEW: {
-      SkScalar from_x = IsOperationIdentity(from) ? 0 : from->skew.x;
-      SkScalar from_y = IsOperationIdentity(from) ? 0 : from->skew.y;
-      SkScalar to_x = IsOperationIdentity(to) ? 0 : to->skew.x;
-      SkScalar to_y = IsOperationIdentity(to) ? 0 : to->skew.y;
+      SkScalar from_x = is_identity_from ? 0 : from->skew.x;
+      SkScalar from_y = is_identity_from ? 0 : from->skew.y;
+      SkScalar to_x = is_identity_to ? 0 : to->skew.x;
+      SkScalar to_y = is_identity_to ? 0 : to->skew.y;
       result->skew.x = BlendSkScalars(from_x, to_x, progress);
       result->skew.y = BlendSkScalars(from_y, to_y, progress);
       result->Bake();
@@ -250,7 +263,7 @@ bool TransformOperation::BlendTransformOperations(
     }
     case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE: {
       SkScalar from_perspective_m43;
-      if (IsOperationIdentity(from)) {
+      if (is_identity_from) {
         from_perspective_m43 = 0.f;
       } else {
         DCHECK_LE(from->perspective_m43, 0.0f);
@@ -258,7 +271,7 @@ bool TransformOperation::BlendTransformOperations(
         from_perspective_m43 = from->perspective_m43;
       }
       SkScalar to_perspective_m43;
-      if (IsOperationIdentity(to)) {
+      if (is_identity_to) {
         to_perspective_m43 = 0.f;
       } else {
         DCHECK_LE(to->perspective_m43, 0.0f);
@@ -273,10 +286,10 @@ bool TransformOperation::BlendTransformOperations(
       break;
     }
     case TransformOperation::TRANSFORM_OPERATION_MATRIX: {
-      if (!IsOperationIdentity(to))
+      if (!is_identity_to)
         result->matrix = to->matrix;
       gfx::Transform from_matrix;
-      if (!IsOperationIdentity(from))
+      if (!is_identity_from)
         from_matrix = from->matrix;
       if (!result->matrix.Blend(from_matrix, progress))
         return false;
@@ -487,8 +500,10 @@ bool TransformOperation::BlendedBoundsForBox(const gfx::BoxF& box,
       SkScalar axis_y = 0;
       SkScalar axis_z = 1;
       SkScalar from_angle = 0;
-      if (!ShareSameAxis(from, to, &axis_x, &axis_y, &axis_z, &from_angle))
+      if (!ShareSameAxis(from, is_identity_from, to, is_identity_to, &axis_x,
+                         &axis_y, &axis_z, &from_angle)) {
         return false;
+      }
 
       bool first_point = true;
       for (int i = 0; i < 8; ++i) {

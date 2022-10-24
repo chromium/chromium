@@ -1805,4 +1805,11 @@ TEST(TransformOperationTest, BlendSkewMatch) {
   ExpectTransformOperationEqual(blended_ops.at(1), expected_ops.at(1));
 }
 
+TEST(TransformOperationsTest, Rotate360IsNotIdentityOperation) {
+  TransformOperations operations;
+  operations.AppendRotate(0, 0, 2, 360);
+  EXPECT_FALSE(operations.IsIdentity());
+  EXPECT_TRUE(operations.Apply().IsIdentity());
+}
+
 }  // namespace gfx

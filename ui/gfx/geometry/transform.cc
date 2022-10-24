@@ -28,7 +28,28 @@ namespace {
 const double kEpsilon = std::numeric_limits<float>::epsilon();
 
 double TanDegrees(double degrees) {
-  return std::tan(gfx::DegToRad(degrees));
+  return std::tan(DegToRad(degrees));
+}
+
+struct SinCos {
+  double sin;
+  double cos;
+  bool IsZeroAngle() const { return sin == 0 && cos == 1; }
+};
+
+SinCos SinCosDegrees(double degrees) {
+  degrees = std::fmod(degrees, 360.0);
+  if (degrees < 0)
+    degrees += 360.0;
+  double n90degrees = degrees / 90.0;
+  int n = static_cast<int>(n90degrees);
+  if (n == n90degrees) {
+    DCHECK_GE(n, 0);
+    DCHECK_LT(n, 4);
+    constexpr SinCos kSinCosN90[] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    return kSinCosN90[n];
+  }
+  return SinCos{std::sin(DegToRad(degrees)), std::cos(DegToRad(degrees))};
 }
 
 inline bool ApproximatelyZero(double x, double tolerance) {
@@ -157,35 +178,31 @@ void Transform::GetColMajorF(float a[16]) const {
 }
 
 void Transform::RotateAboutXAxis(double degrees) {
-  if (degrees == 0)
+  SinCos sin_cos = SinCosDegrees(degrees);
+  if (sin_cos.IsZeroAngle())
     return;
-  double radians = gfx::DegToRad(degrees);
-  double sin_angle = std::sin(radians);
-  double cos_angle = std::cos(radians);
-  EnsureFullMatrix().RotateAboutXAxisSinCos(sin_angle, cos_angle);
+  EnsureFullMatrix().RotateAboutXAxisSinCos(sin_cos.sin, sin_cos.cos);
 }
 
 void Transform::RotateAboutYAxis(double degrees) {
-  if (degrees == 0)
+  SinCos sin_cos = SinCosDegrees(degrees);
+  if (sin_cos.IsZeroAngle())
     return;
-  double radians = gfx::DegToRad(degrees);
-  double sin_angle = std::sin(radians);
-  double cos_angle = std::cos(radians);
-  EnsureFullMatrix().RotateAboutYAxisSinCos(sin_angle, cos_angle);
+  EnsureFullMatrix().RotateAboutYAxisSinCos(sin_cos.sin, sin_cos.cos);
 }
 
 void Transform::RotateAboutZAxis(double degrees) {
-  if (degrees == 0)
+  SinCos sin_cos = SinCosDegrees(degrees);
+  if (sin_cos.IsZeroAngle())
     return;
-  double radians = gfx::DegToRad(degrees);
-  double sin_angle = std::sin(radians);
-  double cos_angle = std::cos(radians);
-  EnsureFullMatrix().RotateAboutZAxisSinCos(sin_angle, cos_angle);
+  EnsureFullMatrix().RotateAboutZAxisSinCos(sin_cos.sin, sin_cos.cos);
 }
 
 void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
-  if (degrees == 0)
+  SinCos sin_cos = SinCosDegrees(degrees);
+  if (sin_cos.IsZeroAngle())
     return;
+
   double x = axis.x();
   double y = axis.y();
   double z = axis.z();
@@ -198,10 +215,7 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
     y *= scale;
     z *= scale;
   }
-  double radians = gfx::DegToRad(degrees);
-  double sin_angle = std::sin(radians);
-  double cos_angle = std::cos(radians);
-  EnsureFullMatrix().RotateUnitSinCos(x, y, z, sin_angle, cos_angle);
+  EnsureFullMatrix().RotateUnitSinCos(x, y, z, sin_cos.sin, sin_cos.cos);
 }
 
 double Transform::Determinant() const {
