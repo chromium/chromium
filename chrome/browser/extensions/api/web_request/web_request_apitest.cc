@@ -1080,7 +1080,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestDeclarative1) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_declarative",
-                               {.custom_arg = R"({"testSuite": "normal"})"}))
+                               {.custom_arg = R"({"testSuite": "normal1"})"}))
       << message_;
 }
 
@@ -1096,10 +1096,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestDeclarative2) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestDeclarative2) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.extension_url = "test_declarative2.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_declarative",
+                               {.custom_arg = R"({"testSuite": "normal2"})"}))
       << message_;
 }
 
