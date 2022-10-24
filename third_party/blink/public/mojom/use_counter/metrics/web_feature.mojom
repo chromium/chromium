@@ -3695,6 +3695,7 @@ enum WebFeature {
   kDocumentOpenDifferentWindow = 4374,
   kDocumentOpenMutateSandbox = 4375,
   kEligibleForImageLoadingPrioritizationFix = 4376,
+  kExecutedNonTrivialJavaScriptURL = 4377,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
