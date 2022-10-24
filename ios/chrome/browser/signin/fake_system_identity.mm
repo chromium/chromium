@@ -141,6 +141,13 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   return self;
 }
 
+- (NSString*)description {
+  return [NSString stringWithFormat:@"<%@: %p, GaiaID: \"%@\", name: \"%@\", "
+                                    @"email: \"%@\">",
+                                    self.class.description, self, self.gaiaID,
+                                    self.userFullName, self.userEmail];
+}
+
 + (BOOL)supportsSecureCoding {
   return YES;
 }
