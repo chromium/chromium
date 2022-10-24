@@ -81,7 +81,7 @@ BASE_FEATURE(kPrioritizeCompositingAndLoadingDuringEarlyLoading,
 // Prioritizes one BeginMainFrame after input.
 BASE_FEATURE(kPrioritizeCompositingAfterInput,
              "PrioritizeCompositingAfterInput",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable setting high priority database task type from field trial parameters.
 BASE_FEATURE(kHighPriorityDatabaseTaskType,

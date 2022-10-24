@@ -1959,28 +1959,6 @@
             ]
         }
     ],
-    "BlinkSchedulerPrioritizeRenderingAfterInput": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220523",
-                    "enable_features": [
-                        "PrioritizeCompositingAfterInput"
-                    ]
-                }
-            ]
-        }
-    ],
     "BluetoothQualityReport": [
         {
             "platforms": [
