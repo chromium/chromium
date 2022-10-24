@@ -7,10 +7,14 @@ source_set("keyboard") {
   sources = [
     "UIKeyCommand+Chrome.h",
     "UIKeyCommand+Chrome.mm",
+    "key_command_actions.h",
   ]
   deps = [
     "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/util",
     "//ui/base",
   ]
 }
