@@ -4,7 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 
-#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
+#import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager_constants.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"

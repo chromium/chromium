@@ -56,6 +56,7 @@ source_set("signin_impl") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication/signin:signin_screen_provider",

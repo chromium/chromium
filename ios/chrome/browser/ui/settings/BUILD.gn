@@ -139,6 +139,7 @@ source_set("settings") {
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui:feature_flags",

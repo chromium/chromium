@@ -22,6 +22,7 @@ source_set("consistency_default_account") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication:authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",

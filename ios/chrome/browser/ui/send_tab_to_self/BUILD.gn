@@ -18,6 +18,7 @@ source_set("send_tab_to_self") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/commands",

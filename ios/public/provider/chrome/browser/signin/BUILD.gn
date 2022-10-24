@@ -5,8 +5,6 @@
 source_set("signin") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "chrome_identity.h",
-    "chrome_identity.mm",
     "chrome_identity_interaction_manager.h",
     "chrome_identity_interaction_manager.mm",
     "chrome_identity_service.h",
@@ -65,6 +63,7 @@ source_set("test_support") {
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",

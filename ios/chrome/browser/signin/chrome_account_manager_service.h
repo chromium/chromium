@@ -13,8 +13,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/pattern_account_restriction.h"
+#import "ios/chrome/browser/signin/system_identity.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 class PrefService;

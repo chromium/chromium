@@ -10,7 +10,7 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "google_apis/gaia/gaia_auth_util.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
+#import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -115,6 +115,7 @@ source_set("signin_util") {
   deps = [
     ":constants",
     ":signin_util_internal",
+    ":system_identity",
     "//base",
     "//components/prefs",
     "//components/signin/public/identity_manager",
@@ -218,6 +219,7 @@ source_set("test_support") {
   ]
   deps = [
     ":signin",
+    ":system_identity",
     ":trusted_vault",
     "//base",
     "//components/image_fetcher/core:test_support",
@@ -264,6 +266,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":signin",
+    ":system_identity",
     ":test_support",
     "//base",
     "//components/pref_registry",

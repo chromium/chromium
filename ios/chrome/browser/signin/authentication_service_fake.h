@@ -9,7 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
+#import "ios/chrome/browser/signin/system_identity.h"
 
 namespace signin {
 class IdentityManager;

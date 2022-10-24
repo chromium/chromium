@@ -30,6 +30,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/undo",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",

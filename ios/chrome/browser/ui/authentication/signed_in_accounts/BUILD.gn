@@ -20,6 +20,7 @@ source_set("signed_in_accounts") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/image_util",

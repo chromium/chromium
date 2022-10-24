@@ -134,6 +134,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/signin:trusted_vault_factory",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync",
