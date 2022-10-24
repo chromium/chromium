@@ -1819,13 +1819,13 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kBrowsingInstanceNotSwapped:
     case Reason::kBackForwardCacheDisabledForDelegate:
     case Reason::kServiceWorkerUnregistration:
-    case Reason::kCacheControlNoStore:
-    case Reason::kCacheControlNoStoreCookieModified:
-    case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
     case Reason::kNoResponseHead:
     case Reason::kErrorDocument:
     case Reason::kFencedFramesEmbedder:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
+    case Reason::kCacheControlNoStore:
+    case Reason::kCacheControlNoStoreCookieModified:
+    case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
     case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
