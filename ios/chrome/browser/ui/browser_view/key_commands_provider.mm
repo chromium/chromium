@@ -91,7 +91,7 @@
   [keyCommands addObjectsFromArray:@[
     UIKeyCommand.cr_openNewTab,
     UIKeyCommand.cr_openNewIncognitoTab,
-    UIKeyCommand.cr_reopenClosedTab,
+    UIKeyCommand.cr_reopenLastClosedTab,
   ]];
 
   // List the commands that only appear when there is at least a tab. When they
@@ -184,7 +184,7 @@
   [_dispatcher openURLInNewTab:newIncognitoTabCommand];
 }
 
-- (void)keyCommand_reopenClosedTab {
+- (void)keyCommand_reopenLastClosedTab {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   sessions::TabRestoreService* const tabRestoreService =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);

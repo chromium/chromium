@@ -47,10 +47,10 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
                            titleID:IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB];
 }
 
-+ (UIKeyCommand*)cr_reopenClosedTab {
++ (UIKeyCommand*)cr_reopenLastClosedTab {
   return [self cr_commandWithInput:@"t"
                      modifierFlags:ShiftCommand
-                            action:@selector(keyCommand_reopenClosedTab)
+                            action:@selector(keyCommand_reopenLastClosedTab)
                            titleID:IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB];
 }
 
@@ -276,7 +276,7 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
   return [self cr_commandWithInput:@"y"
                      modifierFlags:Command
                             action:@selector(keyCommand_showHistory)
-                           titleID:IDS_HISTORY_SHOW_HISTORY];
+                           titleID:IDS_IOS_KEYBOARD_SHOW_HISTORY];
 }
 
 + (UIKeyCommand*)cr_startVoiceSearch {
