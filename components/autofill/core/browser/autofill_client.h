@@ -150,6 +150,17 @@ class AutofillClient : public RiskDataLoader {
     kIgnored,
   };
 
+  enum class SaveIBANOfferUserDecision {
+    // The user accepted IBAN save.
+    kAccepted,
+
+    // The user explicitly declined IBAN save.
+    kDeclined,
+
+    // The user ignored the IBAN save prompt.
+    kIgnored,
+  };
+
   enum class UnmaskCardReason {
     // The card is being unmasked for PaymentRequest.
     kPaymentRequest,
