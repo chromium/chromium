@@ -405,7 +405,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
                     error:&error];
     return error == nil;
   };
-  GREYAssert(!WaitUntilConditionOrTimeout(2, condition),
+  GREYAssert(!WaitUntilConditionOrTimeout(base::Seconds(2), condition),
              @"The Bottom Toolbar tip shouldn't appear");
 }
 
