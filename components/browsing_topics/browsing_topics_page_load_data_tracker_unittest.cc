@@ -14,6 +14,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browsing_topics_test_util.h"
@@ -119,9 +120,8 @@ class BrowsingTopicsPageLoadDataTrackerTest
 
   content::BrowsingTopicsSiteDataManager* topics_site_data_manager() {
     return web_contents()
-        ->GetPrimaryMainFrame()
-        ->GetProcess()
-        ->GetStoragePartition()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
         ->GetBrowsingTopicsSiteDataManager();
   }
 

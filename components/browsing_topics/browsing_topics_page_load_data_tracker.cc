@@ -7,6 +7,7 @@
 #include "components/browsing_topics/util.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -117,8 +118,8 @@ void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
   // app enters background, it may be killed without further notification.
   page()
       .GetMainDocument()
-      .GetProcess()
-      ->GetStoragePartition()
+      .GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetBrowsingTopicsSiteDataManager()
       ->OnBrowsingTopicsApiUsed(hashed_main_frame_host_,
                                 {hashed_context_domain}, base::Time::Now());

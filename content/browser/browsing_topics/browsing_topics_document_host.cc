@@ -5,6 +5,7 @@
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
 
 #include "base/bind.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -77,6 +78,16 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
         blink::mojom::GetBrowsingTopicsResult::NewErrorMessage(
             "document.browsingTopics() is only allowed in the outermost page "
             "and when the page is active."));
+    return;
+  }
+
+  // Skip if the RFH's `StoragePartition` isn't the `BrowserContext`'s default
+  // one. The desired way to process it is TBD.
+  if (render_frame_host().GetStoragePartition() !=
+      render_frame_host().GetBrowserContext()->GetDefaultStoragePartition()) {
+    std::move(callback).Run(
+        blink::mojom::GetBrowsingTopicsResult::NewBrowsingTopics(
+            std::vector<blink::mojom::EpochTopicPtr>()));
     return;
   }
 
