@@ -25,12 +25,14 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
   static NativeThemeFluent* web_instance();
 
   void PaintArrowButton(cc::PaintCanvas* canvas,
+                        const ColorProvider* color_provider,
                         const gfx::Rect& rect,
                         Part direction,
                         State state,
                         ColorScheme color_scheme,
                         const ScrollbarArrowExtraParams& arrow) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
+                           const ColorProvider* color_provider,
                            Part part,
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
@@ -44,6 +46,7 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
                            ScrollbarOverlayColorTheme theme,
                            ColorScheme color_scheme) const override;
   void PaintScrollbarCorner(cc::PaintCanvas* canvas,
+                            const ColorProvider* color_provider,
                             State state,
                             const gfx::Rect& rect,
                             ColorScheme color_scheme) const override;
@@ -56,9 +59,11 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
   FRIEND_TEST_ALL_PREFIXES(NativeThemeFluentTest, HorizontalArrowRectDefault);
 
   void PaintButton(cc::PaintCanvas* canvas,
+                   const ColorProvider* color_provider,
                    const gfx::Rect& rect,
                    ColorScheme color_scheme) const;
   void PaintArrow(cc::PaintCanvas* canvas,
+                  const ColorProvider* color_provider,
                   const gfx::Rect& rect,
                   Part part,
                   State state,

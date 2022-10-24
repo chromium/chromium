@@ -240,6 +240,16 @@
   E_CPONLY(kColorReadAnythingForegroundDark) \
   E_CPONLY(kColorReadAnythingForegroundLight) \
   E_CPONLY(kColorReadAnythingForegroundYellow) \
+  E_CPONLY(kColorScrollbarArrowBackgroundHovered) \
+  E_CPONLY(kColorScrollbarArrowBackgroundPressed) \
+  E_CPONLY(kColorScrollbarArrowForeground) \
+  E_CPONLY(kColorScrollbarArrowForegroundPressed) \
+  E_CPONLY(kColorScrollbarCorner) \
+  E_CPONLY(kColorScrollbarThumb) \
+  E_CPONLY(kColorScrollbarThumbHovered) \
+  E_CPONLY(kColorScrollbarThumbInactive) \
+  E_CPONLY(kColorScrollbarThumbPressed) \
+  E_CPONLY(kColorScrollbarTrack) \
   E_CPONLY(kColorSeparator) \
   E_CPONLY(kColorShadowBase) \
   E_CPONLY(kColorShadowValueAmbientShadowElevationSixteen) \

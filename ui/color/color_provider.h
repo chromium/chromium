@@ -55,6 +55,13 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // provider after this has been called.
   void GenerateColorMap();
 
+  // Returns true if the color_map_ is empty. It's the case for some browser
+  // tests that run in single process mode but access colors that are
+  // initialized on renderer process launch, for example, controls in
+  // NaiveThemeBase and its children classes. Please see more details:
+  // https://crbug.com/1376775.
+  bool IsColorMapEmpty() const;
+
   void SetColorForTesting(ColorId id, SkColor color);
   const ColorMap& color_map_for_testing() { return *color_map_; }
 

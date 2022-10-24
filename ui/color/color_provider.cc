@@ -98,6 +98,11 @@ void ColorProvider::GenerateColorMap() {
   first_postprocessing_mixer_ = mixers_.before_begin();
 }
 
+bool ColorProvider::IsColorMapEmpty() const {
+  DCHECK(color_map_);
+  return color_map_->empty();
+}
+
 void ColorProvider::SetColorForTesting(ColorId id, SkColor color) {
   if (color_map_) {
     (*color_map_)[id] = color;

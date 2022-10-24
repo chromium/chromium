@@ -53,6 +53,21 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorOverlayScrollbarStrokeHoveredDark},
     {RendererColorId::kColorOverlayScrollbarStrokeHoveredLight,
      kColorOverlayScrollbarStrokeHoveredLight},
+    {RendererColorId::kColorScrollbarArrowBackgroundHovered,
+     kColorScrollbarArrowBackgroundHovered},
+    {RendererColorId::kColorScrollbarArrowBackgroundPressed,
+     kColorScrollbarArrowBackgroundPressed},
+    {RendererColorId::kColorScrollbarArrowForeground,
+     kColorScrollbarArrowForeground},
+    {RendererColorId::kColorScrollbarArrowForegroundPressed,
+     kColorScrollbarArrowForegroundPressed},
+    {RendererColorId::kColorScrollbarCorner, kColorScrollbarCorner},
+    {RendererColorId::kColorScrollbarThumb, kColorScrollbarThumb},
+    {RendererColorId::kColorScrollbarThumbHovered, kColorScrollbarThumbHovered},
+    {RendererColorId::kColorScrollbarThumbInactive,
+     kColorScrollbarThumbInactive},
+    {RendererColorId::kColorScrollbarThumbPressed, kColorScrollbarThumbPressed},
+    {RendererColorId::kColorScrollbarTrack, kColorScrollbarTrack},
 };
 
 ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
