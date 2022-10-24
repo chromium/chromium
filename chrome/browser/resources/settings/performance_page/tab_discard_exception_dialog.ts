@@ -47,6 +47,7 @@ export class TabDiscardExceptionDialogElement extends
       errorMessage_: {type: String, value: ''},
       inputInvalid_: {type: Boolean, value: false},
       rule: {type: String, value: ''},
+      submitButtonAriaLabel_: String,
       submitButtonText_: String,
       submitDisabled_: Boolean,
       title_: String,
@@ -58,6 +59,7 @@ export class TabDiscardExceptionDialogElement extends
   private errorMessage_: string;
   private inputInvalid_: boolean;
   rule: string;
+  private submitButtonAriaLabel_: string;
   private submitButtonText_: string;
   private submitDisabled_: boolean;
   private title_: string;
@@ -68,10 +70,14 @@ export class TabDiscardExceptionDialogElement extends
     // use initial value of rule to determine whether we are editing or adding
     if (this.rule) {
       this.title_ = this.i18n('editSiteTitle');
+      this.submitButtonAriaLabel_ =
+          this.i18n('tabDiscardingExceptionsSaveButtonAriaLabel');
       this.submitButtonText_ = this.i18n('save');
       this.submitDisabled_ = false;
     } else {
       this.title_ = this.i18n('addSiteTitle');
+      this.submitButtonAriaLabel_ =
+          this.i18n('tabDiscardingExceptionsAddButtonAriaLabel');
       this.submitButtonText_ = this.i18n('add');
       this.submitDisabled_ = true;
     }

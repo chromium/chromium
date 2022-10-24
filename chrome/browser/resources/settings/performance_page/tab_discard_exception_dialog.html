@@ -4,7 +4,8 @@
     <cr-input id="input" label="$i18n{addSite}"
         placeholder="$i18n{addSiteExceptionPlaceholder}" value="{{rule}}"
         on-input="validate_" error-message="[[errorMessage_]]"
-        invalid="[[inputInvalid_]]" spellcheck="false" autofocus>
+        invalid="[[inputInvalid_]]" spellcheck="false" autofocus
+        aria-label$="[[title_]]">
     </cr-input>
   </div>
   <div slot="button-container">
@@ -13,7 +14,8 @@
       $i18n{cancel}
     </cr-button>
     <cr-button id="actionButton" class="action-button" on-click="onSubmitClick_"
-        disabled$="[[submitDisabled_]]">
+        disabled$="[[submitDisabled_]]"
+        aria-label$="[[submitButtonAriaLabel_]]">
       [[submitButtonText_]]
     </cr-button>
   </div>
