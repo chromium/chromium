@@ -30,7 +30,7 @@
 - (void)keyCommand_dismissModalDialogs;
 - (void)keyCommand_showSettings;
 - (void)keyCommand_stop;
-- (void)keyCommand_showHelpPage;
+- (void)keyCommand_showHelp;
 - (void)keyCommand_showDownloadsFolder;
 - (void)keyCommand_showTab0;
 - (void)keyCommand_showTab1;

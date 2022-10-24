@@ -56,7 +56,7 @@ extern UIKeyModifierFlags KeyModifierControlShift;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_dismissModalDialogs;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showSettings;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_stop;
-@property(class, nonatomic, readonly) UIKeyCommand* cr_showHelpPage;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_showHelp;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showDownloadsFolder;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showDownloadsFolder_2;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showTab0;

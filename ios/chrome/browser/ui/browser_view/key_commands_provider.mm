@@ -151,7 +151,7 @@
   if (hasTabs) {
     [keyCommands addObjectsFromArray:@[
       UIKeyCommand.cr_stop,
-      UIKeyCommand.cr_showHelpPage,
+      UIKeyCommand.cr_showHelp,
       UIKeyCommand.cr_showDownloadsFolder,
       UIKeyCommand.cr_showDownloadsFolder_2,
       UIKeyCommand.cr_showTab0,
@@ -308,7 +308,7 @@
   self.navigationAgent->StopLoading();
 }
 
-- (void)keyCommand_showHelpPage {
+- (void)keyCommand_showHelp {
   [_browserCoordinatorCommandsHandler showHelpPage];
 }
 

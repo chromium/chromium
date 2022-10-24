@@ -300,10 +300,10 @@ UIKeyModifierFlags KeyModifierControlShift =
                             action:@selector(keyCommand_stop)];
 }
 
-+ (UIKeyCommand*)cr_showHelpPage {
++ (UIKeyCommand*)cr_showHelp {
   return [self keyCommandWithInput:@"?"
-                     modifierFlags:KeyModifierCommand
-                            action:@selector(keyCommand_showHelpPage)];
+                     modifierFlags:KeyModifierAltCommand
+                            action:@selector(keyCommand_showHelp)];
 }
 
 + (UIKeyCommand*)cr_showDownloadsFolder {
