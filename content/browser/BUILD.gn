@@ -1991,6 +1991,8 @@ source_set("browser") {
     "shared_storage/shared_storage_budget_charger.h",
     "shared_storage/shared_storage_document_service_impl.cc",
     "shared_storage/shared_storage_document_service_impl.h",
+    "shared_storage/shared_storage_event_params.cc",
+    "shared_storage/shared_storage_event_params.h",
     "shared_storage/shared_storage_render_thread_worklet_driver.cc",
     "shared_storage/shared_storage_render_thread_worklet_driver.h",
     "shared_storage/shared_storage_url_loader_factory_proxy.cc",

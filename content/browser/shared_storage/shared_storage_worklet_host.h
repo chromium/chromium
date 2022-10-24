@@ -24,6 +24,7 @@ class BrowserContext;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
 class SharedStorageWorkletDriver;
+class SharedStorageWorkletHostManager;
 class PageImpl;
 
 // The SharedStorageWorkletHost is responsible for getting worklet operation
@@ -202,6 +203,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // `shared_storage_manager_` always outlives `this` because `this` will be
   // destroyed before `shared_storage_manager_` in ~StoragePartition.
   raw_ptr<storage::SharedStorageManager> shared_storage_manager_;
+
+  // The owning `SharedStorageWorkletHostManager`, which will outlive `this`.
+  raw_ptr<SharedStorageWorkletHostManager> shared_storage_worklet_host_manager_;
 
   // Pointer to the `BrowserContext`, saved to be able to call
   // `IsSharedStorageAllowed()`.

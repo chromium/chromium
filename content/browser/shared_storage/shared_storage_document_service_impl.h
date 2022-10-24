@@ -20,6 +20,7 @@ namespace content {
 
 class RenderFrameHost;
 class SharedStorageWorkletHost;
+class SharedStorageWorkletHostManager;
 
 extern CONTENT_EXPORT const char kSharedStorageDisabledMessage[];
 
@@ -40,6 +41,8 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   ~SharedStorageDocumentServiceImpl() final;
 
   const url::Origin& main_frame_origin() const { return main_frame_origin_; }
+
+  std::string main_frame_id() const { return main_frame_id_; }
 
   void Bind(mojo::PendingAssociatedReceiver<
             blink::mojom::SharedStorageDocumentService> receiver);
@@ -76,11 +79,15 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
 
   explicit SharedStorageDocumentServiceImpl(RenderFrameHost*);
 
+  SharedStorageWorkletHostManager* GetSharedStorageWorkletHostManager();
+
   SharedStorageWorkletHost* GetSharedStorageWorkletHost();
 
   storage::SharedStorageManager* GetSharedStorageManager();
 
   bool IsSharedStorageAllowed();
+
+  std::string SerializeLastCommittedOrigin() const;
 
   mojo::AssociatedReceiver<blink::mojom::SharedStorageDocumentService>
       receiver_{this};
@@ -88,6 +95,10 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   // To avoid race conditions associated with top frame navigations, we need to
   // save the value of the main frame origin in the constructor.
   const url::Origin main_frame_origin_;
+
+  // The DevTools frame token for the main frame, to be used by notifications
+  // to DevTools.
+  const std::string main_frame_id_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 
