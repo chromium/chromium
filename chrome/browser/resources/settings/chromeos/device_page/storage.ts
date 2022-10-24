@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,62 +11,61 @@ import './storage_external.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, StorageSpaceState} from './device_page_browser_proxy.js';
+import {getTemplate} from './storage.html.js';
 
-/**
- * @typedef {{
- *   availableSize: string,
- *   usedSize: string,
- *   usedRatio: number,
- *   spaceState: StorageSpaceState,
- * }}
- */
-let StorageSizeStat;
+interface StorageSizeStat {
+  availableSize: string;
+  usedSize: string;
+  usedRatio: number;
+  spaceState: StorageSpaceState;
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {RouteOriginBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsStorageElementBase = mixinBehaviors(
-    [RouteObserverBehavior, RouteOriginBehavior, WebUIListenerBehavior],
-    PolymerElement);
+interface SettingsStorageElement {
+  $: {
+    availableLabelArea: HTMLElement,
+    browsingDataSize: CrLinkRowElement,
+    inUseLabelArea: HTMLElement,
+    myFilesSize: CrLinkRowElement,
+  };
+}
 
-/** @polymer */
+const SettingsStorageElementBase =
+    mixinBehaviors([RouteOriginBehavior], WebUiListenerMixin(PolymerElement)) as
+    {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          RouteOriginBehaviorInterface,
+    };
+
 class SettingsStorageElement extends SettingsStorageElementBase {
   static get is() {
     return 'settings-storage';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       androidEnabled: Boolean,
 
-      /** @private */
       showCrostiniStorage_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showCrostini: Boolean,
 
-      /** @private */
       isGuest_: {
         type: Boolean,
         value() {
@@ -74,7 +73,6 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         },
       },
 
-      /** @private */
       showOtherUsers_: {
         type: Boolean,
         // Initialize showOtherUsers_ to false if the user is in guest mode.
@@ -83,7 +81,6 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         },
       },
 
-      /** @private {StorageSizeStat} */
       sizeStat_: Object,
     };
   }
@@ -91,6 +88,15 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   static get observers() {
     return ['handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)'];
   }
+
+  showCrostini: boolean;
+  private browserProxy_: DevicePageBrowserProxy;
+  private isGuest_: boolean;
+  private route_: Route;
+  private showCrostiniStorage_: boolean;
+  private showOtherUsers_: boolean;
+  private sizeStat_: StorageSizeStat;
+  private updateTimerId_: number;
 
   constructor() {
     super();
@@ -100,45 +106,42 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
     /**
      * Timer ID for periodic update.
-     * @private {number}
      */
     this.updateTimerId_ = -1;
 
-    /** @private {!DevicePageBrowserProxy} */
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
         'storage-size-stat-changed',
-        (sizeStat) => this.handleSizeStatChanged_(sizeStat));
+        (sizeStat: StorageSizeStat) => this.handleSizeStatChanged_(sizeStat));
     this.addWebUIListener(
         'storage-my-files-size-changed',
-        (size) => this.handleMyFilesSizeChanged_(size));
+        (size: string) => this.handleMyFilesSizeChanged_(size));
     this.addWebUIListener(
         'storage-browsing-data-size-changed',
-        (size) => this.handleBrowsingDataSizeChanged_(size));
+        (size: string) => this.handleBrowsingDataSizeChanged_(size));
     this.addWebUIListener(
         'storage-apps-size-changed',
-        (size) => this.handleAppsSizeChanged_(size));
+        (size: string) => this.handleAppsSizeChanged_(size));
     this.addWebUIListener(
         'storage-crostini-size-changed',
-        (size) => this.handleCrostiniSizeChanged_(size));
-    if (!this.isGuest_) {
+        (size: string) => this.handleCrostiniSizeChanged_(size));
+    if (this.showOtherUsers_) {
       this.addWebUIListener(
           'storage-other-users-size-changed',
-          (size, noOtherUsers) =>
+          (size: string, noOtherUsers: boolean) =>
               this.handleOtherUsersSizeChanged_(size, noOtherUsers));
       this.addWebUIListener(
           'storage-system-size-changed',
-          (size) => this.handleSystemSizeChanged_(size));
+          (size: string) => this.handleSystemSizeChanged_(size));
     }
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     const r = routes;
@@ -146,25 +149,19 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     this.addFocusConfig(r.ACCOUNTS, '#otherUsersSize');
     this.addFocusConfig(
         r.EXTERNAL_STORAGE_PREFERENCES, '#externalStoragePreferences');
+    this.addFocusConfig(r.APP_MANAGEMENT, '#appsSize');
   }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   * @protected
-   */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
 
-    if (Router.getInstance().getCurrentRoute() !== routes.STORAGE) {
+    if (newRoute !== this.route_) {
       return;
     }
     this.onPageShown_();
   }
 
-  /** @private */
-  onPageShown_() {
+  private onPageShown_(): void {
     // Updating storage information can be expensive (e.g. computing directory
     // sizes recursively), so we delay this operation until the page is shown.
     this.browserProxy_.updateStorageInfo();
@@ -174,61 +171,53 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   /**
    * Handler for tapping the "My files" item.
-   * @private
    */
-  onMyFilesTap_() {
+  private onMyFilesTap_(): void {
     this.browserProxy_.openMyFiles();
   }
 
   /**
    * Handler for tapping the "Browsing data" item.
-   * @private
    */
-  onBrowsingDataTap_() {
+  private onBrowsingDataTap_(): void {
     window.open('chrome://settings/clearBrowserData');
   }
 
   /**
    * Handler for tapping the "Apps and Extensions" item.
-   * @private
    */
-  onAppsTap_() {
-    window.location = 'chrome://os-settings/app-management';
+  private onAppsTap_(): void {
+    Router.getInstance().navigateTo(
+        routes.APP_MANAGEMENT,
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
   /**
    * Handler for tapping the "Linux storage" item.
-   * @private
    */
-  onCrostiniTap_() {
+  private onCrostiniTap_(): void {
     Router.getInstance().navigateTo(
-        routes.CROSTINI_DETAILS, /* dynamicParams */ null,
-        /* removeSearch */ true);
+        routes.CROSTINI_DETAILS, /* dynamicParams= */ undefined,
+        /* removeSearch= */ true);
   }
 
   /**
    * Handler for tapping the "Other users" item.
-   * @private
    */
-  onOtherUsersTap_() {
+  private onOtherUsersTap_(): void {
     Router.getInstance().navigateTo(
         routes.ACCOUNTS,
-        /* dynamicParams */ null, /* removeSearch */ true);
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
   /**
    * Handler for tapping the "External storage preferences" item.
-   * @private
    */
-  onExternalStoragePreferencesTap_() {
+  private onExternalStoragePreferencesTap_(): void {
     Router.getInstance().navigateTo(routes.EXTERNAL_STORAGE_PREFERENCES);
   }
 
-  /**
-   * @param {!StorageSizeStat} sizeStat
-   * @private
-   */
-  handleSizeStatChanged_(sizeStat) {
+  private handleSizeStatChanged_(sizeStat: StorageSizeStat): void {
     this.sizeStat_ = sizeStat;
     this.$.inUseLabelArea.style.width = (sizeStat.usedRatio * 100) + '%';
     this.$.availableLabelArea.style.width =
@@ -236,79 +225,72 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   }
 
   /**
-   * @param {string} size Formatted string representing the size of My files.
-   * @private
+   * @param size Formatted string representing the size of My files.
    */
-  handleMyFilesSizeChanged_(size) {
+  private handleMyFilesSizeChanged_(size: string): void {
     this.$.myFilesSize.subLabel = size;
   }
 
   /**
-   * @param {string} size Formatted string representing the size of Browsing
-   *     data.
-   * @private
+   * @param size Formatted string representing the size of Browsing data.
    */
-  handleBrowsingDataSizeChanged_(size) {
+  private handleBrowsingDataSizeChanged_(size: string): void {
     this.$.browsingDataSize.subLabel = size;
   }
 
   /**
-   * @param {string} size Formatted string representing the size of Apps and
+   * @param size Formatted string representing the size of Apps and
    *     extensions storage.
-   * @private
    */
-  handleAppsSizeChanged_(size) {
-    this.shadowRoot.querySelector('#appsSize').subLabel = size;
+  private handleAppsSizeChanged_(size: string): void {
+    this.shadowRoot!.querySelector<CrLinkRowElement>('#appsSize')!.subLabel =
+        size;
   }
 
   /**
-   * @param {string} size Formatted string representing the size of Crostini
-   *     storage.
-   * @private
+   * @param size Formatted string representing the size of Crostini storage.
    */
-  handleCrostiniSizeChanged_(size) {
+  private handleCrostiniSizeChanged_(size: string): void {
     if (this.showCrostiniStorage_) {
-      this.shadowRoot.querySelector('#crostiniSize').subLabel = size;
+      this.shadowRoot!.querySelector<CrLinkRowElement>(
+                          '#crostiniSize')!.subLabel = size;
     }
   }
 
   /**
-   * @param {string} size Formatted string representing the size of Other
-   *     users.
-   * @param {boolean} noOtherUsers True if there is no other registered users
+   * @param size Formatted string representing the size of Other users.
+   * @param noOtherUsers True if there is no other registered users
    *     on the device.
-   * @private
    */
-  handleOtherUsersSizeChanged_(size, noOtherUsers) {
+  private handleOtherUsersSizeChanged_(size: string, noOtherUsers: boolean):
+      void {
     if (this.isGuest_ || noOtherUsers) {
       this.showOtherUsers_ = false;
       return;
     }
     this.showOtherUsers_ = true;
-    this.shadowRoot.querySelector('#otherUsersSize').subLabel = size;
+    this.shadowRoot!.querySelector<CrLinkRowElement>(
+                        '#otherUsersSize')!.subLabel = size;
   }
 
   /**
-   * @param {string} size Formatted string representing the System size.
-   * @private
+   * @param size Formatted string representing the System size.
    */
-  handleSystemSizeChanged_(size) {
-    this.shadowRoot.querySelector('#systemSizeSubLabel').innerText = size;
+  private handleSystemSizeChanged_(size: string): void {
+    this.shadowRoot!.getElementById('systemSizeSubLabel')!.innerText = size;
   }
 
   /**
-   * @param {boolean} enabled True if Crostini is enabled.
-   * @private
+   * @param enabled True if Crostini is enabled.
    */
-  handleCrostiniEnabledChanged_(enabled) {
+  private handleCrostiniEnabledChanged_(enabled: boolean): void {
     this.showCrostiniStorage_ = enabled && this.showCrostini;
   }
 
   /**
    * Starts periodic update for storage usage.
-   * @private
    */
-  startPeriodicUpdate_() {
+  private startPeriodicUpdate_(): void {
     // We update the storage usage every 5 seconds.
     if (this.updateTimerId_ === -1) {
       this.updateTimerId_ = window.setInterval(() => {
@@ -323,9 +305,8 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   /**
    * Stops periodic update for storage usage.
-   * @private
    */
-  stopPeriodicUpdate_() {
+  private stopPeriodicUpdate_(): void {
     if (this.updateTimerId_ !== -1) {
       window.clearInterval(this.updateTimerId_);
       this.updateTimerId_ = -1;
@@ -334,31 +315,25 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   /**
    * Returns true if the remaining space is low, but not critically low.
-   * @param {!StorageSpaceState} spaceState Status about the
-   *     remaining space.
-   * @private
+   * @param spaceState Status about the remaining space.
    */
-  isSpaceLow_(spaceState) {
+  private isSpaceLow_(spaceState: StorageSpaceState): boolean {
     return spaceState === StorageSpaceState.LOW;
   }
 
   /**
    * Returns true if the remaining space is critically low.
-   * @param {!StorageSpaceState} spaceState Status about the
-   *     remaining space.
-   * @private
+   * @param spaceState Status about the remaining space.
    */
-  isSpaceCriticallyLow_(spaceState) {
+  private isSpaceCriticallyLow_(spaceState: StorageSpaceState): boolean {
     return spaceState === StorageSpaceState.CRITICALLY_LOW;
   }
 
   /**
    * Computes class name of the bar based on the remaining space size.
-   * @param {!StorageSpaceState} spaceState Status about the
-   *     remaining space.
-   * @private
+   * @param spaceState Status about the remaining space.
    */
-  getBarClass_(spaceState) {
+  private getBarClass_(spaceState: StorageSpaceState): string {
     switch (spaceState) {
       case StorageSpaceState.LOW:
         return 'space-low';
@@ -367,6 +342,12 @@ class SettingsStorageElement extends SettingsStorageElementBase {
       default:
         return '';
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-storage': SettingsStorageElement;
   }
 }
 

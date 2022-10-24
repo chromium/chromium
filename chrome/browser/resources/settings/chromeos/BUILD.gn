@@ -352,7 +352,6 @@ group("generate_web_components") {
     ":web_components",
 
     # Sub-folder targets
-    "device_page:web_components",
     "internet_page:web_components",
     "kerberos_page:web_components",
     "multidevice_page:web_components",
