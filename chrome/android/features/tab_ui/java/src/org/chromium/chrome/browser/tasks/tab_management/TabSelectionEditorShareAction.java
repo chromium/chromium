@@ -86,11 +86,18 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        int size = editorSupportsActionOnRelatedTabs()
-                ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
-                : tabIds.size();
+        boolean enableShare = false;
+        List<Tab> selectedTabs = getTabsAndRelatedTabsFromSelection();
 
-        setEnabledAndItemCount(!tabIds.isEmpty(), size);
+        for (Tab tab : selectedTabs) {
+            if (!shouldFilterUrl(tab.getUrl())) {
+                enableShare = true;
+                break;
+            }
+        }
+
+        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : tabIds.size();
+        setEnabledAndItemCount(enableShare && !tabIds.isEmpty(), size);
     }
 
     @Override
@@ -156,11 +163,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
             Tab tab = tabList.getTabAt(i);
             if (!selectedTabs.contains(tab)) continue;
 
-            GURL url = tab.getUrl();
-            if (url != null
-                    && (mSkipUrlCheckForTesting
-                            || (url.isValid() && !url.isEmpty()
-                                    && !UNSUPPORTED_SCHEMES.contains(url.getScheme())))) {
+            if (!shouldFilterUrl(tab.getUrl())) {
                 sortedTabIndexList.add(i);
             }
         }
@@ -194,6 +197,13 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         Toast toast =
                 Toast.makeText(mContext.getApplicationContext(), toastText, Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    private boolean shouldFilterUrl(GURL url) {
+        if (mSkipUrlCheckForTesting) return false;
+
+        return url == null || !url.isValid() || url.isEmpty()
+                || UNSUPPORTED_SCHEMES.contains(url.getScheme());
     }
 
     @VisibleForTesting
