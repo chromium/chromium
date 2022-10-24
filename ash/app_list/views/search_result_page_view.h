@@ -23,7 +23,6 @@ namespace ash {
 
 class AppListMainView;
 class ProductivityLauncherSearchView;
-class PrivacyContainerView;
 class SearchBoxView;
 class SearchResultBaseView;
 class SearchResultListView;
@@ -124,7 +123,6 @@ class ASH_EXPORT SearchResultPageView
   // that contain some results are shown.
   void UpdateResultContainersVisibility();
 
-  PrivacyContainerView* GetPrivacyContainerViewForTest();
   SearchResultListView* GetSearchResultListViewForTest();
 
  private:
@@ -203,7 +201,6 @@ class ASH_EXPORT SearchResultPageView
 
   // Search result containers shown within search results page (and added to
   // `result_container_views_`).
-  PrivacyContainerView* privacy_container_view_ = nullptr;
   SearchResultListView* search_result_list_view_ = nullptr;
   // Search result container used for productivity launcher.
   ProductivityLauncherSearchView* productivity_launcher_search_view_ = nullptr;

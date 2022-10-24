@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -203,8 +202,6 @@ void SearchResultPageView::InitializeContainers(
   } else {
     dialog_controller_ =
         std::make_unique<SearchResultPageDialogController>(this);
-    privacy_container_view_ = AddSearchResultContainerView(
-        std::make_unique<PrivacyContainerView>(view_delegate));
 
     search_box_view->SetResultSelectionController(
         result_selection_controller());
@@ -675,10 +672,6 @@ SkColor SearchResultPageView::GetBackgroundColorForState(
         app_list_widget);
   return AppListColorProvider::Get()->GetSearchBoxBackgroundColor(
       app_list_widget);
-}
-
-PrivacyContainerView* SearchResultPageView::GetPrivacyContainerViewForTest() {
-  return privacy_container_view_;
 }
 
 SearchResultListView* SearchResultPageView::GetSearchResultListViewForTest() {
