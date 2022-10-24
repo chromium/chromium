@@ -161,6 +161,7 @@ extern const base::FeatureParam<int> kMaxUPMReenrollments;
 extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts;
 
 extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts;
+extern const base::FeatureParam<int> kMaxShownUPMErrorsBeforeEviction;
 #endif
 
 // Field trial and corresponding parameters.

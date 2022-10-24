@@ -119,6 +119,12 @@ extern const char kTimesReenrolledToGoogleMobileServices[];
 // migration in an attempt to reenroll into the UPM experiment. Reset to zero
 // after a successful reenrollment.
 extern const char kTimesAttemptedToReenrollToGoogleMobileServices[];
+
+// Integer value indicating the number of consecutive times the password manager
+// auth error UI was displayed to the user. Reset once the error is resolved
+// (detected by a successful backend request) or when the user is unenrolled
+// from UPM.
+extern const char kTimesUPMAuthErrorShown[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

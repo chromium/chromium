@@ -3218,6 +3218,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UPMUnenrollmentReason"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M110">
+  <owner>ioanap@chromium.org</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Records the error code returned by the GMS Password Checkup 1P API which
+    caused unenrollment. This is recorded when the user is evicted from UPM.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
     enum="Boolean" expires_after="2023-03-01">
   <owner>izuzic@google.com</owner>

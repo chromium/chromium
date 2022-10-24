@@ -11,6 +11,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/aura/window.h"
@@ -25,6 +27,7 @@ PasswordManagerErrorMessageDelegate::~PasswordManagerErrorMessageDelegate() =
 
 void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     content::WebContents* web_contents,
+    PrefService* pref_service,
     password_manager::ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type,
     base::OnceCallback<void()> dismissal_callback) {
@@ -32,6 +35,11 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
 
   if (!helper_bridge_->ShouldShowErrorUI())
     return;
+
+  int times_shown = pref_service->GetInteger(
+      password_manager::prefs::kTimesUPMAuthErrorShown);
+  pref_service->SetInteger(password_manager::prefs::kTimesUPMAuthErrorShown,
+                           times_shown + 1);
 
   DCHECK(!message_);
 

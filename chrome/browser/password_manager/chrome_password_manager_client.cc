@@ -494,7 +494,7 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
         std::make_unique<PasswordManagerErrorMessageDelegate>(
             std::make_unique<PasswordManagerErrorMessageHelperBridgeImpl>());
     password_manager_error_message_delegate_->MaybeDisplayErrorMessage(
-        web_contents(), flow_type, error_type,
+        web_contents(), GetPrefs(), flow_type, error_type,
         base::BindOnce(&ChromePasswordManagerClient::ResetErrorMessageDelegate,
                        base::Unretained(this)));
   }

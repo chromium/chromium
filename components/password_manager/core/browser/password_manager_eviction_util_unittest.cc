@@ -20,6 +20,8 @@ namespace {
 
 constexpr char kUnenrollmentHistogram[] =
     "PasswordManager.UnenrolledFromUPMDueToErrors";
+constexpr char kUnenrollmentReasonHistogram[] =
+    "PasswordManager.UPMUnenrollmentReason";
 
 constexpr int kTestErrorListVersion = 2;
 
@@ -81,6 +83,8 @@ PasswordManagerEvictionUtilTest::PasswordManagerEvictionUtilTest() {
       password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kSettingsMigratedToUPM, false);
+  test_pref_service_.registry()->RegisterIntegerPref(
+      password_manager::prefs::kTimesUPMAuthErrorShown, 0);
 }
 
 PasswordManagerEvictionUtilTest::~PasswordManagerEvictionUtilTest() = default;
@@ -95,6 +99,8 @@ TEST_F(PasswordManagerEvictionUtilTest, EvictsUser) {
       password_manager::prefs::kTimeOfLastMigrationAttempt, 20.22);
   pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
                              true);
+  pref_service()->SetInteger(password_manager::prefs::kTimesUPMAuthErrorShown,
+                             2);
 
   base::HistogramTester histogram_tester;
 
@@ -121,8 +127,13 @@ TEST_F(PasswordManagerEvictionUtilTest, EvictsUser) {
             0.0);
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPM));
+  EXPECT_EQ(pref_service()->GetInteger(
+                password_manager::prefs::kTimesUPMAuthErrorShown),
+            0);
 
   histogram_tester.ExpectUniqueSample(kUnenrollmentHistogram, true, 1);
+  histogram_tester.ExpectUniqueSample(kUnenrollmentReasonHistogram,
+                                      kInternalError, 1);
 }
 
 TEST_F(PasswordManagerEvictionUtilTest, IndicatesEvictedUser) {
