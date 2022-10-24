@@ -44,7 +44,7 @@ namespace util {
 struct FileDefinition {
   base::FilePath virtual_path;
   base::FilePath absolute_path;
-  bool is_directory;
+  bool is_directory = false;
 };
 
 // Contains all information needed to create an Entry object in custom bindings.
