@@ -582,10 +582,12 @@ group("gn_all") {
     # TODO(https://crbug.com/1299021): These dependencies might be
     # redundant given that we were able to disable them, apparently without
     # negative consequences, for the ARM32-NaCl-on-ARM64 case.
-    if (enable_nacl && target_cpu != "arm64") {
-      deps += [ "//components/nacl/loader:nacl_loader_unittests" ]
+    if (enable_nacl) {
+      if (target_cpu != "arm64") {
+        deps += [ "//components/nacl/loader:nacl_loader_unittests" ]
+      }
 
-      if (is_linux || is_chromeos) {
+      if ((target_cpu != "arm64" && is_linux) || is_chromeos) {
         # TODO(dpranke): Figure out what platforms should actually have this.
         deps += [ "//components/nacl/loader:nacl_helper" ]
       }
