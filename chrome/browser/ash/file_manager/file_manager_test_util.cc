@@ -155,12 +155,21 @@ base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
   static constexpr char kFileSystemProviderFilesystemId[] =
       "test-image-provider-fs";
   base::RunLoop run_loop;
-  file_manager::test::VolumeWaiter waiter(profile, run_loop.QuitClosure());
+
+  // Incognito profiles don't have VolumeManager events (so a
+  // file_manager::test::VolumeWaiter won't work with them). Switch to the
+  // original profile in that case. For regular (not incognito) profiles,
+  // p->GetOriginalProfile() returns p.
+  Profile* profile_with_volume_manager_events = profile->GetOriginalProfile();
+
+  file_manager::test::VolumeWaiter waiter(profile_with_volume_manager_events,
+                                          run_loop.QuitClosure());
   auto extension = InstallTestingChromeApp(
       profile, "extensions/api_test/file_browser/image_provider");
   run_loop.Run();
 
-  auto* volume_manager = file_manager::VolumeManager::Get(profile);
+  auto* volume_manager =
+      file_manager::VolumeManager::Get(profile_with_volume_manager_events);
   CHECK(volume_manager);
   base::WeakPtr<file_manager::Volume> volume;
   for (auto& v : volume_manager->GetVolumeList()) {

@@ -352,11 +352,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
 
 // Test expectations for files coming from provided file systems.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
-  if ((profile_type() == TestProfileType::kIncognito) ||
-      (profile_type() == TestProfileType::kGuest)) {
-    // test::InstallFileSystemProviderChromeApp doesn't work in incognito (as
-    // there is no VolumeManager to send an OnVolumeMounted event) and provided
-    // file systems don't exist in guest.
+  if (profile_type() == TestProfileType::kGuest) {
+    // Provided file systems don't exist in guest.
     return;
   }
   // The current test expectation: a GIF file in the provided file system called
