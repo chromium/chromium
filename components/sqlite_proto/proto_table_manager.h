@@ -58,6 +58,8 @@ class ProtoTableManager : public TableManager {
                               base::span<const std::string> table_names,
                               int schema_version);
 
+  void WillShutdown();
+
  protected:
   ~ProtoTableManager() override;
 

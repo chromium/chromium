@@ -79,4 +79,9 @@ void ProtoTableManager::CreateOrClearTablesIfNecessary() {
                 // object.
 }
 
+void ProtoTableManager::WillShutdown() {
+  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+  ResetDB();
+}
+
 }  // namespace sqlite_proto
