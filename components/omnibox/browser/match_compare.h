@@ -47,23 +47,4 @@ class CompareWithDemoteByType {
   OmniboxFieldTrial::DemotionMultipliers demotions_;
 };
 
-template <class Match>
-class DestinationSort {
- public:
-  DestinationSort(PageClassification page_classification)
-      : demote_by_type_(page_classification) {}
-  bool operator()(const Match& elem1, const Match& elem2) {
-    // Sort identical destination_urls together.
-    // Place the most relevant matches first, so that when we call
-    // std::unique(), these are the ones that get preserved.
-    return (elem1.stripped_destination_url == elem2.stripped_destination_url)
-               ? demote_by_type_(elem1, elem2)
-               : (elem1.stripped_destination_url <
-                  elem2.stripped_destination_url);
-  }
-
- private:
-  CompareWithDemoteByType<Match> demote_by_type_;
-};
-
 #endif  // COMPONENTS_OMNIBOX_BROWSER_MATCH_COMPARE_H_
