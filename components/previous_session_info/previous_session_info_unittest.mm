@@ -6,7 +6,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
+#include "base/test/ios/wait_util.h"
+#include "base/time/time.h"
 #include "components/previous_session_info/previous_session_info_private.h"
 #include "components/version_info/version_info.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -567,12 +568,13 @@ TEST_F(PreviousSessionInfoTest, MemoryFootprintRecording) {
   // Memory footprint should be updated after timeout.
   EXPECT_FALSE([NSUserDefaults.standardUserDefaults
       objectForKey:kPreviousSessionInfoMemoryFootprint]);
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(1, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return
-        [[NSUserDefaults.standardUserDefaults
-            objectForKey:kPreviousSessionInfoMemoryFootprint] integerValue] > 0;
-  }));
+  EXPECT_TRUE(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), ^bool {
+        base::RunLoop().RunUntilIdle();
+        return [[NSUserDefaults.standardUserDefaults
+                   objectForKey:kPreviousSessionInfoMemoryFootprint]
+                   integerValue] > 0;
+      }));
 }
 
 // Tests tabCount property.
