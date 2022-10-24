@@ -185,7 +185,6 @@ class ServiceWorkerContainerTest : public PageTestBase {
     ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
-  v8::Isolate* GetIsolate() { return v8::Isolate::GetCurrent(); }
   ScriptState* GetScriptState() {
     return ToScriptStateForMainWorld(GetDocument().GetFrame());
   }
