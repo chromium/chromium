@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/audio_renderer_sink.h"
@@ -67,6 +68,8 @@ class MEDIA_EXPORT NullAudioSink : public SwitchableAudioRendererSink {
   std::unique_ptr<FakeAudioWorker> fake_worker_;
   base::TimeDelta fixed_data_delay_;
   std::unique_ptr<AudioBus> audio_bus_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media

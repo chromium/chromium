@@ -23,7 +23,9 @@ NullAudioSink::NullAudioSink(
       callback_(nullptr),
       task_runner_(task_runner) {}
 
-NullAudioSink::~NullAudioSink() = default;
+NullAudioSink::~NullAudioSink() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void NullAudioSink::Initialize(const AudioParameters& params,
                                RenderCallback* callback) {
@@ -36,14 +38,14 @@ void NullAudioSink::Initialize(const AudioParameters& params,
 }
 
 void NullAudioSink::Start() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(initialized_);
   DCHECK(!started_);
   started_ = true;
 }
 
 void NullAudioSink::Stop() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   started_ = false;
   // Stop may be called at any time, so we have to check before stopping.
   if (fake_worker_)
@@ -51,7 +53,7 @@ void NullAudioSink::Stop() {
 }
 
 void NullAudioSink::Play() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(started_);
 
   if (playing_)
@@ -64,7 +66,7 @@ void NullAudioSink::Play() {
 }
 
 void NullAudioSink::Pause() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(started_);
 
   if (!playing_)
