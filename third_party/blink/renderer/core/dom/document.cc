@@ -6161,7 +6161,9 @@ ScriptPromise Document::requestStorageAccessForOrigin(
 
     FireRequestStorageAccessForOriginHistogram(
         RequestStorageResult::REJECTED_NO_USER_GESTURE);
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccessForOrigin not allowed"));
     return promise;
   }
 
@@ -6173,7 +6175,9 @@ ScriptPromise Document::requestStorageAccessForOrigin(
         "browsing contexts."));
     FireRequestStorageAccessForOriginHistogram(
         RequestStorageResult::REJECTED_INCORRECT_FRAME);
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccessForOrigin not allowed"));
     return promise;
   }
 
@@ -6185,7 +6189,9 @@ ScriptPromise Document::requestStorageAccessForOrigin(
 
     FireRequestStorageAccessForOriginHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccessForOrigin not allowed"));
     return promise;
   }
 
@@ -6199,7 +6205,9 @@ ScriptPromise Document::requestStorageAccessForOrigin(
         "requestStorageAccessForOrigin: Invalid origin parameter."));
     FireRequestStorageAccessForOriginHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccessForOrigin not allowed"));
     return promise;
   }
 
@@ -6245,7 +6253,12 @@ ScriptPromise Document::requestStorageAccessForOrigin(
                   default:
                     FireRequestStorageAccessForOriginHistogram(
                         RequestStorageResult::REJECTED_GRANT_DENIED);
-                    resolver->Reject();
+                    ScriptState* state = resolver->GetScriptState();
+                    DCHECK(state->ContextIsValid());
+                    ScriptState::Scope scope(state);
+                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                        state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+                        "requestStorageAccessForOrigin not allowed"));
                 }
               },
               WrapPersistent(resolver), WrapPersistent(this)));
@@ -6282,7 +6295,9 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_NO_USER_GESTURE);
 
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
     return promise;
   }
 
@@ -6294,7 +6309,9 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
 
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
     return promise;
   }
 
@@ -6314,7 +6331,9 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
           RequestStorageResult::REJECTED_SANDBOXED);
     }
 
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
     return promise;
   }
 
@@ -6334,7 +6353,9 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
 
     // If a previous rejection has been received the promise can be immediately
     // rejected without further action.
-    resolver->Reject();
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
     return promise;
   }
 
@@ -6365,7 +6386,12 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
                   default:
                     FireRequestStorageAccessHistogram(
                         RequestStorageResult::REJECTED_GRANT_DENIED);
-                    resolver->Reject();
+                    ScriptState* state = resolver->GetScriptState();
+                    DCHECK(state->ContextIsValid());
+                    ScriptState::Scope scope(state);
+                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                        state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+                        "requestStorageAccess not allowed"));
                 }
               },
               WrapPersistent(resolver), WrapPersistent(this)));

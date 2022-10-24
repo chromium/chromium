@@ -61,7 +61,7 @@ if (topLevelDocument) {
         return promise
             .then(t.unreached_func('Should have rejected: ' + description))
             .catch(function(e) {
-              assert_equals(undefined, e, description);
+              assert_equals(e.name, 'NotAllowedError', description);
             });
       },
       '[' + testPrefix +
@@ -120,7 +120,7 @@ if (topLevelDocument) {
                                .then(t.unreached_func(
                                    'Should have rejected: ' + description))
                                .catch(function(e) {
-                                 assert_equals(undefined, e, description);
+                                 assert_equals('NotAllowedError', e.name, description);
                                });
           ;
         };
@@ -142,7 +142,7 @@ if (topLevelDocument) {
                   .then(
                       t.unreached_func('Should have rejected: ' + description))
                   .catch(function(e) {
-                    assert_equals(undefined, e, description);
+                    assert_equals('NotAllowedError', e.name, description);
                   });
           ;
         };
@@ -165,7 +165,7 @@ if (topLevelDocument) {
                   .then(
                       t.unreached_func('Should have rejected: ' + description))
                   .catch(function(e) {
-                    assert_equals(undefined, e, description);
+                    assert_equals('NotAllowedError', e.name, description);
                   });
           ;
         };
