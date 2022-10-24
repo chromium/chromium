@@ -8,8 +8,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.*
 items:
 - caption: High Efficiency Mode will be enabled.
   value: true
@@ -22,5 +20,8 @@ owners:
 - file://components/performance_manager/OWNERS
 schema:
   type: boolean
+supported_on:
+- chrome.*:108-
+- chrome_os:108-
 tags: []
 type: main
