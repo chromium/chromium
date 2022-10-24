@@ -1,0 +1,2 @@
+Tests shared storage fetching of entries/metadata.
+

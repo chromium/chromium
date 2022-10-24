@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -97,8 +98,14 @@ class StorageHandler : public DevToolsDomainHandler,
       const std::string& owner_origin_string,
       const std::string& name,
       std::unique_ptr<GetInterestGroupDetailsCallback> callback) override;
-
   Response SetInterestGroupTracking(bool enable) override;
+
+  void GetSharedStorageMetadata(
+      const std::string& owner_origin_string,
+      std::unique_ptr<GetSharedStorageMetadataCallback> callback) override;
+  void GetSharedStorageEntries(
+      const std::string& owner_origin_string,
+      std::unique_ptr<GetSharedStorageEntriesCallback> callback) override;
 
  private:
   // See definition for lifetime information.
@@ -109,6 +116,9 @@ class StorageHandler : public DevToolsDomainHandler,
   // Not thread safe.
   CacheStorageObserver* GetCacheStorageObserver();
   IndexedDBObserver* GetIndexedDBObserver();
+
+  absl::variant<protocol::Response, storage::SharedStorageManager*>
+  GetSharedStorageManager();
 
   // content::InterestGroupManagerImpl::InterestGroupObserverInterface
   void OnInterestGroupAccessed(

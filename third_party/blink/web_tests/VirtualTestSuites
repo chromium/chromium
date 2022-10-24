@@ -1053,7 +1053,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "wpt_internal/shared_storage",
-      "external/wpt/shared-storage"
+      "external/wpt/shared-storage",
+      "http/tests/inspector-protocol/storage/shared-storage.js"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride"]
   },
@@ -1062,7 +1063,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "wpt_internal/shared_storage",
-      "external/wpt/shared-storage"
+      "external/wpt/shared-storage",
+      "http/tests/inspector-protocol/storage/shared-storage.js"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride"]
   },

@@ -1,0 +1,29 @@
+Tests shared storage fetching of entries/metadata.
+Metadata: {
+    creationTime : <number>
+    length : 3
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : key0-set-from-document
+        value : value0
+    }
+    [1] : {
+        key : key1-set-from-document
+        value : value1value1
+    }
+    [2] : {
+        key : key2-set-from-document
+        value : value2
+    }
+]
+Clear entries
+Metadata: {
+    creationTime : <number>
+    length : 0
+    remainingBudget : 12
+}
+Entries:[
+]
+
