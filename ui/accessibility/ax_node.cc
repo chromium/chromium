@@ -1968,6 +1968,12 @@ bool AXNode::IsLeaf() const {
   if (data().IsAtomicTextField() || IsText())
     return true;
 
+  // Non atomic text fields may have children that we want to expose.
+  // For example, a <div contenteditable> may have child elements such as
+  // more <div>s that we want to expose.
+  if (data().IsNonAtomicTextField())
+    return false;
+
   // Roles whose children are only presentational according to the ARIA and
   // HTML5 Specs should be hidden from screen readers.
   switch (GetRole()) {

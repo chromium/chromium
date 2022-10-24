@@ -1,0 +1,6 @@
+Document
+++Spinner RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=5.00 Value.Value='5'
+++Spinner RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=10.00 RangeValue.Minimum=1.00 RangeValue.Value=5.00 Value.Value='5'
+++Spinner RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
+++Spinner RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
+++Spinner RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00 Value.Value='0'

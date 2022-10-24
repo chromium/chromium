@@ -1144,7 +1144,8 @@ bool content::IsNSRange(id value) {
       _owner->GetBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback)) {
     cocoa_role = NSAccessibilityGroupRole;
   } else if (_owner->IsTextField() &&
-             _owner->HasState(ax::mojom::State::kMultiline)) {
+             _owner->HasState(ax::mojom::State::kMultiline) &&
+             !_owner->GetData().IsSpinnerTextField()) {
     cocoa_role = NSAccessibilityTextAreaRole;
   } else if (ui::IsImage(_owner->GetRole()) && _owner->GetChildCount()) {
     // An image map is an image with children, and exposed on Mac as a group.

@@ -910,4 +910,66 @@ TEST(AXNodeTest, GetLowestCommonAncestor) {
             static_text_1_0_0_node->GetLowestCommonAncestor(*link_1_0_node));
 }
 
+TEST(AXNodeTest, DescendantOfNonAtomicTextField) {
+  // The test covers the different scenarios for descendants of a non-atomic
+  // text field:
+  // <div contenteditable role=spinbutton>
+  //  <div role=spinbutton></div>
+  //  <input type=text role=spinbutton>
+  //  <div></div>
+  // </div>
+  // ++1 kRootWebArea
+  // ++++2 kSpinButton
+  // ++++++3 kSpinButton
+  // ++++++4 kSpinButton
+  // ++++++5 kGenericContainer
+
+  AXNodeData root_1;
+  AXNodeData spin_button_2;
+  AXNodeData spin_button_3;
+  AXNodeData spin_button_4;
+  AXNodeData generic_container_5;
+
+  root_1.id = 1;
+  spin_button_2.id = 2;
+  spin_button_3.id = 3;
+  spin_button_4.id = 4;
+  generic_container_5.id = 5;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {spin_button_2.id};
+
+  spin_button_2.role = ax::mojom::Role::kSpinButton;
+  spin_button_2.AddState(ax::mojom::State::kRichlyEditable);
+  spin_button_2.AddState(ax::mojom::State::kEditable);
+  spin_button_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+  spin_button_2.child_ids = {spin_button_3.id, spin_button_4.id,
+                             generic_container_5.id};
+
+  spin_button_3.role = ax::mojom::Role::kSpinButton;
+
+  spin_button_4.role = ax::mojom::Role::kSpinButton;
+  spin_button_4.AddState(ax::mojom::State::kEditable);
+
+  generic_container_5.role = ax::mojom::Role::kGenericContainer;
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root_1.id;
+  initial_state.nodes = {root_1, spin_button_2, spin_button_3, spin_button_4,
+                         generic_container_5};
+  initial_state.has_tree_data = true;
+  initial_state.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  AXTree tree(initial_state);
+
+  EXPECT_TRUE(tree.GetFromId(spin_button_2.id)->data().IsSpinnerTextField());
+  EXPECT_TRUE(tree.GetFromId(spin_button_2.id)->data().IsTextField());
+  EXPECT_FALSE(
+      tree.GetFromId(spin_button_3.id)->data().IsSpinnerTextField());
+  EXPECT_FALSE(tree.GetFromId(spin_button_3.id)->data().IsTextField());
+  EXPECT_TRUE(tree.GetFromId(spin_button_4.id)->data().IsSpinnerTextField());
+  EXPECT_FALSE(tree.GetFromId(generic_container_5.id)->data().IsSpinnerTextField());
+}
+
 }  // namespace ui
