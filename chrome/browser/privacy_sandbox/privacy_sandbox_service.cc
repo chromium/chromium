@@ -315,7 +315,7 @@ void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
     browsing_topics_service_->ClearAllTopicsData();
 }
 
-bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() {
+bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() const {
   return pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled);
 }
 
@@ -640,7 +640,8 @@ void PrivacySandboxService::SetTopicAllowed(
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
 PrivacySandboxService::GetSampleFirstPartySets() const {
-  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
+  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get() &&
+      IsFirstPartySetsDataAccessEnabled()) {
     return {{net::SchemefulSite(GURL("https://youtube.com")),
              net::SchemefulSite(GURL("https://google.com"))},
             {net::SchemefulSite(GURL("https://google.com")),
