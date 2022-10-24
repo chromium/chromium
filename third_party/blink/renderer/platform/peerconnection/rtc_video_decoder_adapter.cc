@@ -75,32 +75,6 @@ constexpr int32_t kMaxDecodeHistory = 32;
 // requesting fallback to software decode.
 constexpr int32_t kMaxConsecutiveErrors = 5;
 
-// Number of RTCVideoDecoder instances right now that have started decoding.
-class DecoderCounter {
- public:
-  int Count() { return count_.load(); }
-
-  void IncrementCount() {
-    int c = ++count_;
-    DCHECK_GT(c, 0);
-  }
-
-  void DecrementCount() {
-    int c = --count_;
-    DCHECK_GE(c, 0);
-  }
-
- private:
-  std::atomic_int count_{0};
-};
-
-DecoderCounter* GetDecoderCounter() {
-  static DecoderCounter s_counter;
-  // Note that this will init only in the first call in the ctor, so it's still
-  // single threaded.
-  return &s_counter;
-}
-
 void FinishWait(base::WaitableEvent* waiter, bool* result_out, bool result) {
   DVLOG(3) << __func__ << "(" << result << ")";
   *result_out = result;
@@ -241,18 +215,18 @@ RTCVideoDecoderAdapter::FallbackOrRegisterConcurrentInstanceOnce(
   // If this is the first decode, then increment the count of working decoders.
   if (!have_started_decoding_) {
     have_started_decoding_ = true;
-    GetDecoderCounter()->IncrementCount();
+    g_num_decoders_++;
   }
 
   // Don't allow hardware decode for small videos if there are too many
   // decoder instances.  This includes the case where our resolution drops while
   // too many decoders exist.
   if (HasSoftwareFallback(codec) && current_resolution_ < kMinResolution &&
-      GetDecoderCounter()->Count() > kMaxDecoderInstances) {
+      g_num_decoders_ > kMaxDecoderInstances) {
     // Decrement the count and clear the flag, so that other decoders don't
     // fall back also.
     have_started_decoding_ = false;
-    GetDecoderCounter()->DecrementCount();
+    g_num_decoders_--;
     // TODO(b/246460597): Add the fallback reason about too many concurrent
     // instances.
     return RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode;
@@ -457,6 +431,9 @@ void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
 }
 
 // static
+int RTCVideoDecoderAdapter::g_num_decoders_ = 0;
+
+// static
 std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const webrtc::SdpVideoFormat& format) {
@@ -545,7 +522,7 @@ void RTCVideoDecoderAdapter::DecrementCounterOnMediaThread(
   weak_this_factory_.InvalidateWeakPtrs();
 
   if (have_started_decoding_)
-    GetDecoderCounter()->DecrementCount();
+    g_num_decoders_--;
 
   pending_buffers_.clear();
   decode_timestamps_.clear();
@@ -765,26 +742,23 @@ bool RTCVideoDecoderAdapter::ReinitializeSync(
 
 void RTCVideoDecoderAdapter::ChangeStatus(Status new_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  // It is impossible to recover once status becomes kError.
   if (status_ != Status::kError)
     status_ = new_status;
 }
 
-// static
 int RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting() {
-  return GetDecoderCounter()->Count();
+  return g_num_decoders_;
 }
 
-// static
 void RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting() {
-  GetDecoderCounter()->IncrementCount();
+  g_num_decoders_++;
 }
 
-// static
 void RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting() {
-  GetDecoderCounter()->DecrementCount();
+  g_num_decoders_--;
 }
 
-// static
 bool RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers() {
   return base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding);
 }

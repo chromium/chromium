@@ -102,6 +102,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   DecoderInfo GetDecoderInfo() const override { return decoder_info_; }
 
   // Gets / adjusts the current decoder count.
+  // They are must be executed on media thread.
   static int GetCurrentDecoderCountForTesting();
   static void IncrementCurrentDecoderCountForTesting();
   static void DecrementCurrentDecoderCountForTesting();
@@ -190,9 +191,12 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // haven't decoded anything yet.  Since this is updated asynchronously, it's
   // only an approximation of "most recently".
   int32_t current_resolution_ GUARDED_BY_CONTEXT(media_sequence_checker_){0};
+
   // Has anything been sent to Decode() yet?
   bool have_started_decoding_ GUARDED_BY_CONTEXT(media_sequence_checker_){
       false};
+  // This is only accessed on media thread.
+  static int g_num_decoders_;
 
   // Decoding thread members.
   // Has anything been sent to Decode() yet?
