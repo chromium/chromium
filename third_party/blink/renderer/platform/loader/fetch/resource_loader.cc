@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -1175,8 +1176,15 @@ void ResourceLoader::DidReceiveData(const char* data, int length) {
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
     dict.SetDouble("identifier", (double) resource_->InspectorId());
+    dict.SetDouble("dataLength", (double) length);
     if (data) {
-      dict.SetString("data", base::StringPiece(data, length));
+      std::string data_base64 = base::Base64Encode(
+        base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(data),
+          length
+        )
+      );
+      dict.SetString("data", data_base64);
     }
     recordreplay::BrowserEvent("Network.DidReceiveData", dict);
   }

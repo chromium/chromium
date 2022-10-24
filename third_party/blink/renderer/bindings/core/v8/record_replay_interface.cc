@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 
+#include "base/base64.h"
 #include "base/record_replay.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -48,7 +49,7 @@ const {
   setClearPauseDataCallback,
   getCurrentError,
   getCurrentNetworkRequestEvent,
-  getBrowserEvents,
+  getCurrentNetworkStreamData,
   dump,
   getRecordingId,
   sha256DigestHex,
@@ -75,14 +76,6 @@ function assert(v) {
   if (!v) {
     log(`Assertion failed ${Error().stack}`);
     throw new Error("Assertion failed");
-  }
-}
-
-const gBrowserEvents = [];
-function syncBrowserEvents() {
-  for (const {name, payload} of getBrowserEvents()) {
-    const info = JSON.parse(payload);
-    gBrowserEvents.push({ name, info });
   }
 }
 
@@ -153,6 +146,7 @@ const CommandCallbacks = {
   "Target.getSourceMapURL": Target_getSourceMapURL,
   "Target.getStepOffsets": Target_getStepOffsets,
   "Target.getCurrentNetworkRequestEvent": Target_getCurrentNetworkRequestEvent,
+  "Target.getCurrentNetworkStreamData": Target_getCurrentNetworkStreamData,
   "Target.topFrameLocation": Target_topFrameLocation,
   "Pause.evaluateInFrame": Pause_evaluateInFrame,
   "Pause.evaluateInGlobal": Pause_evaluateInGlobal,
@@ -259,6 +253,15 @@ function Target_getCurrentNetworkRequestEvent() {
     return { data: obj };
   } catch (e) {
     log(`Error: getCurrentNetworkRequestEvent exception: ${e}`);
+  }
+}
+
+function Target_getCurrentNetworkStreamData(params) {
+  const data = getCurrentNetworkStreamData(params);
+  if (data) {
+    return { data };
+  } else {
+    log(`Error: getCurrentNetworkStreamData returned no data.`);
   }
 }
 
@@ -1217,24 +1220,25 @@ static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
   return 0;
 }
 
-// C++ structure for keeping received events until being pulled into
-// javascript by controller protocol methods.  We cannot directly
-// call into JS code from this handler because the handler may be
-// called when script execution is forbidden.
-//
-// So instead we keep the received events in C++ as a vector, and
-// have the JS code reach out and pull these into javascript before
-// doing any event-related operations.
-struct BrowserEvent {
-  std::string name;
-  std::string payload;
-
-  BrowserEvent(std::string&& name, std::string&& payload)
-    : name(std::move(name)), payload(std::move(payload)) {}
+// Represents a known network request.  Created and added to
+// `gActiveNetworkRequests` when the request is first seen.  Removed
+// when the request finishes or fails.
+struct NetworkRequestStatus {
+  bool response_received;
+  size_t response_data_received;
+  NetworkRequestStatus()
+  : response_received(false),
+    response_data_received(0)
+  {}
 };
+// Map of active network requests.
+std::unordered_map<std::string, NetworkRequestStatus>*
+  gActiveNetworkRequests = nullptr;
 
-static std::vector<BrowserEvent> *gBrowserEvents = nullptr;
+// Globals storing values to be returned to controller commands
+// `GetCurrentNetwork*`
 static base::Value *gCurrentNetworkRequestEvent = nullptr;
+static std::vector<uint8_t>* gCurrentNetworkStreamData = nullptr;
 
 static void GetCurrentNetworkRequestEvent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (!gCurrentNetworkRequestEvent) {
@@ -1248,20 +1252,93 @@ static void GetCurrentNetworkRequestEvent(const v8::FunctionCallbackInfo<v8::Val
   args.GetReturnValue().Set(json_string);
 }
 
+static void GetCurrentNetworkStreamData(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(gCurrentNetworkStreamData);
+
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  // Expect params: { index, length }
+  v8::Local<v8::Object> params =
+    args[0]->ToObject(context).ToLocalChecked();
+  size_t index =
+    params->Get(context, ToV8String(isolate, "index"))
+      .ToLocalChecked()->NumberValue(context).ToChecked();
+  size_t length =
+    params->Get(context, ToV8String(isolate, "length"))
+      .ToLocalChecked()->NumberValue(context).ToChecked();
+  size_t size = gCurrentNetworkStreamData->size();
+
+  if ((size < index) || ((size - index) < length)) {
+    recordreplay::Print(
+      "GetCurrentNetworkStreamData: Out of range slice"
+      " (size=%u, requested=%u-%u)",
+      (unsigned) size,
+      (unsigned) index,
+      (unsigned) (index + length)
+    );
+    return;
+  }
+
+  uint8_t* bytes = &(*gCurrentNetworkStreamData)[index];
+  std::string encoded = base::Base64Encode(
+    base::span<const uint8_t>(bytes, length)
+  );
+  char* encoded_cstr = strdup(encoded.c_str());
+  char* encoded_end = encoded_cstr + encoded.length();
+  for (char *cur = encoded_cstr; cur < encoded_end; cur++) {
+    if (*cur == '-') { *cur = '+'; }
+    if (*cur == '_') { *cur = '/'; }
+  }
+
+  v8::Local<v8::Object> result = v8::Object::New(isolate);
+  result->Set(context,
+    ToV8String(isolate, "kind"),
+    ToV8String(isolate, "data")
+  ).Check();
+  result->Set(context,
+    ToV8String(isolate, "value"),
+    ToV8String(isolate, encoded_cstr)
+  ).Check();
+  args.GetReturnValue().Set(result);
+}
+
 static void HandleNetworkPrepareRequestEvent(const base::DictionaryValue& info) {
+  CHECK(gActiveNetworkRequests);
+  std::string request_id = *info.FindPath("requestId")->GetIfString();
+  gActiveNetworkRequests->insert({ request_id, NetworkRequestStatus() });
+
   base::DictionaryValue event;
   event.SetString("kind", "request");
   event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
   event.Set("requestMethod", std::unique_ptr<base::Value>(info.FindPath("requestMethod")->DeepCopy()));
   event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
-  std::string request_id = *info.FindPath("requestId")->GetIfString();
 
   gCurrentNetworkRequestEvent = &event;
   recordreplay::OnNetworkRequestEvent(request_id.c_str());
   gCurrentNetworkRequestEvent = nullptr;
 }
 
+static std::string MakeRequestIdentifier(uint64_t identifier) {
+  char request_id[64];
+  snprintf(request_id, 64, "%d.%lu", (int) getpid(), identifier);
+  return std::string(request_id);
+}
+
 static void HandleNetworkDidReceiveResponseEvent(const base::DictionaryValue& info) {
+  CHECK(gActiveNetworkRequests);
+  uint64_t identifier =
+    *info.FindPath("identifier")->GetIfDouble();
+  std::string request_id = MakeRequestIdentifier(identifier);
+  auto requestInfo = gActiveNetworkRequests->find(request_id);
+  if (requestInfo == gActiveNetworkRequests->end()) {
+    recordreplay::Print("Unknown request received response: %s",
+      request_id.c_str());
+    requestInfo->second.response_received = true;
+    return;
+  }
+
+  gActiveNetworkRequests->insert({ request_id, NetworkRequestStatus() });
   base::DictionaryValue event;
   event.SetString("kind", "response");
   event.Set("responseHeaders", std::unique_ptr<base::Value>(
@@ -1279,17 +1356,24 @@ static void HandleNetworkDidReceiveResponseEvent(const base::DictionaryValue& in
   event.Set("responseFromCache", std::unique_ptr<base::Value>(
     info.FindPath("responseFromCache")->DeepCopy()
   ));
-  uint64_t identifier =
-    *info.FindPath("identifier")->GetIfDouble();
-  char request_id[64];
-  snprintf(request_id, 64, "%d.%lu", getpid(), identifier);
 
   gCurrentNetworkRequestEvent = &event;
-  recordreplay::OnNetworkRequestEvent(request_id);
+  recordreplay::OnNetworkRequestEvent(request_id.c_str());
   gCurrentNetworkRequestEvent = nullptr;
 }
 
 static void HandleNetworkDidFinishLoadingEvent(const base::DictionaryValue& info) {
+  CHECK(gActiveNetworkRequests);
+  uint64_t identifier =
+    *info.FindPath("identifier")->GetIfDouble();
+  std::string request_id = MakeRequestIdentifier(identifier);
+  auto request_info = gActiveNetworkRequests->find(request_id);
+  if (request_info == gActiveNetworkRequests->end()) {
+    recordreplay::Print("Unknown request finished loading: %s",
+      request_id.c_str());
+    return;
+  }
+
   base::DictionaryValue event;
   event.SetString("kind", "request-done");
   event.Set("encodedBodySize", std::unique_ptr<base::Value>(
@@ -1299,46 +1383,95 @@ static void HandleNetworkDidFinishLoadingEvent(const base::DictionaryValue& info
     info.FindPath("decodedBodySize")->DeepCopy()
   ));
 
-  uint64_t identifier =
-    *info.FindPath("identifier")->GetIfDouble();
-  char request_id[64];
-  snprintf(request_id, 64, "%d.%lu", getpid(), identifier);
-
   gCurrentNetworkRequestEvent = &event;
-  recordreplay::OnNetworkRequestEvent(request_id);
+  recordreplay::OnNetworkRequestEvent(request_id.c_str());
   gCurrentNetworkRequestEvent = nullptr;
 }
 
 static void HandleNetworkDidFailLoadingEvent(const base::DictionaryValue& info) {
+  CHECK(gActiveNetworkRequests);
+  uint64_t identifier =
+    *info.FindPath("identifier")->GetIfDouble();
+  std::string request_id = MakeRequestIdentifier(identifier);
+  auto requestInfo = gActiveNetworkRequests->find(request_id);
+  if (requestInfo == gActiveNetworkRequests->end()) {
+    recordreplay::Print("Unknown request failed loading: %s",
+      request_id.c_str());
+    return;
+  }
+
   base::DictionaryValue event;
   event.SetString("kind", "request-failed");
   event.Set("requestFailedReason", std::unique_ptr<base::Value>(
     info.FindPath("requestFailedReason")->DeepCopy()
   ));
 
-  uint64_t identifier =
-    *info.FindPath("identifier")->GetIfDouble();
-  char request_id[64];
-  snprintf(request_id, 64, "%d.%lu", getpid(), identifier);
-
   gCurrentNetworkRequestEvent = &event;
-  recordreplay::OnNetworkRequestEvent(request_id);
+  recordreplay::OnNetworkRequestEvent(request_id.c_str());
   gCurrentNetworkRequestEvent = nullptr;
 }
 
-// Store received browser events in a global vector until JS code
-// needs it.  We cannot directly call JS from this code as it may
-// be invoked when script execution is forbidden.  So we store the
-// data away until the javascript code can reach out and fetch it.
-// See: `GetBrowserEvents` (c++) and `syncBrowserEvents` (JS) in this
-// file.
-static void HandleBrowserEvent(const char* name, const char* payload) {
-  if (!gBrowserEvents) {
-    gBrowserEvents = new std::vector<BrowserEvent>();
+static void HandleNetworkDidReceiveDataEvent(const base::DictionaryValue& info) {
+  CHECK(gActiveNetworkRequests);
+  CHECK(gCurrentNetworkStreamData);
+  // Get request info.
+  uint64_t identifier =
+    *info.FindPath("identifier")->GetIfDouble();
+  std::string request_id = MakeRequestIdentifier(identifier);
+  auto request_info = gActiveNetworkRequests->find(request_id);
+  if (request_info == gActiveNetworkRequests->end()) {
+    recordreplay::Print("Unknown request received data: %s",
+      request_id.c_str());
+    return;
   }
-  BrowserEvent event = BrowserEvent(std::string(name), std::string(payload));
-  gBrowserEvents->push_back(std::move(event));
 
+  std::string stream_id = "response-" + request_id;
+
+  // The first byte of data received triggers a "response-body" event.
+  if (request_info->second.response_data_received == 0) {
+    base::DictionaryValue event;
+    event.SetString("kind", "response-body");
+
+    gCurrentNetworkRequestEvent = &event;
+    recordreplay::OnNetworkRequestEvent(request_id.c_str());
+    gCurrentNetworkRequestEvent = nullptr;
+
+    recordreplay::OnNetworkStreamStart(
+      stream_id.c_str(), "response-data", request_id.c_str()
+    );
+  }
+
+  // Sending stream data.
+  size_t length = *info.FindPath("dataLength")->GetIfDouble();
+  CHECK(length >= 0);
+
+  gCurrentNetworkStreamData->clear();
+  const std::string *data_base64 = info.FindPath("data")->GetIfString();
+  if (data_base64) {
+    std::string out_string;
+    if (!base::Base64Decode(*data_base64, &out_string)) {
+      recordreplay::Print("Unknown request received data: %s",
+        request_id.c_str());
+      return;
+    }
+    const uint8_t* data =
+      reinterpret_cast<const uint8_t *>(out_string.c_str());
+    gCurrentNetworkStreamData->insert(
+      gCurrentNetworkStreamData->begin(),
+      data,
+      data + out_string.length()
+    );
+    size_t offset = request_info->second.response_data_received;
+    recordreplay::OnNetworkStreamData(
+      stream_id.c_str(), offset, length, /* bookmark = */ 0
+    );
+    gCurrentNetworkStreamData->clear();
+  }
+  request_info->second.response_data_received += length;
+}
+
+// Handle incoming browser events.
+static void HandleBrowserEvent(const char* name, const char* payload) {
   base::Value val = base::JSONReader::Read(payload).value_or(base::Value());
   assert(!val.is_none() && "Browser event JSON failed");
   assert(!val.is_dict() && "Browser event JSON is not a dictionary");
@@ -1350,10 +1483,10 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
     HandleNetworkDidFinishLoadingEvent(base::Value::AsDictionaryValue(val));
   } else if (!strcmp(name, "Network.DidFailLoading")) {
     HandleNetworkDidFailLoadingEvent(base::Value::AsDictionaryValue(val));
+  } else if (!strcmp(name, "Network.DidReceiveData")) {
+    HandleNetworkDidReceiveDataEvent(base::Value::AsDictionaryValue(val));
   }
 }
-
-static void GetBrowserEvents(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 extern "C" void V8RecordReplaySetAPIObjectIdCallback(int (*callback)(v8::Local<v8::Object>));
 extern "C" void V8RecordReplayRegisterBrowserEventCallback(
@@ -1370,6 +1503,9 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
   V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
 
   gCollectSourceMaps = !TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_COLLECTION");
+  gActiveNetworkRequests =
+    new std::unordered_map<std::string, NetworkRequestStatus>();
+  gCurrentNetworkStreamData = new std::vector<uint8_t>();
 
   // When we aren't collecting source maps and are recording we don't need the
   // record/replay script for anything, so we don't compile and run it. The script
@@ -1402,8 +1538,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       GetCurrentError);
   SetFunctionProperty(isolate, args, "getCurrentNetworkRequestEvent",
                       GetCurrentNetworkRequestEvent);
-  SetFunctionProperty(isolate, args, "getBrowserEvents",
-                      GetBrowserEvents);
+  SetFunctionProperty(isolate, args, "getCurrentNetworkStreamData",
+                      GetCurrentNetworkStreamData);
   SetFunctionProperty(isolate, args, "dump",
                       DumpCallback);
   SetFunctionProperty(isolate, args, "getRecordingId",
@@ -1448,11 +1584,6 @@ static void SetDataProperty(v8::Isolate* isolate, v8::Local<v8::Object> obj,
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   obj->Set(context, ToV8String(isolate, property), value).Check();
 }
-static void SetArrayProperty(v8::Isolate* isolate, v8::Local<v8::Array> arr,
-                            uint32_t idx, v8::Local<v8::Value> value) {
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  arr->CreateDataProperty(context, idx, value).Check();
-}
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (!gCurrentErrorEvent) {
@@ -1472,27 +1603,6 @@ static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {
                   v8::Number::New(isolate, gCurrentErrorEvent->Location()->ScriptId()));
 
   args.GetReturnValue().Set(rv);
-}
-
-static void GetBrowserEvents(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(v8::IsMainThread());
-  CHECK(gInspectorSession);
-  CHECK(args.Length() == 0 && "must be called with no arguments");
-  CHECK(gBrowserEvents && "gBrowserEvents should have been allocated before now");
-
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  v8::Local<v8::Array> result = v8::Array::New(isolate, gBrowserEvents->size());
-  uint32_t i = 0;
-  for (auto iter = gBrowserEvents->begin(); iter != gBrowserEvents->end(); iter++) {
-    v8::Local<v8::Object> obj = v8::Object::New(isolate);
-    SetDataProperty(isolate, obj, "name", ToV8String(isolate, iter->name.c_str()));
-    SetDataProperty(isolate, obj, "payload", ToV8String(isolate, iter->payload.c_str()));
-    SetArrayProperty(isolate, result, i, obj);
-    i += 1;
-  }
-  gBrowserEvents->clear();
-
-  args.GetReturnValue().Set(result);
 }
 
 } // namespace blink
