@@ -2072,7 +2072,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kIsolatedWebAppInstallForceList,
       prefs::kIsolatedWebAppInstallForceList, chrome_schema,
-      SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
+      SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #if defined(USE_CUPS)
