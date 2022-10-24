@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/openssl_util.h"
 #include "crypto/scoped_capi_types.h"
+#include "crypto/scoped_cng_types.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_platform_key_util.h"
@@ -153,31 +154,14 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
   DWORD key_spec_;
 };
 
-class ScopedNCRYPT_PROV_HANDLE {
- public:
-  ScopedNCRYPT_PROV_HANDLE() {}
-  ScopedNCRYPT_PROV_HANDLE(const ScopedNCRYPT_PROV_HANDLE&) = delete;
-  ScopedNCRYPT_PROV_HANDLE& operator=(const ScopedNCRYPT_PROV_HANDLE&) = delete;
-  ~ScopedNCRYPT_PROV_HANDLE() {
-    if (prov_) {
-      NCryptFreeObject(prov_);
-    }
-  }
-
-  NCRYPT_PROV_HANDLE get() const { return prov_; }
-  NCRYPT_PROV_HANDLE* InitializeInto() { return &prov_; }
-
- private:
-  NCRYPT_PROV_HANDLE prov_ = 0;
-};
-
 std::wstring GetCNGProviderName(NCRYPT_KEY_HANDLE key) {
-  ScopedNCRYPT_PROV_HANDLE prov;
+  crypto::ScopedNCryptProvider prov;
   DWORD prov_len = 0;
   SECURITY_STATUS status = NCryptGetProperty(
       key, NCRYPT_PROVIDER_HANDLE_PROPERTY,
-      reinterpret_cast<BYTE*>(prov.InitializeInto()),
-      sizeof(*prov.InitializeInto()), &prov_len, NCRYPT_SILENT_FLAG);
+      reinterpret_cast<BYTE*>(
+          crypto::ScopedNCryptProvider::Receiver(prov).get()),
+      sizeof(NCRYPT_PROV_HANDLE), &prov_len, NCRYPT_SILENT_FLAG);
   if (FAILED(status)) {
     return L"(error getting provider)";
   }
@@ -214,16 +198,14 @@ std::wstring GetCNGProviderName(NCRYPT_KEY_HANDLE key) {
 class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
  public:
   // Takes ownership of |key|.
-  SSLPlatformKeyCNG(NCRYPT_KEY_HANDLE key, int type, size_t max_length)
-      : provider_name_(GetCNGProviderName(key)),
-        key_(key),
+  SSLPlatformKeyCNG(crypto::ScopedNCryptKey key, int type, size_t max_length)
+      : provider_name_(GetCNGProviderName(key.get())),
+        key_(std::move(key)),
         type_(type),
         max_length_(max_length) {}
 
   SSLPlatformKeyCNG(const SSLPlatformKeyCNG&) = delete;
   SSLPlatformKeyCNG& operator=(const SSLPlatformKeyCNG&) = delete;
-
-  ~SSLPlatformKeyCNG() override { NCryptFreeObject(key_); }
 
   std::string GetProviderName() override {
     return "CNG: " + base::WideToUTF8(provider_name_);
@@ -246,7 +228,7 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
       DWORD salt_size = 0;
       DWORD size_of_salt_size = sizeof(salt_size);
       HRESULT status =
-          NCryptGetProperty(key_, NCRYPT_PCP_PSS_SALT_SIZE_PROPERTY,
+          NCryptGetProperty(key_.get(), NCRYPT_PCP_PSS_SALT_SIZE_PROPERTY,
                             reinterpret_cast<PBYTE>(&salt_size),
                             size_of_salt_size, &size_of_salt_size, 0);
       if (FAILED(status) || salt_size != NCRYPT_TPM_PSS_SALT_SIZE_HASHSIZE) {
@@ -327,14 +309,14 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
 
     DWORD signature_len;
     SECURITY_STATUS status =
-        NCryptSignHash(key_, padding_info, const_cast<BYTE*>(digest),
+        NCryptSignHash(key_.get(), padding_info, const_cast<BYTE*>(digest),
                        digest_len, nullptr, 0, &signature_len, flags);
     if (FAILED(status)) {
       LOG(ERROR) << "NCryptSignHash failed: " << status;
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
     signature->resize(signature_len);
-    status = NCryptSignHash(key_, padding_info, const_cast<BYTE*>(digest),
+    status = NCryptSignHash(key_.get(), padding_info, const_cast<BYTE*>(digest),
                             digest_len, signature->data(), signature_len,
                             &signature_len, flags);
     if (FAILED(status)) {
@@ -375,7 +357,7 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
 
  private:
   std::wstring provider_name_;
-  NCRYPT_KEY_HANDLE key_;
+  crypto::ScopedNCryptKey key_;
   int type_;
   size_t max_length_;
 };
@@ -393,19 +375,18 @@ scoped_refptr<SSLPrivateKey> WrapCAPIPrivateKey(
 
 scoped_refptr<SSLPrivateKey> WrapCNGPrivateKey(
     const X509Certificate* certificate,
-    NCRYPT_KEY_HANDLE key) {
+    crypto::ScopedNCryptKey key) {
   // Rather than query the private key for metadata, extract the public key from
   // the certificate without using Windows APIs. CNG does not consistently work
   // depending on the system. See https://crbug.com/468345.
   int key_type;
   size_t max_length;
   if (!GetClientCertInfo(certificate, &key_type, &max_length)) {
-    NCryptFreeObject(key);
     return nullptr;
   }
 
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeyCNG>(key, key_type, max_length),
+      std::make_unique<SSLPlatformKeyCNG>(std::move(key), key_type, max_length),
       GetSSLPlatformKeyTaskRunner());
 }
 
@@ -428,7 +409,7 @@ scoped_refptr<SSLPrivateKey> FetchClientCertPrivateKey(
   CHECK_EQ(must_free, TRUE);
 
   if (key_spec == CERT_NCRYPT_KEY_SPEC) {
-    return WrapCNGPrivateKey(certificate, prov_or_key);
+    return WrapCNGPrivateKey(certificate, crypto::ScopedNCryptKey(prov_or_key));
   } else {
     return WrapCAPIPrivateKey(certificate,
                               crypto::ScopedHCRYPTPROV(prov_or_key), key_spec);

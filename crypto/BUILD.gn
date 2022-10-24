@@ -39,7 +39,6 @@ component("crypto") {
     "random.h",
     "rsa_private_key.cc",
     "rsa_private_key.h",
-    "scoped_capi_types.h",
     "scoped_nss_types.h",
     "secure_hash.cc",
     "secure_hash.h",
@@ -114,6 +113,8 @@ component("crypto") {
     sources += [
       "capi_util.cc",
       "capi_util.h",
+      "scoped_capi_types.h",
+      "scoped_cng_types.h",
       "unexportable_key_win.cc",
     ]
     libs = [ "ncrypt.lib" ]
