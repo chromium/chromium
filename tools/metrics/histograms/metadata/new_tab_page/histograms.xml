@@ -1584,7 +1584,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.RecipeTasks.RecipeDownloadCount" units="recipes"
+<histogram name="NewTabPage.RecipeTasks.RecipesDownloadCount" units="recipes"
     expires_after="2023-06-30">
   <owner>tiborg@chromium.org</owner>
   <owner>danpeng@google.com</owner>
