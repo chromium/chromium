@@ -19,3 +19,8 @@ per-file ntp_tiles_internals_ui.*=file://components/ntp_tiles/OWNERS
 per-file signin_internals_ui*=achuith@chromium.org
 
 per-file invalidations/invalidations_message_handler.*=file://components/invalidation/OWNERS
+
+# Review from WebUI PLATFORM_OWNERs required since this file is commonly
+# used to add new WebUI surfaces.
+per-file chrome_web_ui_controller_factory.cc=set noparent
+per-file chrome_web_ui_controller_factory.cc=file://ui/webui/PLATFORM_OWNERS

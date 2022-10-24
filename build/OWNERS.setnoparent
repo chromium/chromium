@@ -78,3 +78,8 @@ file://third_party/blink/common/origin_trials/OT_OWNERS
 # //ash/constants/quick_settings_catalogs.h should be reviewed
 # by //ash/system owners to ensure that the correct notifier is being used.
 file://ash/system/OWNERS
+
+# WebUI surfaces are user visible and frequently are kept around indefinitely.
+# New WebUI additions should be reviewed by WebUI PLATFORM_OWNERS to ensure
+# they follow the guidance at https://www.chromium.org/developers/webui
+file://ui/webui/PLATFORM_OWNERS
