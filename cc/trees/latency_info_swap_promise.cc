@@ -43,7 +43,7 @@ void LatencyInfoSwapPromise::OnCommit() {
   using perfetto::protos::pbzero::ChromeLatencyInfo;
   using perfetto::protos::pbzero::TrackEvent;
 
-  TRACE_EVENT("input,benchmark", "LatencyInfo.Flow",
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [this](perfetto::EventContext ctx) {
                 ChromeLatencyInfo* latency_info =
                     ctx.event()->set_chrome_latency_info();
