@@ -36,6 +36,11 @@ class ElementFinderResult;
 class SemanticElementFinder : public BaseElementFinder,
                               public content::WebContentsObserver {
  public:
+  struct SemanticNodeResult {
+    GlobalBackendNodeId id = GlobalBackendNodeId(nullptr, -1);
+    bool used_override = false;
+  };
+
   SemanticElementFinder(content::WebContents* web_contents,
                         DevtoolsClient* devtools_client,
                         AnnotateDomModelService* annotate_dom_model_service,
@@ -59,7 +64,7 @@ class SemanticElementFinder : public BaseElementFinder,
 
   // Builds a result from the provided information and returns it with an
   // ok status.
-  void ResultFound(const GlobalBackendNodeId& node_id,
+  void ResultFound(const SemanticNodeResult& node_id,
                    const std::string& object_id,
                    const std::string& devtools_frame_id);
 
@@ -84,7 +89,7 @@ class SemanticElementFinder : public BaseElementFinder,
   void OnRunAnnotateDomModel();
 
   void OnResolveNodeForAnnotateDom(
-      const GlobalBackendNodeId& node,
+      const SemanticNodeResult& node,
       const std::string& devtools_frame_id,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<dom::ResolveNodeResult> result);
@@ -111,11 +116,11 @@ class SemanticElementFinder : public BaseElementFinder,
 
   // Elements gathered through all frames. Unused if the |selector_| does not
   // contain |SemanticInformation|.
-  std::vector<GlobalBackendNodeId> semantic_node_results_;
+  std::vector<SemanticNodeResult> semantic_node_results_;
   std::vector<mojom::NodeDataStatus> node_data_frame_status_;
 
   std::set<content::GlobalRenderFrameHostId> expected_frame_ids_;
-  std::map<content::GlobalRenderFrameHostId, std::vector<GlobalBackendNodeId>>
+  std::map<content::GlobalRenderFrameHostId, std::vector<SemanticNodeResult>>
       received_results_;
 
   std::unique_ptr<base::OneShotTimer> timer_ = nullptr;

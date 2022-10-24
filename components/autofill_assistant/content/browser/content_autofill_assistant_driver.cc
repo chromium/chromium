@@ -7,7 +7,6 @@
 #include "base/files/file.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "components/autofill_assistant/content/common/proto/semantic_feature_overrides.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -35,7 +34,6 @@ void ContentAutofillAssistantDriver::BindDriver(
         pending_receiver,
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
-
   auto* driver = ContentAutofillAssistantDriver::GetOrCreateForCurrentDocument(
       render_frame_host);
   if (driver) {
@@ -78,7 +76,6 @@ void ContentAutofillAssistantDriver::GetAnnotateDomModel(
     base::TimeDelta timeout,
     GetAnnotateDomModelCallback callback) {
   if (!annotate_dom_model_service_) {
-    LOG(ERROR) << "No model service";
     std::move(callback).Run(mojom::ModelStatus::kUnexpectedError, base::File(),
                             /*overrides_policy=*/"");
     return;
@@ -131,7 +128,6 @@ void ContentAutofillAssistantDriver::RunCallback(
   if (it == pending_calls_.end()) {
     return;
   }
-
   DCHECK(it->second->callback_);
   std::move(it->second->callback_)
       .Run(model_status, std::move(model_file), GetOverridesPolicy());
@@ -140,12 +136,13 @@ void ContentAutofillAssistantDriver::RunCallback(
 
 void ContentAutofillAssistantDriver::SetAnnotateDomModelService(
     AnnotateDomModelService* annotate_dom_model_service) {
-  DCHECK(annotate_dom_model_service);
   annotate_dom_model_service_ = annotate_dom_model_service;
 }
 
 std::string ContentAutofillAssistantDriver::GetOverridesPolicy() const {
-  DCHECK(annotate_dom_model_service_);
+  if (!annotate_dom_model_service_) {
+    return "";
+  }
   return annotate_dom_model_service_->GetOverridesPolicy();
 }
 

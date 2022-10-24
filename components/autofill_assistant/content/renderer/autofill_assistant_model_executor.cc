@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "autofill_assistant_model_executor.h"
 #include "base/command_line.h"
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
@@ -112,7 +113,7 @@ void AutofillAssistantModelExecutor::BuildExecutionTask(
       std::make_unique<ExecutionTask>(std::move(tflite_engine), this);
 }
 
-absl::optional<std::pair<int, int>>
+absl::optional<ModelExecutorResult>
 AutofillAssistantModelExecutor::ExecuteModelWithInput(
     const blink::AutofillAssistantNodeSignals& node_signals) {
   if (!execution_task_) {
@@ -252,7 +253,7 @@ bool AutofillAssistantModelExecutor::GetObjective(
   return true;
 }
 
-absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
+absl::optional<ModelExecutorResult> AutofillAssistantModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // Check if we have an override for this execution and return that instead.
   if (overrides_result_) {
@@ -262,7 +263,8 @@ absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
               << ", objective: " << overrides_result_->second << ")";
     }
     // Cleanup the result in case this executor is reused.
-    std::pair<int, int> result = *overrides_result_;
+    ModelExecutorResult result(overrides_result_->first,
+                               overrides_result_->second, true);
     overrides_result_.reset();
     return result;
   }
@@ -296,7 +298,7 @@ absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
   int semantic_role =
       model_metadata_.output().semantic_role().classes(index_of_best_role);
   if (semantic_role == 0) {
-    return std::pair<int, int>(semantic_role, 0);
+    return ModelExecutorResult(/*r=*/0, /*o=*/0, /*with_override=*/false);
   }
 
   int block_index;
@@ -308,7 +310,8 @@ absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
     return absl::nullopt;
   }
 
-  return std::pair<int, int>(semantic_role, objective);
+  ModelExecutorResult result(semantic_role, objective, false);
+  return result;
 }
 
 void AutofillAssistantModelExecutor::Tokenize(

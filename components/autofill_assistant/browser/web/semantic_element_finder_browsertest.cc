@@ -328,6 +328,15 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
   ClientStatus status = RunWaitForDom(action_proto, /* use_observers= */ false,
                                       run_expectations.Get());
   EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+
+  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
+  const auto& result =
+      log_info_.element_finder_info(0).semantic_inference_result();
+  ASSERT_EQ(1, result.predicted_elements().size());
+  EXPECT_EQ(backend_node_id, result.predicted_elements(0).backend_node_id());
+  EXPECT_THAT(1, result.predicted_elements(0).semantic_filter().role());
+  EXPECT_THAT(2, result.predicted_elements(0).semantic_filter().objective());
+  EXPECT_FALSE(result.predicted_elements(0).used_override());
 }
 
 IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
@@ -815,5 +824,57 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest, RespectsTimeout) {
   EXPECT_FALSE(option_status.ok());
   EXPECT_EQ(option_status.proto_status(), TIMED_OUT);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
+                       WaitForDomForSemanticElementWithOverride) {
+  // This element is unique.
+  SelectorProto baseline_selector = ToSelectorProto("#select");
+
+  ClientStatus element_status;
+  int backend_node_id =
+      GetBackendNodeId(Selector(baseline_selector), &element_status);
+  EXPECT_TRUE(element_status.ok());
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+  node_data.used_override = true;
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}))
+      // Capture any other frames.
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
+  ActionProto action_proto;
+  auto* wait_for_dom = action_proto.mutable_wait_for_dom();
+  auto* condition = wait_for_dom->mutable_wait_condition();
+  condition->mutable_client_id()->set_identifier("e");
+  condition->set_require_unique_element(true);
+  auto* semantic_filter =
+      condition->mutable_match()->add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
+
+  base::MockCallback<base::OnceCallback<void(ScriptExecutor*)>>
+      run_expectations;
+  EXPECT_CALL(run_expectations, Run(_))
+      .WillOnce([](ScriptExecutor* script_executor) {
+        EXPECT_TRUE(script_executor->GetElementStore()->HasElement("e"));
+      });
+  ClientStatus status = RunWaitForDom(action_proto, /* use_observers= */ false,
+                                      run_expectations.Get());
+  EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
+  const auto& result =
+      log_info_.element_finder_info(0).semantic_inference_result();
+  ASSERT_EQ(1, result.predicted_elements().size());
+  EXPECT_EQ(backend_node_id, result.predicted_elements(0).backend_node_id());
+  EXPECT_THAT(1, result.predicted_elements(0).semantic_filter().role());
+  EXPECT_THAT(2, result.predicted_elements(0).semantic_filter().objective());
+  EXPECT_TRUE(result.predicted_elements(0).used_override());
+}
+#endif
 
 }  // namespace autofill_assistant

@@ -101,8 +101,8 @@ TEST_F(AutofillAssistantModelExecutorTest, ExecuteWithLoadedModel) {
 
   auto result = model_executor_.ExecuteModelWithInput(node_signals);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->first, 47 /* ADDRESS_LINE1 */);
-  EXPECT_EQ(result->second, 7 /* FILL_DELIVERY_ADDRESS */);
+  EXPECT_EQ(result->role, 47 /* ADDRESS_LINE1 */);
+  EXPECT_EQ(result->objective, 7 /* FILL_DELIVERY_ADDRESS */);
 }
 
 TEST_F(AutofillAssistantModelExecutorTest, OverridesMatch) {
@@ -119,8 +119,9 @@ TEST_F(AutofillAssistantModelExecutorTest, OverridesMatch) {
 
   auto result = model_executor.ExecuteModelWithInput(node_signals);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->first, 9999);
-  EXPECT_EQ(result->second, 1111);
+  EXPECT_EQ(result->role, 9999);
+  EXPECT_EQ(result->objective, 1111);
+  EXPECT_TRUE(result->used_override);
 }
 
 TEST_F(AutofillAssistantModelExecutorTest, OverridesNoMatch) {
@@ -135,8 +136,9 @@ TEST_F(AutofillAssistantModelExecutorTest, OverridesNoMatch) {
 
   auto result = model_executor.ExecuteModelWithInput(node_signals);
   ASSERT_TRUE(result.has_value());
-  EXPECT_NE(result->first, 9999);
-  EXPECT_NE(result->second, 1111);
+  EXPECT_NE(result->role, 9999);
+  EXPECT_NE(result->objective, 1111);
+  EXPECT_FALSE(result->used_override);
 }
 
 TEST_F(AutofillAssistantModelExecutorTest, OverridesResultNotReused) {
@@ -153,8 +155,9 @@ TEST_F(AutofillAssistantModelExecutorTest, OverridesResultNotReused) {
 
     auto result = model_executor.ExecuteModelWithInput(node_signals);
     ASSERT_TRUE(result.has_value());
-    EXPECT_EQ(result->first, 9999);
-    EXPECT_EQ(result->second, 1111);
+    EXPECT_EQ(result->role, 9999);
+    EXPECT_EQ(result->objective, 1111);
+    EXPECT_TRUE(result->used_override);
   }
 
   // We expect the internal overrides result from the previous execution to have
@@ -166,8 +169,9 @@ TEST_F(AutofillAssistantModelExecutorTest, OverridesResultNotReused) {
 
     auto result = model_executor.ExecuteModelWithInput(node_signals);
     ASSERT_TRUE(result.has_value());
-    EXPECT_NE(result->first, 9999);
-    EXPECT_NE(result->second, 1111);
+    EXPECT_NE(result->role, 9999);
+    EXPECT_NE(result->objective, 1111);
+    EXPECT_FALSE(result->used_override);
   }
 }
 
