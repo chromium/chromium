@@ -69,7 +69,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // manager and observes the prompt bubble.
   void InitializePermissionPrompt(
       content::WebContents* web_contents,
-      permissions::PermissionPrompt::Delegate* delegate);
+      permissions::PermissionPrompt::Delegate* delegate,
+      base::OnceCallback<void()>);
 
   // Displays a permission prompt using the chip UI.
   void ShowPermissionPrompt(content::WebContents* web_contents,

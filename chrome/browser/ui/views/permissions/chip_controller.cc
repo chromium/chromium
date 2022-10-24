@@ -177,13 +177,15 @@ bool ChipController::ShouldWaitForConfirmationToComplete() {
 
 void ChipController::InitializePermissionPrompt(
     content::WebContents* web_contents,
-    permissions::PermissionPrompt::Delegate* delegate) {
+    permissions::PermissionPrompt::Delegate* delegate,
+    base::OnceCallback<void()> callback) {
   DCHECK(delegate);
   if (ShouldWaitForConfirmationToComplete()) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ChipController::InitializePermissionPrompt,
-                       weak_factory_.GetWeakPtr(), web_contents, delegate),
+                       weak_factory_.GetWeakPtr(), web_contents, delegate,
+                       std::move(callback)),
         collapse_timer_.GetCurrentDelay());
     return;
   }
@@ -205,6 +207,7 @@ void ChipController::InitializePermissionPrompt(
   active_chip_permission_request_manager_ =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   active_chip_permission_request_manager_.value()->AddObserver(this);
+  std::move(callback).Run();
 }
 
 void ChipController::ShowPermissionPrompt(
@@ -220,7 +223,7 @@ void ChipController::ShowPermissionPrompt(
     return;
   }
 
-  InitializePermissionPrompt(web_contents, delegate);
+  InitializePermissionPrompt(web_contents, delegate, base::DoNothing());
 
   request_chip_shown_time_ = base::TimeTicks::Now();
 
