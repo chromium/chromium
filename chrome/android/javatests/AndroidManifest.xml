@@ -68,7 +68,8 @@
 
         <activity android:name="org.chromium.ui.test.util.BlankUiTestActivity"
             android:theme="@style/Theme.Chromium.Activity"
-            android:exported="true"/>
+          android:exported="true"
+          android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"/>
 
         <activity android:name="org.chromium.components.signin.test.util.FakeAccountManagerFacade$AddAccountActivityStub"
             android:exported="true"/>

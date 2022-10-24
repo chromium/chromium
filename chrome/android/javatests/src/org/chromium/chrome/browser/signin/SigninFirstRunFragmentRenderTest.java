@@ -14,11 +14,10 @@ import static org.mockito.Mockito.when;
 import android.content.res.Configuration;
 import android.support.test.runner.lifecycle.Stage;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,12 +34,12 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigninFirstRunFragment;
@@ -50,13 +49,14 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -66,7 +66,8 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class SigninFirstRunFragmentRenderTest {
+@DoNotBatch(reason = "Relies on global state")
+public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCase {
     /** Parameter provider for night mode state and device orientation. */
     public static class NightModeAndOrientationParameterProvider implements ParameterProvider {
         private static List<ParameterSet> sParams = Arrays.asList(
@@ -104,10 +105,8 @@ public class SigninFirstRunFragmentRenderTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Rule
-    public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
+    @Mock
+    private Profile mProfileMock;
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock
@@ -130,29 +129,35 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameterBefore(NightModeAndOrientationParameterProvider.class)
     public void setupNightModeAndDeviceOrientation(boolean nightModeEnabled, int orientation) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+            AppCompatDelegate.setDefaultNightMode(nightModeEnabled
+                            ? AppCompatDelegate.MODE_NIGHT_YES
+                            : AppCompatDelegate.MODE_NIGHT_NO);
         });
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(
                 orientation == Configuration.ORIENTATION_PORTRAIT ? "Portrait" : "Landscape");
     }
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
-    }
-
     @Before
     public void setUp() {
+        Profile.setLastUsedProfileForTesting(mProfileMock);
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(IdentityServicesProvider.get().getSigninManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mSigninManagerMock);
+            when(IdentityServicesProvider.get().getIdentityManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mIdentityManagerMock);
+        });
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
         FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
                 VariationsGroup.DEFAULT);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
         when(mFirstRunPageDelegateMock.canUseLandscapeLayout()).thenReturn(true);
-        mChromeActivityTestRule.startMainActivityOnBlankPage();
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -168,11 +173,6 @@ public class SigninFirstRunFragmentRenderTest {
         });
     }
 
-    @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-    }
-
     @Test
     @MediumTest
     @Feature("RenderTest")
@@ -181,7 +181,7 @@ public class SigninFirstRunFragmentRenderTest {
         launchActivityWithFragment(Configuration.ORIENTATION_PORTRAIT);
 
         ActivityTestUtils.rotateActivityToOrientation(
-                mChromeActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+                getActivity(), Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(() -> {
             return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
         });
@@ -197,7 +197,7 @@ public class SigninFirstRunFragmentRenderTest {
         launchActivityWithFragment(Configuration.ORIENTATION_LANDSCAPE);
 
         ActivityTestUtils.rotateActivityToOrientation(
-                mChromeActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
+                getActivity(), Configuration.ORIENTATION_PORTRAIT);
         CriteriaHelper.pollUiThread(() -> {
             return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
         });
@@ -245,15 +245,6 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccountWhenSigninIsDisabledByPolicy(
             boolean nightModeEnabled, int orientation) throws IOException {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(IdentityServicesProvider.get().getSigninManager(
-                         Profile.getLastUsedRegularProfile()))
-                    .thenReturn(mSigninManagerMock);
-            when(IdentityServicesProvider.get().getIdentityManager(
-                         Profile.getLastUsedRegularProfile()))
-                    .thenReturn(mIdentityManagerMock);
-        });
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -465,19 +456,18 @@ public class SigninFirstRunFragmentRenderTest {
     }
 
     private void launchActivityWithFragment(int orientation) {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mChromeActivityTestRule.getActivity(), orientation);
+        ActivityTestUtils.rotateActivityToOrientation(getActivity(), orientation);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mChromeActivityTestRule.getActivity()
+            getActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
                     .add(android.R.id.content, mFragment)
                     .commit();
         });
-        ApplicationTestUtils.waitForActivityState(
-                mChromeActivityTestRule.getActivity(), Stage.RESUMED);
+        ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
         // Parts of SigninFirstRunFragment are initialized asynchronously, so ensure the load
         // spinner is not displayed before grabbing a screenshot.
+        ViewUtils.waitForView(withId(R.id.signin_fre_continue_button), ViewUtils.VIEW_VISIBLE);
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(not(isDisplayed())));
     }
