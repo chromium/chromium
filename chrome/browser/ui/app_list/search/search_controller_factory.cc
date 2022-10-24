@@ -177,11 +177,8 @@ std::unique_ptr<SearchController> CreateSearchController(
     controller->AddProvider(
         os_settings_search_group_id,
         std::make_unique<OsSettingsProvider>(
-            profile,
-            os_settings_manager ? os_settings_manager->search_handler()
-                                : nullptr,
-            os_settings_manager ? os_settings_manager->hierarchy() : nullptr,
-            app_service_proxy));
+            profile, os_settings_manager->search_handler(),
+            os_settings_manager->hierarchy(), app_service_proxy));
   }
 
   if (ash::features::IsProductivityLauncherEnabled() &&
