@@ -9,10 +9,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -255,11 +253,10 @@ void FileResult::UpdateIcon() {
   const bool is_dark_light_enabled = ash::features::IsDarkLightModeEnabled();
   // DarkLightModeController might be nullptr in tests.
   auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
-  const bool dark_background =
-      is_dark_light_enabled
-          ? dark_light_mode_controller &&
-                dark_light_mode_controller->IsDarkModeEnabled()
-          : ash::features::IsProductivityLauncherEnabled();
+  const bool is_dark_mode_enabled =
+      dark_light_mode_controller &&
+      dark_light_mode_controller->IsDarkModeEnabled();
+  const bool dark_background = !is_dark_light_enabled || is_dark_mode_enabled;
   if (display_type() == DisplayType::kChip) {
     SetChipIcon(chromeos::GetChipIconForPath(filepath_, dark_background));
   } else if (display_type() == DisplayType::kContinue) {
