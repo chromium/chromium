@@ -63,8 +63,9 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
                                    html_action];
 
     LoadHtml(html);
-    id result = ExecuteJavaScript(
-        @"__gCrWeb.fill.getCanonicalActionForForm(document.body.children[0])");
+    id result = ExecuteJavaScriptForFeature(
+        @"__gCrWeb.fill.getCanonicalActionForForm(document.body.children[0])",
+        autofill::FormUtilJavaScriptFeature::GetInstance());
     NSString* base_url = base::SysUTF8ToNSString(BaseUrl());
     NSString* expected_action =
         [data.expected_action stringByReplacingOccurrencesOfString:@"baseurl/"
@@ -79,8 +80,9 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
 TEST_F(FillJsTest, GetAriaLabel) {
   LoadHtml(@"<input id='input' type='text' aria-label='the label'/>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"the label";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -95,8 +97,9 @@ TEST_F(FillJsTest, GetAriaLabelledBySingle) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"Name";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -111,8 +114,9 @@ TEST_F(FillJsTest, GetAriaLabelledByMulti) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"Billing Name";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -128,8 +132,9 @@ TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"Name";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -145,8 +150,9 @@ TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -162,8 +168,9 @@ TEST_F(FillJsTest, GetAriaLabelledByFallback) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"valid";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -175,8 +182,9 @@ TEST_F(FillJsTest, GetAriaDescriptionSingle) {
             "<div id='div1'>aria description</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -189,8 +197,9 @@ TEST_F(FillJsTest, GetAriaDescriptionMulti) {
             "<div id='div1'>aria</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -201,8 +210,9 @@ TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
             "<input id='input' type='text' aria-describedby='invalid'/>"
             "</body></html>");
 
-  id result = ExecuteJavaScript(
-      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
+  id result = ExecuteJavaScriptForFeature(
+      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"";
   EXPECT_NSEQ(result, expected_result);
 }
