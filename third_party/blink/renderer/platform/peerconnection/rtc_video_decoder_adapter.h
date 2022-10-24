@@ -137,6 +137,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   absl::variant<DecodeResult, RTCVideoDecoderFallbackReason> EnqueueBuffer(
       scoped_refptr<media::DecoderBuffer> buffer);
   void DecodeOnMediaThread();
+  void ReleaseOnMediaThread();
+  void RegisterDecodeCompleteCallbackOnMediaThread(
+      webrtc::DecodedImageCallback* callback);
   void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
@@ -159,11 +162,20 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // Media thread members.
   // |media_log_| must outlive |video_decoder_| because it is passed as a raw
   // pointer.
-  std::unique_ptr<media::MediaLog> media_log_;
+  std::unique_ptr<media::MediaLog> media_log_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+  // TODO(hiroh): Add GUARDED_BY_CONTEXT(media_sequence_checker_) once
+  // NeedSoftwareFallback() is executed on media thread.
   std::unique_ptr<media::VideoDecoder> video_decoder_;
-  int32_t outstanding_decode_requests_ = 0;
+  int32_t outstanding_decode_requests_
+      GUARDED_BY_CONTEXT(media_sequence_checker_){0};
   absl::optional<base::TimeTicks> start_time_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
+  webrtc::DecodedImageCallback* decode_complete_callback_
+      GUARDED_BY_CONTEXT(media_sequence_checker_){nullptr};
+
+  // DecoderInfo is constant after InitializeSync() is complete.
+  DecoderInfo decoder_info_;
 
   media::VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(
       decoding_sequence_checker_){media::VideoDecoderType::kUnknown};
@@ -172,21 +184,19 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   base::Lock lock_;
   // Has anything been sent to Decode() yet?
   bool have_started_decoding_ GUARDED_BY(lock_){false};
-  int32_t consecutive_error_count_ = 0;
+  int32_t consecutive_error_count_ GUARDED_BY(lock_){0};
   Status status_ GUARDED_BY(lock_){Status::kNeedKeyFrame};
-  webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
+
   // Requests that have not been submitted to the decoder yet.
-  WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;
+  WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_
+      GUARDED_BY(lock_);
   // Record of timestamps that have been sent to be decoded. Removing a
   // timestamp will cause the frame to be dropped when it is output.
-  WTF::Deque<base::TimeDelta> decode_timestamps_;
+  WTF::Deque<base::TimeDelta> decode_timestamps_ GUARDED_BY(lock_);
   // Resolution of most recently decoded frame, or the initial resolution if we
   // haven't decoded anything yet.  Since this is updated asynchronously, it's
   // only an approximation of "most recently".
   int32_t current_resolution_ GUARDED_BY(lock_){0};
-
-  // DecoderInfo is constant after InitializeSync() is complete.
-  DecoderInfo decoder_info_;
 
   // Thread management.
   SEQUENCE_CHECKER(media_sequence_checker_);

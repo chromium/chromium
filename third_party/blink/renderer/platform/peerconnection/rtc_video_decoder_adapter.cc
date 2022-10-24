@@ -366,6 +366,19 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(
           std::move(flush_success_cb), std::move(flush_fail_cb)));
 }
 
+void RTCVideoDecoderAdapter::ReleaseOnMediaThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  base::AutoLock auto_lock(lock_);
+  pending_buffers_.clear();
+  decode_timestamps_.clear();
+}
+
+void RTCVideoDecoderAdapter::RegisterDecodeCompleteCallbackOnMediaThread(
+    webrtc::DecodedImageCallback* callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  decode_complete_callback_ = callback;
+}
+
 void RTCVideoDecoderAdapter::OnDecodeDone(media::DecoderStatus status) {
   DVLOG(3) << __func__ << "(" << status.group() << ":"
            << static_cast<int>(status.code()) << ")";
@@ -515,6 +528,9 @@ void RTCVideoDecoderAdapter::DecrementCounterOnMediaThread(
     base::AutoLock auto_lock(lock_);
     if (have_started_decoding_)
       GetDecoderCounter()->DecrementCount();
+
+    pending_buffers_.clear();
+    decode_timestamps_.clear();
   }
 
   video_decoder_.reset();
@@ -645,8 +661,15 @@ int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   DCHECK(callback);
 
+  if (!PostCrossThreadTask(
+          *media_task_runner_.get(), FROM_HERE,
+          CrossThreadBindOnce(&RTCVideoDecoderAdapter::
+                                  RegisterDecodeCompleteCallbackOnMediaThread,
+                              weak_this_, CrossThreadUnretained(callback)))) {
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+
   base::AutoLock auto_lock(lock_);
-  decode_complete_callback_ = callback;
   if (status_ == Status::kError) {
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(),
@@ -659,11 +682,13 @@ int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
 int32_t RTCVideoDecoderAdapter::Release() {
   DVLOG(1) << __func__;
 
-  base::AutoLock auto_lock(lock_);
-  pending_buffers_.clear();
-  decode_timestamps_.clear();
-  return status_ == Status::kError ? WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE
-                                   : WEBRTC_VIDEO_CODEC_OK;
+  if (!PostCrossThreadTask(
+          *media_task_runner_.get(), FROM_HERE,
+          CrossThreadBindOnce(&RTCVideoDecoderAdapter::ReleaseOnMediaThread,
+                              weak_this_))) {
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+  return WEBRTC_VIDEO_CODEC_OK;
 }
 
 bool RTCVideoDecoderAdapter::ShouldReinitializeForSettingHDRColorSpace(
