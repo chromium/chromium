@@ -141,6 +141,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   void ReleaseOnMediaThread();
   void RegisterDecodeCompleteCallbackOnMediaThread(
       webrtc::DecodedImageCallback* callback);
+  void SetResolutionOnMediaThread(int width, int height);
   void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
@@ -185,6 +186,10 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   bool require_key_frame_ GUARDED_BY_CONTEXT(media_sequence_checker_){true};
   WTF::CrossThreadRepeatingFunction<void(Status)> change_status_callback_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
+  // Resolution of most recently decoded frame, or the initial resolution if we
+  // haven't decoded anything yet.  Since this is updated asynchronously, it's
+  // only an approximation of "most recently".
+  int32_t current_resolution_ GUARDED_BY_CONTEXT(media_sequence_checker_){0};
   // Has anything been sent to Decode() yet?
   bool have_started_decoding_ GUARDED_BY_CONTEXT(media_sequence_checker_){
       false};
@@ -199,14 +204,6 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   media::VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(
       decoding_sequence_checker_){media::VideoDecoderType::kUnknown};
-
-  // Shared members.
-  base::Lock lock_;
-
-  // Resolution of most recently decoded frame, or the initial resolution if we
-  // haven't decoded anything yet.  Since this is updated asynchronously, it's
-  // only an approximation of "most recently".
-  int32_t current_resolution_ GUARDED_BY(lock_){0};
 
   // Thread management.
   SEQUENCE_CHECKER(media_sequence_checker_);

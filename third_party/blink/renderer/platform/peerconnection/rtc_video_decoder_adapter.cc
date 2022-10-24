@@ -238,7 +238,6 @@ RTCVideoDecoderAdapter::FallbackOrRegisterConcurrentInstanceOnce(
     media::VideoCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
-  base::AutoLock auto_lock(lock_);
   // If this is the first decode, then increment the count of working decoders.
   if (!have_started_decoding_) {
     have_started_decoding_ = true;
@@ -390,6 +389,12 @@ void RTCVideoDecoderAdapter::RegisterDecodeCompleteCallbackOnMediaThread(
   decode_complete_callback_ = callback;
 }
 
+void RTCVideoDecoderAdapter::SetResolutionOnMediaThread(int32_t width,
+                                                        int32_t height) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  current_resolution_ = base::saturated_cast<int32_t>(width * height);
+}
+
 void RTCVideoDecoderAdapter::OnDecodeDone(media::DecoderStatus status) {
   DVLOG(3) << __func__ << "(" << status.group() << ":"
            << static_cast<int>(status.code()) << ")";
@@ -435,13 +440,9 @@ void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
     start_time_.reset();
   }
 
-  {
-    base::AutoLock auto_lock(lock_);
-    // Update `current_resolution_`, in case it's changed.  This lets us fall
-    // back to software, or avoid doing so, if we're over the decoder limit.
-    current_resolution_ =
-        static_cast<int32_t>(rtc_frame.width()) * rtc_frame.height();
-  }
+  // Update `current_resolution_`, in case it's changed.  This lets us fall
+  // back to software, or avoid doing so, if we're over the decoder limit.
+  SetResolutionOnMediaThread(rtc_frame.width(), rtc_frame.height());
 
   if (!base::Contains(decode_timestamps_, timestamp)) {
     DVLOG(2) << "Discarding frame with timestamp " << timestamp;
@@ -598,11 +599,12 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
   if (WebRtcToMediaVideoCodec(settings.codec_type()) != config_.codec())
     return false;
 
-  base::AutoLock auto_lock(lock_);
   // Save the initial resolution so that we can fall back later, if needed.
-  current_resolution_ =
-      static_cast<int32_t>(settings.max_render_resolution().Width()) *
-      settings.max_render_resolution().Height();
+  PostCrossThreadTask(
+      *media_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(&RTCVideoDecoderAdapter::SetResolutionOnMediaThread,
+                          weak_this_, settings.max_render_resolution().Width(),
+                          settings.max_render_resolution().Height()));
 
   const bool init_success = status_ != Status::kError;
   base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess",
