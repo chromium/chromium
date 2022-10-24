@@ -197,9 +197,9 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
                         std::string account_login,
                         std::string folder_name,
                         std::string folder_id) {
-    base::DictionaryValue account_info;
-    account_info.SetStringKey("name", account_name);
-    account_info.SetStringKey("login", account_login);
+    base::Value::Dict account_info;
+    account_info.Set("name", account_name);
+    account_info.Set("login", account_login);
     ec::SetFileSystemAccountInfo(profile()->GetPrefs(),
                                  ec::kFileSystemServiceProviderPrefNameBox,
                                  std::move(account_info));

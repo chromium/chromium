@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_item_rename_progress_update.h"
@@ -265,7 +266,7 @@ class BoxChunkedUploader : public BoxUploader {
 
   // Callbacks for chunked file upload.
   void OnCreateUploadSessionResponse(BoxApiCallResponse response,
-                                     base::Value session_endpoints,
+                                     base::Value::Dict session_endpoints,
                                      size_t part_size);
   void OnPartFileUploadResponse(BoxApiCallResponse response,
                                 base::Value part_info);
@@ -282,7 +283,7 @@ class BoxChunkedUploader : public BoxUploader {
   std::unique_ptr<FileChunksHandler> chunks_handler_;
 
   const size_t file_size_;
-  base::Value session_endpoints_;
+  base::Value::Dict session_endpoints_;
   PartInfo curr_part_;
   base::ListValue uploaded_parts_;
   std::string sha1_digest_;

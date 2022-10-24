@@ -722,17 +722,13 @@ class BoxCreateUploadSessionApiCallFlowTest
   }
 
   void OnResponse(BoxApiCallResponse response,
-                  base::Value session_endpoints,
+                  base::Value::Dict session_endpoints,
                   size_t part_size) {
     OnGenericResponse(response);
     if (response.success) {
-      ASSERT_TRUE(session_endpoints.is_dict());
-      session_upload_endpoint_ =
-          session_endpoints.FindPath("upload_part")->GetString();
-      session_abort_endpoint_ =
-          session_endpoints.FindPath("abort")->GetString();
-      session_commit_endpoint_ =
-          session_endpoints.FindPath("commit")->GetString();
+      session_upload_endpoint_ = *session_endpoints.FindString("upload_part");
+      session_abort_endpoint_ = *session_endpoints.FindString("abort");
+      session_commit_endpoint_ = *session_endpoints.FindString("commit");
       part_size_ = part_size;
     }
     if (quit_closure_)
@@ -1219,11 +1215,11 @@ class BoxGetCurrentUserApiCallFlowTest
                        factory_.GetWeakPtr()));
   }
 
-  void OnResponse(BoxApiCallResponse response, base::Value json) {
+  void OnResponse(BoxApiCallResponse response, base::Value::Dict json) {
     OnGenericResponse(response);
-    if (json.FindStringPath("enterprise.id")) {
-      enterprise_id_ =
-          std::make_unique<std::string>(*json.FindStringPath("enterprise.id"));
+    if (json.FindStringByDottedPath("enterprise.id")) {
+      enterprise_id_ = std::make_unique<std::string>(
+          *json.FindStringByDottedPath("enterprise.id"));
     }
   }
 
@@ -1297,5 +1293,4 @@ TEST_F(BoxGetCurrentUserApiCallFlowTest, ProcessApiCallFailure) {
   ASSERT_EQ(box_error_code_, "rate_limit_exceeded");
 }
 
-// base::Value(base::Value::Type::DICTIONARY);
 }  // namespace enterprise_connectors

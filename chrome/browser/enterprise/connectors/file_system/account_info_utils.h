@@ -66,7 +66,7 @@ std::string GetDefaultFolderName(PrefService* prefs,
 // provider.
 void SetFileSystemAccountInfo(PrefService* prefs,
                               const std::string& service_provider,
-                              base::Value account_info);
+                              base::Value::Dict account_info);
 bool ClearFileSystemAccountInfo(PrefService* prefs,
                                 const std::string& service_provider);
 

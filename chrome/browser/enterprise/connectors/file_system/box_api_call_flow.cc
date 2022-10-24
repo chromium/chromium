@@ -21,6 +21,7 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #define PRINT_ERROR(net_error, head)                                \
   (net_error ? base::StringPrintf("net error = %d", net_error)      \
@@ -87,10 +88,6 @@ std::string ExtractParentId(const base::Value& value) {
     DLOG(ERROR) << "[BoxApiCallFlow] Parent ID not found";
 
   return id;
-}
-
-base::Value CreateEmptyDict() {
-  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 base::Value CreateSingleFieldDict(const std::string& key,
@@ -463,7 +460,7 @@ void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
 // API reference:
 // https://developer.box.com/reference/get-users-me/
 BoxGetCurrentUserApiCallFlow::BoxGetCurrentUserApiCallFlow(
-    base::OnceCallback<void(Response, base::Value)> callback)
+    base::OnceCallback<void(Response, base::Value::Dict)> callback)
     : callback_(std::move(callback)) {}
 BoxGetCurrentUserApiCallFlow::~BoxGetCurrentUserApiCallFlow() = default;
 
@@ -487,28 +484,31 @@ void BoxGetCurrentUserApiCallFlow::ProcessApiCallSuccess(
 }
 
 void BoxGetCurrentUserApiCallFlow::OnJsonParsed(ParseResult result) {
-  if (!result.has_value()) {
+  if (!result.has_value() || !result->is_dict()) {
     LOG_PARSE_FAIL(ERROR, "GetCurrentUser", result);
-    std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
+    std::move(callback_).Run(Response{false, net::HTTP_OK},
+                             base::Value::Dict());
     return;
   }
-  if (!result->is_dict() ||
-      !result->FindStringPath(kBoxEnterpriseIdFieldName) ||
-      !result->FindStringPath(kBoxLoginFieldName) ||
-      !result->FindStringPath(kBoxNameFieldName)) {
+  base::Value::Dict& result_dict = result->GetDict();
+  if (!result_dict.FindStringByDottedPath(kBoxEnterpriseIdFieldName) ||
+      !result_dict.FindStringByDottedPath(kBoxLoginFieldName) ||
+      !result_dict.FindStringByDottedPath(kBoxNameFieldName)) {
     LOG(ERROR)
         << "[BoxApiCallFlow] GetCurrentUser succeeded but "
            "response does not include all of enterprise_id, login, and name: "
         << *result;
-    std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
+    std::move(callback_).Run(Response{false, net::HTTP_OK},
+                             base::Value::Dict());
     return;
   }
-  std::move(callback_).Run(Response{true, net::HTTP_OK}, std::move(*result));
+  std::move(callback_).Run(Response{true, net::HTTP_OK},
+                           std::move(result->GetDict()));
 }
 
 void BoxGetCurrentUserApiCallFlow::ProcessFailure(Response response) {
   DCHECK(!response.success);
-  std::move(callback_).Run(response, CreateEmptyDict());
+  std::move(callback_).Run(response, base::Value::Dict());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -721,10 +721,11 @@ GURL BoxCreateUploadSessionApiCallFlow::CreateApiCallUrl() {
 }
 
 std::string BoxCreateUploadSessionApiCallFlow::CreateApiCallBody() {
-  base::Value val(base::Value::Type::DICTIONARY);
-  val.SetStringKey("folder_id", folder_id_);
-  val.SetIntKey("file_size", file_size_);  // TODO(https://crbug.com/1187152)
-  val.SetStringKey("file_name", file_name_.MaybeAsASCII());
+  base::Value::Dict val;
+  val.Set("folder_id", folder_id_);
+  val.Set("file_size",
+          static_cast<int>(file_size_));  // TODO(https://crbug.com/1187152)
+  val.Set("file_name", file_name_.MaybeAsASCII());
 
   bool file_big_enough = file_size_ > kChunkFileUploadMinSize;
   CHECK(file_big_enough) << file_size_;
@@ -751,7 +752,7 @@ void BoxCreateUploadSessionApiCallFlow::ProcessApiCallSuccess(
 }
 
 void BoxCreateUploadSessionApiCallFlow::ProcessFailure(Response response) {
-  std::move(callback_).Run(response, CreateEmptyDict(), 0);
+  std::move(callback_).Run(response, base::Value::Dict(), 0);
 }
 
 void BoxCreateUploadSessionApiCallFlow::OnSuccessJsonParsed(
@@ -759,14 +760,18 @@ void BoxCreateUploadSessionApiCallFlow::OnSuccessJsonParsed(
   LOG_PARSE_FAIL_IF(!result.has_value(), ERROR, "CreateUploadSession", result);
 
   const auto http_code = net::HTTP_CREATED;
-  base::Value *endpoints = nullptr, *part_size = nullptr;
-  if (result.has_value() && (part_size = result->FindPath("part_size")) &&
-      (endpoints = result->FindPath("session_endpoints")) &&
-      endpoints->FindPath("upload_part") && endpoints->FindPath("commit") &&
-      endpoints->FindPath("abort")) {
-    std::move(callback_).Run(MakeSuccess(http_code), std::move(*endpoints),
-                             part_size->GetInt());
-    return;
+  if (result.has_value() && result->is_dict()) {
+    base::Value::Dict& result_dict = result->GetDict();
+    base::Value::Dict* endpoints = nullptr;
+    absl::optional<int> part_size;
+    if ((part_size = result_dict.FindInt("part_size")) &&
+        (endpoints = result_dict.FindDict("session_endpoints")) &&
+        endpoints->FindString("upload_part") &&
+        endpoints->FindString("commit") && endpoints->FindString("abort")) {
+      std::move(callback_).Run(MakeSuccess(http_code), std::move(*endpoints),
+                               *part_size);
+      return;
+    }
   }
   LOG_PARSE_FAIL_IF(!result.has_value(), ERROR, "CreateUploadSession", result);
   ProcessFailure(MakeApiFailure(http_code, "bad_response", "parse_fail"));

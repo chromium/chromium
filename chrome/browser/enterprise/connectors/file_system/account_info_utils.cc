@@ -223,9 +223,9 @@ std::vector<std::string> GetFileSystemConnectorAccountInfoPrefs(
 
 void SetFileSystemAccountInfo(PrefService* prefs,
                               const std::string& service_provider,
-                              base::Value account_info) {
-  prefs->Set(GetPrefPath(kAccountInfoPrefPathTemplate, service_provider),
-             account_info);
+                              base::Value::Dict account_info) {
+  prefs->SetDict(GetPrefPath(kAccountInfoPrefPathTemplate, service_provider),
+                 std::move(account_info));
 }
 
 bool ClearFileSystemAccountInfo(PrefService* prefs,

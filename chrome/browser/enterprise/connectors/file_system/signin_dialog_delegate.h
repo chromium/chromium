@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_SIGNIN_DIALOG_DELEGATE_H_
 
 #include <vector>
+
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
@@ -66,7 +68,7 @@ class FileSystemSigninDialogDelegate
 
   void OnCancellation();
   void OnGotCurrentUserResponse(BoxApiCallResponse response,
-                                base::Value user_info);
+                                base::Value::Dict user_info);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(

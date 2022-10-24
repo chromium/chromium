@@ -213,7 +213,7 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
 
 void FileSystemSigninDialogDelegate::OnGotCurrentUserResponse(
     BoxApiCallResponse response,
-    base::Value user_info) {
+    base::Value::Dict user_info) {
   current_api_call_.reset();
   auto state = GoogleServiceAuthError::NONE;  // Assume success.
 
@@ -228,7 +228,7 @@ void FileSystemSigninDialogDelegate::OnGotCurrentUserResponse(
   } else {
     DCHECK_EQ(response.net_or_http_code, net::HTTP_OK);
     const std::string* enterprise_id =
-        user_info.FindStringPath(kBoxEnterpriseIdFieldName);
+        user_info.FindStringByDottedPath(kBoxEnterpriseIdFieldName);
     if (!settings_.enterprise_id.empty()) {
       DLOG_IF(ERROR, !enterprise_id)
           << "Policy enforces account to have enterprise_id = "

@@ -39,10 +39,10 @@ constexpr char kDefaultFolderName[] = "ChromeDownloads";
 constexpr char kDefaultFolderId[] = "13579";
 constexpr char kDefaultFolderLink[] = "https://app.box.com/folder/13579";
 
-base::DictionaryValue MakeAccountInfoDict(std::string name, std::string login) {
-  base::DictionaryValue dict;
-  dict.SetStringKey(kAccountNameKey, name);
-  dict.SetStringKey(kAccountLoginKey, login);
+base::Value::Dict MakeAccountInfoDict(std::string name, std::string login) {
+  base::Value::Dict dict;
+  dict.Set(kAccountNameKey, name);
+  dict.Set(kAccountLoginKey, login);
   return dict;
 }
 

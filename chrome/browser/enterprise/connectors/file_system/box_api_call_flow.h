@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -142,7 +143,7 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
 class BoxGetCurrentUserApiCallFlow : public BoxApiCallFlow {
  public:
   explicit BoxGetCurrentUserApiCallFlow(
-      base::OnceCallback<void(Response, base::Value)> callback);
+      base::OnceCallback<void(Response, base::Value::Dict)> callback);
   ~BoxGetCurrentUserApiCallFlow() override;
 
   // BoxApiCallFlow interface.
@@ -158,7 +159,7 @@ class BoxGetCurrentUserApiCallFlow : public BoxApiCallFlow {
   void OnJsonParsed(ParseResult result);
 
   // Callback from the controller to report success, http_code, folder_id.
-  base::OnceCallback<void(Response, base::Value)> callback_;
+  base::OnceCallback<void(Response, base::Value::Dict)> callback_;
   base::WeakPtrFactory<BoxGetCurrentUserApiCallFlow> weak_factory_{this};
 };
 
@@ -256,7 +257,8 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
  public:
   // Additional callback args are: session endpoints provided in API request
   // response, and part_size for each chunk to be uploaded.
-  using TaskCallback = base::OnceCallback<void(Response, base::Value, size_t)>;
+  using TaskCallback =
+      base::OnceCallback<void(Response, base::Value::Dict, size_t)>;
   BoxCreateUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& folder_id,
                                     const size_t file_size,
