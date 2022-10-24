@@ -4868,6 +4868,14 @@ if (use_fuzzing_engine) {
   }
 }
 
+fuzzer_test("net_der_parser_fuzzer") {
+  sources = [ "der/parser_fuzzer.cc" ]
+  deps = [
+    "//net",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 proto_library("disk_cache_lpm_fuzzer_proto") {
   sources = [ "disk_cache/disk_cache_fuzzer.proto" ]
 }
