@@ -32,7 +32,6 @@
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
@@ -780,7 +779,7 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
   // Don't attempt to autofill with values that are too large or if filling
   // criteria are not met.
   WebString value = element.EditingValue();
-  if (value.length() > kMaxDataLength ||
+  if (value.length() > kMaxStringLength ||
       (!options.autofill_on_empty_values && value.IsEmpty()) ||
       (options.requires_caret_at_end &&
        (element.SelectionStart() != element.SelectionEnd() ||

@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 
 #include "base/ranges/algorithm.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -12,18 +13,12 @@
 
 namespace autofill {
 
-const size_t kMaxDataLength = 1024;
-
-// Allow enough space for all countries (roughly 300 distinct values) and all
-// timezones (roughly 400 distinct values), plus some extra wiggle room.
-const size_t kMaxListSize = 512;
-
 bool IsValidString(const std::string& str) {
-  return str.size() <= kMaxDataLength;
+  return str.size() <= kMaxStringLength;
 }
 
 bool IsValidString16(const std::u16string& str) {
-  return str.size() <= kMaxDataLength;
+  return str.size() <= kMaxStringLength;
 }
 
 bool IsValidGURL(const GURL& url) {

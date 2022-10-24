@@ -30,7 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
-#include "components/autofill/core/common/autofill_data_validation.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -1522,7 +1522,7 @@ bool FormOrFieldsetsToFormData(
     // it is set to kUnknown.
     base::UmaHistogramEnumeration("Autofill.LabelInference.InferredLabelSource",
                                   field.label_source);
-    TruncateString(&field.label, kMaxDataLength);
+    TruncateString(&field.label, kMaxStringLength);
 
     if (optional_field && *form_control_element == control_element) {
       *optional_field = field;
@@ -1605,8 +1605,8 @@ void TrimStringVectorForIPC(std::vector<std::u16string>* strings) {
 
   // Limit the size of the strings in the vector.
   for (auto& string : *strings) {
-    if (string.length() > kMaxDataLength)
-      string.resize(kMaxDataLength);
+    if (string.length() > kMaxStringLength)
+      string.resize(kMaxStringLength);
   }
 }
 
@@ -1625,7 +1625,7 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
   static base::NoDestructor<WebString> kAutocomplete("autocomplete");
   std::string autocomplete_attribute =
       element.GetAttribute(*kAutocomplete).Utf8();
-  if (autocomplete_attribute.size() > kMaxDataLength) {
+  if (autocomplete_attribute.size() > kMaxStringLength) {
     // Discard overly long attribute values to avoid DOS-ing the browser
     // process.  However, send over a default string to indicate that the
     // attribute was present.
@@ -2085,7 +2085,7 @@ void WebFormControlElementToFormField(
 
   // Constrain the maximum data length to prevent a malicious site from DOS'ing
   // the browser: http://crbug.com/49332
-  TruncateString(&value, kMaxDataLength);
+  TruncateString(&value, kMaxStringLength);
 
   field->value = value;
 

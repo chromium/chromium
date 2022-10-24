@@ -8,7 +8,7 @@
     { "site_name": "accesscorrections", "disabled": true, "bug_number": 1373680 },
     { "site_name": "adameve", "disabled": true, "bug_number": 1373669 },
     { "site_name": "advance_autoparts" },
-    { "site_name": "ae" },
+    { "site_name": "ae", "bug_number": 1377060 },
     { "site_name": "aeropostale", "bug_number": 1197254 },
     { "site_name": "agoda" },
     { "site_name": "amazon" },
