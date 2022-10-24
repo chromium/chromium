@@ -206,7 +206,7 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
 
 void AwContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
-  media::KeySystemInfoVector key_systems;
+  media::KeySystemInfos key_systems;
   AwAddKeySystems(&key_systems);
   std::move(cb).Run(std::move(key_systems));
 }

@@ -14,15 +14,15 @@ const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 const char kExternalClearKeyInvalidKeySystem[] =
     "org.chromium.externalclearkey.invalid";
 
-ExternalClearKeyProperties::ExternalClearKeyProperties() = default;
+ExternalClearKeySystemInfo::ExternalClearKeySystemInfo() = default;
 
-ExternalClearKeyProperties::~ExternalClearKeyProperties() = default;
+ExternalClearKeySystemInfo::~ExternalClearKeySystemInfo() = default;
 
-std::string ExternalClearKeyProperties::GetBaseKeySystemName() const {
+std::string ExternalClearKeySystemInfo::GetBaseKeySystemName() const {
   return kExternalClearKeyKeySystem;
 }
 
-bool ExternalClearKeyProperties::IsSupportedKeySystem(
+bool ExternalClearKeySystemInfo::IsSupportedKeySystem(
     const std::string& key_system) const {
   // Supports kExternalClearKeyKeySystem and all its sub key systems, except for
   // the explicitly "invalid" one. See the test
@@ -32,7 +32,7 @@ bool ExternalClearKeyProperties::IsSupportedKeySystem(
          key_system != kExternalClearKeyInvalidKeySystem;
 }
 
-bool ExternalClearKeyProperties::IsSupportedInitDataType(
+bool ExternalClearKeySystemInfo::IsSupportedInitDataType(
     media::EmeInitDataType init_data_type) const {
   switch (init_data_type) {
     case media::EmeInitDataType::CENC:
@@ -48,7 +48,7 @@ bool ExternalClearKeyProperties::IsSupportedInitDataType(
 }
 
 absl::optional<media::EmeConfig>
-ExternalClearKeyProperties::GetEncryptionSchemeConfigRule(
+ExternalClearKeySystemInfo::GetEncryptionSchemeConfigRule(
     media::EncryptionScheme encryption_scheme) const {
   switch (encryption_scheme) {
     case media::EncryptionScheme::kCenc:
@@ -61,12 +61,12 @@ ExternalClearKeyProperties::GetEncryptionSchemeConfigRule(
   return media::EmeConfig::UnsupportedRule();
 }
 
-media::SupportedCodecs ExternalClearKeyProperties::GetSupportedCodecs() const {
+media::SupportedCodecs ExternalClearKeySystemInfo::GetSupportedCodecs() const {
   return media::EME_CODEC_MP4_ALL | media::EME_CODEC_WEBM_ALL;
 }
 
 absl::optional<media::EmeConfig>
-ExternalClearKeyProperties::GetRobustnessConfigRule(
+ExternalClearKeySystemInfo::GetRobustnessConfigRule(
     const std::string& key_system,
     media::EmeMediaType media_type,
     const std::string& requested_robustness,
@@ -80,17 +80,17 @@ ExternalClearKeyProperties::GetRobustnessConfigRule(
 
 // Persistent license sessions are faked.
 absl::optional<media::EmeConfig>
-ExternalClearKeyProperties::GetPersistentLicenseSessionSupport() const {
+ExternalClearKeySystemInfo::GetPersistentLicenseSessionSupport() const {
   return media::EmeConfig::SupportedRule();
 }
 
-media::EmeFeatureSupport ExternalClearKeyProperties::GetPersistentStateSupport()
+media::EmeFeatureSupport ExternalClearKeySystemInfo::GetPersistentStateSupport()
     const {
   return media::EmeFeatureSupport::REQUESTABLE;
 }
 
 media::EmeFeatureSupport
-ExternalClearKeyProperties::GetDistinctiveIdentifierSupport() const {
+ExternalClearKeySystemInfo::GetDistinctiveIdentifierSupport() const {
   return media::EmeFeatureSupport::NOT_SUPPORTED;
 }
 

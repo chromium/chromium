@@ -333,8 +333,8 @@ class KeySystemsImpl : public KeySystems {
   void Initialize();
 
   void UpdateSupportedKeySystems();
-  void OnSupportedKeySystemsUpdated(KeySystemInfoVector key_systems);
-  void ProcessSupportedKeySystems(KeySystemInfoVector key_systems);
+  void OnSupportedKeySystemsUpdated(KeySystemInfos key_systems);
+  void ProcessSupportedKeySystems(KeySystemInfos key_systems);
 
   const KeySystemInfo* GetKeySystemInfo(const std::string& key_system) const;
 
@@ -360,7 +360,7 @@ class KeySystemsImpl : public KeySystems {
   base::OnceClosureList update_callbacks_;
 
   // Vector of KeySystemInfo .
-  KeySystemInfoVector key_system_properties_vector_;
+  KeySystemInfos key_system_info_vector_;
 
   // This member should only be modified by RegisterMimeType().
   MimeTypeToCodecsMap mime_type_to_codecs_map_;
@@ -476,8 +476,7 @@ EmeCodec KeySystemsImpl::GetEmeCodecForString(
   return ToVideoEmeCodec(video_codec, profile);
 }
 
-void KeySystemsImpl::OnSupportedKeySystemsUpdated(
-    KeySystemInfoVector key_systems) {
+void KeySystemsImpl::OnSupportedKeySystemsUpdated(KeySystemInfos key_systems) {
   DVLOG(1) << __func__;
 
   is_updating_ = false;
@@ -490,12 +489,11 @@ void KeySystemsImpl::OnSupportedKeySystemsUpdated(
   update_callbacks_.Notify();
 }
 
-void KeySystemsImpl::ProcessSupportedKeySystems(
-    KeySystemInfoVector key_systems) {
+void KeySystemsImpl::ProcessSupportedKeySystems(KeySystemInfos key_systems) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // Clear `key_system_properties_vector_` before repopulating it.
-  key_system_properties_vector_.clear();
+  // Clear `key_system_info_vector_` before repopulating it.
+  key_system_info_vector_.clear();
 
   for (auto& properties : key_systems) {
     DCHECK(!properties->GetBaseKeySystemName().empty());
@@ -527,19 +525,19 @@ void KeySystemsImpl::ProcessSupportedKeySystems(
 
     const auto base_key_system_name = properties->GetBaseKeySystemName();
     DVLOG(1) << __func__ << ": Adding key system " << base_key_system_name;
-    key_system_properties_vector_.push_back(std::move(properties));
+    key_system_info_vector_.push_back(std::move(properties));
   }
 }
 
 const KeySystemInfo* KeySystemsImpl::GetKeySystemInfo(
     const std::string& key_system) const {
   DCHECK(!is_updating_);
-  for (const auto& key_system_properties : key_system_properties_vector_) {
-    const auto& base_key_system = key_system_properties->GetBaseKeySystemName();
+  for (const auto& key_system_info : key_system_info_vector_) {
+    const auto& base_key_system = key_system_info->GetBaseKeySystemName();
     if ((key_system == base_key_system ||
          IsSubKeySystemOf(key_system, base_key_system)) &&
-        key_system_properties->IsSupportedKeySystem(key_system)) {
-      return key_system_properties.get();
+        key_system_info->IsSupportedKeySystem(key_system)) {
+      return key_system_info.get();
     }
   }
 
@@ -628,7 +626,7 @@ void KeySystemsImpl::ResetForTesting() {
   is_updating_ = false;
   DCHECK(update_callbacks_.empty())
       << "Should have no update callbacks for a clean test.";
-  key_system_properties_vector_.clear();
+  key_system_info_vector_.clear();
   mime_type_to_codecs_map_.clear();
   codec_map_for_testing_.clear();
   audio_codec_mask_ = EME_CODEC_AUDIO_ALL;

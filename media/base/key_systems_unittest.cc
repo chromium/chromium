@@ -258,7 +258,7 @@ class TestMediaClient : public MediaClient {
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) final;
 
  private:
-  KeySystemInfoVector GetSupportedKeySystemsInternal();
+  KeySystemInfos GetSupportedKeySystemsInternal();
 
   GetSupportedKeySystemsCB get_supported_key_systems_cb_;
   bool supports_external_key_system_ = true;
@@ -297,8 +297,8 @@ TestMediaClient::GetAudioRendererAlgorithmParameters(
   return absl::nullopt;
 }
 
-KeySystemInfoVector TestMediaClient::GetSupportedKeySystemsInternal() {
-  KeySystemInfoVector key_systems;
+KeySystemInfos TestMediaClient::GetSupportedKeySystemsInternal() {
+  KeySystemInfos key_systems;
 
   key_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
 

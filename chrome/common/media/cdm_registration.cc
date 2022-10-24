@@ -268,7 +268,7 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
   const char kkExternalClearKeyDifferentCdmTypeTestKeySystem[] =
       "org.chromium.externalclearkey.differentcdmtype";
 
-  // Supported codecs are hard-coded in ExternalClearKeyProperties.
+  // Supported codecs are hard-coded in ExternalClearKeySystemInfo.
   media::CdmCapability capability(
       {}, {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
       {media::CdmSessionType::kTemporary,

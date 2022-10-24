@@ -218,7 +218,7 @@ ContentRendererClientImpl::CreateURLLoaderThrottleProvider(
 
 void ContentRendererClientImpl::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
-  media::KeySystemInfoVector key_systems;
+  media::KeySystemInfos key_systems;
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_WIDEVINE)
   cdm::AddAndroidWidevine(&key_systems);

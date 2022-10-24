@@ -210,9 +210,9 @@ void ShellContentRendererClient::DidInitializeWorkerContextOnWorkerThread(
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 void ShellContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
-  media::KeySystemInfoVector key_systems;
+  media::KeySystemInfos key_systems;
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))
-    key_systems.push_back(std::make_unique<cdm::ExternalClearKeyProperties>());
+    key_systems.push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>());
   std::move(cb).Run(std::move(key_systems));
 }
 #endif

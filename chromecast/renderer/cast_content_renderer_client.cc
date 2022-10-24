@@ -180,7 +180,7 @@ void CastContentRendererClient::RunScriptsAtDocumentEnd(
 
 void CastContentRendererClient::GetSupportedKeySystems(
     ::media::GetSupportedKeySystemsCB cb) {
-  ::media::KeySystemInfoVector key_systems;
+  ::media::KeySystemInfos key_systems;
   media::AddChromecastKeySystems(&key_systems,
                                  false /* enable_persistent_license_support */,
                                  false /* enable_playready */);

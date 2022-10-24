@@ -84,10 +84,9 @@ class MEDIA_EXPORT KeySystemInfo {
   virtual bool UseAesDecryptor() const;
 };
 
-using KeySystemInfoVector = std::vector<std::unique_ptr<KeySystemInfo>>;
+using KeySystemInfos = std::vector<std::unique_ptr<KeySystemInfo>>;
 
-using GetSupportedKeySystemsCB =
-    base::RepeatingCallback<void(KeySystemInfoVector)>;
+using GetSupportedKeySystemsCB = base::RepeatingCallback<void(KeySystemInfos)>;
 
 }  // namespace media
 

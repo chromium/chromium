@@ -49,7 +49,7 @@ using media::CdmSessionType;
 using media::EmeConfig;
 using media::EmeFeatureSupport;
 using media::KeySystemInfo;
-using media::KeySystemInfoVector;
+using media::KeySystemInfos;
 using media::SupportedCodecs;
 
 namespace {
@@ -284,7 +284,7 @@ base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
 }
 
 bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
-                 KeySystemInfoVector* key_systems) {
+                 KeySystemInfos* key_systems) {
   // Codecs and encryption schemes.
   SupportedCodecs codecs = media::EME_CODEC_NONE;
   SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
@@ -407,7 +407,7 @@ const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 
 void AddExternalClearKey(
     const media::mojom::KeySystemCapabilityPtr& /*capability*/,
-    KeySystemInfoVector* key_systems) {
+    KeySystemInfos* key_systems) {
   DVLOG(1) << __func__;
 
   if (!base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting)) {
@@ -416,13 +416,13 @@ void AddExternalClearKey(
   }
 
   // TODO(xhwang): Actually use `capability` to determine capabilities.
-  key_systems->push_back(std::make_unique<cdm::ExternalClearKeyProperties>());
+  key_systems->push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>());
 }
 
 void OnKeySystemSupportUpdated(
     media::GetSupportedKeySystemsCB cb,
     content::KeySystemCapabilityPtrMap key_system_capabilities) {
-  KeySystemInfoVector key_systems;
+  KeySystemInfos key_systems;
   for (const auto& entry : key_system_capabilities) {
     const auto& key_system = entry.first;
     const auto& capability = entry.second;
@@ -450,7 +450,7 @@ void OnKeySystemSupportUpdated(
 
 void GetChromeKeySystems(media::GetSupportedKeySystemsCB cb) {
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_WIDEVINE)
-  KeySystemInfoVector key_systems;
+  KeySystemInfos key_systems;
   cdm::AddAndroidWidevine(&key_systems);
   std::move(cb).Run(std::move(key_systems));
   return;
