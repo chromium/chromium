@@ -66,10 +66,6 @@
 # crbug.com/1062058
 -org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testSafeBrowsingMainResourceWithSplitCache
 
-# crbug.com/1062843
--org.chromium.chrome.browser.banners.AppBannerManagerTest.testAppInstalledModalNativeAppBannerCustomTab
--org.chromium.chrome.browser.banners.AppBannerManagerTest.testModalNativeAppBannerCanBeTriggeredMultipleTimesCustomTab
-
 # crbug.com/1063971
 -org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitPipOnNavigation
 
