@@ -40,6 +40,5 @@ UIImage* CustomSettingsRootSymbol(NSString* symbol_name) {
 }
 
 UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name) {
-  return MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      symbol_name, kSettingsRootSymbolImagePointSize));
+  return CustomMulticolorSymbol(symbol_name, kSettingsRootSymbolImagePointSize);
 }

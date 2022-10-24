@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/incognito_symbol.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -189,16 +188,19 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
       // Incognito image.
       UIImage* incognitoImage;
       if (UseSymbols()) {
-        UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-            configurationWithPointSize:kIncognitoSymbolImagePointSize
-                                weight:UIImageSymbolWeightLight
-                                 scale:UIImageSymbolScaleMedium];
         if (@available(iOS 15, *)) {
-          incognitoImage = ConfigureSymbolWithPaletteColors(
-              CustomSymbolWithConfiguration(kIncognitoCircleFillSymbol,
-                                            configuration),
-              LargeIncognitoColorsPalette());
+          incognitoImage = CustomPaletteSymbol(
+              kIncognitoCircleFillSymbol, kIncognitoSymbolImagePointSize,
+              UIImageSymbolWeightLight, UIImageSymbolScaleMedium, @[
+                [UIColor colorNamed:kGrey100Color],
+                [UIColor colorNamed:kGrey700Color]
+              ]);
         } else {
+          UIImageSymbolConfiguration* configuration =
+              [UIImageSymbolConfiguration
+                  configurationWithPointSize:kIncognitoSymbolImagePointSize
+                                      weight:UIImageSymbolWeightLight
+                                       scale:UIImageSymbolScaleMedium];
           incognitoImage = [CustomSymbolWithConfiguration(
               kIncognitoCircleFilliOS14Symbol, configuration)
               imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

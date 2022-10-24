@@ -107,8 +107,6 @@ source_set("symbols") {
   sources = [
     "chrome_symbol.h",
     "chrome_symbol.mm",
-    "incognito_symbol.h",
-    "incognito_symbol.mm",
   ]
   deps = [
     ":buildflags",
@@ -133,7 +131,6 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:square_bullet_square",
     "//ios/chrome/browser/ui/icons/resources:square_number",
     "//ios/chrome/browser/ui/icons/resources:translate",
-    "//ios/chrome/common/ui/colors",
     ios_branded_icons,
   ]
   frameworks = [

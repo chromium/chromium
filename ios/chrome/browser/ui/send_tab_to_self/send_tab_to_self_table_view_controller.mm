@@ -257,8 +257,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     switch (iter->form_factor) {
       case syncer::DeviceInfo::FormFactor::kTablet:
         if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize));
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize);
         } else {
           deviceItem.iconImage =
               [UIImage imageNamed:@"send_tab_to_self_tablet"];
@@ -266,8 +266,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         break;
       case syncer::DeviceInfo::FormFactor::kPhone:
         if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize));
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize);
         } else {
           deviceItem.iconImage =
               [UIImage imageNamed:@"send_tab_to_self_smartphone"];
@@ -275,8 +275,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         break;
       case syncer::DeviceInfo::FormFactor::kDesktop:
         if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize);
         } else {
           deviceItem.iconImage =
               [UIImage imageNamed:@"send_tab_to_self_laptop"];
@@ -284,8 +284,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
         break;
       default:
         if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
+          // TODO(crbug.com/1315544): Use correct symbol
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize);
         } else {
           deviceItem.iconImage =
               [UIImage imageNamed:@"send_tab_to_self_devices"];

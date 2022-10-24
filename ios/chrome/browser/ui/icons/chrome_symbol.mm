@@ -46,6 +46,7 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
 
 // Custom symbol names.
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
+NSString* const kIncognitoSymbol = @"incognito";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
 NSString* const kCameraSymbol = @"camera";
@@ -62,10 +63,15 @@ NSString* const kLanguageSymbol = @"language";
 NSString* const kPasswordSymbol = @"password";
 NSString* const kCameraLensSymbol = @"camera_lens";
 NSString* const kDownTrendSymbol = @"line_downtrend";
+NSString* const kIncognitoCircleFilliOS14Symbol =
+    @"incognito_circle_fill_ios14";
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 NSString* const kGoogleShieldSymbol = @"google_shield";
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 NSString* const kShieldSymbol = @"shield";
+
+// Custom symbol names which can be configured a "palette".
+NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";
@@ -74,6 +80,9 @@ NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
 NSString* const kPinSymbol = @"pin";
 NSString* const kPinFillSymbol = @"pin.fill";
+NSString* const kIPhoneSymbol = @"iphone";
+NSString* const kIPadSymbol = @"ipad";
+NSString* const kLaptopSymbol = @"laptopcomputer";
 NSString* const kSettingsSymbol = @"gearshape";
 NSString* const kSettingsFilledSymbol = @"gearshape.fill";
 NSString* const kShareSymbol = @"square.and.arrow.up";
@@ -104,12 +113,6 @@ NSString* const kForwardSymbol = @"arrow.forward";
 NSString* const kPersonFillSymbol = @"person.fill";
 NSString* const kMailFillSymbol = @"envelop.fill";
 NSString* const kPhoneFillSymbol = @"phone.fill";
-
-// Names of the default symbol being non-monochrome by default. When using them,
-// you probably want to set their color to monochrome.
-NSString* const kIPhoneSymbol = @"iphone";
-NSString* const kIPadSymbol = @"ipad";
-NSString* const kLaptopSymbol = @"laptopcomputer";
 
 const CGFloat kColorfulBackgroundSymbolCornerRadius = 7;
 
@@ -145,29 +148,35 @@ UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
-UIImage* MakeSymbolMonochrome(UIImage* symbol) {
-  if (@available(iOS 16, *)) {
-    return [symbol
-        imageByApplyingSymbolConfiguration:
-            [UIImageSymbolConfiguration configurationPreferringMonochrome]];
-  }
-  return symbol;
-}
-
-UIImage* MakeSymbolMulticolor(UIImage* symbol) {
+UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size) {
+  UIImageConfiguration* configuration =
+      DefaultSymbolConfigurationWithPointSize(point_size);
   if (@available(iOS 15, *)) {
-    return [symbol
-        imageByApplyingSymbolConfiguration:
+    configuration = [configuration
+        configurationByApplyingConfiguration:
             [UIImageSymbolConfiguration configurationPreferringMulticolor]];
+  }
+  UIImage* symbol = CustomSymbolWithConfiguration(symbol_name, configuration);
+  if (@available(iOS 15, *)) {
+    return symbol;
   }
   return [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 }
 
-UIImage* ConfigureSymbolWithPaletteColors(UIImage* symbol,
-                                          NSArray<UIColor*>* colors) {
-  return [symbol
-      imageByApplyingSymbolConfiguration:
+UIImage* CustomPaletteSymbol(NSString* symbol_name,
+                             CGFloat point_size,
+                             UIImageSymbolWeight weight,
+                             UIImageSymbolScale scale,
+                             NSArray<UIColor*>* colors) {
+  UIImageConfiguration* conf =
+      [UIImageSymbolConfiguration configurationWithPointSize:point_size
+                                                      weight:weight
+                                                       scale:scale];
+  conf = [conf
+      configurationByApplyingConfiguration:
           [UIImageSymbolConfiguration configurationWithPaletteColors:colors]];
+
+  return CustomSymbolWithConfiguration(symbol_name, conf);
 }
 
 bool UseSymbols() {
