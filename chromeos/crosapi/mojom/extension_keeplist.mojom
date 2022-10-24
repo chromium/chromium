@@ -1,0 +1,24 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Extension keep list that list the extensions and extension apps allowed to
+// be running in OS (Ash).
+// Next version: 1
+// Next id: 4
+[Stable]
+struct ExtensionKeepList {
+  // The ids of the extension apps running in ash-chrome only.
+  array<string> extension_apps_run_in_os_only@0;
+
+  // The ids of the extension apps running in both ash-chrome and lacros-chrome.
+  array<string> extension_apps_run_in_os_and_standalonebrowser@1;
+
+  // The ids of the extensions running in ash-chrome only.
+  array<string> extensions_run_in_os_only@2;
+
+  // The ids of the extensions running in both ash-chrome and lacros-chrome.
+  array<string> extensions_run_in_os_and_standalonebrowser@3;
+};

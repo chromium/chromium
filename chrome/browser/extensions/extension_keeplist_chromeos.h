@@ -6,15 +6,37 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_KEEPLIST_CHROMEOS_H_
 
 #include <string>
+#include <vector>
+
+#include "build/chromeos_buildflags.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 
 namespace extensions {
 
-// By default most extensions will not work properly if they run in both ash and
-// lacros. This is the list of exceptions.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+crosapi::mojom::ExtensionKeepListPtr BuildExtensionKeeplistInitParam();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Returns ids of the extensions that are allow to run in both Ash and Lacros.
+base::span<const base::StringPiece> GetExtensionsRunInOSAndStandaloneBrowser();
+
+// Returns ids of the chrome apps that are allow to run in both Ash and Lacros.
+base::span<const base::StringPiece>
+GetExtensionAppsRunInOSAndStandaloneBrowser();
+
+// Returns ids of the extensions that are allow to run in Ash only.
+base::span<const base::StringPiece> GetExtensionsRunInOSOnly();
+
+// Returns ids of the chrome apps that are allow to run in Ash only.
+base::span<const base::StringPiece> GetExtensionAppsRunInOSOnly();
+
+// By default an extension should only be enabled in either Ash or Lacros, but
+// not both. Some extensions may not work properly if enabled in both. This is
+// the list of exceptions.
 bool ExtensionRunsInBothOSAndStandaloneBrowser(const std::string& extension_id);
 
 // By default most extension apps will not work properly if they run in both
-// ash and lacros. This is the list of exceptions.
+// Ash and Lacros. This is the list of exceptions.
 bool ExtensionAppRunsInBothOSAndStandaloneBrowser(
     const std::string& extension_id);
 
@@ -31,6 +53,11 @@ bool ExtensionRunsInOS(const std::string& extension_id);
 // this method is invoked in Lacros, it may not know about OS-specific
 // extensions that are compiled into ash.
 bool ExtensionAppRunsInOS(const std::string& app_id);
+
+size_t ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
+size_t ExtensionAppsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
+size_t ExtensionsRunInOSOnlyAllowlistSizeForTest();
+size_t ExtensionAppsRunInOSOnlyAllowlistSizeForTest();
 
 }  // namespace extensions
 

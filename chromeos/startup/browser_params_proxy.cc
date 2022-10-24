@@ -243,4 +243,9 @@ BrowserParamsProxy::GpuSandboxStartMode() const {
   return BrowserInitParams::Get()->gpu_sandbox_start_mode;
 }
 
+const crosapi::mojom::ExtensionKeepListPtr&
+BrowserParamsProxy::ExtensionKeepList() const {
+  return BrowserInitParams::Get()->extension_keep_list;
+}
+
 }  // namespace chromeos

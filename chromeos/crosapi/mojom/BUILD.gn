@@ -40,6 +40,7 @@ mojom("mojom") {
     "echo_private.mojom",
     "emoji_picker.mojom",
     "extension_info_private.mojom",
+    "extension_keeplist.mojom",
     "feedback.mojom",
     "field_trial.mojom",
     "file_manager.mojom",

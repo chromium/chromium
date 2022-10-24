@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/app_service_types.mojom";
+import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -33,8 +34,8 @@ enum OptionalBoolean {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 3
-// Next method id: 3
+// Next version: 4
+// Next method id: 4
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -50,6 +51,10 @@ interface StandaloneBrowserTestController {
   // Returns all available voices in lacros-chrome.
   [MinVersion=2]
   GetTtsVoices@2() => (array<TtsVoice> voices);
+
+  // Returns Ash extension keeplist data from Lacros.
+  [MinVersion=3]
+  GetExtensionKeeplist@3() => (ExtensionKeepList keep_list);
 };
 
 // Allows callers running in lacros to trigger test events that are passed to

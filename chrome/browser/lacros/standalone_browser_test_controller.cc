@@ -6,6 +6,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
@@ -114,6 +115,31 @@ void StandaloneBrowserTestController::GetTtsVoices(
     mojo_voices.push_back(tts_crosapi_util::ToMojo(voice));
 
   std::move(callback).Run(std::move(mojo_voices));
+}
+
+void StandaloneBrowserTestController::GetExtensionKeeplist(
+    GetExtensionKeeplistCallback callback) {
+  auto mojo_keeplist = crosapi::mojom::ExtensionKeepList::New();
+
+  for (const auto& id :
+       extensions::GetExtensionsRunInOSAndStandaloneBrowser()) {
+    mojo_keeplist->extensions_run_in_os_and_standalonebrowser.push_back(
+        std::string(id));
+  }
+
+  for (const auto& id :
+       extensions::GetExtensionAppsRunInOSAndStandaloneBrowser()) {
+    mojo_keeplist->extension_apps_run_in_os_and_standalonebrowser.push_back(
+        std::string(id));
+  }
+
+  for (const auto& id : extensions::GetExtensionsRunInOSOnly())
+    mojo_keeplist->extensions_run_in_os_only.push_back(std::string(id));
+
+  for (const auto& id : extensions::GetExtensionAppsRunInOSOnly())
+    mojo_keeplist->extension_apps_run_in_os_only.push_back(std::string(id));
+
+  std::move(callback).Run(std::move(mojo_keeplist));
 }
 
 void StandaloneBrowserTestController::WebAppInstallationDone(

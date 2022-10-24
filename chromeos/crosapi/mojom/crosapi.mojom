@@ -36,6 +36,7 @@ import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
 import "chromeos/crosapi/mojom/extension_info_private.mojom";
+import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
@@ -904,8 +905,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known after
 // the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 54
-// Next id: 54
+// Next version: 55
+// Next id: 55
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1250,6 +1251,11 @@ struct BrowserInitParams {
   // supplied, this field is irrelevant.
   [MinVersion=53]
   GpuSandboxStartMode gpu_sandbox_start_mode@53;
+
+  // Ash extension keep list.
+  [MinVersion=54]
+  ExtensionKeepList? extension_keep_list@54;
+
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

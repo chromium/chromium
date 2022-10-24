@@ -10,6 +10,7 @@ ChromeVox*
 DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
 Dictation*
+ExtensionKeeplistTest*
 SelectToSpeak*
 SwitchAccess*
 VpnExtensionObserverBrowserTest*

@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
@@ -593,6 +594,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
           switches::kGpuSandboxStartEarly)
           ? crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kEarly
           : crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kNormal;
+  params->extension_keep_list = extensions::BuildExtensionKeeplistInitParam();
 
   return params;
 }

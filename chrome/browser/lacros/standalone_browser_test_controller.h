@@ -35,6 +35,8 @@ class StandaloneBrowserTestController
 
   void GetTtsVoices(GetTtsVoicesCallback callback) override;
 
+  void GetExtensionKeeplist(GetExtensionKeeplistCallback callback) override;
+
  private:
   void WebAppInstallationDone(InstallWebAppCallback callback,
                               const web_app::AppId& installed_app_id,
