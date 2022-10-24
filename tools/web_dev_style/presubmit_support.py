@@ -7,6 +7,7 @@ from . import css_checker
 from . import html_checker
 from . import js_checker
 from . import resource_checker
+from . import added_js_files_check
 
 
 def IsResource(f):
@@ -41,3 +42,9 @@ def CheckStyleESLint(input_api, output_api):
 def DisallowIncludes(input_api, output_api, msg):
   return resource_checker.ResourceChecker(
       input_api, output_api, file_filter=IsResource).DisallowIncludes(msg)
+
+
+def DisallowNewJsFiles(input_api, output_api, file_filter=lambda f: True):
+  return added_js_files_check.AddedJsFilesCheck(input_api,
+                                                output_api,
+                                                file_filter=file_filter)

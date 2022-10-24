@@ -6,32 +6,17 @@ USE_PYTHON3 = True
 
 
 def _CommonChecks(input_api, output_api):
-  results = []
-
+  # Ignore files in the chromeos/ subfolder.
   EXCLUDE_PATH = input_api.os_path.normpath(
       'chrome/test/data/webui/settings/chromeos/')
 
-  def AddedJsFilesFilter(affected_file):
-    if affected_file.Action() == 'A':
-      # Ignore files in the chromeos/ subfolder.
-      if affected_file.LocalPath().startswith(EXCLUDE_PATH):
-        return False
+  def allow_js(f):
+    path = f.LocalPath()
+    return path.startswith(EXCLUDE_PATH) or path.endswith('_browsertest.js')
 
-      filename = input_api.os_path.basename(affected_file.LocalPath())
-      _, extension = input_api.os_path.splitext(filename)
-      return extension == '.js'
-
-    return False
-
-  added_js_files = input_api.AffectedFiles(
-      include_deletes=False, file_filter=AddedJsFilesFilter)
-
-  for f in added_js_files:
-    results += [output_api.PresubmitError(
-      'Disallowed JS file found \'%s\'. New test files must be written in '
-      'TypeScript instead.' % f.LocalPath())]
-
-  return results
+  from web_dev_style import presubmit_support
+  return presubmit_support.DisallowNewJsFiles(input_api, output_api,
+                                              lambda f: not allow_js(f))
 
 
 def CheckChangeOnUpload(input_api, output_api):
