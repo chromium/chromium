@@ -20,9 +20,32 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
-#include "base/check.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+
+// A strange dance is done here to provide `CHECK` for `raw_ptr<T>`
+// in the presence of NaCl. The constraints are:
+// 1. PA doesn't build under NaCl and cannot be a GN `public_dep` under
+//    NaCl.
+// 2. Individual PA headers may leak into `raw_ptr.h` (and other parts
+//    of `//base`) by inclusion, but using implementations (e.g. of
+//    `CheckError`) will cause a linker error. (Not sure if this is
+//    good form or if it is merely accidentally permissible.)
+// 3. `raw_ptr.h` is part of the standalone PA distribution and must not
+//    have a hard dependency on `//base/check.h`.
+//
+// The solution appears to be to use `//base/check.h` under NaCl to
+// provide `raw_ptr`-level `CHECK()`s. `raw_ref.h` follows suit. This
+// macro isn't used _everywhere_ (e.g. not in the implementation of
+// BRP) because we assert that NaCl always uses RawPtrNoOpImpl (see
+// `static_assert` below).
+#if BUILDFLAG(IS_NACL)
+#include "base/check.h"
+#define PA_RAW_PTR_CHECK(condition) CHECK(condition)
+#else
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
+#define PA_RAW_PTR_CHECK(condition) PA_BASE_CHECK(condition)
+#endif  // BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(PA_USE_BASE_TRACING)
 #include "base/trace_event/base_tracing_forward.h"
@@ -213,8 +236,8 @@ template <typename PartitionAllocSupport>
 struct MTECheckedPtrImpl {
   // This implementation assumes that pointers are 64 bits long and at least 16
   // top bits are unused. The latter is harder to verify statically, but this is
-  // true for all currently supported 64-bit architectures (DCHECK when wrapping
-  // will verify that).
+  // true for all currently supported 64-bit architectures (PA_DCHECK when
+  // wrapping will verify that).
   static_assert(sizeof(void*) >= 8, "Need 64-bit pointers");
 
   // Wraps a pointer, and returns its uintptr_t representation.
@@ -223,7 +246,7 @@ struct MTECheckedPtrImpl {
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
     // function is responsible for adding the software MTE tag.
     uintptr_t addr = partition_alloc::UntagPtr(ptr);
-    DCHECK(ExtractTag(addr) == 0ull);
+    PA_BASE_DCHECK(ExtractTag(addr) == 0ull);
 
     // Return a not-wrapped |addr|, if it's either nullptr or if the protection
     // for this pointer is disabled.
@@ -237,7 +260,7 @@ struct MTECheckedPtrImpl {
     static_assert(sizeof(partition_alloc::PartitionTag) * 8 <= kTagBits, "");
     uintptr_t tag = *(static_cast<volatile partition_alloc::PartitionTag*>(
         PartitionAllocSupport::TagPointer(addr)));
-    DCHECK(tag);
+    PA_BASE_DCHECK(tag);
 
     tag <<= kValidAddressBits;
     addr |= tag;
@@ -270,7 +293,7 @@ struct MTECheckedPtrImpl {
           *static_cast<volatile partition_alloc::PartitionTag*>(
               PartitionAllocSupport::TagPointer(ExtractAddress(wrapped_addr)));
       if (PA_UNLIKELY(tag != read_tag))
-        IMMEDIATE_CRASH();
+        PA_IMMEDIATE_CRASH();
       // See the disambiguation comment above.
       // TODO(kdlee): Ensure that ptr's hardware MTE tag is preserved.
       // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
@@ -329,7 +352,7 @@ struct MTECheckedPtrImpl {
     const uintptr_t tag1 = ExtractTag(partition_alloc::UntagPtr(wrapped_ptr1));
     const uintptr_t tag2 = ExtractTag(partition_alloc::UntagPtr(wrapped_ptr2));
     if (tag1 && tag2) {
-      CHECK(tag1 == tag2);
+      PA_BASE_CHECK(tag1 == tag2);
       return wrapped_ptr1 - wrapped_ptr2;
     }
 
@@ -400,7 +423,8 @@ struct BackupRefPtrImpl {
 #if PA_HAS_BUILTIN(__builtin_constant_p)
     if (__builtin_constant_p(address == 0) && (address == 0)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-      CHECK(!partition_alloc::IsManagedByPartitionAllocBRPPool(address));
+      PA_BASE_CHECK(
+          !partition_alloc::IsManagedByPartitionAllocBRPPool(address));
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON) ||
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       return false;
@@ -444,7 +468,7 @@ struct BackupRefPtrImpl {
     uintptr_t address = partition_alloc::UntagPtr(ptr);
     if (IsSupportedAndNotNull(address)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-      CHECK(ptr != nullptr);
+      PA_BASE_CHECK(ptr != nullptr);
 #endif
       AcquireInternal(address);
     } else {
@@ -475,7 +499,7 @@ struct BackupRefPtrImpl {
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-      CHECK(wrapped_ptr != nullptr);
+      PA_BASE_CHECK(wrapped_ptr != nullptr);
 #endif
       ReleaseInternal(address);
     }
@@ -495,8 +519,8 @@ struct BackupRefPtrImpl {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address)) {
-      CHECK(wrapped_ptr != nullptr);
-      CHECK(IsPointeeAlive(address));
+      PA_BASE_CHECK(wrapped_ptr != nullptr);
+      PA_BASE_CHECK(IsPointeeAlive(address));
     }
 #endif
     return wrapped_ptr;
@@ -540,7 +564,8 @@ struct BackupRefPtrImpl {
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     // TODO(bartekn): Consider adding support for non-BRP pool too.
     if (IsSupportedAndNotNull(address))
-      CHECK(IsValidDelta(address, delta_elems * static_cast<Z>(sizeof(T))));
+      PA_BASE_CHECK(
+          IsValidDelta(address, delta_elems * static_cast<Z>(sizeof(T))));
     return wrapped_ptr + delta_elems;
 #else
     // In the "before allocation" mode, on 32-bit, we can run into a problem
@@ -579,10 +604,10 @@ struct BackupRefPtrImpl {
     // Ensure that both pointers are within the same slot, and pool!
     // TODO(bartekn): Consider adding support for non-BRP pool too.
     if (IsSupportedAndNotNull(address1)) {
-      CHECK(IsSupportedAndNotNull(address2));
-      CHECK(IsValidDelta(address2, address1 - address2));
+      PA_BASE_CHECK(IsSupportedAndNotNull(address2));
+      PA_BASE_CHECK(IsValidDelta(address2, address1 - address2));
     } else {
-      CHECK(!IsSupportedAndNotNull(address2));
+      PA_BASE_CHECK(!IsSupportedAndNotNull(address2));
     }
     return wrapped_ptr1 - wrapped_ptr2;
   }
@@ -951,6 +976,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
       raw_ptr<T, internal::RawPtrCountingImplWrapperForTest<RawPtrMayDangle>>,
       raw_ptr<T, RawPtrMayDangle>>;
 
+#if BUILDFLAG(IS_NACL)
+  // See comment at top about `PA_RAW_PTR_CHECK()`.
+  static_assert(std::is_same_v<Impl, internal::RawPtrNoOpImpl>);
+#endif  // BUILDFLAG(IS_NACL)
+
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
@@ -1073,8 +1103,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    CHECK(reinterpret_cast<uintptr_t>(this) !=
-          reinterpret_cast<uintptr_t>(&ptr));
+    PA_RAW_PTR_CHECK(reinterpret_cast<uintptr_t>(this) !=
+                     reinterpret_cast<uintptr_t>(&ptr));
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ =
@@ -1089,8 +1119,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    CHECK(reinterpret_cast<uintptr_t>(this) !=
-          reinterpret_cast<uintptr_t>(&ptr));
+    PA_RAW_PTR_CHECK(reinterpret_cast<uintptr_t>(this) !=
+                     reinterpret_cast<uintptr_t>(&ptr));
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::template Upcast<T, U>(ptr.wrapped_ptr_);
