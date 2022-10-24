@@ -85,8 +85,9 @@
               aria-describedby="displayName" aria-expanded="false"
               focus-row-control focus-type="expand"></cr-icon-button>
           <cr-icon-button class="subpage-arrow"
-              hidden$="[[grouped_(siteGroup)]]" aria-label$="[[displayName_]]"
-              aria-describedby="displayName"
+              hidden$="[[grouped_(siteGroup)]]"
+              aria-label$="[[getSubpageLabel_(siteGroup.etldPlus1)]]"
+              aria-roledescription="$i18n{subpageArrowRoleDescription}"
               focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
         <div class="row-aligned">
@@ -157,7 +158,7 @@
                     </div>
                     <cr-icon-button class="subpage-arrow"
                         hidden$="[[item.isPartitioned]]"
-                        aria-labelledby$="originSiteRepresentation"
+                        aria-label$="[[getSubpageLabel_(item.origin)]]"
                         aria-roledescription=
                             "$i18n{subpageArrowRoleDescription}"
                         focus-row-control focus-type="detailed-sites">

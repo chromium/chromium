@@ -484,6 +484,12 @@ export class SiteEntryElement extends SiteEntryElementBase {
     return index > 0 ? 'hr' : '';
   }
 
+  private getSubpageLabel_(target: string): string {
+    return this.i18n(
+        'siteSettingsSiteDetailsSubpageAccessibilityLabel',
+        this.originRepresentation(target));
+  }
+
   private getRemoveOriginButtonTitle_(origin: string): string {
     return this.i18n(
         'siteSettingsCookieRemoveSite', this.originRepresentation(origin));
