@@ -13,6 +13,14 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Value of the constant used to provide an alignment on the X center of the
+// images in different rows.
+const CGFloat kImageXCenterAlignmentOffset = 14;
+
+}  // namespace
+
 @interface SettingsImageDetailTextCell ()
 
 // Image view for the cell.
@@ -32,6 +40,11 @@
 // firstBaselineAnchor.
 @property(nonatomic, strong)
     NSLayoutConstraint* alignImageWithContentViewFirstBaselineAnchorConstraint;
+
+// Constraint between the image and the text that is used to center the images
+// in different rows. Only active when there is an image.
+@property(nonatomic, strong) NSLayoutConstraint* imageTextAlignmentConstraint;
+
 @end
 
 @implementation SettingsImageDetailTextCell
@@ -93,8 +106,8 @@
                      constant:kTableViewHorizontalSpacing];
 
   _textWithImageConstraint = [textStackView.leadingAnchor
-      constraintEqualToAnchor:_imageView.trailingAnchor
-                     constant:kTableViewImagePadding];
+      constraintGreaterThanOrEqualToAnchor:_imageView.trailingAnchor
+                                  constant:kTableViewImagePadding];
 
   _alignImageWithContentViewCenterYConstraint = [_imageView.centerYAnchor
       constraintEqualToAnchor:contentView.centerYAnchor];
@@ -103,10 +116,26 @@
       [_imageView.firstBaselineAnchor
           constraintEqualToAnchor:contentView.firstBaselineAnchor];
 
+  // To ensure the images are aligned in different rows even if they have
+  // different width.
+  NSLayoutConstraint* imageLeadingAlignmentConstraint =
+      [_imageView.centerXAnchor
+          constraintEqualToAnchor:contentView.leadingAnchor
+                         constant:kTableViewHorizontalSpacing +
+                                  kImageXCenterAlignmentOffset];
+  imageLeadingAlignmentConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+  imageLeadingAlignmentConstraint.active = YES;
+
+  _imageTextAlignmentConstraint = [_imageView.centerXAnchor
+      constraintEqualToAnchor:contentView.leadingAnchor
+                     constant:kTableViewHorizontalSpacing +
+                              kImageXCenterAlignmentOffset];
+  _imageTextAlignmentConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+
   [NSLayoutConstraint activateConstraints:@[
     [_imageView.leadingAnchor
-        constraintEqualToAnchor:contentView.leadingAnchor
-                       constant:kTableViewHorizontalSpacing],
+        constraintGreaterThanOrEqualToAnchor:contentView.leadingAnchor
+                                    constant:kTableViewHorizontalSpacing],
     _alignImageWithContentViewCenterYConstraint,
     [_imageView.topAnchor
         constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
@@ -141,10 +170,12 @@
   self.imageView.hidden = hidden;
   // Update the leading text constraint based on `image` being provided.
   if (hidden) {
+    self.imageTextAlignmentConstraint.active = NO;
     self.textWithImageConstraint.active = NO;
     self.textNoImageConstraint.active = YES;
   } else {
     self.textNoImageConstraint.active = NO;
+    self.imageTextAlignmentConstraint.active = YES;
     self.textWithImageConstraint.active = YES;
   }
 }
