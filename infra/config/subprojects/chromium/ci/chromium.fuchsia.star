@@ -15,13 +15,12 @@ ci.defaults.set(
     cq_mirrors_console_view = "mirrors",
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     main_console_view = "main",
     notifies = ["cr-fuchsia"],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
-    reclient_instance = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
@@ -54,6 +53,8 @@ ci.builder(
     ],
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
+    reclient_instance = None,
+    goma_backend = goma.backend.RBE_PROD,
     goma_jobs = None,
 )
 
@@ -203,10 +204,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-    goma_jobs = None,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(

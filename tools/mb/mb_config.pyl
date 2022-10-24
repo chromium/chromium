@@ -261,11 +261,11 @@
 
     'chromium.fuchsia': {
       'Deterministic Fuchsia (dbg)': 'debug_bot_fuchsia',
-      'fuchsia-arm64-cast-receiver-rel': 'release_bot_fuchsia_arm64_cast_receiver',
-      'fuchsia-arm64-rel': 'release_bot_fuchsia_arm64',
-      'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver',
+      'fuchsia-arm64-cast-receiver-rel': 'release_bot_fuchsia_arm64_cast_receiver_reclient',
+      'fuchsia-arm64-rel': 'release_bot_fuchsia_arm64_reclient',
+      'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver_reclient',
       'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
-      'fuchsia-x64-rel': 'release_bot_fuchsia',
+      'fuchsia-x64-rel': 'release_bot_fuchsia_reclient',
     },
 
     'chromium.fuchsia.fyi': {
@@ -3421,20 +3421,20 @@
       'release_bot_reclient', 'extended_tracing',
     ],
 
-    'release_bot_fuchsia': [
-      'release_bot', 'fuchsia',
-    ],
-
     'release_bot_fuchsia_arm64': [
       'release_bot', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
-    'release_bot_fuchsia_arm64_cast_receiver': [
-      'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
+    'release_bot_fuchsia_arm64_cast_receiver_reclient': [
+      'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
     ],
 
-    'release_bot_fuchsia_cast_receiver': [
-      'release_bot', 'fuchsia', 'cast_receiver_size_optimized',
+    'release_bot_fuchsia_arm64_reclient': [
+      'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host',
+    ],
+
+    'release_bot_fuchsia_cast_receiver_reclient': [
+      'release_bot_reclient', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
     'release_bot_fuchsia_cfv2_script': [
@@ -3447,6 +3447,10 @@
 
     'release_bot_fuchsia_cfv2_script_chrome': [
       'release_bot', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',
+    ],
+
+    'release_bot_fuchsia_reclient': [
+      'release_bot_reclient', 'fuchsia',
     ],
 
     'release_bot_fuchsia_workstation': [

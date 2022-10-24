@@ -17,7 +17,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-arm64-rel": {
@@ -28,7 +28,7 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-x64-cast-receiver-rel": {
@@ -38,7 +38,7 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-x64-dbg": {
@@ -56,7 +56,7 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }
