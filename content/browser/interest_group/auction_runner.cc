@@ -185,13 +185,19 @@ void AuctionRunner::OnReportingPhaseComplete(
   errors.insert(errors.end(), reporter->errors().begin(),
                 reporter->errors().end());
 
+  auto ad_beacon_map = reporter->TakeAdBeaconMap();
+  auto report_urls = reporter->TakeReportUrls();
+  auto private_aggregation_requests =
+      reporter->TakePrivateAggregationRequests();
+  reporter.reset();
+
   state_ = State::kSucceeded;
   std::move(callback_).Run(
       this, /*manually_aborted=*/false, std::move(winning_group_key),
       auction_.top_bid()->bid->render_url,
-      auction_.top_bid()->bid->ad_components, reporter->TakeReportUrls(),
+      auction_.top_bid()->bid->ad_components, std::move(report_urls),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      reporter->TakeAdBeaconMap(), reporter->TakePrivateAggregationRequests(),
+      std::move(ad_beacon_map), std::move(private_aggregation_requests),
       std::move(errors));
 }
 
