@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "sheriff_rotations")
+load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -14,7 +14,8 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = 10 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     notifies = ["cr-fuchsia"],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,

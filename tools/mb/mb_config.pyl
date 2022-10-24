@@ -269,12 +269,12 @@
     },
 
     'chromium.fuchsia.fyi': {
-      'fuchsia-arm64-chrome-rel': 'release_bot_fuchsia_arm64',
-      'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
-      'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia',
-      'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
-      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script_chrome',
-      'fuchsia-x64-workstation': 'release_bot_fuchsia_workstation',
+      'fuchsia-arm64-chrome-rel': 'release_bot_fuchsia_arm64_reclient',
+      'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64_reclient',
+      'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia_reclient',
+      'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
+      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script_chrome_reclient',
+      'fuchsia-x64-workstation': 'release_bot_fuchsia_workstation_reclient',
     },
 
     'chromium.fuzz': {
@@ -1900,8 +1900,8 @@
       'clang', 'asan', 'fuzzer', 'v8_heap', 'release_bot_reclient',
     ],
 
-    'asan_lsan_bot_fuchsia': [
-      'asan', 'lsan', 'release_bot', 'fuchsia',
+    'asan_lsan_bot_fuchsia_reclient': [
+      'asan', 'lsan', 'release_bot_reclient', 'fuchsia',
     ],
 
     'asan_lsan_chromeos_release_bot_dcheck_always_on': [
@@ -2487,12 +2487,20 @@
       'debug_bot', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
+    'debug_bot_fuchsia_arm64_reclient': [
+      'debug_bot_reclient', 'fuchsia', 'arm64', 'arm64_host',
+    ],
+
     'debug_bot_fuchsia_compile_only': [
       'debug_bot', 'fuchsia', 'compile_only',
     ],
 
     'debug_bot_fuchsia_compile_only_reclient': [
       'debug_bot_reclient', 'fuchsia', 'compile_only',
+    ],
+
+    'debug_bot_fuchsia_reclient': [
+      'debug_bot_reclient', 'fuchsia',
     ],
 
     'debug_bot_local_build': [
@@ -3421,10 +3429,6 @@
       'release_bot_reclient', 'extended_tracing',
     ],
 
-    'release_bot_fuchsia_arm64': [
-      'release_bot', 'fuchsia', 'arm64', 'arm64_host',
-    ],
-
     'release_bot_fuchsia_arm64_cast_receiver_reclient': [
       'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
     ],
@@ -3445,16 +3449,16 @@
       'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
     ],
 
-    'release_bot_fuchsia_cfv2_script_chrome': [
-      'release_bot', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',
+    'release_bot_fuchsia_cfv2_script_chrome_reclient': [
+      'release_bot_reclient', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',
     ],
 
     'release_bot_fuchsia_reclient': [
       'release_bot_reclient', 'fuchsia',
     ],
 
-    'release_bot_fuchsia_workstation': [
-      'release_bot', 'fuchsia', 'fuchsia_include_workstation_image',
+    'release_bot_fuchsia_workstation_reclient': [
+      'release_bot_reclient', 'fuchsia', 'fuchsia_include_workstation_image',
       'fuchsia_chrome'
     ],
 
