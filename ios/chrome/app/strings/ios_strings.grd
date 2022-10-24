@@ -997,7 +997,7 @@ See your search engine’s instructions for deleting your search history, if app
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Default Browser App<ph name="END_BOLD">END_BOLD</ph>
       </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION" desc="The secondary action string on the default browser screen presented to the user on First Run [iOS only]">
-        No, Thanks
+        No Thanks
       </message>
       <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
         More
