@@ -1959,12 +1959,6 @@ BASE_FEATURE(kUploadOfficeToCloud,
              "UploadOfficeToCloud",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Uses new  AuthSession-based API in cryptohome to authenticate users during
-// sign-in.
-BASE_FEATURE(kUseAuthsessionAuthentication,
-             "UseAuthsessionAuthentication",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Uses new AuthFactor-based API when communicating with cryptohome.
 // This feature flag also affects usage of AuthSessions in QuickUnlock, but
 // only in case when cryptohome is used as backend.

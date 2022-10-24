@@ -11,7 +11,6 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -854,42 +853,9 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
-  // If the hibernate service is supported, call it to initiate resume.
-#if BUILDFLAG(ENABLE_HIBERNATE)
-  if (features::IsHibernateEnabled() &&
-      !base::FeatureList::IsEnabled(
-          ash::features::kUseAuthsessionAuthentication)) {
-    HibermanClient::Get()->WaitForServiceToBeAvailable(
-        base::BindOnce(&ExistingUserController::OnHibernateServiceAvailable,
-                       weak_factory_.GetWeakPtr(), user_context));
-
-    return;
-  }
-#endif
-
   // The hibernate service is not supported, just continue directly.
   ContinueAuthSuccessAfterResumeAttempt(user_context, true);
-  return;
 }
-
-#if BUILDFLAG(ENABLE_HIBERNATE)
-void ExistingUserController::OnHibernateServiceAvailable(
-    const UserContext& user_context,
-    bool service_is_available) {
-  if (!service_is_available) {
-    LOG(ERROR) << "Hibernate service is unavailable";
-    ContinueAuthSuccessAfterResumeAttempt(user_context, false);
-  } else {
-    // In a successful resume case, this function never returns, as execution
-    // continues in the resumed hibernation image.
-    HibermanClient::Get()->ResumeFromHibernate(
-        user_context.GetAccountId().GetUserEmail(),
-        base::BindOnce(
-            &ExistingUserController::ContinueAuthSuccessAfterResumeAttempt,
-            weak_factory_.GetWeakPtr(), user_context));
-  }
-}
-#endif
 
 void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
     const UserContext& user_context,

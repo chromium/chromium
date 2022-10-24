@@ -52,7 +52,6 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/logging.h"
-#include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -692,15 +691,11 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
   if (authenticator_.get() == nullptr) {
     if (injected_authenticator_builder_) {
       authenticator_ = injected_authenticator_builder_->Create(consumer);
-    } else if (base::FeatureList::IsEnabled(
-                   ash::features::kUseAuthsessionAuthentication)) {
+    } else {
       authenticator_ = new AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>(),
           base::BindRepeating(&RecordKnownUser), IsEphemeralMountForced(),
           g_browser_process->local_state());
-    } else {
-      authenticator_ =
-          base::MakeRefCounted<ChromeCryptohomeAuthenticator>(consumer);
     }
   } else {
     // TODO(nkostylev): Fix this hack by improving Authenticator dependencies.

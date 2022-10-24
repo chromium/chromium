@@ -65,16 +65,8 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
   }
 
   void CheckCryptohomeMountAssertions() {
-    if (base::FeatureList::IsEnabled(
-            ash::features::kUseAuthsessionAuthentication)) {
-      ASSERT_EQ(
-          FakeUserDataAuthClient::Get()->get_prepare_guest_request_count(), 1);
-    } else {
-      ASSERT_EQ(FakeUserDataAuthClient::Get()->get_mount_request_count(), 1);
-      EXPECT_TRUE(FakeUserDataAuthClient::Get()
-                      ->get_last_mount_request()
-                      .guest_mount());
-    }
+    ASSERT_EQ(FakeUserDataAuthClient::Get()->get_prepare_guest_request_count(),
+              1);
   }
 
  protected:
