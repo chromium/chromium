@@ -6,6 +6,7 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_touch.h"
@@ -37,7 +38,8 @@ namespace ash::diagnostics {
 class InputDataProvider : public mojom::InputDataProvider,
                           public ui::DeviceEventObserver,
                           public InputDataEventWatcher::Dispatcher,
-                          public views::WidgetObserver {
+                          public views::WidgetObserver,
+                          public TabletModeObserver {
  public:
   explicit InputDataProvider(aura::Window* window);
   explicit InputDataProvider(
@@ -70,12 +72,20 @@ class InputDataProvider : public mojom::InputDataProvider,
       uint32_t id,
       mojo::PendingRemote<mojom::KeyboardObserver> observer) override;
 
+  void ObserveTabletMode(
+      mojo::PendingRemote<mojom::TabletModeObserver> observer,
+      ObserveTabletModeCallback callback) override;
+
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
 
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
  protected:
   base::SequenceBound<InputDeviceInfoHelper> info_helper_{
@@ -131,6 +141,8 @@ class InputDataProvider : public mojom::InputDataProvider,
   views::Widget* widget_ = nullptr;
 
   mojo::RemoteSet<mojom::ConnectedDevicesObserver> connected_devices_observers_;
+
+  mojo::Remote<mojom::TabletModeObserver> tablet_mode_observer_;
 
   mojo::Receiver<mojom::InputDataProvider> receiver_{this};
 

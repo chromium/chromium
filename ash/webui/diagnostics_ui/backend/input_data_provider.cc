@@ -10,6 +10,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input_device_information.h"
@@ -63,6 +64,7 @@ InputDataProvider::~InputDataProvider() {
   BlockShortcuts(/*should_block=*/false);
   device_manager_->RemoveObserver(this);
   widget_->RemoveObserver(this);
+  TabletMode::Get()->RemoveObserver(this);
 }
 
 // static
@@ -88,6 +90,7 @@ void InputDataProvider::Initialize(aura::Window* window) {
   device_manager_->AddObserver(this);
   device_manager_->ScanDevices(this);
   widget_->AddObserver(this);
+  TabletMode::Get()->AddObserver(this);
   UpdateMaySendEvents();
 }
 
@@ -132,6 +135,26 @@ void InputDataProvider::OnWidgetVisibilityChanged(views::Widget* widget,
 void InputDataProvider::OnWidgetActivationChanged(views::Widget* widget,
                                                   bool active) {
   UpdateEventObservers();
+}
+
+void InputDataProvider::ObserveTabletMode(
+    mojo::PendingRemote<mojom::TabletModeObserver> observer,
+    ObserveTabletModeCallback callback) {
+  tablet_mode_observer_ =
+      mojo::Remote<mojom::TabletModeObserver>(std::move(observer));
+  std::move(callback).Run(TabletMode::Get()->InTabletMode());
+}
+
+void InputDataProvider::OnTabletModeStarted() {
+  if (tablet_mode_observer_.is_bound()) {
+    tablet_mode_observer_->OnTabletModeChanged(/*is_tablet_mode=*/true);
+  }
+}
+
+void InputDataProvider::OnTabletModeEnded() {
+  if (tablet_mode_observer_.is_bound()) {
+    tablet_mode_observer_->OnTabletModeChanged(/*is_tablet_mode=*/false);
+  }
 }
 
 void InputDataProvider::UpdateMaySendEvents() {

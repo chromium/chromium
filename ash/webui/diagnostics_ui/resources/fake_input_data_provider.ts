@@ -5,7 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
 import {GetConnectedDevicesResponse} from './diagnostics_types.js';
-import {ConnectedDevicesObserverRemote, InputDataProviderInterface, KeyboardInfo, KeyboardObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {ConnectedDevicesObserverRemote, InputDataProviderInterface, KeyboardInfo, KeyboardObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -17,6 +17,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   private observers_: ConnectedDevicesObserverRemote[] = [];
   private keyboards_: KeyboardInfo[] = [];
   private keyboardObservers_: KeyboardObserverRemote[][] = [];
+  private tabletModeObserver_: TabletModeObserverRemote;
   private touchDevices_: TouchDeviceInfo[] = [];
   constructor() {
     this.registerMethods();
@@ -36,6 +37,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   registerMethods(): void {
     this.methods_.register('getConnectedDevices');
     this.methods_.register('observeKeyEvents');
+    this.methods_.register('observeTabletMode');
   }
 
   getConnectedDevices(): Promise<GetConnectedDevicesResponse> {
@@ -51,6 +53,44 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
       return;
     }
     this.keyboardObservers_[id].push(remote);
+  }
+
+  /**
+   * Registers an observer for tablet mode changes and returns current tablet
+   * mode.
+   */
+  observeTabletMode(remote: TabletModeObserverRemote):
+      Promise<{isTabletMode: boolean}> {
+    this.tabletModeObserver_ = remote;
+    return this.methods_.resolveMethod('observeTabletMode');
+  }
+
+  /**
+   * Mock starting tablet mode.
+   */
+  startTabletMode(): void {
+    this.tabletModeObserver_.onTabletModeChanged(true);
+  }
+
+  /**
+   * Mock ending tablet mode.
+   */
+  endTabletMode(): void {
+    this.tabletModeObserver_.onTabletModeChanged(false);
+  }
+
+  /**
+   * Mock registering observer returning isTabletMode as false.
+   */
+  setStartTesterWithClamshellMode(): void {
+    this.methods_.setResult('observeTabletMode', {isTabletMode: false});
+  }
+
+  /**
+   * Mock registering observer returning isTabletMode as true.
+   */
+  setStartTesterWithTabletMode(): void {
+    this.methods_.setResult('observeTabletMode', {isTabletMode: true});
   }
 
   /**

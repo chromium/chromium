@@ -158,6 +158,14 @@ struct TouchDeviceInfo {
   string name;
 };
 
+// Implemented by clients that wish to be notified when the tablet mode is
+// changed.
+interface TabletModeObserver {
+  // OnTabletModeChanged calls are triggered when dsiplay mode has changed
+  // between clamshell mode and tablet mode.
+  OnTabletModeChanged(bool is_tablet_mode);
+};
+
 // Implemented by clients that wish to be updated when input devices are
 // connected or disconnected.
 interface ConnectedDevicesObserver {
@@ -192,4 +200,9 @@ interface InputDataProvider {
   // target SWA window, and enforces the security policy of only forwarding
   // key events to the observer when that window is visible and has focus.
   ObserveKeyEvents(uint32 id, pending_remote<KeyboardObserver> observer);
+
+  // Registers an observer for tablet mode changes and returns tablet mode
+  // initial state.
+  ObserveTabletMode(pending_remote<TabletModeObserver> observer) =>
+    (bool is_tablet_mode);
 };
