@@ -185,13 +185,6 @@ export class SettingsSyncControlsElement extends
     this.onSingleSyncDataTypeChanged_();
   }
 
-  /**
-   * Handler for when the autofill data type checkbox is changed.
-   */
-  private onTypedUrlsDataTypeChanged_() {
-    this.onSingleSyncDataTypeChanged_();
-  }
-
   private shouldPaymentsCheckboxBeDisabled_(
       syncAllDataTypes: boolean, autofillSynced: boolean): boolean {
     return syncAllDataTypes || !autofillSynced;

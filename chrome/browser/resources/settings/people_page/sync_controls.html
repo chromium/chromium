@@ -83,11 +83,9 @@
         <div id="historyCheckboxLabel">
           $i18n{historyCheckboxLabel}
         </div>
-        <!-- TypedUrls has a special on-change handler to deal with user
-             events. -->
         <cr-toggle id="historyToggle"
             checked="{{syncPrefs.typedUrlsSynced}}"
-            on-change="onTypedUrlsDataTypeChanged_"
+            on-change="onSingleSyncDataTypeChanged_"
             disabled="[[syncPrefs.syncAllDataTypes]]"
             aria-labelledby="historyCheckboxLabel">
         </cr-toggle>
