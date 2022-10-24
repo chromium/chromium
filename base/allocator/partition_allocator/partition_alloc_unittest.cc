@@ -2107,14 +2107,26 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 //
 // Disable these tests on Android because, due to the allocation-heavy behavior,
 // they tend to get OOM-killed rather than pass.
-// TODO(https://crbug.com/779645): Fuchsia currently sets OS_POSIX, but does
-// not provide a working setrlimit().
 //
 // Disable these test on Windows, since they run slower, so tend to timout and
 // cause flake.
+//
+// For Fuchsia, see https://crbug.com/779645.
 #if !BUILDFLAG(IS_WIN) &&          \
     (!defined(ARCH_CPU_64_BITS) || \
      (BUILDFLAG(IS_POSIX) && !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID))))
+#define MAYBE_RepeatedAllocReturnNullDirect RepeatedAllocReturnNullDirect
+#define MAYBE_RepeatedReallocReturnNullDirect RepeatedReallocReturnNullDirect
+#define MAYBE_RepeatedTryReallocReturnNullDirect \
+  RepeatedTryReallocReturnNullDirect
+#else
+#define MAYBE_RepeatedAllocReturnNullDirect \
+  DISABLED_RepeatedAllocReturnNullDirect
+#define MAYBE_RepeatedReallocReturnNullDirect \
+  DISABLED_RepeatedReallocReturnNullDirect
+#define MAYBE_RepeatedTryReallocReturnNullDirect \
+  DISABLED_RepeatedTryReallocReturnNullDirect
+#endif
 
 // The following four tests wrap a called function in an expect death statement
 // to perform their test, because they are non-hermetic. Specifically they are
@@ -2126,7 +2138,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 // These tests are *very* slow when BUILDFLAG(PA_DCHECK_IS_ON), because they
 // memset() many GiB of data (see crbug.com/1168168).
 // TODO(lizeb): make these tests faster.
-TEST_P(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
+TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
@@ -2135,7 +2147,7 @@ TEST_P(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
 }
 
 // Repeating above test with Realloc
-TEST_P(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
+TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedReallocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionReallocWithFlags),
@@ -2143,7 +2155,7 @@ TEST_P(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
 }
 
 // Repeating above test with TryRealloc
-TEST_P(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
+TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedTryReallocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionRootTryRealloc),
@@ -2152,6 +2164,7 @@ TEST_P(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
 
 // TODO(crbug.com/1348221) re-enable the tests below, once the allocator
 // actually returns nullptr for non direct-mapped allocations.
+// When doing so, they will need to be made MAYBE_ like those above.
 //
 // Tests "return null" with a 512 kB block size.
 TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
@@ -2180,9 +2193,6 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
   EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionRootTryRealloc),
                "Passed DoReturnNullTest");
 }
-
-#endif  // !defined(ARCH_CPU_64_BITS) || (BUILDFLAG(IS_POSIX) &&
-        // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)))
 
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to
