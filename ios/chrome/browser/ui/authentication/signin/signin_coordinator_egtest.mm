@@ -292,7 +292,8 @@ void ExpectSyncConsentHistogram(
 
 // Tests that signing out a supervised user account with the clear local data
 // option is honored.
-- (void)testSignOutWithClearDataForSupervisedUser {
+// (crbug.com/1368899#c15) Consistently failing on ios-simulator-noncq
+- (void)DISABLED_testSignOutWithClearDataForSupervisedUser {
   // Sign in with a fake supervised identity.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];

@@ -102,7 +102,8 @@ void WaitForSettingDoneButton() {
 // Tests that a user that signs in and gives sync consent can sign
 // out through the "Sign out and Turn Off Sync" > "Clear Data" option in Sync
 // settings.
-- (void)testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData {
+// (crbug.com/1368899#c15) Consistently failing on ios-simulator-noncq
+- (void)DISABLED_testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
