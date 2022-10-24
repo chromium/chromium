@@ -280,6 +280,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // grouped by publisher.
   registry->RegisterIntegerPref(prefs::kNTPFollowingFeedSortType, 1);
 
+  // Register pref to determine if the user changed the Following sort type.
+  registry->RegisterBooleanPref(prefs::kDefaultFollowingFeedSortTypeChanged,
+                                false);
+
   // Register prefs used by Clear Browsing Data UI.
   browsing_data::prefs::RegisterBrowserUserPrefs(registry);
 

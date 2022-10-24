@@ -2056,6 +2056,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "enable-default-following-feed-sort-type",
+    "owners": [ "adamta", "sczs"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-delegated-compositing",
     "owners": [ "petermcneeley" ],
     "expiry_milestone": 110

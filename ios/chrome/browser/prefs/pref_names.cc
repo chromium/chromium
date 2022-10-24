@@ -150,6 +150,10 @@ const char kNTPContentSuggestionsForSupervisedUserEnabled[] =
 // Preference that represents the sorting order of the Following feed content.
 const char kNTPFollowingFeedSortType[] = "ios.ntp.following_feed.sort_type";
 
+// Preference that determines if the user changed the Following feed sort type.
+const char kDefaultFollowingFeedSortTypeChanged[] =
+    "ios.ntp.following_feed_default_sort_type_changed";
+
 // Dictionary preference which tracks day(s) a given destination is clicked from
 // the new overflow menu carousel.
 const char kOverflowMenuDestinationUsageHistory[] =

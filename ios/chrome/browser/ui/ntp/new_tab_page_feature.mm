@@ -33,6 +33,10 @@ BASE_FEATURE(kEnableDiscoverFeedTopSyncPromo,
              "EnableDiscoverFeedTopSyncPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFollowingFeedDefaultSortType,
+             "FollowingFeedDefaultSortType",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
     "DiscoverFeedSRSReconstructedTemplatesEnabled";
 
@@ -43,9 +47,13 @@ BASE_FEATURE(kNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const char kDiscoverFeedTopSyncPromoStyleParam[] = "FeedTopPromoStyle";
 const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[] = "fullWithTitle";
 const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
+
+const char kFollowingFeedDefaultSortTypeSortByLatest[] = "SortByLatest";
+const char kFollowingFeedDefaultSortTypeGroupedByPublisher[] =
+    "GroupedByPublisher";
+
 BASE_FEATURE(kEnableFeedAblation,
              "FeedAblationEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -78,6 +86,16 @@ bool IsDiscoverFeedTopSyncPromoCompact() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyleCompact,
       false);
+}
+
+bool IsFollowingFeedDefaultSortTypeEnabled() {
+  return base::FeatureList::IsEnabled(kFollowingFeedDefaultSortType);
+}
+
+bool IsDefaultFollowingFeedSortTypeGroupedByPublisher() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kFollowingFeedDefaultSortType,
+      kFollowingFeedDefaultSortTypeGroupedByPublisher, true);
 }
 
 bool IsFeedAblationEnabled() {

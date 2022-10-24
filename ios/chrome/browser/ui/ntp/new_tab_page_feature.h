@@ -27,6 +27,9 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
 // Feature flag to enable the sync promo on top of the discover feed.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 
+// Feature flag to enable a default Following feed sort type.
+BASE_DECLARE_FEATURE(kFollowingFeedDefaultSortType);
+
 // Feature flag to enable checking feed visibility on attention log start.
 BASE_DECLARE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart);
 
@@ -42,14 +45,18 @@ extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
 // resource serving.
 extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 
-// A parameter to indicate the style used for the discover feed top promo.
-extern const char kDiscoverFeedTopSyncPromoStyleParam[];
-
 // A parameter value used for displaying the full with title promo style.
 extern const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[];
 
 // A parameter value used for displaying the compact promo style.
 extern const char kDiscoverFeedTopSyncPromoStyleCompact[];
+
+// A parameter value for the default Following sort type to be Sort by Latest.
+extern const char kFollowingFeedDefaultSortTypeSortByLatest[];
+
+// A parameter value for the default Following sort type to be Grouped by
+// Publisher.
+extern const char kFollowingFeedDefaultSortTypeGroupedByPublisher[];
 
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
@@ -70,6 +77,12 @@ bool IsDiscoverFeedTopSyncPromoEnabled();
 
 // Whether the feed top sync promotion is compact or not.
 bool IsDiscoverFeedTopSyncPromoCompact();
+
+// Whether the Following feed default sort type experiment is enabled.
+bool IsFollowingFeedDefaultSortTypeEnabled();
+
+// Whether the default Following feed sort type is Grouped by Publisher.
+bool IsDefaultFollowingFeedSortTypeGroupedByPublisher();
 
 // Whether the Discover feed ablation experiment is enabled.
 bool IsFeedAblationEnabled();

@@ -378,6 +378,11 @@ const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
 
+const char kFollowingFeedDefaultSortTypeName[] =
+    "Following feed default sort type.";
+const char kFollowingFeedDefaultSortTypeDescription[] =
+    "Sets the default sort type for Following feed content.";
+
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
