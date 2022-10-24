@@ -54,6 +54,10 @@ class ComputedStyleTest : public testing::Test {
     return ComputedStyle::Clone(*initial_style_);
   }
 
+  ComputedStyleBuilder CreateComputedStyleBuilder() {
+    return ComputedStyleBuilder(*initial_style_);
+  }
+
  private:
   scoped_refptr<const ComputedStyle> initial_style_;
 };
@@ -1370,6 +1374,20 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
     EXPECT_FALSE(diff.HasDifference());                             \
   }
 
+#define TEST_STYLE_BUILDER_VALUE_NO_DIFF(field_name)                \
+  {                                                                 \
+    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();   \
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();   \
+    builder1.Set##field_name(                                       \
+        ComputedStyleInitialValues::Initial##field_name());         \
+    builder2.Set##field_name(                                       \
+        ComputedStyleInitialValues::Initial##field_name());         \
+    scoped_refptr<ComputedStyle> style1 = builder1.TakeStyle();     \
+    scoped_refptr<ComputedStyle> style2 = builder2.TakeStyle();     \
+    auto diff = style1->VisualInvalidationDiff(*document, *style2); \
+    EXPECT_FALSE(diff.HasDifference());                             \
+  }
+
 // Ensures ref-counted values are compared by their values, not by pointers.
 #define TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(type, field_name)              \
   {                                                                        \
@@ -1394,7 +1412,7 @@ TEST_F(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
   TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(SVGDashArray, StrokeDashArray);
 
   TEST_STYLE_VALUE_NO_DIFF(StrokePaint);
-  TEST_STYLE_VALUE_NO_DIFF(InternalVisitedStrokePaint);
+  TEST_STYLE_BUILDER_VALUE_NO_DIFF(InternalVisitedStrokePaint);
 }
 
 TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {

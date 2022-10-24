@@ -2418,25 +2418,6 @@ void ComputedStyle::RestoreParentTextDecorations(
   }
 }
 
-void ComputedStyle::ClearMultiCol() {
-  SetColumnGap(ComputedStyleInitialValues::InitialColumnGap());
-  SetColumnWidthInternal(ComputedStyleInitialValues::InitialColumnWidth());
-  SetColumnRuleStyle(ComputedStyleInitialValues::InitialColumnRuleStyle());
-  SetColumnRuleWidthInternal(
-      LayoutUnit(ComputedStyleInitialValues::InitialColumnRuleWidth()));
-  SetColumnRuleColorInternal(
-      ComputedStyleInitialValues::InitialColumnRuleColor());
-  SetInternalVisitedColumnRuleColorInternal(
-      ComputedStyleInitialValues::InitialInternalVisitedColumnRuleColor());
-  SetColumnCountInternal(ComputedStyleInitialValues::InitialColumnCount());
-  SetHasAutoColumnCountInternal(
-      ComputedStyleInitialValues::InitialHasAutoColumnCount());
-  SetHasAutoColumnWidthInternal(
-      ComputedStyleInitialValues::InitialHasAutoColumnWidth());
-  ResetColumnFill();
-  ResetColumnSpan();
-}
-
 StyleColor ComputedStyle::DecorationColorIncludingFallback(
     bool visited_link) const {
   StyleColor style_color = visited_link ? InternalVisitedTextDecorationColor()

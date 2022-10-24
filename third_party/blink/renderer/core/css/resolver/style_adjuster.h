@@ -31,6 +31,7 @@ namespace blink {
 
 class Element;
 class ComputedStyle;
+class ComputedStyleBuilder;
 class StyleResolverState;
 
 // Certain CSS Properties/Values do not apply to certain elements
@@ -54,6 +55,8 @@ class StyleAdjuster {
                                          bool is_svg_root);
   static void AdjustOverflow(ComputedStyle& style, Element* element);
   static void AdjustForForcedColorsMode(ComputedStyle& style);
+  static void AdjustForSVGTextElement(ComputedStyle& style,
+                                      ComputedStyleBuilder& builder);
 };
 
 }  // namespace blink

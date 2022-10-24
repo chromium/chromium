@@ -48,7 +48,10 @@ class ColorPropertyFunctions {
                                 ComputedStyle&,
                                 ComputedStyleBuilder&,
                                 const Color&);
-  static void SetVisitedColor(const CSSProperty&, ComputedStyle&, const Color&);
+  static void SetVisitedColor(const CSSProperty&,
+                              ComputedStyle&,
+                              ComputedStyleBuilder&,
+                              const Color&);
 };
 
 }  // namespace blink

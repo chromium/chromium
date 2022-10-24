@@ -797,6 +797,29 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style) {
     style.ClearBackgroundImage();
 }
 
+void StyleAdjuster::AdjustForSVGTextElement(ComputedStyle& style,
+                                            ComputedStyleBuilder& builder) {
+  style.SetColumnGap(ComputedStyleInitialValues::InitialColumnGap());
+  style.SetColumnWidthInternal(
+      ComputedStyleInitialValues::InitialColumnWidth());
+  style.SetColumnRuleStyle(
+      ComputedStyleInitialValues::InitialColumnRuleStyle());
+  style.SetColumnRuleWidthInternal(
+      LayoutUnit(ComputedStyleInitialValues::InitialColumnRuleWidth()));
+  style.SetColumnRuleColorInternal(
+      ComputedStyleInitialValues::InitialColumnRuleColor());
+  builder.SetInternalVisitedColumnRuleColorInternal(
+      ComputedStyleInitialValues::InitialInternalVisitedColumnRuleColor());
+  style.SetColumnCountInternal(
+      ComputedStyleInitialValues::InitialColumnCount());
+  style.SetHasAutoColumnCountInternal(
+      ComputedStyleInitialValues::InitialHasAutoColumnCount());
+  style.SetHasAutoColumnWidthInternal(
+      ComputedStyleInitialValues::InitialHasAutoColumnWidth());
+  style.ResetColumnFill();
+  style.ResetColumnSpan();
+}
+
 void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                                         Element* element) {
   DCHECK(state.LayoutParentStyle());
@@ -912,8 +935,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     const ComputedStyle* originating_style = state.OriginatingElementStyle();
     if (style.ColorIsCurrentColor())
       builder.SetColor(originating_style->GetColor());
-    if (style.InternalVisitedColorIsCurrentColor())
-      style.SetInternalVisitedColor(originating_style->InternalVisitedColor());
+    if (style.InternalVisitedColorIsCurrentColor()) {
+      builder.SetInternalVisitedColor(
+          originating_style->InternalVisitedColor());
+    }
   }
 
   if (style.Display() != EDisplay::kContents) {
@@ -968,7 +993,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // Columns don't apply to svg text elements.
     if (IsA<SVGTextElement>(*element))
-      style.ClearMultiCol();
+      AdjustForSVGTextElement(style, builder);
 
     // Copy DominantBaseline to CssDominantBaseline without 'no-change',
     // 'reset-size', and 'use-script'.
