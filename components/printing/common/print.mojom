@@ -343,10 +343,11 @@ interface PrintRenderFrame {
   PrintNodeUnderContextMenu();
 
   // Prints the content as a snapshot of the page to be analyzed for sensitive
-  // content.
+  // content. Returns nothing if the snapshot couldn't be obtained for any
+  // reason.
   [EnableIf=enable_print_content_analysis]
   SnapshotForContentAnalysis()
-      => (DidPrintDocumentParams params);
+      => (DidPrintDocumentParams? params);
 };
 
 // Browser process interface exposed to the renderer to handle the general
