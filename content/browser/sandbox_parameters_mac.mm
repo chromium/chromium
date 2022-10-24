@@ -237,8 +237,6 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
       break;
     // Setup parameters for sandbox types handled by embedders below.
     case sandbox::mojom::Sandbox::kScreenAI:
-      AddDarwinDirs(client);
-      [[fallthrough]];
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       SetupCommonSandboxParameters(client);
       CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(

@@ -6704,8 +6704,6 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
 
     CHECK(client->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
                                screen_ai_component_dir.value()));
-    CHECK(client->SetBooleanParameter(sandbox::policy::kParamScreenAiDebugMode,
-                                      features::IsScreenAIDebugModeEnabled()));
 
     return true;
 #endif
