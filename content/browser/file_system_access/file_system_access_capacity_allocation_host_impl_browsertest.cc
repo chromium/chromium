@@ -101,9 +101,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_closing', {create: false});
       let ah = await fh.createSyncAccessHandle();
-      await ah.truncate(100);
-      await ah.truncate(10);
-      await ah.close();
+      ah.truncate(100);
+      ah.truncate(10);
+      ah.close();
       return true;
     `);
   )")
@@ -131,9 +131,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_existing', {create: true});
-      let ah =  await fh.createSyncAccessHandle();
-      await ah.truncate(100);
-      await ah.close();
+      let ah = await fh.createSyncAccessHandle();
+      ah.truncate(100);
+      ah.close();
       return true;
     `);
   )")
@@ -148,8 +148,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_existing', {create: false});
       let ah = await fh.createSyncAccessHandle();
-      await ah.truncate(0);
-      await ah.close();
+      ah.truncate(0);
+      ah.close();
       return true;
     `);
   )")
@@ -178,13 +178,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_file_small', {create: true});
-      let ah =  await fh.createSyncAccessHandle();
+      let ah = await fh.createSyncAccessHandle();
       let storage_manager = await navigator.storage.estimate();
       let usage_before_operation = storage_manager.usageDetails.fileSystem;
-      await ah.truncate(100);
+      ah.truncate(100);
       storage_manager = await navigator.storage.estimate();
       let usage_after_operation = storage_manager.usageDetails.fileSystem;
-      await ah.close();
+      ah.close();
       return usage_after_operation-usage_before_operation;
     `);
   )")
@@ -194,14 +194,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_file_medium', {create: true});
-      let ah =  await fh.createSyncAccessHandle();
+      let ah = await fh.createSyncAccessHandle();
       let storage_manager = await navigator.storage.estimate();
       let usage_before_operation = storage_manager.usageDetails.fileSystem;
       let new_file_size = 3*1024*1024;
-      await ah.truncate(new_file_size);
+      ah.truncate(new_file_size);
       storage_manager = await navigator.storage.estimate();
       let usage_after_operation = storage_manager.usageDetails.fileSystem;
-      await ah.close();
+      ah.close();
       return usage_after_operation-usage_before_operation;
     `);
   )")
@@ -227,14 +227,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_file_medium', {create: true});
-      let ah =  await fh.createSyncAccessHandle();
+      let ah = await fh.createSyncAccessHandle();
       let storage_manager = await navigator.storage.estimate();
       let usage_before_operation = storage_manager.usageDetails.fileSystem;
       let new_file_size = 3*1024*1024;
-      await ah.truncate(new_file_size);
+      ah.truncate(new_file_size);
       storage_manager = await navigator.storage.estimate();
       let usage_after_operation = storage_manager.usageDetails.fileSystem;
-      await ah.close();
+      ah.close();
       return usage_after_operation-usage_before_operation;
     `);
   )")
@@ -244,13 +244,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_file_small', {create: true});
-      let ah =  await fh.createSyncAccessHandle();
+      let ah = await fh.createSyncAccessHandle();
       let storage_manager = await navigator.storage.estimate();
       let usage_before_operation = storage_manager.usageDetails.fileSystem;
-      await ah.truncate(100);
+      ah.truncate(100);
       storage_manager = await navigator.storage.estimate();
       let usage_after_operation = storage_manager.usageDetails.fileSystem;
-      await ah.close();
+      ah.close();
       return usage_after_operation-usage_before_operation;
     `);
   )")
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
       let ah = await fh.createSyncAccessHandle();
       const buffer = new DataView(new ArrayBuffer(10));
       ah.write(buffer, { at: 0 });
-      await ah.close();
+      ah.close();
       return true;
     `);
   )")
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
       let ah = await fh.createSyncAccessHandle();
       const buffer = new DataView(new ArrayBuffer(80));
       ah.write(buffer, { at: 20 });
-      await ah.close();
+      ah.close();
       return true;
     `);
   )")
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
       let ah = await fh.createSyncAccessHandle();
       const buffer = new DataView(new ArrayBuffer(20));
       ah.write(buffer, { at: 5 });
-      await ah.close();
+      ah.close();
       return true;
     `);
   )")
