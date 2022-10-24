@@ -6,8 +6,11 @@
 
 #include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -43,46 +46,80 @@ bool IsValidBrowsingContextNameOrKeyword(const String& name_or_keyword) {
   return false;
 }
 
-SpeculationRule* ParseSpeculationRule(JSONObject* input, const KURL& base_url) {
+SpeculationRule* ParseSpeculationRule(JSONObject* input,
+                                      const KURL& base_url,
+                                      ExecutionContext* context) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
 
   // If input has any key other than "source", "urls", "requires", and
   // "target_hint", then return null.
-  const char* const kKnownKeys[] = {"source", "urls", "requires",
-                                    "target_hint"};
+  const char* const kKnownKeys[] = {"source", "urls", "requires", "target_hint",
+                                    "where"};
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     if (!base::Contains(kKnownKeys, input->at(i).first))
       return nullptr;
   }
 
-  // If input["source"] does not exist or is not the string "list", then return
-  // null.
+  bool document_rules_enabled =
+      RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(context);
+
+  // If input["source"] does not exist or is neither the string "list" nor the
+  // string "document", then return null.
   String source;
-  if (!input->GetString("source", &source) || source != "list")
+  if (!input->GetString("source", &source) ||
+      !(source == "list" || (document_rules_enabled && source == "document")))
     return nullptr;
 
-  // Let urls be an empty list.
-  // If input["urls"] does not exist, is not a list, or has any element which is
-  // not a string, then return null.
   Vector<KURL> urls;
-  JSONArray* input_urls = input->GetArray("urls");
-  if (!input_urls)
-    return nullptr;
-
-  // For each urlString of input["urls"]...
-  urls.ReserveInitialCapacity(input_urls->size());
-  for (wtf_size_t i = 0; i < input_urls->size(); ++i) {
-    String url_string;
-    if (!input_urls->at(i)->AsString(&url_string))
+  if (source == "list") {
+    // If input["where"] exists, then return null.
+    if (input->Get("where"))
       return nullptr;
 
-    // Let parsedURL be the result of parsing urlString with baseURL.
-    // If parsedURL is failure, then continue.
-    KURL parsed_url(base_url, url_string);
-    if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHTTPFamily())
-      continue;
+    // Let urls be an empty list.
+    // If input["urls"] does not exist, is not a list, or has any element which
+    // is not a string, then return null.
+    JSONArray* input_urls = input->GetArray("urls");
+    if (!input_urls)
+      return nullptr;
 
-    urls.push_back(std::move(parsed_url));
+    // For each urlString of input["urls"]...
+    urls.ReserveInitialCapacity(input_urls->size());
+    for (wtf_size_t i = 0; i < input_urls->size(); ++i) {
+      String url_string;
+      if (!input_urls->at(i)->AsString(&url_string))
+        return nullptr;
+
+      // Let parsedURL be the result of parsing urlString with baseURL.
+      // If parsedURL is failure, then continue.
+      KURL parsed_url(base_url, url_string);
+      if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHTTPFamily())
+        continue;
+
+      urls.push_back(std::move(parsed_url));
+    }
+  }
+
+  DocumentRulePredicate* document_rule_predicate = nullptr;
+  if (source == "document") {
+    DCHECK(document_rules_enabled);
+    // If input["urls"] exists, then return null.
+    if (input->Get("urls"))
+      return nullptr;
+
+    // If input["where"] does not exist, then set predicate to a document rule
+    // conjunction whose clauses is an empty list.
+    if (!input->Get("where")) {
+      document_rule_predicate = DocumentRulePredicate::MakeDefaultPredicate();
+    }
+    // Otherwise, set predicate to the result of parsing a document rule
+    // predicate given input["where"] and baseURL.
+    else {
+      document_rule_predicate =
+          DocumentRulePredicate::Parse(input->GetJSONObject("where"), base_url);
+    }
+    if (!document_rule_predicate)
+      return nullptr;
   }
 
   // Let requirements be an empty ordered set.
@@ -136,7 +173,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input, const KURL& base_url) {
   }
 
   return MakeGarbageCollected<SpeculationRule>(
-      std::move(urls), requires_anonymous_client_ip, target_hint);
+      std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
+      target_hint);
 }
 
 }  // namespace
@@ -144,6 +182,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input, const KURL& base_url) {
 // static
 SpeculationRuleSet* SpeculationRuleSet::Parse(const String& source_text,
                                               const KURL& base_url,
+                                              ExecutionContext* context,
                                               String* out_error) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-speculation-rules
 
@@ -180,7 +219,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(const String& source_text,
 
           // Let rule be the result of parsing a speculation rule given
           // prefetch/prerenderRule and baseURL.
-          SpeculationRule* rule = ParseSpeculationRule(input_rule, base_url);
+          SpeculationRule* rule =
+              ParseSpeculationRule(input_rule, base_url, context);
 
           // If rule is null, then continue.
           if (!rule)

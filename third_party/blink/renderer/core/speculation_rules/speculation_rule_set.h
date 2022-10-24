@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class ExecutionContext;
 class KURL;
 class SpeculationRule;
 
@@ -28,6 +29,7 @@ class CORE_EXPORT SpeculationRuleSet final
   // though valid, is likely to be an error.
   static SpeculationRuleSet* Parse(const String& source_text,
                                    const KURL& base_url,
+                                   ExecutionContext* context,
                                    String* out_error = nullptr);
 
   const HeapVector<Member<SpeculationRule>>& prefetch_rules() const {

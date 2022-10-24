@@ -3,19 +3,26 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 SpeculationRule::SpeculationRule(
     Vector<KURL> urls,
+    DocumentRulePredicate* predicate,
     RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip,
     absl::optional<mojom::blink::SpeculationTargetHint> target_hint)
     : urls_(std::move(urls)),
+      predicate_(predicate),
       requires_anonymous_client_ip_(requires_anonymous_client_ip),
       target_browsing_context_name_hint_(target_hint) {}
 
 SpeculationRule::~SpeculationRule() = default;
 
-void SpeculationRule::Trace(Visitor*) const {}
+void SpeculationRule::Trace(Visitor* visitor) const {
+  visitor->Trace(predicate_);
+}
 
 }  // namespace blink

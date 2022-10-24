@@ -22,14 +22,18 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -87,10 +91,18 @@ MATCHER(RequiresAnonymousClientIPWhenCrossOrigin,
   return arg->requires_anonymous_client_ip_when_cross_origin();
 }
 
-SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
-    const char* target_hint) {
-  return SpeculationRuleSet::Parse(
-      String::Format(R"({
+class SpeculationRuleSetTest : public ::testing::Test {
+ public:
+  SpeculationRuleSetTest()
+      : execution_context_(MakeGarbageCollected<NullExecutionContext>()) {}
+  ~SpeculationRuleSetTest() override {
+    execution_context_->NotifyContextDestroyed();
+  }
+
+  SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
+      const char* target_hint) {
+    return SpeculationRuleSet::Parse(
+        String::Format(R"({
         "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/hint.html"],
@@ -107,19 +119,21 @@ SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
           "target_hint": "%s"
         }]
       })",
-                     target_hint, target_hint, target_hint),
-      KURL("https://example.com/"));
-}
+                       target_hint, target_hint, target_hint),
+        KURL("https://example.com/"), execution_context_);
+  }
 
-class SpeculationRuleSetTest : public ::testing::Test {
+  ExecutionContext* execution_context() { return execution_context_.Get(); }
+
  private:
   ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch_{true};
   ScopedPrerender2ForTest enable_prerender2_{true};
+  Persistent<ExecutionContext> execution_context_;
 };
 
 TEST_F(SpeculationRuleSetTest, Empty) {
-  auto* rule_set =
-      SpeculationRuleSet::Parse("{}", KURL("https://example.com/"));
+  auto* rule_set = SpeculationRuleSet::Parse("{}", KURL("https://example.com/"),
+                                             execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
@@ -133,7 +147,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
           "urls": ["https://example.com/index2.html"]
         }]
       })",
-      KURL("https://example.com/"));
+      KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(
       rule_set->prefetch_rules(),
@@ -150,7 +164,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrerenderRule) {
           "urls": ["https://example.com/index2.html"]
         }]
       })",
-      KURL("https://example.com/"));
+      KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(
       rule_set->prerender_rules(),
@@ -167,7 +181,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
           "urls": ["https://example.com/index2.html"]
         }]
       })",
-      KURL("https://example.com/"));
+      KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(
@@ -189,7 +203,7 @@ TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
           ]
         }]
       })",
-      KURL("https://example.com/foo/"));
+      KURL("https://example.com/foo/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs(
@@ -209,7 +223,7 @@ TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
           "urls": ["//example.net/direct.html"]
         }]
       })",
-      KURL("https://example.com/"));
+      KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(
       rule_set->prefetch_rules(),
@@ -221,8 +235,9 @@ TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
 
 TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
   String parse_error;
-  auto* rule_set = SpeculationRuleSet::Parse(
-      "[invalid]", KURL("https://example.com"), &parse_error);
+  auto* rule_set =
+      SpeculationRuleSet::Parse("[invalid]", KURL("https://example.com"),
+                                execution_context(), &parse_error);
   EXPECT_FALSE(rule_set);
   EXPECT_TRUE(parse_error.Contains("Syntax error"));
 }
@@ -230,7 +245,7 @@ TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
 TEST_F(SpeculationRuleSetTest, RejectsNonObject) {
   String parse_error;
   auto* rule_set = SpeculationRuleSet::Parse("42", KURL("https://example.com"),
-                                             &parse_error);
+                                             execution_context(), &parse_error);
   EXPECT_FALSE(rule_set);
   EXPECT_TRUE(parse_error.Contains("must be an object"));
 }
@@ -242,7 +257,7 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
         "prefetch": 42,
         "prefetch_with_subresources": false
       })",
-      KURL("https://example.com/"));
+      KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
@@ -275,7 +290,7 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
             "blob:https://bar"
            ]
          }]})",
-      KURL("https://example.com/"));
+      KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/valid.html")));
@@ -718,6 +733,307 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarning) {
   EXPECT_TRUE(base::ranges::any_of(
       chrome_client->ConsoleMessages(),
       [](const String& message) { return message.Contains("Syntax error"); }));
+}
+
+TEST_F(SpeculationRuleSetTest, RejectsWhereClause) {
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "document",
+          "where": {}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+}
+
+MATCHER_P(MatchesPredicate,
+          matcher,
+          ::testing::DescribeMatcher<DocumentRulePredicate>(matcher)) {
+  if (!arg->predicate()) {
+    *result_listener << "does not have a predicate";
+    return false;
+  }
+  return ExplainMatchResult(matcher, *(arg->predicate()), result_listener);
+}
+
+String GetTypeString(DocumentRulePredicate::Type type) {
+  switch (type) {
+    case DocumentRulePredicate::Type::kAnd:
+      return "And";
+    case DocumentRulePredicate::Type::kOr:
+      return "Or";
+    case DocumentRulePredicate::Type::kNot:
+      return "Not";
+  }
+}
+
+std::string GetMatcherDescription(
+    const ::testing::Matcher<DocumentRulePredicate>& matcher) {
+  std::stringstream ss;
+  matcher.DescribeTo(&ss);
+  return ss.str();
+}
+
+class ConditionMatcher {
+ public:
+  explicit ConditionMatcher(
+      DocumentRulePredicate::Type type,
+      Vector<::testing::Matcher<DocumentRulePredicate>> matchers)
+      : type_(type), matchers_(std::move(matchers)) {}
+
+  bool MatchAndExplain(DocumentRulePredicate* predicate,
+                       ::testing::MatchResultListener* listener) const {
+    if (!predicate)
+      return false;
+    return MatchAndExplain(*predicate, listener);
+  }
+
+  bool MatchAndExplain(const DocumentRulePredicate& predicate,
+                       ::testing::MatchResultListener* listener) const {
+    ::testing::StringMatchResultListener inner_listener;
+    const auto& predicates = predicate.GetSubPredicatesForTesting();
+    if (predicate.GetTypeForTesting() != type_ ||
+        predicates.size() != matchers_.size()) {
+      *listener << predicate.ToString();
+      return false;
+    }
+
+    bool matches = true;
+    for (wtf_size_t i = 0; i < matchers_.size(); i++) {
+      if (!matchers_[i].MatchAndExplain(*(predicates[i]), &inner_listener)) {
+        matches = false;
+        break;
+      }
+    }
+    *listener << predicate.ToString();
+    return matches;
+  }
+
+  void DescribeTo(::std::ostream* os) const {
+    *os << GetTypeString(type_) << "(";
+    for (wtf_size_t i = 0; i < matchers_.size(); i++) {
+      *os << GetMatcherDescription(matchers_[i]);
+      if (i != matchers_.size() - 1)
+        *os << ", ";
+    }
+    *os << ")";
+  }
+
+  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
+
+ private:
+  DocumentRulePredicate::Type type_;
+  Vector<::testing::Matcher<DocumentRulePredicate>> matchers_;
+};
+
+auto And(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
+  return testing::MakePolymorphicMatcher(
+      ConditionMatcher(DocumentRulePredicate::Type::kAnd, std::move(matchers)));
+}
+
+auto Or(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
+  return testing::MakePolymorphicMatcher(
+      ConditionMatcher(DocumentRulePredicate::Type::kOr, std::move(matchers)));
+}
+
+auto Neg(::testing::Matcher<DocumentRulePredicate> matcher) {
+  return testing::MakePolymorphicMatcher(
+      ConditionMatcher(DocumentRulePredicate::Type::kNot, {matcher}));
+}
+
+class DocumentRulesTest : public SpeculationRuleSetTest {
+ public:
+  ~DocumentRulesTest() override = default;
+
+  DocumentRulePredicate* CreatePredicate(
+      String where_text,
+      KURL base_url = KURL("https://example.com/")) {
+    auto* rule_set =
+        SpeculationRuleSet::Parse(String::Format(R"({
+        "prefetch": [{
+          "source": "document",
+          "where": {%s}
+        }]
+      })",
+                                                 where_text.Latin1().c_str()),
+                                  base_url, execution_context());
+    DCHECK(!rule_set->prefetch_rules().empty()) << "Invalid predicate.";
+    return rule_set->prefetch_rules()[0]->predicate();
+  }
+
+ private:
+  ScopedSpeculationRulesDocumentRulesForTest enable_document_rules_{true};
+};
+
+TEST_F(DocumentRulesTest, ParseAnd) {
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "document",
+          "where": { "and": [] }
+        }, {
+          "source": "document",
+          "where": {"and": [{"and": []}, {"and": []}]}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesPredicate(And()),
+                          MatchesPredicate(And({And(), And()}))));
+}
+
+TEST_F(DocumentRulesTest, ParseOr) {
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "document",
+          "where": { "or": [] }
+        }, {
+          "source": "document",
+          "where": {"or": [{"and": []}, {"or": []}]}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(MatchesPredicate(Or()), MatchesPredicate(Or({And(), Or()}))));
+}
+
+TEST_F(DocumentRulesTest, ParseNot) {
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "document",
+          "where": {"not": {"and": []}}
+        }, {
+          "source": "document",
+          "where": {"not": {"or": [{"and": []}, {"or": []}]}}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesPredicate(Neg(And())),
+                          MatchesPredicate(Neg(Or({And(), Or()})))));
+}
+
+TEST_F(DocumentRulesTest, DropInvalidRules) {
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({"prefetch": [)"
+
+      // A rule that doesn't elaborate on its source.
+      R"({"where": {"and": []}},)"
+
+      // A rule with an unrecognized source.
+      R"({"source": "magic-8-ball", "where": {"and": []}},)"
+
+      // A list rule with a "where" key.
+      R"({"source": "list", "where": {"and": []}},)"
+
+      // A document rule with a "urls" key.
+      R"({"source": "document", "urls": ["foo.html"]},)"
+
+      // "where" clause is not a map.
+      R"({"source": "document", "where": [{"and": []}]},)"
+
+      // "where" clause does not contain one of "and", "or", "not",
+      // "href_matches" and "selector_matches"
+      R"({"source": "document", "where": {"foo": "bar"}},)"
+
+      // "where" clause has both "and" and "or" as keys
+      R"({"source": "document", "where": {"and": [], "or": []}},)"
+
+      // "and" key has object value.
+      R"({"source": "document", "where": {"and": {}}},)"
+
+      // "or" key has object value.
+      R"({"source": "document", "where": {"or": {}}},)"
+
+      // "and" key has invalid list value.
+      R"({"source": "document", "where": {"and": ["foo"]}},)"
+
+      // "not" key has list value.
+      R"({"source": "document", "where": {"not": [{"and": []}]}},)"
+
+      // "not" key has empty object value.
+      R"({"source": "document", "where": {"not": {}}},)"
+
+      // "not" key has invalid object value.
+      R"({"source": "document", "where": {"not": {"foo": "bar"}}},)"
+
+      // valid document rule.
+      R"({"source": "document",
+          "where": {"and": [{"or": []}, {"not": {"and": []}}]}
+         }]})",
+      KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesPredicate(And({Or(), Neg(And())}))));
+}
+
+TEST_F(DocumentRulesTest, DefaultPredicate) {
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "document"
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre(MatchesPredicate(And())));
+}
+
+TEST_F(DocumentRulesTest, EvaluateCombinators) {
+  DummyPageHolder page_holder;
+  Document& document = page_holder.GetDocument();
+  Element* link = MakeGarbageCollected<HTMLAnchorElement>(document);
+
+  auto* empty_and = CreatePredicate(R"("and": [])");
+  EXPECT_THAT(empty_and, And());
+  EXPECT_TRUE(empty_and->Matches(*link));
+
+  auto* empty_or = CreatePredicate(R"("or": [])");
+  EXPECT_THAT(empty_or, Or());
+  EXPECT_FALSE(empty_or->Matches(*link));
+
+  auto* and_false_false_false =
+      CreatePredicate(R"("and": [{"or": []}, {"or": []}, {"or": []}])");
+  EXPECT_THAT(and_false_false_false, And({Or(), Or(), Or()}));
+  EXPECT_FALSE(and_false_false_false->Matches(*link));
+
+  auto* and_false_true_false =
+      CreatePredicate(R"("and": [{"or": []}, {"and": []}, {"or": []}])");
+  EXPECT_THAT(and_false_true_false, And({Or(), And(), Or()}));
+  EXPECT_FALSE(and_false_true_false->Matches(*link));
+
+  auto* and_true_true_true =
+      CreatePredicate(R"("and": [{"and": []}, {"and": []}, {"and": []}])");
+  EXPECT_THAT(and_true_true_true, And({And(), And(), And()}));
+  EXPECT_TRUE(and_true_true_true->Matches(*link));
+
+  auto* or_false_false_false =
+      CreatePredicate(R"("or": [{"or": []}, {"or": []}, {"or": []}])");
+  EXPECT_THAT(or_false_false_false, Or({Or(), Or(), Or()}));
+  EXPECT_FALSE(or_false_false_false->Matches(*link));
+
+  auto* or_false_true_false =
+      CreatePredicate(R"("or": [{"or": []}, {"and": []}, {"or": []}])");
+  EXPECT_THAT(or_false_true_false, Or({Or(), And(), Or()}));
+  EXPECT_TRUE(or_false_true_false->Matches(*link));
+
+  auto* or_true_true_true =
+      CreatePredicate(R"("or": [{"and": []}, {"and": []}, {"and": []}])");
+  EXPECT_THAT(or_true_true_true, Or({And(), And(), And()}));
+  EXPECT_TRUE(or_true_true_true->Matches(*link));
+
+  auto* not_true = CreatePredicate(R"("not": {"and": []})");
+  EXPECT_THAT(not_true, Neg(And()));
+  EXPECT_FALSE(not_true->Matches(*link));
+
+  auto* not_false = CreatePredicate(R"("not": {"or": []})");
+  EXPECT_THAT(not_false, Neg(Or()));
+  EXPECT_TRUE(not_false->Matches(*link));
 }
 
 }  // namespace

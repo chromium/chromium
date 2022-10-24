@@ -2521,8 +2521,11 @@
     // was enabled.
     {
       name: "SpeculationRules",
-      implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2"],
+      implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2", "SpeculationRulesDocumentRules"],
       origin_trial_feature_name: "SpeculationRules__DONOTUSE",
+    },
+    {
+      name: "SpeculationRulesDocumentRules",
     },
     {
       name: "SpeculationRulesFetchFromHeader"

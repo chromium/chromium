@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_speculation_rules = [
+  "document_rule_predicate.cc",
+  "document_rule_predicate.h",
   "document_speculation_rules.cc",
   "document_speculation_rules.h",
   "speculation_rule.cc",
