@@ -84,16 +84,12 @@ class CORE_EXPORT CullRectUpdater {
 // cull rect when leaving this scope.
 // TODO(crbug.com/1215251): Avoid repaint after the scope if the scope is used
 // to paint into a separate PaintController.
-class OverriddenCullRectScope {
+class CORE_EXPORT OverriddenCullRectScope {
   STACK_ALLOCATED();
 
  public:
   OverriddenCullRectScope(PaintLayer&, const CullRect&);
   ~OverriddenCullRectScope();
-
- private:
-  PaintLayer& starting_layer_;
-  bool updated_ = false;
 };
 
 }  // namespace blink
