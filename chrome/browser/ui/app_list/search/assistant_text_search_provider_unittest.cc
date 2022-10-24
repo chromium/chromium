@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
@@ -24,13 +23,9 @@ namespace {
 using ::ash::assistant::AssistantAllowedState;
 
 // Parameterized by feature ProductivityLauncher.
-class AssistantTextSearchProviderTest
-    : public AppListTestBase,
-      public ::testing::WithParamInterface<bool> {
+class AssistantTextSearchProviderTest : public AppListTestBase {
  public:
   AssistantTextSearchProviderTest() {
-    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
-                                       GetParam());
     auto search_provider = std::make_unique<AssistantTextSearchProvider>();
     search_provider_ = search_provider.get();
     search_controller_.AddProvider(0, std::move(search_provider));
@@ -81,34 +76,9 @@ class AssistantTextSearchProviderTest
   AssistantTextSearchProvider* search_provider_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         AssistantTextSearchProviderTest,
-                         testing::Bool());
-
 // Tests -----------------------------------------------------------------------
 
-// TODO(crbug.com/1258415): Remove this test when the productivity launcher is
-// enabled.
-TEST_P(AssistantTextSearchProviderTest, ShouldNotProvideResultForEmptyQuery) {
-  EXPECT_TRUE(LastResults().empty());
-
-  SendText("testing");
-  // Should now have a search result with title "testing".
-  EXPECT_EQ(LastResults().size(), 1u);
-  VerifyResultAt(0, "testing");
-
-  // If the productivity launcher is enabled, search_provider_.Start() is
-  // guaranteed to be called with a non-empty query. So this test only applies
-  // to the classic launcher.
-  bool productivity_launcher_enabled = GetParam();
-  if (!productivity_launcher_enabled) {
-    SendText("");
-    // Should have no search results.
-    EXPECT_TRUE(LastResults().empty());
-  }
-}
-
-TEST_P(AssistantTextSearchProviderTest,
+TEST_F(AssistantTextSearchProviderTest,
        ShouldUpdateResultsWhenAssistantSettingsChange) {
   SendText("testing");
   EXPECT_EQ(LastResults().size(), 1u);
@@ -120,7 +90,7 @@ TEST_P(AssistantTextSearchProviderTest,
   EXPECT_EQ(LastResults().size(), 1u);
 }
 
-TEST_P(AssistantTextSearchProviderTest,
+TEST_F(AssistantTextSearchProviderTest,
        ShouldUpdateResultsWhenAssistantAllowedStateChanges) {
   SendText("testing");
 
@@ -138,7 +108,7 @@ TEST_P(AssistantTextSearchProviderTest,
     EXPECT_EQ(1u, LastResults().size());
   }
 }
-TEST_P(AssistantTextSearchProviderTest, ShouldDeepLinkAssistantQuery) {
+TEST_F(AssistantTextSearchProviderTest, ShouldDeepLinkAssistantQuery) {
   SendText("testing query");
 
   GURL url;
