@@ -108,9 +108,9 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   // the yielding to looper delay will depend.
   bool browser_enable_periodic_yielding_native_ = false;
   ScrollState scroll_state_;
-  const base::TimeDelta yield_to_native_for_normal_input_after_ms_;
-  const base::TimeDelta yield_to_native_for_fling_input_after_ms_;
-  const base::TimeDelta yield_to_native_for_default_after_ms_;
+  base::TimeDelta yield_to_native_for_normal_input_after_ms_;
+  base::TimeDelta yield_to_native_for_fling_input_after_ms_;
+  base::TimeDelta yield_to_native_for_default_after_ms_;
 };
 
 }  // namespace content

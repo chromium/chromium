@@ -111,12 +111,11 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // The file descriptor used to signal that delayed work is available.
   int delayed_fd_;
 
-  // SequenceManager can ask the pump to yield to the Android looper if Android
-  // looper is expected to execute high-priority work (e.g. process input).
-  // As we can't ensure that the looper won't immediately call us back, we
-  // introduce a small yielding delay before continuing to run Chrome tasks to
-  // force Android looper to run non-Chrome tasks first.
-  const base::TimeDelta yield_duration_;
+  // Delay before invoking DoWork() again when yielding to native. This is
+  // initialized from the "non_delayed_looper_defer_for_ns" param of the
+  // "BrowserPeriodicYieldingToNative" feature on the first call to
+  // ScheduleWorkWithDelay().
+  absl::optional<base::TimeDelta> yield_duration_;
 
   // The Android Looper for this thread.
   raw_ptr<ALooper> looper_ = nullptr;
