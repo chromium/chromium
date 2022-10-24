@@ -132,8 +132,8 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
     HTMLCanvasElement* canvas,
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(canvas, attrs, CanvasRenderingAPI::k2D),
-      BaseRenderingContext2D(canvas->GetTopExecutionContext()->GetTaskRunner(
-          TaskType::kInternalDefault)),
+      BaseRenderingContext2D(
+          canvas->GetDocument().GetTaskRunner(TaskType::kInternalDefault)),
       should_prune_local_font_cache_(false),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
   identifiability_study_helper_.SetExecutionContext(
