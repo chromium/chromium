@@ -7277,7 +7277,6 @@ crbug.com/1371949 [ Mac12 ] virtual/low-priority-script-loading/http/tests/devto
 crbug.com/1371949 [ Mac11 ] virtual/low-priority-script-loading/http/tests/devtools/network/resource-priority.js [ Failure Pass ]
 crbug.com/1370857 [ Debug Linux ] fast/block/float/float-avoidance.html [ Crash Failure ]
 crbug.com/1360944 [ Win ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/event-level-trigger-filter-data.sub.https.html?include=not_filters [ Skip ]
-crbug.com/1377104 [ Debug Linux ] external/wpt/longtask-timing/longtask-in-externalscript.html [ Failure ]
 crbug.com/1371157 [ Debug Linux ] external/wpt/accessibility/crashtests/delayed-ignored-change.html [ Timeout ]
 crbug.com/1371125 [ Mac10.14 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/1377004 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
