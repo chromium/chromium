@@ -1493,8 +1493,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
 
-  // TODO(crbug.com/1277431): Disable it by default in M109.
-  registry->RegisterBooleanPref(policy::policy_prefs::kEventPathEnabled, true);
+  registry->RegisterBooleanPref(policy::policy_prefs::kEventPathEnabled, false);
 
   registry->RegisterBooleanPref(
       prefs::kStrictMimetypeCheckForWorkerScriptsEnabled, true);
@@ -2596,13 +2595,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             prefs->GetBoolean(policy::policy_prefs::kEventPathEnabled)
                 ? blink::switches::kEventPathPolicy_ForceEnable
                 : blink::switches::kEventPathPolicy_ForceDisable);
-      } else if (chrome::GetChannel() < version_info::Channel::BETA) {
-        // When its Enterprise Policy is unspecified, disable Event.path by
-        // default on Canary and Dev to help the deprecation and removal.
-        // See crbug.com/1277431 for more details.
-        command_line->AppendSwitchASCII(
-            blink::switches::kEventPathPolicy,
-            blink::switches::kEventPathPolicy_ForceDisable);
       }
 
       // The IntensiveWakeUpThrottling feature is typically managed via a

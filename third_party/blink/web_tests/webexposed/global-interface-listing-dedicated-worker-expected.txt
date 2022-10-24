@@ -437,7 +437,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter currentTarget
 [Worker]     getter defaultPrevented
 [Worker]     getter eventPhase
-[Worker]     getter path
 [Worker]     getter returnValue
 [Worker]     getter srcElement
 [Worker]     getter target

@@ -331,10 +331,11 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     // renderer processes. See also: switches::kInProcessGPU above.
     features.EnableIfNotSet(::features::kNetworkServiceInProcess);
 
-    // Disable Event.path on Canary and Dev to help the deprecation and removal.
+    // Enable Event.path on Beta and Stable. The feature has been deprecated and
+    // removed on other platforms, but needs more time on WebView.
     // See crbug.com/1277431 for more details.
-    if (version_info::android::GetChannel() < version_info::Channel::BETA)
-      features.DisableIfNotSet(blink::features::kEventPath);
+    if (version_info::android::GetChannel() >= version_info::Channel::BETA)
+      features.EnableIfNotSet(blink::features::kEventPath);
 
     // FedCM is not yet supported on WebView.
     features.DisableIfNotSet(::features::kFedCm);

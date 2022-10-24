@@ -414,7 +414,6 @@ interface Event
     getter currentTarget
     getter defaultPrevented
     getter eventPhase
-    getter path
     getter returnValue
     getter srcElement
     getter target

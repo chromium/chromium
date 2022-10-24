@@ -55,10 +55,8 @@ class EventPathPolicyTest
 IN_PROC_BROWSER_TEST_P(EventPathPolicyTest, Test) {
   bool expected_enabled;
   if (GetParam() == EventPathPolicyValue::kUnset) {
-    // Otherwise, Event.path API is disabled by default on Canary, Dev and
-    // develover builds, and enabled by default on Stable and Beta.
-    // TODO(crbug.com/1277431): Disable it by default in M109.
-    expected_enabled = chrome::GetChannel() >= version_info::Channel::BETA;
+    // Otherwise, Event.path API is disabled by default.
+    expected_enabled = false;
   } else {
     // If the EventPathEnabled policy is set, the Event.path API status should
     // follow the policy value.

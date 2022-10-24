@@ -19749,7 +19749,7 @@
         "policies": {},
         "prefs": {
           "policy.event_path_enabled": {
-            "default_value": true
+            "default_value": false
           }
         }
       }

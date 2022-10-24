@@ -30,7 +30,6 @@ CONSOLE MESSAGE:     getter composed
 CONSOLE MESSAGE:     getter currentTarget
 CONSOLE MESSAGE:     getter defaultPrevented
 CONSOLE MESSAGE:     getter eventPhase
-CONSOLE MESSAGE:     getter path
 CONSOLE MESSAGE:     getter returnValue
 CONSOLE MESSAGE:     getter srcElement
 CONSOLE MESSAGE:     getter target
