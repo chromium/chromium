@@ -38,6 +38,15 @@ export async function catchError(promise) {
 }
 
 /**
+ * @param {!FileEntry} fileEntry
+ * @returns {!Promise<!FileWriter>}
+ */
+ export async function createWriter(fileEntry) {
+  return new Promise(
+      (resolve, reject) => fileEntry.createWriter(resolve, reject));
+}
+
+/**
  * Gets volume information for the provided file system.
  *
  * @param {string} fileSystemId Id of the provided file system.
@@ -67,6 +76,14 @@ export async function getVolumeInfo(fileSystemId) {
  */
 export async function getAllFsInfos() {
   return chrome.fileSystemProvider.getAll();
+}
+
+/**
+ * @param {!FileEntry|!DirectoryEntry} entry
+ * @returns {!Promise<!Metadata>}
+ */
+ export async function getMetadata(entry) {
+  return new Promise((resolve, reject) => entry.getMetadata(resolve, reject));
 }
 
 /**

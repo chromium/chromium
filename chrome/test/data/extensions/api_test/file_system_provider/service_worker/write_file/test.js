@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, createWriter, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -24,15 +24,6 @@ export const TESTING_NEW_FILE_NAME = 'perfume.txt';
  * @const
  */
 export const TESTING_TIRAMISU_FILE_NAME = 'tiramisu.txt';
-
-/**
- * @param {!FileEntry} fileEntry
- * @returns {!Promise<!FileWriter>}
- */
-async function createWriter(fileEntry) {
-  return new Promise(
-      (resolve, reject) => fileEntry.createWriter(resolve, reject));
-}
 
 /**
  * @param {!FileWriter} writer

@@ -2,17 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, getMetadata, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
-
-/**
- * @param {!FileEntry|!DirectoryEntry} entry
- * @returns {!Promise<!Metadata>}
- */
-async function getMetadata(entry) {
-  return new Promise((resolve, reject) => entry.getMetadata(resolve, reject));
-}
 
 async function main() {
   await navigator.serviceWorker.ready;
