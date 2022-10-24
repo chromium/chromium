@@ -17,14 +17,12 @@ namespace ash {
 
 // The size delta between the default font and the font size found in tray
 // items like labels and buttons.
-extern const int kTrayTextFontSizeIncrease;
+constexpr int kTrayTextFontSizeIncrease = 2;
 
-ASH_EXPORT extern const int kTrayItemSize;
+// Size of tray items on the primary axis.
+constexpr int kTrayItemSize = 32;
 
-extern const float kTrayItemCornerRadius;
-
-// Extra padding used beside a single icon in the tray area of the shelf.
-constexpr int kTrayImageItemPadding = 3;
+constexpr float kTrayItemCornerRadius = kTrayItemSize / 2.f;
 
 // The width of the tray menu.
 constexpr int kTrayMenuWidth = 360;
@@ -35,34 +33,34 @@ constexpr int kRevampedTrayMenuWidth = 440;
 // The tray detailed view's scroll view has padding at the top and bottom.
 constexpr auto kQsScrollViewInsideBorderInsets = gfx::Insets::VH(8, 0);
 
-extern const int kTrayPopupAutoCloseDelayInSeconds;
-extern const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
-extern const int kTrayPopupPaddingHorizontal;
-extern const int kTrayPopupButtonEndMargin;
+constexpr int kTrayPopupAutoCloseDelayInSeconds = 2;
+constexpr int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;
+constexpr int kTrayPopupPaddingHorizontal = 18;
+constexpr int kTrayPopupButtonEndMargin = 10;
 
 // The padding used on the left and right of labels. This applies to all labels
 // in the system menu.
-extern const int kTrayPopupLabelHorizontalPadding;
-
-// The horizontal padding used to properly lay out a slider in a TriView
-// container with a FillLayout (such as a volume notification bubble).
-extern const int kTrayPopupSliderHorizontalPadding;
+constexpr int kTrayPopupLabelHorizontalPadding = 4;
 
 // The minimum/default height of the rows in the system tray menu.
-extern const int kTrayPopupItemMinHeight;
+constexpr int kTrayPopupItemMinHeight = 48;
 
 // The width used for the first region of the row (which holds an image).
-extern const int kTrayPopupItemMinStartWidth;
+constexpr int kTrayPopupItemMinStartWidth = 48;
+
+// The size of the icons appearing in the material design system menu.
+constexpr int kMenuIconSize = 20;
 
 // The width used for the end region of the row (usually a more arrow).
-extern const int kTrayPopupItemMinEndWidth;
+constexpr int kTrayPopupItemMinEndWidth =
+    kMenuIconSize + 2 * kTrayPopupButtonEndMargin;
 
 // Padding used on right side of labels to keep minimum distance to the next
 // item. This applies to all labels in the system menu.
-extern const int kTrayPopupLabelRightPadding;
+constexpr int kTrayPopupLabelRightPadding = 8;
 
 // The width of ToggleButton views including any border padding.
-extern const int kTrayToggleButtonWidth;
+constexpr int kTrayToggleButtonWidth = 68;
 
 // Constants for the title row.
 constexpr int kTitleRowProgressBarHeight = 2;
@@ -78,26 +76,24 @@ constexpr int kTraySeparatorWidth = 0;
 constexpr int kTrayIconSize = 16;
 
 // The padding around network tray icon in dip.
-constexpr int kTrayNetworkIconPadding = 2;
 constexpr int kUnifiedTrayNetworkIconPadding = 4;
 
-// The size of the icons appearing in the material design system menu.
-extern const int kMenuIconSize;
 // The size of buttons in the system menu.
-ASH_EXPORT extern const int kMenuButtonSize;
+constexpr int kMenuButtonSize = 48;
 // The vertical padding for the system menu separator.
-extern const int kMenuSeparatorVerticalPadding;
+constexpr int kMenuSeparatorVerticalPadding = 4;
 // The horizontal padding for the system menu separator.
-extern const int kMenuExtraMarginFromLeftEdge;
+constexpr int kMenuExtraMarginFromLeftEdge = 4;
 // The visual padding to the left of icons in the system menu.
-extern const int kMenuEdgeEffectivePadding;
+constexpr int kMenuEdgeEffectivePadding =
+    kMenuExtraMarginFromLeftEdge + (kMenuButtonSize - kMenuIconSize) / 2;
 
 // The inset applied to clickable surfaces in the system menu that do not have
 // the ink drop filling the entire bounds.
-extern const int kTrayPopupInkDropInset;
+constexpr int kTrayPopupInkDropInset = 4;
 
 // The radius used to draw the corners of the rounded rect style ink drops.
-extern const int kTrayPopupInkDropCornerRadius;
+constexpr int kTrayPopupInkDropCornerRadius = 2;
 
 // Threshold to ignore update on the slider value.
 constexpr float kAudioSliderIgnoreUpdateThreshold = 0.01;
@@ -107,18 +103,12 @@ constexpr int kSystemMenuCollapseExpandAnimationDurationMs = 500;
 
 constexpr auto kUnifiedMenuItemPadding = gfx::Insets::TLBR(0, 16, 16, 16);
 constexpr auto kUnifiedSystemInfoViewPadding = gfx::Insets::TLBR(0, 16, 16, 16);
-constexpr auto kUnifiedManagedDeviceViewPadding =
-    gfx::Insets::TLBR(0, 16, 11, 16);
 constexpr auto kUnifiedSliderRowPadding = gfx::Insets::TLBR(0, 12, 8, 16);
 constexpr auto kUnifiedSliderBubblePadding = gfx::Insets::TLBR(12, 0, 4, 0);
 constexpr auto kUnifiedSliderPadding = gfx::Insets::VH(0, 16);
 constexpr auto kMicGainSliderViewPadding = gfx::Insets::TLBR(0, 52, 8, 0);
 constexpr auto kMicGainSliderPadding = gfx::Insets::TLBR(0, 8, 0, 48);
 constexpr int kMicGainSliderViewSpacing = 8;
-
-constexpr int kTrayRadioButtonInterSpacing = 20;
-constexpr auto kTrayRadioButtonPadding = gfx::Insets::TLBR(16, 20, 0, 0);
-constexpr auto kTraySubLabelPadding = gfx::Insets::TLBR(4, 56, 16, 16);
 
 constexpr int kMessageCenterCollapseThreshold = 175;
 constexpr int kStackedNotificationBarHeight = 32;
@@ -136,7 +126,6 @@ constexpr int kUnifiedTrayTextRightPadding = 1;
 constexpr int kUnifiedTrayTimeLeftPadding = 1;
 constexpr int kUnifiedTraySpacingBetweenIcons = 6;
 constexpr int kUnifiedTrayBatteryWidth = 12;
-constexpr int kUnifiedTrayBatteryBottomPadding = 1;
 constexpr int kUnifiedTrayContentPadding = 12;
 constexpr int kUnifiedTopShortcutSpacing = 16;
 constexpr int kUnifiedNotificationHiddenLineHeight = 20;
@@ -179,7 +168,6 @@ constexpr double kNotificationCenterDragExpandThreshold = 0.8;
 constexpr gfx::Size kUnifiedFeaturePodSize(112, 94);
 constexpr gfx::Size kUnifiedFeaturePodCollapsedSize(46, 46);
 constexpr gfx::Insets kUnifiedFeaturePodHoverPadding(2);
-constexpr int kUnifiedFeaturePodVectorIconSize = 18;
 constexpr int kUnifiedFeaturePodLabelWidth = 85;
 constexpr int kUnifiedFeaturePodSpacing = 6;
 constexpr int kUnifiedFeaturePodHoverCornerRadius = 4;

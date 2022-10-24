@@ -4,40 +4,7 @@
 
 #include "ash/system/tray/tray_constants.h"
 
-
 namespace ash {
-
-const int kTrayTextFontSizeIncrease = 2;
-
-// Size of tray items on the primary axis.
-const int kTrayItemSize = 32;
-
-const float kTrayItemCornerRadius = kTrayItemSize / 2.f;
-
-const int kTrayPopupAutoCloseDelayInSeconds = 2;
-const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;
-const int kTrayPopupPaddingHorizontal = 18;
-const int kTrayPopupButtonEndMargin = 10;
-const int kTrayPopupLabelHorizontalPadding = 4;
-const int kTrayPopupSliderHorizontalPadding = 16;
-const int kTrayPopupItemMinHeight = 48;
-const int kTrayPopupItemMinStartWidth = 48;
-const int kTrayPopupItemMinEndWidth =
-    kMenuIconSize + 2 * kTrayPopupButtonEndMargin;
-
-const int kTrayPopupLabelRightPadding = 8;
-
-const int kTrayToggleButtonWidth = 68;
-
-const int kMenuIconSize = 20;
-const int kMenuButtonSize = 48;
-const int kMenuSeparatorVerticalPadding = 4;
-const int kMenuExtraMarginFromLeftEdge = 4;
-const int kMenuEdgeEffectivePadding =
-    kMenuExtraMarginFromLeftEdge + (kMenuButtonSize - kMenuIconSize) / 2;
-
-const int kTrayPopupInkDropInset = 4;
-const int kTrayPopupInkDropCornerRadius = 2;
 
 static_assert(kTrayMenuWidth == kUnifiedFeaturePodHorizontalSidePadding * 2 +
                                     kUnifiedFeaturePodHorizontalMiddlePadding *
