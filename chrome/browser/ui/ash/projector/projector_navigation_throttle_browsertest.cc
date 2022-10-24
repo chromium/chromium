@@ -52,15 +52,12 @@ constexpr char kStartTime[] = "21 Jan 2022 10:00:00 GMT";
 // chrome://projector/app/      | Yes          | No
 // chrome-untrusted://projector | No           | No
 
-class ProjectorNavigationThrottleTest : public InProcessBrowserTest,
-                                        public BrowserListObserver {
+class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
  public:
   ProjectorNavigationThrottleTest()
       : scoped_feature_list_(features::kProjector) {}
 
-  ~ProjectorNavigationThrottleTest() override {
-    BrowserList::RemoveObserver(this);
-  }
+  ~ProjectorNavigationThrottleTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -74,23 +71,9 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest,
     task_runner_->AdvanceMockTickClock(forward_by);
     apps::CommonAppsNavigationThrottle::SetClockForTesting(
         task_runner_->GetMockTickClock());
-    BrowserList::AddObserver(this);
-  }
-
-  void WaitForBrowserRemoved() {
-    base::RunLoop run_loop;
-    on_browser_removed_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
   }
 
  protected:
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override {
-    if (on_browser_removed_callback_) {
-      std::move(on_browser_removed_callback_).Run();
-    }
-  }
-
   Profile* profile() { return browser()->profile(); }
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
@@ -127,6 +110,12 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   Browser* old_browser = browser();
 
+  // We have to listen for both the browser being removed AND the new browser
+  // being added.
+  ui_test_utils::BrowserChangeObserver removed_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserChangeObserver added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   if (navigate_from_link()) {
     // Simulate the user clicking a link.
     NavigateParams params(browser(), gurl,
@@ -138,8 +127,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
         browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
   }
-
-  WaitForBrowserRemoved();
+  removed_observer.Wait();
+  added_observer.Wait();
 
   // During the navigation, we closed the previous browser to prevent dangling
   // about:blank pages and opened a new app browser for the Projector SWA.
@@ -205,6 +194,12 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
       GURL(
           "https://www.google.com/url?q=https://"
           "screencast.apps.chrome&sa=D&source=hangouts&ust=1642759200000000")));
+
+  // We wait for both the old browser to close and the new app browser to open.
+  ui_test_utils::BrowserChangeObserver removed_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserChangeObserver added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   // The Google servers would redirect to the URL in the ?q= query parameter.
   // Simulate this behavior in this test without actually pinging the Google
   // servers to prevent flakiness.
@@ -212,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
       browser(), GURL(kChromeUIUntrustedProjectorPwaUrl),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
-  WaitForBrowserRemoved();
+  removed_observer.Wait();
+  added_observer.Wait();
 
   // During the navigation, we closed the previous browser to prevent dangling
   // blank redirect pages and opened a new app browser for the Projector SWA.
