@@ -1,0 +1,122 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API and definitions exposed by the Telemetry Services. This API is normally
+// consumed by the Managed Device Health Services System Extension API implementation.
+// This API is only available to the Managed Device Health Services ChromeOS System
+// extensions type and not in usual renderers.
+
+// Note: this is a subset of the telemetry probe service crosapi interface which is
+// located in chromeos/crosapi/mojom/probe_service.mojom.
+// This interface serves as a bridge between the Blink rendering process and the browser
+// process that retrieves the system information from ash-chrome.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/chromeos/system_extensions/managed_device_health_services/telemetry/nullable_primitives.mojom";
+
+// Interface for getting device telemetry information. Implemented in
+// the browser process.
+interface CrosTelemetry {
+  // Returns telemetry information for the desired categories.
+  //
+  // The request:
+  // * |categories| - list of each of the categories that TelemetryInfo
+  //                  should return information for.
+  //
+  // The response:
+  // * |telemetry_info| - information for each of the requested categories. Only
+  //                      the fields corresponding to the requested categories
+  //                      will be non-null.
+  ProbeTelemetryInfo@0(array<ProbeCategoryEnum> categories)
+      => (ProbeTelemetryInfo telemetry_info);
+};
+
+// An enumeration of each category of information that the interface can report.
+//
+// Next ID: 14
+[Extensible]
+enum ProbeCategoryEnum {
+  [Default] kUnknown = 0,
+  kBattery = 1,
+  kNonRemovableBlockDevices = 2,
+  kCachedVpdData = 3,
+  kCpu = 4,
+  kTimezone = 5,
+  kMemory = 6,
+  kBacklight = 7,
+  kFan = 8,
+  kStatefulPartition = 9,
+  kBluetooth = 10,
+  kSystem = 11,
+  kNetwork = 12,
+  kTpm = 13,
+};
+
+// An enumeration of the different categories of errors that can occur when
+// probing telemetry information.
+//
+// Next ID: 5
+[Extensible]
+enum TelemetryErrorType {
+  // Default value.
+  [Default] kUnknown = 0,
+  // An error reading a system file.
+  kFileReadError = 1,
+  // An error parsing data into a consumable form.
+  kParseError = 2,
+  // An error using a system utility.
+  kSystemUtilityError = 3,
+  // The external service used to probe the information is not available.
+  kServiceUnavailable = 4,
+};
+
+// Structure that contains error information for a telemetry probe.
+//
+// Next ID: 2
+struct TelemetryError {
+  // The type of error that occurred.
+  TelemetryErrorType type@0;
+  // A debug message with more information about the error. This string is not
+  // intended to be shown to the user.
+  string msg@1;
+};
+
+// Memory information.
+//
+// Next ID: 4
+struct MemoryInfo {
+  // Total memory, in KiB.
+  UInt32Value? total_memory_kib@0;
+  // Free memory, in KiB.
+  UInt32Value? free_memory_kib@1;
+  // Available memory, in KiB.
+  UInt32Value? available_memory_kib@2;
+  // Number of page faults since the last boot.
+  UInt64Value? page_faults_since_last_boot@3;
+};
+
+// Memory probe result. Can either be populated with the MemoryInfo or an
+// error retrieving the information.
+union MemoryResult {
+  // Valid MemoryInfo.
+  MemoryInfo memory_info;
+  // The error that occurred attempting to retrieve the MemoryInfo.
+  TelemetryError error;
+};
+
+// A collection of all the device's telemetry information that the interface is
+// capable of reporting. Note that every field in TelemetryInfo is nullable, and
+// the response for a particular TelemetryInfo request will only contain
+// fields corresponding to the categories passed to the ProbeTelemetryInfo
+// request. All optional array members will be null if the interface did not
+// attempt to fetch that information, and size zero if the interface did attempt
+// to fetch that information, but was unable to.
+//
+// Next ID: 1
+struct ProbeTelemetryInfo {
+  // Information about the system's memory. Only present when kMemory was
+  // included in the categories input to ProbeTelemetryInfo.
+  MemoryResult? memory_result@0;
+};

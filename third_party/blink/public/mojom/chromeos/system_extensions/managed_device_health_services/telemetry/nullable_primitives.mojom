@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Primitive numeric types cannot be optional in Mojom.
+// We therefore wrap them in structs here which can be used for optional values.
+struct UInt32Value {
+  // The value of the uint32.
+  uint32 value@0;
+};
+
+struct UInt64Value {
+  // The value of the uint64.
+  uint64 value@0;
+};

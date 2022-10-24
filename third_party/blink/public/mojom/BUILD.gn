@@ -40,6 +40,8 @@ mojom("mojom_platform") {
     "choosers/file_chooser.mojom",
     "choosers/popup_menu.mojom",
     "chromeos/system_extensions/hid/cros_hid.mojom",
+    "chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.mojom",
+    "chromeos/system_extensions/managed_device_health_services/telemetry/nullable_primitives.mojom",
     "chromeos/system_extensions/window_management/cros_window_management.mojom",
     "clipboard/clipboard.mojom",
     "close_watcher/close_listener.mojom",
