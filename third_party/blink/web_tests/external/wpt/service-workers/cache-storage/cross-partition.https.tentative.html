@@ -228,7 +228,10 @@ promise_test(t => {
 
       // Create a service worker in the same-top-level-site iframe.
       await send(iframe_2_uuid, create_worker_js(same_site_origin));
-      var worker_2_uuid = await receive(response_queue_uuid);
+      const worker_2_uuid = await receive(response_queue_uuid);
+
+      t.add_cleanup(() =>
+        send(worker_2_uuid, "self.registration.unregister();"));
 
       const cache_name = token();
       await self.caches.open(cache_name);
@@ -240,14 +243,15 @@ promise_test(t => {
         reject("Cache not visible in same-top-level-site worker");
       }
 
-      await send(worker_2_uuid, "self.registration.unregister();");
-
       // Create a service worker in the cross-top-level-site iframe. Note that
       // if service workers are unpartitioned then this new service worker would
       // replace the one created above. This is why we wait to create the second
       // service worker until after we are done with the first one.
       await send(iframe_1_uuid, create_worker_js(same_site_origin));
-      var worker_1_uuid = await receive(response_queue_uuid);
+      const worker_1_uuid = await receive(response_queue_uuid);
+
+      t.add_cleanup(() =>
+        send(worker_1_uuid, "self.registration.unregister();"));
 
       await send(worker_1_uuid,
            cache_exists_js(cache_name, response_queue_uuid));
@@ -255,7 +259,6 @@ promise_test(t => {
         reject("Cache visible in not-same-top-level-site worker");
       }
 
-      await send(worker_1_uuid, "self.registration.unregister();");
       resolve();
     } catch (e) {
       reject(e);
