@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/vm/vm_ui.h"
+#include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_diagnostics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/vm/vm.mojom.h"
+#include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -20,9 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/webui/web_ui_util.h"
 
-// TODO(b/173653141) We need to port this to lacros eventually.
-
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -33,7 +31,7 @@ class VmUIImpl : public vm::mojom::VmDiagnosticsProvider {
       : receiver_(this, std::move(receiver)) {}
 
  private:
-  // chromeos::vm::mojom::VmDiagnosticsProvider:
+  // vm::mojom::VmDiagnosticsProvider:
   void GetPluginVmDiagnostics(
       GetPluginVmDiagnosticsCallback callback) override {
     plugin_vm::GetDiagnostics(std::move(callback));
@@ -87,4 +85,4 @@ void VmUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VmUI)
 
-}  // namespace chromeos
+}  // namespace ash
