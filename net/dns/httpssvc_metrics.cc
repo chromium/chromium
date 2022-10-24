@@ -95,9 +95,9 @@ void HttpssvcMetrics::RecordMetrics() {
   DCHECK(!already_recorded_);
   already_recorded_ = true;
 
-  // We really have no metrics to record without an experimental query resolve
-  // time and `address_resolve_times_`. If this HttpssvcMetrics is in an
-  // inconsistent state, disqualify any metrics from being recorded.
+  // We really have no metrics to record without an HTTPS query resolve time and
+  // `address_resolve_times_`. If this HttpssvcMetrics is in an inconsistent
+  // state, disqualify any metrics from being recorded.
   if (!https_resolve_time_.has_value() || address_resolve_times_.empty()) {
     disqualified_ = true;
   }
@@ -115,9 +115,9 @@ void HttpssvcMetrics::RecordMetrics() {
                                   resolve_time_other);
   }
 
-  // ResolveTimeRatio is the experimental query resolve time divided by the
-  // slower of the A or AAAA resolve times. Arbitrarily choosing precision at
-  // two decimal places.
+  // ResolveTimeRatio is the HTTPS query resolve time divided by the slower of
+  // the A or AAAA resolve times. Arbitrarily choosing precision at two decimal
+  // places.
   std::vector<base::TimeDelta>::iterator slowest_address_resolve =
       std::max_element(address_resolve_times_.begin(),
                        address_resolve_times_.end());
@@ -128,8 +128,8 @@ void HttpssvcMetrics::RecordMetrics() {
   if (slowest_address_resolve->is_zero())
     return;
 
-  // Compute a percentage showing how much larger the experimental query resolve
-  // time was compared to the slowest A or AAAA query.
+  // Compute a percentage showing how much larger the HTTPS query resolve time
+  // was compared to the slowest A or AAAA query.
   //
   // Computation happens on TimeDelta objects, which use CheckedNumeric. This
   // will crash if the system clock leaps forward several hundred millennia
@@ -137,9 +137,9 @@ void HttpssvcMetrics::RecordMetrics() {
   //
   // Then scale the value of the percent by dividing by `kPercentScale`. Sample
   // values are bounded between 1 and 20. A recorded sample of 10 means that the
-  // experimental query resolve time took 100% of the slower A/AAAA resolve
-  // time. A sample of 20 means that the experimental query resolve time was
-  // 200% relative to the A/AAAA resolve time, twice as long.
+  // HTTPS query resolve time took 100% of the slower A/AAAA resolve time. A
+  // sample of 20 means that the HTTPS query resolve time was 200% relative to
+  // the A/AAAA resolve time, twice as long.
   constexpr int64_t kMaxRatio = 20;
   constexpr int64_t kPercentScale = 10;
   const int64_t resolve_time_percent = base::ClampFloor<int64_t>(
