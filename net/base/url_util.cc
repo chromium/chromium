@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -38,8 +39,9 @@ bool IsHostCharAlphanumeric(char c) {
   return ((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'));
 }
 
-bool IsNormalizedLocalhostTLD(const std::string& host) {
-  return base::EndsWith(host, ".localhost");
+bool IsNormalizedLocalhostTLD(base::StringPiece host) {
+  return base::EndsWith(host, ".localhost",
+                        base::CompareCase::INSENSITIVE_ASCII);
 }
 
 // Helper function used by GetIdentityFromURL. If |escaped_text| can be "safely
@@ -62,8 +64,8 @@ std::u16string UnescapeIdentityString(base::StringPiece escaped_text) {
 }  // namespace
 
 GURL AppendQueryParameter(const GURL& url,
-                          const std::string& name,
-                          const std::string& value) {
+                          base::StringPiece name,
+                          base::StringPiece value) {
   std::string query(url.query());
 
   if (!query.empty())
@@ -77,7 +79,7 @@ GURL AppendQueryParameter(const GURL& url,
 }
 
 GURL AppendOrReplaceQueryParameter(const GURL& url,
-                                   const std::string& name,
+                                   base::StringPiece name,
                                    absl::optional<base::StringPiece> value) {
   bool replaced = false;
   std::string param_name = base::EscapeQueryParamValue(name, true);
@@ -175,7 +177,7 @@ void QueryIterator::Advance() {
 }
 
 bool GetValueForKeyInQuery(const GURL& url,
-                           const std::string& search_key,
+                           base::StringPiece search_key,
                            std::string* out_value) {
   for (QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
     if (it.GetKey() == search_key) {
@@ -338,7 +340,7 @@ std::string CanonicalizeHost(base::StringPiece host,
   return canon_host;
 }
 
-bool IsCanonicalizedHostCompliant(const std::string& host) {
+bool IsCanonicalizedHostCompliant(base::StringPiece host) {
   if (host.empty())
     return false;
 
@@ -363,10 +365,11 @@ bool IsCanonicalizedHostCompliant(const std::string& host) {
   return most_recent_component_started_alphanumeric;
 }
 
-bool IsHostnameNonUnique(const std::string& hostname) {
+bool IsHostnameNonUnique(base::StringPiece hostname) {
   // CanonicalizeHost requires surrounding brackets to parse an IPv6 address.
-  const std::string host_or_ip = hostname.find(':') != std::string::npos ?
-      "[" + hostname + "]" : hostname;
+  const std::string host_or_ip = hostname.find(':') != std::string::npos
+                                     ? base::StrCat({"[", hostname, "]"})
+                                     : std::string(hostname);
   url::CanonHostInfo host_info;
   std::string canonical_name = CanonicalizeHost(host_or_ip, &host_info);
 
@@ -489,13 +492,12 @@ bool IsGoogleHost(base::StringPiece host) {
 }
 
 bool IsLocalHostname(base::StringPiece host) {
-  std::string normalized_host = base::ToLowerASCII(host);
   // Remove any trailing '.'.
-  if (!normalized_host.empty() && *normalized_host.rbegin() == '.')
-    normalized_host.resize(normalized_host.size() - 1);
+  if (!host.empty() && *host.rbegin() == '.')
+    host.remove_suffix(1);
 
-  return normalized_host == "localhost" ||
-         IsNormalizedLocalhostTLD(normalized_host);
+  return base::EqualsCaseInsensitiveASCII(host, "localhost") ||
+         IsNormalizedLocalhostTLD(host);
 }
 
 }  // namespace net

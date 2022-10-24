@@ -37,8 +37,8 @@ namespace net {
 // AppendQueryParameter(GURL("http://example.com?x=y"), "name", "value").spec()
 // => "http://example.com?x=y&name=value"
 NET_EXPORT GURL AppendQueryParameter(const GURL& url,
-                                     const std::string& name,
-                                     const std::string& value);
+                                     base::StringPiece name,
+                                     base::StringPiece value);
 
 // Returns a new GURL by appending or replacing the given query parameter name
 // and the value. If `name` appears more than once, only the first name-value
@@ -59,7 +59,7 @@ NET_EXPORT GURL AppendQueryParameter(const GURL& url,
 // => "http://example.com?x=y&"
 NET_EXPORT GURL
 AppendOrReplaceQueryParameter(const GURL& url,
-                              const std::string& name,
+                              base::StringPiece name,
                               absl::optional<base::StringPiece> value);
 
 // Iterates over the key-value pairs in the query portion of |url|.
@@ -94,7 +94,7 @@ class NET_EXPORT QueryIterator {
 // key is found and sets |out_value| to the unescaped value for the key.
 // Returns false if the key is not found.
 NET_EXPORT bool GetValueForKeyInQuery(const GURL& url,
-                                      const std::string& search_key,
+                                      base::StringPiece search_key,
                                       std::string* out_value);
 
 // Splits an input of the form <host>[":"<port>] into its consitituent parts.
@@ -166,12 +166,12 @@ NET_EXPORT std::string CanonicalizeHost(base::StringPiece host,
 //
 // NOTE: You should only pass in hosts that have been returned from
 // CanonicalizeHost(), or you may not get accurate results.
-NET_EXPORT bool IsCanonicalizedHostCompliant(const std::string& host);
+NET_EXPORT bool IsCanonicalizedHostCompliant(base::StringPiece host);
 
 // Returns true if |hostname| contains a non-registerable or non-assignable
 // domain name (eg: a gTLD that has not been assigned by IANA) or an IP address
 // that falls in an range reserved for non-publicly routable networks.
-NET_EXPORT bool IsHostnameNonUnique(const std::string& hostname);
+NET_EXPORT bool IsHostnameNonUnique(base::StringPiece hostname);
 
 // Returns true if the host part of |url| is a local host name according to
 // HostStringIsLocalhost.

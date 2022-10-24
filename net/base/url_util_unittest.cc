@@ -804,5 +804,23 @@ TEST(UrlUtilTest, GoogleHost) {
   }
 }
 
+TEST(UrlUtilTest, IsLocalHostname) {
+  EXPECT_TRUE(IsLocalHostname("localhost"));
+  EXPECT_TRUE(IsLocalHostname("localhost."));
+  EXPECT_TRUE(IsLocalHostname("LOCALhost"));
+  EXPECT_TRUE(IsLocalHostname("LOCALhost."));
+  EXPECT_TRUE(IsLocalHostname("abc.localhost"));
+  EXPECT_TRUE(IsLocalHostname("abc.localhost."));
+  EXPECT_TRUE(IsLocalHostname("abc.LOCALhost"));
+  EXPECT_TRUE(IsLocalHostname("abc.LOCALhost."));
+  EXPECT_TRUE(IsLocalHostname("abc.def.localhost"));
+
+  EXPECT_FALSE(IsLocalHostname("localhost.actuallynot"));
+  EXPECT_FALSE(IsLocalHostname("notlocalhost"));
+  EXPECT_FALSE(IsLocalHostname("notlocalhost."));
+  EXPECT_FALSE(IsLocalHostname("still.notlocalhost"));
+  EXPECT_FALSE(IsLocalHostname("localhostjustkidding"));
+}
+
 }  // namespace
 }  // namespace net
