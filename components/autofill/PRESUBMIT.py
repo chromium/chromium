@@ -116,6 +116,25 @@ def _CheckWebViewExposedExperiments(input_api, output_api):
 
   return warnings
 
+def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
+  """Reminds to update internal regex patterns when legacy ones are modified."""
+
+  def is_legacy_patterns_file(f):
+    return (f.LocalPath().startswith("components/autofill/") and
+            f.LocalPath().endswith("legacy_regex_patterns.json"))
+
+  if any(
+      is_legacy_patterns_file(f)
+      for f in input_api.change.AffectedTestableFiles()):
+    return [
+        output_api.PresubmitPromptWarning(
+            "You may need to modify the parsing patterns in src-internal. " +
+            "See go/autofill-internal-parsing-patterns for more details. " +
+            "Ideally, the legacy patterns should not be modified.")
+    ]
+
+  return []
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
@@ -123,6 +142,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckNoServerFieldTypeCasts(input_api, output_api))
   results.extend(_CheckFeatureNames(input_api, output_api))
   results.extend(_CheckWebViewExposedExperiments(input_api, output_api))
+  results.extend(_CheckModificationOfLegacyRegexPatterns(input_api, output_api))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):
