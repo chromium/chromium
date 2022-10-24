@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
@@ -1545,13 +1546,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
+        if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
-        }
-        if (mForceTextureCapture) {
+        } else if (mForceTextureCapture) {
             return CaptureReadinessResult.readyForced();
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
             return getReadinessStateWithSuppression();
         } else {
             return CaptureReadinessResult.unknown(!(urlHasFocus() || mUrlFocusChangeInProgress));

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
@@ -51,8 +52,7 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
         return new ViewResourceAdapter(this) {
             @Override
             public boolean isDirty() {
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
+                if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
                     return false;
                 }
 
