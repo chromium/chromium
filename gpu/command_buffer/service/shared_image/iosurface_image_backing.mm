@@ -44,13 +44,13 @@ GLTextureIOSurfaceRepresentation::GLTextureIOSurfaceRepresentation(
     scoped_refptr<gles2::TexturePassthrough> texture_passthrough)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       client_(client),
-      texture_passthrough_(std::move(texture_passthrough)) {
+      texture_(std::move(texture_passthrough)) {
   // TODO(https://crbug.com/1172769): Remove this CHECK.
-  CHECK(texture_passthrough_);
+  CHECK(texture_);
 }
 
 GLTextureIOSurfaceRepresentation::~GLTextureIOSurfaceRepresentation() {
-  texture_passthrough_.reset();
+  texture_.reset();
   if (client_)
     client_->GLTextureImageRepresentationRelease(has_context());
 }
@@ -58,7 +58,7 @@ GLTextureIOSurfaceRepresentation::~GLTextureIOSurfaceRepresentation() {
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTextureIOSurfaceRepresentation::GetTexturePassthrough(int plane_index) {
   DCHECK_EQ(plane_index, 0);
-  return texture_passthrough_;
+  return texture_;
 }
 
 bool GLTextureIOSurfaceRepresentation::BeginAccess(GLenum mode) {
@@ -241,40 +241,6 @@ gl::GLImage* OverlayIOSurfaceRepresentation::GetGLImage() {
 ///////////////////////////////////////////////////////////////////////////////
 // IOSurfaceImageBacking
 
-// static
-std::unique_ptr<IOSurfaceImageBacking>
-IOSurfaceImageBacking::CreateFromGLTexture(
-    scoped_refptr<gl::GLImage> image,
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    GLenum texture_target,
-    scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture) {
-  DCHECK(!!wrapped_gl_texture);
-
-  // We don't expect the backing to allocate a new
-  // texture but it does need to know the texture target so we supply that
-  // one param.
-  InitializeGLTextureParams params;
-  params.target = texture_target;
-
-  auto si_format = viz::SharedImageFormat::SinglePlane(format);
-  auto shared_image = std::make_unique<IOSurfaceImageBacking>(
-      std::move(image), mailbox, si_format, size, color_space, surface_origin,
-      alpha_type, usage, params, true);
-
-  shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
-  shared_image->gl_texture_retained_for_legacy_mailbox_ = true;
-  shared_image->gl_texture_retain_count_ = 1;
-  shared_image->image_bind_or_copy_needed_ = false;
-
-  return shared_image;
-}
-
 IOSurfaceImageBacking::IOSurfaceImageBacking(
     scoped_refptr<gl::GLImage> image,
     const Mailbox& mailbox,
@@ -284,8 +250,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    const InitializeGLTextureParams& params,
-    bool is_passthrough)
+    const InitializeGLTextureParams& params)
     : SharedImageBacking(
           mailbox,
           format,
@@ -298,7 +263,6 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
           false /* is_thread_safe */),
       image_(image),
       gl_params_(params),
-      is_passthrough_(is_passthrough),
       cleared_rect_(params.is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
   DCHECK(image_);
@@ -324,25 +288,14 @@ void IOSurfaceImageBacking::RetainGLTexture() {
   // Allocate the GL texture.
   GLTextureImageBackingHelper::MakeTextureAndSetParameters(
       gl_params_.target, 0 /* service_id */,
-      gl_params_.framebuffer_attachment_angle,
-      is_passthrough_ ? &passthrough_texture_ : nullptr,
-      is_passthrough_ ? nullptr : &texture_);
+      gl_params_.framebuffer_attachment_angle, &gl_texture_, nullptr);
 
   // Set the GLImage to be initially unbound from the GL texture.
-  image_bind_or_copy_needed_ = true;
-  if (is_passthrough_) {
-    passthrough_texture_->SetEstimatedSize(
-        viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
-    passthrough_texture_->SetLevelImage(gl_params_.target, 0, image_.get());
-    passthrough_texture_->set_is_bind_pending(true);
-  } else {
-    texture_->SetLevelInfo(gl_params_.target, 0, gl_params_.internal_format,
-                           size().width(), size().height(), 1, 0,
-                           gl_params_.format, gl_params_.type, cleared_rect_);
-    texture_->SetLevelImage(gl_params_.target, 0, image_.get(),
-                            gles2::Texture::UNBOUND);
-    texture_->SetImmutable(true, false /* has_immutable_storage */);
-  }
+  bind_needed_ = true;
+  gl_texture_->SetEstimatedSize(
+      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
+  gl_texture_->SetLevelImage(gl_params_.target, 0, image_.get());
+  gl_texture_->set_is_bind_pending(true);
 }
 
 void IOSurfaceImageBacking::ReleaseGLTexture(bool have_context) {
@@ -360,26 +313,17 @@ void IOSurfaceImageBacking::ReleaseGLTexture(bool have_context) {
     }
   }
 
-  if (IsPassthrough()) {
-    if (passthrough_texture_) {
-      if (have_context) {
-        if (!passthrough_texture_->is_bind_pending()) {
-          const GLenum target = GetGLTarget();
-          gl::ScopedTextureBinder binder(target,
-                                         passthrough_texture_->service_id());
-          image_->ReleaseTexImage(target);
-        }
-      } else {
-        passthrough_texture_->MarkContextLost();
+  if (gl_texture_) {
+    if (have_context) {
+      if (!gl_texture_->is_bind_pending()) {
+        const GLenum target = GetGLTarget();
+        gl::ScopedTextureBinder binder(target, gl_texture_->service_id());
+        image_->ReleaseTexImage(target);
       }
-      passthrough_texture_.reset();
+    } else {
+      gl_texture_->MarkContextLost();
     }
-  } else {
-    if (texture_) {
-      cleared_rect_ = texture_->GetLevelClearedRect(texture_->target(), 0);
-      texture_->RemoveLightweightRef(have_context);
-      texture_ = nullptr;
-    }
+    gl_texture_.reset();
   }
 }
 
@@ -388,10 +332,8 @@ GLenum IOSurfaceImageBacking::GetGLTarget() const {
 }
 
 GLuint IOSurfaceImageBacking::GetGLServiceId() const {
-  if (texture_)
-    return texture_->service_id();
-  if (passthrough_texture_)
-    return passthrough_texture_->service_id();
+  if (gl_texture_)
+    return gl_texture_->service_id();
   return 0;
 }
 
@@ -430,16 +372,11 @@ SharedImageBackingType IOSurfaceImageBacking::GetType() const {
 }
 
 gfx::Rect IOSurfaceImageBacking::ClearedRect() const {
-  if (texture_)
-    return texture_->GetLevelClearedRect(texture_->target(), 0);
   return cleared_rect_;
 }
 
 void IOSurfaceImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  if (texture_)
-    texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
-  else
-    cleared_rect_ = cleared_rect;
+  cleared_rect_ = cleared_rect;
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -454,9 +391,9 @@ IOSurfaceImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
   // The corresponding release will be done when the returned representation is
   // destroyed, in GLTextureImageRepresentationRelease.
   RetainGLTexture();
-  DCHECK(passthrough_texture_);
+  DCHECK(gl_texture_);
   return std::make_unique<GLTextureIOSurfaceRepresentation>(
-      manager, this, this, tracker, passthrough_texture_);
+      manager, this, this, tracker, gl_texture_);
 }
 
 std::unique_ptr<OverlayImageRepresentation>
@@ -554,7 +491,7 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
         gl::GLFence::CreateFromGpuFence(*in_fence.get());
     egl_fence->ServerWait();
   }
-  image_bind_or_copy_needed_ = true;
+  bind_needed_ = true;
 }
 
 bool IOSurfaceImageBacking::GLTextureImageRepresentationBeginAccess(
@@ -577,7 +514,7 @@ bool IOSurfaceImageBacking::GLTextureImageRepresentationBeginAccess(
       fence.Wait();
     }
   }
-  return BindOrCopyImageIfNeeded();
+  return BindImageIfNeeded();
 }
 
 void IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess(
@@ -634,16 +571,14 @@ void IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess(
       (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
        !readonly);
 
-  bool needs_synchronization =
-      IsPassthrough() && (needs_sync_for_swangle || needs_sync_for_metal);
-  if (needs_synchronization &&
-      image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
+  bool needs_synchronization = needs_sync_for_swangle || needs_sync_for_metal;
+  if (needs_synchronization) {
     const GLenum target = GetGLTarget();
-    gl::ScopedTextureBinder binder(target, passthrough_texture_->service_id());
-    if (!passthrough_texture_->is_bind_pending()) {
+    gl::ScopedTextureBinder binder(target, gl_texture_->service_id());
+    if (!gl_texture_->is_bind_pending()) {
       image_->ReleaseTexImage(target);
-      image_bind_or_copy_needed_ = true;
-      passthrough_texture_->set_is_bind_pending(true);
+      bind_needed_ = true;
+      gl_texture_->set_is_bind_pending(true);
     }
   }
 }
@@ -653,10 +588,10 @@ void IOSurfaceImageBacking::GLTextureImageRepresentationRelease(
   ReleaseGLTexture(has_context);
 }
 
-bool IOSurfaceImageBacking::BindOrCopyImageIfNeeded() {
+bool IOSurfaceImageBacking::BindImageIfNeeded() {
   // This is called by code that has retained the GL texture.
-  DCHECK(texture_ || passthrough_texture_);
-  if (!image_bind_or_copy_needed_)
+  DCHECK(gl_texture_);
+  if (!bind_needed_)
     return true;
 
   const GLenum target = GetGLTarget();
@@ -665,52 +600,23 @@ bool IOSurfaceImageBacking::BindOrCopyImageIfNeeded() {
   api->glBindTextureFn(target, GetGLServiceId());
 
   // Un-bind the GLImage from the texture if it is currently bound.
-  if (image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
-    bool is_bound = false;
-    if (IsPassthrough()) {
-      is_bound = !passthrough_texture_->is_bind_pending();
-    } else {
-      gles2::Texture::ImageState old_state = gles2::Texture::UNBOUND;
-      texture_->GetLevelImage(target, 0, &old_state);
-      is_bound = old_state == gles2::Texture::BOUND;
-    }
-    if (is_bound)
-      image_->ReleaseTexImage(target);
-  }
+  bool is_bound = !gl_texture_->is_bind_pending();
+  if (is_bound)
+    image_->ReleaseTexImage(target);
 
   // Bind or copy the GLImage to the texture.
-  gles2::Texture::ImageState new_state = gles2::Texture::UNBOUND;
-  if (image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
-    if (!image_->BindTexImage(target)) {
-      LOG(ERROR) << "Failed to bind GLImage to target";
-      return false;
-    }
-    new_state = gles2::Texture::BOUND;
-  } else {
-    ScopedUnpackState scoped_unpack_state(
-        /*uploading_data=*/true);
-    if (!image_->CopyTexImage(target)) {
-      LOG(ERROR) << "Failed to copy GLImage to target";
-      return false;
-    }
-    new_state = gles2::Texture::COPIED;
+  if (!image_->BindTexImage(target)) {
+    LOG(ERROR) << "Failed to bind GLImage to target";
+    return false;
   }
-  DCHECK(new_state == gles2::Texture::BOUND ||
-         new_state == gles2::Texture::COPIED);
-  if (IsPassthrough()) {
-    passthrough_texture_->set_is_bind_pending(false);
-  } else {
-    texture_->SetLevelImage(target, 0, image_.get(), new_state);
-  }
-
-  image_bind_or_copy_needed_ = false;
+  gl_texture_->set_is_bind_pending(false);
+  bind_needed_ = false;
   return true;
 }
 
 void IOSurfaceImageBacking::InitializePixels(GLenum format,
                                              GLenum type,
                                              const uint8_t* data) {
-  DCHECK_EQ(image_->ShouldBindOrCopy(), gl::GLImage::BIND);
   if (IOSurfaceImageBackingFactory::InitializePixels(this, image_, data))
     return;
 }

@@ -204,9 +204,10 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
       for_framebuffer_attachment && texture_usage_angle_;
 
   auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
+  DCHECK(use_passthrough_);
   return std::make_unique<IOSurfaceImageBacking>(
       image, mailbox, si_format, plane_size, color_space, surface_origin,
-      alpha_type, usage, params, use_passthrough_);
+      alpha_type, usage, params);
 }
 
 scoped_refptr<gl::GLImage> IOSurfaceImageBackingFactory::MakeGLImage(
@@ -258,9 +259,8 @@ bool IOSurfaceImageBackingFactory::IsSupported(
   // TODO(https://anglebug.com/7626): Adjust the Metal-related conditions here
   // if/as they are adjusted in
   // IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess().
-  if (use_passthrough_ &&
-      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
-       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
       return false;
     }
@@ -349,9 +349,10 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
       for_framebuffer_attachment && texture_usage_angle_;
 
   DCHECK(!format_info.swizzle);
+  DCHECK(use_passthrough_);
   auto result = std::make_unique<IOSurfaceImageBacking>(
       image, mailbox, format, size, color_space, surface_origin, alpha_type,
-      usage, params, use_passthrough_);
+      usage, params);
   if (!pixel_data.empty()) {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     result->InitializePixels(format_info.adjusted_format, format_info.gl_type,

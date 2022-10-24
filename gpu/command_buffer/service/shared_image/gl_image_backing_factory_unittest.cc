@@ -105,7 +105,7 @@ class IOSurfaceImageBackingFactoryTestBase
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
 
     GpuPreferences preferences;
-    preferences.use_passthrough_cmd_decoder = use_passthrough();
+    preferences.use_passthrough_cmd_decoder = true;
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(), factory,
         &progress_reporter_);
@@ -115,8 +115,6 @@ class IOSurfaceImageBackingFactoryTestBase
         std::make_unique<SharedImageRepresentationFactory>(
             shared_image_manager_.get(), nullptr);
   }
-
-  bool use_passthrough() { return gles2::PassthroughCommandDecoderSupported(); }
 
   bool can_create_scanout_or_gmb_shared_image(
       viz::SharedImageFormat format) const {
@@ -197,25 +195,12 @@ TEST_P(IOSurfaceImageBackingFactoryTest, Basic) {
     EXPECT_TRUE(backing->IsCleared());
   }
 
-  // First, validate via a GLTextureImageRepresentation.
+  // First, validate a GLTexturePassthroughImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
   EXPECT_TRUE(shared_image);
-  if (!use_passthrough()) {
-    auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexture(mailbox);
-    EXPECT_TRUE(gl_representation);
-    EXPECT_TRUE(gl_representation->GetTexture()->service_id());
-    EXPECT_EQ(size, gl_representation->size());
-    EXPECT_EQ(format, gl_representation->format());
-    EXPECT_EQ(color_space, gl_representation->color_space());
-    EXPECT_EQ(usage, gl_representation->usage());
-    gl_representation.reset();
-  }
-
-  // Next, validate a GLTexturePassthroughImageRepresentation.
-  if (use_passthrough()) {
+  {
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
             mailbox);
@@ -262,34 +247,6 @@ TEST_P(IOSurfaceImageBackingFactoryTest, Basic) {
   skia_representation.reset();
 
   shared_image.reset();
-
-  if (!use_passthrough() &&
-      context_state_->feature_info()->feature_flags().ext_texture_rg) {
-    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
-    // Create a R-8 image texture, and check that the internal_format is that
-    // of the image (GL_RGBA for TextureImageFactory). This only matters for
-    // the validating decoder.
-    auto red_format =
-        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8);
-    backing = backing_factory_->CreateSharedImage(
-        mailbox, red_format, gpu::kNullSurfaceHandle, size, color_space,
-        surface_origin, alpha_type, usage, false /* is_thread_safe */);
-    EXPECT_TRUE(backing);
-    shared_image = shared_image_manager_->Register(std::move(backing),
-                                                   memory_type_tracker_.get());
-    auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexture(mailbox);
-    ASSERT_TRUE(gl_representation);
-    gles2::Texture* texture = gl_representation->GetTexture();
-    ASSERT_TRUE(texture);
-    GLenum type = 0;
-    GLenum internal_format = 0;
-    GLenum target = GL_TEXTURE_2D;
-    EXPECT_TRUE(texture->GetLevelType(target, 0, &type, &internal_format));
-    EXPECT_EQ(internal_format, static_cast<GLenum>(GL_RGBA));
-    gl_representation.reset();
-    shared_image.reset();
-  }
 }
 
 TEST_P(IOSurfaceImageBackingFactoryTest, InitialData) {
@@ -330,18 +287,7 @@ TEST_P(IOSurfaceImageBackingFactoryTest, InitialData) {
     EXPECT_TRUE(shared_image);
     GLenum expected_target = GL_TEXTURE_2D;
 
-    if (!use_passthrough()) {
-      auto gl_representation =
-          shared_image_representation_factory_->ProduceGLTexture(mailbox);
-      EXPECT_TRUE(gl_representation);
-      EXPECT_TRUE(gl_representation->GetTexture()->service_id());
-      EXPECT_EQ(expected_target, gl_representation->GetTexture()->target());
-      EXPECT_EQ(size, gl_representation->size());
-      EXPECT_EQ(format, gl_representation->format());
-      EXPECT_EQ(color_space, gl_representation->color_space());
-      EXPECT_EQ(usage, gl_representation->usage());
-      gl_representation.reset();
-    } else {
+    {
       auto gl_representation =
           shared_image_representation_factory_->ProduceGLTexturePassthrough(
               mailbox);
@@ -387,17 +333,7 @@ TEST_P(IOSurfaceImageBackingFactoryTest, InitialDataImage) {
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
   EXPECT_TRUE(shared_image);
-  if (!use_passthrough()) {
-    auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexture(mailbox);
-    EXPECT_TRUE(gl_representation);
-    EXPECT_TRUE(gl_representation->GetTexture()->service_id());
-    EXPECT_EQ(size, gl_representation->size());
-    EXPECT_EQ(format, gl_representation->format());
-    EXPECT_EQ(color_space, gl_representation->color_space());
-    EXPECT_EQ(usage, gl_representation->usage());
-    gl_representation.reset();
-  } else {
+  {
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
             mailbox);
@@ -509,7 +445,8 @@ TEST_P(IOSurfaceImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(GpuDriverBugWorkarounds(), GpuFeatureInfo());
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
-                           use_passthrough(), gles2::DisallowedFeatures());
+                           /*is_passthrough_cmd_decoder=*/true,
+                           gles2::DisallowedFeatures());
   const gles2::Validators* validators = feature_info->validators();
 
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
@@ -597,19 +534,12 @@ class IOSurfaceImageBackingFactoryWithGMBTest
   void SetUp() override { SetUpBase(GpuDriverBugWorkarounds(), this); }
 
   scoped_refptr<gl::GLImage> GetImageFromMailbox(Mailbox mailbox) {
-    if (!use_passthrough()) {
-      auto representation =
-          shared_image_representation_factory_->ProduceGLTexture(mailbox);
-      DCHECK(representation);
-      return representation->GetTexture()->GetLevelImage(GL_TEXTURE_2D, 0);
-    } else {
-      auto representation =
-          shared_image_representation_factory_->ProduceGLTexturePassthrough(
-              mailbox);
-      DCHECK(representation);
-      return representation->GetTexturePassthrough()->GetLevelImage(
-          GL_TEXTURE_2D, 0);
-    }
+    auto representation =
+        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+            mailbox);
+    DCHECK(representation);
+    return representation->GetTexturePassthrough()->GetLevelImage(GL_TEXTURE_2D,
+                                                                  0);
   }
 
  protected:
@@ -700,10 +630,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
                                                &end_semaphores);
     EXPECT_TRUE(stub_image->bound());
   }
-  if (use_passthrough())
-    EXPECT_FALSE(stub_image->bound());
-  else
-    EXPECT_TRUE(stub_image->bound());
+  EXPECT_FALSE(stub_image->bound());
   EXPECT_GT(stub_image->update_counter(), update_counter);
 }
 

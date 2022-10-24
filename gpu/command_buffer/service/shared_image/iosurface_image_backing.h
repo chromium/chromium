@@ -45,7 +45,7 @@ class GLTextureIOSurfaceRepresentation
   void EndAccess() override;
 
   const raw_ptr<GLTextureIOSurfaceRepresentationClient> client_ = nullptr;
-  scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+  scoped_refptr<gles2::TexturePassthrough> texture_;
   GLenum mode_ = 0;
 };
 
@@ -139,21 +139,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
     : public SharedImageBacking,
       public GLTextureIOSurfaceRepresentationClient {
  public:
-  // Used when IOSurfaceImageBacking is serving as a temporary SharedImage
-  // wrapper to an already-allocated texture. The returned backing will not
-  // create any new textures.
-  static std::unique_ptr<IOSurfaceImageBacking> CreateFromGLTexture(
-      scoped_refptr<gl::GLImage> image,
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      GLenum texture_target,
-      scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
-
   IOSurfaceImageBacking(
       scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,
@@ -163,8 +148,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      const GLTextureImageBackingHelper::InitializeGLTextureParams& params,
-      bool is_passthrough);
+      const GLTextureImageBackingHelper::InitializeGLTextureParams& params);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
   ~IOSurfaceImageBacking() override;
@@ -214,14 +198,14 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void GLTextureImageRepresentationEndAccess(bool readonly) override;
   void GLTextureImageRepresentationRelease(bool have_context) override;
 
-  bool IsPassthrough() const { return is_passthrough_; }
+  bool IsPassthrough() const { return true; }
 
   scoped_refptr<gl::GLImage> image_;
 
-  // If |image_bind_or_copy_needed_| is true, then either bind or copy |image_|
-  // to the GL texture, and un-set |image_bind_or_copy_needed_|.
-  bool BindOrCopyImageIfNeeded();
-  bool image_bind_or_copy_needed_ = true;
+  // If |bind_needed_| is true, then either bind or copy |image_|
+  // to the GL texture, and un-set |bind_needed_|.
+  bool BindImageIfNeeded();
+  bool bind_needed_ = true;
 
   // Used to determine whether to release the texture in EndAccess() in use
   // cases that need to ensure IOSurface synchronization.
@@ -236,14 +220,12 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   bool gl_texture_retained_for_legacy_mailbox_ = false;
 
   const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
-  const bool is_passthrough_;
 
   // This is the cleared rect used by ClearedRect and SetClearedRect when
   // |texture_| is nullptr.
   gfx::Rect cleared_rect_;
 
-  gles2::Texture* texture_ = nullptr;
-  scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
+  scoped_refptr<gles2::TexturePassthrough> gl_texture_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
   std::unique_ptr<gl::GLFence> last_write_gl_fence_;
