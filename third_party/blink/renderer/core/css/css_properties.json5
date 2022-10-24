@@ -5095,6 +5095,7 @@
       keywords: ["stretch", "start", "center", "end", "baseline"],
       default_value: "stretch",
       type_name: "EBoxAlignment",
+      readonly: true,
     },
     {
       name: "-webkit-box-decoration-break",
@@ -5103,6 +5104,7 @@
       field_template: "keyword",
       keywords: ["slice", "clone"],
       default_value: "slice",
+      readonly: true,
     },
     {
       name: "-webkit-box-direction",
@@ -5112,6 +5114,7 @@
       field_template: "keyword",
       keywords: ["normal", "reverse"],
       default_value: "normal",
+      readonly: true,
     },
     {
       name: "-webkit-box-flex",
@@ -5120,6 +5123,7 @@
       field_template: "primitive",
       default_value: "0.0f",
       type_name: "float",
+      readonly: true,
     },
     {
       name: "-webkit-box-ordinal-group",
@@ -5129,6 +5133,7 @@
       default_value: "1",
       type_name: "unsigned",
       computed_style_custom_functions: ["setter"],
+      readonly: true,
     },
     {
       name: "-webkit-box-orient",
@@ -5137,6 +5142,7 @@
       field_template: "keyword",
       keywords: ["horizontal", "vertical"],
       default_value: "horizontal",
+      readonly: true,
     },
     {
       name: "-webkit-box-pack",
@@ -5145,6 +5151,7 @@
       field_template: "keyword",
       keywords: ["start", "center", "end", "justify"],
       default_value: "start",
+      readonly: true,
     },
     {
       name: "-webkit-box-reflect",

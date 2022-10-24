@@ -697,12 +697,6 @@ class ComputedStyle : public ComputedStyleBase,
   // -webkit-line-clamp
   bool HasLineClamp() const { return LineClamp() > 0; }
 
-  // -webkit-box-ordinal-group
-  void SetBoxOrdinalGroup(unsigned og) {
-    SetBoxOrdinalGroupInternal(
-        std::min(std::numeric_limits<unsigned>::max() - 1, og));
-  }
-
   // opacity (aka -webkit-opacity)
   void SetOpacity(float f) {
     float v = ClampTo<float>(f, 0, 1);
@@ -3237,6 +3231,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   const ComputedStyle* InternalStyle() const { return style_.get(); }
 
   scoped_refptr<ComputedStyle> TakeStyle() { return std::move(style_); }
+
+  // -webkit-box-ordinal-group
+  void SetBoxOrdinalGroup(unsigned ordinal_group) {
+    SetBoxOrdinalGroupInternal(
+        std::min(std::numeric_limits<unsigned>::max() - 1, ordinal_group));
+  }
 
  private:
   friend class StyleResolverState;
