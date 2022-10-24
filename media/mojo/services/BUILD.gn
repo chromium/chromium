@@ -9,6 +9,9 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/test.gni")
 
+enable_playback_events_recorder =
+    enable_cast_receiver && (is_fuchsia || is_android)
+
 component("services") {
   output_name = "media_mojo_services"
   sources = [
@@ -60,8 +63,6 @@ component("services") {
     "mojo_video_encode_accelerator_provider.h",
     "mojo_video_encode_accelerator_service.cc",
     "mojo_video_encode_accelerator_service.h",
-    "playback_events_recorder.cc",
-    "playback_events_recorder.h",
     "test_mojo_media_client.cc",
     "test_mojo_media_client.h",
     "video_decode_perf_history.cc",
@@ -75,6 +76,13 @@ component("services") {
     "webrtc_video_perf_recorder.cc",
     "webrtc_video_perf_recorder.h",
   ]
+
+  if (enable_playback_events_recorder) {
+    sources += [
+      "playback_events_recorder.cc",
+      "playback_events_recorder.h",
+    ]
+  }
 
   defines = [ "IS_MEDIA_MOJO_IMPL" ]
 
@@ -215,7 +223,6 @@ source_set("unit_tests") {
     "mojo_audio_output_stream_unittest.cc",
     "mojo_demuxer_stream_adapter_unittest.cc",
     "mojo_video_encode_accelerator_service_unittest.cc",
-    "playback_events_recorder_test.cc",
     "test_helpers.cc",
     "test_helpers.h",
     "video_decode_perf_history_unittest.cc",
@@ -224,6 +231,10 @@ source_set("unit_tests") {
     "webrtc_video_perf_history_unittest.cc",
     "webrtc_video_perf_recorder_unittest.cc",
   ]
+
+  if (enable_playback_events_recorder) {
+    sources += [ "playback_events_recorder_test.cc" ]
+  }
 
   deps = [
     ":services",

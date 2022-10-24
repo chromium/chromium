@@ -25,7 +25,8 @@
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+    (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID))
 #include "media/mojo/services/playback_events_recorder.h"
 #endif
 
@@ -337,7 +338,8 @@ void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(
 
 void MediaMetricsProvider::AcquirePlaybackEventsRecorder(
     mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver) {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+    (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID))
   PlaybackEventsRecorder::Create(std::move(receiver));
 #endif
 }
