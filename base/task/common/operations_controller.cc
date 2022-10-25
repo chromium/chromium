@@ -10,7 +10,7 @@ namespace base {
 namespace internal {
 
 OperationsController::OperationsController() {
-  ordered_lock_id_ = recordreplay::CreateOrderedLock("OperationsController");
+  ordered_lock_id_ = recordreplay::AreEventsDisallowed() ? 0 : recordreplay::CreateOrderedLock("OperationsController");
 }
 
 OperationsController::~OperationsController() {

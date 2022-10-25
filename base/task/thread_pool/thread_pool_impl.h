@@ -169,6 +169,9 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   std::unique_ptr<ThreadGroup> foreground_thread_group_;
   std::unique_ptr<ThreadGroup> background_thread_group_;
 
+  // Group used for tasks posted non-deterministically when recording/replaying.
+  std::unique_ptr<ThreadGroup> record_replay_unordered_thread_group_;
+
   bool disable_job_yield_ = false;
   bool disable_fair_scheduling_ = false;
   std::atomic<bool> disable_job_update_priority_{false};

@@ -64,7 +64,12 @@ const char* TaskQueue::PriorityToString(TaskQueue::QueuePriority priority) {
 namespace internal {
 
 TaskQueueImpl::GuardedTaskPoster::GuardedTaskPoster(TaskQueueImpl* outer)
-    : outer_(outer) {}
+    : outer_(outer) {
+  if (recordreplay::IsRecordingOrReplaying()) {
+    recordreplay::AutoDisallowEvents disallow;
+    record_replay_unordered_operations_controller_.emplace();
+  }
+}
 
 TaskQueueImpl::GuardedTaskPoster::~GuardedTaskPoster() {}
 
@@ -73,9 +78,15 @@ bool TaskQueueImpl::GuardedTaskPoster::PostTask(PostedTask task) {
   // has to do this) as it can lead to a deadlock and defer it instead.
   ScopedDeferTaskPosting disallow_task_posting;
 
-  auto token = operations_controller_.TryBeginOperation();
-  if (!token)
-    return false;
+  if (recordreplay::AreEventsDisallowed()) {
+    auto token = record_replay_unordered_operations_controller_.value().TryBeginOperation();
+    if (!token)
+      return false;
+  } else {
+    auto token = operations_controller_.TryBeginOperation();
+    if (!token)
+      return false;
+  }
 
   outer_->PostTask(std::move(task));
   return true;
@@ -95,7 +106,8 @@ bool TaskQueueImpl::TaskRunner::PostDelayedTask(const Location& location,
                                                 OnceClosure callback,
                                                 TimeDelta delay) {
   // https://linear.app/replay/issue/RUN-597
-  recordreplay::Assert("TaskQueueImpl::TaskRunner::PostDelayedTask %lu", recordreplay::PointerId(this));
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("TaskQueueImpl::TaskRunner::PostDelayedTask %lu", recordreplay::PointerId(this));
 
   return task_poster_->PostTask(PostedTask(this, std::move(callback), location,
                                            delay, Nestable::kNestable,
@@ -191,12 +203,14 @@ void TaskQueueImpl::UnregisterTaskQueue() {
   }
 
   TaskDeque immediate_incoming_queue;
+  TaskDeque record_replay_unordered_immediate_incoming_queue;
 
   {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     any_thread_.unregistered = true;
     any_thread_.time_domain = nullptr;
     immediate_incoming_queue.swap(any_thread_.immediate_incoming_queue);
+    record_replay_unordered_immediate_incoming_queue.swap(any_thread_.record_replay_unordered_immediate_incoming_queue);
     any_thread_.task_queue_observer = nullptr;
   }
 
@@ -286,9 +300,17 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
 
   bool should_schedule_work = false;
   {
+    bool events_disallowed = recordreplay::AreEventsDisallowed();
+    if (events_disallowed)
+      recordreplay::BeginPassThroughEvents();
+
     // TODO(alexclarke): Maybe add a main thread only immediate_incoming_queue
     // See https://crbug.com/901800
     base::internal::CheckedAutoLock lock(any_thread_lock_);
+
+    if (events_disallowed)
+      recordreplay::EndPassThroughEvents();
+
     LazyNow lazy_now = any_thread_.time_domain->CreateLazyNow();
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
     if (add_queue_time_to_tasks || delayed_fence_allowed_) {
@@ -302,24 +324,25 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
 
     bool was_immediate_incoming_queue_empty =
-        any_thread_.immediate_incoming_queue.empty();
+        !events_disallowed && any_thread_.immediate_incoming_queue.empty();
     // Delayed run time is null for an immediate task.
     base::TimeTicks delayed_run_time;
-    any_thread_.immediate_incoming_queue.push_back(Task(
+
+    auto& queue = events_disallowed
+      ? any_thread_.record_replay_unordered_immediate_incoming_queue
+      : any_thread_.immediate_incoming_queue;
+    queue.push_back(Task(
         std::move(task), delayed_run_time, sequence_number, sequence_number));
 
 #if DCHECK_IS_ON()
-    any_thread_.immediate_incoming_queue.back().cross_thread_ =
+    queue.back().cross_thread_ =
         (current_thread == TaskQueueImpl::CurrentThread::kNotMainThread);
 #endif
 
-    sequence_manager_->WillQueueTask(
-        &any_thread_.immediate_incoming_queue.back(), name_);
-    MaybeReportIpcTaskQueuedFromAnyThreadLocked(
-        &any_thread_.immediate_incoming_queue.back(), name_);
+    sequence_manager_->WillQueueTask(&queue.back(), name_);
+    MaybeReportIpcTaskQueuedFromAnyThreadLocked(&queue.back(), name_);
     if (!any_thread_.on_task_posted_handler.is_null()) {
-      any_thread_.on_task_posted_handler.Run(
-          any_thread_.immediate_incoming_queue.back());
+      any_thread_.on_task_posted_handler.Run(queue.back());
     }
 
     // If this queue was completely empty, then the SequenceManager needs to be
@@ -475,10 +498,11 @@ void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
   }
 }
 
-void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue) {
+  void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue, TaskDeque* record_replay_unordered_queue) {
   base::internal::CheckedAutoLock lock(any_thread_lock_);
   DCHECK(queue->empty());
   queue->swap(any_thread_.immediate_incoming_queue);
+  record_replay_unordered_queue->swap(any_thread_.record_replay_unordered_immediate_incoming_queue);
 
   // Since |immediate_incoming_queue| is empty, now is a good time to consider
   // reducing it's capacity if we're wasting memory.

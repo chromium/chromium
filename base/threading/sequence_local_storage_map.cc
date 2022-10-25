@@ -19,13 +19,9 @@ LazyInstance<ThreadLocalPointer<SequenceLocalStorageMap>>::Leaky
     tls_current_sequence_local_storage = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
-SequenceLocalStorageMap::SequenceLocalStorageMap() {
-  recordreplay::RegisterPointer(this);
-}
+SequenceLocalStorageMap::SequenceLocalStorageMap() {}
 
-SequenceLocalStorageMap::~SequenceLocalStorageMap() {
-  recordreplay::UnregisterPointer(this);
-}
+SequenceLocalStorageMap::~SequenceLocalStorageMap() {}
 
 ScopedSetSequenceLocalStorageMapForCurrentThread::
     ScopedSetSequenceLocalStorageMapForCurrentThread(

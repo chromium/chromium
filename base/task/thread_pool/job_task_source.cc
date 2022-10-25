@@ -85,7 +85,7 @@ JobTaskSource::JobTaskSource(const Location& from_here,
                              MaxConcurrencyCallback max_concurrency_callback,
                              PooledTaskRunnerDelegate* delegate)
     : TaskSource(traits, nullptr, TaskSourceExecutionMode::kJob),
-      worker_lock_("JobTaskSource.worker_lock_"),
+      worker_lock_(recordreplay::AreEventsDisallowed() ? nullptr : "JobTaskSource.worker_lock_"),
       from_here_(from_here),
       max_concurrency_callback_(std::move(max_concurrency_callback)),
       worker_task_(std::move(worker_task)),

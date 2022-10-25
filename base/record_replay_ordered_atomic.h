@@ -19,11 +19,11 @@ template <typename T>
 class OrderedAtomic {
  public:
   OrderedAtomic() {
-    ordered_lock_id_ = CreateOrderedLock("atomic");
+    ordered_lock_id_ = AreEventsDisallowed() ? 0 : CreateOrderedLock("atomic");
   }
 
   OrderedAtomic(T initial) : value_(initial) {
-    ordered_lock_id_ = CreateOrderedLock("atomic");
+    ordered_lock_id_ = AreEventsDisallowed() ? 0 : CreateOrderedLock("atomic");
   }
 
   T load(std::memory_order memory_order = std::memory_order_seq_cst) const {

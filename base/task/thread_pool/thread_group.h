@@ -123,6 +123,10 @@ class BASE_EXPORT ThreadGroup {
   // called after an update to CanRunPolicy in TaskTracker.
   virtual void DidUpdateCanRunPolicy() = 0;
 
+  bool RecordReplayUnordered() const {
+    return record_replay_unordered_;
+  }
+
  protected:
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
@@ -260,6 +264,9 @@ class BASE_EXPORT ThreadGroup {
   // all task sources should be scheduled on |replacement_thread_group_|. Used
   // to support the UseNativeThreadPool experiment.
   ThreadGroup* replacement_thread_group_ = nullptr;
+
+  // Whether operations on this thread group may be unordered when recording/replaying.
+  bool record_replay_unordered_ = false;
 };
 
 }  // namespace internal

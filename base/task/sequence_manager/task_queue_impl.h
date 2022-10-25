@@ -258,10 +258,14 @@ class BASE_EXPORT TaskQueueImpl {
 
     void StartAcceptingOperations() {
       operations_controller_.StartAcceptingOperations();
+      if (record_replay_unordered_operations_controller_.has_value())
+        record_replay_unordered_operations_controller_.value().StartAcceptingOperations();
     }
 
     void ShutdownAndWaitForZeroOperations() {
       operations_controller_.ShutdownAndWaitForZeroOperations();
+      if (record_replay_unordered_operations_controller_.has_value())
+        record_replay_unordered_operations_controller_.value().ShutdownAndWaitForZeroOperations();
     }
 
    private:
@@ -270,6 +274,8 @@ class BASE_EXPORT TaskQueueImpl {
     ~GuardedTaskPoster();
 
     base::internal::OperationsController operations_controller_;
+    base::Optional<base::internal::OperationsController> record_replay_unordered_operations_controller_;
+
     // Pointer might be stale, access guarded by |operations_controller_|
     TaskQueueImpl* const outer_;
   };
@@ -428,7 +434,7 @@ class BASE_EXPORT TaskQueueImpl {
   // Extracts all the tasks from the immediate incoming queue and swaps it with
   // |queue| which must be empty.
   // Can be called from any thread.
-  void TakeImmediateIncomingQueueTasks(TaskDeque* queue);
+  void TakeImmediateIncomingQueueTasks(TaskDeque* queue, TaskDeque* record_replay_unordered_queue);
 
   void TraceQueueSize() const;
   static Value QueueAsValue(const TaskDeque& queue, TimeTicks now);
@@ -500,6 +506,7 @@ class BASE_EXPORT TaskQueueImpl {
     TaskQueue::Observer* task_queue_observer = nullptr;
 
     TaskDeque immediate_incoming_queue;
+    TaskDeque record_replay_unordered_immediate_incoming_queue;
 
     // True if main_thread_only().immediate_work_queue is empty.
     bool immediate_work_queue_empty = true;

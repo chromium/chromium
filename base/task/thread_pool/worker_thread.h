@@ -157,6 +157,10 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // this WorkerThread is currently in-use. Thread-safe.
   TimeTicks GetLastUsedTime() const;
 
+  bool RecordReplayUnordered() const {
+    return record_replay_unordered_;
+  }
+
  private:
   friend class RefCountedThreadSafe<WorkerThread>;
   class Thread;
@@ -236,6 +240,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Set once JoinForTesting() has been called.
   AtomicFlag join_called_for_testing_;
+
+  // Whether operations on this worker thread may be unordered when recording/replaying.
+  bool record_replay_unordered_ = false;
 };
 
 }  // namespace internal

@@ -158,10 +158,23 @@ void WorkQueue::PushNonNestableTaskToFront(Task task) {
   }
 }
 
+void WorkQueue::RecordReplayRunUnorderedTasks(TaskQueueImpl::TaskDeque* queue) {
+  recordreplay::AutoDisallowEvents disallow;
+  while (!queue->empty()) {
+    Task pending_task = std::move(queue->front());
+    queue->pop_front();
+    std::move(pending_task.task).Run();
+  }
+}
+
 void WorkQueue::TakeImmediateIncomingQueueTasks() {
   DCHECK(tasks_.empty());
 
-  task_queue_->TakeImmediateIncomingQueueTasks(&tasks_);
+  TaskQueueImpl::TaskDeque record_replay_unordered_queue;
+
+  task_queue_->TakeImmediateIncomingQueueTasks(&tasks_, &record_replay_unordered_queue);
+  RecordReplayRunUnorderedTasks(&record_replay_unordered_queue);
+
   if (tasks_.empty())
     return;
 
@@ -182,7 +195,9 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
     if (queue_type_ == QueueType::kImmediate) {
       // Short-circuit the queue reload so that OnPopMinQueueInSet does the
       // right thing.
-      task_queue_->TakeImmediateIncomingQueueTasks(&tasks_);
+      TaskQueueImpl::TaskDeque record_replay_unordered_queue;
+      task_queue_->TakeImmediateIncomingQueueTasks(&tasks_, &record_replay_unordered_queue);
+      RecordReplayRunUnorderedTasks(&record_replay_unordered_queue);
     }
     // Since the queue is empty, now is a good time to consider reducing it's
     // capacity if we're wasting memory.
@@ -242,7 +257,9 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
       if (queue_type_ == QueueType::kImmediate) {
         // Short-circuit the queue reload so that OnPopMinQueueInSet does the
         // right thing.
-        task_queue_->TakeImmediateIncomingQueueTasks(&tasks_);
+        TaskQueueImpl::TaskDeque record_replay_unordered_queue;
+        task_queue_->TakeImmediateIncomingQueueTasks(&tasks_, &record_replay_unordered_queue);
+        RecordReplayRunUnorderedTasks(&record_replay_unordered_queue);
       }
       // Since the queue is empty, now is a good time to consider reducing it's
       // capacity if we're wasting memory.

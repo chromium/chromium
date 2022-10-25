@@ -47,8 +47,8 @@ WorkerThread::WorkerThread(ThreadPriority priority_hint,
       delegate_(std::move(delegate)),
       task_tracker_(std::move(task_tracker)),
       priority_hint_(priority_hint),
-      current_thread_priority_(GetDesiredThreadPriority()) {
-  recordreplay::RegisterPointer(this);
+      current_thread_priority_(GetDesiredThreadPriority()),
+      record_replay_unordered_(recordreplay::AreEventsDisallowed()) {
   DCHECK(delegate_);
   DCHECK(task_tracker_);
   DCHECK(CanUseBackgroundPriorityForWorkerThread() ||
@@ -120,7 +120,6 @@ bool WorkerThread::ThreadAliveForTesting() const {
 }
 
 WorkerThread::~WorkerThread() {
-  recordreplay::UnregisterPointer(this);
   CheckedAutoLock auto_lock(thread_lock_);
 
   // If |thread_handle_| wasn't joined, detach it.
@@ -180,6 +179,10 @@ void WorkerThread::UpdateThreadPriority(
 }
 
 void WorkerThread::ThreadMain() {
+  Optional<recordreplay::AutoDisallowEvents> disallow;
+  if (record_replay_unordered_)
+    disallow.emplace();
+
   if (priority_hint_ == ThreadPriority::BACKGROUND) {
     switch (delegate_->GetThreadLabel()) {
       case ThreadLabel::POOLED:

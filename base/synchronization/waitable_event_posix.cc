@@ -50,7 +50,8 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : kernel_(new WaitableEventKernel(reset_policy, initial_state)) {
   // Pointer registration is needed for sorting in WaitSet.user_events_
-  recordreplay::RegisterPointer(this);
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::RegisterPointer(this);
 }
 
 WaitableEvent::~WaitableEvent() {
@@ -98,7 +99,10 @@ bool WaitableEvent::IsSignaled() {
 class SyncWaiter : public WaitableEvent::Waiter {
  public:
   SyncWaiter()
-      : fired_(false), signaling_event_(nullptr), lock_("SyncWaiter.lock_"), cv_(&lock_) {}
+     : fired_(false),
+       signaling_event_(nullptr),
+       lock_(recordreplay::AreEventsDisallowed() ? nullptr : "SyncWaiter.lock_"),
+       cv_(&lock_) {}
 
   ~SyncWaiter() override {}
 
@@ -168,8 +172,14 @@ void WaitableEvent::Wait() {
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   // https://linear.app/replay/issue/RUN-548
-  recordreplay::Assert("WaitableEvent::TimedWait Start %lu %ld",
-                       recordreplay::PointerId(this), wait_delta.ToInternalValue());
+  if (!kernel_->record_replay_unordered_) {
+    recordreplay::Assert("WaitableEvent::TimedWait Start %lu %ld",
+                         recordreplay::PointerId(this), wait_delta.ToInternalValue());
+  }
+
+  Optional<recordreplay::AutoDisallowEvents> disallow;
+  if (kernel_->record_replay_unordered_)
+    disallow.emplace();
 
   if (wait_delta <= TimeDelta()) {
     return IsSignaled();
@@ -257,11 +267,12 @@ static bool  // StrictWeakOrdering
 cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
              const std::pair<WaitableEvent*, unsigned> &b) {
   // When recording/replaying, sort by the pointer ID to get a consistent order.
+  // Note that pointer IDs will not be present for unordered waitable events.
   if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
     int ida = recordreplay::PointerId(a.first);
     int idb = recordreplay::PointerId(b.first);
-    CHECK(ida && idb);
-    return ida < idb;
+    if (ida && idb)
+      return ida < idb;
   }
   return a.first < b.first;
 }
@@ -270,6 +281,10 @@ cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
 size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
                                size_t count) NO_THREAD_SAFETY_ANALYSIS {
+  Optional<recordreplay::AutoDisallowEvents> disallow;
+  if (count && raw_waitables[0]->kernel_->record_replay_unordered_)
+    disallow.emplace();
+
   DCHECK(count) << "Cannot wait on no events";
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);
@@ -405,9 +420,10 @@ size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
 WaitableEvent::WaitableEventKernel::WaitableEventKernel(
     ResetPolicy reset_policy,
     InitialState initial_state)
-    : lock_("WaitableEventKernel.lock_"),
+    : lock_(recordreplay::AreEventsDisallowed() ? nullptr : "WaitableEventKernel.lock_"),
       manual_reset_(reset_policy == ResetPolicy::MANUAL),
-      signaled_(initial_state == InitialState::SIGNALED) {}
+      signaled_(initial_state == InitialState::SIGNALED),
+      record_replay_unordered_(recordreplay::AreEventsDisallowed()) {}
 
 WaitableEvent::WaitableEventKernel::~WaitableEventKernel() = default;
 

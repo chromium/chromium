@@ -258,6 +258,7 @@ class BASE_EXPORT WaitableEvent {
     const bool manual_reset_;
     bool signaled_;
     std::list<Waiter*> waiters_;
+    bool record_replay_unordered_;
 
    private:
     friend class RefCountedThreadSafe<WaitableEventKernel>;

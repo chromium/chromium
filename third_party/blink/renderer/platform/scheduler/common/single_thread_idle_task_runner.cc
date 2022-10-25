@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 
 #include "base/location.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/blame_context.h"
 #include "base/trace_event/trace_event.h"
@@ -85,7 +86,9 @@ void SingleThreadIdleTaskRunner::RunTask(IdleTask idle_task) {
   std::move(idle_task).Run(deadline);
   if (blame_context_)
     blame_context_->Leave();
-  delegate_->DidProcessIdleTask();
+
+  if (!recordreplay::AreEventsDisallowed())
+    delegate_->DidProcessIdleTask();
 }
 
 void SingleThreadIdleTaskRunner::SetBlameContext(

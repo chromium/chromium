@@ -97,6 +97,9 @@ class BASE_EXPORT WorkQueue {
   // reached it informs the WorkQueueSets if the head changed.
   void TakeImmediateIncomingQueueTasks();
 
+  // Run any unordered queue tasks when recording/replaying.
+  void RecordReplayRunUnorderedTasks(TaskQueueImpl::TaskDeque* queue);
+
   size_t Size() const { return tasks_.size(); }
 
   size_t Capacity() const { return tasks_.capacity(); }

@@ -52,6 +52,8 @@ void TaskSource::ClearHeapHandle() {
 TaskPriority TaskSource::priority_racy() const {
   // Record/replay priority value instead of ordering reads/writes.
   TaskPriority priority = priority_racy_.load(std::memory_order_relaxed);
+  if (recordreplay::AreEventsDisallowed())
+    return priority;
   return (TaskPriority)recordreplay::RecordReplayValue("TaskSource::priority_racy",
                                                        (uintptr_t)priority);
 }
@@ -61,7 +63,7 @@ TaskSource::TaskSource(const TaskTraits& traits,
                        TaskSourceExecutionMode execution_mode)
     : traits_(traits),
       priority_racy_(traits.priority()),
-      lock_("TaskSource.lock_"),
+      lock_(recordreplay::AreEventsDisallowed() ? nullptr : "TaskSource.lock_"),
       task_runner_(task_runner),
       execution_mode_(execution_mode) {
   DCHECK(task_runner_ ||

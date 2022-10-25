@@ -948,6 +948,12 @@ bool SequenceManagerImpl::GetAndClearSystemIsQuiescentBit() {
 EnqueueOrder SequenceManagerImpl::GetNextSequenceNumber() {
   EnqueueOrder rv = enqueue_order_generator_.GenerateNext();
 
+  // Use a zero enqueue order for all unordered tasks when recording/replaying.
+  if (recordreplay::AreEventsDisallowed()) {
+    memset(&rv, 0, sizeof(rv));
+    return rv;
+  }
+
   // EnqueueOrders need to be the same when replaying as when recording,
   // because they affect the order in which tasks will run. We could use
   // an ordered lock here, but it's more efficient to just record/replay

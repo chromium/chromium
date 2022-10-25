@@ -349,6 +349,9 @@ Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
 void PlatformThread::SetName(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 
+  if (recordreplay::AreEventsDisallowed())
+    return;
+
 #if !defined(OS_NACL) && !defined(OS_AIX)
   // On linux we can get the thread names to show up in the debugger by setting
   // the process name for the LWP.  We don't want to do this for the main

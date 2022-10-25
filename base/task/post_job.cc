@@ -17,12 +17,10 @@ JobDelegate::JobDelegate(
     internal::PooledTaskRunnerDelegate* pooled_task_runner_delegate)
     : task_source_(task_source),
       pooled_task_runner_delegate_(pooled_task_runner_delegate) {
-  recordreplay::RegisterPointer(this);
   DCHECK(task_source_);
 }
 
 JobDelegate::~JobDelegate() {
-  recordreplay::UnregisterPointer(this);
   if (task_id_ != kInvalidTaskId)
     task_source_->ReleaseTaskId(task_id_);
 }

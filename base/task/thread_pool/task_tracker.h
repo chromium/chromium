@@ -15,7 +15,6 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback_forward.h"
-#include "base/record_replay_ordered_atomic.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
@@ -217,7 +216,7 @@ class BASE_EXPORT TaskTracker {
   // runs. Is accessed with an acquire memory barrier in FlushForTesting(). The
   // memory barriers ensure that the memory written by flushed task sources is
   // visible when FlushForTesting() returns.
-  recordreplay::OrderedAtomic<int> num_incomplete_task_sources_{0};
+  std::atomic_int num_incomplete_task_sources_{0};
 
   // Global policy the determines result of CanRunPriority().
   std::atomic<CanRunPolicy> can_run_policy_;

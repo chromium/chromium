@@ -98,17 +98,22 @@ bool ContainsWorker(const std::vector<scoped_refptr<WorkerThread>>& workers,
 class ThreadGroupImpl::ScopedCommandsExecutor
     : public ThreadGroup::BaseScopedCommandsExecutor {
  public:
-  explicit ScopedCommandsExecutor(ThreadGroupImpl* outer) : outer_(outer) {}
+  explicit ScopedCommandsExecutor(ThreadGroupImpl* outer) : outer_(outer) {
+    if (recordreplay::AreEventsDisallowed())
+      CHECK(outer_->RecordReplayUnordered());
+  }
 
   ScopedCommandsExecutor(const ScopedCommandsExecutor&) = delete;
   ScopedCommandsExecutor& operator=(const ScopedCommandsExecutor&) = delete;
   ~ScopedCommandsExecutor() { FlushImpl(); }
 
   void ScheduleWakeUp(scoped_refptr<WorkerThread> worker) {
+    CHECK(outer_->RecordReplayUnordered() == worker->RecordReplayUnordered());
     workers_to_wake_up_.AddWorker(std::move(worker));
   }
 
   void ScheduleStart(scoped_refptr<WorkerThread> worker) {
+    CHECK(outer_->RecordReplayUnordered() == worker->RecordReplayUnordered());
     workers_to_start_.AddWorker(std::move(worker));
   }
 
@@ -231,9 +236,7 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
 
   // OnMainExit() handles the thread-affine cleanup; WorkerThreadDelegateImpl
   // can thereafter safely be deleted from any thread.
-  ~WorkerThreadDelegateImpl() override {
-    recordreplay::UnregisterPointer(this);
-  }
+  ~WorkerThreadDelegateImpl() override {}
 
   // WorkerThread::Delegate:
   WorkerThread::ThreadLabel GetThreadLabel() const override;
@@ -542,7 +545,6 @@ ThreadGroupImpl::WorkerThreadDelegateImpl::WorkerThreadDelegateImpl(
     : outer_(std::move(outer)) {
   // Bound in OnMainEntry().
   DETACH_FROM_THREAD(worker_thread_checker_);
-  recordreplay::RegisterPointer(this);
 }
 
 WorkerThread::ThreadLabel
@@ -714,6 +716,9 @@ TimeDelta ThreadGroupImpl::WorkerThreadDelegateImpl::GetSleepTimeout() {
 bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanCleanupLockRequired(
     const WorkerThread* worker) const {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+
+  if (worker->RecordReplayUnordered())
+    return false;
 
   const TimeTicks last_used_time = worker->GetLastUsedTime();
   return !last_used_time.is_null() &&
@@ -949,6 +954,10 @@ void ThreadGroupImpl::MaintainAtLeastOneIdleWorkerLockRequired(
   if (workers_.size() >= max_tasks_)
     return;
 
+  // Workers can't be created / started non-deterministically.
+  if (recordreplay::AreEventsDisallowed())
+    return;
+
   scoped_refptr<WorkerThread> new_worker =
       CreateAndRegisterWorkerLockRequired(executor);
   DCHECK(new_worker);
@@ -962,6 +971,10 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
   DCHECK_LT(workers_.size(), max_tasks_);
   DCHECK_LT(workers_.size(), kMaxNumberOfWorkers);
   DCHECK(idle_workers_stack_.IsEmpty());
+
+  Optional<recordreplay::AutoDisallowEvents> disallow;
+  if (record_replay_unordered_)
+    disallow.emplace();
 
   // WorkerThread needs |lock_| as a predecessor for its thread lock
   // because in WakeUpOneWorker, |lock_| is first acquired and then
@@ -987,6 +1000,11 @@ size_t ThreadGroupImpl::GetNumAwakeWorkersLockRequired() const {
 }
 
 size_t ThreadGroupImpl::GetDesiredNumAwakeWorkersLockRequired() const {
+  // Unordered thread groups can't create new workers on demand, so we use
+  // a fixed size thread pool for unordered tasks.
+  if (record_replay_unordered_)
+    return 4;
+
   // Number of BEST_EFFORT task sources that are running or queued and allowed
   // to run by the CanRunPolicy.
   const size_t num_running_or_queued_can_run_best_effort_task_sources =
@@ -1043,9 +1061,11 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
   // Wake up the appropriate number of workers.
   for (size_t i = 0; i < num_workers_to_wake_up; ++i) {
     MaintainAtLeastOneIdleWorkerLockRequired(executor);
-    WorkerThread* worker_to_wakeup = idle_workers_stack_.Pop();
-    DCHECK(worker_to_wakeup);
-    executor->ScheduleWakeUp(worker_to_wakeup);
+    if (!idle_workers_stack_.IsEmpty()) {
+      WorkerThread* worker_to_wakeup = idle_workers_stack_.Pop();
+      DCHECK(worker_to_wakeup);
+      executor->ScheduleWakeUp(worker_to_wakeup);
+    }
   }
 
   // In the case where the loop above didn't wake up any worker and we don't
