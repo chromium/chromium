@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "cc/paint/paint_canvas.h"
@@ -268,7 +269,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   cc::PaintImage::Id renderer_stable_id_;
 
   // Used for DCHECKs to ensure method calls executed in the correct thread.
-  base::ThreadChecker thread_checker_;
+  base::SequenceChecker sequence_checker_;
 
   struct YUVTextureCache {
     YUVTextureCache();

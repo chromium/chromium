@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -964,7 +965,7 @@ void PaintCanvasVideoRenderer::Paint(
     cc::PaintFlags& flags,
     VideoTransformation video_transformation,
     viz::RasterContextProvider* raster_context_provider) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (flags.getAlpha() == 0) {
     return;
   }
@@ -1411,7 +1412,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     int level,
     bool premultiply_alpha,
     bool flip_y) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
 
@@ -1509,7 +1510,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     unsigned int format,
     unsigned int type,
     bool flip_y) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame);
   // Support uploading for NV12 and I420 video frame only.
   if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
@@ -1838,7 +1839,7 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
 }
 
 void PaintCanvasVideoRenderer::ResetCache() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cache_.reset();
   yuv_cache_.Reset();
 }
