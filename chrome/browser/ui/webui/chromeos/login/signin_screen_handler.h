@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"

@@ -790,6 +790,7 @@
     'chromeos_login': {
       'filepath': 'ash/login/|'\
                   'chrome/browser/ash/login/|'\
+                  'chrome/browser/ui/webui/ash/login/|'\
                   'chrome/browser/ui/webui/chromeos/login/|'\
                   'chrome/browser/resources/chromeos/login/|'\
                   'ui/login/',

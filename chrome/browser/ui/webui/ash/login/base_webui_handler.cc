@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "components/login/localized_values_builder.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

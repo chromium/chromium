@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace login {
 class LocalizedValuesBuilder;

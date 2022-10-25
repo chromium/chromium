@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/ssh_configured_handler.h"
 
-#include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/login/localized_values_builder.h"

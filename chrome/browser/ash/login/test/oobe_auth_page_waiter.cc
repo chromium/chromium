@@ -7,7 +7,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace ash {

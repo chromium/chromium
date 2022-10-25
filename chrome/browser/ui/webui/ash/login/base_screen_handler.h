@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_BASE_SCREEN_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_BASE_SCREEN_HANDLER_H_
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,4 +80,4 @@ class BaseScreenHandler : public BaseWebUIHandler {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_BASE_SCREEN_HANDLER_H_

@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace chromeos {
 

@@ -7,7 +7,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 
 namespace ash {
 namespace test {

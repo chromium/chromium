@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace chromeos {
 

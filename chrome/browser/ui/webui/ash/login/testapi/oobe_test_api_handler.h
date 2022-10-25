@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 
 namespace chromeos {
@@ -46,4 +46,4 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_

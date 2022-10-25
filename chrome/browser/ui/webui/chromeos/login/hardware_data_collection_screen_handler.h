@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "components/login/secure_module_util_chromeos.h"
 
 namespace base {

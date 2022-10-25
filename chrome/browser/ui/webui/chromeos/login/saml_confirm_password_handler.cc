@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"

@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
 class UpdateScreen;

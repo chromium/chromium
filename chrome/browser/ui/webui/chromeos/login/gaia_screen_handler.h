@@ -18,7 +18,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"

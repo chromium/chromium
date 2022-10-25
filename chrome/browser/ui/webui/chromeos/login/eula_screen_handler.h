@@ -12,7 +12,7 @@
 #include "base/values.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "components/login/secure_module_util_chromeos.h"
 
 namespace ash {

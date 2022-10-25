@@ -8,8 +8,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 
 namespace chromeos {
 
