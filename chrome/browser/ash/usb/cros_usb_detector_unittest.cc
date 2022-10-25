@@ -288,7 +288,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   void NotifyMountEvent(const std::string& name,
                         disks::DiskMountManager::MountEvent event,
-                        MountError mount_error = MountError::kNone) {
+                        MountError mount_error = MountError::kSuccess) {
     // In theory we should also clear the mounted flag from the disk, but we
     // don't rely on that.
     disks::DiskMountManager::MountPoint info{"/dev/" + name, "/mount/" + name,
@@ -1094,7 +1094,7 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemSuccess) {
   AddDisk("disk1", 3, 4, true);
   AddDisk("disk2", 3, 4, /*mounted=*/false);
   NotifyMountEvent("disk2", disks::DiskMountManager::MOUNTING,
-                   MountError::kInternal);
+                   MountError::kInternalError);
   AddDisk("disk3", 3, 5, true);
   AddDisk("disk4", 3, 4, true);
   AddDisk("disk5", 2, 4, true);
@@ -1111,7 +1111,7 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemSuccess) {
 
   // Unmount events would normally be fired by the DiskMountManager.
   NotifyMountEvent("disk1", disks::DiskMountManager::UNMOUNTING);
-  std::move(callback1).Run(MountError::kNone);
+  std::move(callback1).Run(MountError::kSuccess);
   base::RunLoop().RunUntilIdle();
 
   device_info = GetSingleDeviceInfo();
@@ -1120,7 +1120,7 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemSuccess) {
 
   // All unmounts must complete before sharing succeeds.
   NotifyMountEvent("disk4", disks::DiskMountManager::UNMOUNTING);
-  std::move(callback4).Run(MountError::kNone);
+  std::move(callback4).Run(MountError::kSuccess);
   base::RunLoop().RunUntilIdle();
 
   device_info = GetSingleDeviceInfo();
@@ -1155,10 +1155,10 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemFailure) {
   AttachDeviceToGuest(guest_os::GuestId("VM1", ""), GetSingleDeviceInfo().guid,
                       /*vm_success=*/false);
   NotifyMountEvent("disk1", disks::DiskMountManager::UNMOUNTING);
-  std::move(callback1).Run(MountError::kNone);
-  std::move(callback2).Run(MountError::kUnknown);
+  std::move(callback1).Run(MountError::kSuccess);
+  std::move(callback2).Run(MountError::kUnknownError);
   NotifyMountEvent("disk3", disks::DiskMountManager::UNMOUNTING);
-  std::move(callback3).Run(MountError::kNone);
+  std::move(callback3).Run(MountError::kSuccess);
   base::RunLoop().RunUntilIdle();
 
   // AttachDeviceToGuest() verifies CrosUsbDetector correctly calls the
@@ -1204,7 +1204,7 @@ TEST_F(CrosUsbDetectorTest, ReassignPromptForStorageDevice) {
   // A disk which fails to mount shouldn't cause the prompt to be shown.
   AddDisk("disk_error", 1, 5, /*mounted=*/false);
   NotifyMountEvent("disk_error", disks::DiskMountManager::MOUNTING,
-                   MountError::kInternal);
+                   MountError::kInternalError);
   EXPECT_FALSE(GetSingleDeviceInfo().prompt_before_sharing);
 
   AddDisk("disk_success", 1, 5, true);

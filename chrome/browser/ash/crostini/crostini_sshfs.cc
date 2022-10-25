@@ -169,14 +169,14 @@ void CrostiniSshfs::OnMountEvent(
     const ash::disks::DiskMountManager::MountPoint& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (error_code != ash::MountError::kNone) {
+  if (error_code != ash::MountError::kSuccess) {
     LOG(ERROR) << "Error mounting crostini container: error_code=" << error_code
                << ", source_path=" << mount_info.source_path
                << ", mount_path=" << mount_info.mount_path
                << ", mount_type=" << mount_info.mount_type
                << ", mount_error=" << mount_info.mount_error;
     switch (error_code) {
-      case ash::MountError::kInternal:
+      case ash::MountError::kInternalError:
         Finish(CrostiniSshfsResult::kMountErrorInternal);
         return;
       case ash::MountError::kMountProgramFailed:

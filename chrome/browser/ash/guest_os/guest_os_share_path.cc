@@ -586,7 +586,7 @@ void GuestOsSharePath::OnVmStopped(
 
 void GuestOsSharePath::OnVolumeMounted(ash::MountError error_code,
                                        const file_manager::Volume& volume) {
-  if (error_code != ash::MountError::kNone) {
+  if (error_code != ash::MountError::kSuccess) {
     return;
   }
 
@@ -616,7 +616,7 @@ void GuestOsSharePath::OnVolumeMounted(ash::MountError error_code,
 void GuestOsSharePath::OnVolumeUnmounted(ash::MountError error_code,
                                          const file_manager::Volume& volume) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (error_code != ash::MountError::kNone) {
+  if (error_code != ash::MountError::kSuccess) {
     return;
   }
   for (auto it = shared_paths_.begin(); it != shared_paths_.end();) {

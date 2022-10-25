@@ -126,7 +126,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
       ash::MountAccessMode access_mode,
       ash::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
-    auto code = ash::MountError::kNone;
+    auto code = ash::MountError::kSuccess;
     DiskMountManager::MountPoint info{
         "sshfs://username@hostname:", "/media/fuse/" + kMountName,
         ash::MountType::kNetworkStorage};
@@ -278,7 +278,7 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
           [this](const std::string& mount_path,
                  DiskMountManager::UnmountPathCallback callback) {
             EXPECT_EQ(mount_path, "/media/fuse/" + kMountName);
-            std::move(callback).Run(ash::MountError::kNone);
+            std::move(callback).Run(ash::MountError::kSuccess);
           }));
 
   crostini_sshfs_->MountCrostiniFiles(

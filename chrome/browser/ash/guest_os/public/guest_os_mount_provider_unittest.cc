@@ -86,7 +86,7 @@ class GuestOsMountProviderTest : public testing::Test {
       ash::MountAccessMode access_mode,
       ash::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
-    auto code = ash::MountError::kNone;
+    auto code = ash::MountError::kSuccess;
     auto info = DiskMountManager::MountPoint{
         base::StringPrintf("sftp://%d:%d", cid_, port_),
         "/media/fuse/" + kMountName, ash::MountType::kNetworkStorage};
@@ -172,7 +172,7 @@ TEST_F(GuestOsMountProviderTest, CanRemountAfterUnmount) {
           [this](const std::string& mount_path,
                  DiskMountManager::UnmountPathCallback callback) {
             EXPECT_EQ(mount_path, "/media/fuse/" + kMountName);
-            std::move(callback).Run(ash::MountError::kNone);
+            std::move(callback).Run(ash::MountError::kSuccess);
           }));
 
   provider_->Mount(profile_.get(), base::BindLambdaForTesting(

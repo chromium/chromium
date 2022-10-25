@@ -115,9 +115,9 @@ void CrostiniBrowserTestBase::DiskMountImpl(
     ash::disks::DiskMountManager::MountPathCallback callback) {
   const ash::disks::DiskMountManager::MountPoint info{source_path,
                                                       "/path/to/mount", type};
-  std::move(callback).Run(ash::MountError::kNone, info);
+  std::move(callback).Run(ash::MountError::kSuccess, info);
   dmgr_->NotifyMountEvent(ash::disks::DiskMountManager::MountEvent::MOUNTING,
-                          ash::MountError::kNone, info);
+                          ash::MountError::kSuccess, info);
 }
 
 void CrostiniBrowserTestBase::CreatedBrowserMainParts(

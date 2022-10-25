@@ -144,7 +144,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
       base::FilePath remote_path,
       ash::MountError error_code,
       const ash::disks::DiskMountManager::MountPoint& mount_info) {
-    if (error_code != ash::MountError::kNone) {
+    if (error_code != ash::MountError::kSuccess) {
       LOG(ERROR) << "Error mounting Guest OS container: error_code="
                  << error_code << ", source_path=" << mount_info.source_path
                  << ", mount_path=" << mount_info.mount_path

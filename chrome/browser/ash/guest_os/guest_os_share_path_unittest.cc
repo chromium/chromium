@@ -853,7 +853,7 @@ TEST_F(GuestOsSharePathTest, ShareOnMountSuccessParentMount) {
       SeneschalClientCalled::YES,
       &vm_tools::seneschal::SharePathRequest::MY_FILES, "already-shared",
       Success::YES, ""));
-  guest_os_share_path_->OnVolumeMounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeMounted(ash::MountError::kSuccess,
                                         *volume_downloads_);
   run_loop_->Run();
 }
@@ -868,7 +868,7 @@ TEST_F(GuestOsSharePathTest, ShareOnMountSuccessSelfMount) {
       SeneschalClientCalled::YES,
       &vm_tools::seneschal::SharePathRequest::MY_FILES, "already-shared",
       Success::YES, ""));
-  guest_os_share_path_->OnVolumeMounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeMounted(ash::MountError::kSuccess,
                                         *volume_shared_path);
   run_loop()->Run();
 }
@@ -884,12 +884,12 @@ TEST_F(GuestOsSharePathTest, ShareOnMountVmNotRunning) {
   fake_concierge_client_->NotifyVmStopped(stop_signal);
 
   // Test mount.
-  guest_os_share_path_->OnVolumeMounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeMounted(ash::MountError::kSuccess,
                                         *volume_downloads_);
   EXPECT_EQ(fake_seneschal_client_->share_path_called(), false);
 
   // Test unmount.
-  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kSuccess,
                                           *volume_downloads_);
   EXPECT_EQ(fake_seneschal_client_->share_path_called(), false);
 }
@@ -900,12 +900,12 @@ TEST_F(GuestOsSharePathTest, ShareOnMountVolumeUnrelated) {
       base::FilePath("/unrelated/path"));
 
   // Test mount.
-  guest_os_share_path_->OnVolumeMounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeMounted(ash::MountError::kSuccess,
                                         *volume_unrelated_);
   EXPECT_EQ(fake_seneschal_client_->share_path_called(), false);
 
   // Test unmount.
-  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kSuccess,
                                           *volume_unrelated_);
   EXPECT_EQ(fake_seneschal_client_->share_path_called(), false);
 }
@@ -916,7 +916,7 @@ TEST_F(GuestOsSharePathTest, UnshareOnUnmountSuccessParentMount) {
       &GuestOsSharePathTest::SeneschalUnsharePathCallback,
       base::Unretained(this), "unshare-on-unmount", shared_path_, Persist::YES,
       SeneschalClientCalled::YES, "MyFiles/already-shared", Success::YES, ""));
-  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kSuccess,
                                           *volume_downloads_);
   run_loop()->Run();
 }
@@ -929,7 +929,7 @@ TEST_F(GuestOsSharePathTest, UnshareOnUnmountSuccessSelfMount) {
       &GuestOsSharePathTest::SeneschalUnsharePathCallback,
       base::Unretained(this), "unshare-on-unmount", shared_path_, Persist::YES,
       SeneschalClientCalled::YES, "MyFiles/already-shared", Success::YES, ""));
-  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kNone,
+  guest_os_share_path_->OnVolumeUnmounted(ash::MountError::kSuccess,
                                           *volume_shared_path);
   run_loop()->Run();
 }
