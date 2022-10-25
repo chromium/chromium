@@ -176,7 +176,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   bool force_default_display = true;
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
-      features::SupportsEGLDualGpuRendering()) {
+      features::SupportsEGLDualGPURendering()) {
     force_default_display = false;
   }
   gl::GpuPreference gpu_preference = init_params.attribs.gpu_preference;

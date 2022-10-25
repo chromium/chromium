@@ -247,7 +247,7 @@ uint64_t SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   // supported.
   gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
                           system_device_id_default);
-  if (system_device_id_high_perf && features::SupportsEGLDualGpuRendering()) {
+  if (system_device_id_high_perf && features::SupportsEGLDualGPURendering()) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kHighPerformance,
                             system_device_id_high_perf);
   }

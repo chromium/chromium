@@ -238,8 +238,8 @@ BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
 // Allow dual GPU rendering through EGL where supported, i.e., allow a WebGL
 // or WebGPU context to be on the high performance GPU if preferred and Chrome
 // internal rendering to be on the low power GPU.
-BASE_FEATURE(kEGLDualGpuRendering,
-             "EGLDualGpuRendering",
+BASE_FEATURE(kEGLDualGPURendering,
+             "EGLDualGPURendering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow overlay swapchain to use Intel video processor for super resolution.
@@ -315,9 +315,9 @@ BASE_FEATURE(kDXGIWaitableSwapChain,
 const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
     &kDXGIWaitableSwapChain, "DXGIWaitableSwapChainMaxQueuedFrames", 2};
 
-bool SupportsEGLDualGpuRendering() {
+bool SupportsEGLDualGPURendering() {
 #if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-  return base::FeatureList::IsEnabled(kEGLDualGpuRendering);
+  return base::FeatureList::IsEnabled(kEGLDualGPURendering);
 #else
   return false;
 #endif  // USE_EGL && (IS_WIN || IS_MAC)

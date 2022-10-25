@@ -100,7 +100,7 @@ GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetX;
 GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetY;
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionSoftwareOverlays);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLetterboxVideoOptimization);
-GL_EXPORT BASE_DECLARE_FEATURE(kEGLDualGpuRendering);
+GL_EXPORT BASE_DECLARE_FEATURE(kEGLDualGPURendering);
 GL_EXPORT BASE_DECLARE_FEATURE(kIntelVpSuperResolution);
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEOpenGL);
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEMetal);
@@ -113,7 +113,7 @@ GL_EXPORT extern const base::FeatureParam<int>
 
 GL_EXPORT bool IsDefaultANGLEVulkan();
 
-GL_EXPORT bool SupportsEGLDualGpuRendering();
+GL_EXPORT bool SupportsEGLDualGPURendering();
 
 }  // namespace features
 
