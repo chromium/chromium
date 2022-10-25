@@ -4281,17 +4281,21 @@ void AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout(Node* menu_list) {
 
 void AXObjectCacheImpl::HandleLoadStart(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  MarkAXObjectDirty(Get(document));
-  DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
-                  ax::mojom::blink::Event::kLoadStart);
+  if (!IsPopup(*document)) {
+    DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
+                    ax::mojom::blink::Event::kLoadStart);
+  }
 }
 
 void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
-  AddPermissionStatusListener();
-  DeferTreeUpdate(&AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout,
-                  document);
+  // Popups do not need to fire a load complete message.
+  if (!IsPopup(*document)) {
+    AddPermissionStatusListener();
+    DeferTreeUpdate(&AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout,
+                    document);
+  }
 }
 
 void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
