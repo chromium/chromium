@@ -61,6 +61,9 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) final;
 
+  // VideoCaptureDevice overrides.
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
+
   // For testing, we need the ability to create a device without its tracker.
  protected:
   WebContentsVideoCaptureDevice();

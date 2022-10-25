@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/layout.h"
@@ -85,6 +86,15 @@ void WebContentsVideoCaptureDevice::OnFrameCaptured(
 
   FrameSinkVideoCaptureDevice::OnFrameCaptured(
       std::move(data), std::move(info), content_rect, std::move(callbacks));
+}
+
+void WebContentsVideoCaptureDevice::OnUtilizationReport(
+    media::VideoCaptureFeedback feedback) {
+  tracker_.AsyncCall(&WebContentsFrameTracker::OnUtilizationReport)
+      .WithArgs(feedback);
+
+  // We still want to capture the base class' behavior for utilization reports.
+  FrameSinkVideoCaptureDevice::OnUtilizationReport(std::move(feedback));
 }
 
 WebContentsVideoCaptureDevice::WebContentsVideoCaptureDevice() = default;

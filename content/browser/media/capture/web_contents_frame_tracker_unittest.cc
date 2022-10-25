@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/media/capture/web_contents_frame_tracker.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen_info.h"
@@ -534,6 +536,90 @@ TEST_F(WebContentsFrameTrackerTest, HighDpiScalingIsStable) {
       gfx::ScaleToRoundedSize(kContentSize, 1.23f);
   tracker()->SetCapturedContentSize(kScaledSmallerContentSize);
   EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+}
+
+TEST_F(WebContentsFrameTrackerTest, HighDpiAdjustsForResourceUtilization) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  // Both factors should be 2.0f, which should be exactly a scaling factor.
+  tracker()->SetCapturedContentSize(gfx::Size(960, 540));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
+
+  // Start with default feedback, which should be ignored.
+  media::VideoCaptureFeedback feedback;
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
+
+  // As the feedback continues to be poor, the scale override should lower.
+  feedback.resource_utilization = 0.9f;
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.75f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.0f);
+
+  // If things get significantly better, it should go back up.
+  feedback.resource_utilization = 0.49f;
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.75f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
+}
+
+TEST_F(WebContentsFrameTrackerTest, HighDpiAdjustsForMaxPixelRate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  tracker()->SetCapturedContentSize(kSize720p);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+
+  // Test using too many pixels.
+  media::VideoCaptureFeedback feedback;
+  feedback.max_pixels = kSize720p.width() * kSize720p.height() - 1;
+
+  // We should lower the maximum, which should eventually lower the override.
+  // First, max is now 1.75f.
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+
+  // Now max is 1.5f.
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+
+  // Now max is 1.25f.
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+
+  // Now max is 1.0f.
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.0f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.0f);
+
+  // Things should only change if it gets significantly better.
+  feedback.max_pixels = kSize720p.width() * kSize720p.height() + 1;
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.0f);
+
+  feedback.max_pixels = kSize720p.width() * kSize720p.height() * 1.33f;
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+  tracker()->OnUtilizationReport(feedback);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
 }
 
 }  // namespace

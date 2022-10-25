@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -100,6 +101,14 @@ class CONTENT_EXPORT WebContentsFrameTracker final
       const gfx::Size& current_content_size,
       const gfx::Size& unscaled_current_content_size);
 
+  // Called whenever the capture device gets updated feedback.
+  //
+  // NOTE: the way this report gets applied in this class assumes that it is
+  // updated relatively infrequently (e.g. multiple seconds between reports). If
+  // we find that this is called more frequently the algorithm should be updated
+  // to weigh historic reports as well as the last received feedback.
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback);
+
   // WebContentsObserver overrides.
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
@@ -145,8 +154,15 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   void SetTargetView(gfx::NativeView view);
 
   // Helper for setting the capture scale override, should always update the
-  // context at the same time.
+  // context at the same time. NOTE: `new_value`
   void SetCaptureScaleOverride(float new_value);
+
+  // Helper for applying the latest-received utilization feedback to throttle
+  // the capture scale override, if necessary.
+  float DetermineMaxScaleOverride();
+
+  // The maximum capture scale override.
+  static const float kMaxCaptureScaleOverride;
 
   // |device_| may be dereferenced only by tasks run by |device_task_runner_|.
   const base::WeakPtr<WebContentsVideoCaptureDevice> device_;
@@ -177,6 +193,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // is incremented. This value is used in frames' metadata so as to allow
   // other modules (mostly Blink) to see which frames are cropped to the
   // old/new specified crop-target.
+  //
   // The value 0 is used before any crop-target is assigned. (Note that by
   // cropping and then uncropping, values other than 0 can also be associated
   // with an uncropped track.)
@@ -191,11 +208,24 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // via SetScaleOverrideForCapture. The value is also saved in this attribute
   // so that it can be undone and/or re-applied when the RenderFrameHost
   // changes.
-  float capture_scale_override_ = 1.0f;
+  //
+  // NOTE: the value provided to the captured content is the min of this
+  // property and `max_capture_scale_override_`.
+  float desired_capture_scale_override_ = 1.0f;
 
   // Track the number of times the capture scale override mutates in a single
   // session.
   int scale_override_change_count_ = 0;
+
+  // The maximum capture scale override, based on the last received
+  // `capture_feedback_`.
+  float max_capture_scale_override_ = kMaxCaptureScaleOverride;
+
+  // The last reported content size, if any.
+  absl::optional<gfx::Size> content_size_;
+
+  // The last received video capture feedback, if any.
+  absl::optional<media::VideoCaptureFeedback> capture_feedback_;
 
   // The consumer-requested capture size, set in |WillStartCapturingWebContents|
   // to indicate the preferred frame size from the video frame consumer. Note
