@@ -78,7 +78,7 @@ class WaylandEventSource : public PlatformEventSource,
   void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
 
   // Starts polling for events from the wayland connection file descriptor.
-  // This method assumes connection is already estabilished and input objects
+  // This method assumes connection is already established and input objects
   // are already bound and properly initialized.
   void StartProcessingEvents();
 
@@ -107,10 +107,12 @@ class WaylandEventSource : public PlatformEventSource,
   void OnPointerFocusChanged(WaylandWindow* window,
                              const gfx::PointF& location,
                              wl::EventDispatchPolicy dispatch_policy) override;
-  void OnPointerButtonEvent(EventType evtype,
-                            int changed_button,
-                            WaylandWindow* window,
-                            wl::EventDispatchPolicy dispatch_policy) override;
+  void OnPointerButtonEvent(
+      EventType evtype,
+      int changed_button,
+      WaylandWindow* window,
+      wl::EventDispatchPolicy dispatch_policy,
+      bool allow_release_of_unpressed_button = false) override;
   void OnPointerMotionEvent(const gfx::PointF& location,
                             wl::EventDispatchPolicy dispatch_policy) override;
   void OnPointerAxisEvent(const gfx::Vector2dF& offset) override;

@@ -287,14 +287,16 @@ void WaylandEventSource::OnPointerButtonEvent(
     EventType type,
     int changed_button,
     WaylandWindow* window,
-    wl::EventDispatchPolicy dispatch_policy) {
+    wl::EventDispatchPolicy dispatch_policy,
+    bool allow_release_of_unpressed_button) {
   DCHECK(type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED);
   DCHECK(HasAnyPointerButtonFlag(changed_button));
 
   // Ignore release events for buttons that aren't currently pressed. Such
   // events should never happen, but there have been compositor bugs before
   // (e.g. crbug.com/1376393).
-  if (type == ET_MOUSE_RELEASED && (pointer_flags_ & changed_button) == 0)
+  if (!allow_release_of_unpressed_button && type == ET_MOUSE_RELEASED &&
+      (pointer_flags_ & changed_button) == 0)
     return;
 
   WaylandWindow* prev_focused_window =
