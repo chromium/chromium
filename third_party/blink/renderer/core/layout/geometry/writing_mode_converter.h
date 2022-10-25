@@ -48,6 +48,7 @@ class CORE_EXPORT WritingModeConverter {
   TextDirection Direction() const { return writing_direction_.Direction(); }
   bool IsLtr() const { return writing_direction_.IsLtr(); }
 
+  const PhysicalSize OuterSize() const { return outer_size_; }
   void SetOuterSize(const PhysicalSize& outer_size) {
     outer_size_ = outer_size;
   }

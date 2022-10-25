@@ -106,6 +106,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   const ChildrenVector& Children() const { return children_; }
 
+  // True if |this| has |NGFragmentItemsBuilder|; i.e., if |this| is an inline
+  // formatting context.
+  virtual bool HasItems() const { return false; }
+
   // Builder has non-trivial OOF-positioned methods.
   // They are intended to be used by a layout algorithm like this:
   //

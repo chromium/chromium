@@ -166,6 +166,30 @@ struct NGStitchedAnchorQueries {
             anchored_oof_containers_and_ancestors),
         root_(root) {}
 
+  void AddChildren(base::span<const NGLogicalLink> children,
+                   const NGFragmentItemsBuilder::ItemWithOffsetList* items,
+                   const WritingModeConverter& converter) {
+    const FragmentainerContext fragmentainer{{}, {}, converter};
+    if (items) {
+      for (const NGFragmentItemsBuilder::ItemWithOffset& item_with_offset :
+           *items) {
+        const NGFragmentItem& item = item_with_offset.item;
+        if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
+          AddBoxChild(*fragment, item.OffsetInContainerFragment(),
+                      fragmentainer);
+        }
+      }
+    }
+
+    for (const NGLogicalLink& child : children) {
+      DCHECK(!child->IsFragmentainerBox());
+      DCHECK(!child->IsColumnSpanAll());
+      const PhysicalOffset child_offset =
+          converter.ToPhysical(child.offset, child->Size());
+      AddChild(*child, child_offset, fragmentainer);
+    }
+  }
+
   void AddFragmentainerChildren(base::span<const NGLogicalLink> children,
                                 WritingDirectionMode writing_direction) {
     LayoutUnit fragmentainer_stitched_offset;
@@ -333,14 +357,29 @@ struct NGStitchedAnchorQueries {
 NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
     const LayoutBox& root_box,
     const NGLogicalLinkVector& children,
+    const NGFragmentItemsBuilder::ItemWithOffsetList* items,
+    const WritingModeConverter& converter)
+    : root_box_(root_box),
+      converter_(converter),
+      writing_direction_(converter.GetWritingDirection()) {
+  DCHECK(&root_box);
+  SetChildren(children, items);
+}
+
+NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
+    const LayoutBox& root_box,
+    const NGLogicalLinkVector& children,
     WritingDirectionMode writing_direction)
     : root_box_(root_box), writing_direction_(writing_direction) {
   DCHECK(&root_box);
   SetChildren(children);
 }
 
-void NGLogicalAnchorQueryMap::SetChildren(const NGLogicalLinkVector& children) {
+void NGLogicalAnchorQueryMap::SetChildren(
+    const NGLogicalLinkVector& children,
+    const NGFragmentItemsBuilder::ItemWithOffsetList* items) {
   children_ = &children;
+  items_ = items;
 
   // Invalidate the cache when children may have changed.
   computed_for_ = nullptr;
@@ -391,8 +430,12 @@ void NGLogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
   // Traverse descendants and collect anchor queries for each containing block.
   NGStitchedAnchorQueries stitched_anchor_queries(
       root_box_, anchored_oof_containers_and_ancestors);
-  stitched_anchor_queries.AddFragmentainerChildren(*children_,
-                                                   writing_direction_);
+  if (converter_) {
+    stitched_anchor_queries.AddChildren(*children_, items_, *converter_);
+  } else {
+    stitched_anchor_queries.AddFragmentainerChildren(*children_,
+                                                     writing_direction_);
+  }
 
   // TODO(kojii): Currently this clears and rebuilds all anchor queries on
   // incremental updates. It may be possible to reduce the computation when

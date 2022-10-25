@@ -642,6 +642,9 @@ class CORE_EXPORT NGPhysicalFragment
   bool HasAnchorQuery() const {
     return oof_data_ && !oof_data_->anchor_query.IsEmpty();
   }
+  bool HasAnchorQueryToPropagate() const {
+    return HasAnchorQuery() || !Style().AnchorName().IsNull();
+  }
   const NGPhysicalAnchorQuery* AnchorQuery() const {
     if (!HasAnchorQuery())
       return nullptr;

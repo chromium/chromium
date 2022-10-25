@@ -667,6 +667,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   }
 
   // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
+  bool HasItems() const final { return items_builder_; }
   NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
   void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
     items_builder_ = builder;
