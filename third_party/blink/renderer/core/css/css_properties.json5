@@ -664,7 +664,7 @@
     // - valid_for_position_fallback: true
     //
     // Whether the property can be used in a @try rule of @position-fallback
-    // https://tabatkins.github.io/specs/css-anchor-position/#fallback-rule
+    // https://drafts.csswg.org/css-anchor-1/#fallback-rule
     valid_for_position_fallback: {
       default: false,
       valid_type: "bool",

@@ -176,7 +176,7 @@ TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
   EXPECT_FALSE(anchor_query);
 }
 
-// https://tabatkins.github.io/specs/css-anchor-position/#determining
+// https://drafts.csswg.org/css-anchor-1/#determining
 TEST_F(NGAnchorQueryTest, AnchorNameValid) {
   SetBodyInnerHTML(R"HTML(
     <div id="container" style="position: relative">

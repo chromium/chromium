@@ -8,7 +8,7 @@
 namespace blink {
 
 // Enum types for CSS anchor() and anchor-size() functions.
-// See https://tabatkins.github.io/specs/css-anchor-position/#anchoring
+// See https://drafts.csswg.org/css-anchor-1/#anchoring
 
 // TODO(crbug.com/1309178): Combine this with `CSSAnchorQueryType`.
 enum class AnchorQueryType {

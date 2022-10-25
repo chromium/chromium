@@ -616,7 +616,7 @@
     },
     {
       // Allows positioning a positioned element relative to another one.
-      // https://tabatkins.github.io/specs/css-anchor-position/
+      // https://drafts.csswg.org/css-anchor-1/
       name: "CSSAnchorPositioning",
       status: "experimental",
     },

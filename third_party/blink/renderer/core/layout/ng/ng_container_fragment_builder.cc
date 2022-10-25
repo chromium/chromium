@@ -30,7 +30,7 @@ NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
     const NGLayoutInputNode& container,
     bool maybe_out_of_order_if_oof) {
   // If the |fragment| is not absolutely positioned, it's a valid anchor.
-  // https://tabatkins.github.io/specs/css-anchor-position/#determining
+  // https://drafts.csswg.org/css-anchor-1/#determining
   if (!fragment.IsOutOfFlowPositioned())
     return NGLogicalAnchorQuery::SetOptions::kValidInOrder;
 

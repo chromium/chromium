@@ -319,7 +319,7 @@ struct NGStitchedAnchorQueries {
     // same containing block as query el, el is not absolutely positioned." That
     // said, for absolutely positioned anchors should be invalid for the first
     // containing block.
-    // https://tabatkins.github.io/specs/css-anchor-position/#determining
+    // https://drafts.csswg.org/css-anchor-1/#determining
     containing_block = containing_block->Container(&skip_info);
     while (containing_block && containing_block != root_ &&
            !skip_info.AncestorSkipped()) {
