@@ -714,7 +714,7 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
   crx_installer_->set_expected_id(approval->extension_id);
   crx_installer_->set_is_gallery_install(true);
   crx_installer_->set_allow_silent_install(true);
-  crx_installer_->set_installer_callback(base::BindOnce(
+  crx_installer_->AddInstallerCallback(base::BindOnce(
       &WebstoreInstaller::OnInstallerDone, weak_ptr_factory_.GetWeakPtr()));
   if (approval->withhold_permissions)
     crx_installer_->set_withhold_permissions();

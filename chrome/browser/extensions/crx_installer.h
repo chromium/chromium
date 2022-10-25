@@ -146,6 +146,12 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void InitializeCreationFlagsForUpdate(const Extension* extension,
                                         const int initial_flags);
 
+  // Adds a callback that will be run once the installation finishes
+  // (successfully or not).
+  // The added callbacks will be run in the order in which they were added
+  // (FIFO).
+  void AddInstallerCallback(InstallerResultCallback callback);
+
   int creation_flags() const { return creation_flags_; }
   void set_creation_flags(int val) { creation_flags_ = val; }
 
@@ -235,9 +241,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void set_bypassed_safebrowsing_friction_for_testing(bool val) {
     set_install_flag(kInstallFlagBypassedSafeBrowsingFriction, val);
   }
-
-  // Virtual for testing.
-  virtual void set_installer_callback(InstallerResultCallback callback);
 
   // Callback to be invoked when the crx file has passed the expectations check
   // after unpack success and the ownership of the crx file lies with the
@@ -358,6 +361,9 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
       scoped_refptr<const Extension> extension,
       SkBitmap install_icon,
       declarative_net_request::RulesetInstallPrefs ruleset_install_prefs);
+
+  // Run all callbacks received in AddInstallerCallback with the given error.
+  void RunInstallerCallbacks(const absl::optional<CrxInstallError>& error);
 
   void set_install_flag(int flag, bool val) {
     if (val)
@@ -541,7 +547,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   std::unique_ptr<PreloadCheckGroup> check_group_;
 
   // Invoked when the install is completed.
-  InstallerResultCallback installer_callback_;
+  std::vector<InstallerResultCallback> installer_callbacks_;
 
   // Invoked when the expectations from CRXFileInfo match with the crx file
   // after unpack success.

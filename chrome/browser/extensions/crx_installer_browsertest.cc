@@ -288,7 +288,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
         CrxInstaller::Create(extension_service(), std::move(prompt), approval));
     installer->set_allow_silent_install(true);
     installer->set_is_gallery_install(true);
-    installer->set_installer_callback(
+    installer->AddInstallerCallback(
         base::BindOnce(&ExtensionCrxInstallerTest::InstallerCallback,
                        run_loop.QuitWhenIdleClosure(), std::move(callback)));
     installer->InstallCrx(crx_path);
@@ -308,7 +308,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
         CrxInstaller::Create(extension_service(), std::move(prompt)));
     installer->set_allow_silent_install(true);
     installer->set_is_gallery_install(true);
-    installer->set_installer_callback(
+    installer->AddInstallerCallback(
         base::BindOnce(&ExtensionCrxInstallerTest::InstallerCallback,
                        run_loop.QuitWhenIdleClosure(), std::move(callback)));
     installer->set_delete_source(true);
@@ -327,7 +327,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     scoped_refptr<CrxInstaller> installer(
         CrxInstaller::Create(extension_service(), std::move(prompt)));
     installer->set_delete_source(true);
-    installer->set_installer_callback(
+    installer->AddInstallerCallback(
         base::BindOnce(&ExtensionCrxInstallerTest::InstallerCallback,
                        run_loop.QuitWhenIdleClosure(), std::move(callback)));
     installer->UpdateExtensionFromUnpackedCrx(extension_id, public_key,
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, AllowOffStore) {
     }
 
     base::RunLoop run_loop;
-    crx_installer->set_installer_callback(
+    crx_installer->AddInstallerCallback(
         base::BindOnce(&ExtensionCrxInstallerTest::InstallerCallback,
                        run_loop.QuitWhenIdleClosure(),
                        CrxInstaller::InstallerResultCallback()));
@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionCrxInstallerTestWithWithholdingUI,
 
   // Install a simple extension with google.com as a permission.
   base::RunLoop run_loop;
-  crx_installer->set_installer_callback(base::BindOnce(
+  crx_installer->AddInstallerCallback(base::BindOnce(
       &ExtensionCrxInstallerTest::InstallerCallback,
       run_loop.QuitWhenIdleClosure(), CrxInstaller::InstallerResultCallback()));
   base::FilePath crx_with_host =

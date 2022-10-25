@@ -164,7 +164,7 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
 
 CrxInstaller::~CrxInstaller() {
   DCHECK(!service_weak_ || service_weak_->browser_terminating() ||
-         installer_callback_.is_null());
+         installer_callbacks_.empty());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Ensure |client_| and |install_checker_| data members are destroyed on the
   // UI thread. The |client_| dialog has a weak reference as |this| is its
@@ -272,14 +272,14 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
                  << " because it is not installed";
     if (delete_source_)
       temp_dir_ = unpacked_dir;
-    if (installer_callback_.is_null()) {
+    if (installer_callbacks_.empty()) {
       shared_file_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&CrxInstaller::CleanupTempFiles, this));
     } else {
       shared_file_task_runner_->PostTaskAndReply(
           FROM_HERE, base::BindOnce(&CrxInstaller::CleanupTempFiles, this),
           base::BindOnce(
-              std::move(installer_callback_),
+              &CrxInstaller::RunInstallerCallbacks, this,
               CrxInstallError(
                   CrxInstallErrorType::OTHER,
                   CrxInstallErrorDetail::UPDATE_NON_EXISTING_EXTENSION)));
@@ -1129,11 +1129,7 @@ void CrxInstaller::NotifyCrxInstallComplete(
   if (success)
     ConfirmReEnable();
 
-  if (!installer_callback_.is_null() &&
-      !content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(std::move(installer_callback_), error))) {
-    NOTREACHED();
-  }
+  RunInstallerCallbacks(error);
 
   profile_keep_alive_.reset();
 }
@@ -1225,8 +1221,19 @@ void CrxInstaller::set_withhold_permissions() {
   creation_flags_ |= Extension::WITHHOLD_PERMISSIONS;
 }
 
-void CrxInstaller::set_installer_callback(InstallerResultCallback callback) {
-  installer_callback_ = std::move(callback);
+void CrxInstaller::AddInstallerCallback(InstallerResultCallback callback) {
+  installer_callbacks_.emplace_back(std::move(callback));
+}
+
+void CrxInstaller::RunInstallerCallbacks(
+    const absl::optional<CrxInstallError>& error) {
+  for (InstallerResultCallback& callback : installer_callbacks_) {
+    if (!content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), error))) {
+      NOTREACHED();
+    }
+  }
+  installer_callbacks_.clear();
 }
 
 void CrxInstaller::set_expectations_verified_callback(

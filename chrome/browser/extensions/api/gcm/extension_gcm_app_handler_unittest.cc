@@ -357,7 +357,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     crx_info.extension_id = extension->id();
 
     auto installer = extension_service_->CreateUpdateInstaller(crx_info, true);
-    installer->set_installer_callback(base::BindOnce(
+    installer->AddInstallerCallback(base::BindOnce(
         &ExtensionGCMAppHandlerTest::InstallerDone, base::Unretained(this)));
     installer->InstallCrxFile(crx_info);
 

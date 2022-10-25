@@ -650,7 +650,7 @@ TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
   installer->set_bypassed_safebrowsing_friction_for_testing(true);
 
   base::RunLoop run_loop;
-  installer->set_installer_callback(base::BindOnce(
+  installer->AddInstallerCallback(base::BindOnce(
       [](base::OnceClosure quit_closure,
          const absl::optional<CrxInstallError>& error) {
         ASSERT_FALSE(error) << error->message();

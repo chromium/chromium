@@ -768,7 +768,7 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
                        weak_ptr_factory_.GetWeakPtr(), crx_file.info));
 
     auto token = UnguessableToken::Create();
-    installer->set_installer_callback(
+    installer->AddInstallerCallback(
         base::BindOnce(&ExtensionUpdater::OnInstallerDone,
                        weak_ptr_factory_.GetWeakPtr(), token));
 

@@ -1922,7 +1922,7 @@ bool ExtensionService::OnExternalExtensionFileFound(
 
   // no client (silent install)
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(this));
-  installer->set_installer_callback(
+  installer->AddInstallerCallback(
       base::BindOnce(&ExtensionService::InstallationFromExternalFileFinished,
                      AsWeakPtr(), info.extension_id));
   installer->set_install_source(info.crx_location);

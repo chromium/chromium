@@ -287,7 +287,7 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
 
   if (installer) {
     base::RunLoop run_loop;
-    installer->set_installer_callback(base::BindLambdaForTesting(
+    installer->AddInstallerCallback(base::BindLambdaForTesting(
         [&run_loop](const absl::optional<CrxInstallError>& error) {
           run_loop.Quit();
         }));

@@ -128,7 +128,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     installer->set_allow_silent_install(true);
     installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedInTest);
-    installer->set_installer_callback(
+    installer->AddInstallerCallback(
         base::BindOnce(&ExtensionUpdateComplete, std::move(callback)));
     installer->InstallCrx(
         test_data_dir_.AppendASCII("content_verifier/v1.crx"));
@@ -503,7 +503,7 @@ class UserInstalledContentVerifierTest : public ContentVerifierTest {
     installer->set_allow_silent_install(true);
     installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedInTest);
-    installer->set_installer_callback(
+    installer->AddInstallerCallback(
         base::BindOnce(&ExtensionUpdateComplete, std::move(callback)));
     installer->InstallCrx(
         test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx));
