@@ -4633,9 +4633,14 @@ std::string GenerateColoredIconList(int installability_icon,
 }
 
 // Disabled due to test flakiness: https://crbug.com/1341954
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CheckCombinations DISABLED_CheckCombinations
+#else
+#define MAYBE_CheckCombinations CheckCombinations
+#endif
 IN_PROC_BROWSER_TEST_P(
     ManifestUpdateManagerBrowserTest_AppIdentityParameterized,
-    CheckCombinations) {
+    MAYBE_CheckCombinations) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "$1",
