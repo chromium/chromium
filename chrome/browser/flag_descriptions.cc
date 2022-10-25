@@ -4982,11 +4982,6 @@ const char kCroshSWADescription[] =
     "When enabled, crosh (ChromeOS Shell) will run as a tabbed System Web App "
     "rather than a normal browser tab.";
 
-const char kCrosLanguageSettingsUpdateJapaneseName[] =
-    "Language Settings Update Japanese";
-const char kCrosLanguageSettingsUpdateJapaneseDescription[] =
-    "Replace the japanese extension settings page with one built into the UI.";
-
 const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";
@@ -6010,7 +6005,8 @@ const char kSystemJapanesePhysicalTypingName[] =
     "Use system IME for Japanese typing";
 const char kSystemJapanesePhysicalTypingDescription[] =
     "Use the system input engine instead of the Chrome extension for physical "
-    "typing in Japanese.";
+    "typing in Japanese. This also replaces the Japanese extension settings "
+    "page with one built into the UI and migrates the data to a new location.";
 
 const char kSystemTransliterationPhysicalTypingName[] =
     "Use system IME for Transliteration typing";

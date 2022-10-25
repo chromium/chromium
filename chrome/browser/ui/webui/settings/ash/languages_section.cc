@@ -561,10 +561,9 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(ash::features::kOnDeviceGrammarCheck));
   html_source->AddBoolean("languagePacksHandwritingEnabled",
                           ash::features::IsLanguagePacksEnabled());
-  html_source->AddBoolean(
-      "languageSettingsUpdateJapanese",
-      ::base::FeatureList::IsEnabled(
-          ash::features::kCrosLanguageSettingsUpdateJapanese));
+  html_source->AddBoolean("systemJapanesePhysicalTyping",
+                          ::base::FeatureList::IsEnabled(
+                              ash::features::kSystemJapanesePhysicalTyping));
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {

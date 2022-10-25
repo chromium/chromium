@@ -162,7 +162,7 @@ class SettingsInputMethodOptionsPageElement extends
     const options = generateOptions(
         this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
         loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
-        loadTimeData.getBoolean('languageSettingsUpdateJapanese'));
+        loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
     const prefValue = this.getPref(this.PREFS_PATH).value;
     const currentSettings =
         this.engineId_ in prefValue ? prefValue[this.engineId_] : {};

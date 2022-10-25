@@ -133,7 +133,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       languageSettingsJapaneseEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('languageSettingsUpdateJapanese');
+          return loadTimeData.getBoolean('systemJapanesePhysicalTyping');
         },
       },
 
@@ -183,14 +183,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('onDeviceGrammarCheckEnabled');
-        },
-      },
-
-      /** @private */
-      onJapaneseSettingsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('languageSettingsUpdateJapanese');
         },
       },
     };
@@ -306,7 +298,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     return hasOptionsPageInSettings(
         id, loadTimeData.getBoolean('allowPredictiveWriting'),
         loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
-        loadTimeData.getBoolean('languageSettingsUpdateJapanese'));
+        loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
   }
 
   /**

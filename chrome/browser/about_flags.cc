@@ -5156,11 +5156,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImeTrayHideVoiceButtonName,
      flag_descriptions::kImeTrayHideVoiceButtonDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kImeTrayHideVoiceButton)},
-    {"enable-cros-language-settings-update-japanese",
-     flag_descriptions::kCrosLanguageSettingsUpdateJapaneseName,
-     flag_descriptions::kCrosLanguageSettingsUpdateJapaneseDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kCrosLanguageSettingsUpdateJapanese)},
     {"enable-cros-multilingual-typing",
      flag_descriptions::kMultilingualTypingName,
      flag_descriptions::kMultilingualTypingDescription, kOsCrOS,
