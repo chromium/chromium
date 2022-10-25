@@ -34,6 +34,9 @@ class ScrollArrowButton;
 // PersistentDesksBarView.
 class DesksTestApi {
  public:
+  // Don't instantiate, just use the static helpers below.
+  DesksTestApi() = delete;
+
   // Getters for elements inside the desks.
   static ScrollArrowButton* GetDesksBarLeftScrollButton();
   static ScrollArrowButton* GetDesksBarRightScrollButton();
@@ -59,12 +62,6 @@ class DesksTestApi {
   // Resets `first_day_visited_` and `last_day_visited_` of `desk` for testing
   // to the current date.
   static void ResetDeskVisitedMetrics(Desk* desk);
-
- private:
-  DesksTestApi() = default;
-  DesksTestApi(const DesksTestApi&) = delete;
-  DesksTestApi& operator=(const DesksTestApi&) = delete;
-  ~DesksTestApi() = default;
 };
 
 }  // namespace ash

@@ -21,7 +21,6 @@ class ColorProvider;
 namespace ash {
 
 class DeskTemplate;
-class SavedDeskIconView;
 
 // This class for determines which app icons/favicons to show for a desk
 // template and creates the according SavedDeskIconView's for them.

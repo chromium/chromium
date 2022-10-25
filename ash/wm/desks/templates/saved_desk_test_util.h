@@ -29,7 +29,6 @@ class CloseButton;
 class OverviewGrid;
 class PillButton;
 class RoundedImageView;
-class SavedDeskLibraryView;
 class SavedDeskPresenter;
 
 // Wrapper for `SavedDeskPresenter` that exposes internal state to test

@@ -22,7 +22,6 @@ class DeskBarHoverObserver;
 class DeskDragProxy;
 class DeskMiniView;
 class ExpandedDesksBarButton;
-class NewDeskButton;
 class OverviewGrid;
 class PersistentDesksBarVerticalDotsButton;
 class PillButton;

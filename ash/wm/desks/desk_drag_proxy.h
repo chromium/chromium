@@ -8,14 +8,6 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
-namespace views {
-class View;
-}  // namespace views
-
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace ash {
 
 class DeskMiniView;
