@@ -549,21 +549,25 @@ void CSSToStyleMap::MapNinePieceImage(StyleResolverState& state,
     // the border slices also set the border widths. We don't need to worry
     // about percentages, since we don't even support those on real borders yet.
     if (image.BorderSlices().Top().IsLength() &&
-        image.BorderSlices().Top().length().IsFixed())
+        image.BorderSlices().Top().length().IsFixed()) {
       state.Style()->SetBorderTopWidth(
-          image.BorderSlices().Top().length().Value());
+          LayoutUnit(image.BorderSlices().Top().length().Pixels()));
+    }
     if (image.BorderSlices().Right().IsLength() &&
-        image.BorderSlices().Right().length().IsFixed())
+        image.BorderSlices().Right().length().IsFixed()) {
       state.Style()->SetBorderRightWidth(
-          image.BorderSlices().Right().length().Value());
+          LayoutUnit(image.BorderSlices().Right().length().Pixels()));
+    }
     if (image.BorderSlices().Bottom().IsLength() &&
-        image.BorderSlices().Bottom().length().IsFixed())
+        image.BorderSlices().Bottom().length().IsFixed()) {
       state.Style()->SetBorderBottomWidth(
-          image.BorderSlices().Bottom().length().Value());
+          LayoutUnit(image.BorderSlices().Bottom().length().Pixels()));
+    }
     if (image.BorderSlices().Left().IsLength() &&
-        image.BorderSlices().Left().length().IsFixed())
+        image.BorderSlices().Left().length().IsFixed()) {
       state.Style()->SetBorderLeftWidth(
-          image.BorderSlices().Left().length().Value());
+          LayoutUnit(image.BorderSlices().Left().length().Pixels()));
+    }
   }
 }
 

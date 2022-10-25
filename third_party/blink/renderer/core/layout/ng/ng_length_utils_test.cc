@@ -469,10 +469,10 @@ TEST_F(NGLengthUtilsTest, TestMargins) {
 }
 
 TEST_F(NGLengthUtilsTest, TestBorders) {
-  style_->SetBorderTopWidth(1);
-  style_->SetBorderRightWidth(2);
-  style_->SetBorderBottomWidth(3);
-  style_->SetBorderLeftWidth(4);
+  style_->SetBorderTopWidth(LayoutUnit(1));
+  style_->SetBorderRightWidth(LayoutUnit(2));
+  style_->SetBorderBottomWidth(LayoutUnit(3));
+  style_->SetBorderLeftWidth(LayoutUnit(4));
   style_->SetBorderTopStyle(EBorderStyle::kSolid);
   style_->SetBorderRightStyle(EBorderStyle::kSolid);
   style_->SetBorderBottomStyle(EBorderStyle::kSolid);

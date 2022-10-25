@@ -594,7 +594,6 @@ class ComputedStyle : public ComputedStyleBase,
       return LayoutUnit(0);
     return BorderTopWidthInternal();
   }
-  void SetBorderTopWidth(float v) { SetBorderTopWidthInternal(LayoutUnit(v)); }
 
   // border-bottom-width
   LayoutUnit BorderBottomWidth() const {
@@ -602,9 +601,6 @@ class ComputedStyle : public ComputedStyleBase,
         BorderBottomStyle() == EBorderStyle::kHidden)
       return LayoutUnit(0);
     return BorderBottomWidthInternal();
-  }
-  void SetBorderBottomWidth(float v) {
-    SetBorderBottomWidthInternal(LayoutUnit(v));
   }
 
   // border-left-width
@@ -614,9 +610,6 @@ class ComputedStyle : public ComputedStyleBase,
       return LayoutUnit(0);
     return BorderLeftWidthInternal();
   }
-  void SetBorderLeftWidth(float v) {
-    SetBorderLeftWidthInternal(LayoutUnit(v));
-  }
 
   // border-right-width
   LayoutUnit BorderRightWidth() const {
@@ -624,9 +617,6 @@ class ComputedStyle : public ComputedStyleBase,
         BorderRightStyle() == EBorderStyle::kHidden)
       return LayoutUnit(0);
     return BorderRightWidthInternal();
-  }
-  void SetBorderRightWidth(float v) {
-    SetBorderRightWidthInternal(LayoutUnit(v));
   }
 
   // box-shadow (aka -webkit-box-shadow)
@@ -1864,22 +1854,22 @@ class ComputedStyle : public ComputedStyleBase,
 
   void ResetBorderTop() {
     SetBorderTopStyle(EBorderStyle::kNone);
-    SetBorderTopWidth(3);
+    SetBorderTopWidth(LayoutUnit(3));
     SetBorderTopColorInternal(StyleColor::CurrentColor());
   }
   void ResetBorderRight() {
     SetBorderRightStyle(EBorderStyle::kNone);
-    SetBorderRightWidth(3);
+    SetBorderRightWidth(LayoutUnit(3));
     SetBorderRightColorInternal(StyleColor::CurrentColor());
   }
   void ResetBorderBottom() {
     SetBorderBottomStyle(EBorderStyle::kNone);
-    SetBorderBottomWidth(3);
+    SetBorderBottomWidth(LayoutUnit(3));
     SetBorderBottomColorInternal(StyleColor::CurrentColor());
   }
   void ResetBorderLeft() {
     SetBorderLeftStyle(EBorderStyle::kNone);
-    SetBorderLeftWidth(3);
+    SetBorderLeftWidth(LayoutUnit(3));
     SetBorderLeftColorInternal(StyleColor::CurrentColor());
   }
 

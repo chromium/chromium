@@ -301,7 +301,7 @@ TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
 
 TEST_F(ComputedStyleTest, BorderWidth) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetBorderBottomWidth(5);
+  style->SetBorderBottomWidth(LayoutUnit(5));
   EXPECT_EQ(style->BorderBottomWidth(), 0);
   EXPECT_EQ(style->BorderBottom().Width(), 5);
   style->SetBorderBottomStyle(EBorderStyle::kSolid);
@@ -341,27 +341,27 @@ TEST_F(ComputedStyleTest, BorderStyle) {
   other->SetBorderBottomStyle(EBorderStyle::kSolid);
 
   EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderLeftWidth(1.0);
+  style->SetBorderLeftWidth(LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderLeftWidth(1.0);
+  other->SetBorderLeftWidth(LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderTopWidth(1.0);
+  style->SetBorderTopWidth(LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderTopWidth(1.0);
+  other->SetBorderTopWidth(LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderRightWidth(1.0);
+  style->SetBorderRightWidth(LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderRightWidth(1.0);
+  other->SetBorderRightWidth(LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderBottomWidth(1.0);
+  style->SetBorderBottomWidth(LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderBottomWidth(1.0);
+  other->SetBorderBottomWidth(LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   style->SetBorderLeftStyle(EBorderStyle::kHidden);
