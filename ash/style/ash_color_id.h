@@ -114,7 +114,10 @@ namespace ash {
   /* Color for dialog background in arc */ \
   E_CPONLY(kColorAshDialogBackgroundColor) \
   /* Color for disabled button icon */ \
-  E_CPONLY(kColorAshButtonIconDisabledColor)
+  E_CPONLY(kColorAshButtonIconDisabledColor) \
+  E_CPONLY(kColorAshIconSecondaryDisabledColor) \
+  E_CPONLY(kColorAshIconPrimaryDisabledColor) \
+  E_CPONLY(KColorAshTextDisabledColor)
 
 #include "ui/color/color_id_macros.inc"
 

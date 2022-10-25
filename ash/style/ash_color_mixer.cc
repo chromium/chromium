@@ -465,6 +465,12 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorAshButtonIconDisabledColor] =
       ui::SetAlpha(kColorAshButtonIconColor, kDisabledColorOpacity);
+  mixer[kColorAshIconSecondaryDisabledColor] =
+      ui::SetAlpha(cros_tokens::kCrosSysSecondary, kDisabledColorOpacity);
+  mixer[kColorAshIconPrimaryDisabledColor] =
+      ui::SetAlpha(cros_tokens::kCrosSysPrimary, kDisabledColorOpacity);
+  mixer[KColorAshTextDisabledColor] =
+      ui::SetAlpha(cros_tokens::kCrosSysOnSurface, kDisabledColorOpacity);
 }
 
 }  // namespace ash

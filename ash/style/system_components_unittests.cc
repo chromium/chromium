@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/checkbox_group.h"
 #include "ash/style/icon_switch.h"
+#include "ash/style/radio_button_group.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/fill_layout.h"
@@ -95,6 +97,130 @@ TEST_F(SystemComponentsTest, IconSwitch) {
   EXPECT_FALSE(button_1->GetEnabled());
   EXPECT_FALSE(button_2->GetEnabled());
   EXPECT_FALSE(button_3->GetEnabled());
+}
+
+// Tests that when one button is selected in the radio button group, the others
+// will be unselected automatically.
+TEST_F(SystemComponentsTest, RadioButtonGroup) {
+  std::unique_ptr<RadioButtonGroup> radio_button_group =
+      std::make_unique<RadioButtonGroup>(198);
+
+  // Add three buttons to the group.
+  auto* button_1 = radio_button_group->AddButton(RadioButton::PressedCallback(),
+                                                 u"Test Button1");
+  auto* button_2 = radio_button_group->AddButton(RadioButton::PressedCallback(),
+                                                 u"Test Button2");
+  auto* button_3 = radio_button_group->AddButton(RadioButton::PressedCallback(),
+                                                 u"Test Button3");
+
+  auto* switch_raw_ptr = radio_button_group.get();
+  auto widget = CreateWidgetWithComponent(std::move(radio_button_group));
+
+  // All the buttons should be in unselected state.
+  EXPECT_FALSE(button_1->selected());
+  EXPECT_FALSE(button_2->selected());
+  EXPECT_FALSE(button_3->selected());
+
+  // select the first button by using `RadioButton::SetSelected`.
+  button_1->SetSelected(true);
+  // Only the first button is selected.
+  EXPECT_TRUE(button_1->selected());
+  EXPECT_FALSE(button_2->selected());
+  EXPECT_FALSE(button_3->selected());
+
+  // Select the second button by mouse clicking.
+  LeftClickOn(button_2);
+  // Only the second button is selected.
+  EXPECT_FALSE(button_1->selected());
+  EXPECT_TRUE(button_2->selected());
+  EXPECT_FALSE(button_3->selected());
+
+  // Select the third button by using `RadioButtonGroup::SelectButtonAtIndex`.
+  switch_raw_ptr->SelectButtonAtIndex(2);
+  // Only the third button is selected.
+  EXPECT_FALSE(button_1->selected());
+  EXPECT_FALSE(button_2->selected());
+  EXPECT_TRUE(button_3->selected());
+
+  // Using `SetSelected` again on the first button will unselect the other
+  // buttons.
+  button_1->SetSelected(true);
+  // Only the first button is selected.
+  EXPECT_TRUE(button_1->selected());
+  EXPECT_FALSE(button_2->selected());
+  EXPECT_FALSE(button_3->selected());
+
+  // Disabling radio button group makes all radio buttons disabled.
+  switch_raw_ptr->SetEnabled(false);
+  EXPECT_FALSE(button_1->GetEnabled());
+  EXPECT_FALSE(button_2->GetEnabled());
+  EXPECT_FALSE(button_3->GetEnabled());
+}
+
+// Tests that all buttons in the checkbox group can be selected / unselected.
+// Click on a selected button will unselect, and vice versa。
+TEST_F(SystemComponentsTest, CheckboxGroup) {
+  std::unique_ptr<CheckboxGroup> checkbox_group =
+      std::make_unique<CheckboxGroup>(198);
+
+  // Add four buttons to the group.
+  auto* button_1 =
+      checkbox_group->AddButton(Checkbox::PressedCallback(), u"Test Button1");
+  auto* button_2 =
+      checkbox_group->AddButton(Checkbox::PressedCallback(), u"Test Button2");
+  auto* button_3 =
+      checkbox_group->AddButton(Checkbox::PressedCallback(), u"Test Button3");
+  auto* button_4 =
+      checkbox_group->AddButton(Checkbox::PressedCallback(), u"Test Button4");
+
+  auto* switch_raw_ptr = checkbox_group.get();
+  auto widget = CreateWidgetWithComponent(std::move(checkbox_group));
+
+  // All the buttons should be in unselected state.
+  EXPECT_FALSE(button_1->selected());
+  EXPECT_FALSE(button_2->selected());
+  EXPECT_FALSE(button_3->selected());
+  EXPECT_FALSE(button_4->selected());
+
+  // select the first button by using `Checkbox::SetSelected`.
+  button_1->SetSelected(true);
+  // The first button is selected.
+  EXPECT_TRUE(button_1->selected());
+  EXPECT_FALSE(button_2->selected());
+  EXPECT_FALSE(button_3->selected());
+  EXPECT_FALSE(button_4->selected());
+
+  // Select the second button by mouse clicking.
+  LeftClickOn(button_2);
+  // The first and second buttons are selected.
+  EXPECT_TRUE(button_1->selected());
+  EXPECT_TRUE(button_2->selected());
+  EXPECT_FALSE(button_3->selected());
+  EXPECT_FALSE(button_4->selected());
+
+  // Click on the second button again, it should be unselected.
+  LeftClickOn(button_2);
+  EXPECT_FALSE(button_2->selected());
+
+  // Select the third button by using `CheckboxGroup::SelectButtonAtIndex`.
+  switch_raw_ptr->SelectButtonAtIndex(2);
+  // The third button should be selected.
+  EXPECT_TRUE(button_3->selected());
+
+  // Using `SetSelected` on the fourth button.
+  button_4->SetSelected(true);
+  // All buttons should be selected except the second one.
+  EXPECT_TRUE(button_1->selected());
+  EXPECT_FALSE(button_2->selected());
+  EXPECT_TRUE(button_3->selected());
+  EXPECT_TRUE(button_4->selected());
+
+  // Disabling radio button group makes all radio buttons disabled.
+  switch_raw_ptr->SetEnabled(false);
+  EXPECT_FALSE(button_1->GetEnabled());
+  EXPECT_FALSE(button_2->GetEnabled());
+  EXPECT_FALSE(button_3->GetEnabled());
+  EXPECT_FALSE(button_4->GetEnabled());
 }
 
 }  // namespace ash
