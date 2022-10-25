@@ -66,6 +66,7 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   virtual bool Submit() = 0;
 
   bool decoded() const { return decoded_; }
+  int input_record() const { return input_record_; }
   V4L2WritableBufferRef& input_buffer() {
     return input_buffer_;
   }
@@ -89,7 +90,8 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   V4L2WritableBufferRef input_buffer_;
   V4L2WritableBufferRef output_buffer_;
   scoped_refptr<VideoFrame> video_frame_;
-
+  // The index of the corresponding input record.
+  const int input_record_;
   // The index of the corresponding output record.
   const int output_record_;
   // The visible size of the buffer.
