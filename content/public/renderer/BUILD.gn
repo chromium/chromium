@@ -51,12 +51,12 @@ target(link_target_type, "renderer_sources") {
   configs += [ "//content:content_implementation" ]
 
   public_deps = [
+    "//build:chromecast_buildflags",
     "//media",
     "//ui/accessibility",
   ]
 
   deps = [
-    "//components/cast_streaming/renderer:resource_provider",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//content/renderer",

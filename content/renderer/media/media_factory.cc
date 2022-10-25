@@ -21,10 +21,6 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "cc/trees/layer_tree_settings.h"
-#include "components/cast_streaming/public/cast_streaming_url.h"
-#include "components/cast_streaming/public/features.h"
-#include "components/cast_streaming/renderer/public/resource_provider.h"
-#include "components/cast_streaming/renderer/public/wrapping_renderer_factory_selector.h"
 #include "components/viz/common/features.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -78,6 +74,13 @@
 #include "media/base/android/media_codec_util.h"
 #include "media/base/media.h"
 #include "url/gurl.h"
+#endif
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+#include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
+#include "components/cast_streaming/public/features.h"            // nogncheck
+#include "components/cast_streaming/renderer/public/resource_provider.h"  // nogncheck
+#include "components/cast_streaming/renderer/public/wrapping_renderer_factory_selector.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
@@ -345,11 +348,9 @@ void MediaFactory::SetupMojo() {
   interface_broker_ = render_frame_->GetBrowserInterfaceBroker();
   DCHECK(interface_broker_);
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   // Add callbacks for cast_streaming to the AssociatedInterfaceRegistry to be
   // populated upon browser-process binding.
-  // TODO(b/3607051): Protect this code block with
-  // #if BUILDFLAG(ENABLE_CAST_RECEIVER) once Fuchsia sets this flag in the
-  // cast_runner build.
   cast_streaming_resource_provider_ =
       GetContentClient()->renderer()->CreateCastStreamingResourceProvider();
   if (cast_streaming_resource_provider_) {
@@ -360,6 +361,7 @@ void MediaFactory::SetupMojo() {
         ->AddInterface<cast_streaming::mojom::DemuxerConnector>(
             cast_streaming_resource_provider_->GetDemuxerConnectorBinder());
   }
+#endif
 }
 
 blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
@@ -494,11 +496,13 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
       GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
                                                             media_task_runner);
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   if (!demuxer_override && cast_streaming_resource_provider_) {
     demuxer_override =
         cast_streaming_resource_provider_->MaybeGetDemuxerOverride(
             url, media_task_runner);
   }
+#endif
 
   return blink::WebMediaPlayerBuilder::Build(
       web_frame, client, encrypted_client, delegate,
@@ -561,6 +565,7 @@ MediaFactory::CreateRendererFactorySelector(
   auto factory_selector = std::make_unique<media::RendererFactorySelector>();
   bool is_base_renderer_factory_set = false;
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   if (cast_streaming::IsCastRemotingEnabled() &&
       cast_streaming::IsCastStreamingMediaSourceUrl(url) &&
       cast_streaming_resource_provider_) {
@@ -568,6 +573,7 @@ MediaFactory::CreateRendererFactorySelector(
         std::make_unique<cast_streaming::WrappingRendererFactorySelector>(
             cast_streaming_resource_provider_.get());
   }
+#endif
 
   auto factory = GetContentClient()->renderer()->GetBaseRendererFactory(
       render_frame_, media_log, decoder_factory,

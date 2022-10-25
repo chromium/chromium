@@ -7,13 +7,16 @@
 
 #include <memory>
 
+#include "build/chromecast_buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "fuchsia_web/webengine/renderer/web_engine_audio_device_factory.h"
 #include "fuchsia_web/webengine/renderer/web_engine_render_frame_observer.h"
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
 namespace cast_streaming {
 class ResourceProvider;
 }
+#endif
 
 namespace memory_pressure {
 class MultiSourceMemoryPressureMonitor;
@@ -57,8 +60,11 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
       media::DecoderFactory* decoder_factory,
       base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
           get_gpu_factories_cb) override;
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::unique_ptr<cast_streaming::ResourceProvider>
   CreateCastStreamingResourceProvider() override;
+#endif
 
   bool RunClosureWhenInForeground(content::RenderFrame* render_frame,
                                   base::OnceClosure closure);

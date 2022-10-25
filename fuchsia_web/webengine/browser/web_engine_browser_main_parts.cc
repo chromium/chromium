@@ -30,6 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/inspect.h"
 #include "components/fuchsia_legacymetrics/legacymetrics_client.h"
 #include "content/public/browser/content_browser_client.h"
@@ -45,7 +46,6 @@
 #include "fuchsia_web/webengine/browser/web_engine_browser_context.h"
 #include "fuchsia_web/webengine/browser/web_engine_devtools_controller.h"
 #include "fuchsia_web/webengine/browser/web_engine_memory_inspector.h"
-#include "fuchsia_web/webengine/common/cast_streaming.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
@@ -59,6 +59,10 @@
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+#include "fuchsia_web/webengine/common/cast_streaming.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -363,10 +367,12 @@ void WebEngineBrowserMainParts::HandleContextRequest(
       component_inspector_->root().CreateChild(inspect_node_name),
       devtools_controller_.get());
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   // If this web instance should allow CastStreaming then enable it in this
   // ContextImpl. CastStreaming will not be available in FrameHost contexts.
   if (IsCastStreamingEnabled())
     context_impl->SetCastStreamingEnabled();
+#endif
 
   // Create the fuchsia.web.Context implementation using the BrowserContext and
   // configure it to terminate the process when the client goes away.

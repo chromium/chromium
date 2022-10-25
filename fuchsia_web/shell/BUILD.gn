@@ -18,10 +18,11 @@ group("shell") {
     "//content/test:*",
     "//fuchsia_web:gn_all",
   ]
-  deps = [
-    ":cast_streaming_shell",
-    ":web_engine_shell",
-  ]
+  deps = [ ":web_engine_shell" ]
+
+  if (enable_cast_receiver) {
+    deps += [ ":cast_streaming_shell" ]
+  }
 }
 
 source_set("remote_debugging_port") {
@@ -91,55 +92,57 @@ executable("web_engine_shell_exec") {
   ]
 }
 
-fuchsia_component("cast_streaming_shell_component") {
-  testonly = true
-  manifest = "cast_streaming_shell.cmx"
-  data_deps = [ ":cast_streaming_shell_exe" ]
-}
+if (enable_cast_receiver) {
+  fuchsia_component("cast_streaming_shell_component") {
+    testonly = true
+    manifest = "cast_streaming_shell.cmx"
+    data_deps = [ ":cast_streaming_shell_exe" ]
+  }
 
-fuchsia_package("cast_streaming_shell_pkg") {
-  testonly = true
-  package_name = "cast_streaming_shell"
-  deps = [ ":cast_streaming_shell_component" ]
-}
+  fuchsia_package("cast_streaming_shell_pkg") {
+    testonly = true
+    package_name = "cast_streaming_shell"
+    deps = [ ":cast_streaming_shell_component" ]
+  }
 
-fuchsia_package_installer("cast_streaming_shell") {
-  testonly = true
-  package = ":cast_streaming_shell_pkg"
-  package_name = "cast_streaming_shell"
-  package_deps = [ [
-        "//fuchsia_web/webengine:web_engine",
-        "web_engine",
-      ] ]
-}
+  fuchsia_package_installer("cast_streaming_shell") {
+    testonly = true
+    package = ":cast_streaming_shell_pkg"
+    package_name = "cast_streaming_shell"
+    package_deps = [ [
+          "//fuchsia_web/webengine:web_engine",
+          "web_engine",
+        ] ]
+  }
 
-executable("cast_streaming_shell_exe") {
-  testonly = true
-  sources = [ "cast_streaming_shell.cc" ]
+  executable("cast_streaming_shell_exe") {
+    testonly = true
+    sources = [ "cast_streaming_shell.cc" ]
 
-  data = [
-    "cast_streaming_shell_data",
-    rebase_path("//media/test/data/bear-1280x720.ivf"),
-  ]
+    data = [
+      "cast_streaming_shell_data",
+      rebase_path("//media/test/data/bear-1280x720.ivf"),
+    ]
 
-  deps = [
-    ":remote_debugging_port",
-    "//base",
-    "//base/test:test_support",
-    "//components/cast/message_port:message_port",
-    "//components/cast_streaming/test:test_sender_using_net_sockets",
-    "//fuchsia_web/cast_streaming",
-    "//fuchsia_web/common",
-    "//fuchsia_web/common/test:test_support",
-    "//fuchsia_web/webengine:switches",
-    "//fuchsia_web/webinstance_host",
-    "//media",
-    "//media/gpu/test:test_helpers",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
-    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//url",
-  ]
+    deps = [
+      ":remote_debugging_port",
+      "//base",
+      "//base/test:test_support",
+      "//components/cast/message_port:message_port",
+      "//components/cast_streaming/test:test_sender_using_net_sockets",
+      "//fuchsia_web/cast_streaming",
+      "//fuchsia_web/common",
+      "//fuchsia_web/common/test:test_support",
+      "//fuchsia_web/webengine:switches",
+      "//fuchsia_web/webinstance_host",
+      "//media",
+      "//media/gpu/test:test_helpers",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+      "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+      "//url",
+    ]
+  }
 }

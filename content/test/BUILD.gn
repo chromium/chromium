@@ -807,10 +807,13 @@ if (is_fuchsia) {
     data = [ "//content/test/gpu/fuchsia_util.py" ]
     if (fuchsia_browser_type == "web_engine_shell") {
       data += [
-        "$root_gen_dir/package_metadata/cast_streaming_shell.meta",
         "$root_gen_dir/package_metadata/web_engine_shell.meta",
         "$root_gen_dir/package_metadata/web_engine_with_webui.meta",
       ]
+      if (enable_cast_receiver) {
+        data += [ "$root_gen_dir/package_metadata/cast_streaming_shell.meta" ]
+      }
+
       data_deps = [
         "//fuchsia_web/shell",
         "//fuchsia_web/webengine:web_engine_with_webui_installer",

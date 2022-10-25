@@ -4,6 +4,7 @@
 
 assert(is_fuchsia)
 
+import("//build/config/chromecast_build.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
 import("//build/config/locales.gni")
@@ -143,14 +144,12 @@ component("web_engine_core") {
   assert_no_deps = _disallowed_deps
 
   deps = [
-    ":cast_streaming_receiver",
     ":context_provider",
     ":switches",
     ":web_engine_export_from_implementation",
     "//base",
     "//base:base_static",
     "//build:chromecast_buildflags",
-    "//components/cast_streaming/renderer",
     "//components/cdm/renderer",
     "//components/client_hints/browser:in_memory",
     "//components/embedder_support",
@@ -324,6 +323,13 @@ component("web_engine_core") {
     "web_engine_main_delegate.cc",
     "web_engine_main_delegate.h",
   ]
+
+  if (enable_cast_receiver) {
+    deps += [
+      ":cast_streaming_receiver",
+      "//components/cast_streaming/renderer",
+    ]
+  }
 }
 
 source_set("context_provider") {
@@ -556,7 +562,6 @@ test("web_engine_browsertests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
     ":browsertest_core",
-    ":cast_streaming_receiver_browsertests",
     ":switches",
     ":web_engine_core",
     "//components/policy/content:safe_sites_navigation_throttle",
@@ -589,6 +594,10 @@ test("web_engine_browsertests") {
     "//build/config/fuchsia/test/test_ui_stack.shard.test-cml",
     "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
   ]
+
+  if (enable_cast_receiver) {
+    deps += [ ":cast_streaming_receiver_browsertests" ]
+  }
 }
 
 # Creates a component manifest based on the production web_instance.cmx, with
@@ -771,21 +780,24 @@ test("web_engine_integration_tests_cfv1") {
 source_set("cast_streaming_receiver") {
   public_deps = [
     "//base",
-    "//components/cast_streaming/browser",
     "//components/cast_streaming/public/mojom",
+    "//mojo/public/cpp/bindings",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
   deps = [
     ":switches",
     "//components/cast/message_port",
+    "//components/cast_streaming/browser",
     "//components/cast_streaming/public:config_conversions",
     "//url",
   ]
+  public = [
+    "browser/receiver_session_client.h",
+    "common/cast_streaming.h",
+  ]
   sources = [
     "browser/receiver_session_client.cc",
-    "browser/receiver_session_client.h",
     "common/cast_streaming.cc",
-    "common/cast_streaming.h",
   ]
 }
 
@@ -796,6 +808,8 @@ source_set("cast_streaming_receiver_browsertests") {
   deps = [
     ":browsertest_core",
     ":web_engine_core",
+    "//base",
+    "//base/test:test_support",
     "//components/cast/message_port",
     "//components/cast_streaming/test:test_sender",
     "//content/test:test_support",

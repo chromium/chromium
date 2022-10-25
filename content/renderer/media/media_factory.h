@@ -43,9 +43,11 @@ class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
 }  // namespace blink
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
 namespace cast_streaming {
 class ResourceProvider;
 }  // namespace cast_streaming
+#endif
 
 namespace cc {
 class LayerTreeSettings;
@@ -192,8 +194,10 @@ class MediaFactory {
   mojo::Remote<media::mojom::RemoterFactory> remoter_factory_;
 #endif
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::unique_ptr<cast_streaming::ResourceProvider>
       cast_streaming_resource_provider_;
+#endif
 };
 
 }  // namespace content

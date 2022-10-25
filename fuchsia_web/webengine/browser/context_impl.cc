@@ -15,7 +15,7 @@
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
-#include "components/cast_streaming/browser/public/network_context_getter.h"
+#include "build/chromecast_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -24,6 +24,10 @@
 #include "fuchsia_web/webengine/browser/web_engine_devtools_controller.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+#include "components/cast_streaming/browser/public/network_context_getter.h"  // nogncheck
+#endif
 
 ContextImpl::ContextImpl(
     std::unique_ptr<content::BrowserContext> browser_context,
@@ -50,11 +54,13 @@ bool ContextImpl::IsJavaScriptInjectionAllowed() {
   return allow_javascript_injection_;
 }
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
 void ContextImpl::SetCastStreamingEnabled() {
   cast_streaming_enabled_ = true;
   cast_streaming::SetNetworkContextGetter(base::BindRepeating(
       &ContextImpl::GetNetworkContext, base::Unretained(this)));
 }
+#endif
 
 void ContextImpl::CreateFrame(
     fidl::InterfaceRequest<fuchsia::web::Frame> frame) {
