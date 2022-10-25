@@ -78,12 +78,6 @@ export class SettingsReviewNotificationPermissionsElement extends
       /* The last origin that the user interacted with. */
       lastOrigin_: String,
 
-      /* Action type for use in bindings. */
-      actionsEnum_: {
-        type: Object,
-        value: Actions,
-      },
-
       /**
        * Indicates whether to show completion info after user has finished the
        * review process.
@@ -250,30 +244,27 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.$.undoToast.hide();
   }
 
-  private getAriaLabelText_(): string {
-    if (!this.lastUserAction_ || !this.lastOrigin_) {
-      return '';
+  private getBlockAriaLabelForOrigin(origin: string): string {
+    return this.i18n(
+        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel', origin);
+  }
+
+  private getIgnoreAriaLabelForOrigin(lastOrigin: string): string|null {
+    // At the time of initialization, lastOrigin is null and we do not need an
+    // aria label yet.
+    if (!lastOrigin) {
+      return null;
     }
-    switch (this.lastUserAction_) {
-      case Actions.BLOCK: {
-        return this.i18n(
-            'safetyCheckNotificationPermissionReviewDontAllowAriaLabel',
-            this.lastOrigin_);
-      }
-      case Actions.IGNORE: {
-        return this.i18n(
-            'safetyCheckNotificationPermissionReviewIgnoreAriaLabel',
-            this.lastOrigin_);
-      }
-      case Actions.RESET: {
-        return this.i18n(
-            'safetyCheckNotificationPermissionReviewResetAriaLabel',
-            this.lastOrigin_);
-      }
-      default: {
-        assertNotReached();
-      }
+    return this.i18n(
+        'safetyCheckNotificationPermissionReviewIgnoreAriaLabel', lastOrigin);
+  }
+
+  private getResetAriaLabelForOrigin(lastOrigin: string): string|null {
+    if (!lastOrigin) {
+      return null;
     }
+    return this.i18n(
+        'safetyCheckNotificationPermissionReviewResetAriaLabel', lastOrigin);
   }
 
   private hideItem_(origin?: string) {
@@ -303,13 +294,13 @@ export class SettingsReviewNotificationPermissionsElement extends
             this.sites_!.length);
   }
 
-  private getMoreActionsAriaLabelText_(): string {
-    if (!this.lastOrigin_) {
-      return '';
+  private getMoreActionsAriaLabel_(lastOrigin: string): string|null {
+    if (!lastOrigin) {
+      return null;
     }
     return this.i18n(
         'safetyCheckNotificationPermissionReviewMoreActionsAriaLabel',
-        this.lastOrigin_);
+        lastOrigin);
   }
 
   /** Show info that review is completed when there are no permissions left. */
