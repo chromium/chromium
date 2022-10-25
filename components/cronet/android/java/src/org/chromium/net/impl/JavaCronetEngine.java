@@ -35,6 +35,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 /**
  * {@link java.net.HttpURLConnection} backed CronetEngine.
  *
@@ -47,6 +48,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
     private final ExecutorService mExecutorService;
     private final int mCronetEngineId;
     private final CronetLogger mLogger;
+    private final AtomicInteger mActiveRequestCount = new AtomicInteger();
 
     public JavaCronetEngine(CronetEngineBuilderImpl builder) {
         mCronetEngineId = hashCode();
@@ -82,6 +84,20 @@ public final class JavaCronetEngine extends CronetEngineBase {
             // Handle any issue gracefully, we should never crash due failures while logging.
             Log.e(TAG, "Error while trying to log JavaCronetEngine creation: ", e);
         }
+    }
+
+    /**
+     * Increment the number of active requests.
+     */
+    void incrementActiveRequestCount() {
+        mActiveRequestCount.incrementAndGet();
+    }
+
+    /**
+     * Decrement the number of active requests.
+     */
+    void decrementActiveRequestCount() {
+        mActiveRequestCount.decrementAndGet();
     }
 
     int getCronetEngineId() {

@@ -105,6 +105,7 @@ final class JavaUrlRequest extends UrlRequestBase {
     private String mPendingRedirectUrl;
     private HttpURLConnection mCurrentUrlConnection; // Only accessed on mExecutor.
     private OutputStreamDataSink mOutputStreamDataSink; // Only accessed on mExecutor.
+    private final JavaCronetEngine mEngine;
     private final int mCronetEngineId;
     private final CronetLogger mLogger;
 
@@ -223,6 +224,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                 });
             }
         });
+        mEngine = engine;
         mCronetEngineId = engine.getCronetEngineId();
         mLogger = engine.getCronetLogger();
         mCurrentUrl = url;
@@ -399,6 +401,7 @@ final class JavaUrlRequest extends UrlRequestBase {
     @Override
     public void start() {
         mAdditionalStatusDetails = Status.CONNECTING;
+        mEngine.incrementActiveRequestCount();
         transitionStates(State.NOT_STARTED, State.STARTED, new Runnable() {
             @Override
             public void run() {
@@ -976,6 +979,7 @@ final class JavaUrlRequest extends UrlRequestBase {
 
         void onCanceled(final UrlResponseInfo info) {
             closeResponseChannel();
+            mEngine.decrementActiveRequestCount();
             mUserExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -990,6 +994,7 @@ final class JavaUrlRequest extends UrlRequestBase {
         }
 
         void onSucceeded(final UrlResponseInfo info) {
+            mEngine.decrementActiveRequestCount();
             mUserExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -1005,6 +1010,7 @@ final class JavaUrlRequest extends UrlRequestBase {
 
         void onFailed(final UrlResponseInfo urlResponseInfo, final CronetException e) {
             closeResponseChannel();
+            mEngine.decrementActiveRequestCount();
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
