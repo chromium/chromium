@@ -22,11 +22,11 @@ constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode2";
 
 constexpr const char* kAlignedBatteryDischargeRateMilliwattsHistogramName =
-    "Power.BatteryDischargeRateMilliwatts4";
+    "Power.BatteryDischargeRateMilliwatts5";
 constexpr const char* kAlignedBatteryDischargeRateRelativeHistogramName =
-    "Power.BatteryDischargeRateRelative4";
+    "Power.BatteryDischargeRateRelative5";
 constexpr const char* kAlignedBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode4";
+    "Power.BatteryDischargeMode5";
 
 #if BUILDFLAG(IS_MAC)
 // Reports `proportion` of a time used to a histogram in permyriad (1/100 %).
@@ -218,7 +218,7 @@ void ReportAlignedBatteryHistograms(
 
       if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
         DCHECK(battery_discharge.rate_milliwatts.has_value());
-        base::UmaHistogramCounts1000(
+        base::UmaHistogramCounts100000(
             base::StrCat({kAlignedBatteryDischargeRateMilliwattsHistogramName,
                           scenario_suffix, interval_type_suffix}),
             *battery_discharge.rate_milliwatts);

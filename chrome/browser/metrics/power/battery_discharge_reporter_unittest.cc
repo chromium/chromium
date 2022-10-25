@@ -19,11 +19,11 @@
 namespace {
 
 constexpr const char* kBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode4";
+    "Power.BatteryDischargeMode5";
 constexpr const char* kBatteryDischargeRateMilliwattsHistogramName =
-    "Power.BatteryDischargeRateMilliwatts4";
+    "Power.BatteryDischargeRateMilliwatts5";
 constexpr const char* kBatteryDischargeRateRelativeHistogramName =
-    "Power.BatteryDischargeRateRelative4";
+    "Power.BatteryDischargeRateRelative5";
 
 constexpr base::TimeDelta kTolerableDrift = base::Seconds(1);
 constexpr int kFullBatteryChargeLevel = 10000;

@@ -723,12 +723,12 @@ chromium-metrics-reviews@google.com.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="Power.BatteryDischargeMode4{UsageScenario}{IntervalType}"
+<histogram name="Power.BatteryDischargeMode5{UsageScenario}{IntervalType}"
     enum="BatteryDischargeMode" expires_after="2022-11-30">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
-    Battery discharge mode describing whether BatteryDischargeRateMilliwatts4
+    Battery discharge mode describing whether BatteryDischargeRateMilliwatts5
     could be reported or not, and why.
 
     This is reported at the end of every valid 1 minute interval. An invalid
@@ -777,8 +777,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Power.BatteryDischargeRateMilliwatts4{UsageScenario}{IntervalType}"
-    units="hundredth of percent" expires_after="2022-11-30">
+    name="Power.BatteryDischargeRateMilliwatts5{UsageScenario}{IntervalType}"
+    units="milliwatts" expires_after="2022-11-30">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -807,7 +807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Power.BatteryDischargeRateRelative4{UsageScenario}{IntervalType}"
+    name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}"
     units="hundredth of percent" expires_after="2022-11-30">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
