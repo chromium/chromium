@@ -113,6 +113,7 @@ executable("cast_runner_exe") {
     ":cast_runner_core",
     ":common",
     "//base",
+    "//build:chromecast_buildflags",
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
     "//fuchsia_web/webinstance_host",

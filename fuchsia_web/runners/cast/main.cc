@@ -21,6 +21,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
+#include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/config_reader.h"
 #include "components/fuchsia_component_support/feedback_registration.h"
 #include "components/fuchsia_component_support/inspect.h"
@@ -107,6 +108,15 @@ int main(int argc, char** argv) {
       << "Failed to initialize logging.";
 
   LogComponentStartWithVersion("cast_runner");
+
+  // CastRunner is built even when `enable_cast_receiver=false` so that it can
+  // always be tested. However, the statically linked WebEngineHost dependency
+  // and WebEngine binary from the same build will be missing functionality and
+  // should not be used with CastRunner outside tests.
+#if !BUILDFLAG(ENABLE_CAST_RECEIVER)
+  LOG(WARNING) << "This binary is from a build without Cast Receiver support "
+                  "and does not support all necessary functionality.";
+#endif
 
   if (!enable_cfv2) {
     return Cfv1ToCfv2RunnerProxyMain();
