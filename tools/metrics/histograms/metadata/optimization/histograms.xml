@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="OptimizationTarget">
   <variant name="AutofillAssistant" summary="Autofill Assistant"/>
+  <variant name="ClientSidePhishing" summary="Client Side Phishing"/>
   <variant name="ContextualPageActionPriceTracking"
       summary="Contextual Page Action: Show price tracking"/>
   <variant name="GeolocationPermissions" summary="Geolocation permissions"/>
