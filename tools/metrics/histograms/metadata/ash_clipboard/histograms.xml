@@ -27,9 +27,11 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The number of consecutive copies in the user session, recorded when a paste
-    occurs. Warning: This histogram was expired from 2021-09-01 to 2022-01-05;
-    data may be missing.
+    The number of consecutive copies in the user session. Recorded when a paste
+    occurs.
+
+    Warning: This histogram was expired from 2021-09-01 to 2022-01-05; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -38,8 +40,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The number of consecutive pastes in the user session, recorded when a copy
-    occurs. Includes pastes from Clipboard History.
+    The number of consecutive pastes in the user session. Includes pastes from
+    clipboard history. Recorded when a copy occurs.
   </summary>
 </histogram>
 
@@ -48,11 +50,13 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The number of consecutive pastes from the clipboard history menu. The count
-    is reset after a copy or a paste that is not through the clipboard history
-    menu (such as pressing ctrl-v accelerator or clicking at a context menu
-    option). Warning: This histogram was expired from 2022-01-02 to 2022-01-05;
-    data may be missing.
+    The number of consecutive pastes from the clipboard history menu in the user
+    session. Recorded at the time of a copy or a paste that is not through the
+    clipboard history menu, such as pressing Ctrl+V or using a context menu's
+    Paste option.
+
+    Warning: This histogram was expired from 2022-01-02 to 2022-01-05; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -61,8 +65,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The format of the ClipboardHistoryItemView that was deleted from the
-    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+    The data format of an item deleted from the clipboard history menu. Recorded
+    when the user deletes an item.
   </summary>
 </histogram>
 
@@ -71,8 +75,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The format of the ClipboardHistoryItemView that was pasted from the
-    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+    The data format of an item pasted from the clipboard history menu. Recorded
+    when the user pastes an item.
   </summary>
 </histogram>
 
@@ -81,8 +85,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The format of the view used to display clipboard data. Logged when the view
-    is created.
+    The data format of an item shown in the clipboard history menu. Recorded
+    when the item's view is created.
   </summary>
 </histogram>
 
@@ -91,8 +95,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The command ID index within the Clipboard History contextual menu that was
-    selected by the user. Recorded when the menu item is selected.
+    The index of a clipboard history menu item selected by the user. Recorded
+    when the item is selected.
   </summary>
 </histogram>
 
@@ -101,9 +105,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The number of clipboard history items shown in the clipboard history
-    contextual menu. Recorded when the clipboard history contextual menu model
-    is built.
+    The number of items shown in the clipboard history menu. Recorded each time
+    the menu is shown.
   </summary>
 </histogram>
 
@@ -112,8 +115,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    It records how many times users trigger the clipboard history menu through
-    different ways respecitvely. Recorded when the clipboard history menu shows.
+    The way a user made the clipboard history menu show. Recorded each time the
+    menu is shown.
   </summary>
 </histogram>
 
@@ -122,9 +125,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The number of placeholder strings shown to users in lieu of actual data,
-    broken down by placeholder string type. Recorded when the label is requested
-    from ClipboardHistoryResourceManager.
+    The type of placeholder string shown in a clipboard history item in lieu of
+    actual data. Recorded on menu item creation when necessary.
   </summary>
 </histogram>
 
@@ -133,10 +135,9 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The length of the user journey of the context menu version of clipboard
-    history. Measured as time from starting to construct the menu, to time of
-    the menu being closed. Recorded every time the menu is closed, regardless of
-    whether the user selected one of the menu options.
+    The length of time between the user opening the clipboard history menu and
+    the menu closing. Recorded every time the clipboard history menu is closed,
+    regardless of whether the user selected one of the menu's options.
   </summary>
 </histogram>
 
@@ -150,10 +151,10 @@ chromium-metrics-reviews@google.com.
   <owner>multipaste@google.com</owner>
   <summary>
     The time between a user's Ctrl key press and the user's V key press when
-    pasting via keyboard. Recorded in AcceleratorHistory when a V is pressed.
-    Only recorded for the first V press in a sequence. Sample scenario: User
-    holds Ctrl, waits 200ms, presses V (histogram entry recorded), and presses V
-    again without releasing Ctrl (no histogram entry recorded).
+    pasting via keyboard. Recorded when V is pressed. Only recorded for the
+    first V press in a sequence. Sample scenario: User holds Ctrl, waits 200ms,
+    presses V (histogram entry recorded), and presses V again without releasing
+    Ctrl (no histogram entry recorded).
   </summary>
 </histogram>
 
@@ -163,10 +164,10 @@ chromium-metrics-reviews@google.com.
   <owner>multipaste@google.com</owner>
   <summary>
     The time between a user's Ctrl key press and the user's V key press when
-    pasting via keyboard. Recorded in AcceleratorHistory when a V is pressed.
-    Only recorded for the first V press in a sequence. Sample scenario: User
-    holds Ctrl, waits 200ms, presses V (histogram entry recorded), and presses V
-    again without releasing Ctrl (no histogram entry recorded).
+    pasting via keyboard. Recorded when V is pressed. Only recorded for the
+    first V press in a sequence. Sample scenario: User holds Ctrl, waits 200ms,
+    presses V (histogram entry recorded), and presses V again without releasing
+    Ctrl (no histogram entry recorded).
 
     Note: Version 1 of this histogram incorrectly recorded the Ctrl pressed time
     in some cases such that it seemed closer to the V pressed time than it
@@ -180,8 +181,8 @@ chromium-metrics-reviews@google.com.
   <owner>multipaste@google.com</owner>
   <summary>
     The time between a user's V key press in a Ctrl+V sequence and the end of
-    the paste. Recorded in AcceleratorHistory when Ctrl is released, V is
-    released, or a different key is pressed.
+    the paste. Recorded when Ctrl is released, V is released, or a different key
+    is pressed.
   </summary>
 </histogram>
 
@@ -190,8 +191,11 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The lifetime of the ClipboardImageModelRequest object. Logged in the dtor of
-    ClipboardImageModelRequest.
+    The lifetime of a request created by the clipboard image model factory. This
+    factory reuses one request object for disinct logical requests until no new
+    rendering requests are issued for some period of time, at which point the
+    request object is deemed idle and destroyed. Recorded when a request object
+    is destroyed, either because it was idle or the system is shutting down.
   </summary>
 </histogram>
 
@@ -200,8 +204,9 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The runtime of a request in a ClipboardImageModelRequest. Logged from when
-    the ClipboardImageModelRequest is Start()-ed to when it is Stop()-ed.
+    The delay between the issue time of a request to render a clipboard history
+    item preview and the request's completion time. Recorded when a rendering
+    request finishes.
   </summary>
 </histogram>
 
@@ -210,8 +215,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The reason a ClipboardImageModelRequest is stopped. Logged when a request is
-    Stop()-ed.
+    The end result of a request to render an image preview for the clipboard
+    history menu. Recorded when a request finishes, whether successful or not.
   </summary>
 </histogram>
 
@@ -220,9 +225,12 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The number of times the clipboard history {NudgeType} has been shown. This
-    number will be used as the baseline against the number of emits of the
-    ToFeaturePasteTime and ToFeatureOpenTime histograms.
+    The number of times the clipboard history {NudgeType} has been shown.
+    Recorded when the {NudgeType} is shown.
+
+    This histogram can be used in conjunction with the ToFeatureOpen and
+    ToFeaturePaste histograms to understand a nudge's efficacy in getting users
+    to engage with the feature.
   </summary>
   <token key="NudgeType">
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
@@ -237,9 +245,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The number of seconds between the user being shown the clipboard history
-    {NudgeType} and {Action}. The number of emits to this histogram will also be
-    used to measure the conversion rate by comparing it to ShownCount histogram
+    The delay between the user being shown the clipboard history {NudgeType} and
+    the user's {Action} action. Recorded at the time of the {Action}.
   </summary>
   <token key="NudgeType">
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
@@ -249,8 +256,7 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="Action">
     <variant name="Open" summary="opening the clipboard history menu"/>
-    <variant name="Paste"
-        summary="using the clipboard history to paste something"/>
+    <variant name="Paste" summary="pasting from the clipboard history menu"/>
   </token>
 </histogram>
 
@@ -259,11 +265,17 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    Different operations detected by ClipboardHistory. Debounced, so different
-    than Clipboard.Read, Clipboard.Write. Any clipboard copy detected here will
-    result in a new entry in ClipboardHistory. Recorded after a clipboard read
-    or write is debounced in ClipboardHistory. Warning: This histogram was
-    expired from 2022-01-02 to 2022-01-05; data may be missing.
+    An operation such as a copy or paste detected by clipboard history. Recorded
+    after any duplicate clipboard operations are debounced in clipboard history.
+
+    The total number of copies and pastes in this histogram differ from the
+    Clipboard.Write and Clipboard.Read histograms, respectively, because
+    clipboard history debounces operations before emitting to this histogram. As
+    a result, clipboard history avoids recording programmatic clipboard reads
+    and writes that do not correspond to user actions.
+
+    Warning: This histogram was expired from 2022-01-02 to 2022-01-05; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -272,8 +284,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    Emits information about the type (plain vs. rich text) and input source of
-    each clipboard history paste.
+    The type (plain vs. rich text) and input source of a clipboard history
+    paste. Recorded when an item is pasted from clipboard history.
   </summary>
 </histogram>
 
@@ -282,8 +294,8 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    Each time the clipboard history list is reordered, the operation (copy or
-    paste) initiating that reorder is emitted here.
+    The operation (copy or paste) initiating a clipboard history reorder.
+    Recorded each time the clipboard history list is reordered.
   </summary>
 </histogram>
 
