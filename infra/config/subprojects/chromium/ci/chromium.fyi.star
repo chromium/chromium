@@ -854,6 +854,7 @@ ci.builder(
         category = "backuprefptr|mac",
         short_name = "64rel",
     ),
+    cores = None,
     notifies = ["chrome-memory-safety"],
     os = os.MAC_ANY,
     builder_spec = builder_config.builder_spec(
