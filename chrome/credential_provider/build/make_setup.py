@@ -62,7 +62,7 @@ def GetLZMAExec(src_path):
   if sys.platform == 'win32':
     executable += '.exe'
 
-  return os.path.join(src_path,  'third_party', 'lzma_sdk', 'bin',
+  return os.path.join(src_path, 'third_party', 'lzma_sdk', 'bin',
                       'host_platform', executable)
 
 def GetCmdLine(command, sz_fn, gcp_7z_fn):
