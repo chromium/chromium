@@ -33,7 +33,7 @@ suite('SidePanelShoppingListTest', () => {
       info: {
         title: 'Product Foo',
         domain: 'foo.com',
-        imageUrl: {url: 'https://foo.com/image'},
+        imageUrl: {url: 'chrome://resources/images/error.svg'},
         productUrl: {url: 'https://foo.com/product'},
         currentPrice: '$12',
         previousPrice: '$34',
@@ -353,7 +353,7 @@ suite('SidePanelShoppingListTest', () => {
       info: {
         title: 'Product Baz',
         domain: 'baz.com',
-        imageUrl: {url: 'https://baz.com/image'},
+        imageUrl: {url: 'chrome://resources/images/error.svg'},
         productUrl: {url: 'https://baz.com/product'},
         currentPrice: '$56',
         previousPrice: '$78',

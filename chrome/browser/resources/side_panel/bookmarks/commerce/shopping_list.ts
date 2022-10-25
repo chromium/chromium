@@ -230,6 +230,17 @@ export class ShoppingListElement extends PolymerElement {
     this.untrackedItems_ = this.untrackedItems_.filter(
         untrackedItem => this.productInfos.includes(untrackedItem));
   }
+
+  private onImageLoadSuccess_() {
+    chrome.metricsPrivate.recordBoolean(
+        'Commerce.PriceTracking.SidePanelImageLoad', true);
+  }
+
+  private onImageLoadError_(event: DomRepeatEvent<BookmarkProductInfo>) {
+    this.set('productInfos.' + event.model.index + '.info.imageUrl.url', '');
+    chrome.metricsPrivate.recordBoolean(
+        'Commerce.PriceTracking.SidePanelImageLoad', false);
+  }
 }
 
 declare global {

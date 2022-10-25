@@ -253,7 +253,9 @@
         <template is="dom-if" if="[[item.info.imageUrl.url.length]]" restamp>
           <div class="product-image-container item-image">
               <img class="product-image" is="cr-auto-img"
-                  auto-src="[[item.info.imageUrl.url]]"></img>
+                  auto-src="[[item.info.imageUrl.url]]"
+                  on-load="onImageLoadSuccess_"
+                  on-error="onImageLoadError_"></img>
           </div>
         </template>
         <template is="dom-if" if="[[!item.info.imageUrl.url.length]]" restamp>
