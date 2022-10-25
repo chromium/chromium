@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 87 tests; 69 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 87 tests; 67 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS font-weight(valid): 'normal' keyword: normal
 PASS font-weight(valid): 'bold' keyword: bold
 PASS font-weight(valid): 'auto' keyword inside @font-face: auto
@@ -71,9 +71,9 @@ PASS font-style(valid): 'oblique' followed by zero degrees: oblique 0deg
 FAIL font-style(valid): 'oblique' followed by default 20deg angle: oblique 20deg assert_equals: Unexpected resulting value. expected "oblique" but got "oblique 20deg"
 PASS font-style(valid): 'oblique' followed by maxumum 90 degree angle: oblique 90deg
 PASS font-style(valid): 'oblique' followed by minimum -90 degree angle: oblique -90deg
-PASS font-style(valid): 'oblique' followed by calc with out of range value (should be clamped): oblique calc(91deg)
-PASS font-style(valid): 'oblique' followed by calc with out of range value (should be clamped): oblique calc(-91deg)
-FAIL font-style(valid): 'oblique' followed by  angle in radians: oblique 0rad assert_equals: Unexpected resulting value. expected "oblique 0deg" but got "oblique 0rad"
+FAIL font-style(valid): 'oblique' followed by calc with out of range value (should be clamped): oblique calc(91deg) assert_equals: Unexpected resulting value. expected "oblique calc(91deg)" but got "oblique 90deg"
+FAIL font-style(valid): 'oblique' followed by calc with out of range value (should be clamped): oblique calc(-91deg) assert_equals: Unexpected resulting value. expected "oblique calc(-91deg)" but got "oblique -90deg"
+FAIL font-style(valid): 'oblique' followed by angle in radians: oblique 0rad assert_equals: Unexpected resulting value. expected "oblique 0deg" but got "oblique 0rad"
 PASS font-style(invalid): 'oblique' followed by unit-less number: oblique 20
 PASS font-style(invalid): 'oblique' followed by non-angle: oblique 20px
 PASS font-style(invalid): 'oblique' followed by non-number: oblique a

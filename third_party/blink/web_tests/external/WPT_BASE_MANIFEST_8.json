@@ -1902,8 +1902,22 @@
       ]
      ],
      "crashtests": {
+      "as-baseline-aligned-grid-item.html": [
+       "f9a9e1dad0d21f9b29c8643a57d9862582a4a1d0",
+       [
+        null,
+        {}
+       ]
+      ],
       "balance-with-forced-break.html": [
        "794f76176652756a400cfd77c13c89a1eb50c95e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "body-becomes-spanner-html-becomes-vertical-rl.html": [
+       "7cd544b71cb8d214a68ed37da4903ff0b7474a1a",
        [
         null,
         {}
@@ -86168,6 +86182,19 @@
        {}
       ]
      ],
+     "fragmented-float-overflowing-container.html": [
+      "789c30bce73e323e0d4e4a285f569c7cb7f3dd79",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "grid": {
       "grid-container-fragmentation-001.html": [
        "0b954f2814850a23cf77a4f0595c7a49235e33f6",
@@ -129519,6 +129546,19 @@
         {}
        ]
       ],
+      "line-names-011.html": [
+       "d3bb734447f6b724f21f0ce4dc2c9d15276523ad",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/line-names-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "orthogonal-writing-mode-001.html": [
        "1cf99a73e2ef7b0e3fe42bbf8c188fa4d2733979",
        [
@@ -143173,6 +143213,19 @@
        [
         [
          "/css/css-multicol/abspos-containing-block-outside-spanner-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-multicol-in-second-outer-clipped.html": [
+      "9e1b3df69c554e75672cded3e258857bf06b153c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -284020,7 +284073,7 @@
        []
       ],
       "at-font-face-descriptors-expected.txt": [
-       "aac4466b88fcad42bdb48386717f62747154142b",
+       "f573fe612d5a2c1e11444ba4b6c71f322d9a84b6",
        []
       ],
       "font-descriptor-range-reversed-ref.html": [
@@ -285661,6 +285714,10 @@
       ],
       "line-names-010-ref.html": [
        "9232f1dcf2a8b805a707c16f7f5976fb90a852f2",
+       []
+      ],
+      "line-names-011-ref.html": [
+       "40f35439808470a82760ddf12a720fa73b87a7c1",
        []
       ],
       "orthogonal-writing-mode-001-ref.html": [
@@ -349688,60 +349745,6 @@
       "572db0c01b620dd317f2079df6d0ea7cff6333fe",
       []
      ],
-     "exception": {
-      "basic.tentative.any.serviceworker-expected.txt": [
-       "73f209a6f8af37976bc6e97587a22d74cb02f222",
-       []
-      ],
-      "basic.tentative.any.sharedworker-expected.txt": [
-       "73f209a6f8af37976bc6e97587a22d74cb02f222",
-       []
-      ],
-      "basic.tentative.any.worker-expected.txt": [
-       "73f209a6f8af37976bc6e97587a22d74cb02f222",
-       []
-      ],
-      "constructor.tentative.any-expected.txt": [
-       "0456f4d2453e86f913bbd6c88cd49caf11dcacc2",
-       []
-      ],
-      "constructor.tentative.any.worker-expected.txt": [
-       "0456f4d2453e86f913bbd6c88cd49caf11dcacc2",
-       []
-      ],
-      "getArg.tentative.any-expected.txt": [
-       "6c0dbd5aa6e1ccdf94a6d100d820ce56b8d74647",
-       []
-      ],
-      "getArg.tentative.any.worker-expected.txt": [
-       "6c0dbd5aa6e1ccdf94a6d100d820ce56b8d74647",
-       []
-      ],
-      "is.tentative.any-expected.txt": [
-       "1e14382459cc166ab037748f754b74d09162059a",
-       []
-      ],
-      "is.tentative.any.worker-expected.txt": [
-       "1e14382459cc166ab037748f754b74d09162059a",
-       []
-      ],
-      "toString.tentative.any-expected.txt": [
-       "d8f08fe7c4a58466cac0b0e899da7f662acf3526",
-       []
-      ],
-      "toString.tentative.any.worker-expected.txt": [
-       "d8f08fe7c4a58466cac0b0e899da7f662acf3526",
-       []
-      ],
-      "type.tentative.any-expected.txt": [
-       "738fd42d339a11a3008a7ee0cfdb7436ed4234b7",
-       []
-      ],
-      "type.tentative.any.worker-expected.txt": [
-       "738fd42d339a11a3008a7ee0cfdb7436ed4234b7",
-       []
-      ]
-     },
      "function": {
       "call.tentative.any-expected.txt": [
        "21dc690f77aac7f80d21483a06a90e11d4b6387e",
@@ -349929,28 +349932,12 @@
       ]
      },
      "tag": {
-      "constructor.tentative.any-expected.txt": [
-       "83d20c88b339c8dd0eace34a1d5c26520feb5f8b",
-       []
-      ],
-      "constructor.tentative.any.worker-expected.txt": [
-       "83d20c88b339c8dd0eace34a1d5c26520feb5f8b",
-       []
-      ],
-      "toString.tentative.any-expected.txt": [
-       "0d1549db8082297c9f34aebed799b28904abed57",
-       []
-      ],
-      "toString.tentative.any.worker-expected.txt": [
-       "0d1549db8082297c9f34aebed799b28904abed57",
-       []
-      ],
       "type.tentative.any-expected.txt": [
-       "4ab317d671d7c1905744274b76d996fbdcb416d5",
+       "1eb163aa197b148b823527137e684b9471439ef1",
        []
       ],
       "type.tentative.any.worker-expected.txt": [
-       "4ab317d671d7c1905744274b76d996fbdcb416d5",
+       "1eb163aa197b148b823527137e684b9471439ef1",
        []
       ]
      },
@@ -358159,7 +358146,7 @@
       []
      ],
      "WorkerNavigator.js": [
-      "88e994959b3ae0202ffe77fd7e43204620085998",
+      "e58e7338e918c5348eaff6243163ddf65e68e130",
       []
      ],
      "WorkerSendingPerformanceNow.js": [
@@ -399210,7 +399197,7 @@
      ],
      "variations": {
       "at-font-face-descriptors.html": [
-       "28610860c5015b659c88058762397c10f8727ba6",
+       "92b746900e9b11f0d88135ba616bcf1327499edd",
        [
         null,
         {}
@@ -404681,6 +404668,13 @@
      ],
      "multicol-span-all-016.html": [
       "87c4b5812e6adede5bff8251772f32c46ff97597",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-non-auto-inline-size-offset-top.html": [
+      "ff2935dbbdedfb1e0fefcd1ff60165ea7b966a30",
       [
        null,
        {}
@@ -569039,7 +569033,7 @@
        ]
       ],
       "getArg.tentative.any.js": [
-       "ecd2fbd42fd18ae7c82ba128eb673c8e9b82debc",
+       "4b72c61f47b7e2c1ad921d072ce1016333e6d420",
        [
         null,
         {
@@ -599245,7 +599239,7 @@
      ]
     ],
     "WorkerNavigator_userAgentData.https.html": [
-     "6c5ce3b74ae570a4e597ea7269f4f1b20addec7c",
+     "29c7055cbb3289e8a0b73828e02f18a8d85bf960",
      [
       null,
       {}
