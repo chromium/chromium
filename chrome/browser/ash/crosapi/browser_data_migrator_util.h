@@ -134,6 +134,7 @@ constexpr const char* const kRemainInAshDataPaths[] = {
     "structured_metrics",
     "Sync Data",
     "Trusted Vault",
+    "trusted_vault.pb",
     "WebRTC Logs",
     "webrtc_event_logs",
     "zero_state_group_ranker.pb",

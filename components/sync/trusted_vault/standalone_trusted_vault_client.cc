@@ -223,6 +223,7 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     const base::FilePath& file_path,
+    const base::FilePath& deprecated_file_path,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : backend_task_runner_(
@@ -240,7 +241,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   }
 
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path,
+      file_path, deprecated_file_path,
       std::make_unique<
           BackendDelegate>(BindToCurrentSequence(base::BindRepeating(
           &StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged,

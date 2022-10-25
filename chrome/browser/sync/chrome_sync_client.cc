@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
 #include "build/build_config.h"
@@ -158,12 +159,14 @@ namespace browser_sync {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-const base::FilePath::CharType kTrustedVaultFilename[] =
+constexpr base::FilePath::CharType kTrustedVaultFilename[] =
+    FILE_PATH_LITERAL("trusted_vault.pb");
+constexpr base::FilePath::CharType kDeprecatedTrustedVaultFilename[] =
     FILE_PATH_LITERAL("Trusted Vault");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-const base::FilePath::CharType kLoopbackServerBackendFilename[] =
+constexpr base::FilePath::CharType kLoopbackServerBackendFilename[] =
     FILE_PATH_LITERAL("profile.pb");
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -267,7 +270,9 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
 #else
   trusted_vault_client_ =
       std::make_unique<syncer::StandaloneTrustedVaultClient>(
-          profile_->GetPath().Append(kTrustedVaultFilename), identity_manager,
+          profile_->GetPath().Append(kTrustedVaultFilename),
+          profile_->GetPath().Append(kDeprecatedTrustedVaultFilename),
+          identity_manager,
           profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
 #endif  // BUILDFLAG(IS_ANDROID)

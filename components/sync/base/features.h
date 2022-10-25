@@ -131,6 +131,9 @@ BASE_DECLARE_FEATURE(kSyncTrustedVaultRedoDeviceRegistration);
 // registration attempt if previous was failed.
 BASE_DECLARE_FEATURE(kSyncTrustedVaultResetKeysAreStale);
 
+// Enables storing MD5 hashed trusted vault file instead of OSCrypt encrypted.
+BASE_DECLARE_FEATURE(kSyncTrustedVaultUseMD5HashedFile);
+
 // If enabled, the device will register with FCM and listen to new
 // invalidations. Also, FCM token will be set in DeviceInfo, which signals to
 // the server that device listens to new invalidations.

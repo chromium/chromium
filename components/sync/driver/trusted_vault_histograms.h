@@ -55,6 +55,18 @@ enum class TrustedVaultDownloadKeysStatusForUMA {
   kMaxValue = kAborted
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TrustedVaultFileReadStatusForUMA {
+  kSuccess = 0,
+  kNotFound = 1,
+  kFileReadFailed = 2,
+  kMD5DigestMismatch = 3,
+  kFileProtoDeserializationFailed = 4,
+  kDataProtoDeserializationFailed = 5,
+  kMaxValue = kDataProtoDeserializationFailed
+};
+
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
@@ -79,6 +91,8 @@ void RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
     const std::string& histogram_name,
     bool sample,
     const SyncStatus& sync_status);
+
+void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status);
 
 }  // namespace syncer
 

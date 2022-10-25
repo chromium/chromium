@@ -41,6 +41,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // |url_loader_factory| must not be null.
   StandaloneTrustedVaultClient(
       const base::FilePath& file_path,
+      const base::FilePath& deprecated_file_path,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
