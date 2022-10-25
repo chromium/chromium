@@ -28,7 +28,10 @@ component("linux_ui") {
     "linux_ui_getter.cc",
     "status_icon_linux.cc",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/base:types",
+  ]
   public_deps = [ "//printing/buildflags" ]
 }
 

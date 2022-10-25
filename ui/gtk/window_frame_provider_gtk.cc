@@ -184,10 +184,12 @@ gfx::Insets WindowFrameProviderGtk::GetFrameThicknessDip() {
   return frame_thickness_dip_;
 }
 
-void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
-                                              const gfx::Rect& rect_dip,
-                                              int top_area_height_dip,
-                                              bool focused) {
+void WindowFrameProviderGtk::PaintWindowFrame(
+    gfx::Canvas* canvas,
+    const gfx::Rect& rect_dip,
+    int top_area_height_dip,
+    bool focused,
+    ui::WindowTiledEdges tiled_edges) {
   gfx::ScopedCanvas scoped_canvas(canvas);
   float scale = canvas->UndoDeviceScaleFactor();
 
@@ -197,10 +199,16 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   DCHECK(asset.valid);
 
   auto client_bounds_px = gfx::ScaleToRoundedRect(rect_dip, scale);
-  client_bounds_px.Inset(asset.frame_thickness_px);
+  const auto effective_frame_thickness_px = gfx::Insets::TLBR(
+      tiled_edges.top ? 0 : asset.frame_thickness_px.top(),
+      tiled_edges.left ? 0 : asset.frame_thickness_px.left(),
+      tiled_edges.bottom ? 0 : asset.frame_thickness_px.bottom(),
+      tiled_edges.right ? 0 : asset.frame_thickness_px.right());
+  client_bounds_px.Inset(effective_frame_thickness_px);
 
   gfx::Rect src_rect(gfx::Size(BitmapSizePx(asset), BitmapSizePx(asset)));
-  src_rect.Inset(gfx::Insets(asset.frame_size_px) - asset.frame_thickness_px);
+  src_rect.Inset(gfx::Insets(asset.frame_size_px) -
+                 effective_frame_thickness_px);
 
   auto corner_w = std::min(asset.frame_size_px, client_bounds_px.width() / 2);
   auto corner_h = std::min(asset.frame_size_px, client_bounds_px.height() / 2);
@@ -208,7 +216,7 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   auto edge_h = client_bounds_px.height() - 2 * corner_h;
 
   auto corner_insets =
-      asset.frame_thickness_px + gfx::Insets::VH(corner_h, corner_w);
+      effective_frame_thickness_px + gfx::Insets::VH(corner_h, corner_w);
 
   auto image = gfx::ImageSkia::CreateFrom1xBitmap(
       focused ? asset.focused_bitmap : asset.unfocused_bitmap);
@@ -244,24 +252,24 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
              corner_insets.bottom());
   // Top edge
   draw_image(2 * asset.frame_size_px, src_rect.y(), 1,
-             asset.frame_thickness_px.top(), corner_insets.left(), 0, edge_w,
-             asset.frame_thickness_px.top());
+             effective_frame_thickness_px.top(), corner_insets.left(), 0,
+             edge_w, effective_frame_thickness_px.top());
   // Left edge
   draw_image(src_rect.x(), 2 * asset.frame_size_px,
-             asset.frame_thickness_px.left(), 1, 0, corner_insets.top(),
-             asset.frame_thickness_px.left(), edge_h);
+             effective_frame_thickness_px.left(), 1, 0, corner_insets.top(),
+             effective_frame_thickness_px.left(), edge_h);
   // Bottom edge
   draw_image(2 * asset.frame_size_px, BitmapSizePx(asset) - asset.frame_size_px,
-             1, asset.frame_thickness_px.bottom(), corner_insets.left(),
+             1, effective_frame_thickness_px.bottom(), corner_insets.left(),
              client_bounds_px.bottom(), edge_w,
-             asset.frame_thickness_px.bottom());
+             effective_frame_thickness_px.bottom());
   // Right edge
   draw_image(BitmapSizePx(asset) - asset.frame_size_px, 2 * asset.frame_size_px,
-             asset.frame_thickness_px.right(), 1, client_bounds_px.right(),
-             corner_insets.top(), asset.frame_thickness_px.right(), edge_h);
+             effective_frame_thickness_px.right(), 1, client_bounds_px.right(),
+             corner_insets.top(), effective_frame_thickness_px.right(), edge_h);
 
   int top_area_height_px =
-      top_area_height_dip * scale - asset.frame_thickness_px.top();
+      top_area_height_dip * scale - effective_frame_thickness_px.top();
 
   auto header = PaintHeaderbar({client_bounds_px.width(), top_area_height_px},
                                HeaderContext(solid_frame_, focused), scale);

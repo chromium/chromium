@@ -72,7 +72,8 @@ BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
 void BrowserFrameViewLinuxNative::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
   window_frame_provider_->PaintWindowFrame(
-      canvas, GetLocalBounds(), GetTopAreaHeight(), ShouldPaintAsActive());
+      canvas, GetLocalBounds(), GetTopAreaHeight(), ShouldPaintAsActive(),
+      GetTiledEdges());
 }
 
 void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
