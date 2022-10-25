@@ -113,6 +113,7 @@ test("components_unittests") {
     "//base",
     "//components/apdu:unit_tests",
     "//components/assist_ranker:unit_tests",
+    "//components/attribution_reporting:unit_tests",
     "//components/autofill/core/browser:unit_tests",
     "//components/autofill/core/common:unit_tests",
     "//components/base32:unit_tests",
