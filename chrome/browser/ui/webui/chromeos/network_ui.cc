@@ -60,7 +60,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
+#include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
 namespace chromeos {
 

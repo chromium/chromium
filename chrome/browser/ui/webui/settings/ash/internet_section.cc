@@ -30,7 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
-#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
+#include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace ash::network_config {

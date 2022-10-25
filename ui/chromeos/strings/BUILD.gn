@@ -16,8 +16,8 @@ grit("strings") {
 if (is_chromeos_ash) {
   static_library("strings_provider") {
     sources = [
-      "network_element_localized_strings_provider.cc",
-      "network_element_localized_strings_provider.h",
+      "network/network_element_localized_strings_provider.cc",
+      "network/network_element_localized_strings_provider.h",
     ]
     deps = [
       "//ash/constants",
