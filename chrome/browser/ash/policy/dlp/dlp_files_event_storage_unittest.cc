@@ -51,9 +51,7 @@ class DlpFilesEventStorageTest : public testing::Test {
 
   void SetUp() override {}
 
-  void TearDown() override {
-      task_environment_.RunUntilIdle();
-  }
+  void TearDown() override {}
 
   base::HistogramTester histogram_tester_;
 
