@@ -312,6 +312,10 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/resize_03.html [ RetryOnFailure ]
 crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_* [ RetryOnFailure ]
 
+# win10 / angle-d3d11 / passthrough command decoder failures.
+crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
+crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
+
 ######################
 # Mac Metal failures #
 ######################

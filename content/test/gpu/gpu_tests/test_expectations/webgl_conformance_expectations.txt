@@ -518,6 +518,10 @@ crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shad
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
+# win10 / angle-d3d11 / Passthrough command decoder failures.
+crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
+crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
+
 # Vulkan / Win / NVIDIA / Passthrough command decoder
 crbug.com/1209189 [ win nvidia angle-vulkan passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
 crbug.com/angleproject/6281 [ win nvidia angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
