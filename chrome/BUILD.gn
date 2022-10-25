@@ -1846,10 +1846,17 @@ if (is_chromeos_lacros && is_official_build) {
       ":strip_chrome_crashpad_handler",
       ":strip_libegl_so",
       ":strip_libglesv2_so",
-      ":strip_nacl_helper",
     ]
-    if (target_cpu == "arm" || target_cpu == "arm64") {
-      deps += [ ":strip_nacl_helper_bootstrap" ]
+    if (target_cpu == "x64") {
+      deps += [ ":strip_nacl_helper" ]
+    } else if (target_cpu == "arm") {
+      deps += [
+        ":strip_nacl_helper",
+        ":strip_nacl_helper_bootstrap",
+      ]
+    } else {
+      assert(target_cpu == "arm64")
+      #TODO(crbug.com/1365963): Add nacl.
     }
   }
 
