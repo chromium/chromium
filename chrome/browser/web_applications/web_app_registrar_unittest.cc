@@ -946,7 +946,7 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeBrowser) {
 }
 
 TEST_F(WebAppRegistrarTest,
-       NotLocallyInstalledAppGetsDisplayModeBrowserEvenForIsolatedApps) {
+       NotLocallyInstalledAppGetsDisplayModeBrowserEvenForIsolatedWebApps) {
   InitSyncBridge();
 
   auto web_app = test::CreateWebApp();
@@ -966,7 +966,7 @@ TEST_F(WebAppRegistrarTest,
 }
 
 TEST_F(WebAppRegistrarTest,
-       IsolatedAppsGetDisplayModeStandaloneRegardlessOfUserSettings) {
+       IsolatedWebAppsGetDisplayModeStandaloneRegardlessOfUserSettings) {
   InitSyncBridge();
 
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();

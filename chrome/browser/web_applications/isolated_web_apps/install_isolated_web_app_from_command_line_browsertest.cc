@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include <vector>
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -32,7 +32,7 @@ using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
 
-class InstallIsolatedAppFromCommandLineBrowserTest
+class InstallIsolatedWebAppFromCommandLineBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUp() override {
@@ -63,7 +63,7 @@ class InstallIsolatedAppFromCommandLineBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(InstallIsolatedAppFromCommandLineBrowserTest,
+IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineBrowserTest,
                        AppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
   AppId id = observer.BeginListeningAndWait();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
+#include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
 
 #include <memory>
 #include <sstream>
@@ -64,15 +64,15 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
 
 }  // namespace
 
-InstallIsolatedAppCommand::InstallIsolatedAppCommand(
+InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppUrlInfo& isolation_info,
     const IsolationData& isolation_data,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     content::BrowserContext& browser_context,
     WebAppInstallFinalizer& install_finalizer,
-    base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
-                                           InstallIsolatedAppCommandError>)>
+    base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
+                                           InstallIsolatedWebAppCommandError>)>
         callback)
     : lock_description_(std::make_unique<AppLockDescription>(
           base::flat_set<AppId>{isolation_info.app_id()})),
@@ -89,37 +89,39 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
   DCHECK(!callback.is_null());
 
   callback_ =
-      base::BindOnce([](base::expected<InstallIsolatedAppCommandSuccess,
-                                       InstallIsolatedAppCommandError> result) {
-        webapps::InstallableMetrics::TrackInstallResult(result.has_value());
-        return result;
-      }).Then(std::move(callback));
+      base::BindOnce(
+          [](base::expected<InstallIsolatedWebAppCommandSuccess,
+                            InstallIsolatedWebAppCommandError> result) {
+            webapps::InstallableMetrics::TrackInstallResult(result.has_value());
+            return result;
+          })
+          .Then(std::move(callback));
 }
 
-void InstallIsolatedAppCommand::SetDataRetrieverForTesting(
+void InstallIsolatedWebAppCommand::SetDataRetrieverForTesting(
     std::unique_ptr<WebAppDataRetriever> data_retriever) {
   data_retriever_ = std::move(data_retriever);
 }
 
-InstallIsolatedAppCommand::~InstallIsolatedAppCommand() = default;
+InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() = default;
 
-LockDescription& InstallIsolatedAppCommand::lock_description() const {
+LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
   return *lock_description_;
 }
 
-void InstallIsolatedAppCommand::Start() {
+void InstallIsolatedWebAppCommand::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateStoragePartition();
   LoadUrl();
 }
 
-void InstallIsolatedAppCommand::CreateStoragePartition() {
+void InstallIsolatedWebAppCommand::CreateStoragePartition() {
   browser_context_->GetStoragePartition(
       isolation_info_.storage_partition_config(&browser_context_),
       /*can_create=*/true);
 }
 
-void InstallIsolatedAppCommand::LoadUrl() {
+void InstallIsolatedWebAppCommand::LoadUrl() {
   DCHECK(web_contents_ != nullptr);
 
   // |web_app::IsolatedWebAppURLLoaderFactory| uses the isolation data in
@@ -133,11 +135,11 @@ void InstallIsolatedAppCommand::LoadUrl() {
       isolation_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);
   url_loader_->LoadUrl(install_page_url, web_contents_.get(),
                        WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
-                       base::BindOnce(&InstallIsolatedAppCommand::OnLoadUrl,
+                       base::BindOnce(&InstallIsolatedWebAppCommand::OnLoadUrl,
                                       weak_factory_.GetWeakPtr()));
 }
 
-void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
+void InstallIsolatedWebAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsUrlLoadingResultSuccess(result)) {
@@ -149,17 +151,17 @@ void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
   CheckInstallabilityAndRetrieveManifest();
 }
 
-void InstallIsolatedAppCommand::CheckInstallabilityAndRetrieveManifest() {
+void InstallIsolatedWebAppCommand::CheckInstallabilityAndRetrieveManifest() {
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents_.get(),
       /*bypass_service_worker_check=*/true,
-      base::BindOnce(
-          &InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&InstallIsolatedWebAppCommand::
+                         OnCheckInstallabilityAndRetrieveManifest,
+                     weak_factory_.GetWeakPtr()));
 }
 
 base::expected<WebAppInstallInfo, std::string>
-InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
+InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
     const blink::mojom::Manifest& manifest,
     const GURL& manifest_url) {
   WebAppInstallInfo info;
@@ -185,10 +187,10 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
     // `start_url` into account. (See https://w3c.github.io/manifest/#id-member
     // on how the manifest parser resolves the `id` field).
     //
-    // It is required for isolated apps to have app id based on origin of the
-    // application and do not include other information in order to be able to
-    // identify isolated apps by origin because there is always only 1 app per
-    // origin.
+    // It is required for Isolated Web Apps to have app id based on origin of
+    // the application and do not include other information in order to be able
+    // to identify Isolated Web Apps by origin because there is always only 1
+    // app per origin.
     return base::unexpected{base::StrCat(
         {R"(Manifest `id` must be "/". Resolved manifest id: )", *encoded_id})};
   }
@@ -206,7 +208,7 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
   return info;
 }
 
-void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
+void InstallIsolatedWebAppCommand::OnCheckInstallabilityAndRetrieveManifest(
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
@@ -249,18 +251,19 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   }
 }
 
-void InstallIsolatedAppCommand::FinalizeInstall(const WebAppInstallInfo& info) {
+void InstallIsolatedWebAppCommand::FinalizeInstall(
+    const WebAppInstallInfo& info) {
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
   options.isolation_data = isolation_data_;
 
   install_finalizer_.FinalizeInstall(
       info, options,
-      base::BindOnce(&InstallIsolatedAppCommand::OnFinalizeInstall,
+      base::BindOnce(&InstallIsolatedWebAppCommand::OnFinalizeInstall,
                      weak_factory_.GetWeakPtr()));
 }
 
-void InstallIsolatedAppCommand::OnFinalizeInstall(
+void InstallIsolatedWebAppCommand::OnFinalizeInstall(
     const AppId& unused_app_id,
     webapps::InstallResultCode install_result_code,
     OsHooksErrors unused_os_hooks_errors) {
@@ -273,16 +276,17 @@ void InstallIsolatedAppCommand::OnFinalizeInstall(
   }
 }
 
-void InstallIsolatedAppCommand::DownloadIcons(WebAppInstallInfo install_info) {
+void InstallIsolatedWebAppCommand::DownloadIcons(
+    WebAppInstallInfo install_info) {
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(install_info);
   data_retriever_->GetIcons(
       web_contents_.get(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
-      base::BindOnce(&InstallIsolatedAppCommand::OnGetIcons,
+      base::BindOnce(&InstallIsolatedWebAppCommand::OnGetIcons,
                      weak_factory_.GetWeakPtr(), std::move(install_info)));
 }
 
-void InstallIsolatedAppCommand::OnGetIcons(
+void InstallIsolatedWebAppCommand::OnGetIcons(
     WebAppInstallInfo install_info,
     IconsDownloadedResult result,
     std::map<GURL, std::vector<SkBitmap>> icons_map,
@@ -299,38 +303,39 @@ void InstallIsolatedAppCommand::OnGetIcons(
   FinalizeInstall(install_info);
 }
 
-void InstallIsolatedAppCommand::OnSyncSourceRemoved() {
+void InstallIsolatedWebAppCommand::OnSyncSourceRemoved() {
   // TODO(kuragin): Test cancellation on sync source removed event.
   ReportFailure("Sync source removed.");
 }
 
-void InstallIsolatedAppCommand::OnShutdown() {
+void InstallIsolatedWebAppCommand::OnShutdown() {
   // TODO(kuragin): Test cancellation of pending installation during system
   // shutdown.
   ReportFailure("System is shutting down.");
 }
 
-void InstallIsolatedAppCommand::ReportFailure(base::StringPiece message) {
+void InstallIsolatedWebAppCommand::ReportFailure(base::StringPiece message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
       base::BindOnce(std::move(callback_),
-                     base::unexpected{InstallIsolatedAppCommandError{
+                     base::unexpected{InstallIsolatedWebAppCommandError{
                          .message = std::string{message}}}));
 }
 
-void InstallIsolatedAppCommand::ReportSuccess() {
+void InstallIsolatedWebAppCommand::ReportSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
-      base::BindOnce(std::move(callback_), InstallIsolatedAppCommandSuccess{}));
+      base::BindOnce(std::move(callback_),
+                     InstallIsolatedWebAppCommandSuccess{}));
 }
 
-base::Value InstallIsolatedAppCommand::ToDebugValue() const {
+base::Value InstallIsolatedWebAppCommand::ToDebugValue() const {
   return base::Value{};
 }
 }  // namespace web_app

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -132,26 +132,26 @@ base::CommandLine CreateCommandLine(
   return command_line;
 }
 
-class InstallIsolatedAppFromCommandLineFlagTest : public ::testing::Test {
+class InstallIsolatedWebAppFromCommandLineFlagTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        NoInstallationWhenProxyFlagAbsentAndBundleFlagAbsent) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(
                   CreateCommandLine(absl::nullopt, absl::nullopt)),
               HasNoValue());
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        NoInstallationWhenProxyFlagAbsentAndBundleFlagEmpty) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
                   absl::nullopt, base::FilePath::FromUTF8Unsafe(""))),
               HasNoValue());
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagAbsentAndBundleFlagInvalid) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
                   absl::nullopt,
@@ -159,7 +159,7 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               HasErrorWithSubstr("Invalid path provided"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagAbsentAndBundleFlagIsDirectory) {
   ScopedWorkingDirectoryWithFile cwd;
   EXPECT_THAT(GetIsolationDataFromCommandLine(
@@ -167,7 +167,7 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               HasErrorWithSubstr("Invalid path provided"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagAbsentAndBundleFlagValid) {
   ScopedWorkingDirectoryWithFile cwd;
   EXPECT_THAT(GetIsolationDataFromCommandLine(
@@ -175,7 +175,7 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               IsDevModeBundle(cwd.existing_file_path()));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagAbsentAndBundleFlagValidAndAbsolute) {
   ScopedWorkingDirectoryWithFile cwd;
   EXPECT_THAT(GetIsolationDataFromCommandLine(
@@ -183,28 +183,28 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               IsDevModeBundle(cwd.existing_file_path()));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        NoInstallationWhenProxyFlagEmptyAndBundleFlagAbsent) {
   EXPECT_THAT(
       GetIsolationDataFromCommandLine(CreateCommandLine("", absl::nullopt)),
       HasNoValue());
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        NoInstallationWhenProxyFlagEmptyAndBundleFlagEmpty) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(
                   CreateCommandLine("", base::FilePath::FromUTF8Unsafe(""))),
               HasNoValue());
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagEmptyAndBundleFlagInvalid) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
                   "", base::FilePath::FromUTF8Unsafe("does_not_exist.wbn"))),
               HasErrorWithSubstr("Invalid path provided"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagEmptyAndBundleFlagValid) {
   ScopedWorkingDirectoryWithFile cwd;
   EXPECT_THAT(GetIsolationDataFromCommandLine(
@@ -212,21 +212,21 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               IsDevModeBundle(cwd.existing_file_path()));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagInvalidAndBundleFlagAbsent) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(
                   CreateCommandLine("invalid", absl::nullopt)),
               HasErrorWithSubstr("Invalid URL"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagInvalidAndBundleFlagEmpty) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
                   "invalid", base::FilePath::FromUTF8Unsafe(""))),
               HasErrorWithSubstr("Invalid URL"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagInvalidAndBundleFlagInvalid) {
   EXPECT_THAT(
       GetIsolationDataFromCommandLine(CreateCommandLine(
@@ -234,7 +234,7 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
       HasErrorWithSubstr("cannot both be provided"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagInvalidAndBundleFlagValid) {
   ScopedWorkingDirectoryWithFile cwd;
   EXPECT_THAT(GetIsolationDataFromCommandLine(
@@ -242,21 +242,21 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               HasErrorWithSubstr("cannot both be provided"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagAbsent) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(
                   CreateCommandLine("http://example.com", absl::nullopt)),
               IsDevModeProxy("http://example.com"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagEmpty) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
                   "http://example.com", base::FilePath::FromUTF8Unsafe(""))),
               IsDevModeProxy("http://example.com"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagValidAndBundleFlagInvalid) {
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
                   "http://example.com",
@@ -264,7 +264,7 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               HasErrorWithSubstr("cannot both be provided"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        ErrorWhenProxyFlagValidAndBundleFlagValid) {
   ScopedWorkingDirectoryWithFile cwd;
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
@@ -272,13 +272,13 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
               HasErrorWithSubstr("cannot both be provided"));
 }
 
-class InstallIsolatedAppFromCommandLineIsolationInfoTest
+class InstallIsolatedWebAppFromCommandLineIsolationInfoTest
     : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
        GetIsolationInfoSucceedsWhenInstalledBundle) {
   IsolationData isolation_data =
       IsolationData{IsolationData::InstalledBundle{}};
@@ -288,7 +288,7 @@ TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
   EXPECT_THAT(isolation_info.error(), HasSubstr("is not implemented"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
        GetIsolationInfoSucceedsWhenDevModeBundle) {
   IsolationData isolation_data = IsolationData{IsolationData::DevModeBundle{}};
   base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
@@ -297,7 +297,7 @@ TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
   EXPECT_THAT(isolation_info.error(), HasSubstr("is not implemented"));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
+TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
        GetIsolationInfoSucceedsWhenDevModeProxy) {
   IsolationData isolation_data = IsolationData{IsolationData::DevModeProxy{}};
   base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =

@@ -174,7 +174,7 @@ TEST(WebAppTest, ResolveEffectiveDisplayModeWithDisplayOverrides) {
                 UserDisplayMode::kStandalone, /*is_isolated=*/false));
 }
 
-TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedApp) {
+TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedWebApp) {
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 /*app_display_mode=*/DisplayMode::kBrowser,

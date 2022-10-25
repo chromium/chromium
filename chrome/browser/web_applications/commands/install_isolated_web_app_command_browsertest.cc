@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
+#include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "content/public/test/browser_test.h"
@@ -11,9 +11,9 @@
 
 namespace web_app {
 
-using InstallIsolatedAppCommandBrowserTest = WebAppControllerBrowserTest;
+using InstallIsolatedWebAppCommandBrowserTest = WebAppControllerBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(InstallIsolatedAppCommandBrowserTest, DoesFoo) {
+IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppCommandBrowserTest, DoesFoo) {
   const GURL kWebAppUrl =
       https_server()->GetURL(R"(/banners/manifest_test_page.html)");
 }

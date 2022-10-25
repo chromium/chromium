@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_APP_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_APP_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_WEB_APP_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_WEB_APP_COMMAND_H_
 
 #include <memory>
 #include <ostream>
@@ -40,13 +40,14 @@ class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
 
-struct InstallIsolatedAppCommandSuccess {};
-struct InstallIsolatedAppCommandError {
+struct InstallIsolatedWebAppCommandSuccess {};
+struct InstallIsolatedWebAppCommandError {
   std::string message;
 
-  friend std::ostream& operator<<(std::ostream& os,
-                                  const InstallIsolatedAppCommandError& error) {
-    return os << "InstallIsolatedAppCommandError { message = \""
+  friend std::ostream& operator<<(
+      std::ostream& os,
+      const InstallIsolatedWebAppCommandError& error) {
+    return os << "InstallIsolatedWebAppCommandError { message = \""
               << error.message << "\" }.";
   }
 };
@@ -57,7 +58,7 @@ struct InstallIsolatedAppCommandError {
 //
 // |content::IsolatedAppThrottle| enforces that. The requirements prevent
 // re-using web contents.
-class InstallIsolatedAppCommand : public WebAppCommand {
+class InstallIsolatedWebAppCommand : public WebAppCommand {
  public:
   //
   // |isolation_info| holds the origin information of the app. It is
@@ -70,25 +71,26 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   // |callback| must be not null.
   //
   // The `id` in the application's manifest must equal "/".
-  explicit InstallIsolatedAppCommand(
+  explicit InstallIsolatedWebAppCommand(
       const IsolatedWebAppUrlInfo& isolation_info,
       const IsolationData& isolation_data,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       content::BrowserContext& browser_context,
       WebAppInstallFinalizer& install_finalizer,
-      base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
-                                             InstallIsolatedAppCommandError>)>
-          callback);
+      base::OnceCallback<
+          void(base::expected<InstallIsolatedWebAppCommandSuccess,
+                              InstallIsolatedWebAppCommandError>)> callback);
 
-  InstallIsolatedAppCommand(const InstallIsolatedAppCommand&) = delete;
-  InstallIsolatedAppCommand& operator=(const InstallIsolatedAppCommand&) =
+  InstallIsolatedWebAppCommand(const InstallIsolatedWebAppCommand&) = delete;
+  InstallIsolatedWebAppCommand& operator=(const InstallIsolatedWebAppCommand&) =
       delete;
 
-  InstallIsolatedAppCommand(InstallIsolatedAppCommand&&) = delete;
-  InstallIsolatedAppCommand& operator=(InstallIsolatedAppCommand&&) = delete;
+  InstallIsolatedWebAppCommand(InstallIsolatedWebAppCommand&&) = delete;
+  InstallIsolatedWebAppCommand& operator=(InstallIsolatedWebAppCommand&&) =
+      delete;
 
-  ~InstallIsolatedAppCommand() override;
+  ~InstallIsolatedWebAppCommand() override;
 
   LockDescription& lock_description() const override;
 
@@ -147,13 +149,13 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
-  base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
-                                         InstallIsolatedAppCommandError>)>
+  base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
+                                         InstallIsolatedWebAppCommandError>)>
       callback_;
 
-  base::WeakPtrFactory<InstallIsolatedAppCommand> weak_factory_{this};
+  base::WeakPtrFactory<InstallIsolatedWebAppCommand> weak_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_APP_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_WEB_APP_COMMAND_H_

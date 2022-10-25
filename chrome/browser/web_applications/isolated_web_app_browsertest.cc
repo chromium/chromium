@@ -176,20 +176,21 @@ class ServiceWorkerVersionStoppedRunningWaiter
 };
 }  // namespace
 
-class IsolatedAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
+class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedAppBrowserTest() = default;
-  IsolatedAppBrowserTest(const IsolatedAppBrowserTest&) = delete;
-  IsolatedAppBrowserTest& operator=(const IsolatedAppBrowserTest&) = delete;
-  ~IsolatedAppBrowserTest() override = default;
+  IsolatedWebAppBrowserTest() = default;
+  IsolatedWebAppBrowserTest(const IsolatedWebAppBrowserTest&) = delete;
+  IsolatedWebAppBrowserTest& operator=(const IsolatedWebAppBrowserTest&) =
+      delete;
+  ~IsolatedWebAppBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
 
-    std::string isolated_app_origins =
+    std::string isolated_web_app_origins =
         std::string("https://") + kAppHost + ",https://" + kApp2Host;
     command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    isolated_app_origins);
+                                    isolated_web_app_origins);
   }
 
  protected:
@@ -204,7 +205,7 @@ class IsolatedAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {
   AppId app1_id = InstallIsolatedWebApp(kAppHost);
   AppId app2_id = InstallIsolatedWebApp(kApp2Host);
 
@@ -223,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
             app2_frame->GetStoragePartition());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
                        OmniboxNavigationOpensNewPwaWindow) {
   AppId app_id = InstallIsolatedWebApp(kAppHost);
 
@@ -245,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    IsolatedAppBrowserTest,
+    IsolatedWebAppBrowserTest,
     OmniboxNavigationOpensNewPwaWindowEvenIfUserDisplayModeIsBrowser) {
   AppId app_id = InstallIsolatedWebApp(kAppHost);
 
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests that the app menu doesn't have an 'Open in Chrome' option.
-IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, NoOpenInChrome) {
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
   AppId app_id = InstallIsolatedWebApp(kAppHost);
   auto* app_frame = OpenApp(app_id);
   auto* app_browser = GetBrowserFromFrame(app_frame);
@@ -290,15 +291,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, NoOpenInChrome) {
   EXPECT_FALSE(found);
 }
 
-class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
+class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
  public:
   using CookieHeaders = std::vector<std::string>;
 
   void SetUpOnMainThread() override {
-    https_server()->RegisterRequestMonitor(base::BindRepeating(
-        &IsolatedAppBrowserCookieTest::MonitorRequest, base::Unretained(this)));
+    https_server()->RegisterRequestMonitor(
+        base::BindRepeating(&IsolatedWebAppBrowserCookieTest::MonitorRequest,
+                            base::Unretained(this)));
 
-    IsolatedAppBrowserTest::SetUpOnMainThread();
+    IsolatedWebAppBrowserTest::SetUpOnMainThread();
   }
 
  protected:
@@ -330,7 +332,7 @@ class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
   std::unordered_map<std::string, CookieHeaders> cookie_map_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
   AppId app_id = InstallIsolatedWebApp(kAppHost);
 
   GURL app_url =
@@ -372,16 +374,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
   EXPECT_TRUE(non_app_cookies[2].empty());
 }
 
-class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
+class IsolatedWebAppBrowserServiceWorkerTest
+    : public IsolatedWebAppBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    IsolatedAppBrowserTest::SetUpOnMainThread();
+    IsolatedWebAppBrowserTest::SetUpOnMainThread();
 
     app_url_ = https_server()->GetURL(
         kAppHost, "/banners/isolated/register_service_worker.html");
   }
 
-  int64_t InstallIsolatedAppAndWaitForServiceWorker() {
+  int64_t InstallIsolatedWebAppAndWaitForServiceWorker() {
     AppId app_id = InstallIsolatedWebApp(app_url_);
 
     auto* original_frame = OpenApp(app_id);
@@ -406,24 +409,24 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
   GURL app_url_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserServiceWorkerTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserServiceWorkerTest,
                        ServiceWorkerPartitioned) {
-  InstallIsolatedAppAndWaitForServiceWorker();
+  InstallIsolatedWebAppAndWaitForServiceWorker();
   test::CheckServiceWorkerStatus(
       app_url_, storage_partition_,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
-class IsolatedAppBrowserServiceWorkerPushTest
-    : public IsolatedAppBrowserServiceWorkerTest {
+class IsolatedWebAppBrowserServiceWorkerPushTest
+    : public IsolatedWebAppBrowserServiceWorkerTest {
  public:
-  IsolatedAppBrowserServiceWorkerPushTest()
+  IsolatedWebAppBrowserServiceWorkerPushTest()
       : scoped_testing_factory_installer_(
             base::BindRepeating(&gcm::FakeGCMProfileService::Build)) {}
 
  protected:
   void SetUpOnMainThread() override {
-    IsolatedAppBrowserServiceWorkerTest::SetUpOnMainThread();
+    IsolatedWebAppBrowserServiceWorkerTest::SetUpOnMainThread();
 
     notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
         browser()->profile());
@@ -469,10 +472,10 @@ class IsolatedAppBrowserServiceWorkerPushTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    IsolatedAppBrowserServiceWorkerPushTest,
+    IsolatedWebAppBrowserServiceWorkerPushTest,
     ServiceWorkerPartitionedWhenWakingUpDuetoPushNotification) {
   int64_t service_worker_version_id =
-      InstallIsolatedAppAndWaitForServiceWorker();
+      InstallIsolatedWebAppAndWaitForServiceWorker();
 
   // Request and confirm permission to show notifications.
   auto* permission_request_manager =

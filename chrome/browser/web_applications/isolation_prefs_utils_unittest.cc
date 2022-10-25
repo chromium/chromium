@@ -33,7 +33,7 @@ class IsolationPrefsUtilsTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
-TEST_F(IsolationPrefsUtilsTest, TestInstallNonIsolatedApp) {
+TEST_F(IsolationPrefsUtilsTest, TestInstallNonIsolatedWebApp) {
   WebApp app(app_id);
   app.SetScope(GURL(scope));
 
@@ -44,7 +44,7 @@ TEST_F(IsolationPrefsUtilsTest, TestInstallNonIsolatedApp) {
   EXPECT_EQ(storage_isolation_key, nullptr);
 }
 
-TEST_F(IsolationPrefsUtilsTest, TestInstallIsolatedApp) {
+TEST_F(IsolationPrefsUtilsTest, TestInstallIsolatedWebApp) {
   WebApp app(app_id);
   app.SetScope(GURL(scope));
   app.SetStorageIsolated(true);
@@ -57,7 +57,7 @@ TEST_F(IsolationPrefsUtilsTest, TestInstallIsolatedApp) {
   EXPECT_EQ(*storage_isolation_key, app_id);
 }
 
-TEST_F(IsolationPrefsUtilsTest, TestUpdateIsolatedApp) {
+TEST_F(IsolationPrefsUtilsTest, TestUpdateIsolatedWebApp) {
   WebApp app(app_id);
   app.SetScope(GURL(scope));
   app.SetStorageIsolated(true);
@@ -81,7 +81,7 @@ TEST_F(IsolationPrefsUtilsTest, TestUpdateIsolatedApp) {
   }
 }
 
-TEST_F(IsolationPrefsUtilsTest, TestUninstallIsolatedApp) {
+TEST_F(IsolationPrefsUtilsTest, TestUninstallIsolatedWebApp) {
   WebApp app(app_id);
   app.SetScope(GURL(scope));
   app.SetStorageIsolated(true);

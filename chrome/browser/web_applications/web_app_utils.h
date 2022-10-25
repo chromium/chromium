@@ -177,8 +177,8 @@ enum class AppSettingsPageEntryPoint {
 // window (for app_display_mode 'standalone' or 'fullscreen'), or a minimal-ui
 // window (for app_display_mode 'browser' or 'minimal-ui').
 //
-// |is_isolated| overrides browser display mode for isolated apps because they
-// can't be open as a tab.
+// |is_isolated| overrides browser display mode for Isolated Web Apps because
+// they can't be open as a tab.
 DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,

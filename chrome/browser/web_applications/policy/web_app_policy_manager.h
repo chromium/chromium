@@ -132,7 +132,7 @@ class WebAppPolicyManager {
 
   void RefreshPolicyInstalledApps();
 #if BUILDFLAG(IS_CHROMEOS)
-  void RefreshPolicyInstalledIsolatedApps();
+  void RefreshPolicyInstalledIsolatedWebApps();
 #endif
   void RefreshPolicySettings();
   void OnAppsSynchronized(

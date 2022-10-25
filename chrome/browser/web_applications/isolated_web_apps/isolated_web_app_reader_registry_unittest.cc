@@ -176,7 +176,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
 
   constexpr static char kResponseBody[] = "test";
 
-  constexpr static char kInvalidIsolatedAppUrl[] = "isolated-app://foo/";
+  constexpr static char kInvalidIsolatedWebAppUrl[] = "isolated-app://foo/";
 
   std::unique_ptr<IsolatedWebAppReaderRegistry> registry_;
   std::unique_ptr<web_package::MockWebBundleParserFactory> parser_factory_;
@@ -535,7 +535,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
 
   FulfillIntegrityBlock();
   auto metadata = metadata_->Clone();
-  metadata->primary_url = GURL(kInvalidIsolatedAppUrl);
+  metadata->primary_url = GURL(kInvalidIsolatedWebAppUrl);
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
@@ -543,11 +543,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(
-      result.error().message,
-      base::StringPrintf("Invalid metadata: Primary URL must be %s, but "
-                         "was %s",
-                         kPrimaryUrl.spec().c_str(), kInvalidIsolatedAppUrl));
+  EXPECT_EQ(result.error().message,
+            base::StringPrintf("Invalid metadata: Primary URL must be %s, but "
+                               "was %s",
+                               kPrimaryUrl.spec().c_str(),
+                               kInvalidIsolatedWebAppUrl));
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
@@ -561,7 +561,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
   FulfillIntegrityBlock();
   auto metadata = metadata_->Clone();
   metadata->requests.insert_or_assign(
-      GURL(kInvalidIsolatedAppUrl),
+      GURL(kInvalidIsolatedWebAppUrl),
       web_package::mojom::BundleResponseLocation::New());
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));

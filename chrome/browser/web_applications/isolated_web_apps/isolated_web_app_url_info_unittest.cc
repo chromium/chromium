@@ -22,7 +22,7 @@ using ::testing::IsTrue;
 using ::testing::StartsWith;
 using ::testing::Values;
 
-constexpr char kValidIsolatedAppUrl[] =
+constexpr char kValidIsolatedWebAppUrl[] =
     "isolated-app://"
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
     "?foo=bar#baz";
@@ -32,7 +32,7 @@ using IsolatedWebAppUrlInfoTest = ::testing::Test;
 
 TEST_F(IsolatedWebAppUrlInfoTest, CreateSucceedsWithValidUrl) {
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
 
   EXPECT_THAT(url_info.has_value(), IsTrue());
 }
@@ -71,7 +71,7 @@ TEST_F(IsolatedWebAppUrlInfoTest,
 
 TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdSucceedWithValidUrl) {
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
   base::expected<web_package::SignedWebBundleId, std::string> bundle_id =
       url_info->ParseSignedWebBundleId();
 
@@ -114,7 +114,7 @@ TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdFailsWithBadHostname) {
 
 TEST_F(IsolatedWebAppUrlInfoTest, OriginIsCorrect) {
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
 
   EXPECT_THAT(url_info->origin().Serialize(),
               Eq("isolated-app://"
@@ -123,7 +123,7 @@ TEST_F(IsolatedWebAppUrlInfoTest, OriginIsCorrect) {
 
 TEST_F(IsolatedWebAppUrlInfoTest, AppIdIsHashedOrigin) {
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
 
   EXPECT_THAT(url_info->app_id(), Eq("ckmbeioemjmabdoddhjadagkjknpeigi"));
 }
@@ -133,7 +133,7 @@ TEST_F(IsolatedWebAppUrlInfoTest, StoragePartitionConfigUsesOrigin) {
   TestingProfile testing_profile;
 
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
 
   auto expected_config = content::StoragePartitionConfig::Create(
       &testing_profile,
@@ -163,24 +163,24 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppGURLConversionTest,
     Values(
-        std::make_pair(kValidIsolatedAppUrl, kValidIsolatedAppUrl),
+        std::make_pair(kValidIsolatedWebAppUrl, kValidIsolatedWebAppUrl),
         // credentials
         std::make_pair(
             "isolated-app://"
             "foo:bar@aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
             "?foo=bar#baz",
-            kValidIsolatedAppUrl),
+            kValidIsolatedWebAppUrl),
         // explicit port
         std::make_pair(
             "isolated-app://"
             "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic:123/"
             "?foo=bar#baz",
-            kValidIsolatedAppUrl),
+            kValidIsolatedWebAppUrl),
         // missing `//`
         std::make_pair(
             "isolated-app:"
             "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
             "?foo=bar#baz",
-            kValidIsolatedAppUrl)));
+            kValidIsolatedWebAppUrl)));
 
 }  // namespace web_app

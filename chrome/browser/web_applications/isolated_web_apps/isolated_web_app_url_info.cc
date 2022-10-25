@@ -68,12 +68,12 @@ content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
     content::BrowserContext* browser_context) const {
   DCHECK(browser_context != nullptr);
 
-  constexpr char kIsolatedAppPartitionPrefix[] = "iwa-";
+  constexpr char kIsolatedWebAppPartitionPrefix[] = "iwa-";
   // We add a prefix to `partition_domain` to avoid potential name conflicts
   // with Chrome Apps, which use their id/hostname as `partition_domain`.
   return content::StoragePartitionConfig::Create(
       browser_context,
-      /*partition_domain=*/kIsolatedAppPartitionPrefix + origin().host(),
+      /*partition_domain=*/kIsolatedWebAppPartitionPrefix + origin().host(),
       /*partition_name=*/"",
       /*in_memory=*/false);
 }

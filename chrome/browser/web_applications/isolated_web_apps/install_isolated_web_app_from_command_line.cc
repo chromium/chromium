@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 
 #include <memory>
 #include <string>
@@ -21,7 +21,7 @@
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
+#include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -40,8 +40,8 @@ namespace web_app {
 namespace {
 
 void ReportInstallationResult(
-    base::expected<InstallIsolatedAppCommandSuccess,
-                   InstallIsolatedAppCommandError> result) {
+    base::expected<InstallIsolatedWebAppCommandSuccess,
+                   InstallIsolatedWebAppCommandError> result) {
   if (!result.has_value()) {
     LOG(ERROR) << "Isolated app auto installation "
                   "failed. Error: "
@@ -59,15 +59,15 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile& profile) {
   return web_contents;
 }
 
-void ScheduleInstallIsolatedApp(const IsolatedWebAppUrlInfo& isolation_info,
-                                IsolationData isolation_data,
-                                WebAppProvider& provider,
-                                Profile& profile,
-                                base::OnceClosure callback) {
+void ScheduleInstallIsolatedWebApp(const IsolatedWebAppUrlInfo& isolation_info,
+                                   IsolationData isolation_data,
+                                   WebAppProvider& provider,
+                                   Profile& profile,
+                                   base::OnceClosure callback) {
   DCHECK(!callback.is_null());
 
   provider.command_manager().ScheduleCommand(
-      std::make_unique<InstallIsolatedAppCommand>(
+      std::make_unique<InstallIsolatedWebAppCommand>(
           isolation_info, isolation_data, CreateWebContents(profile),
           std::make_unique<WebAppUrlLoader>(), profile,
           provider.install_finalizer(),
@@ -212,7 +212,7 @@ void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
 
   provider->on_registry_ready().Post(
       FROM_HERE,
-      base::BindOnce(&ScheduleInstallIsolatedApp, isolation_info.value(),
+      base::BindOnce(&ScheduleInstallIsolatedWebApp, isolation_info.value(),
                      **isolation_data, std::ref(*provider), std::ref(profile),
                      std::move(done)));
 }

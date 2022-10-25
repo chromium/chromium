@@ -181,9 +181,9 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
     pref_change_registrar_.Add(
         prefs::kIsolatedWebAppInstallForceList,
         base::BindRepeating(
-            &WebAppPolicyManager::RefreshPolicyInstalledIsolatedApps,
+            &WebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps,
             weak_ptr_factory_.GetWeakPtr()));
-    RefreshPolicyInstalledIsolatedApps();
+    RefreshPolicyInstalledIsolatedWebApps();
 #endif
   }
   ObserveDisabledSystemFeaturesPolicy();
@@ -293,7 +293,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void WebAppPolicyManager::RefreshPolicyInstalledIsolatedApps() {
+void WebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps() {
   const base::Value::List& isolated_web_apps =
       pref_service_->GetList(prefs::kIsolatedWebAppInstallForceList);
   if (!isolated_web_apps.empty()) {
