@@ -1,0 +1,11 @@
+{
+  "name": "chrome.tabCapture.multipleExtensions.a",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Simple tab capture extension for multi-extension test.",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "permissions": ["tabCapture","tabs"]
+}

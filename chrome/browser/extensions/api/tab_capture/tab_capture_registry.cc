@@ -59,9 +59,6 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   const std::string& extension_id() const { return extension_id_; }
   bool is_anonymous() const { return is_anonymous_; }
   TabCaptureState capture_state() const { return capture_state_; }
-  blink::mojom::MediaStreamType last_capture_state_update_stream_type() const {
-    return last_capture_state_update_stream_type_;
-  }
   bool is_verified() const { return is_verified_; }
 
   void SetIsVerified() {
@@ -75,11 +72,7 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
            render_frame_id_ == render_frame_id;
   }
 
-  // TODO(https://crbug.com/1370338): stream_type was added to provide more
-  // context to debug a crash; remove when crash is identified.
-  void UpdateCaptureState(TabCaptureState next_capture_state,
-                          blink::mojom::MediaStreamType stream_type) {
-    last_capture_state_update_stream_type_ = stream_type;
+  void UpdateCaptureState(TabCaptureState next_capture_state) {
     // This method can get duplicate calls if both audio and video were
     // requested, so return early to avoid duplicate dispatching of status
     // change events.
@@ -113,11 +106,6 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   const bool is_anonymous_;
   const raw_ptr<TabCaptureRegistry> registry_;
   TabCaptureState capture_state_ = tab_capture::TAB_CAPTURE_STATE_NONE;
-  // TODO(https://crbug.com/1370338): last_capture_state_update_stream_type_ was
-  // added to provide more context to debug a crash; remove when crash is
-  // identified.
-  blink::mojom::MediaStreamType last_capture_state_update_stream_type_ =
-      blink::mojom::MediaStreamType::NO_SERVICE;
   bool is_verified_ = false;
   bool is_fullscreened_ = false;
 
@@ -283,18 +271,13 @@ void TabCaptureRegistry::OnRequestUpdate(
       request->capture_state() != tab_capture::TAB_CAPTURE_STATE_NONE &&
       request->capture_state() != tab_capture::TAB_CAPTURE_STATE_STOPPED &&
       request->capture_state() != tab_capture::TAB_CAPTURE_STATE_ERROR) {
-    // If we end up trying to grab a new stream while the previous one was never
-    // terminated, then something fishy is going on.
-    NOTREACHED() << "Trying to capture tab with existing stream. extension_id="
-                 << request->extension_id()
-                 << " capture_state=" << ToString(request->capture_state())
-                 << " stream_type=" << stream_type
-                 << " last_capture_state_update_stream_type="
-                 << request->last_capture_state_update_stream_type();
+    // Despite other code preventing multiple captures of the same tab, we can
+    // reach this case due to a race condition (see crbug.com/1370338).
+    // TODO(crbug.com/1377780): Handle status updates for multiple capturers.
     return;
   }
 
-  request->UpdateCaptureState(next_state, stream_type);
+  request->UpdateCaptureState(next_state);
 }
 
 void TabCaptureRegistry::DispatchStatusChangeEvent(

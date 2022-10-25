@@ -351,6 +351,70 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Load both extensions and wait for them to be ready.
+  base::FilePath base_path = test_data_dir_.AppendASCII("tab_capture")
+                                 .AppendASCII("multiple_extensions");
+
+  ExtensionTestMessageListener extension_a_ready("ready",
+                                                 ReplyBehavior::kWillReply);
+  auto* extension_a = LoadExtension(base_path.AppendASCII("a"));
+  ASSERT_TRUE(extension_a);
+  extension_a_ready.set_extension_id(extension_a->id());
+  ASSERT_TRUE(extension_a_ready.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener extension_b_ready("ready",
+                                                 ReplyBehavior::kWillReply);
+  auto* extension_b = LoadExtension(base_path.AppendASCII("b"));
+  ASSERT_TRUE(extension_b);
+  extension_b_ready.set_extension_id(extension_b->id());
+  ASSERT_TRUE(extension_b_ready.WaitUntilSatisfied());
+
+  // Open a page and grant permissions.
+  content::OpenURLParams params(embedded_test_server()->GetURL("/simple.html"),
+                                content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  content::WebContents* web_contents = browser()->OpenURL(params);
+  ASSERT_TRUE(web_contents) << "Failed to open new tab";
+  auto* perm_granter =
+      TabHelper::FromWebContents(web_contents)->active_tab_permission_granter();
+  // It doesn't seem to work to grant permissions for both extensions at the
+  // same time. We start with extension_a.
+  perm_granter->GrantIfRequested(extension_a);
+
+  // Set up success listeners.
+  ExtensionTestMessageListener extension_a_success("success");
+  extension_a_success.set_extension_id(extension_a->id());
+  ExtensionTestMessageListener extension_b_success("success");
+  extension_b_success.set_extension_id(extension_b->id());
+
+  // Start a tab capture from extension_a.
+  extension_a_ready.Reply("");
+  extension_a_ready.Reset();
+  ASSERT_TRUE(extension_a_ready.WaitUntilSatisfied());
+
+  perm_granter->GrantIfRequested(extension_b);
+
+  // To reproduce crbug.com/1370338, we have extension_b spam tab capture
+  // requests until one or the other extension successfully captures the tab.
+  while (!extension_a_success.was_satisfied() &&
+         !extension_b_success.was_satisfied()) {
+    extension_b_ready.Reply("");
+    extension_b_ready.Reset();
+    ASSERT_TRUE(extension_b_ready.WaitUntilSatisfied());
+  }
+  // Only one capture should succeed.
+  // TODO(https://crbug.com/1377780): Remove this restriction.
+  ASSERT_TRUE(extension_a_success.was_satisfied() !=
+              extension_b_success.was_satisfied());
+  // Avoid CHECK for forgotten reply in ExtensionTestMessageListener destructor.
+  extension_a_ready.Reply("");
+  extension_b_ready.Reply("");
+}
+
 }  // namespace
 
 }  // namespace extensions
