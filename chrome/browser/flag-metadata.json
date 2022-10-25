@@ -1630,11 +1630,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "enable-accelerated-video-decode",
-    "owners": [ "media-dev@chromium.org" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 110
