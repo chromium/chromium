@@ -266,9 +266,15 @@ absl::optional<ParseError> ParseSubset(
 //
 // Outputs any warnings encountered during parsing to `warnings`,
 // regardless of success/failure.
+//
+// Note that this function may execute before field trial state has been
+// initialized (e.g. when parsing enterprise policy sets), so it must not read
+// field trial state/params internally, otherwise it would get a
+// potentially-incorrect value.
 base::expected<SetsAndAliases, ParseError> ParseSet(
     const base::Value& value,
     bool exempt_from_limits,
+    const absl::optional<int>& associated_site_limit,
     bool emit_errors,
     base::flat_set<net::SchemefulSite>& elements,
     std::vector<ParseWarning>* warnings) {
@@ -303,8 +309,7 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
            SubsetDescriptor{
                .field_name = kFirstPartySetAssociatedSitesField,
               .site_type = net::SiteType::kAssociated,
-              .size_limit = absl::make_optional(
-                  features::kFirstPartySetsMaxAssociatedSites.Get()),
+              .size_limit = associated_site_limit,
            },
            {
                .field_name = kFirstPartySetServiceSitesField,
@@ -370,6 +375,7 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
   for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
     base::expected<SetsAndAliases, ParseError> parsed =
         ParseSet((*policy_sets)[i], /*exempt_from_limits=*/true,
+                 /*associated_site_limit=*/absl::nullopt,
                  /*emit_errors=*/false, elements, &warnings);
     for (auto it = warnings.begin() + previous_size; it != warnings.end();
          it++) {
@@ -437,9 +443,11 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
         trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value())
       return {};
-    base::expected<SetsAndAliases, ParseError> parsed = ParseSet(
-        *maybe_value, /*exempt_from_limits=*/false, emit_errors, elements,
-        /*warnings=*/nullptr);
+    base::expected<SetsAndAliases, ParseError> parsed =
+        ParseSet(*maybe_value, /*exempt_from_limits=*/false,
+                 features::kFirstPartySetsMaxAssociatedSites.Get(), emit_errors,
+                 elements,
+                 /*warnings=*/nullptr);
     if (!parsed.has_value()) {
       if (parsed.error().type() == ParseErrorType::kInvalidOrigin) {
         // Ignore sets that include an invalid domain (which might have been

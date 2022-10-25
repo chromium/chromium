@@ -61,11 +61,12 @@ class CONTENT_EXPORT FirstPartySetParser {
 
   // Parses newline-delimited First-Party sets (as JSON records) from `input`.
   // Each record should follow the format specified in this
-  // document:https://github.com/privacycg/first-party-sets. This function does
+  // document: https://github.com/privacycg/first-party-sets. This function does
   // not check versions or assertions, since it is intended only for sets
   // received by Component Updater.
   //
-  // Returns an empty map if parsing or validation of any set failed.
+  // Returns an empty map if parsing or validation of any set failed. Must not
+  // be called before field trial state has been initialized.
   static SetsAndAliases ParseSetsFromStream(std::istream& input,
                                             bool emit_errors);
 
