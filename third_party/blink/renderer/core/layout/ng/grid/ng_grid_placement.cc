@@ -138,13 +138,11 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     position.columns =
         placement_data_.line_resolver.ResolveGridPositionsFromStyle(
             item_style, kForColumns, column_auto_repeat_track_count_,
-            placement_data_.IsSubgriddedToParent(),
             placement_data_.subgridded_column_span_size);
     DCHECK(!position.columns.IsTranslatedDefinite());
 
     position.rows = placement_data_.line_resolver.ResolveGridPositionsFromStyle(
         item_style, kForRows, row_auto_repeat_track_count_,
-        placement_data_.IsSubgriddedToParent(),
         placement_data_.subgridded_row_span_size);
     DCHECK(!position.rows.IsTranslatedDefinite());
 
@@ -680,7 +678,6 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
 
   const auto span = placement_data.line_resolver.ResolveGridPositionsFromStyle(
       item_style, track_direction, auto_repeat_track_count,
-      placement_data.IsSubgriddedToParent(),
       is_for_columns ? placement_data.subgridded_column_span_size
                      : placement_data.subgridded_row_span_size);
 

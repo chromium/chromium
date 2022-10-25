@@ -57,11 +57,6 @@ struct CORE_EXPORT NGGridPlacementData {
     return subgrid_span_size == kNotFound;
   }
 
-  bool IsSubgriddedToParent() const {
-    return subgridded_column_span_size != kNotFound ||
-           subgridded_row_span_size != kNotFound;
-  }
-
   NGGridLineResolver line_resolver;
   wtf_size_t subgridded_column_span_size{kNotFound};
   wtf_size_t subgridded_row_span_size{kNotFound};

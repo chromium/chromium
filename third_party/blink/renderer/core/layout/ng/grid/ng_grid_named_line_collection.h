@@ -23,7 +23,7 @@ class NGGridNamedLineCollection {
       const ComputedGridTrackList& computed_grid_track_list,
       wtf_size_t last_line,
       wtf_size_t auto_repeat_tracks_count,
-      bool is_subgridded_to_parent = false);
+      bool is_subgridded_to_parent);
 
   NGGridNamedLineCollection(const NGGridNamedLineCollection&) = delete;
   NGGridNamedLineCollection& operator=(const NGGridNamedLineCollection&) =

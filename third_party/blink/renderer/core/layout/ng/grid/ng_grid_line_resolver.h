@@ -52,7 +52,6 @@ class NGGridLineResolver {
       const ComputedStyle&,
       GridTrackSizingDirection,
       wtf_size_t auto_repeat_tracks_count,
-      bool is_subgridded_to_parent = false,
       wtf_size_t subgrid_span_size = kNotFound) const;
 
  private:
@@ -70,21 +69,18 @@ class NGGridLineResolver {
       const GridPosition& position,
       GridPositionSide side,
       wtf_size_t auto_repeat_tracks_count,
-      wtf_size_t subgrid_span_size,
-      bool is_subgridded_to_parent) const;
+      wtf_size_t subgrid_span_size) const;
 
   GridSpan ResolveNamedGridLinePositionAgainstOppositePosition(
       int opposite_line,
       const GridPosition& position,
       wtf_size_t auto_repeat_tracks_count,
       GridPositionSide side,
-      wtf_size_t subgrid_span_size,
-      bool is_subgridded_to_parent) const;
+      wtf_size_t subgrid_span_size) const;
 
   int ResolveGridPosition(const GridPosition& position,
                           GridPositionSide side,
                           wtf_size_t auto_repeat_tracks_count,
-                          bool is_subgridded_to_parent,
                           wtf_size_t subgrid_span_size) const;
 
   wtf_size_t ExplicitGridSizeForSide(GridPositionSide side,
@@ -109,8 +105,7 @@ class NGGridLineResolver {
   int ResolveNamedGridLinePosition(const GridPosition& position,
                                    GridPositionSide side,
                                    wtf_size_t auto_repeat_tracks_count,
-                                   wtf_size_t subgrid_span_size,
-                                   bool is_subgridded_to_parent) const;
+                                   wtf_size_t subgrid_span_size) const;
 
   void InitialAndFinalPositionsFromStyle(
       const ComputedStyle& grid_item_style,
@@ -124,6 +119,8 @@ class NGGridLineResolver {
       GridPositionSide side,
       int last_line,
       NGGridNamedLineCollection& lines_collection) const;
+
+  bool IsSubgridded(GridTrackSizingDirection track_direction) const;
 
   scoped_refptr<const ComputedStyle> style_;
 
