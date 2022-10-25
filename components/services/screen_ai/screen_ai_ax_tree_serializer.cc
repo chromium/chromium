@@ -25,13 +25,15 @@ ScreenAIAXTreeSerializer::ScreenAIAXTreeSerializer(
   if (!nodes.empty()) {
     DCHECK(base::Contains(
         std::set{ax::mojom::Role::kDialog, ax::mojom::Role::kRootWebArea,
-                 ax::mojom::Role::kPdfRoot},
-        nodes[0].role));
+                 ax::mojom::Role::kPdfRoot, ax::mojom::Role::kRegion},
+        nodes[0].role))
+        << nodes[0].role;
     update.root_id = nodes[0].id;
   } else {
     update.root_id = ui::kInvalidAXNodeID;
   }
   update.nodes = nodes;
+  update.has_tree_data = true;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.tree_data.parent_tree_id = parent_tree_id;
   update.tree_data.title = "Screen AI";

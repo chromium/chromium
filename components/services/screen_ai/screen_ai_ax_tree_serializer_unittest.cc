@@ -55,7 +55,15 @@ TEST(ScreenAIAXTreeSerializerTest, Serialize) {
        page_2_text_data});
   ui::AXTreeUpdate update = serializer.Serialize();
 
+  EXPECT_NE(update.tree_data.tree_id, ui::AXTreeIDUnknown());
+  EXPECT_NE(update.tree_data.parent_tree_id, ui::AXTreeIDUnknown());
+  // After checking the tree IDs, reset them to allow testing using a constant
+  // expectation string, since tree IDs are dynamically generated.
+  update.tree_data.tree_id = ui::AXTreeIDUnknown();
+  update.tree_data.parent_tree_id = ui::AXTreeIDUnknown();
+
   const std::string expected_update(
+      "AXTreeUpdate tree data: title=Screen AI\n"
       "AXTreeUpdate: root id 1\nid=1 pdfRoot (0, 0)-(0, 0) child_ids=2,4\n  "
       "id=2 region (0, 0)-(0, 0) is_page_breaking_object=true child_ids=3\n    "
       "id=3 staticText (0, 0)-(0, 0) name_from=contents name=some text on page "
