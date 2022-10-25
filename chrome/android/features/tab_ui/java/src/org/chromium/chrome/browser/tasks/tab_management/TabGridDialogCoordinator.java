@@ -98,7 +98,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     },
                     null, false, gridCardOnClickListenerProvider,
                     mMediator.getTabGridDialogHandler(), TabProperties.UiType.CLOSABLE, null, null,
-                    containerView, false, mComponentName, rootView, null, mMediator);
+                    containerView, false, mComponentName, rootView, null);
             TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
             TabGroupUiToolbarView toolbarView =

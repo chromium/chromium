@@ -86,5 +86,4 @@ found in the LICENSE file.
     <!-- Dimens for TabSelectionEditorV2 -->
     <dimen name="tab_selection_editor_action_view_padding">14dp</dimen>
     <dimen name="tab_selection_editor_selection_action_inset">2dp</dimen>
-    <dimen name="tab_selection_editor_longpress_entry_threshold">20dp</dimen>
 </resources>
