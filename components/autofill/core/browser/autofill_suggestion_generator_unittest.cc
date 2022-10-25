@@ -486,8 +486,8 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateCreditCardSuggestion_LocalCard) {
   EXPECT_TRUE(real_card_suggestion.custom_icon.IsEmpty());
 }
 
-// Credit card name field suggestion with metadata for virtual cards in Autofill
-// popup.
+// Verify that the suggestion's texts are populated correctly for a virtual card
+// suggestion when the cardholder name field is focused.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNameField) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -509,29 +509,23 @@ TEST_F(AutofillSuggestionGeneratorTest,
           /*prefix_matched_suggestion=*/false, /*virtual_card_option=*/true, "",
           /*card_linked_offer_available=*/false);
 
-  // "Virtual card" text is prefixed to the name.
-  EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
-            u"Virtual card");
-  EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value, u"Mojo Jojo");
+  EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value, u"Mojo Jojo");
+  EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value, u"");
 
-#if BUILDFLAG(IS_ANDROID)
-  // For Android, the label is "Network ....1234".
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
   ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
+#if BUILDFLAG(IS_ANDROID)
+  // For Android, the label is "Network  ....1234".
   EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
                                          u"1111", 4)}));
 #elif BUILDFLAG(IS_IOS)
   // For IOS, the label is "....1234".
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
   // For Desktop, the label is the descriptive expiration date formatted as
-  // "Network ....1234, expires on mm/yy".
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
+  // "Network  ....1234, expires on mm/yy".
   EXPECT_EQ(
       virtual_card_name_field_suggestion.labels[0][0].value,
       base::StrCat({u"Visa  ",
@@ -539,10 +533,15 @@ TEST_F(AutofillSuggestionGeneratorTest,
                     u", expires on 04/",
                     base::UTF8ToUTF16(test::NextYear().substr(2))}));
 #endif
+  // The virtual card text should be populated in the labels to be shown in a
+  // new line.
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[1].size(), 1U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[1][0].value,
+            u"Virtual card");
 }
 
-// Credit card number field suggestion with metadata for virtual cards in
-// Autofill popup.
+// Verify that the suggestion's texts are populated correctly for a virtual card
+// suggestion when the card number field is focused.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNumberField) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -587,8 +586,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
             u"Virtual card");
 }
 
-// Credit card name field suggestion with metadata for non-virtual cards in
-// Autofill popup.
+// Verify that the suggestion's texts are populated correctly for a masked
+// server card suggestion when the cardholder name field is focused.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_NonVirtualCardNameField) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -615,7 +614,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(real_card_name_field_suggestion.minor_text.value, u"");
 
 #if BUILDFLAG(IS_ANDROID)
-  // For Android, the label is "Network ....1234".
+  // For Android, the label is "Network  ....1234".
   ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
   ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
@@ -629,7 +628,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
   // For Desktop, the label is the descriptive expiration date formatted as
-  // "Network ....1234, expires on mm/yy".
+  // "Network  ....1234, expires on mm/yy".
   ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
   ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(
@@ -641,8 +640,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 #endif
 }
 
-// Credit card number field suggestion with metadata for non-virtual cards in
-// Autofill popup.
+// Verify that the suggestion's texts are populated correctly for a masked
+// server card suggestion when the card number field is focused.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_NonVirtualCardNumberField) {
   base::test::ScopedFeatureList scoped_feature_list;

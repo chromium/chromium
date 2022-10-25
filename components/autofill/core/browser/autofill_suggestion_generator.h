@@ -153,9 +153,9 @@ class AutofillSuggestionGenerator {
                               int obfuscation_length) const;
 
   // Adjust the content of |suggestion| if it is a virtual card suggestion.
-  void AdjustSuggestionContentForVirtualCard(Suggestion* suggestion,
-                                             const CreditCard& credit_card,
-                                             const AutofillType& type) const;
+  void AdjustVirtualCardSuggestionContent(Suggestion* suggestion,
+                                          const CreditCard& credit_card,
+                                          const AutofillType& type) const;
 
   // Maps suggestion backend ID to and from an internal ID identifying it. Two
   // of these intermediate internal IDs are packed by MakeFrontendID to make the

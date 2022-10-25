@@ -119,6 +119,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     const std::string& app_locale,
     bool* should_display_gpay_logo,
     bool* with_offer) {
+  DCHECK(type.group() == FieldTypeGroup::kCreditCard);
   std::vector<Suggestion> suggestions;
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
@@ -363,6 +364,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     bool virtual_card_option,
     const std::string& app_locale,
     bool card_linked_offer_available) const {
+  DCHECK(type.group() == FieldTypeGroup::kCreditCard);
+
   // The kAutofillKeyboardAccessory feature is only available on Android. So for
   // other platforms, we'd always use the obfuscation_length of 4.
   int obfuscation_length =
@@ -418,12 +421,12 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   // For virtual cards, make some adjustments for the suggestion contents.
   if (virtual_card_option) {
     // We don't show card linked offers for virtual card options.
-    AdjustSuggestionContentForVirtualCard(&suggestion, credit_card, type);
+    AdjustVirtualCardSuggestionContent(&suggestion, credit_card, type);
   } else if (card_linked_offer_available) {
     // If Keyboard Accessory is not enabled (i.e. Desktop or Clank dropdown),
     // populate an offer label.
     if (!base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
-      suggestion.labels.emplace_back(
+      suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(
               l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK))});
 
@@ -489,6 +492,8 @@ std::u16string AutofillSuggestionGenerator::GetCardLabel(
     const AutofillType& type,
     const std::string& app_locale,
     int obfuscation_length) const {
+  DCHECK(type.group() == FieldTypeGroup::kCreditCard);
+
   // If the focused field is a card number field.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -533,10 +538,12 @@ std::u16string AutofillSuggestionGenerator::GetCardLabel(
 #endif
 }
 
-void AutofillSuggestionGenerator::AdjustSuggestionContentForVirtualCard(
+void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     Suggestion* suggestion,
     const CreditCard& credit_card,
     const AutofillType& type) const {
+  DCHECK(type.group() == FieldTypeGroup::kCreditCard);
+
   GURL card_art_url_for_virtual_card_option;
   if (credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
     card_art_url_for_virtual_card_option = credit_card.card_art_url();
@@ -553,20 +560,23 @@ void AutofillSuggestionGenerator::AdjustSuggestionContentForVirtualCard(
   suggestion->feature_for_iph =
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 
-  // TODO(crbug.com/1344629): Update "Virtual card" label for other fields.
-  // For virtual cards, prefix "Virtual card" label to field suggestions. For
-  // card number field in a dropdown, show the "Virtual card" label below the
-  // card number for Metadata experiment.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardMetadata) &&
-      type.GetStorableType() == CREDIT_CARD_NUMBER &&
-      !base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
-    suggestion->labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}};
-  } else {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableVirtualCardMetadata) ||
+      base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
     suggestion->minor_text.value = suggestion->main_text.value;
     suggestion->main_text.value = l10n_util::GetStringUTF16(
         IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+  } else if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
+    // If the focused field is a credit card number field, reset all labels and
+    // populate only the virtual card text.
+    suggestion->labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}};
+  } else {
+    // Otherwise, add the virtual card text after the original label, so it
+    // will be shown on the third line.
+    suggestion->labels.push_back(std::vector<Suggestion::Text>{
+        Suggestion::Text(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))});
   }
 
 #if BUILDFLAG(IS_ANDROID)
