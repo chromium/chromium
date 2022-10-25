@@ -203,7 +203,7 @@ void PaintOpBufferSerializer::SerializePreamble(SkCanvas* canvas,
 
 bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
                                                   SkCanvas* canvas,
-                                                  PlaybackParams params,
+                                                  const PlaybackParams& params,
                                                   uint8_t alpha) {
   // Skip ops outside the current clip if they have images. This saves
   // performing an unnecessary expensive decode.
