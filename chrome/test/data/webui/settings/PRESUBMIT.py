@@ -7,12 +7,24 @@ USE_PYTHON3 = True
 
 def _CommonChecks(input_api, output_api):
   # Ignore files in the chromeos/ subfolder.
-  EXCLUDE_PATH = input_api.os_path.normpath(
+  EXCLUDE_PATH_PREFIX = input_api.os_path.normpath(
       'chrome/test/data/webui/settings/chromeos/')
+
+  # Also exempt top-level browser test definitions files, which must be in JS.
+  EXCLUDE_PATH_SUFFIXES = [
+      '_browsertest.js',
+      '_interactive_ui_tests.js',
+      '_accessibility_test.js',
+  ]
 
   def allow_js(f):
     path = f.LocalPath()
-    return path.startswith(EXCLUDE_PATH) or path.endswith('_browsertest.js')
+    if path.startswith(EXCLUDE_PATH_PREFIX):
+      return True
+    for suffix in EXCLUDE_PATH_SUFFIXES:
+      if path.endswith(suffix):
+        return True
+    return False
 
   from web_dev_style import presubmit_support
   return presubmit_support.DisallowNewJsFiles(input_api, output_api,
