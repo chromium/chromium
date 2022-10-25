@@ -986,20 +986,20 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
 
-  auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
-      {.address = scan_result.address, .name = scan_result.name}));
-
+  BluetoothDeviceFloss* device_ptr;
   std::string canonical_address =
-      device::CanonicalizeBluetoothAddress(device->GetAddress());
-  if (base::Contains(devices_, canonical_address)) {
-    BLUETOOTH_LOG(DEBUG) << __func__ << ": Already seen device, skipping: "
-                         << scan_result.address;
-    return;
-  }
+      device::CanonicalizeBluetoothAddress(scan_result.address);
 
-  // Take copy of pointer before moving ownership.
-  BluetoothDeviceFloss* device_ptr = device.get();
-  devices_.emplace(canonical_address, std::move(device));
+  if (base::Contains(devices_, canonical_address)) {
+    device_ptr =
+        static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
+    device_ptr->UpdateTimestamp();
+  } else {
+    auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
+        {.address = scan_result.address, .name = scan_result.name}));
+    device_ptr = device.get();
+    devices_.emplace(canonical_address, std::move(device));
+  }
 
   device::BluetoothDevice::ServiceDataMap service_data_map;
   for (const auto& [uuid, bytes] : scan_result.service_data) {
