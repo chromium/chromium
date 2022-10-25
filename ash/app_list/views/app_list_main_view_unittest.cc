@@ -19,12 +19,10 @@
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -36,14 +34,9 @@
 
 namespace ash {
 
-// Parameterized by ProductivityLauncher.
-class AppListMainViewTest : public AshTestBase,
-                            public testing::WithParamInterface<bool> {
+class AppListMainViewTest : public AshTestBase {
  public:
-  AppListMainViewTest() {
-    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
-                                       GetParam());
-  }
+  AppListMainViewTest() = default;
   AppListMainViewTest(const AppListMainViewTest& other) = delete;
   AppListMainViewTest& operator=(const AppListMainViewTest& other) = delete;
   ~AppListMainViewTest() override = default;
@@ -53,14 +46,9 @@ class AppListMainViewTest : public AshTestBase,
     AshTestBase::SetUp();
 
     // Create and show the app list in fullscreen apps grid state.
+    // Tablet mode uses a fullscreen AppListMainView.
     auto* helper = GetAppListTestHelper();
-    if (features::IsProductivityLauncherEnabled()) {
-      // Tablet mode uses a fullscreen AppListMainView.
-      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-    } else {
-      helper->Show(GetPrimaryDisplay().id());
-      helper->GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
-    }
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     app_list_view_ = helper->GetAppListView();
   }
 
@@ -204,37 +192,32 @@ class AppListMainViewTest : public AshTestBase,
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
 };
 
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         AppListMainViewTest,
-                         testing::Bool());
-
 // Tests that the close button becomes invisible after close button is clicked.
-TEST_P(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
+TEST_F(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
   PressAndReleaseKey(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_FALSE(search_box_view()->close_button()->GetVisible());
 }
 
 // Tests that the search box becomes empty after close button is clicked.
-TEST_P(AppListMainViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
+TEST_F(AppListMainViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
   PressAndReleaseKey(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_TRUE(search_box_view()->search_box()->GetText().empty());
 }
 
 // Tests that the search box is no longer active after close button is clicked.
-TEST_P(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
+TEST_F(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
   PressAndReleaseKey(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_FALSE(search_box_view()->is_search_box_active());
 }
 
 // Tests changing the AppListModel when switching profiles.
-TEST_P(AppListMainViewTest, ModelChanged) {
+TEST_F(AppListMainViewTest, ModelChanged) {
   const size_t kInitialItems = 2;
   GetTestModel()->PopulateApps(kInitialItems);
   EXPECT_EQ(kInitialItems, GetRootViewModel()->view_size());
@@ -257,12 +240,7 @@ TEST_P(AppListMainViewTest, ModelChanged) {
 
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
-TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
-  // This test is flaky when ProductivityLauncher is false. Skip the test in
-  // that case. http://crbug.com/1351834
-  if (!features::IsProductivityLauncherEnabled())
-    return;
-
+TEST_F(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   ASSERT_TRUE(folder_item_view);
 
@@ -297,7 +275,7 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
 // Test that an interrupted drag while reparenting an item from a folder, when
 // canceled via the root grid, correctly forwards the cancelation to the drag
 // ocurring from the folder.
-TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
+TEST_F(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
   CreateAndOpenSingleItemFolder();
   AppListItemView* dragged = StartDragForReparent(0);
 
@@ -320,7 +298,7 @@ TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
 // Test that dragging an app out of a single item folder and reparenting it
 // back into its original folder results in a cancelled reparent. This is a
 // regression test for http://crbug.com/429083.
-TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
+TEST_F(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   // Add a folder with 1 item.
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   std::string folder_id = folder_item_view->item()->id();

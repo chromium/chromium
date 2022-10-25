@@ -7,7 +7,6 @@
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
@@ -27,27 +26,18 @@ namespace {
 // Returns visibility from the presenter's perspective.
 bool GetPresenterVisibility() {
   auto* controller = Shell::Get()->app_list_controller();
-  if (features::IsProductivityLauncherEnabled())
-    return controller->bubble_presenter_for_test()->IsShowing();
-  return controller->fullscreen_presenter()->GetTargetVisibility();
+  return controller->bubble_presenter_for_test()->IsShowing();
 }
 
 }  // namespace
 
-class AppListTest : public AshTestBase,
-                    public testing::WithParamInterface<bool> {
+class AppListTest : public AshTestBase {
  public:
-  AppListTest() {
-    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
-                                       GetParam());
-  }
-  base::test::ScopedFeatureList feature_list_;
+  AppListTest() = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher, AppListTest, testing::Bool());
-
 // An integration test to toggle the app list by pressing the shelf button.
-TEST_P(AppListTest, PressHomeButtonToShowAndDismiss) {
+TEST_F(AppListTest, PressHomeButtonToShowAndDismiss) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   Shelf* shelf = Shelf::ForWindow(root_window);
   ShelfWidget* shelf_widget = shelf->shelf_widget();
@@ -81,7 +71,7 @@ TEST_P(AppListTest, PressHomeButtonToShowAndDismiss) {
 
 // Tests that the app list gets toggled by pressing the shelf button on
 // secondary display.
-TEST_P(AppListTest, PressHomeButtonToShowAndDismissOnSecondDisplay) {
+TEST_F(AppListTest, PressHomeButtonToShowAndDismissOnSecondDisplay) {
   UpdateDisplay("1024x768,1024x768");
   aura::Window* root_window =
       Shell::GetRootWindowForDisplayId(GetSecondaryDisplay().id());
