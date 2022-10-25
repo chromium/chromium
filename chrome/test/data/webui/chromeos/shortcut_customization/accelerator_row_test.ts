@@ -96,7 +96,7 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.source = AcceleratorSource.BROWSER;
+    rowElement.source = AcceleratorSource.kBrowser;
     await flushTasks();
 
     // Expected the lock icon to appear if the source is kBrowser.
@@ -105,7 +105,7 @@ suite('acceleratorRowTest', function() {
     assertFalse(lockItemContainer.hidden);
 
     // Update source to be kAsh, lock icon should no longer appear.
-    rowElement!.source = AcceleratorSource.ASH;
+    rowElement!.source = AcceleratorSource.kAsh;
     await flushTasks();
     lockItemContainer = rowElement!.shadowRoot!.querySelector(
                             '#lockIconContainer') as HTMLDivElement;
@@ -126,7 +126,7 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.source = AcceleratorSource.BROWSER;
+    rowElement.source = AcceleratorSource.kBrowser;
     await flushTasks();
 
     // Expected the lock icon to appear if the source is kBrowser.
@@ -150,7 +150,7 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.source = AcceleratorSource.BROWSER;
+    rowElement.source = AcceleratorSource.kBrowser;
 
     let showDialogListenerCalled = false;
     rowElement.addEventListener('show-edit-dialog', () => {
@@ -183,7 +183,7 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.source = AcceleratorSource.BROWSER;
+    rowElement.source = AcceleratorSource.kBrowser;
 
     let showDialogListenerCalled = false;
     rowElement.addEventListener('show-edit-dialog', () => {

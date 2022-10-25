@@ -58,7 +58,7 @@ suite('acceleratorSubsectionTest', function() {
     sectionElement!.acceleratorContainer = [{
       description: description,
       acceleratorInfos: accelerators,
-      source: AcceleratorSource.ASH,
+      source: AcceleratorSource.kAsh,
       action: 0,
     }];
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as AcceleratorInfoTypes from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js';
+
 /**
  * @fileoverview
  * Type aliases for the mojo API.
@@ -21,13 +23,13 @@ export enum Modifier {
   COMMAND = 1 << 4,
 }
 
+/**
+ * In TypeScript, an enum is both a value and type,
+ * so we have to export each one separately.
+ */
 /** Enumeration of accelerator sources. */
-export enum AcceleratorSource {
-  ASH,
-  EVENT_REWRITER,
-  BROWSER,
-  ANDROID,
-}
+export type AcceleratorSource = AcceleratorInfoTypes.AcceleratorSource;
+export const AcceleratorSource = AcceleratorInfoTypes.AcceleratorSource;
 
 /** Enumeration of accelerator types. */
 export enum AcceleratorType {

@@ -38,7 +38,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}> {
     this.methods_.setResult(
-        'isMutable', {isMutable: source !== AcceleratorSource.BROWSER});
+        'isMutable', {isMutable: source !== AcceleratorSource.kBrowser});
     return this.methods_.resolveMethod('isMutable');
   }
 

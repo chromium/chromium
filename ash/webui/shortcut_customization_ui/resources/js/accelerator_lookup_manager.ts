@@ -90,6 +90,12 @@ export class AcceleratorLookupManager {
 
   setAcceleratorLookup(acceleratorConfig: AcceleratorConfig) {
     for (const [source, accelInfoMap] of Object.entries(acceleratorConfig)) {
+      // When calling Object.entries on an object with optional enum keys,
+      // TypeScript considers the values to be possibly undefined.
+      // This guard lets us use this value later as if it were not undefined.
+      if (!accelInfoMap) {
+        continue;
+      }
       for (const [actionId, accelInfos] of Object.entries(accelInfoMap)) {
         const id = `${source}-${actionId}`;
         if (!this.acceleratorLookup_.has(id)) {

@@ -58,12 +58,12 @@ suite('fakeShortcutProviderTest', function() {
 
   test('IsMutableDefaultFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
-    // AcceleratorSource.ASH is a mutable source.
-    return getProvider().isMutable(AcceleratorSource.ASH).then((result) => {
+    // AcceleratorSource.kAsh is a mutable source.
+    return getProvider().isMutable(AcceleratorSource.kAsh).then((result) => {
       assertTrue(result.isMutable);
-      // AcceleratorSource.BROWSER is not a mutable source
+      // AcceleratorSource.kBrowser is not a mutable source
       return getProvider()
-          .isMutable(AcceleratorSource.BROWSER)
+          .isMutable(AcceleratorSource.kBrowser)
           .then((result) => {
             assertFalse(result.isMutable);
           });

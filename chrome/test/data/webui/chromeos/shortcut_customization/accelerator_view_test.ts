@@ -74,7 +74,7 @@ suite('acceleratorViewTest', function() {
         /*keyDisplay=*/ ']');
 
     viewElement!.acceleratorInfo = acceleratorInfo;
-    viewElement!.source = AcceleratorSource.ASH;
+    viewElement!.source = AcceleratorSource.kAsh;
     viewElement!.action = 1;
     await flush();
     // Enable the edit view.

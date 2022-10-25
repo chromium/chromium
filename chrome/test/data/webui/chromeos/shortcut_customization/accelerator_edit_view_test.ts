@@ -98,7 +98,7 @@ suite('acceleratorEditViewTest', function() {
         /*keyDisplay=*/ ']');
 
     editViewElement!.acceleratorInfo = acceleratorInfo;
-    editViewElement!.source = AcceleratorSource.ASH;
+    editViewElement!.source = AcceleratorSource.kAsh;
     editViewElement!.action = 1;
     await flushTasks();
 
