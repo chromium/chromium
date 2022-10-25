@@ -3547,8 +3547,11 @@
       "intel_gpu_series": [
         "icelake",
         "tigerlake",
+        "rocketlake",
+        "dg1",
         "alderlake",
-        "alchemist"
+        "alchemist",
+        "raptorlake"
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"

@@ -61,8 +61,8 @@ enum class IntelGpuSeriesType {
   kApollolake = 7,
   kSkylake = 8,
   kGeminilake = 9,
-  kAmberlake = 23,
   kKabylake = 10,
+  kAmberlake = 23,
   kCoffeelake = 11,
   kWhiskeylake = 12,
   kCometlake = 13,
@@ -78,8 +78,9 @@ enum class IntelGpuSeriesType {
   kDG1 = 25,
   kAlderlake = 22,
   kAlchemist = 26,
+  kRaptorlake = 27,
   // Please also update |gpu_series_map| in process_json.py.
-  kMaxValue = kAlchemist,
+  kMaxValue = kRaptorlake,
 };
 
 // Video profile.  This *must* match media::VideoCodecProfile.
