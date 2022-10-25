@@ -227,17 +227,12 @@ void HttpServerPropertiesManager::ReadPrefs(
 
   net_log_.EndEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_INITIALIZATION);
 
-  const base::Value* http_server_properties_value =
-      pref_delegate_->GetServerProperties();
-  // If there are no preferences set, do nothing.
-  if (!http_server_properties_value || !http_server_properties_value->is_dict())
-    return;
-
   const base::Value::Dict& http_server_properties_dict =
-      http_server_properties_value->GetDict();
+      pref_delegate_->GetServerProperties();
 
-  net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_CACHE,
-                    [&] { return http_server_properties_value->Clone(); });
+  net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_CACHE, [&] {
+    return base::Value(http_server_properties_dict.Clone());
+  });
   absl::optional<int> maybe_version_number =
       http_server_properties_dict.FindInt(kVersionKey);
   if (!maybe_version_number.has_value() ||
@@ -770,12 +765,12 @@ void HttpServerPropertiesManager::WriteToPrefs(
       broken_alternative_service_list, kMaxBrokenAlternativeServicesToPersist,
       recently_broken_alternative_services, http_server_properties_dict);
 
-  pref_delegate_->SetServerProperties(
-      base::Value(http_server_properties_dict.Clone()), std::move(callback));
-
   net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_PREFS, [&] {
     return base::Value(std::move(http_server_properties_dict));
   });
+
+  pref_delegate_->SetServerProperties(std::move(http_server_properties_dict),
+                                      std::move(callback));
 }
 
 void HttpServerPropertiesManager::SaveAlternativeServiceToServerPrefs(

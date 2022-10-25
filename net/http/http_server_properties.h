@@ -40,7 +40,6 @@
 namespace base {
 class Clock;
 class TickClock;
-class Value;
 }
 
 namespace net {
@@ -111,12 +110,12 @@ class NET_EXPORT HttpServerProperties
 
     // Returns the branch of the preferences system for the server properties.
     // Returns nullptr if the pref system has no data for the server properties.
-    virtual const base::Value* GetServerProperties() const = 0;
+    virtual const base::Value::Dict& GetServerProperties() const = 0;
 
     // Sets the server properties to the given value. If |callback| is
     // non-empty, flushes data to persistent storage and invokes |callback|
     // asynchronously when complete.
-    virtual void SetServerProperties(const base::Value& value,
+    virtual void SetServerProperties(base::Value::Dict dict,
                                      base::OnceClosure callback) = 0;
 
     // Starts listening for prefs to be loaded. If prefs are already loaded,

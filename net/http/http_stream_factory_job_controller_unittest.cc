@@ -112,10 +112,14 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
   ~MockPrefDelegate() override = default;
 
   // HttpServerProperties::PrefDelegate implementation:
-  const base::Value* GetServerProperties() const override { return nullptr; }
-  void SetServerProperties(const base::Value& value,
+  const base::Value::Dict& GetServerProperties() const override {
+    return empty_dict_;
+  }
+  void SetServerProperties(base::Value::Dict dict,
                            base::OnceClosure callback) override {}
   void WaitForPrefLoad(base::OnceClosure pref_loaded_callback) override {}
+
+  base::Value::Dict empty_dict_;
 };
 
 }  // anonymous namespace

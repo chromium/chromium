@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -32,17 +33,18 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   }
 
   // PrefDelegate implementation.
-  const base::Value* GetServerProperties() const override {
+  const base::Value::Dict& GetServerProperties() const override {
     const base::Value* value;
     if (pref_store_->GetValue(path_, &value) && value->is_dict()) {
-      return value;
+      return value->GetDict();
     }
 
-    return nullptr;
+    static const base::NoDestructor<base::Value::Dict> empty_dict;
+    return *empty_dict;
   }
-  void SetServerProperties(const base::Value& value,
+  void SetServerProperties(base::Value::Dict dict,
                            base::OnceClosure callback) override {
-    pref_store_->SetValue(path_, value.Clone(),
+    pref_store_->SetValue(path_, base::Value(std::move(dict)),
                           WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     if (callback)
       pref_store_->CommitPendingWrite(std::move(callback));

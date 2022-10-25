@@ -27,15 +27,15 @@ void HttpServerPropertiesPrefDelegate::RegisterPrefs(
   pref_registry->RegisterDictionaryPref(kPrefPath);
 }
 
-const base::Value* HttpServerPropertiesPrefDelegate::GetServerProperties()
+const base::Value::Dict& HttpServerPropertiesPrefDelegate::GetServerProperties()
     const {
-  return &pref_service_->GetValue(kPrefPath);
+  return pref_service_->GetDict(kPrefPath);
 }
 
 void HttpServerPropertiesPrefDelegate::SetServerProperties(
-    const base::Value& value,
+    base::Value::Dict dict,
     base::OnceClosure callback) {
-  pref_service_->Set(kPrefPath, value);
+  pref_service_->SetDict(kPrefPath, std::move(dict));
   if (callback)
     pref_service_->CommitPendingWrite(std::move(callback));
 }

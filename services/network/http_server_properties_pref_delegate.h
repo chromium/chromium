@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/http/http_server_properties.h"
 
@@ -31,8 +32,8 @@ class HttpServerPropertiesPrefDelegate
   static void RegisterPrefs(PrefRegistrySimple* pref_registry);
 
   // net::HttpServerProperties::PrefDelegate implementation.
-  const base::Value* GetServerProperties() const override;
-  void SetServerProperties(const base::Value& value,
+  const base::Value::Dict& GetServerProperties() const override;
+  void SetServerProperties(base::Value::Dict dict,
                            base::OnceClosure callback) override;
   void WaitForPrefLoad(base::OnceClosure callback) override;
 
