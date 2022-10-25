@@ -21,22 +21,27 @@ found in the LICENSE file.
       android:importantForAccessibility="no"
       app:srcCompat="@drawable/fre_product_logo"/>
 
-    <TextView
+    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"
-      android:gravity="center_horizontal"
-      android:focusable="true"
-      android:textAppearance="@style/TextAppearance.Headline"
-      android:text="@string/fast_checkout_home_sheet_title"/>
+      android:orientation="vertical"
+      android:focusable="true">
 
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:gravity="center_horizontal"
-      android:focusable="true"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-      android:text="@string/fast_checkout_home_sheet_subtitle" />
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.Headline"
+        android:text="@string/fast_checkout_home_sheet_title"/>
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:text="@string/fast_checkout_home_sheet_subtitle" />
+    </LinearLayout>
 
     <!-- Autofill Options -->
     <LinearLayout
