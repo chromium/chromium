@@ -9167,6 +9167,11 @@ void RenderFrameHostImpl::CommitNavigation(
             &non_network_factories);
 
     for (auto& factory : non_network_factories) {
+      // TODO(https://crbug.com/1376879): Remove the ad-hoc debugging code after
+      // the bug is understood and/or fixed.
+      const std::string& scheme = factory.first;
+      SCOPED_CRASH_KEY_STRING32("non_network_factories", "scheme", scheme);
+
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_factory_proxy;
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
@@ -9178,7 +9183,7 @@ void RenderFrameHostImpl::CommitNavigation(
           std::move(factory.second));
       remote->Clone(std::move(factory_receiver));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
-          factory.first, std::move(pending_factory_proxy));
+          scheme, std::move(pending_factory_proxy));
     }
 
     subresource_loader_factories->pending_isolated_world_factories() =
