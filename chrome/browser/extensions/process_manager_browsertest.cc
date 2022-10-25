@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -34,7 +33,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -426,9 +424,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, MAYBE_PopupHostCreation) {
 
   // Simulate clicking on the action to open a popup.
   auto test_util = ExtensionActionTestHelper::Create(browser());
-  content::WindowedNotificationObserver frame_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver frame_observer;
   // Open popup in the first extension.
   test_util->Press(popup->id());
   frame_observer.Wait();
