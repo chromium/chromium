@@ -718,8 +718,9 @@ void AXObjectCacheImpl::UpdateLifecycleIfNeeded(Document& document) {
 }
 
 void AXObjectCacheImpl::UpdateAXForAllDocuments() {
-  if (IsFrozen())
-    return;
+  DCHECK(!IsFrozen())
+      << "Don't call UpdateAXForAllDocuments() here; layout and a11y are "
+         "already clean at the start of serialization.";
 
   // First update the layout for the main and popup document.
   UpdateLifecycleIfNeeded(GetDocument());
@@ -733,8 +734,14 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
-  // TODO(accessibility) Change this to a DCHECK.
-  UpdateAXForAllDocuments();
+#if DCHECK_IS_ON()
+  DCHECK(GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout);
+  if (GetPopupDocumentIfShowing()) {
+    DCHECK(GetPopupDocumentIfShowing()->Lifecycle().GetState() >=
+           DocumentLifecycle::kAfterPerformLayout);
+  }
+#endif
 
   AXObject* obj = GetOrCreate(node);
   if (!obj)
