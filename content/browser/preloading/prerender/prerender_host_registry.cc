@@ -62,6 +62,13 @@ bool DeviceHasEnoughMemoryForPrerender() {
   return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
 }
 
+PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
+  return static_cast<PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(
+          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
+
 }  // namespace
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
@@ -221,7 +228,9 @@ int PrerenderHostRegistry::CreateAndStartHost(
         // experiment groups for analysis. To prevent this we set
         // TriggeringOutcome to kFailure and look into the failure reason to
         // learn more.
-        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kFailure);
+        attempt->SetFailureReason(
+            ToPreloadingFailureReason(
+                PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded));
       }
       RecordPrerenderFinalStatus(
           PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, attributes,

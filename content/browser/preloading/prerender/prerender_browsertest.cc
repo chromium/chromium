@@ -6206,7 +6206,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kFailure,
-            PreloadingFailureReason::kUnspecified,
+            ToPreloadingFailureReason(
+                PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded),
             /*accurate=*/false),
     };
 
