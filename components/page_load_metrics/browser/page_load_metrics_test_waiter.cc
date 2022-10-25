@@ -212,13 +212,11 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
   const page_load_metrics::mojom::FrameMetadata& metadata =
       subframe_rfh ? delegate->GetSubframeMetadata()
                    : delegate->GetMainFrameMetadata();
-  // There is no way to get the layout shift score only for a subframe so far.
-  // See the score only when the frame is the main frame.
-  const PageRenderData* render_data =
-      subframe_rfh ? nullptr : &delegate->GetMainFrameRenderData();
+
+  const PageRenderData* render_data = &delegate->GetPageRenderData();
 
   TimingFieldBitSet matched_bits =
-      GetMatchedBits(timing, metadata, render_data);
+      GetMatchedBits(timing, metadata, render_data, !subframe_rfh);
 
   if (subframe_rfh)
     observed_.subframe_fields_.Merge(matched_bits);
@@ -354,7 +352,8 @@ PageLoadMetricsTestWaiter::TimingFieldBitSet
 PageLoadMetricsTestWaiter::GetMatchedBits(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     const page_load_metrics::mojom::FrameMetadata& metadata,
-    const PageRenderData* render_data) {
+    const PageRenderData* render_data,
+    bool is_main_frame) {
   PageLoadMetricsTestWaiter::TimingFieldBitSet matched_bits;
   if (timing.document_timing->load_event_start)
     matched_bits.Set(TimingField::kLoadEvent);
@@ -401,9 +400,15 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
 
   if (render_data) {
     double layout_shift_score = render_data->layout_shift_score;
-    if (last_main_frame_layout_shift_score_ < layout_shift_score)
-      matched_bits.Set(TimingField::kLayoutShift);
-    last_main_frame_layout_shift_score_ = layout_shift_score;
+    if (is_main_frame) {
+      if (last_main_frame_layout_shift_score_ < layout_shift_score)
+        matched_bits.Set(TimingField::kLayoutShift);
+      last_main_frame_layout_shift_score_ = layout_shift_score;
+    } else {  // subframe
+      if (last_sub_frame_layout_shift_score_ < layout_shift_score)
+        matched_bits.Set(TimingField::kLayoutShift);
+      last_sub_frame_layout_shift_score_ = layout_shift_score;
+    }
   }
   if (soft_navigation_count_updated_) {
     soft_navigation_count_updated_ = false;

@@ -10,9 +10,11 @@ metric_integration_jsdeps = [
   "//third_party/blink/web_tests/external/wpt/images/green-16x16.png",
   "//third_party/blink/web_tests/external/wpt/images/green-256x256.png",
   "//third_party/blink/web_tests/external/wpt/images/pattern.ogv",
+  "//third_party/blink/web_tests/external/wpt/layout-instability/main-frame.html",
   "//third_party/blink/web_tests/external/wpt/layout-instability/resources/util.js",
   "//third_party/blink/web_tests/external/wpt/layout-instability/simple-block-movement.html",
   "//third_party/blink/web_tests/external/wpt/layout-instability/sources-enclosure.html",
   "//third_party/blink/web_tests/external/wpt/layout-instability/sources-maximpact.html",
+  "//third_party/blink/web_tests/external/wpt/layout-instability/sub-frame.html",
   "//third_party/blink/web_tests/external/wpt/resources/testharness.js",
 ]

@@ -22,49 +22,81 @@ using ukm::builders::PageLoad;
 
 class LayoutInstabilityTest : public MetricIntegrationTest {
  protected:
-  void RunWPT(const std::string& test_file, bool trace_only = false);
+  // Identify which frame the layout shift happens.
+  enum class ShiftFrame {
+    LayoutShiftOnlyInMainFrame,
+    LayoutShiftOnlyInSubFrame,
+    LayoutShiftOnlyInBothFrames,
+    NoLayoutShift,
+  };
+
+  // This function will load and run the WPT, merge the layout shift scores
+  // from both the main frame and sub-frame.
+  // We need to specify which frame the layout shift happens and whether we
+  // want to verify the layout shift UKM and UMA values.
+  void RunWPT(const std::string& test_file,
+              ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
+              bool check_UKM_UMA_metrics = false);
 
  private:
   double CheckTraceData(Value::List& expectations, TraceAnalyzer&);
   void CheckSources(const Value::List& expected_sources,
                     const Value::List& trace_sources);
+  void CheckUKMAndUMAMetrics(double expect_score);
 };
 
 void LayoutInstabilityTest::RunWPT(const std::string& test_file,
-                                   bool trace_only) {
+                                   ShiftFrame frame,
+                                   bool check_UKM_UMA_metrics) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
+  // Wait for the layout shift in the main frame
   waiter->AddPageExpectation(
       page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLayoutShift);
+  // Wait for the layout shift in the sub frame
+  if (frame == ShiftFrame::LayoutShiftOnlyInSubFrame ||
+      frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
+    waiter->AddSubFrameExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
+            kLayoutShift);
+  }
   Start();
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
   Load("/layout-instability/" + test_file);
 
-  // Check web perf API.
-  base::Value expectations =
-      EvalJs(web_contents(), "cls_run_tests").ExtractList();
+  // Set layout shift amount expectations from web perf API.
+  base::Value::List expectations;
+  if (frame == ShiftFrame::LayoutShiftOnlyInMainFrame ||
+      frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
+    base::Value value = EvalJs(web_contents(), "cls_run_tests").ExtractList();
+    for (auto& d : value.GetList())
+      expectations.Append(std::move(d));
+  }
+  if (frame == ShiftFrame::LayoutShiftOnlyInSubFrame ||
+      frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
+    content::RenderFrameHost* child_frame =
+        content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+    base::Value value = EvalJs(child_frame, "cls_run_tests").ExtractList();
+    for (auto& d : value.GetList())
+      expectations.Append(std::move(d));
+  }
 
-  // Check trace data.
-  double final_score =
-      CheckTraceData(expectations.GetList(), *StopTracingAndAnalyze());
-  if (trace_only)
-    return;
+  // It compares the trace data of layout shift events with |expectations| and
+  // computes a score that's used to check the UKM and UMA values below.
+  double final_score = CheckTraceData(expectations, *StopTracingAndAnalyze());
 
   waiter->Wait();
 
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  // Check UKM.
-  ExpectUKMPageLoadMetric(PageLoad::kLayoutInstability_CumulativeShiftScoreName,
-                          page_load_metrics::LayoutShiftUkmValue(final_score));
-
-  // Check UMA.
-  auto samples = histogram_tester().GetAllSamples(
-      "PageLoad.LayoutInstability.CumulativeShiftScore");
-  EXPECT_EQ(1ul, samples.size());
-  EXPECT_EQ(samples[0],
-            Bucket(page_load_metrics::LayoutShiftUmaValue(final_score), 1));
+  // We can only verify the layout shift metrics here in UKM and UMA if layout
+  // shift only happens in the main frame. For layout shift happens in the
+  // sub-frame, it needs to apply a sub-frame weighting factor.
+  if (check_UKM_UMA_metrics) {
+    DCHECK_EQ(ShiftFrame::LayoutShiftOnlyInMainFrame, frame);
+    CheckUKMAndUMAMetrics(final_score);
+  }
 }
 
 double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
@@ -87,8 +119,9 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
     Value::Dict data = events[i++]->GetKnownArgAsDict("data");
 
     if (score) {
-      EXPECT_EQ(*score, data.FindDouble("score"));
-      final_score = *score;
+      const absl::optional<double> traced_score = data.FindDouble("score");
+      final_score += traced_score.has_value() ? traced_score.value() : 0;
+      EXPECT_EQ(*score, final_score);
     }
     const Value::List* sources = expectation.FindList("sources");
     if (sources) {
@@ -122,14 +155,45 @@ void LayoutInstabilityTest::CheckSources(const Value::List& expected_sources,
   }
 }
 
+void LayoutInstabilityTest::CheckUKMAndUMAMetrics(double expect_score) {
+  // Check UKM.
+  ExpectUKMPageLoadMetric(PageLoad::kLayoutInstability_CumulativeShiftScoreName,
+                          page_load_metrics::LayoutShiftUkmValue(expect_score));
+
+  // Check UMA.
+  auto samples = histogram_tester().GetAllSamples(
+      "PageLoad.LayoutInstability.CumulativeShiftScore");
+  EXPECT_EQ(1ul, samples.size());
+  EXPECT_EQ(samples[0],
+            Bucket(page_load_metrics::LayoutShiftUmaValue(expect_score), 1));
+}
+
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
-  RunWPT("simple-block-movement.html");
+  RunWPT("simple-block-movement.html", ShiftFrame::LayoutShiftOnlyInMainFrame,
+         true /* check_UKM_UMA_metrics */);
 }
 
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
-  RunWPT("sources-enclosure.html", true);
+  RunWPT("sources-enclosure.html");
 }
 
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_MaxImpact) {
-  RunWPT("sources-maximpact.html", true);
+  RunWPT("sources-maximpact.html");
+}
+
+// This test verifies the layout shift score in the sub-frame is recorded
+// correctly in both UKM and UMA, the layout shift score in sub-frame is
+// calculated by applying a sub-frame weighting factor to the total score.
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, OOPIFSubframeWeighting) {
+  RunWPT("main-frame.html", ShiftFrame::LayoutShiftOnlyInSubFrame);
+
+  // Check UKM.
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kLayoutInstability_CumulativeShiftScoreName,
+      page_load_metrics::LayoutShiftUkmValue(0.03), 1);
+
+  // Check UMA.
+  ExpectUniqueUMAPageLoadMetricNear(
+      "PageLoad.LayoutInstability.CumulativeShiftScore",
+      page_load_metrics::LayoutShiftUmaValue(0.03));
 }

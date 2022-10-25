@@ -187,7 +187,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   TimingFieldBitSet GetMatchedBits(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       const page_load_metrics::mojom::FrameMetadata& metadata,
-      const PageRenderData* render_data);
+      const PageRenderData* render_data,
+      bool is_main_frame);
 
   // Updates observed page fields when a timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
@@ -313,6 +314,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool soft_navigation_count_updated_ = false;
 
   double last_main_frame_layout_shift_score_ = 0;
+  double last_sub_frame_layout_shift_score_ = 0;
 
   uint64_t current_num_input_events_ = 0;
   uint64_t expected_num_input_events_ = 0;
