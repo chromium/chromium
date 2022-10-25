@@ -66,8 +66,11 @@
 
 namespace {
 
-base::NoDestructor<fidl::InterfaceRequest<fuchsia::web::Context>>
-    g_test_request;
+fidl::InterfaceRequest<fuchsia::web::Context>& GetTestRequest() {
+  static base::NoDestructor<fidl::InterfaceRequest<fuchsia::web::Context>>
+      request;
+  return *request;
+}
 
 constexpr base::TimeDelta kMetricsReportingInterval = base::Minutes(1);
 
@@ -292,8 +295,9 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
   // TODO(crbug.com/1163073): Update tests to make a service connection to the
   // Context and remove this workaround.
-  if (*g_test_request)
-    HandleContextRequest(std::move(*g_test_request));
+  fidl::InterfaceRequest<fuchsia::web::Context>& request = GetTestRequest();
+  if (request)
+    HandleContextRequest(std::move(request));
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
@@ -323,7 +327,7 @@ void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
 // static
 void WebEngineBrowserMainParts::SetContextRequestForTest(
     fidl::InterfaceRequest<fuchsia::web::Context> request) {
-  *g_test_request.get() = std::move(request);
+  GetTestRequest() = std::move(request);
 }
 
 ContextImpl* WebEngineBrowserMainParts::context_for_test() const {
