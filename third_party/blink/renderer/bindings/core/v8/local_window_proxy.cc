@@ -106,20 +106,7 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   // willReleaseScriptContext callback, so all disposing should happen after
   // it returns.
   GetFrame()->Client()->WillReleaseScriptContext(context, world_->GetWorldId());
-
-  // We don't notify context destruction during frame detachment that happens
-  // when we remove the frame from the DOM tree. This allows debug code evaled
-  // from those frames. However, we still want to notify that the context was
-  // destroyed when navigating between documents, because DevTools is designed
-  // to only show what's going on "currently".
-  // Also, delaying such message won't leak memory because
-  // `V8InspectorImpl::contextCollected` is also called when the context for
-  // detached iframe is collected by GC.
-  if (next_status != Lifecycle::kFrameIsDetached &&
-      next_status != Lifecycle::kFrameIsDetachedAndV8MemoryIsPurged) {
-    MainThreadDebugger::Instance()->ContextWillBeDestroyed(script_state_);
-  }
-
+  MainThreadDebugger::Instance()->ContextWillBeDestroyed(script_state_);
   if (next_status == Lifecycle::kV8MemoryIsForciblyPurged ||
       next_status == Lifecycle::kGlobalObjectIsDetached) {
     // Clean up state on the global proxy, which will be reused.

@@ -7286,7 +7286,6 @@ crbug.com/1377004 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callb
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
 
-crbug.com/1370050 http/tests/devtools/debugger/stop-on-debugger-from-detached-iframe.js [ Skip ]
 crbug.com/1370050 http/tests/devtools/sources/debugger-ui/debugger-save-to-temp-var.js [ Skip ]
 
 crbug.com/1279220 [ Win ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass Timeout ]

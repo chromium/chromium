@@ -24,8 +24,4 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  frame (magic-frame.html)
-    127.0.0.1:8000
-      devtools/bindings/resources
-        magic-script.js
 
