@@ -2112,9 +2112,6 @@ void LayerTreeImpl::ProcessUIResourceRequestQueue() {
       case UIResourceRequest::UI_RESOURCE_DELETE:
         host_impl_->DeleteUIResource(req.GetId());
         break;
-      case UIResourceRequest::UI_RESOURCE_INVALID_REQUEST:
-        NOTREACHED();
-        break;
     }
   }
   ui_resource_request_queue_.clear();

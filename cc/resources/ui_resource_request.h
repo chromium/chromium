@@ -19,7 +19,6 @@ class CC_EXPORT UIResourceRequest {
   enum UIResourceRequestType {
     UI_RESOURCE_CREATE,
     UI_RESOURCE_DELETE,
-    UI_RESOURCE_INVALID_REQUEST
   };
 
   UIResourceRequest(UIResourceRequestType type, UIResourceId id);
