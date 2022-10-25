@@ -11,10 +11,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.accounts.Account;
 import android.app.Activity;
 
 import org.junit.After;
@@ -216,5 +218,20 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PasswordManager.UPMUpdateSignInCredentialsSucces", 1));
+    }
+
+    @Test
+    public void testDontShowMessageWithtoutAccount() {
+        when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());
+    }
+
+    @Test
+    public void testDontTryToUpdateCredentialWithNoAccount() {
+        when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+        PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
+                mWindowAndroidMock);
+        verify(mFakeAccountManagerFacade, never())
+                .updateCredentials(any(Account.class), any(Activity.class), any(Callback.class));
     }
 }
