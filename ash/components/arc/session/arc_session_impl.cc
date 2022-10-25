@@ -32,6 +32,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/user_manager/user_manager.h"
@@ -248,11 +249,8 @@ base::ScopedFD ArcSessionDelegateImpl::ConnectMojo(
 
 void ArcSessionDelegateImpl::GetFreeDiskSpace(
     GetFreeDiskSpaceCallback callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                     base::FilePath("/home")),
-      std::move(callback));
+  ash::SpacedClient::Get()->GetFreeDiskSpace("/home/chronos/user",
+                                             std::move(callback));
 }
 
 version_info::Channel ArcSessionDelegateImpl::GetChannel() {
@@ -587,13 +585,13 @@ void ArcSessionImpl::DoUpgrade() {
                                              weak_factory_.GetWeakPtr()));
 }
 
-void ArcSessionImpl::OnFreeDiskSpace(int64_t space) {
+void ArcSessionImpl::OnFreeDiskSpace(absl::optional<int64_t> space) {
   // Ensure there's sufficient space on disk for the container.
-  if (space == -1) {
+  if (!space.has_value()) {
     LOG(ERROR) << "Could not determine free disk space";
     StopArcInstance(/*on_shutdown=*/false, /*should_backup_log=*/false);
     return;
-  } else if (space < kMinimumFreeDiskSpaceBytes) {
+  } else if (space.value() < kMinimumFreeDiskSpaceBytes) {
     VLOG(1) << "There is not enough disk space to start the ARC container";
     insufficient_disk_space_ = true;
     StopArcInstance(/*on_shutdown=*/false, /*should_backup_log=*/false);

@@ -150,7 +150,8 @@ class ArcSessionImpl
                                        ConnectMojoCallback callback) = 0;
 
     // Gets the available disk space under /home. The result is in bytes.
-    using GetFreeDiskSpaceCallback = base::OnceCallback<void(int64_t)>;
+    using GetFreeDiskSpaceCallback =
+        base::OnceCallback<void(absl::optional<int64_t>)>;
     virtual void GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) = 0;
 
     // Returns the channel for the installation.
@@ -248,7 +249,7 @@ class ArcSessionImpl
   void DoStartMiniInstance(size_t num_cores_disabled);
 
   // Free disk space under /home in bytes.
-  void OnFreeDiskSpace(int64_t space);
+  void OnFreeDiskSpace(absl::optional<int64_t> space);
 
   // Whether adb sideloading can be changed
   void OnCanChangeAdbSideloading(bool can_change_adb_sideloading);

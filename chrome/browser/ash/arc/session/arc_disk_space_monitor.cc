@@ -52,8 +52,9 @@ void ArcDiskSpaceMonitor::ScheduleCheckDiskSpace(base::TimeDelta delay) {
 
 void ArcDiskSpaceMonitor::CheckDiskSpace() {
   ash::SpacedClient::Get()->GetFreeDiskSpace(
-      "/home", base::BindOnce(&ArcDiskSpaceMonitor::OnGetFreeDiskSpace,
-                              weak_ptr_factory_.GetWeakPtr()));
+      "/home/chronos/user",
+      base::BindOnce(&ArcDiskSpaceMonitor::OnGetFreeDiskSpace,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcDiskSpaceMonitor::OnGetFreeDiskSpace(absl::optional<int64_t> reply) {
