@@ -333,40 +333,28 @@ public class ContextualSearchInstrumentationBase {
             // All false
             ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
             false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
-            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false,
-            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, false);
+            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
 
     /** This is the Related Searches Feature in the MVP configuration. */
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES = ImmutableMap.of(
             // Related Searches needs these 3:
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
             true, ChromeFeatureList.RELATED_SEARCHES_UI, true,
-            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false,
-            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, false);
+            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
 
     /** This is the helper-text Feature. */
     private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION = ImmutableMap.of(
             ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
             false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
             // Just this one enabled:
-            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
-            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, false);
+            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
     /** This is the helper-text Feature with Related Searches */
     private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION_WITH_RELATED_SEARCHES =
             ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
                     ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true,
                     ChromeFeatureList.RELATED_SEARCHES_UI, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
-                    ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, false);
-
-    /** This is the contextual triggers feature set that alters tap to show selection handles. */
-    private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS = ImmutableMap.of(
-            ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
-            false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
-            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false,
-            // Just this one enabled:
-            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, true);
+                    ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
     //--------------------------------------------------------------------------------------------
     // Feature maps that we use for individual tests.
@@ -397,14 +385,13 @@ public class ContextualSearchInstrumentationBase {
     private FakeSlowResolveSearch mLatestSlowResolveSearch;
 
     @IntDef({EnabledFeature.NONE, EnabledFeature.RELATED_SEARCHES, EnabledFeature.FORCE_CAPTION,
-            EnabledFeature.FORCE_CAPTION_WITH_RELATED_SEARCHES, EnabledFeature.CONTEXTUAL_TRIGGERS})
+            EnabledFeature.FORCE_CAPTION_WITH_RELATED_SEARCHES})
     @Retention(RetentionPolicy.SOURCE)
     @interface EnabledFeature {
         int NONE = 0;
         int RELATED_SEARCHES = 1;
         int FORCE_CAPTION = 2;
         int FORCE_CAPTION_WITH_RELATED_SEARCHES = 3;
-        int CONTEXTUAL_TRIGGERS = 4;
     }
 
     // Tracks whether a long-press triggering experiment is active.
@@ -487,9 +474,6 @@ public class ContextualSearchInstrumentationBase {
                 break;
             case EnabledFeature.FORCE_CAPTION_WITH_RELATED_SEARCHES:
                 whichFeature = ENABLE_FORCE_CAPTION_WITH_RELATED_SEARCHES;
-                break;
-            case EnabledFeature.CONTEXTUAL_TRIGGERS:
-                whichFeature = ENABLE_CONTEXTUAL_TRIGGERS;
                 break;
         }
         Assert.assertNotNull(

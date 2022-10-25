@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
@@ -568,32 +567,6 @@ class ContextualSearchPolicy {
     boolean isMissingRelatedSearchesConfiguration() {
         return TextUtils.isEmpty(
                 ContextualSearchFieldTrial.getRelatedSearchesExperimentConfigurationStamp());
-    }
-
-    // --------------------------------------------------------------------------------------------
-    // Contextual Triggers Support.
-    // --------------------------------------------------------------------------------------------
-
-    /**
-     * Returns the size of the selection that should be shown in response to a Tap gesture.
-     * The typical return value is word granularity, but sentence selection and others may be
-     * supported too.
-     */
-    @SelectionGranularity
-    int getSelectionSize() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_SIZE)
-                ? SelectionGranularity.SENTENCE
-                : SelectionGranularity.WORD;
-    }
-
-    /** Returns whether the selection handles should be shown in response to a Tap gesture. */
-    boolean getSelectionShouldShowHandles() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES);
-    }
-
-    /** Returns whether the selection context menu should be shown in response to a Tap gesture. */
-    boolean getSelectionShouldShowMenu() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_MENU);
     }
 
     // --------------------------------------------------------------------------------------------

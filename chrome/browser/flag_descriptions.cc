@@ -3564,25 +3564,6 @@ const char kContextualSearchSuppressShortViewName[] =
 const char kContextualSearchSuppressShortViewDescription[] =
     "Contextual Search suppress when the base page view is too short";
 
-const char kContextualTriggersSelectionHandlesName[] =
-    "Contextual Triggers selection handles";
-const char kContextualTriggersSelectionHandlesDescription[] =
-    "Shows the selection handles when selecting text in response to a tap "
-    "gesture on plain text.";
-
-const char kContextualTriggersSelectionMenuName[] =
-    "Contextual Triggers selection menu";
-const char kContextualTriggersSelectionMenuDescription[] =
-    "Shows the context menu when selecting text in response to a tap gesture "
-    "on plain text.";
-
-const char kContextualTriggersSelectionSizeName[] =
-    "Contextual Triggers selection size";
-const char kContextualTriggersSelectionSizeDescription[] =
-    "Selects a sentence instead of a single word when text is selected in "
-    "response to "
-    "a tap gesture on plain text.";
-
 const char kAutofillManualFallbackAndroidName[] =
     "Enable Autofill manual fallback for Addresses and Payments (Android)";
 const char kAutofillManualFallbackAndroidDescription[] =

@@ -232,9 +232,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchForceCaption,
     &kContextualSearchSuppressShortView,
     &kContextualSearchThinWebViewImplementation,
-    &kContextualTriggersSelectionHandles,
-    &kContextualTriggersSelectionMenu,
-    &kContextualTriggersSelectionSize,
     &kDirectActions,
     &kDisableCompositedProgressBar,
     &kDownloadFileProvider,
@@ -730,18 +727,6 @@ BASE_FEATURE(kContextualSearchSuppressShortView,
 
 BASE_FEATURE(kContextualSearchThinWebViewImplementation,
              "ContextualSearchThinWebViewImplementation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextualTriggersSelectionHandles,
-             "ContextualTriggersSelectionHandles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextualTriggersSelectionMenu,
-             "ContextualTriggersSelectionMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextualTriggersSelectionSize,
-             "ContextualTriggersSelectionSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDirectActions, "DirectActions", base::FEATURE_ENABLED_BY_DEFAULT);

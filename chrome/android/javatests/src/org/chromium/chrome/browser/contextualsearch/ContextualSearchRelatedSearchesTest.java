@@ -85,10 +85,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarSerpOffset() throws Exception {
-        // If this experiment under development is active, skip this test for now.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES)) {
-            return;
-        }
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mFakeServer.reset();
         simulateResolveSearch(SEARCH_NODE);

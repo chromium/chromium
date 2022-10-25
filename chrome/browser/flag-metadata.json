@@ -1126,21 +1126,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "contextual-triggers-selection-handles",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 108
-  },
-  {
-    "name": "contextual-triggers-selection-menu",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 108
-  },
-  {
-    "name": "contextual-triggers-selection-size",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "copy-link-to-text",
     "owners": [ "johntlee" ],
     "expiry_milestone": 94

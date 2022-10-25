@@ -214,9 +214,6 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testRelatedSearchesItemNotSelected(@EnabledFeature int enabledFeature)
             throws Exception {
-        // If this experiment under development is active, skip this test for now.
-        if (enabledFeature == EnabledFeature.CONTEXTUAL_TRIGGERS) return;
-
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");

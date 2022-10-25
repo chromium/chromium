@@ -121,10 +121,6 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testNotifyObserversAfterNonResolve() throws Exception {
-        // If this experiment under development is active, skip this test for now.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES)) {
-            return;
-        }
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         triggerNonResolve(SEARCH_NODE);
@@ -174,10 +170,6 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testNotifyObserversAfterResolve() throws Exception {
-        // If this experiment under development is active, skip this test for now.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES)) {
-            return;
-        }
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         simulateResolveSearch(SEARCH_NODE);
@@ -224,11 +216,6 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testNotifyObserversOnExpandSelection() throws Exception {
-        // If this experiment under development is active, skip this test for now.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES)) {
-            return;
-        }
-
         mPolicy.overrideDecidedStateForTesting(true);
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
@@ -257,10 +244,6 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testSecondTap() throws Exception {
-        // If this experiment under development is active, skip this test for now.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES)) {
-            return;
-        }
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
 

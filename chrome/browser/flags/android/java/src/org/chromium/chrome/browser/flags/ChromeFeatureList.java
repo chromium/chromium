@@ -314,12 +314,6 @@ public abstract class ChromeFeatureList {
             "ContextualSearchSuppressShortView";
     public static final String CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION =
             "ContextualSearchThinWebViewImplementation";
-    public static final String CONTEXTUAL_TRIGGERS_SELECTION_HANDLES =
-            "ContextualTriggersSelectionHandles";
-    public static final String CONTEXTUAL_TRIGGERS_SELECTION_MENU =
-            "ContextualTriggersSelectionMenu";
-    public static final String CONTEXTUAL_TRIGGERS_SELECTION_SIZE =
-            "ContextualTriggersSelectionSize";
     public static final String CORMORANT = "Cormorant";
     public static final String SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS =
             "SyncAndroidLimitNTPPromoImpressions";

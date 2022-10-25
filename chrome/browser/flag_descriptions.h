@@ -2009,15 +2009,6 @@ extern const char kContextualSearchForceCaptionDescription[];
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 
-extern const char kContextualTriggersSelectionHandlesName[];
-extern const char kContextualTriggersSelectionHandlesDescription[];
-
-extern const char kContextualTriggersSelectionMenuName[];
-extern const char kContextualTriggersSelectionMenuDescription[];
-
-extern const char kContextualTriggersSelectionSizeName[];
-extern const char kContextualTriggersSelectionSizeDescription[];
-
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
 

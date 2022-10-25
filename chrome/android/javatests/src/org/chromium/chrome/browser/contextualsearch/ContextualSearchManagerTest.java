@@ -184,9 +184,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveSwipeExpand(@EnabledFeature int enabledFeature) throws Exception {
-        // Skip when this experimental feature is enabled since it's not yet planned past Beta.
-        if (enabledFeature == EnabledFeature.CONTEXTUAL_TRIGGERS) return;
-
         simulateNonResolveSearch("search");
         assertNoWebContents();
         assertLoadedNoUrl();
@@ -536,9 +533,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     // Previously flaky on phones: https://crbug.com/765796
     public void testPanelDismissedOnToggleFullscreen(@EnabledFeature int enabledFeature)
             throws Exception {
-        // Skip when this experimental feature is enabled since it's not yet planned past Beta.
-        if (enabledFeature == EnabledFeature.CONTEXTUAL_TRIGGERS) return;
-
         // Simulate a resolving search and assert that the panel peeks.
         simulateResolveSearch("search");
 
@@ -604,9 +598,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testQuickActionCaptionAndImage(@EnabledFeature int enabledFeature)
             throws Exception {
-        // Skip when this experimental feature is enabled since it's not yet planned past Beta.
-        if (enabledFeature == EnabledFeature.CONTEXTUAL_TRIGGERS) return;
-
         CompositorAnimationHandler.setTestingMode(true);
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
@@ -767,9 +758,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testContextualDictionaryDefinitions(@EnabledFeature int enabledFeature)
             throws Exception {
-        // Skip when this experimental feature is enabled since it's not yet planned past Beta.
-        if (enabledFeature == EnabledFeature.CONTEXTUAL_TRIGGERS) return;
-
         runDictionaryCardTest(CardTag.CT_CONTEXTUAL_DEFINITION);
     }
 

@@ -291,9 +291,6 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
-        // This experimental feature does not support chained search.
-        if (enabledFeature == EnabledFeature.CONTEXTUAL_TRIGGERS) return;
-
         // This test depends on preloading the content - which is loaded and not made visible.
         // We only preload when the user has decided to accept the privacy opt-in.
         mPolicy.overrideDecidedStateForTesting(true);

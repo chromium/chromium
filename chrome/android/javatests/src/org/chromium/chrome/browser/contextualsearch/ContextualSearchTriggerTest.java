@@ -205,12 +205,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     public void testTapGestureFarAwayTogglesSelecting() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
-        // Showing the handles on a Tap gesture can interfere with the next tap gesture because
-        // the handles make the CS System think it's a long-press, which behaves differently.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES)) {
-            return;
-        }
-
         clickWordNode("states");
         Assert.assertEquals("States", getSelectedText());
         waitForPanelToPeek();

@@ -25,6 +25,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -1686,9 +1687,9 @@ public class ContextualSearchManager
                     mInternalStateController.notifyStartingWorkOn(
                             InternalState.START_SHOWING_TAP_UI);
                     mSelectAroundCaretCounter++;
-                    baseWebContents.selectAroundCaret(mPolicy.getSelectionSize(),
-                            mPolicy.getSelectionShouldShowHandles(),
-                            mPolicy.getSelectionShouldShowMenu());
+                    baseWebContents.selectAroundCaret(SelectionGranularity.WORD,
+                            /*shouldShowHandle=*/false,
+                            /*shouldShowContextMenu=*/false);
                     // Let the policy know that a valid tap gesture has been received.
                     mPolicy.registerTap();
                 } else {
