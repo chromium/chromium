@@ -79,6 +79,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected LinkedList<StorageRequest> mQueue = new LinkedList<>();
     private LinkedList<FileSaveRequest> mDelayedSaveRequests = new LinkedList<>();
+    private FileSaveRequest mExecutingSaveRequest;
 
     protected FilePersistedTabDataStorage() {
         mSequencedTaskRunner =
@@ -154,6 +155,11 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         delete(tabId, dataId, NO_OP_CALLBACK);
     }
 
+    @VisibleForTesting
+    public List<StorageRequest> getStorageRequestQueueForTesting() {
+        return mQueue;
+    }
+
     // Callback used for test synchronization between save, restore and delete operations
     @MainThread
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -164,6 +170,11 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     protected void addStorageRequestAndProcessNext(StorageRequest storageRequest) {
         mQueue.add(storageRequest);
         processNextItemOnQueue();
+    }
+
+    @VisibleForTesting
+    protected void setExecutingSaveRequestForTesting(FileSaveRequest fileSaveRequest) {
+        mExecutingSaveRequest = fileSaveRequest;
     }
 
     /**
@@ -247,6 +258,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     protected class FileSaveRequest extends StorageRequest<Void> {
         protected Serializer<ByteBuffer> mSerializer;
         protected Callback<Integer> mCallback;
+        private boolean mFinished;
 
         /**
          * @param tabId identifier for the {@link Tab}
@@ -312,6 +324,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             }
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Save." + getUmaTag(), success);
+            mFinished = true;
             return null;
         }
 
@@ -330,6 +343,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
                 @Override
                 protected void onPostExecute(Void result) {
+                    mExecutingSaveRequest = null;
                     PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                             () -> { mCallback.onResult(DECREMENT_SEMAPHORE_VAL); });
                     processNextItemOnQueue();
@@ -347,6 +361,14 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         @StorageRequestType
         int getStorageRequestType() {
             return StorageRequestType.SAVE;
+        }
+
+        public void preSerialize() {
+            mSerializer.preSerialize();
+        }
+
+        public boolean isFinished() {
+            return mFinished;
         }
     }
 
@@ -583,6 +605,9 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                     storageRequest.getStorageRequestType(), StorageRequestType.NUM_ENTRIES);
             mFirstOperationRecorded = true;
         }
+        if (storageRequest instanceof FileSaveRequest) {
+            mExecutingSaveRequest = (FileSaveRequest) storageRequest;
+        }
         storageRequest.getAsyncTask().executeOnTaskRunner(mSequencedTaskRunner);
     }
 
@@ -640,6 +665,16 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         }
     }
 
+    /**
+     * Used for cleaning up files between batched tests.
+     */
+    @VisibleForTesting
+    protected static void deleteFilesForTesting() {
+        for (File file : getOrCreateBaseStorageDirectory().listFiles()) {
+            file.delete();
+        }
+    }
+
     private static boolean isDelaySavesUntilDeferredStartup() {
         return ChromeFeatureList.sCriticalPersistedTabData.isEnabled()
                 && DELAY_SAVES_UNTIL_DEFERRED_STARTUP_PARAM.getValue();
@@ -661,5 +696,28 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     @VisibleForTesting
     public LinkedList<FileSaveRequest> getDelayedSaveRequestsForTesting() {
         return mDelayedSaveRequests;
+    }
+
+    /**
+     * System is shutting down - finish any pending saves.
+     */
+    public void onShutdown() {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            // Cancel existing request on background thread and finish
+            // all saves.
+            if (mExecutingSaveRequest != null) {
+                mExecutingSaveRequest.getAsyncTask().cancel(false);
+                if (!mExecutingSaveRequest.isFinished()) {
+                    mQueue.addFirst(mExecutingSaveRequest);
+                }
+            }
+            for (StorageRequest storageRequest : mQueue) {
+                if (storageRequest instanceof FileSaveRequest) {
+                    ((FileSaveRequest) storageRequest).preSerialize();
+                    storageRequest.executeSyncTask();
+                }
+            }
+            mQueue.clear();
+        }
     }
 }
