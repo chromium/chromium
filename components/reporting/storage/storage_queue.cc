@@ -23,6 +23,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -254,7 +255,8 @@ Status StorageQueue::Init() {
   // This is especially imporant for non-periodic queues, but won't harm
   // others either.
   if (first_sequencing_id_ < next_sequencing_id_) {
-    Start<ReadContext>(UploaderInterface::UploadReason::INIT_RESUME, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::INIT_RESUME,
+                       base::DoNothing(), this);
   }
   return Status::StatusOK();
 }
@@ -815,15 +817,18 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) const {
 // active_read_operations_ to make sure confirmation will not trigger
 // files deletion. Decrements it upon completion (when this counter
 // is zero, RemoveConfirmedData can delete the unused files).
+// Returns result through `completion_cb`.
 class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
  public:
   ReadContext(UploaderInterface::UploadReason reason,
+              base::OnceCallback<void(Status)> completion_cb,
               scoped_refptr<StorageQueue> storage_queue)
       : TaskRunnerContext<Status>(
             base::BindOnce(&ReadContext::UploadingCompleted,
                            base::Unretained(this)),
             storage_queue->sequenced_task_runner_),
         reason_(reason),
+        completion_cb_(std::move(completion_cb)),
         async_start_upload_cb_(storage_queue->async_start_upload_cb_),
         must_invoke_upload_(
             EncryptionModuleInterface::is_enabled() &&
@@ -1014,6 +1019,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
         DCHECK_GE(count, 0);
       }
     }
+    // Respond with the result.
+    std::move(completion_cb_).Run(status);
   }
 
   // Prepares the |blob| for uploading.
@@ -1289,6 +1296,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // the uploader object.
   const UploaderInterface::UploadReason reason_;
 
+  // Completion callback.
+  base::OnceCallback<void(Status)> completion_cb_;
+
   // Files that will be read (in order of sequencing ids).
   std::map<int64_t, scoped_refptr<SingleFile>> files_;
   SequenceInformation sequence_info_;
@@ -1343,7 +1353,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // finished and respond back when reading Upload is done.
     // Note: new uploader created synchronously before scheduling Upload.
     Start<ReadContext>(UploaderInterface::UploadReason::IMMEDIATE_FLUSH,
-                       storage_queue_);
+                       base::DoNothing(), storage_queue_);
   }
 
   void OnStart() override {
@@ -1886,14 +1896,16 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   if (!status.ok()) {
     // Previous upload failed, retry.
-    Start<ReadContext>(UploaderInterface::UploadReason::FAILURE_RETRY, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::FAILURE_RETRY,
+                       base::DoNothing(), this);
     return;
   }
 
   if (!first_unconfirmed_sequencing_id_.has_value() ||
       first_unconfirmed_sequencing_id_.value() < next_sequencing_id) {
     // Not all uploaded events were confirmed after upload, retry.
-    Start<ReadContext>(UploaderInterface::UploadReason::INCOMPLETE_RETRY, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::INCOMPLETE_RETRY,
+                       base::DoNothing(), this);
     return;
   }
 
@@ -1901,11 +1913,13 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
 }
 
 void StorageQueue::PeriodicUpload() {
-  Start<ReadContext>(UploaderInterface::UploadReason::PERIODIC, this);
+  Start<ReadContext>(UploaderInterface::UploadReason::PERIODIC,
+                     base::DoNothing(), this);
 }
 
-void StorageQueue::Flush() {
-  Start<ReadContext>(UploaderInterface::UploadReason::MANUAL, this);
+void StorageQueue::Flush(base::OnceCallback<void(Status)> completion_cb) {
+  Start<ReadContext>(UploaderInterface::UploadReason::MANUAL,
+                     std::move(completion_cb), this);
 }
 
 void StorageQueue::ReleaseAllFileInstances() {

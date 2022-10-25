@@ -36,7 +36,7 @@ void StorageModule::AddRecord(Priority priority,
 }
 
 void StorageModule::Flush(Priority priority, FlushCallback callback) {
-  std::move(callback).Run(storage_->Flush(priority));
+  storage_->Flush(priority, std::move(callback));
 }
 
 void StorageModule::ReportSuccess(SequenceInformation sequence_information,

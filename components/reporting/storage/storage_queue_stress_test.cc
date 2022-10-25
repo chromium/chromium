@@ -193,6 +193,12 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     storage_queue_->Write(std::move(record), std::move(cb));
   }
 
+  void FlushOrDie() {
+    test::TestEvent<Status> flush_event;
+    storage_queue_->Flush(flush_event.cb());
+    ASSERT_OK(flush_event.result());
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -249,7 +255,7 @@ TEST_P(StorageQueueStressTest,
     write_waiter.Wait();
 
     SCOPED_TRACE(base::StrCat({"Upload ", base::NumberToString(iStart)}));
-    storage_queue_->Flush();
+    FlushOrDie();
 
     SCOPED_TRACE(base::StrCat({"Reset ", base::NumberToString(iStart)}));
     ResetTestStorageQueue();

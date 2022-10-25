@@ -69,8 +69,8 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Initiates upload of collected records according to the priority.
   // Called usually for a queue with an infinite or very large upload period.
   // Multiple |Flush| calls can safely run in parallel.
-  // Returns error if cannot start upload.
-  Status Flush(Priority priority);
+  // Invokes |completion_cb| with error if upload fails or cannot start.
+  void Flush(Priority priority, base::OnceCallback<void(Status)> completion_cb);
 
   // If the server attached signed encryption key to the response, it needs to
   // be paased here.

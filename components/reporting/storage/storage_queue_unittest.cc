@@ -716,6 +716,12 @@ class StorageQueueTest
     ASSERT_OK(write_result) << write_result;
   }
 
+  void FlushOrDie() {
+    test::TestEvent<Status> flush_event;
+    storage_queue_->Flush(flush_event.cb());
+    ASSERT_OK(flush_event.result());
+  }
+
   void ConfirmOrDie(int64_t sequencing_id, bool force = false) {
     ASSERT_TRUE(last_upload_generation_id_.has_value());
     LOG(ERROR) << "Confirm force=" << force << " seq=" << sequencing_id
@@ -1073,7 +1079,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
       .RetiresOnSaturation();
 
   // Flush manually.
-  storage_queue_->Flush();
+  FlushOrDie();
 }
 
 TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
@@ -1106,7 +1112,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
       .RetiresOnSaturation();
 
   // Flush manually.
-  storage_queue_->Flush();
+  FlushOrDie();
 }
 
 TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
@@ -1134,7 +1140,7 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
       .RetiresOnSaturation();
 
   // Flush manually.
-  storage_queue_->Flush();
+  FlushOrDie();
 }
 
 TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
