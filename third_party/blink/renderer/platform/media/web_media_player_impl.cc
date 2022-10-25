@@ -4090,8 +4090,22 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
 }
 
 bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
+  // If there is a MultiBuffer associated with this player, then defer to it.
+  // This will return false if any HTTP response so far has failed the TAO
+  // check.
   if (mb_data_source_)
     return mb_data_source_->PassedTimingAllowOriginCheck();
+  // If there is no MultiBuffer, then there are no HTTP responses, and so this
+  // can safely return true. Specifically for the MSE case, the app itself
+  // sources the ArrayBuffer[Views], possibly not even from HTTP responses. Any
+  // TAO checks which are present to prevent deduction of the resource content
+  // can be assumed to have passed, as the content is already readable by the
+  // app. TAO checks which would be used to determine other network timing
+  // info, such as DNS lookup time, are not relevant as the media data is far
+  // removed from the network itself at this point, and so that info cannot be
+  // revealed via the MediaSource or WebMediaPlayer that's using MSE.
+  // TODO(1266991): Ensure that this returns the correct value for HLS media,
+  // based on the TAO checks performed on those resources.
   return true;
 }
 
