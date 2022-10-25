@@ -45,17 +45,7 @@ validation_schema:
       filter:
         properties:
           ISSUER:
-            id: CertPrincipalFields
-            properties:
-              CN:
-                type: string
-              L:
-                type: string
-              O:
-                type: string
-              OU:
-                type: string
-            type: object
+            $ref: CertPrincipalFields
           SUBJECT:
             $ref: CertPrincipalFields
         type: object

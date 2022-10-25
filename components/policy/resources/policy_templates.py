@@ -30,7 +30,8 @@ def _SubstituteSchemaRefNames(node, child_key, common_schema, parent_refs,
   '''Converts recursively objects with the key '$ref' into their actual schema.
   '''
 
-  if not isinstance(node, dict) or not isinstance(node[child_key], dict):
+  if (not isinstance(node, dict) or not child_key in node
+    or not isinstance(node[child_key], dict)):
     return
   if '$ref' in node[child_key]:
     ref_name = node[child_key]['$ref']
@@ -46,8 +47,10 @@ def _SubstituteSchemaRefNames(node, child_key, common_schema, parent_refs,
     refs_seen.add(ref_name)
 
   for ck in node[child_key].keys():
-    _SubstituteSchemaRefNames(node[child_key], ck, common_schema, parent_refs,
-                        refs_seen)
+    # Copy parents ref so that parents are unique for each child branch and do not mix with sibling
+    # nodes.
+    _SubstituteSchemaRefNames(node[child_key], ck, common_schema,
+                              parent_refs.copy(), refs_seen)
 
 
 def _SubstituteSchemaRefs(policies, common_schema):
@@ -63,6 +66,10 @@ def _SubstituteSchemaRefs(policies, common_schema):
     parent_refs = set()
     _SubstituteSchemaRefNames(policy, 'schema', common_schema, parent_refs,
                               refs_seen)
+  for policy in list_dict_policies:
+    parent_refs = set()
+    _SubstituteSchemaRefNames(policy, 'validation_schema', common_schema,
+                              parent_refs, refs_seen)
 
 
 def _BuildPolicyTemplate(data):

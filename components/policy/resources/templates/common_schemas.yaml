@@ -11,6 +11,17 @@ BookmarkType:
     url:
       type: string
   type: object
+CertPrincipalFields:
+  properties:
+    CN:
+      type: string
+    L:
+      type: string
+    O:
+      type: string
+    OU:
+      type: string
+  type: object
 Config:
   description: Configuration used to generate and verify Parent Access Code.
   properties:
