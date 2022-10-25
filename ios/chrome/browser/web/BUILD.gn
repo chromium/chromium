@@ -209,6 +209,8 @@ optimize_js("language_detection_js") {
 source_set("web_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "browser_about_rewriter.cc",
+    "browser_about_rewriter.h",
     "chrome_main_parts.h",
     "chrome_main_parts.mm",
     "chrome_web_client.h",
@@ -243,6 +245,7 @@ source_set("web_internal") {
     "//components/strings",
     "//components/translate/core/browser",
     "//components/translate/ios/browser",
+    "//components/url_formatter",
     "//components/variations",
     "//components/variations/field_trial_config",
     "//components/variations/service",
@@ -321,6 +324,7 @@ source_set("unit_tests_internal") {
   testonly = true
   sources = [
     "blocked_popup_tab_helper_unittest.mm",
+    "browser_about_rewriter_unittest.cc",
     "chrome_web_client_unittest.mm",
   ]
   deps = [

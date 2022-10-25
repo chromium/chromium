@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_ABOUT_REWRITER_H_
-#define IOS_CHROME_BROWSER_BROWSER_ABOUT_REWRITER_H_
+#ifndef IOS_CHROME_BROWSER_WEB_BROWSER_ABOUT_REWRITER_H_
+#define IOS_CHROME_BROWSER_WEB_BROWSER_ABOUT_REWRITER_H_
 
 class GURL;
 
@@ -17,4 +17,4 @@ class BrowserState;
 // function that is used by web::BrowserURLRewriter.
 bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state);
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_ABOUT_REWRITER_H_
+#endif  // IOS_CHROME_BROWSER_WEB_BROWSER_ABOUT_REWRITER_H_

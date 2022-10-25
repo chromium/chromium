@@ -13,8 +13,6 @@ import("//third_party/protobuf/proto_library.gni")
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "browser_about_rewriter.cc",
-    "browser_about_rewriter.h",
     "chrome_browser_provider_observer_bridge.h",
     "chrome_browser_provider_observer_bridge.mm",
     "chrome_constants.cc",
@@ -226,7 +224,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "browser_about_rewriter_unittest.cc",
     "chrome_browser_provider_observer_bridge_unittest.mm",
     "installation_notifier_unittest.mm",
     "url/url_util_unittest.mm",
