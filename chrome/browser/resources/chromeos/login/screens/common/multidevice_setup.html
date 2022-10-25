@@ -4,156 +4,137 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="stylesheet" href="oobe_popup_overlay.css">
+<style include="multidevice-setup-shared oobe-common-styles">
+  multidevice-setup {
+    --multidevice-setup-width: 100%;
+    --iron-pages-overflow: auto;
+  }
 
-<link rel="import" href="chrome://resources/ash/common/multidevice_setup/mojo_api.html">
-<link rel="import" href="chrome://resources/ash/common/multidevice_setup/multidevice_setup_shared.css.html">
-<link rel="import" href="chrome://resources/ash/common/multidevice_setup/multidevice_setup.html">
-<link rel="import" href="chrome://resources/ash/common/multidevice_setup/multidevice_setup_delegate.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/ash/common/i18n_behavior.html">
-<link rel="import" href="chrome://resources/ash/common/web_ui_listener_behavior.html">
+  #multidevice-help-overlay-container {
+    width: 768px;
+  }
 
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_next_button.html">
-<link rel="import" href="../../components/buttons/oobe_text_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/throbber_notice.html">
+  #multideviceHelpOverlayWebview {
+    border: 1px solid #d9d9d9;
+    display: block;
+    height: 450px;
+    width: 100%;
+  }
 
-<!--
-  OOBE screen that wraps MultiDevice setup flow when displayed during the
-  user's onboarding on this Chromebook. Note that this flow is slightly
-  different from the post-OOBE flow ( `c/b/r/chromeos/multidevice_setup/` )
-  in 3 ways:
-    (1) During onboarding, the user has just entered their password, so we
-        do not prompt the user to enter a password before continuing.
-    (2) During onboarding, once the user selects a host device, we continue to
-        the next OOBE/login task; in the post-OOBE mode, there is a "success"
-        screen.
-    (3) During onboarding, buttons are styled with custom OOBE buttons.
--->
+  #multidevice-help-overlay-webview-container {
+    box-sizing: border-box;
+    height: 482px;
+    margin: auto;
+    padding: 24px 8px 8px 8px;
+    width: 100%;
+  }
 
-<dom-module id="multidevice-setup-element">
-  <template>
-    <link rel="stylesheet" href="oobe_popup_overlay.css">
-    <style include="multidevice-setup-shared oobe-common-styles">
-      multidevice-setup {
-        --multidevice-setup-width: 100%;
-        --iron-pages-overflow: auto;
-      }
+  .multidevice-help-overlay-webview-loading {
+    height: 100%;
+    width: 100%;
+  }
 
-      #multidevice-help-overlay-container {
-        width: 768px;
-      }
+  .multidevice-help-overlay-close-top {
+    background-image: url(chrome://theme/IDR_CLOSE_DIALOG);
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 14px;
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    width: 14px;
+    z-index: 1;
+  }
 
-      #multideviceHelpOverlayWebview {
-        border: 1px solid #d9d9d9;
-        display: block;
-        height: 450px;
-        width: 100%;
-      }
+  html[dir='rtl'] .multidevice-help-overlay-close-top {
+    left: 10px;
+    right: auto;
+  }
 
-      #multidevice-help-overlay-webview-container {
-        box-sizing: border-box;
-        height: 482px;
-        margin: auto;
-        padding: 24px 8px 8px 8px;
-        width: 100%;
-      }
+  .multidevice-help-overlay-close-top:hover {
+    background-image: url(chrome://theme/IDR_CLOSE_DIALOG_H);
+  }
 
-      .multidevice-help-overlay-webview-loading {
-          height: 100%;
-          width: 100%;
-      }
+  .multidevice-help-overlay-close-top:active {
+    background-image: url(chrome://theme/IDR_CLOSE_DIALOG_P);
+  }
 
-      .multidevice-help-overlay-close-top {
-        background-image: url(chrome://theme/IDR_CLOSE_DIALOG);
-        background-position: center;
-        background-repeat: no-repeat;
-        height: 14px;
-        position: absolute;
-        right: 7px;
-        top: 7px;
-        width: 14px;
-        z-index: 1;
-      }
+  .multidevice-help-button-strip {
+    display: flex;
+    justify-content: flex-end;
+    margin: 8px;
+    min-height: 0;
+  }
 
-      html[dir='rtl'] .multidevice-help-overlay-close-top {
-        left: 10px;
-        right: auto;
-      }
-
-      .multidevice-help-overlay-close-top:hover {
-        background-image: url(chrome://theme/IDR_CLOSE_DIALOG_H);
-      }
-
-      .multidevice-help-overlay-close-top:active {
-        background-image: url(chrome://theme/IDR_CLOSE_DIALOG_P);
-      }
-
-      .multidevice-help-button-strip {
-        display: flex;
-        justify-content: flex-end;
-        margin: 8px;
-        min-height: 0;
-      }
-
-      /*
+  /*
       TODO(https://crbug.com/1320715) Revise the color
       oobe-text-button {
         --oobe-button-border-color: var(--google-grey-200);
       }
       */
-    </style>
-    <multidevice-setup id="multideviceSetup"
-        delegate="[[delegate_]]"
-        on-setup-exited="onExitRequested_"
-        on-open-learn-more-webview-requested="onOpenLearnMoreWebviewRequested_"
-        on-forward-button-focus-requested="onForwardButtonFocusRequested_"
-        forward-button-text-id="{{forwardButtonTextId_}}"
-        forward-button-disabled="{{forwardButtonDisabled_}}"
-        cancel-button-text-id="{{cancelButtonTextId_}}">
-      <oobe-text-button slot="cancel-button"
-        text-key="[[cancelButtonTextId_]]"></oobe-text-button>
-      <oobe-next-button id="nextButton" slot="forward-button"
-          disabled$="[[forwardButtonDisabled_]]"
-          text-key="[[forwardButtonTextId_]]"></oobe-next-button>
-    </multidevice-setup>
+</style>
+<multidevice-setup
+  id="multideviceSetup"
+  delegate="[[delegate_]]"
+  on-setup-exited="onExitRequested_"
+  on-open-learn-more-webview-requested="onOpenLearnMoreWebviewRequested_"
+  on-forward-button-focus-requested="onForwardButtonFocusRequested_"
+  forward-button-text-id="{{forwardButtonTextId_}}"
+  forward-button-disabled="{{forwardButtonDisabled_}}"
+  cancel-button-text-id="{{cancelButtonTextId_}}"
+>
+  <oobe-text-button
+    slot="cancel-button"
+    text-key="[[cancelButtonTextId_]]"
+  ></oobe-text-button>
+  <oobe-next-button
+    id="nextButton"
+    slot="forward-button"
+    disabled$="[[forwardButtonDisabled_]]"
+    text-key="[[forwardButtonTextId_]]"
+  ></oobe-next-button>
+</multidevice-setup>
 
-    <div id="multidevice-help-overlay" class="popup-overlay"
-        hidden$="[[webviewOverlayHidden_]]">
-      <div id="multidevice-help-overlay-container"
-          class="oobe-popup not-resizable">
-        <div id="multidevice-help-overlay-close-top"
-            class="multidevice-help-overlay-close-top
-                multidevice-help-overlay-close-button"
-            on-click="hideWebviewOverlay_"
-            title="[[i18nDynamic(locale, 'arcOverlayClose')]]">
-        </div>
-        <div id="multidevice-help-overlay-webview-container">
-          <div class="multidevice-help-overlay-webview-loading
-                      layout horizontal center-center"
-              hidden$="[[!isWebviewLoading_]]">
-            <throbber-notice text-key="gaiaLoading"></throbber-notice>
-          </div>
-          <webview id="multideviceHelpOverlayWebview"
-              hidden$="[[isWebviewLoading_]]"
-              src="[[webviewSrc_]]">
-          </webview>
-        </div>
-        <div class="multidevice-help-button-strip">
-          <!-- TODO(crbug.com/894537): Use string that is specific to
-                  MultiDevice. -->
-          <oobe-text-button inverse id="multidevice-help-overlay-close-bottom"
-              class="multidevice-help-overlay-close-button"
-              text-key="arcOverlayClose"
-              on-click="hideWebviewOverlay_">
-          </oobe-text-button>
-        </div>
+<div
+  id="multidevice-help-overlay"
+  class="popup-overlay"
+  hidden$="[[webviewOverlayHidden_]]"
+>
+  <div id="multidevice-help-overlay-container" class="oobe-popup not-resizable">
+    <div
+      id="multidevice-help-overlay-close-top"
+      class="multidevice-help-overlay-close-top
+          multidevice-help-overlay-close-button"
+      on-click="hideWebviewOverlay_"
+      title="[[i18nDynamic(locale, 'arcOverlayClose')]]"
+    ></div>
+    <div id="multidevice-help-overlay-webview-container">
+      <div
+        class="multidevice-help-overlay-webview-loading
+            layout horizontal center-center"
+        hidden$="[[!isWebviewLoading_]]"
+      >
+        <throbber-notice text-key="gaiaLoading"></throbber-notice>
       </div>
+      <webview
+        id="multideviceHelpOverlayWebview"
+        hidden$="[[isWebviewLoading_]]"
+        src="[[webviewSrc_]]"
+      >
+      </webview>
     </div>
-  </template>
-  <script src="multidevice_setup.js"></script>
-</dom-module>
+    <div class="multidevice-help-button-strip">
+      <!-- TODO(crbug.com/894537): Use string that is specific to
+                  MultiDevice. -->
+      <oobe-text-button
+        inverse
+        id="multidevice-help-overlay-close-bottom"
+        class="multidevice-help-overlay-close-button"
+        text-key="arcOverlayClose"
+        on-click="hideWebviewOverlay_"
+      >
+      </oobe-text-button>
+    </div>
+  </div>
+</div>

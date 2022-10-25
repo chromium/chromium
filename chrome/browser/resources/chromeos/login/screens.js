@@ -25,7 +25,7 @@ import './screens/common/hw_data_collection.m.js';
 import './screens/common/local_state_error.js';
 import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
-import './screens/common/multidevice_setup.m.js';
+import './screens/common/multidevice_setup.js';
 import './screens/common/offline_ad_login.js';
 import './screens/common/oobe_eula.js';
 import './screens/common/oobe_reset.js';

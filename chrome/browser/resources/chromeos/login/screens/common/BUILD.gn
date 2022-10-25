@@ -18,7 +18,6 @@ group("polymer3_elements") {
     ":family_link_notice_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
-    ":multidevice_setup_module",
     ":recommend_apps_module",
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
@@ -88,7 +87,7 @@ js_type_check("closure_compile_local") {
 js_type_check("closure_compile_multidevice_setup") {
   is_polymer3 = true
   closure_flags = default_closure_args + mojom_js_args
-  deps = [ ":multidevice_setup.m" ]
+  deps = [ ":multidevice_setup" ]
 }
 
 ###############################
@@ -374,8 +373,8 @@ js_library("marketing_opt_in") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("multidevice_setup.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/multidevice_setup.m.js" ]
+js_library("multidevice_setup") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/multidevice_setup.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -388,7 +387,7 @@ js_library("multidevice_setup.m") {
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":multidevice_setup_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("offline_ad_login") {
@@ -713,15 +712,6 @@ polymer_modulizer("hw_data_collection") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("multidevice_setup") {
-  js_file = "multidevice_setup.js"
-  html_file = "multidevice_setup.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("recommend_apps") {
   js_file = "recommend_apps.js"
   html_file = "recommend_apps.html"
@@ -783,6 +773,7 @@ html_to_js("web_components") {
     "local_state_error.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",
+    "multidevice_setup.js",
     "offline_ad_login.js",
     "oobe_eula.js",
     "oobe_reset.js",

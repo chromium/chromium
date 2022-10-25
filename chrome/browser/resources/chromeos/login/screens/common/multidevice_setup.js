@@ -5,9 +5,33 @@
 /**
  * @fileoverview MultiDevice setup screen for login/OOBE.
  */
+import '//resources/ash/common/multidevice_setup/mojo_api.js';
+import '//resources/ash/common/multidevice_setup/multidevice_setup_shared.css.js';
+import '//resources/ash/common/multidevice_setup/multidevice_setup.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/throbber_notice.js';
 
-/* #js_imports_placeholder */
+import {MultiDeviceSetupDelegate} from '//resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';
+import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
+import {assert} from '//resources/js/assert.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
+// OOBE screen that wraps MultiDevice setup flow when displayed during the
+// user's onboarding on this Chromebook. Note that this flow is slightly
+// different from the post-OOBE flow ( `c/b/r/chromeos/multidevice_setup/` )
+// in 3 ways:
+//  (1) During onboarding, the user has just entered their password, so we
+//      do not prompt the user to enter a password before continuing.
+//  (2) During onboarding, once the user selects a host device, we continue to
+//      the next OOBE/login task; in the post-OOBE mode, there is a "success"
+//      screen.
+//  (3) During onboarding, buttons are styled with custom OOBE buttons.
 
 /** @implements {MultiDeviceSetupDelegate} */
 class MultiDeviceSetupScreenDelegate {
@@ -53,12 +77,11 @@ class MultiDeviceSetupScreenDelegate {
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
- const MultiDeviceSetupScreenBase = Polymer.mixinBehaviors(
-  [OobeI18nBehavior, LoginScreenBehavior, WebUIListenerBehavior],
-  Polymer.Element);
+const MultiDeviceSetupScreenBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
 /**
  * @polymer
@@ -68,7 +91,9 @@ class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
     return 'multidevice-setup-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
