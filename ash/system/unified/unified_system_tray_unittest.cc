@@ -628,4 +628,25 @@ TEST_P(UnifiedSystemTrayTest, BubbleClosedAfterTabletModeChange) {
   EXPECT_FALSE(IsBubbleShown());
 }
 
+// Tests that the tray background has the correct color when entering tablet
+// mode.
+TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  auto* widget = tray->GetWidget();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+
+  tablet_mode_controller->SetEnabledForTest(false);
+  EXPECT_EQ(tray->layer()->background_color(),
+            ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_EQ(tray->layer()->background_color(),
+            ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+
+  tablet_mode_controller->SetEnabledForTest(false);
+  EXPECT_EQ(tray->layer()->background_color(),
+            ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+}
+
 }  // namespace ash
