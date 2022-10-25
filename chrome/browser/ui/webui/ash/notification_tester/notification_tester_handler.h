@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_NOTIFICATION_TESTER_NOTIFICATION_TESTER_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_NOTIFICATION_TESTER_NOTIFICATION_TESTER_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_NOTIFICATION_TESTER_NOTIFICATION_TESTER_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_NOTIFICATION_TESTER_NOTIFICATION_TESTER_HANDLER_H_
 
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -22,7 +22,7 @@ namespace ui {
 class ImageModel;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 
 // WebUI message handler for chrome://notification-tester from the front-end to
 // the message center.
@@ -70,6 +70,6 @@ class NotificationTesterHandler : public content::WebUIMessageHandler {
       const base::Value::Dict* notifObj);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif

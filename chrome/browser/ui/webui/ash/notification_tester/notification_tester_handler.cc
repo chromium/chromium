@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/notification_tester/notification_tester_handler.h"
+#include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_handler.h"
 
 #include <string>
 
@@ -20,7 +20,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 
 NotificationTesterHandler::NotificationTesterHandler() = default;
 
@@ -97,7 +97,7 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
   } else {
     notifier_id = message_center::NotifierId(
         static_cast<message_center::NotifierType>(notifier_type.value()),
-        "test notifier id", ash::NotificationCatalogName::kTestCatalogName);
+        "test notifier id", NotificationCatalogName::kTestCatalogName);
   }
 
   // Create RichNotificationData object.
@@ -250,4 +250,4 @@ NotificationTesterHandler::DictToOptionalFields(
   return optional_fields;
 }
 
-}  // namespace chromeos
+}  // namespace ash

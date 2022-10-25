@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_NOTIFICATION_TESTER_NOTIFICATION_TESTER_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_NOTIFICATION_TESTER_NOTIFICATION_TESTER_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_NOTIFICATION_TESTER_NOTIFICATION_TESTER_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_NOTIFICATION_TESTER_NOTIFICATION_TESTER_UI_H_
 
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class NotificationTesterUI;
 
@@ -31,6 +31,6 @@ class NotificationTesterUI : public content::WebUIController {
   ~NotificationTesterUI() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_NOTIFICATION_TESTER_NOTIFICATION_TESTER_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_NOTIFICATION_TESTER_NOTIFICATION_TESTER_UI_H_
