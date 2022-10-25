@@ -1679,5 +1679,9 @@ BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSplitUserMediaQueues,
+             "SplitUserMediaQueues",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

@@ -30,7 +30,6 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
-class ApplyConstraintsProcessor;
 class LocalFrame;
 
 // UserMediaClient handles requests coming from the Blink MediaDevices
@@ -49,14 +48,9 @@ class MODULES_EXPORT UserMediaClient
   // |frame| and its respective RenderFrame must outlive this instance.
   UserMediaClient(LocalFrame* frame,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  UserMediaClient(LocalFrame* frame,
-                  UserMediaProcessor* user_media_processor,
-                  scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   UserMediaClient(const UserMediaClient&) = delete;
   UserMediaClient& operator=(const UserMediaClient&) = delete;
-
-  ~UserMediaClient() override;
 
   void RequestUserMedia(UserMediaRequest* user_media_request);
   void CancelUserMediaRequest(UserMediaRequest* user_media_request);
@@ -87,6 +81,13 @@ class MODULES_EXPORT UserMediaClient
       base::UnguessableToken session_id,
       base::UnguessableToken transfer_id,
       UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb);
+
+ protected:
+  // For testing
+  UserMediaClient(LocalFrame* frame,
+                  UserMediaProcessor* user_media_processor,
+                  UserMediaProcessor* display_user_media_processor,
+                  scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
   class Request final : public GarbageCollected<Request> {
@@ -124,28 +125,29 @@ class MODULES_EXPORT UserMediaClient
     Member<MediaStreamComponent> track_to_stop_;
   };
 
-  void MaybeProcessNextRequestInfo();
-  void CurrentRequestCompleted();
+  class RequestQueue;
 
   void DeleteAllUserMediaRequests();
 
   blink::mojom::blink::MediaDevicesDispatcherHost* GetMediaDevicesDispatcher();
+  RequestQueue* GetRequestQueue(
+      mojom::blink::MediaStreamType user_media_request);
 
   // LocalFrame instance that own this UserMediaClient.
   WeakMember<LocalFrame> frame_;
 
-  Member<UserMediaProcessor> user_media_processor_;
-  Member<ApplyConstraintsProcessor> apply_constraints_processor_;
-
   HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
 
-  // UserMedia requests are processed sequentially. |is_processing_request_|
-  // is a flag that indicates if a request is being processed at a given time,
-  // and |pending_request_infos_| is a list of queued requests.
-  bool is_processing_request_ = false;
-
-  HeapDeque<Member<Request>> pending_request_infos_;
+  // TODO(crbug.com/1373032): Rename pending_requests_ to
+  //   pending_device_requests_ when the kSplitUserMediaQueues feature flag is
+  //   removed and update the comments below accordingly.
+  // Default queue for all requests if kSplitUserMediaQueues is disabled, or
+  // device requests only if kSplitUserMediaQueues is enabled.
+  Member<RequestQueue> pending_requests_;
+  // Queue for display requests if kSplitUserMediaQueues is enabled, or set to
+  // nullptr otherwise.
+  Member<RequestQueue> pending_display_requests_;
 
   THREAD_CHECKER(thread_checker_);
 };

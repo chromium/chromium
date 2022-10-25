@@ -532,10 +532,12 @@ class UserMediaClientUnderTest : public UserMediaClient {
  public:
   UserMediaClientUnderTest(LocalFrame* frame,
                            UserMediaProcessor* user_media_processor,
+                           UserMediaProcessor* display_user_media_processor,
                            RequestState* state)
       : UserMediaClient(
             frame,
             user_media_processor,
+            display_user_media_processor,
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         state_(state) {}
 
@@ -571,10 +573,11 @@ class UserMediaChromeClient : public EmptyChromeClient {
 
 }  // namespace
 
-class UserMediaClientTest : public ::testing::Test {
+class UserMediaClientTest : public ::testing::TestWithParam<bool> {
  public:
   UserMediaClientTest()
       : user_media_processor_receiver_(&media_devices_dispatcher_),
+        display_user_media_processor_receiver_(&media_devices_dispatcher_),
         user_media_client_receiver_(&media_devices_dispatcher_) {}
 
   void SetUp() override {
@@ -591,8 +594,26 @@ class UserMediaClientTest : public ::testing::Test {
     user_media_processor_->set_media_stream_dispatcher_host_for_testing(
         mock_dispatcher_host_.CreatePendingRemoteAndBind());
 
+    // If running tests with a separate queue for display capture requests
+    if (GetParam()) {
+      auto* display_msd_observer =
+          new blink::WebMediaStreamDeviceObserver(nullptr);
+      display_user_media_processor_ =
+          MakeGarbageCollected<UserMediaProcessorUnderTest>(
+              &(dummy_page_holder_->GetFrame()),
+              base::WrapUnique(display_msd_observer),
+              display_user_media_processor_receiver_.BindNewPipeAndPassRemote(),
+              &state_);
+      display_user_media_processor_
+          ->set_media_stream_dispatcher_host_for_testing(
+              display_mock_dispatcher_host_.CreatePendingRemoteAndBind());
+    } else {
+      display_user_media_processor_ = nullptr;
+    }
+
     user_media_client_impl_ = MakeGarbageCollected<UserMediaClientUnderTest>(
-        &(dummy_page_holder_->GetFrame()), user_media_processor_, &state_);
+        &(dummy_page_holder_->GetFrame()), user_media_processor_,
+        display_user_media_processor_, &state_);
 
     user_media_client_impl_->SetMediaDevicesDispatcherForTesting(
         user_media_client_receiver_.BindNewPipeAndPassRemote());
@@ -612,7 +633,7 @@ class UserMediaClientTest : public ::testing::Test {
 
   MediaStreamDescriptor* RequestLocalMediaStream() {
     user_media_client_impl_->RequestUserMediaForTest();
-    StartMockedVideoSource();
+    StartMockedVideoSource(user_media_processor_);
 
     EXPECT_EQ(kRequestSucceeded, request_state());
 
@@ -631,7 +652,7 @@ class UserMediaClientTest : public ::testing::Test {
     UserMediaRequest* user_media_request = UserMediaRequest::CreateForTesting(
         MediaConstraints(), CreateDefaultConstraints());
     user_media_client_impl_->RequestUserMediaForTest(user_media_request);
-    StartMockedVideoSource();
+    StartMockedVideoSource(user_media_processor_);
     EXPECT_EQ(kRequestSucceeded, request_state());
 
     MediaStreamDescriptor* descriptor =
@@ -668,9 +689,10 @@ class UserMediaClientTest : public ::testing::Test {
     return audio_components[0];
   }
 
-  void StartMockedVideoSource() {
+  void StartMockedVideoSource(
+      UserMediaProcessorUnderTest* user_media_processor) {
     MockMediaStreamVideoCapturerSource* video_source =
-        user_media_processor_->last_created_video_source();
+        user_media_processor->last_created_video_source();
     if (video_source->SourceHasAttemptedToStart())
       video_source->StartMockedSource();
   }
@@ -693,7 +715,7 @@ class UserMediaClientTest : public ::testing::Test {
     UserMediaRequest* request = UserMediaRequest::CreateForTesting(
         audio_constraints, video_constraints);
     user_media_client_impl_->RequestUserMediaForTest(request);
-    StartMockedVideoSource();
+    StartMockedVideoSource(user_media_processor_);
 
     EXPECT_EQ(kRequestSucceeded, request_state());
     EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().audio_device);
@@ -728,23 +750,36 @@ class UserMediaClientTest : public ::testing::Test {
 
   RequestState request_state() const { return state_; }
 
+  UserMediaProcessorUnderTest* UserMediaProcessorForDisplayCapture() {
+    return GetParam() ? display_user_media_processor_ : user_media_processor_;
+  }
+
+  const MockMojoMediaStreamDispatcherHost&
+  MediaStreamDispatcherHostForDisplayCapture() {
+    return GetParam() ? display_mock_dispatcher_host_ : mock_dispatcher_host_;
+  }
+
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       testing_platform_;
   MockMojoMediaStreamDispatcherHost mock_dispatcher_host_;
+  MockMojoMediaStreamDispatcherHost display_mock_dispatcher_host_;
   MockMediaDevicesDispatcherHost media_devices_dispatcher_;
   mojo::Receiver<blink::mojom::blink::MediaDevicesDispatcherHost>
       user_media_processor_receiver_;
+  mojo::Receiver<blink::mojom::blink::MediaDevicesDispatcherHost>
+      display_user_media_processor_receiver_;
   mojo::Receiver<blink::mojom::blink::MediaDevicesDispatcherHost>
       user_media_client_receiver_;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   WeakPersistent<UserMediaProcessorUnderTest> user_media_processor_;
+  WeakPersistent<UserMediaProcessorUnderTest> display_user_media_processor_;
   Persistent<UserMediaClientUnderTest> user_media_client_impl_;
   RequestState state_ = kRequestNotStarted;
 };
 
-TEST_F(UserMediaClientTest, GenerateMediaStream) {
+TEST_P(UserMediaClientTest, GenerateMediaStream) {
   // Generate a stream with both audio and video.
   MediaStreamDescriptor* mixed_desc = RequestLocalMediaStream();
   EXPECT_TRUE(mixed_desc);
@@ -752,7 +787,7 @@ TEST_F(UserMediaClientTest, GenerateMediaStream) {
 
 // Test that the same source object is used if two MediaStreams are generated
 // using the same source.
-TEST_F(UserMediaClientTest, GenerateTwoMediaStreamsWithSameSource) {
+TEST_P(UserMediaClientTest, GenerateTwoMediaStreamsWithSameSource) {
   MediaStreamDescriptor* desc1 = RequestLocalMediaStream();
   MediaStreamDescriptor* desc2 = RequestLocalMediaStream();
 
@@ -775,7 +810,7 @@ TEST_F(UserMediaClientTest, GenerateTwoMediaStreamsWithSameSource) {
 
 // Test that the same source object is not used if two MediaStreams are
 // generated using different sources.
-TEST_F(UserMediaClientTest, GenerateTwoMediaStreamsWithDifferentSources) {
+TEST_P(UserMediaClientTest, GenerateTwoMediaStreamsWithDifferentSources) {
   MediaStreamDescriptor* desc1 = RequestLocalMediaStream();
   // Make sure another device is selected (another |session_id|) in  the next
   // gUM request.
@@ -799,7 +834,7 @@ TEST_F(UserMediaClientTest, GenerateTwoMediaStreamsWithDifferentSources) {
             MediaStreamAudioSource::From(desc2_audio_components[0]->Source()));
 }
 
-TEST_F(UserMediaClientTest, StopLocalTracks) {
+TEST_P(UserMediaClientTest, StopLocalTracks) {
   // Generate a stream with both audio and video.
   MediaStreamDescriptor* mixed_desc = RequestLocalMediaStream();
 
@@ -822,7 +857,7 @@ TEST_F(UserMediaClientTest, StopLocalTracks) {
 // MediaStream is stopped if there are two MediaStreams with tracks using the
 // same device. The source is stopped
 // if there are no more MediaStream tracks using the device.
-TEST_F(UserMediaClientTest, StopLocalTracksWhenTwoStreamUseSameDevices) {
+TEST_P(UserMediaClientTest, StopLocalTracksWhenTwoStreamUseSameDevices) {
   // Generate a stream with both audio and video.
   MediaStreamDescriptor* desc1 = RequestLocalMediaStream();
   MediaStreamDescriptor* desc2 = RequestLocalMediaStream();
@@ -856,7 +891,7 @@ TEST_F(UserMediaClientTest, StopLocalTracksWhenTwoStreamUseSameDevices) {
   EXPECT_EQ(1, mock_dispatcher_host_.stop_video_device_counter());
 }
 
-TEST_F(UserMediaClientTest, StopSourceWhenMediaStreamGoesOutOfScope) {
+TEST_P(UserMediaClientTest, StopSourceWhenMediaStreamGoesOutOfScope) {
   // Generate a stream with both audio and video.
   RequestLocalMediaStream();
   // Makes sure the test itself don't hold a reference to the created
@@ -872,7 +907,7 @@ TEST_F(UserMediaClientTest, StopSourceWhenMediaStreamGoesOutOfScope) {
 
 // Test that the MediaStreams are deleted if a new document is loaded in the
 // frame.
-TEST_F(UserMediaClientTest, LoadNewDocumentInFrame) {
+TEST_P(UserMediaClientTest, LoadNewDocumentInFrame) {
   // Test a stream with both audio and video.
   MediaStreamDescriptor* mixed_desc = RequestLocalMediaStream();
   EXPECT_TRUE(mixed_desc);
@@ -885,7 +920,7 @@ TEST_F(UserMediaClientTest, LoadNewDocumentInFrame) {
 }
 
 // This test what happens if a video source to a MediaSteam fails to start.
-TEST_F(UserMediaClientTest, MediaVideoSourceFailToStart) {
+TEST_P(UserMediaClientTest, MediaVideoSourceFailToStart) {
   user_media_client_impl_->RequestUserMediaForTest();
   FailToStartMockedVideoSource();
   base::RunLoop().RunUntilIdle();
@@ -900,10 +935,10 @@ TEST_F(UserMediaClientTest, MediaVideoSourceFailToStart) {
 }
 
 // This test what happens if an audio source fail to initialize.
-TEST_F(UserMediaClientTest, MediaAudioSourceFailToInitialize) {
+TEST_P(UserMediaClientTest, MediaAudioSourceFailToInitialize) {
   user_media_processor_->SetCreateSourceThatFails(true);
   user_media_client_impl_->RequestUserMediaForTest();
-  StartMockedVideoSource();
+  StartMockedVideoSource(user_media_processor_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kRequestFailed, request_state());
   EXPECT_EQ(
@@ -917,7 +952,7 @@ TEST_F(UserMediaClientTest, MediaAudioSourceFailToInitialize) {
 
 // This test what happens if UserMediaClient is deleted before a source has
 // started.
-TEST_F(UserMediaClientTest, MediaStreamImplShutDown) {
+TEST_P(UserMediaClientTest, MediaStreamImplShutDown) {
   user_media_client_impl_->RequestUserMediaForTest();
   EXPECT_EQ(1, mock_dispatcher_host_.request_stream_counter());
   EXPECT_EQ(kRequestNotComplete, request_state());
@@ -927,7 +962,7 @@ TEST_F(UserMediaClientTest, MediaStreamImplShutDown) {
 
 // This test what happens if a new document is loaded in the frame while the
 // MediaStream is being generated by the blink::WebMediaStreamDeviceObserver.
-TEST_F(UserMediaClientTest, ReloadFrameWhileGeneratingStream) {
+TEST_P(UserMediaClientTest, ReloadFrameWhileGeneratingStream) {
   mock_dispatcher_host_.DoNotRunCallback();
 
   user_media_client_impl_->RequestUserMediaForTest();
@@ -940,7 +975,7 @@ TEST_F(UserMediaClientTest, ReloadFrameWhileGeneratingStream) {
 
 // This test what happens if a newdocument is loaded in the frame while the
 // sources are being started.
-TEST_F(UserMediaClientTest, ReloadFrameWhileGeneratingSources) {
+TEST_P(UserMediaClientTest, ReloadFrameWhileGeneratingSources) {
   user_media_client_impl_->RequestUserMediaForTest();
   EXPECT_EQ(1, mock_dispatcher_host_.request_stream_counter());
   LoadNewDocumentInFrame();
@@ -951,7 +986,7 @@ TEST_F(UserMediaClientTest, ReloadFrameWhileGeneratingSources) {
 
 // This test what happens if stop is called on a track after the frame has
 // been reloaded.
-TEST_F(UserMediaClientTest, StopTrackAfterReload) {
+TEST_P(UserMediaClientTest, StopTrackAfterReload) {
   MediaStreamDescriptor* mixed_desc = RequestLocalMediaStream();
   EXPECT_EQ(1, mock_dispatcher_host_.request_stream_counter());
   LoadNewDocumentInFrame();
@@ -974,7 +1009,7 @@ TEST_F(UserMediaClientTest, StopTrackAfterReload) {
   EXPECT_EQ(1, mock_dispatcher_host_.stop_video_device_counter());
 }
 
-TEST_F(UserMediaClientTest, DefaultConstraintsPropagate) {
+TEST_P(UserMediaClientTest, DefaultConstraintsPropagate) {
   UserMediaRequest* request = UserMediaRequest::CreateForTesting(
       CreateDefaultConstraints(), CreateDefaultConstraints());
   user_media_client_impl_->RequestUserMediaForTest(request);
@@ -1032,7 +1067,7 @@ TEST_F(UserMediaClientTest, DefaultConstraintsPropagate) {
   EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
 }
 
-TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
+TEST_P(UserMediaClientTest, DefaultTabCapturePropagate) {
   blink::MockConstraintFactory factory;
   factory.basic().media_stream_source.SetExact(kMediaStreamSourceTab);
   MediaConstraints audio_constraints = factory.CreateMediaConstraints();
@@ -1041,9 +1076,9 @@ TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
       UserMediaRequest::CreateForTesting(audio_constraints, video_constraints);
   user_media_client_impl_->RequestUserMediaForTest(request);
   blink::AudioCaptureSettings audio_capture_settings =
-      user_media_processor_->AudioSettings();
+      UserMediaProcessorForDisplayCapture()->AudioSettings();
   blink::VideoCaptureSettings video_capture_settings =
-      user_media_processor_->VideoSettings();
+      UserMediaProcessorForDisplayCapture()->VideoSettings();
   user_media_client_impl_->CancelUserMediaRequest(request);
 
   // Check default values selected by the constraints algorithm.
@@ -1086,7 +1121,7 @@ TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
   EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
 }
 
-TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
+TEST_P(UserMediaClientTest, DefaultDesktopCapturePropagate) {
   blink::MockConstraintFactory factory;
   factory.basic().media_stream_source.SetExact(kMediaStreamSourceDesktop);
   MediaConstraints audio_constraints = factory.CreateMediaConstraints();
@@ -1095,9 +1130,9 @@ TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
       UserMediaRequest::CreateForTesting(audio_constraints, video_constraints);
   user_media_client_impl_->RequestUserMediaForTest(request);
   blink::AudioCaptureSettings audio_capture_settings =
-      user_media_processor_->AudioSettings();
+      UserMediaProcessorForDisplayCapture()->AudioSettings();
   blink::VideoCaptureSettings video_capture_settings =
-      user_media_processor_->VideoSettings();
+      UserMediaProcessorForDisplayCapture()->VideoSettings();
   user_media_client_impl_->CancelUserMediaRequest(request);
   base::RunLoop().RunUntilIdle();
 
@@ -1141,7 +1176,7 @@ TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
   EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
 }
 
-TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
+TEST_P(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
   mock_dispatcher_host_.DoNotRunCallback();
 
   blink::MockConstraintFactory factory;
@@ -1181,7 +1216,7 @@ TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
   EXPECT_FALSE(properties.goog_experimental_auto_gain_control);
 }
 
-TEST_F(UserMediaClientTest, CreateWithMandatoryInvalidAudioDeviceId) {
+TEST_P(UserMediaClientTest, CreateWithMandatoryInvalidAudioDeviceId) {
   MediaConstraints audio_constraints =
       CreateDeviceConstraints(kInvalidDeviceId);
   UserMediaRequest* request =
@@ -1190,7 +1225,7 @@ TEST_F(UserMediaClientTest, CreateWithMandatoryInvalidAudioDeviceId) {
   EXPECT_EQ(kRequestFailed, request_state());
 }
 
-TEST_F(UserMediaClientTest, CreateWithMandatoryInvalidVideoDeviceId) {
+TEST_P(UserMediaClientTest, CreateWithMandatoryInvalidVideoDeviceId) {
   MediaConstraints video_constraints =
       CreateDeviceConstraints(kInvalidDeviceId);
   UserMediaRequest* request =
@@ -1199,7 +1234,7 @@ TEST_F(UserMediaClientTest, CreateWithMandatoryInvalidVideoDeviceId) {
   EXPECT_EQ(kRequestFailed, request_state());
 }
 
-TEST_F(UserMediaClientTest, CreateWithMandatoryValidDeviceIds) {
+TEST_P(UserMediaClientTest, CreateWithMandatoryValidDeviceIds) {
   MediaConstraints audio_constraints =
       CreateDeviceConstraints(kFakeAudioInputDeviceId1);
   MediaConstraints video_constraints =
@@ -1209,7 +1244,7 @@ TEST_F(UserMediaClientTest, CreateWithMandatoryValidDeviceIds) {
                                   kFakeVideoInputDeviceId1);
 }
 
-TEST_F(UserMediaClientTest, CreateWithBasicIdealValidDeviceId) {
+TEST_P(UserMediaClientTest, CreateWithBasicIdealValidDeviceId) {
   MediaConstraints audio_constraints =
       CreateDeviceConstraints(nullptr, kFakeAudioInputDeviceId1);
   MediaConstraints video_constraints =
@@ -1219,7 +1254,7 @@ TEST_F(UserMediaClientTest, CreateWithBasicIdealValidDeviceId) {
                                   kFakeVideoInputDeviceId1);
 }
 
-TEST_F(UserMediaClientTest, CreateWithAdvancedExactValidDeviceId) {
+TEST_P(UserMediaClientTest, CreateWithAdvancedExactValidDeviceId) {
   MediaConstraints audio_constraints =
       CreateDeviceConstraints(nullptr, nullptr, kFakeAudioInputDeviceId1);
   MediaConstraints video_constraints =
@@ -1229,7 +1264,7 @@ TEST_F(UserMediaClientTest, CreateWithAdvancedExactValidDeviceId) {
                                   kFakeVideoInputDeviceId1);
 }
 
-TEST_F(UserMediaClientTest, CreateWithAllOptionalInvalidDeviceId) {
+TEST_P(UserMediaClientTest, CreateWithAllOptionalInvalidDeviceId) {
   MediaConstraints audio_constraints =
       CreateDeviceConstraints(nullptr, kInvalidDeviceId, kInvalidDeviceId);
   MediaConstraints video_constraints =
@@ -1244,7 +1279,7 @@ TEST_F(UserMediaClientTest, CreateWithAllOptionalInvalidDeviceId) {
                                   kFakeVideoInputDeviceId1);
 }
 
-TEST_F(UserMediaClientTest, CreateWithFacingModeUser) {
+TEST_P(UserMediaClientTest, CreateWithFacingModeUser) {
   MediaConstraints audio_constraints =
       CreateDeviceConstraints(kFakeAudioInputDeviceId1);
   MediaConstraints video_constraints = CreateFacingModeConstraints("user");
@@ -1254,7 +1289,7 @@ TEST_F(UserMediaClientTest, CreateWithFacingModeUser) {
                                   kFakeVideoInputDeviceId1);
 }
 
-TEST_F(UserMediaClientTest, CreateWithFacingModeEnvironment) {
+TEST_P(UserMediaClientTest, CreateWithFacingModeEnvironment) {
   MediaConstraints audio_constraints =
       CreateDeviceConstraints(kFakeAudioInputDeviceId1);
   MediaConstraints video_constraints =
@@ -1265,7 +1300,7 @@ TEST_F(UserMediaClientTest, CreateWithFacingModeEnvironment) {
                                   kFakeVideoInputDeviceId2);
 }
 
-TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceSingleTrack) {
+TEST_P(UserMediaClientTest, ApplyConstraintsVideoDeviceSingleTrack) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
@@ -1298,7 +1333,7 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceSingleTrack) {
   CheckVideoSourceAndTrack(source, 800, 600, 30.0, component, 800, 600, 30.0);
 }
 
-TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceTwoTracks) {
+TEST_P(UserMediaClientTest, ApplyConstraintsVideoDeviceTwoTracks) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
@@ -1348,7 +1383,7 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceTwoTracks) {
   CheckVideoSourceAndTrack(source, 800, 600, 30.0, component, 800, 600, 30.0);
 }
 
-TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceFailsToStopForRestart) {
+TEST_P(UserMediaClientTest, ApplyConstraintsVideoDeviceFailsToStopForRestart) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
@@ -1368,7 +1403,7 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceFailsToStopForRestart) {
   CheckVideoSourceAndTrack(source, 1024, 768, 20.0, component, 640, 480, 20.0);
 }
 
-TEST_F(UserMediaClientTest,
+TEST_P(UserMediaClientTest,
        ApplyConstraintsVideoDeviceFailsToRestartAfterStop) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamTrack* track = RequestLocalVideoTrack();
@@ -1391,7 +1426,7 @@ TEST_F(UserMediaClientTest,
   EXPECT_FALSE(source->IsRunning());
 }
 
-TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceStopped) {
+TEST_P(UserMediaClientTest, ApplyConstraintsVideoDeviceStopped) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
@@ -1432,7 +1467,7 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceStopped) {
 
 // These tests check that the associated output device id is
 // set according to the renderToAssociatedSink constrainable property.
-TEST_F(UserMediaClientTest,
+TEST_P(UserMediaClientTest,
        RenderToAssociatedSinkTrueAssociatedOutputDeviceId) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamComponent* component =
@@ -1442,7 +1477,7 @@ TEST_F(UserMediaClientTest,
   EXPECT_TRUE(source->device().matched_output_device_id);
 }
 
-TEST_F(UserMediaClientTest,
+TEST_P(UserMediaClientTest,
        RenderToAssociatedSinkFalseAssociatedOutputDeviceId) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamComponent* component =
@@ -1452,7 +1487,7 @@ TEST_F(UserMediaClientTest,
   EXPECT_FALSE(source->device().matched_output_device_id);
 }
 
-TEST_F(UserMediaClientTest, IsCapturing) {
+TEST_P(UserMediaClientTest, IsCapturing) {
   EXPECT_FALSE(user_media_client_impl_->IsCapturing());
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamDescriptor* descriptor = RequestLocalMediaStream();
@@ -1467,7 +1502,7 @@ TEST_F(UserMediaClientTest, IsCapturing) {
   EXPECT_FALSE(user_media_client_impl_->IsCapturing());
 }
 
-TEST_F(UserMediaClientTest, DesktopCaptureChangeSource) {
+TEST_P(UserMediaClientTest, DesktopCaptureChangeSource) {
   blink::MockConstraintFactory factory;
   factory.basic().media_stream_source.SetExact(
       blink::WebString::FromASCII(blink::kMediaStreamSourceDesktop));
@@ -1479,30 +1514,30 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSource) {
 
   // Test changing video source.
   MockMediaStreamVideoCapturerSource* video_source =
-      user_media_processor_->last_created_video_source();
+      UserMediaProcessorForDisplayCapture()->last_created_video_source();
   blink::MediaStreamDevice fake_video_device(
       blink::mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       kFakeVideoInputDeviceId1, "Fake Video Device");
   EXPECT_CALL(*video_source, ChangeSourceImpl(_));
-  user_media_processor_->OnDeviceChanged(video_source->device(),
-                                         fake_video_device);
+  UserMediaProcessorForDisplayCapture()->OnDeviceChanged(video_source->device(),
+                                                         fake_video_device);
 
   // Test changing audio source.
   MockLocalMediaStreamAudioSource* audio_source =
-      user_media_processor_->last_created_local_audio_source();
+      UserMediaProcessorForDisplayCapture()->last_created_local_audio_source();
   EXPECT_NE(audio_source, nullptr);
   blink::MediaStreamDevice fake_audio_device(
       blink::mojom::blink::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
       kFakeVideoInputDeviceId1, "Fake Audio Device");
   EXPECT_CALL(*audio_source, EnsureSourceIsStopped()).Times(2);
-  user_media_processor_->OnDeviceChanged(audio_source->device(),
-                                         fake_audio_device);
+  UserMediaProcessorForDisplayCapture()->OnDeviceChanged(audio_source->device(),
+                                                         fake_audio_device);
 
   user_media_client_impl_->CancelUserMediaRequest(request);
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
+TEST_P(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
   blink::MockConstraintFactory factory;
   factory.basic().media_stream_source.SetExact(kMediaStreamSourceDesktop);
   MediaConstraints audio_constraints = factory.CreateMediaConstraints();
@@ -1510,20 +1545,24 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
   UserMediaRequest* request =
       UserMediaRequest::CreateForTesting(audio_constraints, video_constraints);
   user_media_client_impl_->RequestUserMediaForTest(request);
-  EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().audio_device);
-  EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().video_device);
+  EXPECT_NE(
+      absl::nullopt,
+      MediaStreamDispatcherHostForDisplayCapture().devices().audio_device);
+  EXPECT_NE(
+      absl::nullopt,
+      MediaStreamDispatcherHostForDisplayCapture().devices().video_device);
 
   // If the new desktop capture source doesn't have audio, the previous audio
   // device should be stopped. Here |EnsureSourceIsStopped()| should be called
   // only once by |OnDeviceChanged()|.
   MockLocalMediaStreamAudioSource* audio_source =
-      user_media_processor_->last_created_local_audio_source();
+      UserMediaProcessorForDisplayCapture()->last_created_local_audio_source();
   EXPECT_NE(audio_source, nullptr);
   EXPECT_CALL(*audio_source, EnsureSourceIsStopped()).Times(1);
   blink::MediaStreamDevice fake_audio_device(
       blink::mojom::blink::MediaStreamType::NO_SERVICE, "", "");
-  user_media_processor_->OnDeviceChanged(audio_source->device(),
-                                         fake_audio_device);
+  UserMediaProcessorForDisplayCapture()->OnDeviceChanged(audio_source->device(),
+                                                         fake_audio_device);
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(audio_source);
@@ -1532,7 +1571,7 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(UserMediaClientTest, PanConstraintRequestPanTiltZoomPermission) {
+TEST_P(UserMediaClientTest, PanConstraintRequestPanTiltZoomPermission) {
   EXPECT_FALSE(UserMediaProcessor::IsPanTiltZoomPermissionRequested(
       CreateDefaultConstraints()));
 
@@ -1548,7 +1587,7 @@ TEST_F(UserMediaClientTest, PanConstraintRequestPanTiltZoomPermission) {
       advanced_factory.CreateMediaConstraints()));
 }
 
-TEST_F(UserMediaClientTest, TiltConstraintRequestPanTiltZoomPermission) {
+TEST_P(UserMediaClientTest, TiltConstraintRequestPanTiltZoomPermission) {
   EXPECT_FALSE(UserMediaProcessor::IsPanTiltZoomPermissionRequested(
       CreateDefaultConstraints()));
 
@@ -1564,7 +1603,7 @@ TEST_F(UserMediaClientTest, TiltConstraintRequestPanTiltZoomPermission) {
       advanced_factory.CreateMediaConstraints()));
 }
 
-TEST_F(UserMediaClientTest, ZoomConstraintRequestPanTiltZoomPermission) {
+TEST_P(UserMediaClientTest, ZoomConstraintRequestPanTiltZoomPermission) {
   EXPECT_FALSE(UserMediaProcessor::IsPanTiltZoomPermissionRequested(
       CreateDefaultConstraints()));
 
@@ -1580,7 +1619,7 @@ TEST_F(UserMediaClientTest, ZoomConstraintRequestPanTiltZoomPermission) {
       advanced_factory.CreateMediaConstraints()));
 }
 
-TEST_F(UserMediaClientTest, MultiDeviceOnStreamGenerated) {
+TEST_P(UserMediaClientTest, MultiDeviceOnStreamGenerated) {
   const size_t devices_count = 5u;
   const int32_t request_id = 0;
   std::unique_ptr<blink::MediaDevicesDispatcherHostMock>
@@ -1611,5 +1650,10 @@ TEST_F(UserMediaClientTest, MultiDeviceOnStreamGenerated) {
   base::RunLoop run_loop;
   DCHECK_EQ(devices_count, media_devices_dispatcher_host_mock->devices_count());
 }
+
+// Run tests with a separate queue for display capture requests (GetParam() ==
+// true) and without (GetParam() == false) , corresponding to if
+// kSplitUserMediaQueues is enabled or not.
+INSTANTIATE_TEST_CASE_P(/*no prefix*/, UserMediaClientTest, ::testing::Bool());
 
 }  // namespace blink

@@ -81,7 +81,7 @@ TEST_F(MediaStreamTrackImplTest, StopTrackTriggersObservers) {
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      false /* remote */);
+      false /* remote */, MakeMockMediaStreamVideoSource());
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponentImpl>(source);
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
@@ -115,7 +115,7 @@ TEST_F(MediaStreamTrackImplTest, StopTrackSynchronouslyDisablesMedia) {
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeAudio, "name",
-      false /* remote */);
+      false /* remote */, MakeMockMediaStreamVideoSource());
   auto platform_track =
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
   MediaStreamAudioTrack* platform_track_ptr = platform_track.get();
@@ -155,7 +155,7 @@ TEST_F(MediaStreamTrackImplTest, MutedDoesntUpdateAfterEnding) {
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      false /* remote */);
+      false /* remote */, MakeMockMediaStreamVideoSource());
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponentImpl>(source);
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(

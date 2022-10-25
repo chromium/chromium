@@ -920,6 +920,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAbortSignalHandleBasedRemoval);
 // WebGL contexts.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);
 
+// Process device and display capture requests on different queues.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSplitUserMediaQueues);
+
 }  // namespace features
 }  // namespace blink
 

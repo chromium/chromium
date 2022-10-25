@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -71,8 +72,9 @@ class RTCPeerConnectionTest : public testing::Test {
   MediaStreamTrack* CreateTrack(V8TestingScope& scope,
                                 MediaStreamSource::StreamType type,
                                 String id) {
-    auto* source = MakeGarbageCollected<MediaStreamSource>("sourceId", type,
-                                                           "sourceName", false);
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        "sourceId", type, "sourceName", false,
+        base::WrapUnique(new MockMediaStreamVideoSource()));
     auto* component =
         MakeGarbageCollected<MediaStreamComponentImpl>(id, source);
     return MakeGarbageCollected<MediaStreamTrackImpl>(
