@@ -372,14 +372,24 @@ void Widget::Init(InitParams params) {
     // ViewsDelegate::OnBeforeWidgetInit() may change `params.delegate` either
     // by setting it to null or assigning a different value to it, so handle
     // both cases.
-    auto default_widget_delegate = std::make_unique<DefaultWidgetDelegate>();
-    widget_delegate_ =
-        params.delegate ? params.delegate : default_widget_delegate.get();
+    // TODO(kylixrd): Rework this to avoid always creating the default delegate
+    // once the widget never owns a provided delegate.
+    owned_widget_delegate_ = std::make_unique<DefaultWidgetDelegate>();
+    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
+                                       : owned_widget_delegate_->AsWeakPtr();
 
     ViewsDelegate::GetInstance()->OnBeforeWidgetInit(&params, this);
 
-    widget_delegate_ =
-        params.delegate ? params.delegate : default_widget_delegate.release();
+    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
+                                       : owned_widget_delegate_->AsWeakPtr();
+    if (widget_delegate_.get() != owned_widget_delegate_.get()) {
+      // TODO(kylixrd): This will be unnecessary once the Widget can no longer
+      // "own" the delegate.
+      if (widget_delegate_->owned_by_widget())
+        owned_widget_delegate_ = base::WrapUnique(widget_delegate_.get());
+      else
+        owned_widget_delegate_.reset();
+    }
   }
   DCHECK(widget_delegate_);
 
@@ -395,8 +405,7 @@ void Widget::Init(InitParams params) {
   // Henceforth, ensure the delegate outlives the Widget.
   widget_delegate_->can_delete_this_ = false;
 
-  if (params.delegate)
-    params.delegate->WidgetInitializing(this);
+  widget_delegate_->WidgetInitializing(this);
 
   ownership_ = params.ownership;
 
@@ -1510,13 +1519,17 @@ void Widget::OnNativeWidgetDestroying() {
 void Widget::OnNativeWidgetDestroyed() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetDestroyed(this);
-
+  // TODO(kylixrd): Remove the references to owned_by_widget once widgets cease
+  // being able to "own" the delegate.
   if (widget_delegate_) {
-    widget_delegate_->can_delete_this_ = true;
-    // `DeleteDelegate()` ends up destroying the object that `widget_delegate_`
-    // points to. Use `ExtractAsDangling()` to avoid having `widget_delegate_`
-    // briefly point to freed memory.
-    widget_delegate_.ExtractAsDangling()->DeleteDelegate();
+    if (widget_delegate_->owned_by_widget()) {
+      widget_delegate_->DeleteDelegate();
+      widget_delegate_->can_delete_this_ = true;
+      owned_widget_delegate_.reset();
+    } else {
+      widget_delegate_->can_delete_this_ = true;
+      widget_delegate_->DeleteDelegate();
+    }
   }
   // TODO(pbos): Replace this with native_widget_ = nullptr; and nullptr
   // checking. This currently breaks on reentrant calls to CloseNow() that I'm

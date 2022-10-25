@@ -232,12 +232,23 @@ void WidgetDelegate::DeleteDelegate() {
   for (auto&& callback : delete_callbacks)
     std::move(callback).Run();
 
+  // TODO(kylixrd): Eventually the widget will never own the delegate, so much
+  // of this code will need to be reworked.
+  //
   // If the WidgetDelegate is owned by the Widget, it is illegal for the
   // DeleteDelegate callbacks to destruct it; if it is not owned by the Widget,
   // the DeleteDelete callbacks are allowed but not required to destroy it.
   if (owned_by_widget) {
     DCHECK(!destructor_ran);
-    delete this;
+    // TODO(kylxird): Rework this once the Widget stops being able to "own" the
+    // delegate.
+    // Only delete this if this delegate was never actually initialized wth a
+    // Widget or the delegate isn't "owned" by the Widget.
+    if (can_delete_this_) {
+      delete this;
+      return;
+    }
+    destructor_ran_ = nullptr;
   } else {
     // If the destructor didn't get run, reset destructor_ran_ so that when it
     // does run it doesn't try to scribble over where our stack was.
@@ -325,8 +336,18 @@ void WidgetDelegate::SetCanResize(bool can_resize) {
     GetWidget()->OnSizeConstraintsChanged();
 }
 
+// TODO (kylixrd): This will be removed once Widget no longer "owns" the
+// WidgetDelegate.
 void WidgetDelegate::SetOwnedByWidget(bool owned) {
+  if (params_.owned_by_widget == owned)
+    return;
   params_.owned_by_widget = owned;
+  if (widget_ && widget_->widget_delegate_.get() == this) {
+    if (params_.owned_by_widget)
+      widget_->owned_widget_delegate_ = base::WrapUnique(this);
+    else
+      widget_->owned_widget_delegate_.release();
+  }
 }
 
 void WidgetDelegate::SetFocusTraversesOut(bool focus_traverses_out) {
@@ -439,6 +460,7 @@ void WidgetDelegate::SetContentsViewImpl(std::unique_ptr<View> contents) {
 // WidgetDelegateView:
 
 WidgetDelegateView::WidgetDelegateView() {
+  // TODO (kylixrd): Remove once the Widget ceases to "own" the WidgetDelegate.
   // A WidgetDelegate should be deleted on DeleteDelegate.
   SetOwnedByWidget(true);
 }
