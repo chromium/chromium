@@ -22,7 +22,6 @@ V4L2DecodeSurface::V4L2DecodeSurface(V4L2WritableBufferRef input_buffer,
     : input_buffer_(std::move(input_buffer)),
       output_buffer_(std::move(output_buffer)),
       video_frame_(std::move(frame)),
-      input_record_(input_buffer_.BufferId()),
       output_record_(output_buffer_.BufferId()),
       decoded_(false) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -94,7 +93,8 @@ std::string V4L2DecodeSurface::ToString() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string out;
-  base::StringAppendF(&out, "Buffer %d -> %d. ", input_record_, output_record_);
+  base::StringAppendF(&out, "Buffer %d -> %d. ", input_buffer_.BufferId(),
+                      output_record_);
   base::StringAppendF(&out, "Reference surfaces:");
   for (const auto& ref : reference_surfaces_) {
     DCHECK_NE(ref->output_record(), output_record_);
