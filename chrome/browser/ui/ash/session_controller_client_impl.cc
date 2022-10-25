@@ -230,7 +230,7 @@ void SessionControllerClientImpl::RequestSignOut() {
 }
 
 void SessionControllerClientImpl::RequestRestartForUpdate() {
-  browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
+  chrome::AttemptRelaunch();
 }
 
 void SessionControllerClientImpl::AttemptRestartChrome() {
