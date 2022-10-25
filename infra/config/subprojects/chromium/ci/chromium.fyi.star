@@ -190,8 +190,6 @@ ci.builder(
         ),
     ],
     os = os.LINUX_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -437,8 +435,6 @@ ci.builder(
     # To avoid peak hours, we run it from 8PM TO 4AM PST. It is
     # 3 AM to 11 AM UTC.
     schedule = "0 3,5,7,9 * * *",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -531,8 +527,6 @@ ci.builder(
         category = "linux",
     ),
     os = os.LINUX_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -1792,8 +1786,6 @@ fyi_coverage_builder(
     use_clang_coverage = True,
     schedule = "triggered",
     triggered_by = [],
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 fyi_coverage_builder(

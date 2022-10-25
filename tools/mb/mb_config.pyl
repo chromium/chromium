@@ -399,9 +399,9 @@
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
-      'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
+      'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
       'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64',
-      'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script',
+      'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script_reclient',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
@@ -433,7 +433,7 @@
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
       'linux-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot_reclient',
-      'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
+      'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
       'linux-js-code-coverage': 'clang_code_coverage_with_js_coverage',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot_reclient',
@@ -443,7 +443,7 @@
       'linux-lacros-dbg-fyi': 'lacros_on_linux_debug_bot_reclient',
       'linux-lacros-dbg-tests-fyi': 'lacros_on_linux_debug_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
-      'linux-lacros-tester-rel-reviver': 'lacros_on_linux_release_bot',
+      'linux-lacros-tester-rel-reviver': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot_reclient',
       'linux-perfetto-rel': 'perfetto_release_bot_reclient',
       'linux-rel-no-external-ip': 'gpu_tests_release_bot_do_typecheck_reclient',
@@ -2535,8 +2535,8 @@
       'debug_bot_reclient', 'x86',
     ],
 
-    'fuchsia_clang_code_coverage': [
-      'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot',
+    'fuchsia_clang_code_coverage_reclient': [
+      'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
       'use_clang_coverage'
     ],
 
@@ -3445,16 +3445,16 @@
       'release_bot_reclient', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
-    'release_bot_fuchsia_cfv2_script': [
-      'release_bot', 'fuchsia', 'fuchsia_cfv2_script',
-    ],
-
     'release_bot_fuchsia_cfv2_script_arm64': [
       'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
     ],
 
     'release_bot_fuchsia_cfv2_script_chrome_reclient': [
       'release_bot_reclient', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',
+    ],
+
+    'release_bot_fuchsia_cfv2_script_reclient': [
+      'release_bot_reclient', 'fuchsia', 'fuchsia_cfv2_script',
     ],
 
     'release_bot_fuchsia_reclient': [
