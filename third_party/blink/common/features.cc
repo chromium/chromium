@@ -693,12 +693,6 @@ BASE_FEATURE(kWebviewAccelerateSmallCanvases,
              "WebviewAccelerateSmallCanvases",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Let accelerated canvases remain accelerated after readback
-// (crbug.com/1288118)
-BASE_FEATURE(kCanvas2dStaysGPUOnReadback,
-             "Canvas2dStaysGPUOnReadback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, frees up CachedMetadata after consumption by script resources
 // and modules. Needed for the experiment in http://crbug.com/1045052.
 BASE_FEATURE(kDiscardCodeCacheAfterFirstUse,

@@ -246,8 +246,6 @@ public final class ProductionSupportedFlagList {
                     "Enables prefetching Android fonts on renderer startup."),
             Flag.baseFeature(BlinkFeatures.INITIAL_NAVIGATION_ENTRY,
                     "Enables creation of initial NavigationEntries on WebContents creation."),
-            Flag.baseFeature(BlinkFeatures.CANVAS2D_STAYS_GPU_ON_READBACK,
-                    "Accelerated canvases that a read back from remain accelerated."),
             Flag.baseFeature(BlinkFeatures.EARLY_BODY_LOAD,
                     "Enables loading the response body earlier in navigation."),
             Flag.baseFeature(BlinkFeatures.DEFAULT_STYLE_SHEETS_EARLY_INIT,

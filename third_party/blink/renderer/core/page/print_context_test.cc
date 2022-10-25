@@ -861,7 +861,6 @@ TEST_P(PrintContextOOPRCanvasTest, Canvas2DBeforePrint) {
 
 TEST_P(PrintContextOOPRCanvasTest, Canvas2DFlushForImageListener) {
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kCanvas2dStaysGPUOnReadback);
   // Verifies that a flush triggered by a change to a source canvas results
   // in printing falling out of vector print mode.
 
@@ -876,7 +875,8 @@ TEST_P(PrintContextOOPRCanvasTest, Canvas2DFlushForImageListener) {
       "source_canvas = document.createElement('canvas');"
       "source_canvas.width = 5;"
       "source_canvas.height = 5;"
-      "source_ctx = source_canvas.getContext('2d');"
+      "source_ctx = source_canvas.getContext('2d', {willReadFrequently: "
+      "'false'});"
       "source_ctx.fillRect(0, 0, 1, 1);"
       "image_data = source_ctx.getImageData(0, 0, 5, 5);"
       "window.addEventListener('beforeprint', (ev) => {"

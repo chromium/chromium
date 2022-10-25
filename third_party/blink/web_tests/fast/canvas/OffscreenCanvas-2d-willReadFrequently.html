@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <canvas id="canvasCPU" width="300" height="300"></canvas>
 <canvas id="canvasGPU" width="300" height="300"></canvas>
+<canvas id="canvasDefault" width="300" height="300"></canvas>
 <script>
 // Testing that willReadFrequently works the same with HTMLCanvasElement and
 // OffscreenCanvas
@@ -9,6 +10,10 @@ var ctxCPU = offscreenCanvasCPU.getContext('2d', { willReadFrequently: true });
 
 var offscreenCanvasGPU = new OffscreenCanvas(400, 400);
 var ctxGPU = offscreenCanvasGPU.getContext('2d', { willReadFrequently: false });
+
+// There is also a default value
+var offscreenCanvasDefault = new OffscreenCanvas(400, 400);
+var ctxDefault = offscreenCanvasDefault.getContext('2d');
 
 var img = document.createElement('IMG');
 img.onload = function () {
@@ -19,6 +24,10 @@ img.onload = function () {
   ctxGPU.drawImage(img, 0, 0, 300, 300);
   var c2 = document.getElementById("canvasGPU").getContext("2d");
   c2.drawImage(offscreenCanvasGPU, 0, 0);
+
+  ctxDefault.drawImage(img, 0, 0, 300, 300);
+  var c2 = document.getElementById("canvasDefault").getContext("2d");
+  c2.drawImage(offscreenCanvasDefault, 0, 0);
 }
 
 // This src image corresponds to a gradient white line that looks different in

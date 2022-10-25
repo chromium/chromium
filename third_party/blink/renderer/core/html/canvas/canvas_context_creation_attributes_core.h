@@ -21,6 +21,8 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
       blink::CanvasContextCreationAttributesCore const&);
   virtual ~CanvasContextCreationAttributesCore();
 
+  enum class WillReadFrequently { kTrue, kFalse, kUndefined };
+
   bool alpha = true;
   bool antialias = true;
   PredefinedColorSpace color_space = PredefinedColorSpace::kSRGB;
@@ -33,7 +35,7 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
   String power_preference = "default";
   bool stencil = false;
   // Help to determine whether to use GPU or CPU for the canvas.
-  bool will_read_frequently = false;
+  WillReadFrequently will_read_frequently = WillReadFrequently::kUndefined;
   bool xr_compatible = false;
 };
 

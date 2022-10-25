@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -147,14 +149,13 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
 
   enum LatencyMode { kNormalLatency, kLowLatency };
 
-  enum class ReadFrequencyMode { kWillReadFrequency, kWillNotReadFrequency };
-
   static constexpr size_t kMaxPinnedImageBytes = 1000;
 
   void CreateContext(
       OpacityMode,
       LatencyMode = kNormalLatency,
-      ReadFrequencyMode = ReadFrequencyMode::kWillNotReadFrequency);
+      CanvasContextCreationAttributesCore::WillReadFrequently =
+          CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined);
 
   ScriptState* GetScriptState() {
     return ToScriptStateForMainWorld(canvas_element_->DomWindow()->GetFrame());
@@ -232,13 +233,13 @@ CanvasRenderingContext2DTest::CanvasRenderingContext2DTest()
 void CanvasRenderingContext2DTest::CreateContext(
     OpacityMode opacity_mode,
     LatencyMode latency_mode,
-    ReadFrequencyMode read_frequency_mode) {
+    CanvasContextCreationAttributesCore::WillReadFrequently
+        will_read_frequently) {
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = opacity_mode == kNonOpaque;
   attributes.desynchronized = latency_mode == kLowLatency;
-  attributes.will_read_frequently =
-      read_frequency_mode == ReadFrequencyMode::kWillReadFrequency;
+  attributes.will_read_frequently = will_read_frequently;
   canvas_element_->GetCanvasRenderingContext(canvas_type, attributes);
 }
 
@@ -1233,26 +1234,31 @@ TEST_P(CanvasRenderingContext2DTest,
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfNormalLatencyWillReadFrequently) {
   CreateContext(kNonOpaque, kNormalLatency,
-                ReadFrequencyMode::kWillReadFrequency);
+                CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   DrawSomething();
-  EXPECT_TRUE(Context2D()->getContextAttributes()->willReadFrequently());
+  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
+            V8CanvasWillReadFrequently::Enum::kTrue);
   EXPECT_FALSE(
       CanvasElement().GetOrCreateCanvas2DLayerBridge()->IsAccelerated());
 }
 
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfLowLatencyWillReadFrequently) {
-  CreateContext(kNonOpaque, kLowLatency, ReadFrequencyMode::kWillReadFrequency);
+  CreateContext(kNonOpaque, kLowLatency,
+                CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
-  EXPECT_TRUE(Context2D()->getContextAttributes()->willReadFrequently());
+  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
+            V8CanvasWillReadFrequently::Enum::kTrue);
   EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 }
 
-TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
+TEST_P(CanvasRenderingContext2DTest,
+       RemainAcceleratedAfterGetImageDataWithWillNotReadFrequently) {
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kCanvas2dStaysGPUOnReadback);
-  CreateContext(kNonOpaque);
+  CreateContext(
+      kNonOpaque, kNormalLatency,
+      CanvasContextCreationAttributesCore::WillReadFrequently::kFalse);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
@@ -1264,6 +1270,23 @@ TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
   ImageDataSettings* settings = ImageDataSettings::Create();
   Context2D()->getImageData(0, 0, 1, 1, settings, exception_state);
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+}
+
+TEST_P(CanvasRenderingContext2DTest,
+       UnacceleratedAfterGetImageDataWithDefaultWillReadFrequently) {
+  base::test::ScopedFeatureList feature_list_;
+  CreateContext(kNonOpaque, kNormalLatency);
+  gfx::Size size(10, 10);
+  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
+      size, kNonOpaque, RasterModeHint::kPreferGPU);
+  CanvasElement().SetResourceProviderForTesting(
+      nullptr, std::move(fake_accelerate_surface), size);
+
+  DrawSomething();
+  NonThrowableExceptionState exception_state;
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  Context2D()->getImageData(0, 0, 1, 1, settings, exception_state);
+  EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
@@ -1509,7 +1532,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
+  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
+            V8CanvasWillReadFrequently::Enum::kUndefined);
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_FALSE(
       CanvasElement()
@@ -1581,7 +1605,8 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
+  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
+            V8CanvasWillReadFrequently::Enum::kUndefined);
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
   EXPECT_TRUE(CanvasElement()
@@ -1626,7 +1651,8 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
+  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
+            V8CanvasWillReadFrequently::Enum::kUndefined);
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
   EXPECT_TRUE(CanvasElement()

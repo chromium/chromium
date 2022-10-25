@@ -1308,10 +1308,14 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
     // resource provider fails, the canvas will fallback to CPU rendering.
     UMA_HISTOGRAM_BOOLEAN(
         "Blink.Canvas.2DLayerBridge.WillReadFrequently",
-        context_ && context_->CreationAttributes().will_read_frequently);
+        context_ &&
+            context_->CreationAttributes().will_read_frequently ==
+                CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
 
-    if (ShouldAccelerate() && context_ &&
-        !context_->CreationAttributes().will_read_frequently) {
+    bool will_read_frequently =
+        context_->CreationAttributes().will_read_frequently ==
+        CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
+    if (ShouldAccelerate() && context_ && !will_read_frequently) {
       canvas2d_bridge_ = Create2DLayerBridge(RasterMode::kGPU);
     }
     if (!canvas2d_bridge_) {

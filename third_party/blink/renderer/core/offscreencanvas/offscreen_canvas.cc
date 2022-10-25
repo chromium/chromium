@@ -419,7 +419,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
       (IsWebGL() || IsWebGPU() ||
        (IsRenderingContext2D() &&
         RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
-        !context_->CreationAttributes().will_read_frequently));
+        !(context_->CreationAttributes().will_read_frequently ==
+          CanvasContextCreationAttributesCore::WillReadFrequently::kTrue)));
   const bool composited_mode =
       IsWebGPU() ||
       (IsWebGL() && RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) ||

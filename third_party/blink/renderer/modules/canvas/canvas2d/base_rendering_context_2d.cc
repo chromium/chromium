@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -2007,13 +2008,17 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   FinalizeFrame();
 
   num_readbacks_performed_++;
+  CanvasContextCreationAttributesCore::WillReadFrequently
+      will_read_frequently_value = GetCanvasRenderingContextHost()
+                                       ->RenderingContext()
+                                       ->CreationAttributes()
+                                       .will_read_frequently;
   if (num_readbacks_performed_ == 2 && GetCanvasRenderingContextHost() &&
       GetCanvasRenderingContextHost()->RenderingContext()) {
-    bool will_read_frequently_enabled = GetCanvasRenderingContextHost()
-                                            ->RenderingContext()
-                                            ->CreationAttributes()
-                                            .will_read_frequently;
-    if (!will_read_frequently_enabled) {
+    if (will_read_frequently_value == CanvasContextCreationAttributesCore::
+                                          WillReadFrequently::kUndefined ||
+        will_read_frequently_value ==
+            CanvasContextCreationAttributesCore::WillReadFrequently::kFalse) {
       const String& message =
           "Canvas2D: Multiple readback operations using getImageData are "
           "faster with the willReadFrequently attribute set to true. See: "
@@ -2025,8 +2030,12 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
               mojom::blink::ConsoleMessageLevel::kWarning, message));
     }
   }
-  if (!base::FeatureList::IsEnabled(features::kCanvas2dStaysGPUOnReadback)) {
-    // GetImagedata is faster in Unaccelerated canvases.
+
+  // The default behavior before the willReadFrequently feature existed:
+  // Accelerated canvases fall back to CPU when there is a readback.
+  if (will_read_frequently_value ==
+      CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined) {
+    // GetImageData is faster in Unaccelerated canvases.
     // In Desynchronized canvas disabling the acceleration will break
     // putImageData: crbug.com/1112060.
     if (IsAccelerated() && !IsDesynchronized()) {
