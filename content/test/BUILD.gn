@@ -323,8 +323,6 @@ static_library("test_support") {
     "../public/test/test_navigation_throttle_inserter.h",
     "../public/test/test_navigation_ui_data.cc",
     "../public/test/test_navigation_ui_data.h",
-    "../public/test/test_notification_tracker.cc",
-    "../public/test/test_notification_tracker.h",
     "../public/test/test_renderer_host.cc",
     "../public/test/test_renderer_host.h",
     "../public/test/test_storage_partition.cc",

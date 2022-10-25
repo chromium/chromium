@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
+
+#include "base/stl_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search/ntp_features.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_notification_tracker.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
@@ -22,6 +23,15 @@ void ExpectIsWebUiNtp(content::WebContents* tab) {
   EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL).spec(),
             EvalJs(tab, "window.location.href",
                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
+}
+
+std::set<int> LiveRenderProcessHostIds() {
+  std::set<int> result;
+  for (auto iter = content::RenderProcessHost::AllHostsIterator();
+       !iter.IsAtEnd(); iter.Advance()) {
+    result.insert(iter.GetCurrentKey());
+  }
+  return result;
 }
 
 }  // namespace
@@ -91,17 +101,14 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
 // Verify that the WebUI NTP uses an available spare process and does not
 // discard it as in https://crbug.com/1094088.
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
-  // Listen for notifications about renderer processes being terminated - this
-  // shouldn't happen during the test.
-  content::TestNotificationTracker process_termination_tracker;
-  process_termination_tracker.ListenFor(
-      content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-      content::NotificationService::AllBrowserContextsAndSources());
-
   // Capture current spare renderer.
   content::RenderProcessHost* spare =
       content::RenderProcessHost::GetSpareRenderProcessHostForTesting();
   ASSERT_TRUE(spare);
+
+  // Note the current render processes before the navigation. These should all
+  // remain alive after the navigation.
+  const std::set<int> starting_rph_ids = LiveRenderProcessHostIds();
 
   // Open an NTP.
   chrome::NewTab(browser());
@@ -113,5 +120,8 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   EXPECT_EQ(ntp->GetPrimaryMainFrame()->GetProcess(), spare);
 
   // No processes should be unnecessarily terminated.
-  EXPECT_EQ(0u, process_termination_tracker.size());
+  const std::set<int> ending_rph_ids = LiveRenderProcessHostIds();
+  const std::set<int> terminated_rph_ids =
+      base::STLSetDifference<std::set<int>>(starting_rph_ids, ending_rph_ids);
+  EXPECT_TRUE(terminated_rph_ids.empty());
 }
