@@ -33,11 +33,12 @@ LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
   auto* const layout_object = MakeGarbageCollected<LayoutNGTextCombine>();
   auto& document = text_child->GetDocument();
   layout_object->SetDocumentForAnonymous(&document);
-  scoped_refptr<ComputedStyle> new_style =
-      document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
+  ComputedStyleBuilder new_style_builder =
+      document.GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           text_child->StyleRef(), EDisplay::kInlineBlock);
-  StyleAdjuster::AdjustStyleForTextCombine(*new_style);
-  layout_object->SetStyle(std::move(new_style));
+  StyleAdjuster::AdjustStyleForTextCombine(
+      *new_style_builder.MutableInternalStyle());
+  layout_object->SetStyle(new_style_builder.TakeStyle());
   layout_object->AddChild(text_child);
   LayoutNGTextCombine::AssertStyleIsValid(text_child->StyleRef());
   return layout_object;

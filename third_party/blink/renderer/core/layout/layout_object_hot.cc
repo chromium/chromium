@@ -146,8 +146,8 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
     if (child->AnonymousHasStylePropagationOverride())
       continue;
 
-    scoped_refptr<ComputedStyle> new_style =
-        GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+    ComputedStyleBuilder new_style_builder =
+        GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), child->StyleRef().Display());
 
     // Preserve the position style of anonymous block continuations as they can
@@ -156,10 +156,10 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
     if (child->IsInFlowPositioned() && child_block_flow &&
         child_block_flow->IsAnonymousBlockContinuation())
-      new_style->SetPosition(child->StyleRef().GetPosition());
+      new_style_builder.SetPosition(child->StyleRef().GetPosition());
 
     if (UNLIKELY(IsA<LayoutNGTextCombine>(child))) {
-      if (new_style->IsHorizontalWritingMode()) {
+      if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
         // |LayoutNGTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.
         // See StyleToHorizontalWritingModeWithWordBreak
@@ -168,13 +168,14 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
                child->SlowFirstChild()->GetNode()->NeedsReattachLayoutTree());
       } else {
         // "text-combine-width-after-style-change.html" reaches here.
-        StyleAdjuster::AdjustStyleForTextCombine(*new_style);
+        StyleAdjuster::AdjustStyleForTextCombine(
+            *new_style_builder.MutableInternalStyle());
       }
     }
 
-    UpdateAnonymousChildStyle(child, *new_style);
+    UpdateAnonymousChildStyle(child, *new_style_builder.MutableInternalStyle());
 
-    child->SetStyle(std::move(new_style));
+    child->SetStyle(new_style_builder.TakeStyle());
   }
 
   PseudoId pseudo_id = StyleRef().StyleType();

@@ -119,7 +119,7 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   parent_layout_object->AddChild(new_layout_object, next_layout_object);
 }
 
-scoped_refptr<ComputedStyle>
+scoped_refptr<const ComputedStyle>
 LayoutTreeBuilderForText::CreateInlineWrapperStyleForDisplayContentsIfNeeded()
     const {
   // If the parent element is not a display:contents element, the style and the
@@ -135,7 +135,7 @@ LayoutTreeBuilderForText::CreateInlineWrapperStyleForDisplayContentsIfNeeded()
 
 LayoutObject*
 LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded(
-    ComputedStyle* wrapper_style) const {
+    const ComputedStyle* wrapper_style) const {
   if (!wrapper_style)
     return nullptr;
 
@@ -158,7 +158,7 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
   const ComputedStyle* style = style_.get();
   LayoutObject* layout_object_parent = context_.parent;
   LayoutObject* next_layout_object = NextLayoutObject();
-  scoped_refptr<ComputedStyle> nullable_wrapper_style =
+  scoped_refptr<const ComputedStyle> nullable_wrapper_style =
       CreateInlineWrapperStyleForDisplayContentsIfNeeded();
   if (LayoutObject* wrapper = CreateInlineWrapperForDisplayContentsIfNeeded(
           nullable_wrapper_style.get())) {

@@ -109,13 +109,20 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void PropagateStyleToViewport();
 
   // Create ComputedStyle for anonymous boxes.
-  scoped_refptr<ComputedStyle> CreateAnonymousStyleWithDisplay(
+  ComputedStyleBuilder CreateAnonymousStyleBuilderWithDisplay(
       const ComputedStyle& parent_style,
       EDisplay);
+  scoped_refptr<const ComputedStyle> CreateAnonymousStyleWithDisplay(
+      const ComputedStyle& parent_style,
+      EDisplay display) {
+    return CreateAnonymousStyleBuilderWithDisplay(parent_style, display)
+        .TakeStyle();
+  }
 
   // Create ComputedStyle for anonymous wrappers between text boxes and
   // display:contents elements.
-  scoped_refptr<ComputedStyle> CreateInheritedDisplayContentsStyleIfNeeded(
+  scoped_refptr<const ComputedStyle>
+  CreateInheritedDisplayContentsStyleIfNeeded(
       const ComputedStyle& parent_style,
       const ComputedStyle& layout_parent_style);
 

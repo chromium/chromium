@@ -2270,14 +2270,19 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
       new_display = EDisplay::kBlock;
       break;
   }
-  scoped_refptr<ComputedStyle> new_style =
-      parent->GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent->StyleRef(), new_display);
+  ComputedStyleBuilder new_style_builder =
+      parent->GetDocument()
+          .GetStyleResolver()
+          .CreateAnonymousStyleBuilderWithDisplay(parent->StyleRef(),
+                                                  new_display);
 
   LegacyLayout legacy =
       parent->ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
 
-  parent->UpdateAnonymousChildStyle(nullptr, *new_style);
+  parent->UpdateAnonymousChildStyle(nullptr,
+                                    *new_style_builder.MutableInternalStyle());
+  scoped_refptr<const ComputedStyle> new_style = new_style_builder.TakeStyle();
+
   LayoutBlock* layout_block;
   if (new_display == EDisplay::kFlex) {
     layout_block = LayoutObjectFactory::CreateFlexibleBox(parent->GetDocument(),

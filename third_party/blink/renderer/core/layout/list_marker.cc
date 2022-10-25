@@ -275,7 +275,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
           LayoutListMarkerImage::CreateAnonymous(&marker.GetDocument());
       if (marker.IsLayoutNGListMarker())
         image->SetIsLayoutNGObjectForListMarkerImage(true);
-      scoped_refptr<ComputedStyle> image_style =
+      scoped_refptr<const ComputedStyle> image_style =
           marker.GetDocument()
               .GetStyleResolver()
               .CreateAnonymousStyleWithDisplay(marker.StyleRef(),
@@ -300,7 +300,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   // |LayoutObject::PropagateStyleToAnonymousChildren()| to avoid unexpected
   // full layout due by style difference. See http://crbug.com/980399
   const auto& style_parent = child ? *child->Parent() : marker;
-  scoped_refptr<ComputedStyle> text_style =
+  scoped_refptr<const ComputedStyle> text_style =
       marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           style_parent.StyleRef(), marker.StyleRef().Display());
   if (IsA<LayoutTextFragment>(child))

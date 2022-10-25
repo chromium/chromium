@@ -2238,17 +2238,17 @@ bool StyleResolver::IsForcedColorsModeEnabled() const {
   return GetDocument().InForcedColorsMode();
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::CreateAnonymousStyleWithDisplay(
+ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(
     const ComputedStyle& parent_style,
     EDisplay display) {
-  scoped_refptr<ComputedStyle> new_style = CreateComputedStyle();
-  new_style->InheritFrom(parent_style);
-  new_style->SetUnicodeBidi(parent_style.GetUnicodeBidi());
-  new_style->SetDisplay(display);
-  return new_style;
+  ComputedStyleBuilder builder(*initial_style_);
+  builder.MutableInternalStyle()->InheritFrom(parent_style);
+  builder.SetUnicodeBidi(parent_style.GetUnicodeBidi());
+  builder.SetDisplay(display);
+  return builder;
 }
 
-scoped_refptr<ComputedStyle>
+scoped_refptr<const ComputedStyle>
 StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
     const ComputedStyle& parent_style,
     const ComputedStyle& layout_parent_style) {

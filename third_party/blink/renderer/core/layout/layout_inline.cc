@@ -798,8 +798,8 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren(
   // hold |newChild|. We then make that block box a continuation of this
   // inline. We take all of the children after |beforeChild| and put them in a
   // clone of this object.
-  scoped_refptr<ComputedStyle> new_style =
-      GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+  ComputedStyleBuilder new_style_builder =
+      GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           StyleRef(), EDisplay::kBlock);
   const LayoutBlock* containing_block = ContainingBlock();
   // The anon block we create here doesn't exist in the CSS spec, so we need to
@@ -811,23 +811,25 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren(
   // children we will want to special-case them here too. Writing-mode would be
   // one if it didn't create a formatting context of its own, removing the need
   // for continuations.
-  new_style->SetDirection(containing_block->StyleRef().Direction());
+  new_style_builder.SetDirection(containing_block->StyleRef().Direction());
 
   if (split_flow) {
     // If inside an inline affected by in-flow positioning the block needs to be
     // affected by it too. Giving the block a layer like this allows it to
     // collect the x/y offsets from inline parents later.
     if (const LayoutObject* positioned_ancestor =
-            InFlowPositionedInlineAncestor(this))
-      new_style->SetPosition(positioned_ancestor->StyleRef().GetPosition());
+            InFlowPositionedInlineAncestor(this)) {
+      new_style_builder.SetPosition(
+          positioned_ancestor->StyleRef().GetPosition());
+    }
   }
 
   LegacyLayout legacy = containing_block->ForceLegacyLayout()
                             ? LegacyLayout::kForce
                             : LegacyLayout::kAuto;
 
-  return LayoutBlockFlow::CreateAnonymous(&GetDocument(), std::move(new_style),
-                                          legacy);
+  return LayoutBlockFlow::CreateAnonymous(
+      &GetDocument(), new_style_builder.TakeStyle(), legacy);
 }
 
 LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(

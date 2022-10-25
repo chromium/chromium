@@ -70,11 +70,12 @@ void LayoutMultiColumnSpannerPlaceholder::
 void LayoutMultiColumnSpannerPlaceholder::UpdateProperties(
     const ComputedStyle& parent_style) {
   NOT_DESTROYED();
-  scoped_refptr<ComputedStyle> new_style =
-      GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+  ComputedStyleBuilder new_style_builder =
+      GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           parent_style, EDisplay::kBlock);
-  CopyMarginProperties(*new_style, layout_object_in_flow_thread_->StyleRef());
-  SetStyle(std::move(new_style));
+  CopyMarginProperties(*new_style_builder.MutableInternalStyle(),
+                       layout_object_in_flow_thread_->StyleRef());
+  SetStyle(new_style_builder.TakeStyle());
 }
 
 void LayoutMultiColumnSpannerPlaceholder::InsertedIntoTree() {

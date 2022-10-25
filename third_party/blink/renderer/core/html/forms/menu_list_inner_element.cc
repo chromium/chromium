@@ -20,28 +20,32 @@ MenuListInnerElement::MenuListInnerElement(Document& document)
 scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle& parent_style = OwnerShadowHost()->ComputedStyleRef();
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+  ComputedStyleBuilder style_builder =
+      GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           parent_style, EDisplay::kBlock);
-  style->SetFlexGrow(1);
-  style->SetFlexShrink(1);
+  ComputedStyle* style = style_builder.MutableInternalStyle();
+
+  style_builder.SetFlexGrow(1);
+  style_builder.SetFlexShrink(1);
   // min-width: 0; is needed for correct shrinking.
-  style->SetMinWidth(Length::Fixed(0));
-  style->SetHasLineIfEmpty(true);
-  style->SetOverflowX(EOverflow::kHidden);
-  style->SetOverflowY(EOverflow::kHidden);
-  style->SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
-  style->SetTextOverflow(parent_style.TextOverflow());
-  style->SetUserModify(EUserModify::kReadOnly);
+  style_builder.SetMinWidth(Length::Fixed(0));
+  style_builder.SetHasLineIfEmpty(true);
+  style_builder.SetOverflowX(EOverflow::kHidden);
+  style_builder.SetOverflowY(EOverflow::kHidden);
+  style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  style_builder.SetTextOverflow(parent_style.TextOverflow());
+  style_builder.SetUserModify(EUserModify::kReadOnly);
 
   if (style->LineHeight() == ComputedStyleInitialValues::InitialLineHeight()) {
     // line-height should be consistent with MenuListIntrinsicBlockSize()
     // in layout_box.cc.
     const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-    if (font_data)
-      style->SetLineHeight(Length::Fixed(font_data->GetFontMetrics().Height()));
-    else
-      style->SetLineHeight(Length::Fixed(style->FontSize()));
+    if (font_data) {
+      style_builder.SetLineHeight(
+          Length::Fixed(font_data->GetFontMetrics().Height()));
+    } else {
+      style_builder.SetLineHeight(Length::Fixed(style->FontSize()));
+    }
   }
 
   // Use margin:auto instead of align-items:center to get safe centering, i.e.
@@ -68,7 +72,7 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
     style->SetMarginLeft(margin_end);
     style->SetMarginRight(margin_start);
   }
-  style->SetTextAlign(parent_style.GetTextAlign(true));
+  style_builder.SetTextAlign(parent_style.GetTextAlign(true));
   style->SetPaddingTop(
       Length::Fixed(theme.PopupInternalPaddingTop(parent_style)));
   style->SetPaddingBottom(
@@ -76,8 +80,8 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
 
   if (const ComputedStyle* option_style =
           To<HTMLSelectElement>(OwnerShadowHost())->OptionStyle()) {
-    style->SetDirection(option_style->Direction());
-    style->SetUnicodeBidi(option_style->GetUnicodeBidi());
+    style_builder.SetDirection(option_style->Direction());
+    style_builder.SetUnicodeBidi(option_style->GetUnicodeBidi());
   }
 
   return style;
