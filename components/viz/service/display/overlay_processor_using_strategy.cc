@@ -198,9 +198,10 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   NotifyOverlayPromotion(resource_provider, *candidates,
                          render_pass->quad_list);
 
-  if (!candidates->empty()) {
-    DBG_DRAW_RECT("overlay.selected.rect", (*candidates)[0].display_rect);
+  for (auto& selected_candidate : *candidates) {
+    DBG_DRAW_RECT("overlay.selected.rect", selected_candidate.display_rect);
   }
+
   DBG_DRAW_RECT("overlay.outgoing.damage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
