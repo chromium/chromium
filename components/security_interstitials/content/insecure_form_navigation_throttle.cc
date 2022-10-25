@@ -61,11 +61,11 @@ InsecureFormNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 InsecureFormNavigationThrottle::WillProcessResponse() {
-  // If there is an InsecureFormTabStorage associated to |web_contents_|, clear
-  // the IsProceeding flag.
+  // If there is an InsecureFormTabStorage associated to `web_contents_`, clear
+  // the IsProceeding flag, except when prerendering.
   InsecureFormTabStorage* tab_storage = InsecureFormTabStorage::FromWebContents(
       navigation_handle()->GetWebContents());
-  if (tab_storage) {
+  if (tab_storage && !navigation_handle()->IsInPrerenderedMainFrame()) {
     tab_storage->SetIsProceeding(false);
     tab_storage->SetInterstitialShown(false);
   }
@@ -100,9 +100,20 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
   // submissions are not marked as form submissions on reloads, so we check if
   // this navigation is coming from another mixed form interstitial.
   if (!handle->IsFormSubmission() &&
-      (!tab_storage || !tab_storage->InterstitialShown())) {
+      (handle->IsInPrerenderedMainFrame() ||
+       (!tab_storage || !tab_storage->InterstitialShown()))) {
     return content::NavigationThrottle::PROCEED;
   }
+
+  // If the form is in a prerendered page, cancel it. Even though the form
+  // submission wouldn't include user data (a prerender cannot provide any
+  // input), the prerendered form submission could still leak data over the
+  // network (e.g. the path).
+  // There's an exception to this: Reloading a GET form will proceed since a
+  // prerender shouldn't check the InsecureFormTabStorage, which is a per-tab
+  // object. This is done in the check above.
+  if (handle->IsInPrerenderedMainFrame())
+    return content::NavigationThrottle::CANCEL;
 
   // If user has just chosen to proceed on an interstitial, we don't show
   // another one.
@@ -144,11 +155,6 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
   if (should_proceed) {
     LogMixedFormInterstitialMetrics(log_state);
     return content::NavigationThrottle::PROCEED;
-  } else if (handle->IsInPrerenderedMainFrame()) {
-    // If we're prerendered, avoid logging any metrics or showing an
-    // interstitial if the prerender will be canceled. This will cancel the
-    // form navigation as well as the prerender.
-    return content::NavigationThrottle::CANCEL;
   }
 
   LogMixedFormInterstitialMetrics(log_state);
