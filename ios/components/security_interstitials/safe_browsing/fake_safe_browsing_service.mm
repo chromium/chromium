@@ -45,11 +45,13 @@ class FakeSafeBrowsingUrlCheckerImpl
       std::move(callback).Run(/*slow_check_notifier=*/nullptr,
                               /*proceed=*/false,
                               /*showed_interstitial=*/true,
+                              /*did_perform_real_time_check=*/false,
                               /*did_check_allowlist=*/true);
       return;
     }
     std::move(callback).Run(/*slow_check_notifier=*/nullptr, /*proceed=*/true,
                             /*showed_interstitial=*/false,
+                            /*did_perform_real_time_check=*/false,
                             /*did_check_allowlist=*/true);
   }
 };

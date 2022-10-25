@@ -37,22 +37,28 @@ content::WebContents* GetWebContentsFromID(int render_process_id,
 // if it hasn't been run yet.
 class CheckUrlCallbackWrapper {
  public:
-  using Callback = base::OnceCallback<
-      void(mojo::PendingReceiver<mojom::UrlCheckNotifier>, bool, bool, bool)>;
+  using Callback =
+      base::OnceCallback<void(mojo::PendingReceiver<mojom::UrlCheckNotifier>,
+                              bool,
+                              bool,
+                              bool,
+                              bool)>;
 
   explicit CheckUrlCallbackWrapper(Callback callback)
       : callback_(std::move(callback)) {}
   ~CheckUrlCallbackWrapper() {
     if (callback_)
-      Run(mojo::NullReceiver(), true, false, false);
+      Run(mojo::NullReceiver(), true, false, false, false);
   }
 
   void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
            bool proceed,
            bool showed_interstitial,
+           bool did_perform_real_time_check,
            bool did_check_allowlist) {
     std::move(callback_).Run(std::move(slow_check_notifier), proceed,
-                             showed_interstitial, did_check_allowlist);
+                             showed_interstitial, did_perform_real_time_check,
+                             did_check_allowlist);
   }
 
  private:
@@ -143,6 +149,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     if (callback) {
       std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
                               false /* showed_interstitial */,
+                              false /* did_perform_real_time_check */,
                               false /* did_check_allowlist */);
     }
 

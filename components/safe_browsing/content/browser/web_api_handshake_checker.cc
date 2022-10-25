@@ -53,6 +53,7 @@ class WebApiHandshakeChecker::CheckerOnIO
     if (skip_checks) {
       OnCompleteCheck(/*slow_check=*/false, /*proceed=*/true,
                       /*showed_interstitial=*/false,
+                      /*did_perform_real_time_check=*/false,
                       /*did_check_allowlist=*/false);
       return;
     }
@@ -81,11 +82,12 @@ class WebApiHandshakeChecker::CheckerOnIO
       SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
+      bool did_perform_real_time_check,
       bool did_check_allowlist) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     if (!slow_check_notifier) {
       OnCompleteCheck(/*slow_check=*/false, proceed, showed_interstitial,
-                      did_check_allowlist);
+                      did_perform_real_time_check, did_check_allowlist);
       return;
     }
 
@@ -97,12 +99,15 @@ class WebApiHandshakeChecker::CheckerOnIO
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
                        bool showed_interstitial,
+                       bool did_perform_real_time_check,
                        bool did_check_allowlist) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&WebApiHandshakeChecker::OnCompleteCheck,
-                                  handshake_checker_, slow_check, proceed,
-                                  showed_interstitial, did_check_allowlist));
+        FROM_HERE,
+        base::BindOnce(&WebApiHandshakeChecker::OnCompleteCheck,
+                       handshake_checker_, slow_check, proceed,
+                       showed_interstitial, did_perform_real_time_check,
+                       did_check_allowlist));
   }
 
   base::WeakPtr<WebApiHandshakeChecker> handshake_checker_;
@@ -141,6 +146,7 @@ void WebApiHandshakeChecker::Check(const GURL& url, CheckCallback callback) {
 void WebApiHandshakeChecker::OnCompleteCheck(bool slow_check,
                                              bool proceed,
                                              bool showed_interstitial,
+                                             bool did_perform_real_time_check,
                                              bool did_check_allowlist) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(check_callback_);

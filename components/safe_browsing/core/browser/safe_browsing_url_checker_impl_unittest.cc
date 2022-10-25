@@ -310,7 +310,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         real_time_lookup_enabled,
         /*can_rt_check_subresource_url=*/false, can_check_safe_browsing_db,
         /*can_check_high_confidence_allowlist=*/true,
-        /*url_lookup_service_metric_suffix=*/".None",
+        /*url_lookup_service_metric_suffix=*/
+        real_time_lookup_enabled ? ".Enterprise" : ".None",
         /*last_committed_url=*/GURL(), base::SequencedTaskRunnerHandle::Get(),
         real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr() : nullptr,
         /*webui_delegate_=*/nullptr);
@@ -332,9 +333,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
                                          /*delayed_callback=*/false);
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback,
-              Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_check_allowlist=*/_));
+  EXPECT_CALL(
+      callback,
+      Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
+          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -354,6 +356,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
   EXPECT_CALL(callback, Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
+                            /*did_perform_real_time_check=*/false,
                             /*did_check_allowlist=*/_));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(
@@ -373,9 +376,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       origin_callback;
-  EXPECT_CALL(origin_callback,
-              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_check_allowlist=*/_));
+  EXPECT_CALL(
+      origin_callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -387,9 +391,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       redirect_callback;
-  EXPECT_CALL(redirect_callback,
-              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_check_allowlist=*/_));
+  EXPECT_CALL(
+      redirect_callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
   safe_browsing_url_checker->CheckUrl(redirect_url, "GET",
                                       redirect_callback.Get());
 
@@ -407,9 +412,10 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       origin_callback;
-  EXPECT_CALL(origin_callback,
-              Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-                  /*did_check_allowlist=*/_));
+  EXPECT_CALL(
+      origin_callback,
+      Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
+          /*did_perform_real_time_check=*/false, /*did_check_allowlist=*/_));
   // Not displayed yet, because the callback is not returned.
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
@@ -422,7 +428,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       redirect_callback;
   // Not called because it is blocked by the first URL.
-  EXPECT_CALL(redirect_callback, Run(_, _, _, _)).Times(0);
+  EXPECT_CALL(redirect_callback, Run(_, _, _, _, _)).Times(0);
   safe_browsing_url_checker->CheckUrl(redirect_url, "GET",
                                       redirect_callback.Get());
 
@@ -449,7 +455,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledAllowlistMatch) {
       callback;
   // Note that the callback is not called, because resource fetch is not blocked
   // while we perform a real time URL check.
-  EXPECT_CALL(callback, Run(_, _, _, _)).Times(0);
+  EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(
                   IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
@@ -471,6 +477,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrl) {
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
   EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                            /*did_perform_real_time_check=*/true,
                             /*did_check_allowlist=*/_));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
@@ -500,6 +507,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrlFromCache) {
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
   EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                            /*did_perform_real_time_check=*/true,
                             /*did_check_allowlist=*/_));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
@@ -591,6 +599,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
 
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
     EXPECT_CALL(cb, Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
+                        /*did_perform_real_time_check=*/false,
                         /*did_check_allowlist=*/_));
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
     safe_browsing_url_checker.reset();

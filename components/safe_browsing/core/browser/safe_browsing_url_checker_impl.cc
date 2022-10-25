@@ -75,51 +75,57 @@ operator=(Notifier&& other) = default;
 void SafeBrowsingUrlCheckerImpl::Notifier::OnStartSlowCheck() {
   if (callback_) {
     std::move(callback_).Run(slow_check_notifier_.BindNewPipeAndPassReceiver(),
-                             false, false, false);
+                             false, false, false, false);
     return;
   }
 
   DCHECK(native_callback_);
   std::move(native_callback_)
-      .Run(&native_slow_check_notifier_, false, false, false);
+      .Run(&native_slow_check_notifier_, false, false, false, false);
 }
 
 void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
     bool proceed,
     bool showed_interstitial,
+    bool did_perform_real_time_check,
     bool did_check_allowlist) {
   if (callback_) {
     std::move(callback_).Run(mojo::NullReceiver(), proceed, showed_interstitial,
-                             did_check_allowlist);
+                             did_perform_real_time_check, did_check_allowlist);
     return;
   }
 
   if (native_callback_) {
     std::move(native_callback_)
-        .Run(nullptr, proceed, showed_interstitial, did_check_allowlist);
+        .Run(nullptr, proceed, showed_interstitial, did_perform_real_time_check,
+             did_check_allowlist);
     return;
   }
 
   if (slow_check_notifier_) {
     slow_check_notifier_->OnCompleteCheck(proceed, showed_interstitial,
+                                          did_perform_real_time_check,
                                           did_check_allowlist);
     slow_check_notifier_.reset();
     return;
   }
 
   std::move(native_slow_check_notifier_)
-      .Run(proceed, showed_interstitial, did_check_allowlist);
+      .Run(proceed, showed_interstitial, did_perform_real_time_check,
+           did_check_allowlist);
 }
 
 SafeBrowsingUrlCheckerImpl::UrlInfo::UrlInfo(const GURL& in_url,
                                              const std::string& in_method,
                                              Notifier in_notifier,
                                              bool in_is_cached_safe_url,
+                                             bool did_perform_real_time_check,
                                              bool did_check_allowlist)
     : url(in_url),
       method(in_method),
       notifier(std::move(in_notifier)),
       is_cached_safe_url(in_is_cached_safe_url),
+      did_perform_real_time_check(did_perform_real_time_check),
       did_check_allowlist(did_check_allowlist) {}
 
 SafeBrowsingUrlCheckerImpl::UrlInfo::UrlInfo(UrlInfo&& other) = default;
@@ -372,6 +378,7 @@ void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
   DVLOG(1) << "SafeBrowsingUrlCheckerImpl checks URL: " << url;
   urls_.emplace_back(url, method, std::move(notifier),
                      /*safe_from_real_time_cache=*/false,
+                     /*did_perform_real_time_check=*/false,
                      /*did_check_allowlist=*/false);
 
   ProcessUrls();
@@ -443,9 +450,12 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     base::UmaHistogramBoolean("SafeBrowsing.RT.CanCheckDatabase",
                               can_check_db_);
     if (can_perform_full_url_lookup) {
+      DCHECK_NE(url_lookup_service_metric_suffix_, kNoRealTimeURLLookupService);
       UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.RequestDestinations.Checked",
                                 request_destination_);
+      urls_[next_index_].did_perform_real_time_check = true;
       safe_synchronously = false;
+
       bool check_allowlist =
           can_check_db_ && can_check_high_confidence_allowlist_;
       AsyncMatch match = (check_allowlist)
@@ -454,6 +464,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       urls_[next_index_].did_check_allowlist = check_allowlist;
       RecordLocalMatchResult(match, request_destination_,
                              url_lookup_service_metric_suffix_);
+
       switch (match) {
         case AsyncMatch::ASYNC:
           // Hash-prefix matched. A call to
@@ -567,7 +578,9 @@ bool SafeBrowsingUrlCheckerImpl::RunNextCallback(bool proceed,
 
   auto weak_self = weak_factory_.GetWeakPtr();
   urls_[next_index_].notifier.OnCompleteCheck(
-      proceed, showed_interstitial, urls_[next_index_].did_check_allowlist);
+      proceed, showed_interstitial,
+      urls_[next_index_].did_perform_real_time_check,
+      urls_[next_index_].did_check_allowlist);
   next_index_++;
   return !!weak_self;
 }
