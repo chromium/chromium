@@ -61,11 +61,12 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
     bool has_immutable_storage = false;
   };
 
-  // Object used to restore texture bindings.
+  // At destriction time, restore `target`'s binding as of construction time. If
+  // `new_binding` is non-zero, then bind `target` to it at construction time.
   // TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.
   class ScopedRestoreTexture {
    public:
-    ScopedRestoreTexture(gl::GLApi* api, GLenum target);
+    ScopedRestoreTexture(gl::GLApi* api, GLenum target, GLuint new_binding = 0);
 
     ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
     ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;

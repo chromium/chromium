@@ -18,7 +18,6 @@
 #include "ui/gfx/mac/display_icc_profiles.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buffer_format_utils.h"
-#include "ui/gl/egl_surface_io_surface.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
@@ -30,17 +29,6 @@
 using gfx::BufferFormat;
 
 namespace gl {
-
-namespace {
-
-// If enabled, this will release all EGL state as soon as the underlying
-// texture is released. This has the potential to cause performance regressions,
-// and so is disabled by default.
-BASE_FEATURE(kTightlyScopedIOSurfaceEGLState,
-             "TightlyScopedIOSurfaceEGLState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // GLImageIOSurface
@@ -142,53 +130,12 @@ GLImage::BindOrCopy GLImageIOSurface::ShouldBindOrCopy() {
 }
 
 bool GLImageIOSurface::BindTexImage(unsigned target) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  TRACE_EVENT0("gpu", "GLImageIOSurface::BindTexImage");
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  GLDisplayEGL* display = GLDisplayEGL::GetDisplayForCurrentContext();
-  if (!display) {
-    LOG(ERROR) << "No GLDisplayEGL current.";
-    return false;
-  }
-
-  auto found = egl_surface_map_.find(display);
-  if (found == egl_surface_map_.end()) {
-    auto egl_surface = ScopedEGLSurfaceIOSurface::Create(
-        display->GetDisplay(), io_surface_, io_surface_plane_, format_);
-    if (!egl_surface) {
-      LOG(ERROR) << "Failed to create ScopedEGLSurfaceIOSurface.";
-      return false;
-    }
-    found =
-        egl_surface_map_.insert(std::make_pair(display, std::move(egl_surface)))
-            .first;
-  }
-  ScopedEGLSurfaceIOSurface* egl_surface = found->second.get();
-  if (!egl_surface->BindTexImage(target)) {
-    LOG(ERROR) << "Failed BindTexImage.";
-    return false;
-  }
-
-  UMA_HISTOGRAM_TIMES("GPU.IOSurface.TexImageTime",
-                      base::TimeTicks::Now() - start_time);
-  return true;
+  LOG(ERROR) << "GLImageIOSurface::BindTexImage should not be reached.";
+  NOTREACHED();
+  return false;
 }
 
-void GLImageIOSurface::ReleaseTexImage(unsigned target) {
-  auto found =
-      egl_surface_map_.find(GLDisplayEGL::GetDisplayForCurrentContext());
-  if (found == egl_surface_map_.end()) {
-    LOG(ERROR) << "Called ReleaseTexImage without BindTexImage.";
-    return;
-  }
-
-  ScopedEGLSurfaceIOSurface* egl_surface = found->second.get();
-  egl_surface->ReleaseTexImage();
-
-  if (base::FeatureList::IsEnabled(kTightlyScopedIOSurfaceEGLState))
-    egl_surface_map_.erase(found);
-}
+void GLImageIOSurface::ReleaseTexImage(unsigned target) {}
 
 void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                                     uint64_t process_tracing_id,

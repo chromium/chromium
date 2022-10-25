@@ -15,7 +15,9 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "ui/gl/egl_surface_io_surface.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_image_io_surface.h"
@@ -281,6 +283,13 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       cleared_rect_(params.is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
   DCHECK(image_);
+
+  // If this will be bound to different GL backends, then make RetainGLTexture
+  // and ReleaseGLTexture actually create and destroy the texture.
+  // https://crbug.com/1251724
+  if (usage & SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU)
+    return;
+
   // NOTE: Mac currently retains GLTexture and reuses it. Not sure if this is
   // best approach as it can lead to issues with context losses.
   if (!gl_texture_retained_for_legacy_mailbox_) {
@@ -306,7 +315,6 @@ void IOSurfaceImageBacking::RetainGLTexture() {
       gl_params_.framebuffer_attachment_angle, &gl_texture_, nullptr);
 
   // Set the GLImage to be initially unbound from the GL texture.
-  bind_needed_ = true;
   gl_texture_->SetEstimatedSize(
       viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
   gl_texture_->SetLevelImage(gl_params_.target, 0, image_.get());
@@ -330,10 +338,10 @@ void IOSurfaceImageBacking::ReleaseGLTexture(bool have_context) {
 
   if (gl_texture_) {
     if (have_context) {
-      if (!gl_texture_->is_bind_pending()) {
-        const GLenum target = GetGLTarget();
-        gl::ScopedTextureBinder binder(target, gl_texture_->service_id());
-        image_->ReleaseTexImage(target);
+      if (egl_surface_) {
+        ScopedRestoreTexture scoped_restore(gl::g_current_gl_context,
+                                            GetGLTarget(), GetGLServiceId());
+        egl_surface_.reset();
       }
     } else {
       gl_texture_->MarkContextLost();
@@ -358,10 +366,6 @@ std::unique_ptr<gfx::GpuFence> IOSurfaceImageBacking::GetLastWriteGpuFence() {
 
 void IOSurfaceImageBacking::SetReleaseFence(gfx::GpuFenceHandle release_fence) {
   release_fence_ = std::move(release_fence);
-}
-
-scoped_refptr<gfx::NativePixmap> IOSurfaceImageBacking::GetNativePixmap() {
-  return image_->GetNativePixmap();
 }
 
 void IOSurfaceImageBacking::OnMemoryDump(
@@ -506,7 +510,8 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
         gl::GLFence::CreateFromGpuFence(*in_fence.get());
     egl_fence->ServerWait();
   }
-  bind_needed_ = true;
+  if (gl_texture_)
+    gl_texture_->set_is_bind_pending(true);
 }
 
 bool IOSurfaceImageBacking::GLTextureImageRepresentationBeginAccess(
@@ -529,7 +534,45 @@ bool IOSurfaceImageBacking::GLTextureImageRepresentationBeginAccess(
       fence.Wait();
     }
   }
-  return BindImageIfNeeded();
+
+  // If the GL texture is already bound (the bind is not marked as pending),
+  // then early-out.
+  if (!gl_texture_->is_bind_pending())
+    return true;
+
+  // Create the EGL surface to bind to the GL texture, if it doesn't exist
+  // already.
+  if (!egl_surface_) {
+    auto* gl_image_io_surface =
+        static_cast<gl::GLImageIOSurface*>(image_.get());
+    gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
+    if (!display) {
+      LOG(ERROR) << "No GLDisplayEGL current.";
+      return false;
+    }
+    egl_surface_ = gl::ScopedEGLSurfaceIOSurface::Create(
+        display->GetDisplay(), GetGLTarget(), gl_image_io_surface->io_surface(),
+        gl_image_io_surface->io_surface_plane(), gl_image_io_surface->format());
+    if (!egl_surface_) {
+      LOG(ERROR) << "Failed to create ScopedEGLSurfaceIOSurface.";
+      return false;
+    }
+  }
+
+  ScopedRestoreTexture scoped_restore(gl::g_current_gl_context, GetGLTarget(),
+                                      GetGLServiceId());
+
+  // Un-bind the IOSurface from the GL texture (this will be a no-op if it is
+  // not yet bound).
+  egl_surface_->ReleaseTexImage();
+
+  // Bind the IOSurface to the GL texture.
+  if (!egl_surface_->BindTexImage()) {
+    LOG(ERROR) << "Failed to bind ScopedEGLSurfaceIOSurface to target";
+    return false;
+  }
+  gl_texture_->set_is_bind_pending(false);
+  return true;
 }
 
 void IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess(
@@ -588,11 +631,12 @@ void IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess(
 
   bool needs_synchronization = needs_sync_for_swangle || needs_sync_for_metal;
   if (needs_synchronization) {
-    const GLenum target = GetGLTarget();
-    gl::ScopedTextureBinder binder(target, gl_texture_->service_id());
     if (!gl_texture_->is_bind_pending()) {
-      image_->ReleaseTexImage(target);
-      bind_needed_ = true;
+      if (egl_surface_) {
+        ScopedRestoreTexture scoped_restore(gl::g_current_gl_context,
+                                            GetGLTarget(), GetGLServiceId());
+        egl_surface_->ReleaseTexImage();
+      }
       gl_texture_->set_is_bind_pending(true);
     }
   }
@@ -601,32 +645,6 @@ void IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess(
 void IOSurfaceImageBacking::GLTextureImageRepresentationRelease(
     bool has_context) {
   ReleaseGLTexture(has_context);
-}
-
-bool IOSurfaceImageBacking::BindImageIfNeeded() {
-  // This is called by code that has retained the GL texture.
-  DCHECK(gl_texture_);
-  if (!bind_needed_)
-    return true;
-
-  const GLenum target = GetGLTarget();
-  gl::GLApi* api = gl::g_current_gl_context;
-  ScopedRestoreTexture scoped_restore(api, target);
-  api->glBindTextureFn(target, GetGLServiceId());
-
-  // Un-bind the GLImage from the texture if it is currently bound.
-  bool is_bound = !gl_texture_->is_bind_pending();
-  if (is_bound)
-    image_->ReleaseTexImage(target);
-
-  // Bind or copy the GLImage to the texture.
-  if (!image_->BindTexImage(target)) {
-    LOG(ERROR) << "Failed to bind GLImage to target";
-    return false;
-  }
-  gl_texture_->set_is_bind_pending(false);
-  bind_needed_ = false;
-  return true;
 }
 
 void IOSurfaceImageBacking::InitializePixels(GLenum format,

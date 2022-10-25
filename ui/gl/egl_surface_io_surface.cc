@@ -74,6 +74,7 @@ InternalFormatType BufferFormatToInternalFormatType(BufferFormat format) {
 // static
 std::unique_ptr<ScopedEGLSurfaceIOSurface> ScopedEGLSurfaceIOSurface::Create(
     EGLDisplay display,
+    unsigned target,
     IOSurfaceRef io_surface,
     uint32_t plane,
     gfx::BufferFormat format) {
@@ -84,6 +85,11 @@ std::unique_ptr<ScopedEGLSurfaceIOSurface> ScopedEGLSurfaceIOSurface::Create(
 
   std::unique_ptr<ScopedEGLSurfaceIOSurface> result(
       new ScopedEGLSurfaceIOSurface(display));
+
+  if (!result->ValidateTarget(target)) {
+    return nullptr;
+  }
+
   if (!result->CreatePBuffer(io_surface, plane, format)) {
     LOG(ERROR) << "Failed to create PBuffer for IOSurface.";
     return nullptr;
@@ -112,6 +118,27 @@ ScopedEGLSurfaceIOSurface::ScopedEGLSurfaceIOSurface(EGLDisplay display)
                        EGL_BIND_TO_TEXTURE_TARGET_ANGLE, &texture_target_);
   }
   DCHECK_NE(texture_target_, EGL_NO_TEXTURE);
+}
+
+bool ScopedEGLSurfaceIOSurface::ValidateTarget(unsigned target) const {
+  switch (target) {
+    case GL_TEXTURE_2D:
+      if (texture_target_ != EGL_TEXTURE_2D) {
+        LOG(ERROR) << "eglBindTexImage requires 2D, got: " << target;
+        return false;
+      }
+      break;
+    case GL_TEXTURE_RECTANGLE_ARB:
+      if (texture_target_ != EGL_TEXTURE_RECTANGLE_ANGLE) {
+        LOG(ERROR) << "eglBindTexImage requires RECTANGLE, got: " << target;
+        return false;
+      }
+      break;
+    default:
+      LOG(ERROR) << "Invalid texture target: " << target;
+      return false;
+  }
+  return true;
 }
 
 bool ScopedEGLSurfaceIOSurface::CreatePBuffer(IOSurfaceRef io_surface,
@@ -156,23 +183,8 @@ bool ScopedEGLSurfaceIOSurface::CreatePBuffer(IOSurfaceRef io_surface,
   return true;
 }
 
-bool ScopedEGLSurfaceIOSurface::BindTexImage(unsigned target) {
+bool ScopedEGLSurfaceIOSurface::BindTexImage() {
   CHECK(!texture_bound_);
-
-  EGLint target_egl = EGL_NO_TEXTURE;
-  switch (target) {
-    case GL_TEXTURE_2D:
-      target_egl = EGL_TEXTURE_2D;
-      break;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      target_egl = EGL_TEXTURE_RECTANGLE_ANGLE;
-      break;
-    default:
-      LOG(ERROR) << "Invalid texture target: " << target;
-      return false;
-  }
-  DCHECK_EQ(texture_target_, target_egl);
-
   EGLBoolean result = eglBindTexImage(display_, pbuffer_, EGL_BACK_BUFFER);
   if (result != EGL_TRUE) {
     LOG(ERROR) << "eglBindTexImage failed, EGL error is " << eglGetError();

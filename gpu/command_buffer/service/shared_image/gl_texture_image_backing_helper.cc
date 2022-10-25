@@ -60,7 +60,8 @@ ScopedUnpackState::~ScopedUnpackState() {
 
 GLTextureImageBackingHelper::ScopedRestoreTexture::ScopedRestoreTexture(
     gl::GLApi* api,
-    GLenum target)
+    GLenum target,
+    GLuint new_binding)
     : api_(api), target_(target) {
   GLenum get_target = GL_TEXTURE_BINDING_2D;
   switch (target) {
@@ -80,6 +81,8 @@ GLTextureImageBackingHelper::ScopedRestoreTexture::ScopedRestoreTexture(
   GLint old_texture_binding = 0;
   api->glGetIntegervFn(get_target, &old_texture_binding);
   old_binding_ = old_texture_binding;
+  if (new_binding)
+    api_->glBindTextureFn(target_, new_binding);
 }
 
 GLTextureImageBackingHelper::ScopedRestoreTexture::~ScopedRestoreTexture() {

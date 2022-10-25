@@ -24,9 +24,6 @@
 
 namespace gl {
 
-class GLDisplayEGL;
-class ScopedEGLSurfaceIOSurface;
-
 class GL_EXPORT GLImageIOSurface : public GLImage {
  public:
   static GLImageIOSurface* Create(const gfx::Size& size);
@@ -69,8 +66,10 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
 
+  gfx::BufferFormat format() const { return format_; }
   gfx::GenericSharedMemoryId io_surface_id() const { return io_surface_id_; }
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface() { return io_surface_; }
+  uint32_t io_surface_plane() const { return io_surface_plane_; }
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer() {
     return cv_pixel_buffer_;
   }
@@ -98,8 +97,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   base::ThreadChecker thread_checker_;
 
   bool disable_in_use_by_window_server_ = false;
-  std::map<const GLDisplayEGL*, std::unique_ptr<ScopedEGLSurfaceIOSurface>>
-      egl_surface_map_;
 };
 
 }  // namespace gl

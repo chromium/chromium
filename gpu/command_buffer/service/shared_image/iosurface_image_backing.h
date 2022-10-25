@@ -13,6 +13,10 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_image_memory.h"
 
+namespace gl {
+class ScopedEGLSurfaceIOSurface;
+}  // namespace gl
+
 namespace gpu {
 
 // Interface through which a representation that has a GL texture calls into its
@@ -163,7 +167,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
  private:
   // SharedImageBacking:
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,
@@ -203,11 +206,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   scoped_refptr<gl::GLImage> image_;
 
-  // If |bind_needed_| is true, then either bind or copy |image_|
-  // to the GL texture, and un-set |bind_needed_|.
-  bool BindImageIfNeeded();
-  bool bind_needed_ = true;
-
   // Used to determine whether to release the texture in EndAccess() in use
   // cases that need to ensure IOSurface synchronization.
   uint num_ongoing_read_accesses_ = 0;
@@ -226,6 +224,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // |texture_| is nullptr.
   gfx::Rect cleared_rect_;
 
+  std::unique_ptr<gl::ScopedEGLSurfaceIOSurface> egl_surface_;
   scoped_refptr<gles2::TexturePassthrough> gl_texture_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;

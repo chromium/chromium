@@ -19,18 +19,25 @@ namespace gl {
 // it to an EGL texture.
 class GL_EXPORT ScopedEGLSurfaceIOSurface {
  public:
+  // Create a PBuffer for the specified IOSurface on the specified EGLDisplay.
+  // Indicate in `gl_target` the GL target enum (not EGL target enum) that the
+  // caller intends to bind the IOSurface to. Return nullptr on failure.
   static std::unique_ptr<ScopedEGLSurfaceIOSurface> Create(
       EGLDisplay display,
+      unsigned gl_target,
       IOSurfaceRef io_surface,
       uint32_t plane,
       gfx::BufferFormat format);
   ~ScopedEGLSurfaceIOSurface();
 
-  bool BindTexImage(unsigned target);
+  // BindTexImage and ReleaseTexImage will bind and unbind the IOSurface to the
+  // texture currently bound to the target specified in Create.
+  bool BindTexImage();
   void ReleaseTexImage();
 
  private:
   explicit ScopedEGLSurfaceIOSurface(EGLDisplay display);
+  bool ValidateTarget(unsigned target) const;
   bool CreatePBuffer(IOSurfaceRef io_surface,
                      uint32_t plane,
                      gfx::BufferFormat format);
