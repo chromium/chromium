@@ -1626,4 +1626,19 @@ TEST(SchemaTest, ParseToDictAndValidate) {
       << error;
 }
 
+TEST(SchemaTest, ErrorPathToString) {
+  EXPECT_EQ(ErrorPathToString("Policy", {}), "");
+  EXPECT_EQ(ErrorPathToString("Policy", {"key"}), "Policy.key");
+  EXPECT_EQ(ErrorPathToString("Policy", {0}), "Policy[0]");
+  EXPECT_EQ(ErrorPathToString("", {"key"}), ".key");
+  EXPECT_EQ(ErrorPathToString("", {0}), "[0]");
+  EXPECT_EQ(ErrorPathToString("Policy", {"key", "key", "key"}),
+            "Policy.key.key.key");
+  EXPECT_EQ(ErrorPathToString("Policy", {"a", "b", "c"}), "Policy.a.b.c");
+  EXPECT_EQ(ErrorPathToString("Policy", {0, 0, 0}), "Policy[0][0][0]");
+  EXPECT_EQ(ErrorPathToString("Policy", {1, 2, 3}), "Policy[1][2][3]");
+  EXPECT_EQ(ErrorPathToString("Policy", {0, "key", 5, 7, "example"}),
+            "Policy[0].key[5][7].example");
+}
+
 }  // namespace policy
