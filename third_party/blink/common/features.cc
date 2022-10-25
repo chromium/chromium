@@ -1633,9 +1633,38 @@ bool IsNewBaseUrlInheritanceBehaviorEnabled() {
 const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
     &kDocumentEventNodePathCaching, "max-cache-entries", 10};
 
-BASE_FEATURE(kPostMessageDifferentPartitionSameOriginBlocked,
-             "PostMessageDifferentPartitionSameOriginBlocked",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(
+    kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked,
+    "PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(
+    kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned,
+    "PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorage"
+    "IsPartitioned",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(
+    kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked,
+    "PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(
+    kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned,
+    "PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlockedIfStorage"
+    "IsPartitioned",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(
+    kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked,
+    "PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(
+    kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned,
+    "PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorage"
+    "IsPartitioned",
+    base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread,
              "WebRtcCombinedNetworkAndWorkerThread",

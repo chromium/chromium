@@ -857,9 +857,35 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDocumentEventNodePathCaching);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kDocumentMaxEventNodePathCachedEntries;
 
-// Whether same-origin different-partition post messages are currently blocked.
+// Whether first-party to third-party different-bucket same-origin post messages
+// are blocked.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kPostMessageDifferentPartitionSameOriginBlocked);
+    kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked);
+
+// Whether first-party to third-party different-bucket same-origin post messages
+// are blocked when storage partitioning is enabled.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned);
+
+// Whether third-party to first-party different-bucket same-origin post messages
+// are blocked.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked);
+
+// Whether third-party to first-party different-bucket same-origin post messages
+// are blocked when storage partitioning is enabled.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned);
+
+// Whether third-party to third-party different-bucket same-origin post messages
+// are blocked.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked);
+
+// Whether third-party to third-party different-bucket same-origin post messages
+// are blocked when storage partitioning is enabled.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned);
 
 // Combine WebRTC Network and Worker threads. More info at crbug.com/1373439.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread);

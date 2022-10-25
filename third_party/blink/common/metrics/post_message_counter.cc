@@ -39,38 +39,51 @@ PostMessageType GetPostMessageType(
       source_3psp_key.top_level_site().opaque() ||
       target_3psp_key.origin().opaque() ||
       target_3psp_key.top_level_site().opaque()) {
+    // We want to return here if any component of the storage key is opaque.
     return PostMessageType::kOpaque;
   } else if (source_3psp_key.IsFirstPartyContext() &&
              target_3psp_key.IsFirstPartyContext()) {
-    // Since the keys are both first party we can compare them directly.
+    // If both storage keys are first party . . .
     if (source_3psp_key == target_3psp_key) {
+      // . . . we note if they are identical . . .
       return PostMessageType::kFirstPartyToFirstPartySameBucket;
     } else {
+      // . . . or if they are in any way distinct.
       return PostMessageType::kFirstPartyToFirstPartyDifferentBucket;
     }
   } else if (source_3psp_key.IsFirstPartyContext() &&
              target_3psp_key.IsThirdPartyContext()) {
+    // If the source is first party and the target is third party . . .
     if (source_3psp_key.origin() == target_3psp_key.origin()) {
+      // . . . we note if their origins are identical . . .
       return PostMessageType::kFirstPartyToThirdPartyDifferentBucketSameOrigin;
     } else {
+      // . . . or the origins are distinct.
       return PostMessageType::
           kFirstPartyToThirdPartyDifferentBucketDifferentOrigin;
     }
   } else if (source_3psp_key.IsThirdPartyContext() &&
              target_3psp_key.IsFirstPartyContext()) {
+    // If the source is third party and the target is first party . . .
     if (source_3psp_key.origin() == target_3psp_key.origin()) {
+      // . . . we note if their origins are identical . . .
       return PostMessageType::kThirdPartyToFirstPartyDifferentBucketSameOrigin;
     } else {
+      // . . . or the origins are distinct.
       return PostMessageType::
           kThirdPartyToFirstPartyDifferentBucketDifferentOrigin;
     }
   } else if (source_3psp_key.IsThirdPartyContext() &&
              target_3psp_key.IsThirdPartyContext()) {
+    // If both storage keys are third party . . .
     if (source_3psp_key == target_3psp_key) {
+      // . . . we note if they are identical . . .
       return PostMessageType::kThirdPartyToThirdPartySameBucket;
     } else if (source_3psp_key.origin() == target_3psp_key.origin()) {
+      // . . . or if their origins alone are identical . . .
       return PostMessageType::kThirdPartyToThirdPartyDifferentBucketSameOrigin;
     } else {
+      // . . . or the origins are distinct.
       return PostMessageType::
           kThirdPartyToThirdPartyDifferentBucketDifferentOrigin;
     }
@@ -194,10 +207,41 @@ bool ShouldSendPostMessage(PostMessageType type) {
     case PostMessageType::kThirdPartyToThirdPartyDifferentBucketDifferentOrigin:
       return true;
     case PostMessageType::kFirstPartyToThirdPartyDifferentBucketSameOrigin:
+      // This handles two cases: (1) if the general block is enabled or (2) if
+      // third party storage partitioning is enabled and the conditional block
+      // is enabled. This is inverted as returning false drops the message.
+      return !(
+          base::FeatureList::IsEnabled(
+              blink::features::
+                  kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked) ||
+          (base::FeatureList::IsEnabled(
+               blink::features::
+                   kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned) &&
+           blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()));
     case PostMessageType::kThirdPartyToFirstPartyDifferentBucketSameOrigin:
+      // This handles two cases: (1) if the general block is enabled or (2) if
+      // third party storage partitioning is enabled and the conditional block
+      // is enabled. This is inverted as returning false drops the message.
+      return !(
+          base::FeatureList::IsEnabled(
+              blink::features::
+                  kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked) ||
+          (base::FeatureList::IsEnabled(
+               blink::features::
+                   kPostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned) &&
+           blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()));
     case PostMessageType::kThirdPartyToThirdPartyDifferentBucketSameOrigin:
-      return !base::FeatureList::IsEnabled(
-          blink::features::kPostMessageDifferentPartitionSameOriginBlocked);
+      // This handles two cases: (1) if the general block is enabled or (2) if
+      // third party storage partitioning is enabled and the conditional block
+      // is enabled. This is inverted as returning false drops the message.
+      return !(
+          base::FeatureList::IsEnabled(
+              blink::features::
+                  kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked) ||
+          (base::FeatureList::IsEnabled(
+               blink::features::
+                   kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned) &&
+           blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()));
   }
   NOTREACHED();
   return false;

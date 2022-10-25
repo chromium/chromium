@@ -822,10 +822,22 @@
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
   },
   {
-    "prefix": "post-message-different-partition-same-origin-blocked",
+    "prefix": "post-message-first-party-to-third-party-different-bucket-same-origin-blocked",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
-    "args": ["--enable-features=PostMessageDifferentPartitionSameOriginBlocked"]
+    "args": ["--enable-features=PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked"]
+  },
+  {
+    "prefix": "post-message-third-party-to-first-party-different-bucket-same-origin-blocked",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/html/browsers/windows/post-message"],
+    "args": ["--enable-features=PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked"]
+  },
+  {
+    "prefix": "post-message-third-party-to-third-party-different-bucket-same-origin-blocked",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/html/browsers/windows/post-message"],
+    "args": ["--enable-features=PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked"]
   },
   {
     "prefix": "threaded-composited-iframes",
