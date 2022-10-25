@@ -211,16 +211,8 @@ public class AccountTrackerService {
 
     private void finishSeedingAccounts(
             List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
-        String[] emails = new String[coreAccountInfos.size()];
-        String[] gaiaIds = new String[coreAccountInfos.size()];
-        for (int index = 0; index < coreAccountInfos.size(); index++) {
-            emails[index] = coreAccountInfos.get(index).getEmail();
-            gaiaIds[index] = coreAccountInfos.get(index).getGaiaId();
-        }
-        // TODO(https://crbug.com/1336704): Change native method to take CoreAccountInfo as
-        // argument.
         AccountTrackerServiceJni.get().seedAccountsInfo(
-                mNativeAccountTrackerService, gaiaIds, emails);
+                mNativeAccountTrackerService, coreAccountInfos.toArray(new CoreAccountInfo[0]));
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
 
         if (mExistsPendingSeedAccountsTask) {
@@ -244,7 +236,7 @@ public class AccountTrackerService {
 
     @NativeMethods
     interface Natives {
-        void seedAccountsInfo(long nativeAccountTrackerService, String[] gaiaIds, String[] emails);
+        void seedAccountsInfo(long nativeAccountTrackerService, CoreAccountInfo[] coreAccountInfos);
 
         /**
          * Returns whether GaiaIdCacheInAccountManagerFacade feature is enabled in native code.

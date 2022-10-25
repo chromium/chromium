@@ -127,11 +127,10 @@ class AccountTrackerService {
   // Returns a reference to the corresponding Java AccountTrackerService object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  // Seeds the accounts with |gaiaIds| and |accountNames|.
+  // Seeds the accounts with |core_account_infos|.
   void SeedAccountsInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& gaiaIds,
-      const base::android::JavaParamRef<jobjectArray>& accountNames);
+      const base::android::JavaParamRef<jobjectArray>& core_account_infos);
 #endif
 
   // If set, this callback will be invoked whenever the details of a tracked

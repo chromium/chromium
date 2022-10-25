@@ -853,30 +853,31 @@ AccountTrackerService::GetJavaObject() {
 
 void AccountTrackerService::SeedAccountsInfo(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& gaiaIds,
-    const base::android::JavaParamRef<jobjectArray>& accountNames) {
-  std::vector<std::string> gaia_ids;
-  std::vector<std::string> account_names;
-  base::android::AppendJavaStringArrayToStringVector(env, gaiaIds, &gaia_ids);
-  base::android::AppendJavaStringArrayToStringVector(env, accountNames,
-                                                     &account_names);
-  DCHECK_EQ(gaia_ids.size(), account_names.size());
+    const base::android::JavaParamRef<jobjectArray>& core_account_infos) {
+  std::vector<CoreAccountInfo> curr_core_account_infos;
+  // As |GetArrayLength| makes no guarantees about the returned value (e.g., it
+  // may be -1 if |array| is not a valid Java array), wrap it with std::max
+  // to always get a valid, non-negative size.
+  size_t len = std::max(0, env->GetArrayLength(core_account_infos.obj()));
+  for (size_t i = 0; i < len; i++) {
+    base::android::ScopedJavaLocalRef<jobject> core_account_info_java(
+        env, env->GetObjectArrayElement(core_account_infos.obj(), i));
+    curr_core_account_infos.push_back(
+        ConvertFromJavaCoreAccountInfo(env, core_account_info_java));
+  }
 
   DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
-           << " number of accounts " << gaia_ids.size();
+           << " number of accounts " << curr_core_account_infos.size();
 
-  std::vector<CoreAccountId> curr_ids;
-  for (const auto& gaia_id : gaia_ids) {
-    curr_ids.push_back(CoreAccountId::FromGaiaId(gaia_id));
-  }
   // Remove the accounts deleted from device
-  for (const AccountInfo& info : GetAccounts()) {
-    if (!base::Contains(curr_ids, info.account_id)) {
-      RemoveAccount(info.account_id);
+  for (const auto& account : GetAccounts()) {
+    if (!base::Contains(curr_core_account_infos, account.account_id,
+                        &CoreAccountInfo::account_id)) {
+      RemoveAccount(account.account_id);
     }
   }
-  for (size_t i = 0; i < gaia_ids.size(); ++i) {
-    SeedAccountInfo(gaia_ids[i], account_names[i]);
+  for (const auto& core_account_info : curr_core_account_infos) {
+    SeedAccountInfo(core_account_info.gaia, core_account_info.email);
   }
 }
 
