@@ -35,21 +35,17 @@ using policy::BrowserPolicyConnectorAsh;
 
 constexpr char kLatencyHistogramVariant[] = "Ash";
 
-const ash::DeviceState* GetCurrentlyActiveDeviceState(Profile* profile) {
+void GetNetworkDeviceStates(Profile* profile,
+                            ash::NetworkStateHandler::DeviceStateList* list) {
   if (!crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
           profile)) {
-    return nullptr;
+    return;
   }
 
   ash::NetworkStateHandler* network_state_handler =
       ash::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
-  if (!network) {
-    // Not connected to a network.
-    return nullptr;
-  }
-  return network_state_handler->GetDeviceState(network->device_path());
+
+  network_state_handler->GetDeviceList(list);
 }
 
 }  // namespace
@@ -89,17 +85,22 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
   signals.Set(device_signals::names::kScreenLockSecured,
               static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
 
-  const ash::DeviceState* device_state =
-      GetCurrentlyActiveDeviceState(profile_);
-  if (device_state) {
-    base::Value::List imei_list;
-    imei_list.Append(device_state->imei());
-    signals.Set(device_signals::names::kImei, std::move(imei_list));
+  base::Value::List imei_list;
+  base::Value::List meid_list;
+  ash::NetworkStateHandler::DeviceStateList device_list;
+  GetNetworkDeviceStates(profile_, &device_list);
+  for (auto* device_state : device_list) {
+    if (!device_state)
+      continue;
 
-    base::Value::List meid_list;
-    meid_list.Append(device_state->meid());
-    signals.Set(device_signals::names::kMeid, std::move(meid_list));
+    if (!device_state->imei().empty())
+      imei_list.Append(device_state->imei());
+
+    if (!device_state->meid().empty())
+      meid_list.Append(device_state->meid());
   }
+  signals.Set(device_signals::names::kImei, std::move(imei_list));
+  signals.Set(device_signals::names::kMeid, std::move(meid_list));
 
   if (!crosapi::CrosapiManager::Get() ||
       !crosapi::CrosapiManager::Get()->crosapi_ash() ||

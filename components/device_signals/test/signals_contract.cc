@@ -173,6 +173,10 @@ GetSignalsContract() {
   // Chrome OS Signals.
   contract[names::kAllowScreenLock] =
       base::BindRepeating(VerifyIsBoolean, names::kAllowScreenLock);
+  contract[names::kImei] = base::BindRepeating(
+      VerifyIsStringArray, names::kImei, /*enforce_value=*/false);
+  contract[names::kMeid] = base::BindRepeating(
+      VerifyIsStringArray, names::kMeid, /*enforce_value=*/false);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return contract;

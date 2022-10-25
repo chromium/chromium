@@ -43,6 +43,7 @@ constexpr char kFakeImei[] = "fake_imei";
 constexpr char kFakeMeid[] = "fake_meid";
 constexpr char kMacAddress[] = "00:00:00:00:00:00";
 constexpr char kWifiDevicePath[] = "/device/stub_wifi";
+constexpr char kCellularDevicePath[] = "/device/stub_cellular_device";
 constexpr char kWifiServicePath[] = "/service/stub_wifi";
 
 constexpr char kFakeSerialNumber[] = "fake_serial_number";
@@ -65,18 +66,20 @@ void SetupFakeNetwork() {
   shill_service_client->ClearServices();
   shill_device_client->ClearDevices();
 
+  shill_device_client->AddDevice(kCellularDevicePath, shill::kTypeCellular,
+                                 "stub_cellular_device");
+  shill_device_client->SetDeviceProperty(
+      kCellularDevicePath, shill::kMeidProperty, base::Value(kFakeMeid),
+      /*notify_changed=*/false);
+  shill_device_client->SetDeviceProperty(
+      kCellularDevicePath, shill::kImeiProperty, base::Value(kFakeImei),
+      /*notify_changed=*/false);
+
   shill_device_client->AddDevice(kWifiDevicePath, shill::kTypeWifi,
                                  "stub_wifi_device");
   shill_device_client->SetDeviceProperty(
       kWifiDevicePath, shill::kAddressProperty, base::Value(kMacAddress),
       /*notify_changed=*/false);
-
-  shill_device_client->SetDeviceProperty(kWifiDevicePath, shill::kMeidProperty,
-                                         base::Value(kFakeMeid),
-                                         /*notify_changed=*/false);
-  shill_device_client->SetDeviceProperty(kWifiDevicePath, shill::kImeiProperty,
-                                         base::Value(kFakeImei),
-                                         /*notify_changed=*/false);
 
   shill_service_client->AddService(kWifiServicePath, "wifi_guid",
                                    "wifi_network_name", shill::kTypeWifi,
@@ -188,26 +191,50 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
   ash::ChromeUserManager::Get()->SetUserAffiliation(user->GetAccountId(),
                                                     user_affiliation_ids);
 
-  SetupFakeNetwork();
+  // Test for no network
+  {
+    base::RunLoop run_loop;
+    base::Value::Dict signals;
+    decorator.Decorate(signals, run_loop.QuitClosure());
 
-  base::RunLoop run_loop;
-  base::Value::Dict signals;
-  decorator.Decorate(signals, run_loop.QuitClosure());
+    run_loop.Run();
 
-  run_loop.Run();
+    base::Value::List* imei_list =
+        signals.FindList(device_signals::names::kImei);
+    ASSERT_TRUE(imei_list);
+    EXPECT_TRUE(imei_list->empty());
 
-  const auto* mac_addresses =
-      signals.FindList(device_signals::names::kMacAddresses);
-  ASSERT_TRUE(mac_addresses);
-  EXPECT_EQ(*mac_addresses, GetExpectedMacAddresses());
+    base::Value::List* meid_list =
+        signals.FindList(device_signals::names::kMeid);
+    ASSERT_TRUE(meid_list);
+    EXPECT_TRUE(meid_list->empty());
+  }
 
-  base::Value::List* imei_list = signals.FindList(device_signals::names::kImei);
-  EXPECT_EQ(imei_list->size(), 1u);
-  EXPECT_EQ(imei_list->front(), kFakeImei);
+  // Test for fake network
+  {
+    SetupFakeNetwork();
 
-  base::Value::List* meid_list = signals.FindList(device_signals::names::kMeid);
-  EXPECT_EQ(meid_list->size(), 1u);
-  EXPECT_EQ(meid_list->front(), kFakeMeid);
+    base::RunLoop run_loop;
+    base::Value::Dict signals;
+    decorator.Decorate(signals, run_loop.QuitClosure());
+
+    run_loop.Run();
+
+    const auto* mac_addresses =
+        signals.FindList(device_signals::names::kMacAddresses);
+    ASSERT_TRUE(mac_addresses);
+    EXPECT_EQ(*mac_addresses, GetExpectedMacAddresses());
+
+    base::Value::List* imei_list =
+        signals.FindList(device_signals::names::kImei);
+    EXPECT_EQ(imei_list->size(), 1u);
+    EXPECT_EQ(imei_list->front(), kFakeImei);
+
+    base::Value::List* meid_list =
+        signals.FindList(device_signals::names::kMeid);
+    EXPECT_EQ(meid_list->size(), 1u);
+    EXPECT_EQ(meid_list->front(), kFakeMeid);
+  }
 }
 
 }  // namespace enterprise_connectors
