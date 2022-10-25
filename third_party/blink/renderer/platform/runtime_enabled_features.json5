@@ -2939,11 +2939,6 @@
       name: "WebAssemblyCSP",
       status: "stable",
     },
-    {
-      name: "WebAssemblyExceptions",
-      origin_trial_feature_name: "WebAssemblyExceptions",
-      status: "test",
-    },
     // WebAuth is disabled on Android versions prior to N (7.0) due to lack of
     // supporting APIs, see runtime_features.cc.
     {
