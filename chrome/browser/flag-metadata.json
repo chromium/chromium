@@ -2014,11 +2014,6 @@
     "expiry_milestone": 97
   },
   {
-    "name": "enable-cros-virtual-keyboard-bordered-key",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-cros-virtual-keyboard-multitouch",
     "owners": [ "michellegc", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110

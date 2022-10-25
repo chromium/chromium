@@ -578,10 +578,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "newheader", base::FeatureList::IsEnabled(
                        chromeos::features::kVirtualKeyboardNewHeader)));
-
-  features.Append(GenerateFeatureFlag(
-      "borderedkey", base::FeatureList::IsEnabled(
-                         chromeos::features::kVirtualKeyboardBorderedKey)));
   features.Append(GenerateFeatureFlag(
       "multitouch", base::FeatureList::IsEnabled(
                         chromeos::features::kVirtualKeyboardMultitouch)));

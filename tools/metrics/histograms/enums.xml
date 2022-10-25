@@ -60231,7 +60231,6 @@ from previous Chrome versions.
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
   <int value="-223595595" label="OSKResizesVisualViewportByDefault:enabled"/>
-  <int value="-222296540" label="VirtualKeyboardBorderedKey:disabled"/>
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
   <int value="-221649438" label="AllowTouchpadHapticClickSettings:disabled"/>
@@ -63178,7 +63177,6 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakPageMigration:enabled"/>
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>
-  <int value="1561781431" label="VirtualKeyboardBorderedKey:enabled"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>
   <int value="1563255033" label="memlog-stack-mode"/>
   <int value="1566945988" label="PdfOcr:disabled"/>

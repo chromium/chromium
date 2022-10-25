@@ -2013,11 +2013,6 @@ BASE_FEATURE(kUserActivityPrediction,
 // Enable or disable the ChromeOS video conferencing controls UI.
 BASE_FEATURE(kVcControlsUi, "VcControlsUi", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable bordered key for virtual keyboard on ChromeOS.
-BASE_FEATURE(kVirtualKeyboardBorderedKey,
-             "VirtualKeyboardBorderedKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable multitouch for virtual keyboard on ChromeOS.
 BASE_FEATURE(kVirtualKeyboardMultitouch,
              "VirtualKeyboardMultitouch",
