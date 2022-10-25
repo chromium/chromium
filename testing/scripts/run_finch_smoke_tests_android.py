@@ -415,8 +415,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                                                    test_run_variation)):
       # Make sure the browser is not running before the tests run
       self.stop_browser()
-      ret = super(FinchTestCase, self).run_test()
-      self.stop_browser()
+
+      if self.tests:
+        ret = super(FinchTestCase, self).run_test()
+        self.stop_browser()
 
       command_line_file = '%s-command-line' % self.product_name()
       # Set the browser command line file
