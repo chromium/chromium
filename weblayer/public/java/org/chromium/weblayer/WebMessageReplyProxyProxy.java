@@ -7,10 +7,10 @@ package org.chromium.weblayer;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.chromium.browserfragment.interfaces.IWebMessageReplyProxy;
+import org.chromium.webengine.interfaces.IWebMessageReplyProxy;
 
 /**
- * This class act as a proxy between browserfragment and the {@link WebMessageReplyProxy} in
+ * This class act as a proxy between webengine and the {@link WebMessageReplyProxy} in
  * weblayer.
  */
 class WebMessageReplyProxyProxy extends IWebMessageReplyProxy.Stub {

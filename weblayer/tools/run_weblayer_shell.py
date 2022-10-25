@@ -73,18 +73,18 @@ def main():
                     'launch']
       launch_cmd.extend(args.remaining_args)
       subprocess.call(launch_cmd)
-    elif (os.path.basename(args.shell_apk_path) == "BFShellLocal.apk"):
+    elif (os.path.basename(args.shell_apk_path) == "WEShellLocal.apk"):
       launch_cmd = [
         os.path.join(os.path.dirname(args.shell_apk_path),
-                     os.pardir, 'bin', 'browserfragment_shell_local_apk'),
+                     os.pardir, 'bin', 'webengine_shell_local_apk'),
         'launch'
       ]
       launch_cmd.extend(args.remaining_args)
       subprocess.call(launch_cmd)
-    elif (os.path.basename(args.shell_apk_path) == "BFShellSandbox.apk"):
+    elif (os.path.basename(args.shell_apk_path) == "WEShellSandbox.apk"):
       launch_cmd = [
         os.path.join(os.path.dirname(args.shell_apk_path),
-                     os.pardir, 'bin', 'browserfragment_shell_sandbox_apk'),
+                     os.pardir, 'bin', 'webengine_shell_sandbox_apk'),
         'launch'
       ]
       launch_cmd.extend(args.remaining_args)

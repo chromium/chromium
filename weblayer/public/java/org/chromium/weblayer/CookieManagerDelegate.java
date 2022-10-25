@@ -9,14 +9,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
-import org.chromium.browserfragment.interfaces.ExceptionType;
-import org.chromium.browserfragment.interfaces.IBooleanCallback;
-import org.chromium.browserfragment.interfaces.ICookieManagerDelegate;
-import org.chromium.browserfragment.interfaces.IStringCallback;
+import org.chromium.webengine.interfaces.ExceptionType;
+import org.chromium.webengine.interfaces.IBooleanCallback;
+import org.chromium.webengine.interfaces.ICookieManagerDelegate;
+import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
 
 /**
- * This class acts as a proxy between the embedding app's BrowserFragment and
+ * This class acts as a proxy between the embedding app's WebFragment and
  * the WebLayer implementation.
  */
 class CookieManagerDelegate extends ICookieManagerDelegate.Stub {

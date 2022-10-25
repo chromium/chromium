@@ -6,11 +6,11 @@ import("//android_webview/system_webview_apk_tmpl.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
-android_library("browserfragment_java_tests") {
+android_library("webengine_java_tests") {
   testonly = true
-  sources = [ "src/org/chromium/browserfragment/test/BrowserFragmentTest.java" ]
+  sources = [ "src/org/chromium/webengine/test/WebFragmentTest.java" ]
   deps = [
-    ":browserfragment_java_test_support",
+    ":webengine_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/share/android:java",
@@ -29,18 +29,18 @@ android_library("browserfragment_java_tests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/common:common_java",
     "//third_party/junit:junit",
-    "//weblayer/public/java:browserfragment_java",
+    "//weblayer/public/java:webengine_java",
     "//weblayer/public/javatests:weblayer_public_javatests",
-    "//weblayer/shell/android:browserfragment_shell_java",
+    "//weblayer/shell/android:webengine_shell_java",
   ]
 }
 
-android_library("browserfragment_java_test_support") {
+android_library("webengine_java_test_support") {
   testonly = true
   sources = [
-    "src/org/chromium/browserfragment/test/BrowserFragmentActivityTestRule.java",
-    "src/org/chromium/browserfragment/test/BrowserFragmentJUnit4ClassRunner.java",
-    "src/org/chromium/browserfragment/test/InstrumentationActivityTestRule.java",
+    "src/org/chromium/webengine/test/InstrumentationActivityTestRule.java",
+    "src/org/chromium/webengine/test/WebEngineActivityTestRule.java",
+    "src/org/chromium/webengine/test/WebEngineJUnit4ClassRunner.java",
   ]
   deps = [
     "//base:base_java",
@@ -52,12 +52,12 @@ android_library("browserfragment_java_test_support") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java_test_support",
-    "//weblayer/public/java:browserfragment_java",
-    "//weblayer/shell/android:browserfragment_shell_java",
+    "//weblayer/public/java:webengine_java",
+    "//weblayer/shell/android:webengine_shell_java",
   ]
 }
 
-template("browserfragment_instrumentation") {
+template("webengine_instrumentation") {
   instrumentation_test_apk(target_name) {
     forward_variables_from(invoker, "*")
 
@@ -78,11 +78,10 @@ template("browserfragment_instrumentation") {
 
 # Runs the instrumentation tests loading the implementation from the WebLayer
 # support library.
-browserfragment_instrumentation(
-    "browserfragment_support_instrumentation_test_apk") {
-  apk_name = "BrowserFragmentSupportInstrumentationTest"
-  apk_under_test = "//weblayer/shell/android:browserfragment_shell_local_apk"
+webengine_instrumentation("webengine_support_instrumentation_test_apk") {
+  apk_name = "WebEngineSupportInstrumentationTest"
+  apk_under_test = "//weblayer/shell/android:webengine_shell_local_apk"
   additional_apks = [ "//weblayer/shell/android:weblayer_support_apk" ]
 
-  deps = [ ":browserfragment_java_tests" ]
+  deps = [ ":webengine_java_tests" ]
 }

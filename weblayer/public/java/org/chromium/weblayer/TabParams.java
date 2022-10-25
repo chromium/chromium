@@ -6,7 +6,7 @@ package org.chromium.weblayer;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.browserfragment.interfaces.ITabParams;
+import org.chromium.webengine.interfaces.ITabParams;
 
 /**
  * Parameters for {@link Tab}.

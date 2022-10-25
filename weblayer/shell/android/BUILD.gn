@@ -12,40 +12,40 @@ import("//third_party/icu/config.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 
-generate_wrapper("run_browserfragment_shell") {
+generate_wrapper("run_webengine_shell") {
   testonly = true
-  wrapper_script = "$root_out_dir/bin/run_browserfragment_shell"
+  wrapper_script = "$root_out_dir/bin/run_webengine_shell"
   executable = "//weblayer/tools/run_weblayer_shell.py"
   executable_args = [
     "--shell-apk-path",
-    "@WrappedPath(apks/BFShellSandbox.apk)",
+    "@WrappedPath(apks/WEShellSandbox.apk)",
     "--support-apk-path",
-    "@WrappedPath(apks/BFSandbox.apk)",
+    "@WrappedPath(apks/WESandbox.apk)",
     "--support-apk-path",
     "@WrappedPath(apks/WebLayerSupport.apk)",
   ]
 
   deps = [
     ":browser_sandbox_apk",
-    ":browserfragment_shell_sandbox_apk",
+    ":webengine_shell_sandbox_apk",
     ":weblayer_support_apk",
   ]
 }
 
-generate_wrapper("run_browserfragment_shell_local") {
+generate_wrapper("run_webengine_shell_local") {
   testonly = true
-  wrapper_script = "$root_out_dir/bin/run_browserfragment_shell_local"
+  wrapper_script = "$root_out_dir/bin/run_webengine_shell_local"
   executable = "//weblayer/tools/run_weblayer_shell.py"
   executable_args = [
     "--shell-apk-path",
-    "@WrappedPath(apks/BFShellLocal.apk)",
+    "@WrappedPath(apks/WEShellLocal.apk)",
     "--support-apk-path",
     "@WrappedPath(apks/WebLayerSupport.apk)",
   ]
 
   deps = [
     ":browser_sandbox_apk",
-    ":browserfragment_shell_local_apk",
+    ":webengine_shell_local_apk",
     ":weblayer_support_apk",
   ]
 }
@@ -118,44 +118,44 @@ android_apk("weblayer_support_apk") {
   shared_libraries = [ "//weblayer:libweblayer_test" ]
 }
 
-android_resources("browserfragment_shell_resources") {
+android_resources("webengine_shell_resources") {
   sources = [
-    "browserfragment_shell_apk/res/layout/main.xml",
-    "browserfragment_shell_apk/res/values/strings.xml",
-    "browserfragment_shell_apk/res/values/styles.xml",
+    "webengine_shell_apk/res/layout/main.xml",
+    "webengine_shell_apk/res/values/strings.xml",
+    "webengine_shell_apk/res/values/styles.xml",
   ]
 }
 
-android_library("browserfragment_shell_java") {
+android_library("webengine_shell_java") {
   testonly = true
-  resources_package = "org.chromium.browserfragment.shell"
+  resources_package = "org.chromium.webengine.shell"
 
   sources = [
-    "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/BrowserFragmentShellActivity.java",
-    "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/InstrumentationActivity.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/InstrumentationActivity.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineShellActivity.java",
   ]
 
   deps = [
-    ":browserfragment_service_provider_resources",
-    ":browserfragment_shell_resources",
+    ":webengine_service_provider_resources",
+    ":webengine_shell_resources",
     "//base:base_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
-    "//weblayer/public/java:browserfragment_java",
     "//weblayer/public/java:service_provider_java",
+    "//weblayer/public/java:webengine_java",
   ]
 }
 
-template("browserfragment_shell_apk_helper") {
-  _browserfragment_shell_manifest =
+template("webengine_shell_apk_helper") {
+  _webengine_shell_manifest =
       "$target_gen_dir/manifest_$target_name/AndroidManifest.xml"
   _manifest_target = target_name + "_manifest"
 
   jinja_template(_manifest_target) {
-    input = "browserfragment_shell_apk/AndroidManifest.xml"
-    output = _browserfragment_shell_manifest
+    input = "webengine_shell_apk/AndroidManifest.xml"
+    output = _webengine_shell_manifest
     if (defined(invoker.browser_process_mode)) {
       variables = [ "browser_process_mode=" + invoker.browser_process_mode ]
     }
@@ -169,40 +169,40 @@ template("browserfragment_shell_apk_helper") {
 
     deps = [
       ":$_manifest_target",
-      ":browserfragment_shell_java",
+      ":webengine_shell_java",
     ]
 
-    android_manifest = _browserfragment_shell_manifest
+    android_manifest = _webengine_shell_manifest
     android_manifest_dep = ":$_manifest_target"
     min_sdk_version = default_min_sdk_version
     target_sdk_version = 28
   }
 }
 
-browserfragment_shell_apk_helper("browserfragment_shell_local") {
+webengine_shell_apk_helper("webengine_shell_local") {
   browser_process_mode = "local"
-  apk_name = "BFShellLocal"
+  apk_name = "WEShellLocal"
 }
 
-browserfragment_shell_apk_helper("browserfragment_shell_sandbox") {
+webengine_shell_apk_helper("webengine_shell_sandbox") {
   browser_process_mode = "sandbox"
-  apk_name = "BFShellSandbox"
+  apk_name = "WEShellSandbox"
 }
 
-browserfragment_services_manifest =
+webengine_services_manifest =
     "$target_gen_dir/service_provider/AndroidManifest.xml"
 
-jinja_template("browserfragment_services_manifest") {
+jinja_template("webengine_services_manifest") {
   input = "service_provider/AndroidManifest.xml"
-  output = browserfragment_services_manifest
+  output = webengine_services_manifest
 }
 
-android_resources("browserfragment_service_provider_resources") {
+android_resources("webengine_service_provider_resources") {
   testonly = true
-  android_manifest = browserfragment_services_manifest
-  android_manifest_dep = ":browserfragment_services_manifest"
+  android_manifest = webengine_services_manifest
+  android_manifest_dep = ":webengine_services_manifest"
 
-  deps = [ ":browserfragment_services_manifest" ]
+  deps = [ ":webengine_services_manifest" ]
 }
 
 # TODO(swestphal): Make this an AAR when BrowserProcess service can run in isolated process.
@@ -213,14 +213,14 @@ android_apk("browser_sandbox_apk") {
   never_incremental = true
 
   deps = [
-    ":browserfragment_service_provider_resources",
-    "//weblayer/public/java:browserfragment_interfaces_java",
+    ":webengine_service_provider_resources",
     "//weblayer/public/java:service_provider_java",
+    "//weblayer/public/java:webengine_interfaces_java",
   ]
 
-  apk_name = "BFSandbox"
-  android_manifest = browserfragment_services_manifest
-  android_manifest_dep = ":browserfragment_services_manifest"
+  apk_name = "WESandbox"
+  android_manifest = webengine_services_manifest
+  android_manifest_dep = ":webengine_services_manifest"
   min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   shared_resources = true

@@ -9,16 +9,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
-import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
-import org.chromium.browserfragment.interfaces.IBrowserSandboxCallback;
-import org.chromium.browserfragment.interfaces.IBrowserSandboxService;
-import org.chromium.browserfragment.interfaces.IFragmentParams;
+import org.chromium.webengine.interfaces.IFragmentParams;
+import org.chromium.webengine.interfaces.IWebFragmentDelegate;
+import org.chromium.webengine.interfaces.IWebSandboxCallback;
+import org.chromium.webengine.interfaces.IWebSandboxService;
 
 /**
- * Implementation of IBrowserSandboxService.Stub to be used in in-process and out-of-process
+ * Implementation of IWebSandboxService.Stub to be used in in-process and out-of-process
  * browser process services.
  */
-class BrowserProcessBinder extends IBrowserSandboxService.Stub {
+class BrowserProcessBinder extends IWebSandboxService.Stub {
     private final Context mContext;
     private WebLayer mWebLayer;
 
@@ -27,13 +27,13 @@ class BrowserProcessBinder extends IBrowserSandboxService.Stub {
     }
 
     @Override
-    public void initializeBrowserProcess(IBrowserSandboxCallback callback) {
+    public void initializeBrowserProcess(IWebSandboxCallback callback) {
         new Handler(Looper.getMainLooper()).post(() -> {
             WebLayer.loadAsync(mContext, (webLayer) -> onWebLayerReady(webLayer, callback));
         });
     }
 
-    private void onWebLayerReady(WebLayer webLayer, IBrowserSandboxCallback callback) {
+    private void onWebLayerReady(WebLayer webLayer, IWebSandboxCallback callback) {
         mWebLayer = webLayer;
         try {
             callback.onBrowserProcessInitialized();
@@ -42,10 +42,10 @@ class BrowserProcessBinder extends IBrowserSandboxService.Stub {
     }
 
     @Override
-    public IBrowserFragmentDelegate createFragmentDelegate(IFragmentParams params) {
+    public IWebFragmentDelegate createFragmentDelegate(IFragmentParams params) {
         assert mWebLayer != null;
 
-        return new BrowserFragmentDelegate(mContext, mWebLayer, params);
+        return new WebFragmentDelegate(mContext, mWebLayer, params);
     }
 
     @Override
