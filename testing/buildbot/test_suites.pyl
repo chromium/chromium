@@ -5332,7 +5332,6 @@
     'wpt_web_tests': {
       'wpt_tests_suite': {
         'args': [
-          '--no-wpt-internal',
           '--child-processes=8',
           '--log-wptreport',
         ],

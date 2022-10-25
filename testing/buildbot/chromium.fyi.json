@@ -96579,7 +96579,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--no-wpt-internal",
           "--child-processes=8",
           "--log-wptreport"
         ],
