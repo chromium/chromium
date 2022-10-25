@@ -10,8 +10,6 @@ blink_modules_sources("font_access") {
     "font_access.h",
     "font_metadata.cc",
     "font_metadata.h",
-    "font_table_map.cc",
-    "font_table_map.h",
   ]
 
   deps = [
