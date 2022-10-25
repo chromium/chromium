@@ -2462,3 +2462,28 @@ AX_TEST_F(
 
       await mockFeedback.replay();
     });
+
+AX_TEST_F('ChromeVoxEditingTest', 'SelectAcrossSoftLineWraps', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>start</p>
+    <div role=textbox contenteditable>Copy this message into any text field. Move to the top, then select with shift+down arrow. Notice that text selection reads from the beginning of the very long line when pressing shift+down arrow. This continues to happen until encountering a line break
+like this one.
+    </div>
+  `;
+  const root = await this.runWithLoadedTree(site);
+  await this.focusFirstTextField(root);
+
+  const textField = root.find({role: RoleType.TEXT_FIELD});
+  mockFeedback.expectSpeech('Text area')
+      .call(this.press(KeyCode.DOWN, {shift: true}))
+      .expectSpeech(
+          'Copy this message into any text field. Move to the top, then select with shift+down arrow. Notice that text selection reads from the beginning of the very long line when ',
+          'selected')
+      .call(this.press(KeyCode.DOWN, {shift: true}))
+      .expectSpeech(
+          'pressing shift+down arrow. This continues to happen until encountering a line breaklike this one.',
+          'selected');
+
+  await mockFeedback.replay();
+});

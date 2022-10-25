@@ -623,7 +623,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       let suffixMsg = '';
       if (curBase.isBeforeLine(curExtent)) {
         // Forward selection.
-        if (prev.isBeforeLine(curBase)) {
+        if (prev.isBeforeLine(curBase) && !prev.start.equals(curBase.start)) {
           // Wrapped across the baseline. Read out the new selection.
           suffixMsg = 'selected';
           this.speakTextSelection_(

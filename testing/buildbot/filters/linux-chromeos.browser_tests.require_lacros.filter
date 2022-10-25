@@ -39,6 +39,8 @@ WebAppsCrosapiBrowserTest*
 -ChromeVoxBackgroundTest.GestureOnPopUpButton
 -ChromeVoxBackgroundTest.HitTestOnExoSurface
 -ChromeVoxEditingTest.JumpCommandsSyncSelection
+# TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
+-ChromeVoxEditingTest.SelectAcrossSoftLineWraps
 -ChromeVoxBackgroundTest.ListBoxItemsNavigation
 -ChromeVoxLiveRegionsTest.FocusThenLiveRegion
 -ChromeVoxLiveRegionsTest.LiveRegionAddElement
