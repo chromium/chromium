@@ -1321,6 +1321,38 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DISABLED_SelectNextWordNewLine) {
   SendFinalResultAndWaitForTextAreaValue("nice", expected);
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharSimple) {
+  SendFinalResultAndWaitForTextAreaValue("Text", "Text");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForCaretBoundsChanged("highlight the next character");
+  std::string expected = "ext";
+  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharMultiLineString) {
+  std::string text = "Hello, world.\n";
+  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWait("highlight the next character");
+  std::string expected = "Hello, world.";
+  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharSimple) {
+  SendFinalResultAndWaitForTextAreaValue("Text", "Text");
+  SendFinalResultAndWaitForCaretBoundsChanged("highlight the previous character");
+  std::string expected = "Tex";
+  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharMultiLineString) {
+  std::string text = "Hello, world.\n";
+  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWait("highlight the previous character");
+  std::string expected = "Hello, world.";
+  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+}
+
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
   SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
   SendFinalResultAndWaitForTextAreaValue("delete the previous sentence", "");

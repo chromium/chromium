@@ -312,3 +312,29 @@ export class SelectNextWord extends RepeatableKeyPressMacro {
     EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true, shift: true});
   }
 }
+
+/** Macro to select the next character in the input field. */
+export class SelectNextChar extends RepeatableKeyPressMacro {
+  /** @param {number=} repeat The number of next characters to select. */
+  constructor(repeat = 1) {
+    super(MacroName.SELECT_NEXT_CHAR, repeat);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.RIGHT, {shift: true});
+  }
+}
+
+/** Macro to select the previous character in the input field. */
+export class SelectPrevChar extends RepeatableKeyPressMacro {
+  /** @param {number=} repeat The number of previous characters to select. */
+  constructor(repeat = 1) {
+    super(MacroName.SELECT_PREV_CHAR, repeat);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.LEFT, {shift: true});
+  }
+}

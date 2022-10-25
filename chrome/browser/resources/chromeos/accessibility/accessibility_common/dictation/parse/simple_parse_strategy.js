@@ -257,6 +257,14 @@ class SimpleMacroFactory {
         messageId: 'dictation_command_select_next_word',
         build: RepeatableKeyPress.SelectNextWord,
       },
+      [MacroName.SELECT_NEXT_CHAR]: {
+        messageId: 'dictation_command_select_next_char',
+        build: RepeatableKeyPress.SelectNextChar,
+      },
+      [MacroName.SELECT_PREV_CHAR]: {
+        messageId: 'dictation_command_select_prev_char',
+        build: RepeatableKeyPress.SelectPrevChar,
+      },
     };
   }
 }
@@ -287,6 +295,8 @@ export class SimpleParseStrategy extends ParseStrategy {
       MacroName.NAV_END_TEXT,
       MacroName.SELECT_PREV_WORD,
       MacroName.SELECT_NEXT_WORD,
+      MacroName.SELECT_NEXT_CHAR,
+      MacroName.SELECT_PREV_CHAR,
     ];
 
     this.initialize_();
