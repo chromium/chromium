@@ -5184,10 +5184,6 @@ crbug.com/1084256 [ Linux ] http/tests/misc/insert-iframe-into-xml-document-befo
 crbug.com/1084256 [ Mac ] http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html [ Failure Pass ]
 crbug.com/1084276 [ Mac ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Crash Failure Pass ]
 
-# Temporarily disabled to land the new wasm exception handling JS API
-crbug.com/v8/11992 external/wpt/wasm/jsapi/exception/* [ Skip ]
-crbug.com/v8/11992 external/wpt/wasm/jsapi/tag/* [ Skip ]
-
 # Assorted virtual/threaded/.../wpt/scroll-animations tests
 crbug.com/1279648 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-iframe.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-quirks-mode.html [ Failure ]
