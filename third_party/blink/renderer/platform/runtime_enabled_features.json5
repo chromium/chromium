@@ -2270,6 +2270,10 @@
       name: "RenderPriorityAttribute"
     },
     {
+      name: "ResourceTimingContentType",
+      status: "experimental",
+    },
+    {
       name: "ResourceTimingResponseStatus",
       status: "experimental",
     },

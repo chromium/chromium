@@ -80,6 +80,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       alpn_negotiated_protocol_(
           static_cast<String>(info.alpn_negotiated_protocol)),
       connection_info_(static_cast<String>(info.connection_info)),
+      content_type_(static_cast<String>(info.content_type)),
       render_blocking_status_(info.render_blocking_status
                                   ? RenderBlockingStatusType::kBlocking
                                   : RenderBlockingStatusType::kNonBlocking),
@@ -195,6 +196,10 @@ AtomicString PerformanceResourceTiming::renderBlockingStatus() const {
   }
   NOTREACHED();
   return "non-blocking";
+}
+
+AtomicString PerformanceResourceTiming::contentType() const {
+  return content_type_;
 }
 
 uint16_t PerformanceResourceTiming::responseStatus() const {
@@ -478,6 +483,9 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("nextHopProtocol", nextHopProtocol());
   if (RuntimeEnabledFeatures::RenderBlockingStatusEnabled()) {
     builder.AddString("renderBlockingStatus", renderBlockingStatus());
+  }
+  if (RuntimeEnabledFeatures::ResourceTimingContentTypeEnabled()) {
+    builder.AddString("contentType", contentType());
   }
   builder.AddNumber("workerStart", workerStart());
   builder.AddNumber("redirectStart", redirectStart());

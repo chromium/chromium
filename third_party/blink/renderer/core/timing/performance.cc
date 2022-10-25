@@ -450,7 +450,7 @@ bool Performance::IsResponseSameOriginWithInitiator(
   return is_same_origin;
 }
 
-bool Performance::ShouldReportResponseStatus(
+bool Performance::PassesCORSConditions(
     const ResourceResponse& final_response,
     const SecurityOrigin& initiator_security_origin,
     const network::mojom::RequestMode request_mode,
@@ -549,9 +549,11 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   }
 
   result->render_blocking_status = info.RenderBlockingStatus();
-  if (ShouldReportResponseStatus(final_response, destination_origin,
-                                 info.RequestMode(), redirect_chain)) {
+  result->content_type = g_empty_string;
+  if (PassesCORSConditions(final_response, destination_origin,
+                           info.RequestMode(), redirect_chain)) {
     result->response_status = final_response.HttpStatusCode();
+    result->content_type = final_response.HttpContentType();
   }
 
   return result;

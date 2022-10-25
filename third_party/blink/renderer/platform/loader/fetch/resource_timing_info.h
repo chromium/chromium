@@ -91,6 +91,8 @@ class PLATFORM_EXPORT ResourceTimingInfo
     return final_response_.CacheState();
   }
 
+  const AtomicString& ContentType() const { return content_type_; }
+
   // The timestamps in PerformanceResourceTiming are measured relative from the
   // time origin. In most cases these timestamps must be positive value, so we
   // use 0 for invalid negative values. But the timestamps for Service Worker
@@ -121,6 +123,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
 
   AtomicString type_;
   bool render_blocking_status_ = false;
+  AtomicString content_type_;
   base::TimeTicks initial_time_;
   mojom::blink::RequestContextType context_type_;
   network::mojom::RequestDestination request_destination_;

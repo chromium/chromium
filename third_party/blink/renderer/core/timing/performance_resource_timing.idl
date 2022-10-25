@@ -64,5 +64,9 @@ interface PerformanceResourceTiming : PerformanceEntry {
     // See: https://github.com/abinpaul1/resource-timing/blob/explainer-resource-response-status/Explainers/Response_Status_Code.md
     [RuntimeEnabled=ResourceTimingResponseStatus]
         readonly attribute short responseStatus;
+    // PerformanceResourceTiming#contentType
+    // See: https://github.com/abinpaul1/resource-timing/blob/explainer-content-type/Explainers/Content-Type.md
+    [RuntimeEnabled=ResourceTimingContentType]
+        readonly attribute DOMString contentType;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

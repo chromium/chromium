@@ -126,4 +126,8 @@ struct ResourceTimingInfo {
   // Holds the HTTP status code corresponding to |responseStatus| in
   // PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-2/).
   uint16 response_status;
+
+  // Holds the string corresponding to |contentType| in
+  // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
+  string content_type;
 };

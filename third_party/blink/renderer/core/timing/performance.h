@@ -314,7 +314,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
       const ResourceResponse& response,
       const SecurityOrigin& initiator_security_origin);
 
-  static bool ShouldReportResponseStatus(
+  static bool PassesCORSConditions(
       const ResourceResponse& final_response,
       const SecurityOrigin& initiator_security_origin,
       const network::mojom::RequestMode request_mode,
