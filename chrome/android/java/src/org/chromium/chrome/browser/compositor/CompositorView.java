@@ -88,7 +88,6 @@ public class CompositorView
     class ScreenStateReceiverWorkaround extends BroadcastReceiver {
         // True indicates we should destroy and recreate the surface manager.
         private boolean mNeedsReset;
-        private Surface mLastDestroyedSurface;
 
         ScreenStateReceiverWorkaround() {
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
