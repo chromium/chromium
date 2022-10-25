@@ -37,9 +37,16 @@
       function onSidebarCreated(sidebar) {
         output("Sidebar created");
         dumpObject(sidebar);
-        function onShown(win) {
-          if (panelName !== "elements")
-            output("sidebar height " + win.document.documentElement.getBoundingClientRect().height);
+        async function onShown(win) {
+          while (win.document.documentElement.getBoundingClientRect().height <
+                 10) {
+            await new Promise(resolve => setTimeout(resolve, 10));
+          }
+
+          if (panelName !== 'elements')
+            output(
+                'sidebar height ' +
+                win.document.documentElement.getBoundingClientRect().height);
           sidebar.onShown.removeListener(onShown);
           nextTest();
         }
