@@ -96,6 +96,10 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsImportRule() const { return GetType() == kImport; }
   bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
   bool IsTryRule() const { return GetType() == kTry; }
+  bool IsConditionRule() const {
+    return GetType() == kContainer || GetType() == kMedia ||
+           GetType() == kSupports;
+  }
 
   StyleRuleBase* Copy() const;
 
@@ -442,6 +446,8 @@ class CORE_EXPORT StyleRuleLayerStatement : public StyleRuleBase {
   Vector<LayerName> names_;
 };
 
+// If you add new children of this class, remember to update IsConditionRule()
+// above.
 class CORE_EXPORT StyleRuleCondition : public StyleRuleGroup {
  public:
   String ConditionText() const { return condition_text_; }

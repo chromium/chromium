@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -82,6 +83,21 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
         DOMExceptionCode::kHierarchyRequestError,
         "'@import' rules cannot be inserted inside a group rule.");
     return nullptr;
+  }
+
+  if (!new_rule->IsConditionRule() && !new_rule->IsStyleRule()) {
+    for (const CSSRule* current = &parent_rule; current != nullptr;
+         current = current->parentRule()) {
+      if (IsA<CSSStyleRule>(current)) {
+        // We are in nesting context (directly or indirectly),
+        // so inserting this rule is not allowed.
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kHierarchyRequestError,
+            "Only conditional nested group rules and style rules may be "
+            "nested.");
+        return nullptr;
+      }
+    }
   }
 
   return new_rule;
