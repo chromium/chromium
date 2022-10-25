@@ -23,6 +23,7 @@
 
 namespace storage {
 class FileSystemURL;
+class FileSystemContext;
 }  // namespace storage
 
 namespace views {
@@ -224,6 +225,9 @@ class DlpFilesController {
 
   DlpFilesEventStorage* GetEventStorageForTesting();
 
+  void SetFileSystemContextForTesting(
+      storage::FileSystemContext* file_system_context);
+
  private:
   // Called back from warning dialog. Passes blocked files sources along
   // to |callback|. In case |should_proceed| is true, passes only
@@ -265,6 +269,12 @@ class DlpFilesController {
   // Closes warning dialog if `response` has error.
   ::dlp::CheckFilesTransferResponse MaybeCloseDialog(
       ::dlp::CheckFilesTransferResponse response);
+
+  // Called when `transferred_files` is ready. Constructs CheckFilesTransfer
+  // request and forwards it to the dlp daemon.
+  void OnGetFilesUrls(storage::FileSystemURL destination,
+                      GetDisallowedTransfersCallback result_callback,
+                      std::vector<storage::FileSystemURL> transferred_files);
 
   const DlpRulesManager& rules_manager_;
 

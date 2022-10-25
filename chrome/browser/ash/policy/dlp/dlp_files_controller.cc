@@ -24,6 +24,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -36,7 +37,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/recursive_operation_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/views/widget/widget.h"
@@ -45,6 +50,19 @@
 namespace policy {
 
 namespace {
+
+// Timeout defining when two events having the same properties are considered
+// duplicates.
+// TODO(crbug.com/1368982): determine the value to use.
+constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
+
+// The maximum number of entries that can be kept in the
+// DlpFilesEventStorage.
+// TODO(crbug.com/1366299): determine the value to use.
+constexpr size_t kEntriesLimit = 100;
+
+// FileSystemContext instance set for testing.
+storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
 
 absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
   struct stat file_stats;
@@ -112,15 +130,144 @@ DlpRulesManager::Component MapProtoToPolicyComponent(
   }
 }
 
-// Timeout defining when two events having the same properties are considered
-// duplicates.
-// TODO(crbug.com/1368982): determine the value to use.
-constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
+// Returns |g_file_system_context_for_testing| if set, otherwise
+// it returns FileSystemContext* for the primary profile.
+storage::FileSystemContext* GetFileSystemContext() {
+  if (g_file_system_context_for_testing)
+    return g_file_system_context_for_testing;
 
-// The maximum number of entries that can be kept in the
-// DlpFilesEventStorage.
-// TODO(crbug.com/1366299): determine the value to use.
-constexpr size_t kEntriesLimit = 100;
+  auto* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(primary_profile);
+  return file_manager::util::GetFileManagerFileSystemContext(primary_profile);
+}
+
+// Gets all files inside |root| recursively and runs |callback_| with the
+// files list.
+class FolderRecursionDelegate : public storage::RecursiveOperationDelegate {
+ public:
+  using FileURLsCallback =
+      base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
+
+  FolderRecursionDelegate(storage::FileSystemContext* file_system_context,
+                          const storage::FileSystemURL& root,
+                          FileURLsCallback callback)
+      : RecursiveOperationDelegate(file_system_context),
+        root_(root),
+        callback_(std::move(callback)) {}
+
+  FolderRecursionDelegate(const FolderRecursionDelegate&) = delete;
+  FolderRecursionDelegate& operator=(const FolderRecursionDelegate&) = delete;
+
+  ~FolderRecursionDelegate() override = default;
+
+  // RecursiveOperationDelegate:
+  void Run() override { NOTREACHED(); }
+  void RunRecursively() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    StartRecursiveOperation(root_,
+                            storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP,
+                            base::BindOnce(&FolderRecursionDelegate::Completed,
+                                           weak_ptr_factory_.GetWeakPtr()));
+  }
+  void ProcessFile(const storage::FileSystemURL& url,
+                   StatusCallback callback) override {
+    file_system_context()->operation_runner()->GetMetadata(
+        url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+        base::BindOnce(&FolderRecursionDelegate::OnGetMetadata,
+                       weak_ptr_factory_.GetWeakPtr(), url,
+                       std::move(callback)));
+  }
+  void ProcessDirectory(const storage::FileSystemURL& url,
+                        StatusCallback callback) override {
+    std::move(callback).Run(base::File::FILE_OK);
+  }
+  void PostProcessDirectory(const storage::FileSystemURL& url,
+                            StatusCallback callback) override {
+    std::move(callback).Run(base::File::FILE_OK);
+  }
+
+ private:
+  void OnGetMetadata(const storage::FileSystemURL& url,
+                     StatusCallback callback,
+                     base::File::Error result,
+                     const base::File::Info& file_info) {
+    if (result != base::File::FILE_OK) {
+      std::move(callback).Run(result);
+      return;
+    }
+    if (file_info.is_directory) {
+      std::move(callback).Run(base::File::FILE_ERROR_NOT_A_FILE);
+      return;
+    }
+    files_urls_.push_back(url);
+    std::move(callback).Run(base::File::FILE_OK);
+  }
+
+  void Completed(base::File::Error result) {
+    std::move(callback_).Run(std::move(files_urls_));
+  }
+
+  const storage::FileSystemURL& root_;
+  FileURLsCallback callback_;
+  std::vector<storage::FileSystemURL> files_urls_;
+
+  base::WeakPtrFactory<FolderRecursionDelegate> weak_ptr_factory_{this};
+};
+
+// Gets all files inside |roots| recursively and runs |callback_| with the
+// whole files list. Deletes itself after |callback_| is run.
+// TODO(crbug.com/1378202): Extract RootsRecursionDelegate to another file to
+// have better testing coverage.
+class RootsRecursionDelegate {
+ public:
+  RootsRecursionDelegate(storage::FileSystemContext* file_system_context,
+                         const std::vector<storage::FileSystemURL>& roots,
+                         FolderRecursionDelegate::FileURLsCallback callback)
+      : file_system_context_(file_system_context),
+        roots_(roots),
+        callback_(std::move(callback)) {}
+
+  RootsRecursionDelegate(const RootsRecursionDelegate&) = delete;
+  RootsRecursionDelegate& operator=(const RootsRecursionDelegate&) = delete;
+
+  ~RootsRecursionDelegate() = default;
+
+  // Starts getting all files inside |roots| recursively.
+  void Run() {
+    for (const auto& root : roots_) {
+      auto recursion_delegate = std::make_unique<FolderRecursionDelegate>(
+          file_system_context_, root,
+          base::BindOnce(&RootsRecursionDelegate::Completed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      recursion_delegate->RunRecursively();
+      delegates_.push_back(std::move(recursion_delegate));
+    }
+  }
+
+  // Runs |callback_| when all files are ready.
+  void Completed(std::vector<storage::FileSystemURL> files_urls) {
+    counter_++;
+    files_urls_.insert(std::end(files_urls_), std::begin(files_urls),
+                       std::end(files_urls));
+    if (counter_ == roots_.size()) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback_), std::move(files_urls_)));
+      content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
+    }
+  }
+
+ private:
+  // counts the number of |roots| processed.
+  uint counter_ = 0;
+  storage::FileSystemContext* file_system_context_ = nullptr;
+  const std::vector<storage::FileSystemURL>& roots_;
+  FolderRecursionDelegate::FileURLsCallback callback_;
+  std::vector<storage::FileSystemURL> files_urls_;
+  std::vector<std::unique_ptr<FolderRecursionDelegate>> delegates_;
+
+  base::WeakPtrFactory<RootsRecursionDelegate> weak_ptr_factory_{this};
+};
 
 void GotFilesSourcesOfCopy(
     storage::FileSystemURL destination,
@@ -246,38 +393,23 @@ void DlpFilesController::GetDisallowedTransfers(
     return;
   }
 
-  ::dlp::CheckFilesTransferRequest request;
-  base::flat_map<std::string, storage::FileSystemURL> filtered_files;
-  for (const auto& file : transferred_files) {
-    // If the file is in the same file system as the destination, no
-    // restrictions should be applied.
-    if (!file.IsInSameFileSystem(destination)) {
-      auto file_path = file.path().value();
-      filtered_files[file_path] = file;
-      request.add_files_paths(file_path);
-    }
-  }
-  if (filtered_files.empty()) {
+  auto* file_system_context = GetFileSystemContext();
+  if (!file_system_context) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
     return;
   }
 
-  request.set_destination_url(destination.path().value());
-  // TODO(crbug.com/1356109): Set move or copy action instead of transfer.
-  request.set_file_action(::dlp::FileAction::TRANSFER);
-  auto return_transfers_callback =
-      base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(filtered_files),
-                     std::move(result_callback));
-  auto close_dialog_callback =
-      base::BindOnce(&DlpFilesController::MaybeCloseDialog,
-                     // base::Unretained() is safe since |this| is bound to
-                     // |return_transfers_callback|, which will be called after
-                     // |close_dialog_callback|
-                     base::Unretained(this));
-  chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request, std::move(close_dialog_callback)
-                   .Then(std::move(return_transfers_callback)));
+  auto* roots_recursion_delegate = new RootsRecursionDelegate(
+      file_system_context, transferred_files,
+      base::BindOnce(&DlpFilesController::OnGetFilesUrls,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(destination),
+                     std::move(result_callback)));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RootsRecursionDelegate::Run,
+                     // base::Unretained() is safe since |recursion_delegate|
+                     // will delete itself after all the files list if ready.
+                     base::Unretained(roots_recursion_delegate)));
 }
 
 void DlpFilesController::CopySourceInformation(
@@ -352,63 +484,6 @@ void DlpFilesController::FilterDisallowedUploads(
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(close_dialog_callback)
                    .Then(std::move(return_uploads_callback)));
-}
-
-void DlpFilesController::MaybeReportEvent(
-    ino64_t inode,
-    const base::FilePath& path,
-    const std::string& source_pattern,
-    const DlpFileDestination& dst,
-    const absl::optional<std::string>& dst_pattern,
-    absl::optional<DlpRulesManager::Level> level) {
-  const bool is_warning_proceeded_event = !level.has_value();
-
-  if (!is_warning_proceeded_event &&
-      (level.value() == DlpRulesManager::Level::kAllow ||
-       level.value() == DlpRulesManager::Level::kNotSet)) {
-    return;
-  }
-
-  DlpReportingManager* reporting_manager = rules_manager_.GetReportingManager();
-  if (!reporting_manager) {
-    return;
-  }
-
-  // Warning proceeded events are always user-initiated since they are triggered
-  // only when the user interacts with the warning dialog.
-  if (!is_warning_proceeded_event &&
-      !event_storage_->StoreEventAndCheckIfItShouldBeReported(inode, dst)) {
-    return;
-  }
-
-  std::unique_ptr<DlpPolicyEventBuilder> event_builder =
-      is_warning_proceeded_event
-          ? DlpPolicyEventBuilder::WarningProceededEvent(
-                source_pattern, DlpRulesManager::Restriction::kFiles)
-          : DlpPolicyEventBuilder::Event(source_pattern,
-                                         DlpRulesManager::Restriction::kFiles,
-                                         level.value());
-
-  event_builder->SetContentName(path.BaseName().value());
-
-  if (dst_pattern.has_value()) {
-    DCHECK(!dst.component.has_value());
-    event_builder->SetDestinationPattern(dst_pattern.value());
-  } else {
-    DCHECK(dst.component.has_value());
-    event_builder->SetDestinationComponent(dst.component.value());
-  }
-  reporting_manager->ReportEvent(event_builder->Create());
-}
-
-::dlp::CheckFilesTransferResponse DlpFilesController::MaybeCloseDialog(
-    ::dlp::CheckFilesTransferResponse response) {
-  if (response.has_error_message() && warn_dialog_widget_ &&
-      !warn_dialog_widget_->IsClosed()) {
-    warn_dialog_widget_->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
-  }
-  return response;
 }
 
 void DlpFilesController::CheckIfDownloadAllowed(
@@ -630,6 +705,15 @@ void DlpFilesController::SetWarnNotifierForTesting(
   warn_notifier_ = std::move(warn_notifier);
 }
 
+DlpFilesEventStorage* DlpFilesController::GetEventStorageForTesting() {
+  return event_storage_.get();
+}
+
+void DlpFilesController::SetFileSystemContextForTesting(
+    storage::FileSystemContext* file_system_context) {
+  g_file_system_context_for_testing = file_system_context;
+}
+
 void DlpFilesController::OnDlpWarnDialogReply(
     std::vector<FileDaemonInfo> restricted_files,
     std::vector<FileDaemonInfo> warned_files,
@@ -737,8 +821,99 @@ void DlpFilesController::ReturnDlpMetadata(
   std::move(result_callback).Run(std::move(result));
 }
 
-DlpFilesEventStorage* DlpFilesController::GetEventStorageForTesting() {
-  return event_storage_.get();
+void DlpFilesController::MaybeReportEvent(
+    ino64_t inode,
+    const base::FilePath& path,
+    const std::string& source_pattern,
+    const DlpFileDestination& dst,
+    const absl::optional<std::string>& dst_pattern,
+    absl::optional<DlpRulesManager::Level> level) {
+  const bool is_warning_proceeded_event = !level.has_value();
+
+  if (!is_warning_proceeded_event &&
+      (level.value() == DlpRulesManager::Level::kAllow ||
+       level.value() == DlpRulesManager::Level::kNotSet)) {
+    return;
+  }
+
+  DlpReportingManager* reporting_manager = rules_manager_.GetReportingManager();
+  if (!reporting_manager) {
+    return;
+  }
+
+  // Warning proceeded events are always user-initiated since they are triggered
+  // only when the user interacts with the warning dialog.
+  if (!is_warning_proceeded_event &&
+      !event_storage_->StoreEventAndCheckIfItShouldBeReported(inode, dst)) {
+    return;
+  }
+
+  std::unique_ptr<DlpPolicyEventBuilder> event_builder =
+      is_warning_proceeded_event
+          ? DlpPolicyEventBuilder::WarningProceededEvent(
+                source_pattern, DlpRulesManager::Restriction::kFiles)
+          : DlpPolicyEventBuilder::Event(source_pattern,
+                                         DlpRulesManager::Restriction::kFiles,
+                                         level.value());
+
+  event_builder->SetContentName(path.BaseName().value());
+
+  if (dst_pattern.has_value()) {
+    DCHECK(!dst.component.has_value());
+    event_builder->SetDestinationPattern(dst_pattern.value());
+  } else {
+    DCHECK(dst.component.has_value());
+    event_builder->SetDestinationComponent(dst.component.value());
+  }
+  reporting_manager->ReportEvent(event_builder->Create());
+}
+
+::dlp::CheckFilesTransferResponse DlpFilesController::MaybeCloseDialog(
+    ::dlp::CheckFilesTransferResponse response) {
+  if (response.has_error_message() && warn_dialog_widget_ &&
+      !warn_dialog_widget_->IsClosed()) {
+    warn_dialog_widget_->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
+  return response;
+}
+
+void DlpFilesController::OnGetFilesUrls(
+    storage::FileSystemURL destination,
+    GetDisallowedTransfersCallback result_callback,
+    std::vector<storage::FileSystemURL> transferred_files) {
+  ::dlp::CheckFilesTransferRequest request;
+  base::flat_map<std::string, storage::FileSystemURL> filtered_files;
+  for (const auto& file : transferred_files) {
+    // If the file is in the same file system as the destination, no
+    // restrictions should be applied.
+    if (!file.IsInSameFileSystem(destination)) {
+      auto file_path = file.path().value();
+      filtered_files[file_path] = file;
+      request.add_files_paths(file_path);
+    }
+  }
+  if (filtered_files.empty()) {
+    std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
+    return;
+  }
+
+  request.set_destination_url(destination.path().value());
+  // TODO(crbug.com/1356109): Set move or copy action instead of transfer.
+  request.set_file_action(::dlp::FileAction::TRANSFER);
+  auto return_transfers_callback =
+      base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(filtered_files),
+                     std::move(result_callback));
+  auto close_dialog_callback =
+      base::BindOnce(&DlpFilesController::MaybeCloseDialog,
+                     // base::Unretained() is safe since |this| is bound to
+                     // |return_transfers_callback|, which will be called after
+                     // |close_dialog_callback|
+                     base::Unretained(this));
+  chromeos::DlpClient::Get()->CheckFilesTransfer(
+      request, std::move(close_dialog_callback)
+                   .Then(std::move(return_transfers_callback)));
 }
 
 }  // namespace policy

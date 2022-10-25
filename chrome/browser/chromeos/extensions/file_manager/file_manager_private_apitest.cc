@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -159,8 +160,9 @@ TestDiskInfo kTestDisks[] = {{"file_path1",
                               "exfat",
                               ""}};
 
+const char kLocalMountPointName[] = "local";
+
 void AddLocalFileSystem(Profile* profile, base::FilePath root) {
-  const char kLocalMountPointName[] = "local";
   const char kTestFileContent[] = "The five boxing wizards jumped quickly";
 
   {
@@ -744,8 +746,9 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
 
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
+  const char kTestFileName[] = "dlp_test_file.txt";
   const base::FilePath test_file_path =
-      temp_dir_.GetPath().Append("dlp_test_file.txt");
+      temp_dir_.GetPath().Append(kTestFileName);
 
   {
     base::ScopedAllowBlockingForTesting allow_io;
@@ -755,6 +758,15 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
 
     ASSERT_TRUE(base::CreateDirectory(drive_path_.GetPath().Append("subdir")));
   }
+
+  auto* file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(browser()->profile());
+  file_system_context->external_backend()->GrantFileAccessToOrigin(
+      url::Origin::Create(
+          GURL("chrome-extension://"
+               "pkplfbidichfdicaijlchgnapepdginl/")),  // Testing
+                                                       // extension
+      base::FilePath(base::StrCat({kLocalMountPointName, "/", kTestFileName})));
 
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       "drivefs-delayed_mount_2", storage::kFileSystemTypeDriveFs,
@@ -769,6 +781,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
   check_files_response.add_files_paths(test_file_path.value());
   chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
       std::move(check_files_response));
+
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController)
+      .Times(testing::AnyNumber());
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_block", {},
                                {.load_as_component = true}));
