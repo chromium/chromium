@@ -26,8 +26,7 @@ class VisitScores {
            foreground_duration_score_ *
                GetConfig().foreground_duration_ranking_weight +
            bookmark_score_ * GetConfig().bookmark_ranking_weight +
-           srp_score_ * GetConfig().search_results_page_ranking_weight +
-           page_title_score_ * GetConfig().has_page_title_ranking_weight;
+           srp_score_ * GetConfig().search_results_page_ranking_weight;
   }
 
   void set_visit_duration_score(float score) { visit_duration_score_ = score; }
@@ -40,8 +39,6 @@ class VisitScores {
 
   void set_is_srp() { srp_score_ = 1.0; }
 
-  void set_has_page_title() { page_title_score_ = 1.0; }
-
  private:
   // The score for the duration associated with a visit.
   float visit_duration_score_ = 0.0;
@@ -51,8 +48,6 @@ class VisitScores {
   float bookmark_score_ = 0.0;
   // The score for whether the visit was on a search results page.
   float srp_score_ = 0.0;
-  // The score for whether the visit had a page title.
-  float page_title_score_ = 0.0;
 };
 
 // A cluster finalizer that scores visits based on visit duration.

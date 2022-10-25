@@ -259,7 +259,7 @@ TEST_F(RankingClusterFinalizerTest, ScoreVisitsOnHasPageTitle) {
               ElementsAre(ElementsAre(
                   testing::VisitResult(/*visit_id=*/1, /*score=*/1.0,
                                        /*duplicate_visits=*/{}),
-                  testing::VisitResult(/*visit_id=*/2, /*score=*/0.333333,
+                  testing::VisitResult(/*visit_id=*/2, /*score=*/0.0,
                                        /*duplicate_visits=*/{}),
                   testing::VisitResult(/*visit_id=*/3, /*score=*/1.0,
                                        /*duplicate_visits=*/{}))));

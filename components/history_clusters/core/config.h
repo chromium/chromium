@@ -268,10 +268,6 @@ struct Config {
   // visits within a cluster. Will always be greater than or equal to 0.
   float search_results_page_ranking_weight = 2.0;
 
-  // Returns the weight to use for visits that have page titles ranking visits
-  // within a cluster. Will always be greater than or equal to 0.
-  float has_page_title_ranking_weight = 2.0;
-
   // Whether to determine whether to show/hide clusters on prominent UI surfaces
   // based on categories annotated for a visit.
   bool should_use_categories_to_filter_on_prominent_ui_surfaces = false;
