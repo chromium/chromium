@@ -1,0 +1,56 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [
+    "nearby_connector.mojom",
+    "secure_channel.mojom",
+    "secure_channel_types.mojom",
+  ]
+
+  public_deps = [
+    "//chromeos/ash/components/multidevice/mojom",
+    "//mojo/public/mojom/base",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.secure_channel.mojom.ConnectionMedium"
+          cpp = "::ash::secure_channel::ConnectionMedium"
+        },
+        {
+          mojom = "ash.secure_channel.mojom.ConnectionPriority"
+          cpp = "::ash::secure_channel::ConnectionPriority"
+        },
+      ]
+
+      traits_headers = [ "secure_channel_mojom_traits.h" ]
+      traits_sources = [ "secure_channel_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//chromeos/ash/services/secure_channel/public/cpp/shared" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "secure_channel_mojom_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/secure_channel/public/cpp/shared",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}

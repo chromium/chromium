@@ -10,12 +10,12 @@
 #include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/device_to_device_authenticator.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 #include "ash/services/secure_channel/secure_context.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 
 namespace ash::secure_channel {
 

@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_DELEGATE_H_
 #define ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_DELEGATE_H_
 
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

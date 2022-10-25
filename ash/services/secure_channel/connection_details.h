@@ -8,7 +8,7 @@
 #include <ostream>
 #include <string>
 
-#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 
 namespace ash::secure_channel {
 

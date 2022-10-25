@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_UNLOCK_MANAGER_IMPL_H_
 
 #include "ash/public/cpp/smartlock_state.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -19,6 +18,7 @@
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "chromeos/ash/components/proximity_auth/unlock_manager.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 

@@ -5,8 +5,8 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_PHONE_HUB_METRICS_RECORDER_H_
 #define ASH_COMPONENTS_PHONEHUB_PHONE_HUB_METRICS_RECORDER_H_
 
-#include "ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
 
 namespace ash::phonehub {
 

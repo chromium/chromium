@@ -4,8 +4,8 @@
 
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 
-#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

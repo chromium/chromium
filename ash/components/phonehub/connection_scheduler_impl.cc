@@ -5,10 +5,10 @@
 #include "ash/components/phonehub/connection_scheduler_impl.h"
 
 #include "ash/components/phonehub/feature_status.h"
-#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace phonehub {

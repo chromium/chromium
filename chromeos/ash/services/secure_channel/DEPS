@@ -1,0 +1,16 @@
+# TODO(https://crbug.com/1164001): When this file is edited, same file in
+# //ash/services/secure_channel should be updated as well. We need
+# to sync both files until the migration is done.
+include_rules = [
+  "+ash/constants",
+  "+ash/services/device_sync",
+  "+chromeos/ash/components/multidevice",
+  "+chromeos/ash/services/multidevice_setup/public/cpp",
+  "+crypto",
+  "+third_party/securemessage",
+  "+third_party/ukey2",
+
+  # TODO(https://crbug.com/1164001): This is a temporary deps during
+  # //{ash=>chromeos/ash}/services/secure_channel migration.
+  "+ash/services/secure_channel",
+]

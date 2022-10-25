@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/components/tether/keep_alive_scheduler.h"
 
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/ash/components/tether/host_scan_cache.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
 

@@ -6,7 +6,7 @@
 #define ASH_SERVICES_SECURE_CHANNEL_CLIENT_CONNECTION_PARAMETERS_IMPL_H_
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

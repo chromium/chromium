@@ -17,12 +17,12 @@
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/nearby_connection_manager_impl.h"
 #include "ash/services/secure_channel/pending_connection_manager_impl.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "ash/services/secure_channel/timer_factory_impl.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_cache.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {

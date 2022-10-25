@@ -9,7 +9,6 @@
 #include "ash/components/phonehub/camera_roll_download_manager.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -30,6 +29,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

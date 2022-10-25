@@ -11,10 +11,10 @@
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/device_id_pair.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace ash::secure_channel {
 

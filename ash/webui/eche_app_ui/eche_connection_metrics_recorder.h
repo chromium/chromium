@@ -5,8 +5,8 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_METRICS_RECORDER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_METRICS_RECORDER_H_
 
-#include "ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
 
 namespace ash::eche_app {
 

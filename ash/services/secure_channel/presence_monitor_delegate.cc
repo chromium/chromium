@@ -8,11 +8,11 @@
 #include "ash/services/secure_channel/ble_synchronizer.h"
 #include "ash/services/secure_channel/bluetooth_helper_impl.h"
 #include "ash/services/secure_channel/connection_role.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/remote_device_cache.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {

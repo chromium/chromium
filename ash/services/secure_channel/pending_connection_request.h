@@ -10,7 +10,7 @@
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/pending_connection_request_delegate.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace ash::secure_channel {
 

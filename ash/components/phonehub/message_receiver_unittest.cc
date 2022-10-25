@@ -9,9 +9,9 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/constants/ash_features.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

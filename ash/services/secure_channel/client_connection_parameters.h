@@ -8,9 +8,9 @@
 #include <ostream>
 #include <string>
 
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_IMPL_H_
 #define ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_IMPL_H_
 
-#include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
 
 namespace device {
 class BluetoothAdapter;

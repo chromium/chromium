@@ -13,8 +13,8 @@
 
 #include "ash/services/secure_channel/ble_advertiser.h"
 #include "ash/services/secure_channel/device_id_pair.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/shared_resource_scheduler.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {

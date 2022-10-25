@@ -6,8 +6,6 @@
 
 #include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/wire_message.h"
 #include "base/callback.h"
 #include "base/files/file.h"
@@ -16,6 +14,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

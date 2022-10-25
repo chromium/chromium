@@ -9,14 +9,14 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace proximity_auth {
 class ProximityAuthLocalStatePrefManager;

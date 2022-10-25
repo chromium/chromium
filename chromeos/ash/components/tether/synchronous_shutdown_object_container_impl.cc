@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/tether/active_host.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ash/components/tether/timer_factory.h"
 #include "chromeos/ash/components/tether/top_level_host_scan_cache.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
 

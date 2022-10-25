@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chromeos/ash/components/proximity_auth/messenger.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
 
 namespace proximity_auth {
 

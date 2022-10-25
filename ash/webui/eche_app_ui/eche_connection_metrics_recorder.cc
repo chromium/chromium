@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/eche_connection_metrics_recorder.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace ash::eche_app {
 

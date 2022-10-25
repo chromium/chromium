@@ -12,7 +12,6 @@
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/device_to_device_responder_operations.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/secure_context.h"
 #include "ash/services/secure_channel/session_keys.h"
 #include "ash/services/secure_channel/wire_message.h"
@@ -25,6 +24,7 @@
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

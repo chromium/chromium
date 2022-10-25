@@ -17,10 +17,10 @@
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/nearby_initiator_failure_type.h"
 #include "ash/services/secure_channel/pending_connection_manager.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {

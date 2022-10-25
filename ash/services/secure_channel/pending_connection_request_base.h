@@ -9,11 +9,11 @@
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/pending_connection_request.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace ash::secure_channel {
 

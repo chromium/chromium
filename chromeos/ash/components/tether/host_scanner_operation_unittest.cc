@@ -9,9 +9,6 @@
 #include <vector>
 
 #include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -24,6 +21,9 @@
 #include "chromeos/ash/components/tether/mock_tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/proto_test_util.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;

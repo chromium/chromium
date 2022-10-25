@@ -6,9 +6,9 @@
 #define ASH_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

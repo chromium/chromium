@@ -9,7 +9,6 @@
 
 #include "ash/components/phonehub/camera_roll_download_manager.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
@@ -18,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace ash {
 namespace phonehub {

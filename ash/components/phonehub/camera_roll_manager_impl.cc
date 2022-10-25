@@ -14,13 +14,13 @@
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/components/phonehub/util/histogram_util.h"
-#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

@@ -5,9 +5,9 @@
 #include "ash/services/secure_channel/fake_authenticated_channel.h"
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/register_payload_file_request.h"
 #include "base/callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace ash::secure_channel {
 

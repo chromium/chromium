@@ -8,10 +8,10 @@
 #include <string>
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom-forward.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 #include "base/callback.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-forward.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 
 namespace ash::secure_channel {
 

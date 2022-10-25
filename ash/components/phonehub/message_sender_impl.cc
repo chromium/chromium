@@ -8,10 +8,10 @@
 
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/constants/ash_features.h"
-#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace phonehub {

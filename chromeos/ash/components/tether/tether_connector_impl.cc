@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/tether/tether_connector_impl.h"
 
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,6 +20,7 @@
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
 

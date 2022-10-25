@@ -8,10 +8,10 @@
 #include "ash/components/phonehub/connection_scheduler.h"
 #include "ash/components/phonehub/feature_status.h"
 #include "ash/components/phonehub/feature_status_provider.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "net/base/backoff_entry.h"
 
 namespace ash {

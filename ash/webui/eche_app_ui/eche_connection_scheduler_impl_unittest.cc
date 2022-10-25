@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

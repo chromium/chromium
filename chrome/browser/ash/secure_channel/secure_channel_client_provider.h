@@ -7,9 +7,9 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/no_destructor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
 namespace secure_channel {

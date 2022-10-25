@@ -8,9 +8,9 @@
 
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/feature_status.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/tether/asynchronous_shutdown_object_container_impl.h"
@@ -19,6 +18,7 @@
 #include "chromeos/ash/components/tether/fake_tether_disconnector.h"
 #include "chromeos/ash/components/tether/synchronous_shutdown_object_container_impl.h"
 #include "chromeos/ash/components/tether/tether_session_completion_logger.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

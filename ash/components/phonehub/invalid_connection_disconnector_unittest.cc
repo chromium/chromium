@@ -6,9 +6,9 @@
 
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/memory/ptr_util.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

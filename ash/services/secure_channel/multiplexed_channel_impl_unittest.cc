@@ -17,13 +17,13 @@
 #include "ash/services/secure_channel/fake_multiplexed_channel.h"
 #include "ash/services/secure_channel/fake_single_client_proxy.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/single_client_proxy_impl.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

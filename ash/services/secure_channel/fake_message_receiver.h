@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace ash::secure_channel {
 

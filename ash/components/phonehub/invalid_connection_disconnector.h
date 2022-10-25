@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 #define ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 
-#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace base {
 class OneShotTimer;

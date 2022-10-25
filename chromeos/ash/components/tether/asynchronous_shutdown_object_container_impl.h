@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/memory/ref_counted.h"
 #include "chromeos/ash/components/tether/asynchronous_shutdown_object_container.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
-#include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 class PrefService;
 

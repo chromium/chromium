@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/proximity_auth/fake_remote_device_life_cycle.h"
 
-#include "ash/services/secure_channel/public/cpp/client/client_channel.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
 
 namespace proximity_auth {
 

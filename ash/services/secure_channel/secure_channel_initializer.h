@@ -9,12 +9,12 @@
 #include <queue>
 #include <string>
 
-#include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/secure_channel_base.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
@@ -18,6 +17,7 @@
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
 

@@ -8,7 +8,6 @@
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/eche_app_ui/eche_connection_metrics_recorder.h"
@@ -24,6 +23,7 @@
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/system/sys_info.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 
 namespace ash {
 namespace {

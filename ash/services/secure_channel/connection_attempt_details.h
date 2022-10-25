@@ -11,7 +11,7 @@
 #include "ash/services/secure_channel/connection_details.h"
 #include "ash/services/secure_channel/connection_role.h"
 #include "ash/services/secure_channel/device_id_pair.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 
 namespace ash::secure_channel {
 

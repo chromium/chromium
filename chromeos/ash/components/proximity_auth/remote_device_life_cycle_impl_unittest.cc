@@ -9,9 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
-#include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -19,6 +16,9 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/proximity_auth/messenger.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

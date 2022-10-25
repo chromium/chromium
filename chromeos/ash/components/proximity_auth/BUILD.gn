@@ -48,8 +48,6 @@ static_library("proximity_auth") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
-    "//ash/services/secure_channel/public/cpp/client",
-    "//ash/services/secure_channel/public/mojom",
     "//base",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/multidevice",
@@ -57,6 +55,8 @@ static_library("proximity_auth") {
     "//chromeos/ash/components/proximity_auth/public/mojom",
     "//chromeos/ash/services/multidevice_setup/public/cpp",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/ash/services/secure_channel/public/cpp/client",
+    "//chromeos/ash/services/secure_channel/public/mojom",
     "//chromeos/dbus/power",
     "//components/account_id",
     "//components/pref_registry:pref_registry",
@@ -83,11 +83,11 @@ static_library("test_support") {
   deps = [
     "//ash/services/device_sync/proto",
     "//ash/services/secure_channel:test_support",
-    "//ash/services/secure_channel/public/cpp/client",
     "//base",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/secure_channel/public/cpp/client",
     "//testing/gmock",
   ]
 }
@@ -111,7 +111,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/services/secure_channel:test_support",
-    "//ash/services/secure_channel/public/cpp/client:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/multidevice",
@@ -119,6 +118,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
+    "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/prefs:test_support",

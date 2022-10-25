@@ -10,12 +10,12 @@
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/connection_role.h"
 #include "ash/services/secure_channel/device_id_pair.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {

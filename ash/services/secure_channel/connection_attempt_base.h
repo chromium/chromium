@@ -11,7 +11,6 @@
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/connection_details.h"
 #include "ash/services/secure_channel/pending_connection_request.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -19,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace ash::secure_channel {
 

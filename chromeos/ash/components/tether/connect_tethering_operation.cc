@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/tether/connect_tethering_operation.h"
 
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -12,6 +11,7 @@
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
 

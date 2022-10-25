@@ -6,11 +6,11 @@
 
 #include "ash/services/secure_channel/authenticated_channel_impl.h"
 #include "ash/services/secure_channel/nearby_connection.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/secure_channel_disconnector.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace ash::secure_channel {
 

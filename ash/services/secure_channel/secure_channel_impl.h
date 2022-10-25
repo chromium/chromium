@@ -13,9 +13,9 @@
 #include "ash/services/secure_channel/active_connection_manager.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/pending_connection_manager.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/containers/flat_map.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace device {
 class BluetoothAdapter;

@@ -15,11 +15,11 @@
 #include "ash/services/secure_channel/fake_error_tolerant_ble_advertisement.h"
 #include "ash/services/secure_channel/fake_one_shot_timer.h"
 #include "ash/services/secure_channel/fake_timer_factory.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

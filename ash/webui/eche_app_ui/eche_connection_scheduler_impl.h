@@ -5,12 +5,12 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_SCHEDULER_IMPL_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_SCHEDULER_IMPL_H_
 
-#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "ash/webui/eche_app_ui/eche_connection_scheduler.h"
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "net/base/backoff_entry.h"
 
 namespace ash {

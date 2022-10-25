@@ -7,7 +7,7 @@
 
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
 
-#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace eche_app {

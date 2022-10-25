@@ -7,12 +7,12 @@
 #include <memory>
 #include <set>
 
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/timer_factory.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
 

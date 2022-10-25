@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "ash/services/secure_channel/pending_connection_request_base.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {
