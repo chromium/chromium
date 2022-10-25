@@ -377,8 +377,34 @@ void RecordRetryHistograms(PasswordStoreOperation operation,
                                 attempt, kMaxReportedRetryAttempts);
 }
 
+bool HasPromptedTooManyAuthErrors(PrefService* pref_service) {
+  DCHECK(pref_service);
+  // This question only makes sense if auth error prompts are enabled.
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerErrorMessages));
+
+  // If there is no limit on how many times an auth error can be shown,
+  // there is no such thing as too many auth error prompts.
+  int max_auth_error_prompts =
+      password_manager::features::kMaxShownUPMErrorsBeforeEviction.Get();
+  if (max_auth_error_prompts < 0) {
+    return false;
+  }
+
+  if (pref_service->GetInteger(
+          password_manager::prefs::kTimesUPMAuthErrorShown) <
+      max_auth_error_prompts) {
+    return false;
+  }
+
+  LOG(ERROR) << "Auth error prompts exceeds limit of "
+             << max_auth_error_prompts;
+  return true;
+}
+
 bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code,
-                                 PasswordStoreOperation operation) {
+                                 PasswordStoreOperation operation,
+                                 PrefService* pref_service) {
   if (password_manager_upm_eviction::ShouldRetryOnApiError(
           static_cast<int>(api_error_code)) &&
       IsRetriableOperation(operation)) {
@@ -397,10 +423,13 @@ bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code,
   }
 
   // Auth errors require explicit handling and are not recoverable if this
-  // handling is disabled.
+  // handling is disabled. They are also considered unrecoverable if the client
+  // has been in a broke auth state for too long, verified by the number of auth
+  // error prompts that were shown.
   if (IsAuthenticationError(api_error_code) &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
+      (!base::FeatureList::IsEnabled(
+           password_manager::features::kUnifiedPasswordManagerErrorMessages) ||
+       HasPromptedTooManyAuthErrors(pref_service))) {
     return true;
   }
 
@@ -453,7 +482,8 @@ bool ShouldRetryOperation(PasswordStoreOperation operation,
 
 PasswordStoreBackendError BackendErrorFromAndroidBackendError(
     const AndroidBackendError& error,
-    PasswordStoreOperation operation) {
+    PasswordStoreOperation operation,
+    PrefService* pref_service) {
   if (error.type != AndroidBackendErrorType::kExternalError) {
     return PasswordStoreBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
@@ -482,7 +512,7 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
             : PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
   PasswordStoreBackendErrorRecoveryType recovery_type =
-      IsUnrecoverableBackendError(api_error_code, operation)
+      IsUnrecoverableBackendError(api_error_code, operation, pref_service)
           ? PasswordStoreBackendErrorRecoveryType::kUnrecoverable
           : PasswordStoreBackendErrorRecoveryType::kRecoverable;
   return PasswordStoreBackendError(error_type, recovery_type);
@@ -1021,6 +1051,10 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
 
   // Since the API call has succeeded, it's safe to reenable saving.
   prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
+  // A successful API call means that the user is no longer in a broken auth
+  // state. Reset the counter.
+  prefs_->SetInteger(password_manager::prefs::kTimesUPMAuthErrorShown, 0);
+
   reply->RecordMetrics(/*error=*/absl::nullopt);
   DCHECK(reply->Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
@@ -1040,6 +1074,9 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(JobId job_id,
 
   // Since the API call has succeeded, it's safe to reenable saving.
   prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
+  // A successful API all means that the user is no longer in a broken auth
+  // state. Reset the counter.
+  prefs_->SetInteger(password_manager::prefs::kTimesUPMAuthErrorShown, 0);
 
   main_task_runner_->PostTask(
       FROM_HERE,
@@ -1054,6 +1091,13 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
   PasswordStoreOperation operation = reply->GetOperation();
+
+  // The error to report is computed before potential eviction. This is because
+  // eviction resets state which might be used to infer the recovery type of
+  // the error.
+  PasswordStoreBackendError reported_error =
+      BackendErrorFromAndroidBackendError(error, operation, prefs_);
+
   if (error.api_error_code.has_value() && sync_service_) {
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
     // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
@@ -1115,8 +1159,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 
     // If the user is experiencing an error unresolvable by Chrome or by the
     // user, unenroll the user from the UPM experience.
-    if (password_manager::IsUnrecoverableBackendError(api_error_code,
-                                                      operation)) {
+    if (password_manager::IsUnrecoverableBackendError(api_error_code, operation,
+                                                      prefs_)) {
       if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs_)) {
         if (base::FeatureList::IsEnabled(
                 password_manager::features::kShowUPMErrorNotification)) {
@@ -1133,8 +1177,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
     }
   }
-  PasswordStoreBackendError reported_error =
-      BackendErrorFromAndroidBackendError(error, operation);
+
   reply->RecordMetrics(std::move(error));
   // The decision whether to show an error UI depends on the re-enrollment pref
   // and as such the consumers should be called last.

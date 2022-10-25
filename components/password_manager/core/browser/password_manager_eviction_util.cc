@@ -65,8 +65,14 @@ void EvictCurrentUser(int api_error_code, PrefService* prefs) {
   prefs->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
   prefs->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM, false);
 
+  // Reset the counter for the auth error prompts, so that the user starts
+  // with a fresh state when re-enrolling.
+  prefs->SetInteger(password_manager::prefs::kTimesUPMAuthErrorShown, 0);
+
   base::UmaHistogramBoolean("PasswordManager.UnenrolledFromUPMDueToErrors",
                             true);
+  base::UmaHistogramSparse("PasswordManager.UPMUnenrollmentReason",
+                           api_error_code);
   LOG(ERROR) << "Unenrolled from UPM due to error with code: "
              << api_error_code;
 }

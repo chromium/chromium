@@ -50,6 +50,7 @@ const char kTimesReenrolledToGoogleMobileServices[] =
 
 const char kTimesAttemptedToReenrollToGoogleMobileServices[] =
     "times_attempted_to_reenroll_to_google_mobile_services";
+const char kTimesUPMAuthErrorShown[] = "times_upm_auth_error_shown";
 #endif
 
 #if BUILDFLAG(IS_WIN)

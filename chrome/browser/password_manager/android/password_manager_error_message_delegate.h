@@ -11,6 +11,7 @@
 #include "components/messages/android/message_wrapper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "components/prefs/pref_service.h"
 
 namespace content {
 class WebContents;
@@ -25,9 +26,11 @@ class PasswordManagerErrorMessageDelegate {
   // Displays a password error message for current `web_contents` if enough
   // time has passed since the last error message was displayed.
   // `ErrorMessageFlowType` decides whether the error message mentions the
-  // inability to save or use passwords.
+  // inability to save or use passwords. The `pref_service` is used to count
+  // how many times the prompt was shown.
   void MaybeDisplayErrorMessage(
       content::WebContents* web_contents,
+      PrefService* pref_service,
       password_manager::ErrorMessageFlowType flow_type,
       password_manager::PasswordStoreBackendErrorType error_type,
       base::OnceCallback<void()> dismissal_callback);

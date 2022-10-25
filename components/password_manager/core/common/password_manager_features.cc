@@ -325,6 +325,15 @@ extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts = {
 extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts = {
     &kUnifiedPasswordManagerErrorMessages, "ignore_auth_error_message_timeouts",
     false};
+
+// The maximum number of authentication error UI messages to show before
+// considering auth errors as unrecoverable and unenrolling the user from UPM.
+// If this param is set, unenrollment will happen even if the auth error is in
+// the ignore list.
+// By default, there is no limit to how many errors will be shown.
+extern const base::FeatureParam<int> kMaxShownUPMErrorsBeforeEviction = {
+    &kUnifiedPasswordManagerErrorMessages,
+    "max_shown_auth_errors_before_eviction", -1};
 #endif
 
 // Field trial identifier for password generation requirements.
