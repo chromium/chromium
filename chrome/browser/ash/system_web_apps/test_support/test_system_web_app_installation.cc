@@ -810,17 +810,12 @@ TestSystemWebAppInstallation::CreateSystemWebAppManager(
                          profile);
   }
 
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-  DCHECK(provider);
-
   auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
 
   system_web_app_manager->SetSystemAppsForTesting(
       std::move(system_app_delegates_));
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
 
-  system_web_app_manager->ConnectSubsystems(provider);
   system_web_app_manager->ScheduleStart();
 
   const url::Origin app_origin = url::Origin::Create(delegate->GetInstallUrl());
@@ -837,16 +832,11 @@ TestSystemWebAppInstallation::CreateSystemWebAppManagerWithNoSystemWebApps(
   // `CreateWebAppProvider` gets called first and assigns `profile_`.
   DCHECK_EQ(profile_, profile);
 
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-  DCHECK(provider);
-
   auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
 
   system_web_app_manager->SetSystemAppsForTesting({});
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
 
-  system_web_app_manager->ConnectSubsystems(provider);
   system_web_app_manager->ScheduleStart();
 
   return system_web_app_manager;

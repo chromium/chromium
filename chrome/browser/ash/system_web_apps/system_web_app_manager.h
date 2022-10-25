@@ -7,12 +7,10 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
@@ -20,18 +18,12 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace base {
 class Version;
@@ -41,14 +33,7 @@ namespace content {
 class NavigationHandle;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace web_app {
-class WebAppUiManager;
-class WebAppSyncBridge;
-class WebAppPolicyManager;
 class WebAppProvider;
 }  // namespace web_app
 
@@ -106,16 +91,10 @@ class SystemWebAppManager : public KeyedService,
   // running in Lacros/Ash. Blocks if the web app registry is not yet ready.
   static SystemWebAppManager* GetForTest(Profile* profile);
 
-  void SetSubsystems(
-      web_app::ExternallyManagedAppManager* externally_managed_app_manager,
-      web_app::WebAppRegistrar* registrar,
-      web_app::WebAppSyncBridge* sync_bridge,
-      web_app::WebAppUiManager* ui_manager,
-      web_app::WebAppPolicyManager* web_app_policy_manager);
-  void ConnectSubsystems(web_app::WebAppProvider* provider);
+  // Calls `Start` when `WebAppProvider` is ready.
   void ScheduleStart();
 
-  // Gets called when `WebAppProvider` is ready.
+  // Initialize the SystemWebAppManager.
   void Start();
 
   // KeyedService:
@@ -229,13 +208,12 @@ class SystemWebAppManager : public KeyedService,
       content::NavigationHandle* navigation_handle) override;
   void OnWebAppUiManagerDestroyed() override;
 
-  void CheckIsConnected() const;
   void ConnectProviderToSystemWebAppDelegateMap(
       const SystemWebAppDelegateMap* system_web_apps_delegate_map) const;
 
   raw_ptr<Profile> profile_;
   // SystemWebAppManager KeyedService depends on WebAppProvider KeyedService,
-  // therefore this pointer is always valid once connected.
+  // therefore this pointer is always valid.
   raw_ptr<web_app::WebAppProvider> provider_ = nullptr;
 
   std::unique_ptr<base::OneShotEvent> on_apps_synchronized_;
@@ -255,16 +233,6 @@ class SystemWebAppManager : public KeyedService,
   SystemWebAppDelegateMap system_app_delegates_;
 
   const raw_ptr<PrefService> pref_service_;
-
-  // Used to install, uninstall, and update apps. Should outlive this class.
-  raw_ptr<web_app::ExternallyManagedAppManager>
-      externally_managed_app_manager_ = nullptr;
-
-  raw_ptr<web_app::WebAppRegistrar> registrar_ = nullptr;
-
-  raw_ptr<web_app::WebAppSyncBridge> sync_bridge_ = nullptr;
-
-  raw_ptr<web_app::WebAppPolicyManager> web_app_policy_manager_ = nullptr;
 
   std::vector<std::unique_ptr<SystemWebAppBackgroundTask>> tasks_;
 

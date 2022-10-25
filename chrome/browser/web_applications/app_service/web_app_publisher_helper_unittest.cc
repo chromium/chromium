@@ -94,7 +94,6 @@ class WebAppPublisherHelperTest : public testing::Test {
     ash::SystemWebAppManager* swa_manager_ptr = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     swa_manager_ = std::make_unique<ash::TestSystemWebAppManager>(profile());
-    swa_manager_->ConnectSubsystems(provider_);
     swa_manager_ptr = swa_manager_.get();
 #endif
 

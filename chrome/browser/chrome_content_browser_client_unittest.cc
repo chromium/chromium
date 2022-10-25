@@ -112,14 +112,10 @@ class ChromeContentBrowserClientTest : public testing::Test {
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<KeyedService> CreateSystemWebAppManager(Profile* profile) {
-    auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-    DCHECK(provider);
-
     // Unit tests need SWAs from production. Creates real SystemWebAppManager
     // instead of `TestSystemWebAppManager::BuildDefault()` for
     // `TestingProfile`.
     auto swa_manager = std::make_unique<ash::SystemWebAppManager>(profile);
-    swa_manager->ConnectSubsystems(provider);
     return swa_manager;
   }
   // The custom manager creator should be constructed before `TestingProfile`.

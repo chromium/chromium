@@ -5,41 +5,42 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
+#include <ostream>
+#include <set>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
-#include "ash/webui/connectivity_diagnostics/url_constants.h"
-#include "ash/webui/firmware_update_ui/url_constants.h"
-#include "ash/webui/help_app_ui/url_constants.h"
-#include "ash/webui/media_app_ui/url_constants.h"
-#include "ash/webui/os_feedback_ui/url_constants.h"
-#include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "ash/webui/shimless_rma/url_constants.h"
-#include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "base/bind.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
@@ -68,33 +69,22 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
-#include "chromeos/strings/grit/chromeos_strings.h"  // nogncheck
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
@@ -210,12 +200,14 @@ const char SystemWebAppManager::kInstallDurationHistogramName[];
 
 SystemWebAppManager::SystemWebAppManager(Profile* profile)
     : profile_(profile),
+      provider_(web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_)),
       on_apps_synchronized_(new base::OneShotEvent()),
       on_tasks_started_(new base::OneShotEvent()),
       install_result_per_profile_histogram_name_(
           std::string(kInstallResultHistogramName) + ".Profiles." +
           web_app::GetProfileCategoryForLogging(profile)),
       pref_service_(profile_->GetPrefs()) {
+  DCHECK(provider_);
   // Always create delegates because many System Web App WebUIs are disabled
   // when the delegate is not present and we need them in tests. Tests can
   // override the list of delegates with SetSystemAppsForTesting().
@@ -250,8 +242,7 @@ SystemWebAppManager::~SystemWebAppManager() {
   // SystemWebAppManager lifetime matches WebAppProvider lifetime (see
   // BrowserContextDependencyManager) but we reset pointers to
   // system_app_delegates_ for integrity with DCHECKs.
-  if (provider_)
-    ConnectProviderToSystemWebAppDelegateMap(nullptr);
+  ConnectProviderToSystemWebAppDelegateMap(nullptr);
 }
 
 // static
@@ -268,13 +259,7 @@ web_app::WebAppProvider* SystemWebAppManager::GetWebAppProvider(
 // static
 SystemWebAppManager* SystemWebAppManager::GetForLocalAppsUnchecked(
     Profile* profile) {
-  SystemWebAppManager* swa_manager =
-      SystemWebAppManagerFactory::GetForProfile(profile);
-  if (!swa_manager)
-    return nullptr;
-
-  swa_manager->CheckIsConnected();
-  return swa_manager;
+  return SystemWebAppManagerFactory::GetForProfile(profile);
 }
 
 // static
@@ -291,7 +276,6 @@ SystemWebAppManager* SystemWebAppManager::GetForTest(Profile* profile) {
 
   SystemWebAppManager* swa_manager = GetForLocalAppsUnchecked(profile);
   DCHECK(swa_manager);
-  swa_manager->CheckIsConnected();
 
   if (provider->on_registry_ready().is_signaled())
     return swa_manager;
@@ -320,42 +304,20 @@ bool SystemWebAppManager::IsAppEnabled(SystemWebAppType type) const {
   return delegate->IsAppEnabled();
 }
 
-void SystemWebAppManager::SetSubsystems(
-    web_app::ExternallyManagedAppManager* externally_managed_app_manager,
-    web_app::WebAppRegistrar* registrar,
-    web_app::WebAppSyncBridge* sync_bridge,
-    web_app::WebAppUiManager* ui_manager,
-    web_app::WebAppPolicyManager* web_app_policy_manager) {
-  externally_managed_app_manager_ = externally_managed_app_manager;
-  registrar_ = registrar;
-  sync_bridge_ = sync_bridge;
-  web_app_policy_manager_ = web_app_policy_manager;
-
-  // `SetSubsystems` and `Start` can be called multiple times in tests.
-  ui_manager_observation_.Reset();
-  ui_manager_observation_.Observe(ui_manager);
-}
-
-void SystemWebAppManager::ConnectSubsystems(web_app::WebAppProvider* provider) {
-  DCHECK(provider);
-  DCHECK(!provider_);
-  provider_ = provider;
-
-  SetSubsystems(&provider->externally_managed_app_manager(),
-                &provider->registrar(), &provider->sync_bridge(),
-                &provider->ui_manager(), &provider->policy_manager());
-
-  ConnectProviderToSystemWebAppDelegateMap(&system_app_delegates_);
-}
-
 void SystemWebAppManager::ScheduleStart() {
-  CheckIsConnected();
-
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&SystemWebAppManager::Start, GetWeakPtr()));
 }
 
 void SystemWebAppManager::Start() {
+  DCHECK(provider_->is_registry_ready());
+
+  // `Start` can be called multiple times in tests.
+  ui_manager_observation_.Reset();
+  ui_manager_observation_.Observe(&provider_->ui_manager());
+
+  ConnectProviderToSystemWebAppDelegateMap(&system_app_delegates_);
+
   const base::TimeTicks install_start_time = base::TimeTicks::Now();
 
 #if DCHECK_IS_ON()
@@ -382,7 +344,7 @@ void SystemWebAppManager::Start() {
   }
 
   const auto& disabled_system_apps =
-      web_app_policy_manager_->GetDisabledSystemWebApps();
+      provider_->policy_manager().GetDisabledSystemWebApps();
 
   for (const auto& app : system_app_delegates_) {
     bool is_disabled = base::Contains(disabled_system_apps, app.first);
@@ -405,7 +367,7 @@ void SystemWebAppManager::Start() {
     install_options_list.clear();
   }
 
-  externally_managed_app_manager_->SynchronizeInstalledApps(
+  provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list),
       web_app::ExternalInstallSource::kSystemInstalled,
       base::BindOnce(&SystemWebAppManager::OnAppsSynchronized, GetWeakPtr(),
@@ -431,14 +393,18 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
 
 absl::optional<web_app::AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemWebAppType type) const {
-  return web_app::GetAppIdForSystemApp(*registrar_, system_app_delegates_,
-                                       type);
+  if (!provider_->is_registry_ready())
+    return absl::nullopt;
+  return web_app::GetAppIdForSystemApp(provider_->registrar(),
+                                       system_app_delegates_, type);
 }
 
 absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     const web_app::AppId& app_id) const {
-  return web_app::GetSystemAppTypeForAppId(*registrar_, system_app_delegates_,
-                                           app_id);
+  if (!provider_->is_registry_ready())
+    return absl::nullopt;
+  return web_app::GetSystemAppTypeForAppId(provider_->registrar(),
+                                           system_app_delegates_, app_id);
 }
 
 const SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
@@ -459,7 +425,9 @@ std::vector<web_app::AppId> SystemWebAppManager::GetAppIds() const {
 }
 
 bool SystemWebAppManager::IsSystemWebApp(const web_app::AppId& app_id) const {
-  return web_app::IsSystemWebApp(*registrar_, system_app_delegates_, app_id);
+  DCHECK(provider_->is_registry_ready());
+  return web_app::IsSystemWebApp(provider_->registrar(), system_app_delegates_,
+                                 app_id);
 }
 
 const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
@@ -508,8 +476,11 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
   if (!HasSystemWebAppScheme(url))
     return absl::nullopt;
 
+  if (!provider_->is_registry_ready())
+    return absl::nullopt;
+
   absl::optional<web_app::AppId> app_id =
-      registrar_->FindAppWithUrlInScope(url);
+      provider_->registrar().FindAppWithUrlInScope(url);
   if (!app_id.has_value())
     return absl::nullopt;
 
@@ -670,7 +641,8 @@ void SystemWebAppManager::OnAppsSynchronized(
   // May be called more than once in tests.
   if (!on_apps_synchronized_->is_signaled()) {
     on_apps_synchronized_->Signal();
-    web_app_policy_manager_->OnDisableListPolicyChanged();
+    DCHECK(provider_->is_registry_ready());
+    provider_->policy_manager().OnDisableListPolicyChanged();
     // TODO(http://crbug/1173187): Don't create SWA background tasks that are
     // associated with a disabled SWA.
   }
@@ -753,15 +725,9 @@ bool SystemWebAppManager::CheckAndIncrementRetryAttempts() {
   return true;
 }
 
-void SystemWebAppManager::CheckIsConnected() const {
-  DCHECK(provider_) << "Attempted to access SystemWebAppManager while "
-                       "it is is not connected to WebAppProvider.";
-}
-
 void SystemWebAppManager::ConnectProviderToSystemWebAppDelegateMap(
     const SystemWebAppDelegateMap* system_web_apps_delegate_map) const {
-  DCHECK(provider_);
-
+  // TODO(crbug.com/1377190): Consider DCHECKing that provider_ is ready.
   provider_->manifest_update_manager().SetSystemWebAppDelegateMap(
       system_web_apps_delegate_map);
   provider_->policy_manager().SetSystemWebAppDelegateMap(

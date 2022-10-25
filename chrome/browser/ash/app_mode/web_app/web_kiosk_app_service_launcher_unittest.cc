@@ -140,11 +140,6 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
                   install_result_code_, app_id);
             }));
 
-    // Web app system checks for system web app info before launching.
-    system_web_app_manager()->SetSubsystems(
-        &externally_managed_app_manager(), &app_registrar(), &sync_bridge(),
-        &ui_manager(), /*web_app_policy_manager=*/nullptr);
-
     web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
         base::BindLambdaForTesting(
             [this](apps::AppLaunchParams&& params) -> content::WebContents* {

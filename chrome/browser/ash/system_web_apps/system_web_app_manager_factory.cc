@@ -49,12 +49,7 @@ KeyedService* SystemWebAppManagerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(web_app::WebAppProviderFactory::IsServiceCreatedForProfile(profile));
 
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-  DCHECK(provider);
-
   SystemWebAppManager* swa_manager = new SystemWebAppManager(profile);
-  swa_manager->ConnectSubsystems(provider);
   swa_manager->ScheduleStart();
 
   return swa_manager;

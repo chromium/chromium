@@ -8,9 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,13 +26,7 @@ std::unique_ptr<KeyedService> TestSystemWebAppManager::BuildDefault(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-  DCHECK(provider);
-
   auto test_swa_manager = std::make_unique<TestSystemWebAppManager>(profile);
-
-  test_swa_manager->ConnectSubsystems(provider);
 
   // We don't auto-install system web apps in `TestingProfile`. Tests must
   // opt-in to call `ScheduleStart()` or `Start()` when they need.

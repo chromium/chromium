@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_MANAGER_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_MANAGER_H_
 
+#include <memory>
 #include <string>
-#include <vector>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/version.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "url/gurl.h"
 
 class KeyedService;
 class Profile;

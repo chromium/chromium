@@ -192,10 +192,6 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
     web_app_policy_manager().SetSystemWebAppDelegateMap(
         &test_system_web_app_manager_->system_app_delegates());
 
-    test_system_web_app_manager_->SetSubsystems(
-        &externally_managed_app_manager(), &provider().registrar(),
-        &provider().sync_bridge(), &ui_manager(), &web_app_policy_manager());
-
     externally_installed_app_prefs_ =
         std::make_unique<web_app::ExternallyInstalledWebAppPrefs>(
             profile()->GetPrefs());
@@ -1066,9 +1062,6 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   auto unsynced_system_web_app_manager =
       std::make_unique<TestSystemWebAppManager>(profile());
 
-  unsynced_system_web_app_manager->SetSubsystems(
-      &externally_managed_app_manager(), &provider().registrar(),
-      &provider().sync_bridge(), &ui_manager(), &web_app_policy_manager());
   {
     SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
@@ -1478,10 +1471,6 @@ TEST_F(SystemWebAppManagerTest,
   // Creates a new SystemWebAppManager without the previously installed App.
   auto unsynced_system_web_app_manager =
       std::make_unique<TestSystemWebAppManager>(profile());
-
-  unsynced_system_web_app_manager->SetSubsystems(
-      &externally_managed_app_manager(), &provider().registrar(),
-      &provider().sync_bridge(), &ui_manager(), &web_app_policy_manager());
 
   // Before Apps are synchronized, WebAppRegistry should know about the App.
   const web_app::WebApp* web_app =
