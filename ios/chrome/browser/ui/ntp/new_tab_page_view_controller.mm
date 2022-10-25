@@ -549,8 +549,10 @@
                   willDecelerate:(BOOL)decelerate {
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
-  [self.feedMetricsRecorder
-      recordFeedScrolled:scrollView.contentOffset.y - self.scrollStartPosition];
+  if (self.isFeedVisible) {
+    [self.feedMetricsRecorder recordFeedScrolled:scrollView.contentOffset.y -
+                                                 self.scrollStartPosition];
+  }
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView*)scrollView {
@@ -876,7 +878,7 @@
 
 // Handles device rotation.
 - (void)deviceOrientationDidChange {
-  if (self.viewDidAppear) {
+  if (self.viewDidAppear && self.isFeedVisible) {
     [self.feedMetricsRecorder
         recordDeviceOrientationChanged:[[UIDevice currentDevice] orientation]];
   }
