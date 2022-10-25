@@ -19,6 +19,8 @@ source_set("signin") {
     "authentication_service_factory.h",
     "authentication_service_factory.mm",
     "authentication_service_observer.h",
+    "authentication_service_observer_bridge.h",
+    "authentication_service_observer_bridge.mm",
     "chrome_account_manager_service.h",
     "chrome_account_manager_service.mm",
     "chrome_account_manager_service_factory.h",
@@ -253,6 +255,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_consistency_browser_agent_unittest.mm",
+    "authentication_service_observer_bridge_unittest.mm",
     "authentication_service_unittest.mm",
     "chrome_account_manager_service_observer_bridge_unittest.mm",
     "chrome_account_manager_service_unittest.mm",
