@@ -40,13 +40,15 @@ std::string ConvertSearchRequestToJson(
 os_feedback_ui::mojom::HelpContentType ToHelpContentType(
     const std::string& result_type);
 
-// Parse the |json| string and populate |search_response| with HelpContents and
-// totalResults.
+// Parse the |search_result| json string and populate |search_response| with
+// HelpContents and totalResults. Items having different languages from the
+// |app_locale| will be dropped. First |max_results| items will be returned.
 //
 // Sample json string:
 //  {
 //   "resource": [
 //     {
+//       "language": "en",
 //       "url":
 //       "/chromebook/thread/110208459?hl=en-gb",
 //       "title": "Bluetooth Headphones",
@@ -59,6 +61,8 @@ os_feedback_ui::mojom::HelpContentType ToHelpContentType(
 //   "totalResults": "2415"
 // }
 void PopulateSearchResponse(
+    const std::string& app_locale,
+    const uint32_t max_results,
     const base::Value& search_result,
     os_feedback_ui::mojom::SearchResponsePtr& search_response);
 
@@ -86,12 +90,14 @@ class HelpContentProvider : os_feedback_ui::mojom::HelpContentProvider {
  private:
   // Call when the |url_loader| receives response from the search service.
   void OnHelpContentSearchResponse(
+      const uint32_t max_results,
       GetHelpContentsCallback callback,
       std::unique_ptr<network::SimpleURLLoader> url_loader,
       std::unique_ptr<std::string> response_body);
   // Called when the data decoder service provides parsed JSON data for a
   // server response.
-  void OnResponseJsonParsed(GetHelpContentsCallback callback,
+  void OnResponseJsonParsed(const uint32_t max_results,
+                            GetHelpContentsCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);
 
   std::string app_locale_;

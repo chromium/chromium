@@ -40,11 +40,19 @@ using os_feedback_ui::mojom::SearchResponsePtr;
 
 constexpr char kFakeResponse[] = R"({"resource": [
     {
+      "language": "en-US",
       "url": "/chromebook/fake1?hl=en-gb",
       "title": "fake-title-1",
       "resultType": "CT_ANSWER"
     },
     {
+      "language": "zh-Hans",
+      "resultType": "CT_ANSWER",
+      "title": "将Chromecast 与Chromebook 搭配使用",
+      "url": "/chromebook/answer/3289520?hl=zh-Hans"
+    },
+    {
+      "language": "en-gb",
       "url": "https://support.google.com/chromebook/fake2?hl=en-gb",
       "title": "fake-title-2",
       "resultType": "CT_SUPPORT_FORUM_THREAD"
@@ -88,7 +96,8 @@ class HelpContentProviderTest : public testing::Test {
                                     SearchResponsePtr& search_response) {
     absl::optional<base::Value> search_result = base::JSONReader::Read(json);
     if (search_result) {
-      PopulateSearchResponse(search_result.value(), search_response);
+      PopulateSearchResponse("en-gb", 5u, search_result.value(),
+                             search_response);
     }
   }
 
@@ -122,7 +131,7 @@ TEST_F(HelpContentProviderTest, ConvertToHelpContentType) {
 TEST_F(HelpContentProviderTest, ConvertSearchRequestToJson) {
   auto request = SearchRequest::New(u"how do", 10);
   EXPECT_EQ(R"({"helpcenter":"chromeos","language":"zh",)"
-            R"("max_results":"10","query":"how do"})",
+            R"("max_results":"20","query":"how do"})",
             ConvertSearchRequestToJson("zh", request));
 }
 
