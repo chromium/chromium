@@ -5718,7 +5718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VTVDA.HardwareAccelerated"
-    enum="BooleanHardwareAccelerated" expires_after="2022-12-01">
+    enum="BooleanHardwareAccelerated" expires_after="2023-10-01">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
