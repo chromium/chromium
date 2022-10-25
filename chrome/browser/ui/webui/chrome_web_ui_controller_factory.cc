@@ -1659,7 +1659,8 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kOsUISystemURL),
       GURL(chrome::kOsUIHelpAppURL),
       GURL(chrome::kOsUINetExportURL),
-      GURL(chrome::kOsUILauncherInternalsURL)};
+      GURL(chrome::kOsUILauncherInternalsURL),
+      GURL(chrome::kOsUIExtensionsInternalsURL)};
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::vector<GURL>{GURL(chrome::kChromeUIAboutURL),
                            GURL(chrome::kChromeUIComponentsUrl),

@@ -402,6 +402,7 @@ const char kOsUICreditsURL[] = "os://credits";
 const char kOsUIDeviceLogURL[] = "os://device-log";
 const char kOsUIDriveInternalsURL[] = "os://drive-internals";
 const char kOsUIEmojiPickerURL[] = "os://emoji-picker";
+const char kOsUIExtensionsInternalsURL[] = "os://extensions-internals";
 const char kOsUIGpuURL[] = "os://gpu";
 const char kOsUIHistogramsURL[] = "os://histograms";
 const char kOsUIInvalidationsURL[] = "os://invalidations";

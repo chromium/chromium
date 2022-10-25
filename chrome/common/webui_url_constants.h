@@ -371,6 +371,7 @@ extern const char kOsUICreditsURL[];
 extern const char kOsUIDeviceLogURL[];
 extern const char kOsUIDriveInternalsURL[];
 extern const char kOsUIEmojiPickerURL[];
+extern const char kOsUIExtensionsInternalsURL[];
 extern const char kOsUIGpuURL[];
 extern const char kOsUIHistogramsURL[];
 extern const char kOsUIInvalidationsURL[];
