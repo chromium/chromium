@@ -23,6 +23,9 @@ BASE_DECLARE_FEATURE(kJourneys);
 // Enables labelling of Journeys in UI.
 BASE_DECLARE_FEATURE(kJourneysLabels);
 
+// Enables images for Journeys in UI.
+BASE_DECLARE_FEATURE(kJourneysImages);
+
 // Enables persisting and using persisted clusters.
 BASE_DECLARE_FEATURE(kPersistedClusters);
 

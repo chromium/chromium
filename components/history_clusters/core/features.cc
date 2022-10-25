@@ -33,6 +33,10 @@ BASE_FEATURE(kJourneysLabels,
              "JourneysLabel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kJourneysImages,
+             "JourneysImages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPersistedClusters,
              "HistoryClustersPersistedClusters",
              base::FEATURE_DISABLED_BY_DEFAULT);

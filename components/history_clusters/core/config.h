@@ -89,6 +89,10 @@ struct Config {
   // Does nothing if `should_label_clusters` is false.
   bool labels_from_entities = false;
 
+  // Whether to attempt to provide images for eligible Journeys (so far just
+  // a proof of concept implementation for Entities only).
+  bool images = false;
+
   // The `kPersistedClusters` feature and child params.
 
   // If enabled, updating clusters will persist the results to the history DB

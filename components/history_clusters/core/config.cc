@@ -90,6 +90,9 @@ Config::Config() {
         labels_from_entities);
   }
 
+  // The `kJourneysImages` feature.
+  { images = base::FeatureList::IsEnabled(internal::kJourneysImages); }
+
   // The `kPersistedClusters` feature and child params.
   {
     persist_clusters_in_history_db =
