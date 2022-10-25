@@ -61,11 +61,15 @@ class UnifiedSideSearchController
 
   base::WeakPtr<UnifiedSideSearchController> GetWeakPtr();
 
+  // Gets the URL needed to open the current side search side panel contents
+  // into a new tab.
+  GURL GetOpenInNewTabURL() const;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
  private:
   BrowserView* GetBrowserView() const;
-  Profile* GetProfile();
+  Profile* GetProfile() const;
 
   // Create a WebView to host the side search WebContents.
   std::unique_ptr<views::View> GetSideSearchView();

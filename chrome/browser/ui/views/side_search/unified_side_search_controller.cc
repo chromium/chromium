@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
@@ -19,6 +20,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
@@ -51,6 +53,17 @@ class SideSearchWebView : public views::WebView {
   }
 };
 }  // namespace
+
+GURL UnifiedSideSearchController::GetOpenInNewTabURL() const {
+  auto* active_contents = GetBrowserView()->GetActiveWebContents();
+  DCHECK(active_contents);
+  auto* helper = SideSearchTabContentsHelper::FromWebContents(active_contents);
+  DCHECK(helper);
+  const auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(GetProfile());
+  return template_url_service->RemoveSideSearchParamFromURL(
+      helper->last_search_url().value());
+}
 
 UnifiedSideSearchController::UnifiedSideSearchController(
     content::WebContents* web_contents)
@@ -220,7 +233,7 @@ BrowserView* UnifiedSideSearchController::GetBrowserView() const {
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
-Profile* UnifiedSideSearchController::GetProfile() {
+Profile* UnifiedSideSearchController::GetProfile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
@@ -256,6 +269,8 @@ void UnifiedSideSearchController::UpdateSidePanelRegistry(bool is_available) {
         SidePanelEntry::Id::kSideSearch, GetSideSearchName(),
         GetSideSearchIcon(),
         base::BindRepeating(&UnifiedSideSearchController::GetSideSearchView,
+                            base::Unretained(this)),
+        base::BindRepeating(&UnifiedSideSearchController::GetOpenInNewTabURL,
                             base::Unretained(this)));
     entry->AddObserver(this);
     registry->Register(std::move(entry));
