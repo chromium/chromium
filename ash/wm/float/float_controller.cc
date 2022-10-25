@@ -24,14 +24,20 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
 
 namespace ash {
 namespace {
+
+constexpr base::TimeDelta kUntuckWindowAnimationDuration =
+    base::Milliseconds(400);
 
 // Disables the window's position auto management and returns its original
 // value.
@@ -45,14 +51,15 @@ bool DisableAndGetOriginalPositionAutoManaged(aura::Window* window) {
   return original_position_auto_managed;
 }
 
-// Updates `window`'s bounds while in tablet mode. Note that this uses a bounds
-// animation which can be expensive. Called after a drag is completed or
-// switching from clamshell to tablet or vice versa.
-void UpdateWindowBoundsForTablet(aura::Window* window) {
+// Updates `window`'s bounds while in tablet mode, using the given
+// `animation_type`. Called after a drag is completed, switching between
+// clamshell to tablet, and to tuck and untuck the window.
+void UpdateWindowBoundsForTablet(
+    aura::Window* window,
+    WindowState::BoundsChangeAnimationType animation_type) {
   WindowState* window_state = WindowState::Get(window);
   DCHECK(window_state);
-  TabletModeWindowState::UpdateWindowPosition(
-      window_state, WindowState::BoundsChangeAnimationType::kAnimate);
+  TabletModeWindowState::UpdateWindowPosition(window_state, animation_type);
 }
 
 // Hides the given floated window.
@@ -117,7 +124,31 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     scoped_window_tucker_->AnimateTuck(left);
   }
 
-  void MaybeUntuckWindow() { scoped_window_tucker_.reset(); }
+  void MaybeUntuckWindow() {
+    // Save the initial tucked window bounds.
+    const gfx::RectF initial_bounds(floated_window_->bounds());
+
+    // `scoped_window_tucker_` must be destroyed before
+    // `GetPreferredFloatWindowTabletBounds()` is called.
+    scoped_window_tucker_.reset();
+
+    // Animate to the final untucked window bounds.
+    UpdateWindowBoundsForTablet(floated_window_,
+                                WindowState::BoundsChangeAnimationType::kNone);
+    const gfx::Transform transform = gfx::TransformBetweenRects(
+        gfx::RectF(floated_window_->bounds()), initial_bounds);
+
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(base::TimeDelta())
+        .SetTransform(floated_window_, transform)
+        .Then()
+        .SetDuration(kUntuckWindowAnimationDuration)
+        .SetTransform(floated_window_, gfx::Transform(),
+                      gfx::Tween::ACCEL_5_70_DECEL_90);
+  }
 
   views::Widget* GetTuckHandleWidget() {
     DCHECK(scoped_window_tucker_);
@@ -272,7 +303,6 @@ void FloatController::MaybeUntuckFloatedWindowForTablet(
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(floated_window_info);
   floated_window_info->MaybeUntuckWindow();
-  UpdateWindowBoundsForTablet(floated_window);
 }
 
 bool FloatController::IsFloatedWindowTuckedForTablet(
@@ -319,7 +349,8 @@ void FloatController::OnDragCompletedForTablet(
                            : MagnetismCorner::kBottomRight;
   }
   floated_window_info->set_magnetism_corner(magnetism_corner);
-  UpdateWindowBoundsForTablet(floated_window);
+  UpdateWindowBoundsForTablet(floated_window,
+                              WindowState::BoundsChangeAnimationType::kAnimate);
 }
 
 void FloatController::OnFlingOrSwipeForTablet(aura::Window* floated_window,
