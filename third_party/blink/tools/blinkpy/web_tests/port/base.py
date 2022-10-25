@@ -1206,6 +1206,15 @@ class Port(object):
         if not tot_pix_min:
             tot_pix_min = tot_pix_max
 
+        for flag in reversed(self._specified_additional_driver_flags() +
+                             self.args_for_test(test_name)):
+            if "--force-device-scale-factor" in flag:
+                _, scale_factor = flag.split("=")
+                dsf = float(scale_factor)
+                tot_pix_min = float(tot_pix_min) * dsf * dsf
+                tot_pix_max = float(tot_pix_max) * dsf * dsf
+                break
+
         return ([int(max_diff_min),
                  int(max_diff_max)], [int(tot_pix_min),
                                       int(tot_pix_max)])
