@@ -168,12 +168,33 @@ TEST_F(TailoredSecurityTabHelperTest,
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(&web_state_);
 
-  // When a sync notification request is sent and the user is synced, the
-  // SafeBrowsingState should automatically change to Standard Protection.
+  // When a nonsynced in-flow message prompt is triggered, the message prompt
+  // should show for the WebState that is currently shown.
+  web_state_.WasShown();
   tab_helper->OnTailoredSecurityBitChanged(/*enabled=*/true,
                                            base::Time::NowFromSystemTime());
   EXPECT_TRUE(infobar_manager->infobar_count() == 1);
   EXPECT_TRUE(chrome_browser_state_->GetPrefs()->GetBoolean(
+      prefs::kAccountTailoredSecurityShownNotification));
+}
+
+// Tests that an infobar is not created when the WebState is hidden.
+TEST_F(TailoredSecurityTabHelperTest, InfobarNotCreatedOnHiddenWebState) {
+  MockTailoredSecurityService mock_service;
+  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
+  InfoBarManagerImpl::CreateForWebState(&web_state_);
+  TailoredSecurityTabHelper* tab_helper =
+      TailoredSecurityTabHelper::FromWebState(&web_state_);
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(&web_state_);
+
+  // When a nonsynced in-flow message prompt is triggered, the message prompt
+  // should not show for the WebState that is currently hidden.
+  web_state_.WasHidden();
+  tab_helper->OnTailoredSecurityBitChanged(/*enabled=*/true,
+                                           base::Time::NowFromSystemTime());
+  EXPECT_TRUE(infobar_manager->infobar_count() == 0);
+  EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
 
@@ -188,10 +209,27 @@ TEST_F(TailoredSecurityTabHelperTest, EarlyReturnOnTailoredSecurityBitChanged) {
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(&web_state_);
 
-  // When a sync notification request is sent and the user is synced, the
-  // SafeBrowsingState should automatically change to Standard Protection.
   tab_helper->OnTailoredSecurityBitChanged(/*enabled=*/false,
                                            base::Time::NowFromSystemTime());
+  EXPECT_TRUE(infobar_manager->infobar_count() == 0);
+  EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
+      prefs::kAccountTailoredSecurityShownNotification));
+}
+
+// Tests that an infobar isn't created when the time difference is greater than
+// kThresholdForInFlowNotificationMinutes.
+TEST_F(TailoredSecurityTabHelperTest,
+       TailoredSecurityBitChangedAfterFiveMinutes) {
+  MockTailoredSecurityService mock_service;
+  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
+  InfoBarManagerImpl::CreateForWebState(&web_state_);
+  TailoredSecurityTabHelper* tab_helper =
+      TailoredSecurityTabHelper::FromWebState(&web_state_);
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(&web_state_);
+
+  tab_helper->OnTailoredSecurityBitChanged(
+      /*enabled=*/true, base::Time::NowFromSystemTime() - base::Minutes(6));
   EXPECT_TRUE(infobar_manager->infobar_count() == 0);
   EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));

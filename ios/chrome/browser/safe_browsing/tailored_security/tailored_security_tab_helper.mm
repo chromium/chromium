@@ -67,10 +67,12 @@ void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(
                       identity_manager, browser_state->GetPrefs()))
     return;
 
-  browser_state->GetPrefs()->SetBoolean(
-      prefs::kAccountTailoredSecurityShownNotification, true);
-  if (base::Time::NowFromSystemTime() - previous_update <=
-      base::Minutes(safe_browsing::kThresholdForInFlowNotificationMinutes)) {
+  if (base::Time::Now() - previous_update <=
+          base::Minutes(
+              safe_browsing::kThresholdForInFlowNotificationMinutes) &&
+      web_state_->IsVisible()) {
+    browser_state->GetPrefs()->SetBoolean(
+        prefs::kAccountTailoredSecurityShownNotification, true);
     ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
                     kUnconsentedAndFlowEnabled);
   }

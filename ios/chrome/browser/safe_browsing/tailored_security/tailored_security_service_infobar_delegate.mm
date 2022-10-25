@@ -57,7 +57,8 @@ std::u16string TailoredSecurityServiceInfobarDelegate::GetDescription() const {
       return l10n_util::GetStringUTF16(
           IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION);
     case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
-      return std::u16string();
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_TAILORED_SECURITY_UNCONSENTED_ENABLE_MESSAGE_DESCRIPTION);
   }
 }
 
