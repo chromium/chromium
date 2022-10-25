@@ -184,6 +184,13 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
                             action:@selector(keyCommand_showPreviousTab)];
 }
 
++ (UIKeyCommand*)cr_showBookmarks {
+  return [self cr_commandWithInput:@"b"
+                     modifierFlags:AltCommand
+                            action:@selector(keyCommand_showBookmarks)
+                           titleID:IDS_IOS_KEYBOARD_SHOW_BOOKMARKS];
+}
+
 + (UIKeyCommand*)cr_addToBookmarks {
   return [self cr_commandWithInput:@"d"
                      modifierFlags:Command

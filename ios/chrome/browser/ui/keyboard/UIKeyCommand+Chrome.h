@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showTab6;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showTab7;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showLastTab;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_showBookmarks;
 
 // Returns a symbolic description of the key command. For example: ⇧⌘T.
 @property(nonatomic, readonly) NSString* cr_symbolicDescription;

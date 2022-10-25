@@ -1270,6 +1270,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS" desc="In Title Case: Title of the keyboard shortcut that bookmarks the current page. [Length: 20 em] [iOS only]">
         Add to Bookmarks
       </message>
+      <message name="IDS_IOS_KEYBOARD_SHOW_BOOKMARKS" desc="In Title Case: Title of the keyboard shortcut that shows the list of bookmarks. [iOS only]">
+        Show Bookmarks
+      </message>
       <message name="IDS_IOS_KEYBOARD_HISTORY_BACK" desc="Title of the keyboard shortcut to go back in the history menu. [Length: 20 em] [iOS only]">
         Back
       </message>

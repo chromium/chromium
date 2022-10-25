@@ -115,6 +115,7 @@
       UIKeyCommand.cr_showPreviousTab_2,
       UIKeyCommand.cr_showNextTab_3,
       UIKeyCommand.cr_showPreviousTab_3,
+      UIKeyCommand.cr_showBookmarks,
       UIKeyCommand.cr_addToBookmarks,
       UIKeyCommand.cr_reload,
       UIKeyCommand.cr_goBack,
@@ -260,6 +261,10 @@
   } else {
     webStateList->ActivateWebStateAt(webStateList->count() - 1);
   }
+}
+
+- (void)keyCommand_showBookmarks {
+  [_browserCoordinatorCommandsHandler showBookmarksManager];
 }
 
 - (void)keyCommand_addToBookmarks {
