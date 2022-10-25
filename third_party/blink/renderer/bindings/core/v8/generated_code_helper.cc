@@ -394,10 +394,16 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext,
                                  class_like_name, property_name);
 
-  // [CEReactions]
-  CEReactionsScope ce_reactions_scope;
-
   v8::Local<v8::Object> v8_receiver = info.This();
+  v8::Local<v8::Context> receiver_context =
+      v8_receiver->GetCreationContextChecked();
+  ScriptState* receiver_script_state = ScriptState::From(receiver_context);
+  ExecutionContext* receiver_execution_context =
+      ExecutionContext::From(receiver_script_state);
+
+  // [CEReactions]
+  CEReactionsScope ce_reactions_scope(receiver_execution_context);
+
   CSSStyleDeclaration* blink_receiver =
       V8CSSStyleDeclaration::ToWrappableUnsafe(v8_receiver);
   v8::Local<v8::Value> v8_property_value = info[0];
@@ -406,9 +412,6 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (UNLIKELY(exception_state.HadException())) {
     return;
   }
-  v8::Local<v8::Context> receiver_context =
-      v8_receiver->GetCreationContextChecked();
-  ScriptState* receiver_script_state = ScriptState::From(receiver_context);
   // TODO(andruud): AnonymousNamedSetter is not the best function.  Change the
   // function to a more appropriate one.  It's better to pass |exception_state|
   // as the implementation of AnonymousNamedSetter needs it.
@@ -433,9 +436,17 @@ void PerformAttributeSetCEReactionsReflect(
     return;
   }
 
-  CEReactionsScope ce_reactions_scope;
+  v8::Local<v8::Object> v8_receiver = info.This();
+  v8::Local<v8::Context> receiver_context =
+      v8_receiver->GetCreationContextChecked();
+  ScriptState* receiver_script_state = ScriptState::From(receiver_context);
+  ExecutionContext* receiver_execution_context =
+      ExecutionContext::From(receiver_script_state);
 
-  Element* blink_receiver = V8Element::ToWrappableUnsafe(info.This());
+  // [CEReactions]
+  CEReactionsScope ce_reactions_scope(receiver_execution_context);
+
+  Element* blink_receiver = V8Element::ToWrappableUnsafe(v8_receiver);
   auto&& arg_value = NativeValueTraits<IDLType>::NativeValue(isolate, info[0],
                                                              exception_state);
   if (UNLIKELY(exception_state.HadException()))
