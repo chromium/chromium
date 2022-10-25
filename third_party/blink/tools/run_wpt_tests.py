@@ -316,6 +316,12 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                             default=True,
                             help=('Use this tag to not run wptrunner in'
                                   'headless mode'))
+        # TODO(crbug.com/1377834) show results in browser in future.
+        # currently this flag is no-op
+        parser.add_argument('--show-results-in-browser',
+                            action='store_true',
+                            help='adding this tag will show results in'
+                            'the browser')
 
     def add_binary_arguments(self, parser):
         group = parser.add_argument_group(
