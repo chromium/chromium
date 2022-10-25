@@ -459,7 +459,6 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
   // Assume we should commit the name change unless `HandleKeyEvent` detects the
   // user pressed the escape key.
   should_commit_name_changes_ = true;
-  name_view_->UpdateViewAppearance();
 
   // Hide the hover container when we are modifying the template name.
   hover_container_->SetVisible(false);
@@ -506,7 +505,6 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
   DCHECK_EQ(observed_view, name_view_);
   is_template_name_being_modified_ = false;
   defer_select_all_ = false;
-  name_view_->UpdateViewAppearance();
 
   // Collapse the whitespace for the text first before comparing it or trying to
   // commit the name in order to prevent duplicate name issues.

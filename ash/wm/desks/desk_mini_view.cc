@@ -505,7 +505,6 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   // Assume we should commit the name change unless HandleKeyEvent detects the
   // user pressed the escape key.
   should_commit_name_changes_ = true;
-  desk_name_view_->UpdateViewAppearance();
 
   // Set the Overview highlight to move focus with the DeskNameView.
   UpdateOverviewHighlightForFocus(desk_name_view_);
@@ -517,7 +516,6 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
 void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   DCHECK_EQ(observed_view, desk_name_view_);
   defer_select_all_ = false;
-  desk_name_view_->UpdateViewAppearance();
 
   // If `should_commit_name_changes_` is true, then the view was blurred from
   // the user pressing a key other than escape. In that case we should set the

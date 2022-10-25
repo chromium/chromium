@@ -50,14 +50,6 @@ DesksTextfield::~DesksTextfield() = default;
 // static
 constexpr size_t DesksTextfield::kMaxLength;
 
-void DesksTextfield::UpdateViewAppearance() {
-  background()->SetNativeControlColor(GetBackgroundColor());
-  // Paint the whole view to update the background. The `SchedulePaint` in
-  // `UpdateFocusRingState` will only repaint the focus ring.
-  SchedulePaint();
-  UpdateFocusRingState();
-}
-
 gfx::Size DesksTextfield::CalculatePreferredSize() const {
   const std::u16string& text = GetText();
   int width = 0;
@@ -126,11 +118,13 @@ ui::Cursor DesksTextfield::GetCursor(const ui::MouseEvent& event) {
 void DesksTextfield::OnFocus() {
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
   views::Textfield::OnFocus();
+  UpdateViewAppearance();
 }
 
 void DesksTextfield::OnBlur() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   views::Textfield::OnBlur();
+  UpdateViewAppearance();
 
   // Avoid having the focus restored to the same DeskNameView when the desk bar
   // widget is refocused. Use a post task to avoid calling
@@ -181,6 +175,14 @@ void DesksTextfield::UpdateFocusRingState() {
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   DCHECK(focus_ring);
   focus_ring->SchedulePaint();
+}
+
+void DesksTextfield::UpdateViewAppearance() {
+  background()->SetNativeControlColor(GetBackgroundColor());
+  // Paint the whole view to update the background. The `SchedulePaint` in
+  // `UpdateFocusRingState` will only repaint the focus ring.
+  SchedulePaint();
+  UpdateFocusRingState();
 }
 
 SkColor DesksTextfield::GetBackgroundColor() const {
