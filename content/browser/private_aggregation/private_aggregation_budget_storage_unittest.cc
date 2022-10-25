@@ -177,6 +177,26 @@ TEST_F(PrivateAggregationBudgetStorageTest, DatabaseReopened_DataPersisted) {
 }
 
 TEST_F(PrivateAggregationBudgetStorageTest,
+       DatabaseClosedBeforeFlush_DataPersisted) {
+  OpenDatabaseAndWait();
+  ASSERT_TRUE(storage());
+
+  // The database should start empty.
+  EXPECT_FALSE(storage()->budgets_data()->TryGetData(kExampleSerializedOrigin,
+                                                     /*data=*/nullptr));
+
+  storage()->budgets_data()->UpdateData(kExampleSerializedOrigin,
+                                        proto::PrivateAggregationBudgets());
+  // Not waiting for DB flush
+  CloseDatabase();
+
+  OpenDatabaseAndWait();
+
+  EXPECT_TRUE(storage()->budgets_data()->TryGetData(kExampleSerializedOrigin,
+                                                    /*data=*/nullptr));
+}
+
+TEST_F(PrivateAggregationBudgetStorageTest,
        InMemoryDatabaseReopened_DataNotPersisted) {
   OpenDatabaseAndWait(/*exclusively_run_in_memory=*/true);
   ASSERT_TRUE(storage());

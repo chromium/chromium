@@ -138,6 +138,11 @@ void PrivateAggregationBudgetStorage::Shutdown() {
 
   // Guard against `Shutdown()` being called multiple times.
   if (db_) {
+    // Schedules `budgets_table_` tasks on the DB sequence for all pending
+    // updates. Since they are scheduled before the `DeleteSoon()` commands, the
+    // tasks will be able to complete before `budgets_table_` gets destroyed.
+    budgets_data_.FlushDataToDisk();
+
     // The following protects `table_manager_` from holding a dangling pointer
     // to `db_`. This is possible in the case that the
     // PrivateAggregationBudgeter is deleted before `this` is finished

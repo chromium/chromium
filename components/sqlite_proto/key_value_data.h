@@ -41,7 +41,9 @@ struct FakeCompare {
 // KeyValueTable<T>. The current implementation caches all the
 // data in the memory. The cache size is limited by the |max_num_entries|
 // parameter, using the Compare function to decide which entries should
-// be evicted.
+// be evicted. The data is written back to disk periodically and some updates
+// might be lost on shutdown. To prevent this data loss, one can call
+// `FlushDataToDisk()` before shutting down.
 //
 // NOTE: If the data store is larger than the maximum cache size, it
 // will be pruned on construction to satisfy the size invariant specified
@@ -95,6 +97,9 @@ class KeyValueData {
   // Deletes all entries from the database.
   void DeleteAllData();
 
+  // Force cached updates to be immediately flushed to disk.
+  void FlushDataToDisk();
+
  private:
   struct EntryCompare : private Compare {
     bool operator()(const std::pair<std::string, T>& lhs,
@@ -104,8 +109,6 @@ class KeyValueData {
   };
 
   enum class DeferredOperation { kUpdate, kDelete };
-
-  void FlushDataToDisk();
 
   scoped_refptr<TableManager> manager_;
   base::WeakPtr<KeyValueTable<T>> backend_table_;
