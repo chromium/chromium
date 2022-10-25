@@ -24,6 +24,7 @@ class ImageView;
 class Label;
 class ProgressBar;
 class ScrollView;
+class Separator;
 }  // namespace views
 
 namespace ash {
@@ -140,6 +141,13 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Overridden to handle clicks on subclass-specific views.
   virtual void HandleViewClicked(views::View* view);
 
+  // Returns the TriView used for the title row. A label with `string_id` is
+  // added to the CENTER view.
+  std::unique_ptr<TriView> CreateTitleTriView(int string_id);
+
+  // Returns the separator used between the title row and the contents.
+  std::unique_ptr<views::Separator> CreateTitleSeparator();
+
   // Creates and adds subclass-specific buttons to the title row.
   virtual void CreateExtraTitleRowButtons();
 
@@ -154,15 +162,25 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   ScrollBorder* scroll_border_ = nullptr;  // Weak reference
 
-  // The container view for the top-most title row in material design.
+  // The container view for the top-most title row. Owned by views hierarchy.
   TriView* tri_view_ = nullptr;
 
-  // The back button that appears in the material design title row. Not owned.
+  // The back button that appears in the title row. Owned by views hierarchy.
   views::Button* back_button_ = nullptr;
 
+  // The label in the title row. Owned by views hierarchy.
+  views::Label* title_label_ = nullptr;
+
+  // Owned by views hierarchy.
   views::Label* sub_header_label_ = nullptr;
   views::ImageView* sub_header_image_view_ = nullptr;
+
+  // Owned by vector icon cache.
   const gfx::VectorIcon* sub_header_icon_ = nullptr;
+
+  // The separator under the title row. Not all views have a separator. Owned by
+  // views hierarchy.
+  views::Separator* title_separator_ = nullptr;
 
   // Gets modified to false in the constructor of the view if it doesn't have a
   // separator.

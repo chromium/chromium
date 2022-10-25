@@ -12,7 +12,6 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
@@ -44,8 +43,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -57,7 +56,52 @@ namespace {
 // The index of the horizontal rule below the title row.
 const int kTitleRowSeparatorIndex = 1;
 
+constexpr int kQsItemBetweenSpacing = 8;
+
 constexpr int kQsScrollViewCornerRadius = 16;
+
+// Configures the TriView used for the title in a detailed view.
+void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
+  std::unique_ptr<views::BoxLayout> layout;
+
+  switch (container) {
+    case TriView::Container::START:
+    case TriView::Container::END: {
+      const int left_padding = container == TriView::Container::START
+                                   ? kUnifiedBackButtonLeftPadding
+                                   : 0;
+      layout = std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets::TLBR(0, left_padding, 0, 0),
+          features::IsQsRevampEnabled() ? kQsItemBetweenSpacing
+                                        : kUnifiedTopShortcutSpacing);
+      layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kCenter);
+      layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kCenter);
+      break;
+    }
+    case TriView::Container::CENTER:
+      tri_view->SetFlexForContainer(TriView::Container::CENTER, 1.f);
+
+      layout = std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical);
+      layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kCenter);
+      if (features::IsQsRevampEnabled()) {
+        layout->set_cross_axis_alignment(
+            views::BoxLayout::CrossAxisAlignment::kCenter);
+        break;
+      }
+      layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kStretch);
+      break;
+  }
+
+  tri_view->SetContainerLayout(container, std::move(layout));
+  tri_view->SetMinSize(container,
+                       gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
+}
 
 // A view that is used as ScrollView contents. It supports designating some of
 // the children as sticky header rows. The sticky header rows are not scrolled
@@ -321,13 +365,11 @@ void TrayDetailedView::OverrideProgressBarAccessibleName(
 void TrayDetailedView::CreateTitleRow(int string_id) {
   DCHECK(!tri_view_);
 
-  tri_view_ = delegate_->CreateTitleRow(string_id);
+  tri_view_ = AddChildViewAt(CreateTitleTriView(string_id), 0);
 
   back_button_ = delegate_->CreateBackButton(base::BindRepeating(
       &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
   tri_view_->AddView(TriView::Container::START, back_button_);
-
-  AddChildViewAt(tri_view_, 0);
 
   // If this view doesn't have a separator, adds an empty view as a placeholder
   // so that the views below won't move up when the `progress_bar_` becomes
@@ -337,7 +379,8 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
     buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
     AddChildViewAt(std::move(buffer_view), kTitleRowSeparatorIndex);
   } else {
-    AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
+    title_separator_ =
+        AddChildViewAt(CreateTitleSeparator(), kTitleRowSeparatorIndex);
   }
 
   CreateExtraTitleRowButtons();
@@ -370,7 +413,7 @@ void TrayDetailedView::CreateScrollableList() {
   DCHECK(!scroller_);
   auto scroll_content = std::make_unique<ScrollContentsView>(delegate_);
   scroller_ = AddChildView(std::make_unique<views::ScrollView>());
-  scroller_->SetDrawOverflowIndicator(delegate_->IsOverflowIndicatorEnabled());
+  scroller_->SetDrawOverflowIndicator(false);
   scroll_content_ = scroller_->SetContents(std::move(scroll_content));
   // TODO(varkha): Make the sticky rows work with EnableViewPortLayer().
 
@@ -507,6 +550,35 @@ void TrayDetailedView::HandleViewClicked(views::View* view) {
   NOTREACHED();
 }
 
+std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
+  auto tri_view = std::make_unique<TriView>(kUnifiedTopShortcutSpacing);
+
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::START);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::CENTER);
+  ConfigureTitleTriView(tri_view.get(), TriView::Container::END);
+
+  title_label_ = TrayPopupUtils::CreateDefaultLabel();
+  title_label_->SetText(l10n_util::GetStringUTF16(string_id));
+  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  TrayPopupUtils::SetLabelFontList(title_label_,
+                                   TrayPopupUtils::FontStyle::kTitle);
+  tri_view->AddView(TriView::Container::CENTER, title_label_);
+  tri_view->SetContainerVisible(TriView::Container::END, false);
+  tri_view->SetBorder(
+      views::CreateEmptyBorder(kUnifiedDetailedViewTitlePadding));
+
+  return tri_view;
+}
+
+std::unique_ptr<views::Separator> TrayDetailedView::CreateTitleSeparator() {
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kTitleRowProgressBarHeight - views::Separator::kThickness, 0, 0, 0)));
+  return separator;
+}
+
 void TrayDetailedView::CreateExtraTitleRowButtons() {}
 
 void TrayDetailedView::TransitionToMainView() {
@@ -551,9 +623,11 @@ const char* TrayDetailedView::GetClassName() const {
 void TrayDetailedView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  delegate_->UpdateColors();
-
   auto* color_provider = AshColorProvider::Get();
+  if (title_label_) {
+    title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
   if (sub_header_label_) {
     sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
@@ -563,6 +637,9 @@ void TrayDetailedView::OnThemeChanged() {
         *sub_header_icon_,
         color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  }
+  if (title_separator_) {
+    title_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   }
 }
 

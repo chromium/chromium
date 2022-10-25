@@ -14,14 +14,9 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/controls/separator.h"
-#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -29,52 +24,8 @@ using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
-constexpr int kQsItemBetweenSpacing = 8;
-
 // The scroll view's top is flush against the header.
 constexpr auto kQsScrollViewMargin = gfx::Insets::TLBR(0, 16, 16, 16);
-
-void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
-  std::unique_ptr<views::BoxLayout> layout;
-
-  switch (container) {
-    case TriView::Container::START:
-    case TriView::Container::END: {
-      const int left_padding = container == TriView::Container::START
-                                   ? kUnifiedBackButtonLeftPadding
-                                   : 0;
-      layout = std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(0, left_padding, 0, 0),
-          features::IsQsRevampEnabled() ? kQsItemBetweenSpacing
-                                        : kUnifiedTopShortcutSpacing);
-      layout->set_main_axis_alignment(
-          views::BoxLayout::MainAxisAlignment::kCenter);
-      layout->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kCenter);
-      break;
-    }
-    case TriView::Container::CENTER:
-      tri_view->SetFlexForContainer(TriView::Container::CENTER, 1.f);
-
-      layout = std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical);
-      layout->set_main_axis_alignment(
-          views::BoxLayout::MainAxisAlignment::kCenter);
-      if (features::IsQsRevampEnabled()) {
-        layout->set_cross_axis_alignment(
-            views::BoxLayout::CrossAxisAlignment::kCenter);
-        break;
-      }
-      layout->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kStretch);
-      break;
-  }
-
-  tri_view->SetContainerLayout(container, std::move(layout));
-  tri_view->SetMinSize(container,
-                       gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
-}
 
 }  // namespace
 
@@ -90,39 +41,6 @@ void DetailedViewDelegate::TransitionToMainView(bool restore_focus) {
 
 void DetailedViewDelegate::CloseBubble() {
   tray_controller_->CloseBubble();
-}
-
-bool DetailedViewDelegate::IsOverflowIndicatorEnabled() const {
-  return false;
-}
-
-TriView* DetailedViewDelegate::CreateTitleRow(int string_id) {
-  auto* tri_view = new TriView(kUnifiedTopShortcutSpacing);
-
-  ConfigureTitleTriView(tri_view, TriView::Container::START);
-  ConfigureTitleTriView(tri_view, TriView::Container::CENTER);
-  ConfigureTitleTriView(tri_view, TriView::Container::END);
-
-  title_label_ = TrayPopupUtils::CreateDefaultLabel();
-  title_label_->SetText(l10n_util::GetStringUTF16(string_id));
-  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(title_label_,
-                                   TrayPopupUtils::FontStyle::kTitle);
-  tri_view->AddView(TriView::Container::CENTER, title_label_);
-  tri_view->SetContainerVisible(TriView::Container::END, false);
-  tri_view->SetBorder(
-      views::CreateEmptyBorder(kUnifiedDetailedViewTitlePadding));
-
-  return tri_view;
-}
-
-views::View* DetailedViewDelegate::CreateTitleSeparator() {
-  title_separator_ = new views::Separator();
-  title_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-  title_separator_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      kTitleRowProgressBarHeight - views::Separator::kThickness, 0, 0, 0)));
-  return title_separator_;
 }
 
 void DetailedViewDelegate::ShowStickyHeaderSeparator(views::View* view,
@@ -201,16 +119,6 @@ views::Button* DetailedViewDelegate::CreateHelpButton(
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);
   return button;
-}
-
-void DetailedViewDelegate::UpdateColors() {
-  if (title_label_) {
-    title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-  }
-  if (title_separator_) {
-    title_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-  }
 }
 
 }  // namespace ash

@@ -8,8 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/button/button.h"
 
 namespace gfx {
@@ -17,15 +15,12 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
-class Label;
-class Separator;
 class View;
 }  // namespace views
 
 namespace ash {
 
 class HoverHighlightView;
-class TriView;
 class UnifiedSystemTrayController;
 class ViewClickListener;
 
@@ -47,18 +42,6 @@ class ASH_EXPORT DetailedViewDelegate {
 
   // Close the bubble that contains the detailed view.
   virtual void CloseBubble();
-
-  // Return true if overflow indicator of ScrollView is enabled.
-  virtual bool IsOverflowIndicatorEnabled() const;
-
-  // Return TriView used for the title row. It should have title label of
-  // |string_id| in CENTER. TrayDetailedView will calls CreateBackButton() and
-  // adds the returned view to START.
-  virtual TriView* CreateTitleRow(int string_id);
-
-  // Return the separator used between the title row and the contents. Caller
-  // takes ownership of the returned view.
-  virtual views::View* CreateTitleSeparator();
 
   // Configure a |view| to have a visible separator below.
   virtual void ShowStickyHeaderSeparator(views::View* view,
@@ -97,15 +80,8 @@ class ASH_EXPORT DetailedViewDelegate {
   virtual views::Button* CreateHelpButton(
       views::Button::PressedCallback callback);
 
-  // Update the colors that need to be updated while switching between dark and
-  // light mode.
-  virtual void UpdateColors();
-
  private:
   UnifiedSystemTrayController* const tray_controller_;
-
-  views::Label* title_label_ = nullptr;
-  views::Separator* title_separator_ = nullptr;
 };
 
 }  // namespace ash
