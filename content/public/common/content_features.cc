@@ -1149,15 +1149,6 @@ BASE_FEATURE(kTouchpadOverscrollHistoryNavigation,
 #endif
 );
 
-// When TreatBootstrapAsDefault is enabled, the browser will execute tasks with
-// the kBootstrap task type on the default task queues (based on priority of
-// the task) rather than a dedicated high-priority task queue. Intended to
-// evaluate the impact of the already-launched prioritization of bootstrap
-// tasks (crbug.com/1258621).
-BASE_FEATURE(kTreatBootstrapAsDefault,
-             "TreatBootstrapAsDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
 // features.

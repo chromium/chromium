@@ -62,7 +62,7 @@ public abstract class AsyncInitTaskRunner {
         @Override
         public void run() {
             VariationsSeedFetcher.get().fetchSeed(mRestrictMode, mMilestone, mChannel);
-            PostTask.postTask(UiThreadTaskTraits.BOOTSTRAP, new Runnable() {
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
                 @Override
                 public void run() {
                     tasksPossiblyComplete(null);

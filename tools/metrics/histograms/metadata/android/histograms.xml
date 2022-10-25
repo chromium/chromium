@@ -3731,30 +3731,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.TaskScheduling.BootstrapTaskRunnerType"
-    enum="BootstrapTaskRunnerType" expires_after="2022-12-04">
-  <owner>blundell@chromium.org</owner>
-  <owner>scheduler-dev@chromium.org</owner>
-  <summary>
-    Records creation of Java task runners that are created with BOOTSTRAP task
-    type, bucketed by whether they are configured to post at the back or the
-    front of the task queue.
-  </summary>
-</histogram>
-
-<histogram name="Android.TaskScheduling.PreNativeTaskPostType"
-    enum="PreNativeTaskPostType" expires_after="2022-12-04">
-  <owner>blundell@chromium.org</owner>
-  <owner>scheduler-dev@chromium.org</owner>
-  <summary>
-    Records whether Java tasks that are targeted for scheduling pre-native
-    initialization are (a) posted at the back of the Looper's task queue, (b)
-    posted at the front of its task queue, or (c) not posted at all (deferring
-    to native task runner initialization). Emitted at the time of scheduling the
-    task.
-  </summary>
-</histogram>
-
 <histogram name="Android.ThemeColor" enum="Android.ThemeColor"
     expires_after="2022-06-19">
   <owner>sinansahin@google.com</owner>

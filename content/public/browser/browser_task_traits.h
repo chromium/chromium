@@ -33,9 +33,6 @@ enum class BrowserTaskType {
   // A catch all for tasks that don't fit the types below.
   kDefault,
 
-  // Critical startup tasks.
-  kBootstrap,
-
   // A subset of tasks related to user input.
   kUserInput,
 

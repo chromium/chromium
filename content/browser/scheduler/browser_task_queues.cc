@@ -55,8 +55,6 @@ QueueName GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
   switch (queue_type) {
     case BrowserTaskQueues::QueueType::kBestEffort:
       return QueueName::UI_BEST_EFFORT_TQ;
-    case BrowserTaskQueues::QueueType::kBootstrap:
-      return QueueName::UI_BOOTSTRAP_TQ;
     case BrowserTaskQueues::QueueType::kDefault:
       return QueueName::UI_DEFAULT_TQ;
     case BrowserTaskQueues::QueueType::kUserBlocking:
@@ -76,8 +74,6 @@ QueueName GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
   switch (queue_type) {
     case BrowserTaskQueues::QueueType::kBestEffort:
       return QueueName::IO_BEST_EFFORT_TQ;
-    case BrowserTaskQueues::QueueType::kBootstrap:
-      return QueueName::IO_BOOTSTRAP_TQ;
     case BrowserTaskQueues::QueueType::kDefault:
       return QueueName::IO_DEFAULT_TQ;
     case BrowserTaskQueues::QueueType::kUserBlocking:
@@ -129,13 +125,6 @@ BrowserTaskQueues::Handle::Handle(BrowserTaskQueues* outer)
       control_task_runner_(outer_->control_queue_->task_runner()),
       default_task_runner_(outer_->default_task_queue_->task_runner()),
       browser_task_runners_(outer_->CreateBrowserTaskRunners()) {}
-
-void BrowserTaskQueues::Handle::PostFeatureListInitializationSetup() {
-  control_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserTaskQueues::PostFeatureListInitializationSetup,
-                     base::Unretained(outer_)));
-}
 
 void BrowserTaskQueues::Handle::OnStartupComplete() {
   control_task_runner_->PostTask(
@@ -229,13 +218,6 @@ BrowserTaskQueues::CreateBrowserTaskRunners() const {
     task_runners[i] = queue_data_[i].task_queue->task_runner();
   }
   return task_runners;
-}
-
-void BrowserTaskQueues::PostFeatureListInitializationSetup() {
-  // NOTE: This queue will not be used if the |kTreatBootstrapAsDefault|
-  // feature is enabled (see browser_task_executor.cc).
-  GetBrowserTaskQueue(QueueType::kBootstrap)
-      ->SetQueuePriority(QueuePriority::kHighestPriority);
 }
 
 void BrowserTaskQueues::OnStartupComplete() {

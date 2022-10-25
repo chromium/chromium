@@ -150,8 +150,6 @@ TEST_F(BrowserTaskTraitsMappingTest, BrowserTaskTraitsMapToProperPriorities) {
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({TaskPriority::USER_BLOCKING}),
             QueueType::kUserBlocking);
 
-  EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kBootstrap}),
-            QueueType::kUserBlocking);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kDefault}),
             QueueType::kUserBlocking);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType(

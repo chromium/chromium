@@ -411,11 +411,11 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     // callback lists, it is safe to call this more than once.
     private void enqueueCallbackExecutionOnStartupFailure() {
         PostTask.postTask(
-                UiThreadTaskTraits.BOOTSTRAP, () -> executeEnqueuedCallbacks(STARTUP_FAILURE));
+                UiThreadTaskTraits.DEFAULT, () -> executeEnqueuedCallbacks(STARTUP_FAILURE));
     }
 
     private void postStartupCompleted(final StartupCallback callback) {
-        PostTask.postTask(UiThreadTaskTraits.BOOTSTRAP, new Runnable() {
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 if (mStartupSuccess) {

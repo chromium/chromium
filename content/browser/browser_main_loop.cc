@@ -820,7 +820,7 @@ void BrowserMainLoop::CreateStartupTasks() {
 
   startup_task_runner_ = std::make_unique<StartupTaskRunner>(
       base::BindOnce(&BrowserStartupComplete),
-      GetUIThreadTaskRunner({BrowserTaskType::kBootstrap}));
+      GetUIThreadTaskRunner({BrowserTaskType::kDefault}));
 #else
   startup_task_runner_ = std::make_unique<StartupTaskRunner>(
       base::OnceCallback<void(int)>(), base::ThreadTaskRunnerHandle::Get());

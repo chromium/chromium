@@ -242,10 +242,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.FONT_MANAGER_EARLY_INIT,
                     "Whether to initialize the font manager when the renderer starts on a "
                             + "background thread."),
-            Flag.baseFeature(ContentFeatures.TREAT_BOOTSTRAP_AS_DEFAULT,
-                    "Executes tasks with  the kBootstrap task type on the default task queues "
-                            + "(based on priority of the task) rather than a dedicated "
-                            + "high-priority task queue."),
             Flag.baseFeature(BlinkFeatures.PREFETCH_ANDROID_FONTS,
                     "Enables prefetching Android fonts on renderer startup."),
             Flag.baseFeature(BlinkFeatures.INITIAL_NAVIGATION_ENTRY,

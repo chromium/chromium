@@ -48,9 +48,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // practice.
     kBestEffort,
 
-    // For tasks on the critical path up to issuing the initial navigation.
-    kBootstrap,
-
     // base::TaskPriority::kUserBlocking maps to this task queue. It's for tasks
     // that affect the UI immediately after a user interaction. Has the same
     // priority as kDefault.
@@ -101,11 +98,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
         QueueType queue_type) const {
       return browser_task_runners_[static_cast<size_t>(queue_type)];
     }
-
-    // Initializes any scheduler experiments. Should be called after
-    // FeatureLists have been initialized (which usually happens after task
-    // queues are set up).
-    void PostFeatureListInitializationSetup();
 
     // Informs that startup is complete. Can be called multiple times.
     void OnStartupComplete();
@@ -172,7 +164,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
       base::ScopedClosureRunner on_pending_task_ran);
   void OnStartupComplete();
   void EnableAllExceptBestEffortQueues();
-  void PostFeatureListInitializationSetup();
 
   base::sequence_manager::TaskQueue* GetBrowserTaskQueue(QueueType type) const {
     return queue_data_[static_cast<size_t>(type)].task_queue.get();

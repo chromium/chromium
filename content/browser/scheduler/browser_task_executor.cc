@@ -136,17 +136,6 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
     DCHECK_LT(task_type, BrowserTaskType::kBrowserTaskType_Last);
 
     switch (task_type) {
-      case BrowserTaskType::kBootstrap:
-        if (base::FeatureList::IsEnabled(
-                ::features::kTreatBootstrapAsDefault)) {
-          // Defer to traits.priority() below rather than executing this task on
-          // the dedicated bootstrap queue.
-          break;
-        }
-
-        // Note we currently ignore the priority for bootstrap tasks.
-        return QueueType::kBootstrap;
-
       case BrowserTaskType::kUserInput:
         if (base::FeatureList::IsEnabled(
                 features::kBrowserPrioritizeInputQueue)) {
@@ -268,11 +257,7 @@ void BrowserTaskExecutor::ResetForTesting() {
 
 // static
 void BrowserTaskExecutor::PostFeatureListSetup() {
-  DCHECK(Get()->browser_ui_thread_handle_);
-  DCHECK(Get()->browser_io_thread_handle_);
   DCHECK(Get()->ui_thread_executor_);
-  Get()->browser_ui_thread_handle_->PostFeatureListInitializationSetup();
-  Get()->browser_io_thread_handle_->PostFeatureListInitializationSetup();
   Get()->ui_thread_executor_->PostFeatureListSetup();
 }
 

@@ -244,7 +244,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadAsyncPinchEvents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kTreatBootstrapAsDefault);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUnrestrictedSharedArrayBuffer);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserActivationSameOriginVisibility);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kVerifyDidCommitParams);

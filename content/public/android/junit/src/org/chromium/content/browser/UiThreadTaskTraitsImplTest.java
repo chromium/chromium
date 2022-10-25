@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import androidx.test.filters.SmallTest;
@@ -15,7 +14,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content_public.browser.BrowserTaskType;
 
 /**
  * Tests for {@link UiThreadTaskTraitsImpl}
@@ -26,18 +24,9 @@ public class UiThreadTaskTraitsImplTest {
     @Test
     @SmallTest
     public void testContainsExtension() {
-        TaskTraits traits = UiThreadTaskTraitsImpl.BOOTSTRAP;
+        TaskTraits traits = UiThreadTaskTraitsImpl.BEST_EFFORT;
         UiThreadTaskTraitsImpl impl = traits.getExtension(UiThreadTaskTraitsImpl.DESCRIPTOR);
 
         assertNotNull(impl);
-    }
-
-    @Test
-    @SmallTest
-    public void testCanDeserializeProperties() {
-        TaskTraits traits = UiThreadTaskTraitsImpl.BOOTSTRAP;
-        UiThreadTaskTraitsImpl impl = traits.getExtension(UiThreadTaskTraitsImpl.DESCRIPTOR);
-
-        assertEquals(BrowserTaskType.BOOTSTRAP, impl.getTaskType());
     }
 }

@@ -179,10 +179,6 @@ public class ProcessInitializationHandler {
      */
     protected void handlePreNativeInitialization() {
         BrowserTaskExecutor.register();
-        // This function controls whether BrowserTaskExecutor posts pre-native bootstrap tasks at
-        // the front or back of the Looper's queue.
-        BrowserTaskExecutor.setShouldPrioritizePreNativeBootstrapTasks(
-                !ChromeFeatureList.sElidePrioritizationOfPreNativeBootstrapTasks.isEnabled());
 
         Context application = ContextUtils.getApplicationContext();
 

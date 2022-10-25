@@ -13514,11 +13514,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Zip has AES"/>
 </enum>
 
-<enum name="BootstrapTaskRunnerType">
-  <int value="0" label="Posts at back of queue"/>
-  <int value="1" label="Posts at front of queue"/>
-</enum>
-
 <enum name="BorealisGetDiskInfoResult">
   <int value="0" label="Success"/>
   <int value="1" label="A GetDiskInfo request is already in progress"/>
@@ -80852,12 +80847,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="file not found"/>
   <int value="2" label="file read failed"/>
   <int value="3" label="parse proto failed"/>
-</enum>
-
-<enum name="PreNativeTaskPostType">
-  <int value="0" label="Posted at back of queue"/>
-  <int value="1" label="Posted at front of queue"/>
-  <int value="2" label="Deferred to native init"/>
 </enum>
 
 <enum name="PrerenderActivationNavigationParamsMatch">

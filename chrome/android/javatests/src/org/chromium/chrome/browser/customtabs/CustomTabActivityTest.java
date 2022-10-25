@@ -138,7 +138,6 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -972,7 +971,6 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS})
     public void testNavigationHistogramsRecorded() throws Exception {
         String startHistogramPrefix = "CustomTabs.IntentToFirstNavigationStartTime";
         String commitHistogramPrefix = "CustomTabs.IntentToFirstCommitNavigationTime3";

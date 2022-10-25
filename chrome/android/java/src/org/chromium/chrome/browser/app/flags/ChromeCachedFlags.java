@@ -102,7 +102,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sDownloadsAutoResumptionNative);
                 add(ChromeFeatureList.sEarlyLibraryLoad);
                 add(ChromeFeatureList.sElasticOverscroll);
-                add(ChromeFeatureList.sElidePrioritizationOfPreNativeBootstrapTasks);
                 add(ChromeFeatureList.sFeedLoadingPlaceholder);
                 add(ChromeFeatureList.sGridTabSwitcherForTablets);
                 add(ChromeFeatureList.sImmersiveUiMode);
