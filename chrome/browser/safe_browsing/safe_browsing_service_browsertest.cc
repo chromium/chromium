@@ -41,7 +41,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,8 +79,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -1080,9 +1077,6 @@ class V4SafeBrowsingServiceJsRequestTest
 using V4SafeBrowsingServiceJsRequestInterstitialTest =
     V4SafeBrowsingServiceJsRequestTest;
 
-// This is almost identical to
-// SafeBrowsingServiceWebSocketTest.MalwareWebSocketBlocked. That test will be
-// deleted when the old database backend is removed.
 IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
                        MalwareBlocked) {
   GURL base_url = embedded_test_server()->GetURL(kMalwareJsRequestPage);
@@ -1092,23 +1086,16 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
 
   MarkUrlForMalwareUnexpired(js_request_url);
 
-  // Brute force method for waiting for the interstitial to be displayed.
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_ALL,
-      base::BindRepeating(
-          [](V4SafeBrowsingServiceTest* self,
-             const content::NotificationSource& source,
-             const content::NotificationDetails& details) {
-            return self->ShowingInterstitialPage();
-          },
-          base::Unretained(this)));
-
   EXPECT_CALL(observer_,
               OnSafeBrowsingHit(IsUnsafeResourceFor(js_request_url)));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
-  // If the interstitial fails to be displayed, the test will hang here.
-  load_stop_observer.Wait();
+  content::TestNavigationObserver error_observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      net::ERR_BLOCKED_BY_CLIENT);
+  error_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  error_observer.WaitForNavigationFinished();
 
   EXPECT_TRUE(ShowingInterstitialPage());
   EXPECT_TRUE(got_hit_report());

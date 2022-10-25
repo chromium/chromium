@@ -22,7 +22,6 @@ class TestNotificationTracker : public NotificationObserver {
  public:
   // Records one received notification.
   struct Event {
-    Event();
     Event(int t, NotificationSource s, NotificationDetails d);
 
     int type;

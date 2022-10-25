@@ -98,24 +98,8 @@ void NotificationServiceImpl::RemoveObserver(NotificationObserver* observer,
 void NotificationServiceImpl::Notify(int type,
                                      const NotificationSource& source,
                                      const NotificationDetails& details) {
-  DCHECK_GT(type, NOTIFICATION_ALL) <<
-      "Allowed for observing, but not posting.";
-
   // There's no particular reason for the order in which the different
   // classes of observers get notified here.
-
-  // Notify observers of all types and all sources
-  if (HasKey(observers_[NOTIFICATION_ALL], AllSources()) &&
-      source != AllSources()) {
-    for (auto& observer : *observers_[NOTIFICATION_ALL][AllSources().map_key()])
-      observer.Observe(type, source, details);
-  }
-
-  // Notify observers of all types and the given source
-  if (HasKey(observers_[NOTIFICATION_ALL], source)) {
-    for (auto& observer : *observers_[NOTIFICATION_ALL][source.map_key()])
-      observer.Observe(type, source, details);
-  }
 
   // Notify observers of the given type and all sources
   if (HasKey(observers_[type], AllSources()) &&
@@ -130,7 +114,6 @@ void NotificationServiceImpl::Notify(int type,
       observer.Observe(type, source, details);
   }
 }
-
 
 NotificationServiceImpl::~NotificationServiceImpl() {
   lazy_tls_ptr.Pointer()->Set(nullptr);

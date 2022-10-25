@@ -21,12 +21,6 @@ namespace content {
 enum NotificationType {
   NOTIFICATION_CONTENT_START = 0,
 
-  // General -----------------------------------------------------------------
-
-  // Special signal value to represent an interest in all notifications.
-  // Not valid when posting a notification.
-  NOTIFICATION_ALL = NOTIFICATION_CONTENT_START,
-
   // NavigationController ----------------------------------------------------
 
   // A new non-pending navigation entry has been created. This will
@@ -37,7 +31,7 @@ enum NotificationType {
   // details will be NavigationController::LoadCommittedDetails.
   // DEPRECATED: Use WebContentsObserver::NavigationEntryCommitted()
   // TODO(https://crbug.com/1174760): Remove.
-  NOTIFICATION_NAV_ENTRY_COMMITTED,
+  NOTIFICATION_NAV_ENTRY_COMMITTED = NOTIFICATION_CONTENT_START,
 
   // Other load-related (not from NavigationController) ----------------------
 

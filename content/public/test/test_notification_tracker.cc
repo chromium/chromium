@@ -9,11 +9,6 @@
 
 namespace content {
 
-TestNotificationTracker::Event::Event()
-    : type(NOTIFICATION_ALL),
-      source(NotificationService::AllSources()),
-      details(NotificationService::NoDetails()) {
-}
 TestNotificationTracker::Event::Event(int t,
                                       NotificationSource s,
                                       NotificationDetails d)
@@ -22,11 +17,9 @@ TestNotificationTracker::Event::Event(int t,
       details(d) {
 }
 
-TestNotificationTracker::TestNotificationTracker() {
-}
+TestNotificationTracker::TestNotificationTracker() = default;
 
-TestNotificationTracker::~TestNotificationTracker() {
-}
+TestNotificationTracker::~TestNotificationTracker() = default;
 
 void TestNotificationTracker::ListenFor(
     int type,
