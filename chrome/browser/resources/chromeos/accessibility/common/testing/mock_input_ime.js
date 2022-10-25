@@ -36,6 +36,9 @@ var MockInputIme = {
   /** @private {function<number>} */
   onBlurListener_: null,
 
+  /** @private {function<number>} */
+  onSurroundingTextChangedListener_: null,
+
   /** @private {MockImeCompositionParameters} */
   lastCompositionParameters_: null,
 
@@ -83,6 +86,26 @@ var MockInputIme = {
     removeListener: listener => {
       if (MockInputIme.onBlurListener_ === listener) {
         MockInputIme.onBlurListener_ = null;
+      }
+    },
+  },
+
+  onSurroundingTextChanged: {
+    /**
+     * Adds a listener to onSurroundingTextChanged.
+     * @param {function<number>} listener
+     */
+    addListener: listener => {
+      MockInputIme.onSurroundingTextChangedListener_ = listener;
+    },
+
+    /**
+     * Removes the listener.
+     * @param {function<number>} listener
+     */
+    removeListener: listener => {
+      if (MockInputIme.onSurroundingTextChangedListener_ === listener) {
+        MockInputIme.onSurroundingTextChangedListener_ = null;
       }
     },
   },

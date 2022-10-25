@@ -97,10 +97,13 @@ const char* kMacroSucceededMetric =
     "Accessibility.CrosDictation.MacroSucceeded";
 const char* kMacroFailedMetric = "Accessibility.CrosDictation.MacroFailed";
 const int kInputTextViewMetricValue = 1;
-
+constexpr char kContentEditableUrl[] =
+    "data:text/html;charset=utf-8,<div id=input contenteditable></div>";
 constexpr char kPumpkinTestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/dictation/parse/"
     "pumpkin";
+constexpr char kTextAreaUrl[] =
+    "data:text/html;charset=utf-8,<textarea id=input></textarea>";
 
 static const char* kEnglishDictationCommands[] = {
     "delete",
@@ -153,6 +156,28 @@ std::string ToString(DictationBubbleIconType icon) {
       return "macro fail";
   }
 }
+
+// The type of editable field to use in tests.
+enum class EditableType { kContentEditable, kTextArea };
+
+// A class used to define the parameters of a test case.
+class TestConfig {
+ public:
+  TestConfig(speech::SpeechRecognitionType speech_recognition_type,
+             EditableType editable_type)
+      : speech_recognition_type_(speech_recognition_type),
+        editable_type_(editable_type) {}
+
+  speech::SpeechRecognitionType speech_recognition_type() const {
+    return speech_recognition_type_;
+  }
+
+  EditableType editable_type() const { return editable_type_; }
+
+ private:
+  speech::SpeechRecognitionType speech_recognition_type_;
+  EditableType editable_type_;
+};
 
 // Listens for changes to the histogram provided at construction. This class
 // only allows `Wait()` to be called once. If you need to call `Wait()` multiple
@@ -283,11 +308,10 @@ class ClipboardChangedWaiter : public ui::ClipboardObserver {
 
 }  // namespace
 
-class DictationTestBase
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<speech::SpeechRecognitionType> {
+class DictationTestBase : public InProcessBrowserTest,
+                          public ::testing::WithParamInterface<TestConfig> {
  public:
-  DictationTestBase() : test_helper_(GetParam()) {}
+  DictationTestBase() : test_helper_(speech_recognition_type()) {}
   ~DictationTestBase() override = default;
   DictationTestBase(const DictationTestBase&) = delete;
   DictationTestBase& operator=(const DictationTestBase&) = delete;
@@ -322,10 +346,16 @@ class DictationTestBase
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(
-            "data:text/html;charset=utf-8,<textarea id=textarea></textarea>")));
+    std::string url;
+    switch (editable_type()) {
+      case EditableType::kTextArea:
+        url = kTextAreaUrl;
+        break;
+      case EditableType::kContentEditable:
+        url = kContentEditableUrl;
+        break;
+    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
     // Put focus in the text box.
     ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
@@ -340,7 +370,7 @@ class DictationTestBase
   }
 
   void TearDownOnMainThread() override {
-    if (GetParam() == speech::SpeechRecognitionType::kNetwork)
+    if (speech_recognition_type() == speech::SpeechRecognitionType::kNetwork)
       content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
 
     InProcessBrowserTest::TearDownOnMainThread();
@@ -367,6 +397,8 @@ class DictationTestBase
 
   void SendErrorAndWait() { test_helper_.SendErrorAndWait(); }
 
+  // TODO(crbug.com/1374425): Rename this to '...WaitForEditableValue' for
+  // consistency.
   void SendFinalResultAndWaitForTextAreaValue(const std::string& result,
                                               const std::string& value) {
     // Ensure that the accessibility tree and the text area value are updated.
@@ -415,20 +447,32 @@ class DictationTestBase
     waiter.Wait();
   }
 
-  std::string GetTextAreaValue() {
+  std::string GetEditableValue() {
     std::string output;
-    std::string script =
-        "window.domAutomationController.send("
-        "document.getElementById('textarea').value)";
+    std::string script;
+    switch (editable_type()) {
+      case EditableType::kTextArea:
+        script =
+            "window.domAutomationController.send("
+            "document.getElementById('input').value)";
+        break;
+      case EditableType::kContentEditable:
+        script =
+            "window.domAutomationController.send("
+            "document.getElementById('input').innerText)";
+        break;
+    }
     CHECK(ExecuteScriptAndExtractString(
         browser()->tab_strip_model()->GetWebContentsAt(0), script, &output));
     return output;
   }
 
+  // TODO(crbug.com/1374425): Rename this 'WaitForEditableValue' for
+  // consistency.
   void WaitForTextAreaValue(const std::string& value) {
     std::string error_message = "Still waiting for text area value: " + value;
     SuccessWaiter(base::BindLambdaForTesting(
-                      [&]() { return value == GetTextAreaValue(); }),
+                      [&]() { return value == GetEditableValue(); }),
                   error_message)
         .Wait();
   }
@@ -502,6 +546,12 @@ class DictationTestBase
     return base::UTF16ToUTF8(text);
   }
 
+  speech::SpeechRecognitionType speech_recognition_type() {
+    return GetParam().speech_recognition_type();
+  }
+
+  EditableType editable_type() { return GetParam().editable_type(); }
+
  private:
   SpeechRecognitionTestHelper test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -526,14 +576,28 @@ class DictationTest : public DictationTestBase {
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    Network,
+    NetworkTextArea,
     DictationTest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
+    NetworkContentEditable,
     DictationTest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable)));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDeviceTextArea,
+    DictationTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kTextArea)));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDeviceContentEditable,
+    DictationTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kContentEditable)));
 
 // Tests the behavior of the GetAllSupportedLocales method, specifically how
 // it sets locale data.
@@ -543,7 +607,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     const std::string locale = it.first;
     bool works_offline = it.second.works_offline;
     bool installed = it.second.installed;
-    if (GetParam() == speech::SpeechRecognitionType::kOnDevice &&
+    if (speech_recognition_type() == speech::SpeechRecognitionType::kOnDevice &&
         locale == speech::kUsEnglishLocale) {
       // Currently, the only locale supported by SODA is en-US. It should work
       // offline and be installed.
@@ -555,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     }
   }
 
-  if (GetParam() == speech::SpeechRecognitionType::kOnDevice) {
+  if (speech_recognition_type() == speech::SpeechRecognitionType::kOnDevice) {
     // Uninstall SODA and all language packs.
     speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
   } else {
@@ -638,7 +702,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWhenInputFieldLosesFocus) {
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
   WaitForRecognitionStopped();
-  EXPECT_EQ("Vega is a star", GetTextAreaValue());
+  EXPECT_EQ("Vega is a star", GetEditableValue());
 }
 
 // TODO(crbug.com/1352312): Flaky.
@@ -702,7 +766,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationBeforeSpeech) {
 // Ensures that the correct metrics are recorded when Dictation is toggled.
 IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
   base::HistogramTester histogram_tester_;
-  bool on_device = GetParam() == speech::SpeechRecognitionType::kOnDevice;
+  bool on_device =
+      speech_recognition_type() == speech::SpeechRecognitionType::kOnDevice;
   const char* metric_name = on_device ? kOnDeviceListeningDurationMetric
                                       : kNetworkListeningDurationMetric;
   HistogramWaiter waiter(metric_name);
@@ -817,14 +882,16 @@ class DictationWithAutoclickTest : public DictationTestBase {
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    Network,
+    NetworkTextArea,
     DictationWithAutoclickTest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
+    OnDeviceTextArea,
     DictationWithAutoclickTest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kTextArea)));
 
 IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, CanDictate) {
   ToggleDictationWithKeystroke();
@@ -857,9 +924,10 @@ class DictationJaTest : public DictationTestBase {
 // On-device speech recognition is currently limited to en-US, so
 // DictationJaTest should use network speech recognition only.
 INSTANTIATE_TEST_SUITE_P(
-    Network,
+    NetworkTextArea,
     DictationJaTest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
 
 IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartSpacingOrCapitalization) {
   ToggleDictationWithKeystroke();
@@ -990,14 +1058,16 @@ class DictationCommandsTest : public DictationTest {
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    Network,
+    NetworkTextArea,
     DictationCommandsTest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
+    OnDeviceTextArea,
     DictationCommandsTest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kTextArea)));
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesCommands) {
   std::string expected_text = "";
@@ -1411,6 +1481,41 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartInsertBefore) {
                                          "This is a simple biology test");
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartDeletePhraseLongContent) {
+  std::string first_sentence_initial = R"(
+    The dog (Canis familiaris or Canis lupus familiaris) is a domesticated
+    descendant of the wolf.
+  )";
+  // The same as above, except the second instance of "familiaris" is removed.
+  std::string first_sentence_final = R"(
+    The dog (Canis familiaris or Canis lupus) is a domesticated
+    descendant of the wolf.
+  )";
+  std::string remaining_text = R"(
+    Also called the domestic dog, it is derived from an
+    ancient, extinct wolf, and the modern wolf is the dog's nearest living
+    relative. The dog was the first species to be domesticated, by
+    hunter-gatherers over 15,000 years ago, before the development of
+    agriculture. Due to their long association with humans, dogs have expanded
+    to a large number of domestic individuals and gained the ability to thrive
+    on a starch-rich diet that would be inadequate for other canids.
+
+    The dog has been selectively bred over millennia for various behaviors,
+    sensory capabilities, and physical attributes. Dog breeds vary widely in
+    shape, size, and color. They perform many roles for humans, such as hunting,
+    herding, pulling loads, protection, assisting police and the military,
+    companionship, therapy, and aiding disabled people. Over the millennia, dogs
+    became uniquely adapted to human behavior, and the human-canine bond has
+    been a topic of frequent study. This influence on human society has given
+    them the sobriquet of "man's best friend".
+  )";
+
+  std::string initial_value = first_sentence_initial + remaining_text;
+  std::string final_value = first_sentence_final + remaining_text;
+  SendFinalResultAndWaitForTextAreaValue(initial_value, initial_value);
+  SendFinalResultAndWaitForTextAreaValue("delete familiaris", final_value);
+}
+
 // Tests the behavior of the Dictation bubble UI.
 class DictationUITest : public DictationTest {
  protected:
@@ -1515,14 +1620,16 @@ class DictationUITest : public DictationTest {
 #endif
 
 INSTANTIATE_TEST_SUITE_P(
-    Network,
+    NetworkTextArea,
     DictationUITest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
+    OnDeviceTextArea,
     DictationUITest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kTextArea)));
 
 IN_PROC_BROWSER_TEST_P(DictationUITest,
                        MAYBE_ShownWhenSpeechRecognitionStarts) {
@@ -1780,14 +1887,28 @@ class DictationPumpkinTest : public DictationTest {
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    Network,
+    NetworkTextArea,
     DictationPumpkinTest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
+    NetworkContentEditable,
     DictationPumpkinTest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable)));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDeviceTextArea,
+    DictationPumpkinTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kTextArea)));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDeviceContentEditable,
+    DictationPumpkinTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kContentEditable)));
 
 // TODO(crbug.com/1368843): Test is flaky on MSAN builds.
 #if defined(MEMORY_SANITIZER)

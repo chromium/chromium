@@ -8,6 +8,17 @@ import {LocaleInfo} from './locale_info.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
+const StateType = chrome.automation.StateType;
+
+/**
+ * @typedef {{
+ * anchor: number,
+ * focus: number,
+ * offset: number,
+ * text: string,
+ * }}
+ */
+let SurroundingInfo;
 
 /** InputController handles interaction with input fields for Dictation. */
 export class InputController {
@@ -37,6 +48,12 @@ export class InputController {
     /** @private {?function(number):void} */
     this.onBlurListener_ = null;
 
+    /** @private {?function(string, !SurroundingInfo):void} */
+    this.onSurroundingTextChangedListener_ = null;
+
+    /** @private {?SurroundingInfo} */
+    this.surroundingInfo_ = null;
+
     this.initialize_();
   }
 
@@ -47,20 +64,25 @@ export class InputController {
   initialize_() {
     this.onFocusListener_ = context => this.onImeFocus_(context);
     this.onBlurListener_ = contextId => this.onImeBlur_(contextId);
-    // Listen for IME focus changes.
+    this.onSurroundingTextChangedListener_ = (engineID, surroundingInfo) =>
+        this.onSurroundingTextChanged_(engineID, surroundingInfo);
     chrome.input.ime.onFocus.addListener(this.onFocusListener_);
     chrome.input.ime.onBlur.addListener(this.onBlurListener_);
+    chrome.input.ime.onSurroundingTextChanged.addListener(
+        this.onSurroundingTextChangedListener_);
   }
 
-  /**
-   * Removes IME listeners.
-   */
+  /** Removes IME listeners. */
   removeListeners() {
     if (this.onFocusListener_) {
       chrome.input.ime.onFocus.removeListener(this.onFocusListener_);
     }
     if (this.onBlurListener_) {
       chrome.input.ime.onBlur.removeListener(this.onBlurListener_);
+    }
+    if (this.onSurroundingTextChangedListener_) {
+      chrome.input.ime.onSurroundingTextChanged.removeListener(
+          this.onSurroundingTextChangedListener_);
     }
   }
 
@@ -156,8 +178,24 @@ export class InputController {
     if (contextId === this.activeImeContextId_) {
       // Clean up context ID immediately. We can no longer use this context.
       this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
+      this.surroundingInfo_ = null;
       this.stopDictationCallback_();
     }
+  }
+
+  /**
+   * Called when the editable string around the caret is changed or when the
+   * caret position is moved.
+   * @param {string} engineID
+   * @param {!SurroundingInfo} surroundingInfo
+   * @private
+   */
+  onSurroundingTextChanged_(engineID, surroundingInfo) {
+    if (engineID !== InputController.ON_SURROUNDING_TEXT_CHANGED_ENGINE_ID) {
+      return;
+    }
+
+    this.surroundingInfo_ = surroundingInfo;
   }
 
   /**
@@ -321,17 +359,44 @@ export class InputController {
 
   /**
    * Returns the value and caret index of the currently focused editable node.
+   * Only returns valid data if there isn't a selection.
+   * TODO(crbug.com/1344888): Add support for when there is a selection.
+   * TODO(crbug.com/1353871): Only return text that is visible on-screen.
    * @return {!{node: !AutomationNode, value: string, caretIndex: number}|null}
    * @private
    */
   getEditableNodeData_() {
     const node = this.focusHandler_.getEditableNode();
-    if (!node || node.value === undefined || node.textSelStart === undefined ||
-        node.textSelStart !== node.textSelEnd) {
+    if (!node) {
       return null;
     }
 
-    return {node, value: node.value, caretIndex: node.textSelStart};
+    let value;
+    let caretIndex;
+    const isContentEditable = node.state[StateType.RICHLY_EDITABLE];
+    if (isContentEditable && this.surroundingInfo_) {
+      // Use IME data only in contenteditables.
+      if (this.surroundingInfo_.anchor !== this.surroundingInfo_.focus) {
+        // Selection check.
+        return null;
+      }
+
+      value = this.surroundingInfo_.text;
+      caretIndex = this.surroundingInfo_.anchor;
+      return {node, value, caretIndex};
+    }
+
+    if (node.textSelStart !== undefined && node.textSelEnd !== undefined &&
+        node.textSelStart !== node.textSelEnd) {
+      // Selection check.
+      return null;
+    }
+
+    // Fall back to data from Automation.
+    value = node.value || '';
+    caretIndex =
+        node.textSelStart !== undefined ? node.textSelStart : value.length;
+    return {node, value, caretIndex};
   }
 }
 
@@ -341,6 +406,13 @@ export class InputController {
  */
 InputController.IME_ENGINE_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
+
+/**
+ * The engine ID that is passed into `onSurroundingTextChanged_` when Dictation
+ * modifies the text field.
+ * @const {string}
+ */
+InputController.ON_SURROUNDING_TEXT_CHANGED_ENGINE_ID = 'dictation';
 
 /**
  * @private {number}
