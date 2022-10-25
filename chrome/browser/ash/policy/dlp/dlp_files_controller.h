@@ -252,7 +252,9 @@ class DlpFilesController {
   // Reports an event if a `DlpReportingManager` instance exists. When
   // `dst_pattern` is missing, we report `dst.component.value()` instead. When
   // `level` is missing, we report a warning proceeded event.
-  void MaybeReportEvent(const FileDaemonInfo& file,
+  void MaybeReportEvent(ino64_t inode,
+                        const base::FilePath& path,
+                        const std::string& source_pattern,
                         const DlpFileDestination& dst,
                         const absl::optional<std::string>& dst_pattern,
                         absl::optional<DlpRulesManager::Level> level);
