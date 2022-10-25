@@ -173,7 +173,7 @@ class DesksClient : public ash::SessionObserver {
 
  private:
   class LaunchPerformanceTracker;
-  friend class DesksTemplatesClientTest;
+  friend class DesksClientTest;
   friend class ScopedDesksTemplatesAppLaunchHandlerSetter;
 
   // Launches DeskTemplate after retrieval from storage.
