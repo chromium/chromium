@@ -426,7 +426,9 @@ class MetricsServiceBrowserNoUploadTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest, FilesRemoved) {
+// TODO(crbug.com/1378228): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest,
+                       DISABLED_FilesRemoved) {
   // SetUp() has removed consent and made metrics "sampled-in" (enabled).
   EXPECT_FALSE(HasNonPMAFiles());
 }
