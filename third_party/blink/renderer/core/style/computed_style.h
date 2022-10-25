@@ -3096,22 +3096,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   friend class ColorPropertyFunctions;
   friend class StyleAdjuster;
   friend class StyleResolverState;
-  friend class css_longhand::InternalForcedVisitedColor;
-  friend class css_longhand::InternalVisitedBackgroundColor;
-  friend class css_longhand::InternalVisitedBorderBottomColor;
-  friend class css_longhand::InternalVisitedBorderLeftColor;
-  friend class css_longhand::InternalVisitedBorderRightColor;
-  friend class css_longhand::InternalVisitedBorderTopColor;
-  friend class css_longhand::InternalVisitedCaretColor;
-  friend class css_longhand::InternalVisitedColor;
-  friend class css_longhand::InternalVisitedColumnRuleColor;
-  friend class css_longhand::InternalVisitedFill;
-  friend class css_longhand::InternalVisitedOutlineColor;
-  friend class css_longhand::InternalVisitedStroke;
-  friend class css_longhand::InternalVisitedTextDecorationColor;
-  friend class css_longhand::InternalVisitedTextEmphasisColor;
-  friend class css_longhand::InternalVisitedTextFillColor;
-  friend class css_longhand::InternalVisitedTextStrokeColor;
 
   ComputedStyleBuilder() = default;
 
@@ -3120,46 +3104,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetStyle(scoped_refptr<ComputedStyle> style) {
     style_ = std::move(style);
     SetStyleBase(*style_);
-  }
-
-  void SetInternalForcedVisitedColor(const StyleColor& v) {
-    SetInternalForcedVisitedColorInternal(v);
-  }
-  void SetInternalVisitedColor(const StyleColor& v) {
-    SetInternalVisitedColorInternal(v);
-  }
-  void SetInternalVisitedBackgroundColor(const StyleColor& v) {
-    SetInternalVisitedBackgroundColorInternal(v);
-  }
-  void SetInternalVisitedBorderLeftColor(const StyleColor& v) {
-    SetInternalVisitedBorderLeftColorInternal(v);
-  }
-  void SetInternalVisitedBorderRightColor(const StyleColor& v) {
-    SetInternalVisitedBorderRightColorInternal(v);
-  }
-  void SetInternalVisitedBorderBottomColor(const StyleColor& v) {
-    SetInternalVisitedBorderBottomColorInternal(v);
-  }
-  void SetInternalVisitedBorderTopColor(const StyleColor& v) {
-    SetInternalVisitedBorderTopColorInternal(v);
-  }
-  void SetInternalVisitedOutlineColor(const StyleColor& v) {
-    SetInternalVisitedOutlineColorInternal(v);
-  }
-  void SetInternalVisitedColumnRuleColor(const StyleColor& v) {
-    SetInternalVisitedColumnRuleColorInternal(v);
-  }
-  void SetInternalVisitedTextDecorationColor(const StyleColor& v) {
-    SetInternalVisitedTextDecorationColorInternal(v);
-  }
-  void SetInternalVisitedTextEmphasisColor(const StyleColor& color) {
-    SetInternalVisitedTextEmphasisColorInternal(color);
-  }
-  void SetInternalVisitedTextFillColor(const StyleColor& color) {
-    SetInternalVisitedTextFillColorInternal(color);
-  }
-  void SetInternalVisitedTextStrokeColor(const StyleColor& color) {
-    SetInternalVisitedTextStrokeColorInternal(color);
   }
 
   scoped_refptr<ComputedStyle> style_;
