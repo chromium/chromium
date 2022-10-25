@@ -218,8 +218,9 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   void StoreMargins(const NGConstraintSpace&, const NGBoxStrut& margins);
   void StoreMargins(const NGPhysicalBoxStrut& margins);
 
-  // Write the inline-size of columns in a multicol container to legacy.
-  void StoreColumnInlineSize(LayoutUnit);
+  // Write the inline-size and number of columns in a multicol container to
+  // legacy.
+  void StoreColumnSizeAndCount(LayoutUnit inline_size, int count);
 
   static bool CanUseNewLayout(const LayoutBox&);
   bool CanUseNewLayout() const;

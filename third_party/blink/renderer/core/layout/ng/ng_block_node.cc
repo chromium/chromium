@@ -1509,9 +1509,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     // This is the first fragment generated for the multicol container (there
     // may be multiple fragments if we're nested inside another fragmentation
     // context).
-    int column_count =
-        ResolveUsedColumnCount(space.AvailableSize().inline_size, Style());
-    flow_thread->StartLayoutFromNG(column_count);
+    flow_thread->StartLayoutFromNG();
     pending_column_set =
         DynamicTo<LayoutMultiColumnSet>(flow_thread->FirstMultiColumnBox());
   }
@@ -2174,13 +2172,15 @@ void NGBlockNode::StoreMargins(const NGPhysicalBoxStrut& physical_margins) {
   box_->SetMargin(physical_margins);
 }
 
-void NGBlockNode::StoreColumnInlineSize(LayoutUnit inline_size) {
+void NGBlockNode::StoreColumnSizeAndCount(LayoutUnit inline_size, int count) {
   LayoutMultiColumnFlowThread* flow_thread =
       To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();
   // We have no chance to unregister the inline size for the
   // LayoutMultiColumnFlowThread.
   TextAutosizer::MaybeRegisterInlineSize(*flow_thread, inline_size);
   flow_thread->ClearNeedsLayout();
+
+  flow_thread->SetColumnCountFromNG(count);
 }
 
 static bool g_devtools_layout = false;

@@ -243,16 +243,17 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   column_inline_size_ =
       ResolveUsedColumnInlineSize(ChildAvailableSize().inline_size, Style());
 
-  // Write the column inline-size back to the legacy flow thread if we're at the
-  // first fragment. TextAutosizer needs this.
-  if (!IsResumingLayout(BreakToken()))
-    node_.StoreColumnInlineSize(column_inline_size_);
-
   column_inline_progression_ =
       column_inline_size_ +
       ResolveUsedColumnGap(ChildAvailableSize().inline_size, Style());
   used_column_count_ =
       ResolveUsedColumnCount(ChildAvailableSize().inline_size, Style());
+
+  // Write the column inline-size and count back to the legacy flow thread if
+  // we're at the first fragment. TextAutosizer needs the inline-size, and the
+  // legacy fragmentainer group machinery needs the count.
+  if (!IsResumingLayout(BreakToken()))
+    node_.StoreColumnSizeAndCount(column_inline_size_, used_column_count_);
 
   // If we know the block-size of the fragmentainers in an outer fragmentation
   // context (if any), our columns may be constrained by that, meaning that we

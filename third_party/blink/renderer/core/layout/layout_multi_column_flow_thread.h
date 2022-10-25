@@ -311,7 +311,8 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   void AppendNewFragmentainerGroupIfNeeded(LayoutUnit offset_in_flow_thread,
                                            PageBoundaryRule);
 
-  void StartLayoutFromNG(unsigned column_count);
+  void SetColumnCountFromNG(unsigned column_count);
+  void StartLayoutFromNG();
   LayoutMultiColumnSet* PendingColumnSetForNG() const;
   void AppendNewFragmentainerGroupFromNG();
   void SetCurrentColumnBlockSizeFromNG(LayoutUnit);
