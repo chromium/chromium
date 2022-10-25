@@ -613,6 +613,57 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
   return v4l2_frame_params;
 }
 
+// Section 5.11. Tile Group OBU syntax
+std::vector<struct v4l2_ctrl_av1_tile_group_entry> FillTileGroupParams(
+    const base::span<const uint8_t> frame_obu_data,
+    const size_t tile_columns,
+    const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
+  // This could happen in rare cases (for example, if there is a Metadata OBU
+  // after the TileGroup OBU). We currently do not have a reason to handle those
+  // cases. This is also the case in libgav1 at the moment.
+  CHECK(!tile_buffers.empty());
+
+  CHECK_GT(tile_columns, 0u);
+  const uint32_t num_tiles = tile_buffers.size();
+
+  std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vector(
+      num_tiles);
+
+  for (uint32_t tile_index = 0; tile_index < num_tiles; ++tile_index) {
+    auto& tile_group_entry_params = tile_group_entry_vector[tile_index];
+
+    CHECK(tile_buffers[tile_index].data >= frame_obu_data.data());
+    tile_group_entry_params.tile_offset = base::checked_cast<uint32_t>(
+        tile_buffers[tile_index].data - frame_obu_data.data());
+
+    tile_group_entry_params.tile_size =
+        base::checked_cast<uint32_t>(tile_buffers[tile_index].size);
+
+    // The tiles are row-major. We use the number of columns |tile_columns|
+    // to compute computation of the row and column for a given tile.
+    tile_group_entry_params.tile_row =
+        tile_index / base::checked_cast<uint32_t>(tile_columns);
+    tile_group_entry_params.tile_col =
+        tile_index % base::checked_cast<uint32_t>(tile_columns);
+
+    base::CheckedNumeric<uint32_t> safe_tile_data_end(
+        tile_group_entry_params.tile_offset);
+    safe_tile_data_end += tile_group_entry_params.tile_size;
+    size_t tile_data_end;
+    if (!safe_tile_data_end.AssignIfValid(&tile_data_end) ||
+        tile_data_end > frame_obu_data.size()) {
+      DLOG(ERROR) << "Invalid tile offset and size"
+                  << ", offset=" << tile_group_entry_params.tile_offset
+                  << ", size=" << tile_group_entry_params.tile_size
+                  << ", entire data size=" << frame_obu_data.size();
+
+      return {};
+    }
+  }
+
+  return tile_group_entry_vector;
+}
+
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
@@ -640,15 +691,21 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
     const AV1ReferenceFrameVector& ref_frames,
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
     base::span<const uint8_t> stream) {
-  // TODO(stevecho): Remove initialization for |v4l2_seq_params| and
-  // |v4l2_frame_params| once they are actually being used
-  // (as they are assigned right away)
-  struct v4l2_ctrl_av1_sequence v4l2_seq_params = {};
-  v4l2_seq_params = FillSequenceParams(sequence_header);
+  struct v4l2_ctrl_av1_sequence v4l2_seq_params =
+      FillSequenceParams(sequence_header);
 
-  struct v4l2_ctrl_av1_frame v4l2_frame_params = {};
-  v4l2_frame_params =
+  struct v4l2_ctrl_av1_frame v4l2_frame_params =
       SetupFrameParams(sequence_header, pic.frame_header, ref_frames);
+
+  std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vectors =
+      FillTileGroupParams(base::make_span(stream.data(), stream.size()),
+                          pic.frame_header.tile_info.tile_columns,
+                          tile_buffers);
+
+  if (tile_group_entry_vectors.empty()) {
+    VLOGF(1) << "Tile group entry setup failed";
+    return DecodeStatus::kFail;
+  }
 
   struct v4l2_ext_control ext_ctrl_array[] = {
       {.id = V4L2_CID_STATELESS_AV1_SEQUENCE,
@@ -657,10 +714,11 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
       {.id = V4L2_CID_STATELESS_AV1_FRAME,
        .size = sizeof(v4l2_frame_params),
        .ptr = &v4l2_frame_params},
-  };
-
-  // TODO(b/254274375): Add V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY
-  // control id setup
+      {.id = V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY,
+       .size =
+           base::checked_cast<__u32>(tile_group_entry_vectors.size() *
+                                     sizeof(v4l2_ctrl_av1_tile_group_entry)),
+       .ptr = tile_group_entry_vectors.data()}};
 
   struct v4l2_ext_controls ext_ctrls = {
       .count = base::checked_cast<__u32>(std::size(ext_ctrl_array)),
