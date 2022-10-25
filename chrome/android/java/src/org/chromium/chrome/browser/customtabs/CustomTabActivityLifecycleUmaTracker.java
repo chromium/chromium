@@ -47,7 +47,7 @@ public class CustomTabActivityLifecycleUmaTracker
         implements PauseResumeWithNativeObserver, StartStopWithNativeObserver, NativeInitObserver {
     /**
      * Identifier used for last CCT client App. Used as suffix for histogram
-     * "CustomTabs.RetainableSessions.TimeBetweenLaunch".
+     * "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch".
      */
     @StringDef({ClientIdentifierType.DIFFERENT, ClientIdentifierType.MIXED,
             ClientIdentifierType.REFERRER, ClientIdentifierType.PACKAGE_NAME})
@@ -223,7 +223,7 @@ public class CustomTabActivityLifecycleUmaTracker
             preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER);
         }
 
-        if (!launchWithSameUrl || prevTaskId != taskId
+        if (!launchWithSameUrl
                 || !preferences.readBoolean(
                         ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, false)) {
             return;
@@ -233,9 +233,10 @@ public class CustomTabActivityLifecycleUmaTracker
         String suffix = ClientIdentifierType.DIFFERENT;
         if (hasClientPackage && TextUtils.equals(clientPackage, prevClientPackage)) {
             suffix = ClientIdentifierType.PACKAGE_NAME;
-        } else if (!TextUtils.isEmpty(referrer) && TextUtils.equals(referrer, prevReferrer)) {
+        } else if (!TextUtils.isEmpty(referrer) && TextUtils.equals(referrer, prevReferrer)
+                && prevTaskId == taskId) {
             suffix = ClientIdentifierType.REFERRER;
-        } else {
+        } else if (hasClientPackage || prevTaskId == taskId) {
             String currentPackage =
                     hasClientPackage ? clientPackage : Uri.parse(referrer).getHost();
             String prevPackage = !TextUtils.isEmpty(prevClientPackage)
@@ -247,7 +248,7 @@ public class CustomTabActivityLifecycleUmaTracker
             }
         }
 
-        String histogramPrefix = "CustomTabs.RetainableSessions.TimeBetweenLaunch";
+        String histogramPrefix = "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch";
         long time = SystemClock.uptimeMillis();
         long lastClosedTime =
                 preferences.readLong(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);

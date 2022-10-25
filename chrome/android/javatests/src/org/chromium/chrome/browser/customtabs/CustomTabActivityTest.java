@@ -2112,7 +2112,7 @@ public class CustomTabActivityTest {
     private void assertLastLaunchedClientAppRecorded(String histogramSuffix, String clientPackage,
             String url, int taskId, boolean umaRecorded) {
         SharedPreferencesManager pref = SharedPreferencesManager.getInstance();
-        String histogramName = "CustomTabs.RetainableSessions.TimeBetweenLaunch" + histogramSuffix;
+        String histogramName = "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch" + histogramSuffix;
 
         Assert.assertEquals("Client package name in shared pref is different.", clientPackage,
                 pref.readString(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE, ""));
