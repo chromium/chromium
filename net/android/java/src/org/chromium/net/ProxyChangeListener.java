@@ -276,13 +276,8 @@ public class ProxyChangeListener {
             // Create a BroadcastReceiver that uses M+ APIs to fetch the proxy confuguration from
             // ConnectionManager.
             mRealProxyReceiver = new ProxyBroadcastReceiver(this);
-            Intent intent = ContextUtils.registerNonExportedBroadcastReceiver(
+            ContextUtils.registerNonExportedBroadcastReceiver(
                     ContextUtils.getApplicationContext(), mRealProxyReceiver, filter);
-            if (intent != null) {
-                // registerReceiver returns the last broadcasted intent for sticky broadcasts, so
-                // rather than wait for the first time the receiver is triggered, use this now.
-                updateProxyConfigFromConnectivityManager(intent);
-            }
         }
     }
 
