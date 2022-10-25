@@ -346,6 +346,10 @@ NSInteger kTrailingSymbolSize = 18;
   return self;
 }
 
+- (void)dealloc {
+  DCHECK(!_accountManagerServiceObserver.get());
+}
+
 - (void)setReauthenticationModule:
     (ReauthenticationModule*)reauthenticationModule {
   _reauthenticationModule = reauthenticationModule;
@@ -755,10 +759,12 @@ NSInteger kTrailingSymbolSize = 18;
 
 - (void)reportDismissalUserAction {
   base::RecordAction(base::UserMetricsAction("MobilePasswordsSettingsClose"));
+  _accountManagerServiceObserver.reset();
 }
 
 - (void)reportBackUserAction {
   base::RecordAction(base::UserMetricsAction("MobilePasswordsSettingsBack"));
+  _accountManagerServiceObserver.reset();
 }
 
 - (void)settingsWillBeDismissed {
@@ -2390,6 +2396,7 @@ NSInteger kTrailingSymbolSize = 18;
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSPasswordsSettingsCloseWithSwipe"));
+  _accountManagerServiceObserver.reset();
 }
 
 @end

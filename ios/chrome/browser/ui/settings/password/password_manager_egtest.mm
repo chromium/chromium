@@ -461,6 +461,8 @@ id<GREYMatcher> EditDoneButton() {
   [OptedInTrustedVaultText() assertWithMatcher:grey_nil()];
   [OptInTrustedVaultLink() assertWithMatcher:grey_nil()];
   [SetUpTrustedVaultLink() assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Check that a user which is not logged in any account do not get
@@ -473,6 +475,8 @@ id<GREYMatcher> EditDoneButton() {
   [OptedInTrustedVaultText() assertWithMatcher:grey_nil()];
   [OptInTrustedVaultLink() assertWithMatcher:grey_nil()];
   [SetUpTrustedVaultLink() assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Verifies the UI elements are accessible on the Passwords page.
@@ -1420,6 +1424,12 @@ id<GREYMatcher> EditDoneButton() {
                                    IDS_IOS_EXPORT_PASSWORDS)]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SettingsDoneButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Test that when user types text in search field, passwords and blocked
@@ -1511,6 +1521,8 @@ id<GREYMatcher> EditDoneButton() {
       assertWithMatcher:grey_nil()];
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Test that user can't search passwords while in edit mode.
@@ -1523,6 +1535,10 @@ id<GREYMatcher> EditDoneButton() {
   // Verify search bar is disabled.
   [[EarlGrey selectElementWithMatcher:SearchTextField()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Test that the user can edit a password that is part of search results.
@@ -1568,6 +1584,8 @@ id<GREYMatcher> EditDoneButton() {
       assertWithMatcher:grey_notNil()];
   [GetInteractionForPasswordEntry(@"example12.com, user2")
       assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Checks that attempts to edit a password provide appropriate feedback.
@@ -1824,6 +1842,10 @@ id<GREYMatcher> EditDoneButton() {
   // Verify that the dialog didn't show up after tapping the Add button.
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests the add password flow.
@@ -2137,6 +2159,10 @@ id<GREYMatcher> EditDoneButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
   [GetInteractionForPasswordDetailItem(HidePasswordButton())
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that the favicons for the password managers metrics are logged
@@ -2221,6 +2247,10 @@ id<GREYMatcher> EditDoneButton() {
   if (error) {
     GREYFail([error description]);
   }
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that the favicons for the password managers metrics are logged
