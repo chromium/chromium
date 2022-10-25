@@ -6581,6 +6581,7 @@ test("unit_tests") {
       "../browser/apps/intent_helper/page_transition_util_unittest.cc",
       "../browser/autocomplete/tab_matcher_desktop_unittest.cc",
       "../browser/autofill/autofill_context_menu_manager_unittest.cc",
+      "../browser/autofill/autofill_image_fetcher_impl_unittest.cc",
       "../browser/autofill_assistant/password_change/apc_client_impl_unittest.cc",
       "../browser/autofill_assistant/password_change/apc_external_action_delegate_unittest.cc",
       "../browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl_unittest.cc",

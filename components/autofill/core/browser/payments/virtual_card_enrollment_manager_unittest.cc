@@ -96,11 +96,11 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   }
 
   void SetValidCardArtImageForCard(const CreditCard& card) {
-    gfx::Image expected_image = gfx::test::CreateImage(32, 20);
+    std::unique_ptr<CreditCardArtImage> credit_card_art_image =
+        std::make_unique<CreditCardArtImage>(card.card_art_url(),
+                                             gfx::test::CreateImage(32, 20));
     std::vector<std::unique_ptr<CreditCardArtImage>> images;
-    images.emplace_back(std::make_unique<CreditCardArtImage>());
-    images.back()->card_art_url = card.card_art_url();
-    images.back()->card_art_image = expected_image;
+    images.push_back(std::move(credit_card_art_image));
     personal_data_manager_->OnCardArtImagesFetched(std::move(images));
   }
 

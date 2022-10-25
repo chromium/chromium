@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -331,7 +332,9 @@ class PersonalDataManager : public KeyedService,
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
 
-  // Returns the customized credit card art image for the |card_art_url|.
+  // Returns the customized credit card art image for the |card_art_url|. If no
+  // image has been cached, an asynchronous request will be sent to fetch the
+  // image and this function will return nullptr.
   virtual gfx::Image* GetCreditCardArtImageForUrl(
       const GURL& card_art_url) const;
 
@@ -663,8 +666,8 @@ class PersonalDataManager : public KeyedService,
   // this class and must outlive |this|.
   void SetPrefService(PrefService* pref_service);
 
-  // Asks AutofillImageFetcher to fetch images.
-  virtual void FetchImagesForUrls(const std::vector<GURL>& updated_urls) const;
+  // Asks AutofillImageFetcher to fetch images. Virtual for testing.
+  virtual void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PersonalDatabaseHelper> database_helper_;
@@ -793,7 +796,7 @@ class PersonalDataManager : public KeyedService,
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
   void OnCardArtImagesFetched(
-      std::vector<std::unique_ptr<CreditCardArtImage>> art_images);
+      const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images);
 
   // Look at the next profile change for profile with guid = |guid|, and handle
   // it.

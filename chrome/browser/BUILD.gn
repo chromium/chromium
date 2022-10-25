@@ -181,6 +181,8 @@ static_library("browser") {
     "autofill/autofill_gstatic_reader.h",
     "autofill/autofill_image_fetcher_factory.cc",
     "autofill/autofill_image_fetcher_factory.h",
+    "autofill/autofill_image_fetcher_impl.cc",
+    "autofill/autofill_image_fetcher_impl.h",
     "autofill/autofill_offer_manager_factory.cc",
     "autofill/autofill_offer_manager_factory.h",
     "autofill/iban_manager_factory.cc",

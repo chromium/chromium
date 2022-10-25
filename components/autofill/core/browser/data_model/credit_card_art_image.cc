@@ -6,7 +6,9 @@
 
 namespace autofill {
 
-CreditCardArtImage::CreditCardArtImage() = default;
+CreditCardArtImage::CreditCardArtImage(const GURL& card_art_url,
+                                       const gfx::Image& card_art_image)
+    : card_art_url(card_art_url), card_art_image(card_art_image) {}
 
 CreditCardArtImage::CreditCardArtImage(const CreditCardArtImage& other) =
     default;

@@ -13,7 +13,8 @@ namespace autofill {
 // Represents an rich card art image for the card art url.
 struct CreditCardArtImage {
  public:
-  CreditCardArtImage();
+  CreditCardArtImage(const GURL& card_art_url,
+                     const gfx::Image& card_art_image);
   CreditCardArtImage(const CreditCardArtImage& other);
   ~CreditCardArtImage();
 

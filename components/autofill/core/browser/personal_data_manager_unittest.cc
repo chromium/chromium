@@ -85,8 +85,8 @@ class PersonalDataManagerMock : public PersonalDataManager {
   ~PersonalDataManagerMock() override = default;
 
   MOCK_METHOD(void,
-              FetchImagesForUrls,
-              ((const std::vector<GURL>& updated_urls)),
+              FetchImagesForURLs,
+              ((base::span<const GURL> updated_urls)),
               (const override));
 };
 
@@ -487,13 +487,13 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   }
 
   // Verifies the credit card art image fetching should begin.
-  void WaitForFetchImagesForUrls(const std::vector<GURL>& updated_urls) {
+  void WaitForFetchImagesForUrls() {
     base::RunLoop run_loop;
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
         .Times(testing::AnyNumber());
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
         .Times(testing::AnyNumber());
-    EXPECT_CALL(*personal_data_, FetchImagesForUrls(updated_urls))
+    EXPECT_CALL(*personal_data_, FetchImagesForURLs(testing::_))
         .Times(1)
         .WillOnce(QuitMessageLoop(&run_loop));
     run_loop.Run();
@@ -1188,11 +1188,10 @@ TEST_F(PersonalDataManagerTest, GetCreditCardByServerId) {
 TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
   gfx::Image expected_image = gfx::test::CreateImage(32, 20);
   std::unique_ptr<CreditCardArtImage> credit_card_art_image =
-      std::make_unique<CreditCardArtImage>();
-  credit_card_art_image->card_art_url = GURL("https://www.example.com");
-  credit_card_art_image->card_art_image = expected_image;
+      std::make_unique<CreditCardArtImage>(GURL("https://www.example.com"),
+                                           expected_image);
   std::vector<std::unique_ptr<CreditCardArtImage>> images;
-  images.emplace_back(std::move(credit_card_art_image));
+  images.push_back(std::move(credit_card_art_image));
 
   personal_data_->OnCardArtImagesFetched(std::move(images));
 
@@ -1223,14 +1222,14 @@ TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
   updated_urls.emplace_back(GURL("https://www.example.com/card1"));
 
   personal_data_->AddFullServerCreditCard(card);
-  WaitForFetchImagesForUrls(updated_urls);
+  WaitForFetchImagesForUrls();
 
   card.set_card_art_url(GURL("https://www.example.com/card2"));
   updated_urls.clear();
   updated_urls.emplace_back(GURL("https://www.example.com/card2"));
 
   personal_data_->AddFullServerCreditCard(card);
-  WaitForFetchImagesForUrls(updated_urls);
+  WaitForFetchImagesForUrls();
 }
 #endif
 

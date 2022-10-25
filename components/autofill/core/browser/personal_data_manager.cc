@@ -1239,7 +1239,7 @@ gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
   if (cached_image)
     return cached_image;
 
-  FetchImagesForUrls({card_art_url});
+  FetchImagesForURLs(base::make_span(&card_art_url, 1));
   return nullptr;
 }
 
@@ -1500,12 +1500,12 @@ void PersonalDataManager::SetPrefService(PrefService* pref_service) {
   }
 }
 
-void PersonalDataManager::FetchImagesForUrls(
-    const std::vector<GURL>& updated_urls) const {
+void PersonalDataManager::FetchImagesForURLs(
+    base::span<const GURL> updated_urls) const {
   if (!image_fetcher_)
     return;
 
-  image_fetcher_->FetchImagesForUrls(
+  image_fetcher_->FetchImagesForURLs(
       updated_urls, base::BindOnce(&PersonalDataManager::OnCardArtImagesFetched,
                                    weak_factory_.GetMutableWeakPtr()));
 }
@@ -2151,7 +2151,7 @@ void PersonalDataManager::OnAutofillProfileChanged(
 }
 
 void PersonalDataManager::OnCardArtImagesFetched(
-    std::vector<std::unique_ptr<CreditCardArtImage>> art_images) {
+    const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images) {
   for (auto& art_image : art_images) {
     if (!art_image->card_art_image.IsEmpty()) {
       credit_card_art_images_[art_image->card_art_url] =
@@ -2441,7 +2441,7 @@ void PersonalDataManager::ProcessCardArtUrlChanges() {
       updated_urls.emplace_back(card->card_art_url());
   }
   if (!updated_urls.empty())
-    FetchImagesForUrls(updated_urls);
+    FetchImagesForURLs(updated_urls);
 }
 
 size_t PersonalDataManager::GetServerCardWithArtImageCount() const {
