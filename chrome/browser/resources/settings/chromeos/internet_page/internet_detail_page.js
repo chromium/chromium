@@ -324,6 +324,15 @@ class SettingsInternetDetailPageElement extends
         computed: 'computeDisabled_(deviceState_.*)',
       },
 
+      /** @private */
+      enableHiddenNetworkMigration_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('enableHiddenNetworkMigration') &&
+              loadTimeData.getBoolean('enableHiddenNetworkMigration');
+        },
+      },
+
       /**
        * Return true if captivePortalUI2022 feature flag is enabled.
        * @private
@@ -2172,35 +2181,49 @@ class SettingsInternetDetailPageElement extends
   }
 
   /**
-   * @param {!ManagedProperties} managedProperties
-   * @param {!GlobalPolicy} globalPolicy
-   * @param {boolean} managedNetworkAvailable
    * @return {boolean} True if the Hidden checkbox should be shown.
    * @private
    */
-  showHiddenNetwork_(managedProperties, globalPolicy, managedNetworkAvailable) {
+  showHiddenNetwork_() {
     if (!this.showHiddenToggle_) {
       return false;
     }
 
-    if (!managedProperties) {
+    if (!this.managedProperties_) {
       return false;
     }
 
-    if (managedProperties.type !== NetworkType.kWiFi) {
+    if (this.managedProperties_.type !== NetworkType.kWiFi) {
       return false;
     }
 
-    if (!this.isRemembered_(managedProperties)) {
+    if (!this.isRemembered_(this.managedProperties_)) {
       return false;
     }
 
     if (this.isBlockedByPolicy_(
-            managedProperties, globalPolicy, managedNetworkAvailable)) {
+            this.managedProperties_, this.globalPolicy,
+            this.managedNetworkAvailable)) {
       return false;
     }
 
     return true;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showHiddenNetworkToggleLegacy_() {
+    return this.showHiddenNetwork_() && !this.enableHiddenNetworkMigration_;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showHiddenNetworkToggleMoved_() {
+    return this.showHiddenNetwork_() && this.enableHiddenNetworkMigration_;
   }
 
   /**
