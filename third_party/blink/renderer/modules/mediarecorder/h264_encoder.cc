@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/video_codecs.h"
@@ -89,7 +91,9 @@ void H264Encoder::ShutdownEncoder(
     std::unique_ptr<NonMainThread> encoding_thread,
     ScopedISVCEncoderPtr encoder) {
   DCHECK(encoding_thread);
-  // Both |encoding_thread| and |encoder| will be destroyed at end-of-scope.
+  base::ScopedAllowBaseSyncPrimitives allow;
+  encoding_thread = nullptr;
+  encoder = nullptr;
 }
 
 H264Encoder::H264Encoder(
@@ -104,10 +108,11 @@ H264Encoder::H264Encoder(
 }
 
 H264Encoder::~H264Encoder() {
-  PostCrossThreadTask(*main_task_runner_.get(), FROM_HERE,
-                      CrossThreadBindOnce(&H264Encoder::ShutdownEncoder,
-                                          std::move(encoding_thread_),
-                                          std::move(openh264_encoder_)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          &H264Encoder::ShutdownEncoder, std::move(encoding_thread_),
+          std::move(openh264_encoder_))));
 }
 
 void H264Encoder::EncodeOnEncodingTaskRunner(

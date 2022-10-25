@@ -135,6 +135,7 @@ class CategorizedWorkerPoolImpl;
 class CategorizedWorkerPoolJob;
 class CategorizedWorkerPool;
 class DiskDataAllocator;
+class H264Encoder;
 class IdentifiabilityActiveSampler;
 class RTCVideoDecoderAdapter;
 class RTCVideoEncoder;
@@ -142,6 +143,7 @@ class SourceStream;
 class VideoFrameResourceProvider;
 class WebRtcVideoFrameAdapter;
 class LegacyWebRtcVideoFrameAdapter;
+class VpxEncoder;
 class WorkerThread;
 namespace scheduler {
 class NonMainThreadImpl;
@@ -574,8 +576,10 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class base::SimpleThread;
   friend class blink::CategorizedWorkerPoolImpl;
   friend class blink::CategorizedWorkerPoolJob;
+  friend class blink::H264Encoder;
   friend class blink::IdentifiabilityActiveSampler;
   friend class blink::SourceStream;
+  friend class blink::VpxEncoder;
   friend class blink::WorkerThread;
   friend class blink::scheduler::NonMainThreadImpl;
   friend class chrome_cleaner::ResetShortcutsComponent;
