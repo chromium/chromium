@@ -24,8 +24,10 @@ struct ExclusionSpaceForTesting {
   NGExclusionSpace exclusion_space;
   LayoutUnit available_inline_size;
 
-  LayoutUnit InitialLetterClearanceOffset() const {
-    return exclusion_space.InitialLetterClearanceOffset();
+  Vector<LayoutUnit> InitialLetterClearanceOffset() const {
+    return {exclusion_space.InitialLetterClearanceOffset(EClear::kBoth),
+            exclusion_space.InitialLetterClearanceOffset(EClear::kLeft),
+            exclusion_space.InitialLetterClearanceOffset(EClear::kRight)};
   }
 
   void Add(const NGExclusion* exclusion) { exclusion_space.Add(exclusion); }
@@ -385,7 +387,8 @@ TEST(NGExclusionSpaceTest, InitialLetterBasic) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
               ElementsAre(LayoutOpportunity(9, 124, 309)));
 
-  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, InitialLetterDirectionRight) {
@@ -439,7 +442,8 @@ TEST(NGExclusionSpaceTest, InitialLetterDirectionRight) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
               ElementsAre(LayoutOpportunity(9, 124, 309)));
 
-  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, InitialLetterFloatLeft1) {
@@ -490,7 +494,8 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeft1) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
               ElementsAre(LayoutOpportunity(9, 124, 309)));
 
-  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2) {
@@ -543,7 +548,8 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
               ElementsAre(LayoutOpportunity(9, 124, 309)));
 
-  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
@@ -598,7 +604,8 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
               ElementsAre(LayoutOpportunity(9, 124, 309)));
 
-  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
@@ -662,7 +669,8 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
               ElementsAre(LayoutOpportunity(9, 124, 309)));
 
-  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
@@ -718,7 +726,8 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
               ElementsAre(LayoutOpportunity(9, 124, 309)));
 
-  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, InitialLetterFloatRight2) {
@@ -777,7 +786,8 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatRight2) {
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 174),
               ElementsAre(LayoutOpportunity(9, 174, 309)));
 
-  EXPECT_EQ(LayoutUnit(123), exclusion_space.InitialLetterClearanceOffset());
+  EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
+              ElementsAre(LayoutUnit(123), LayoutUnit(123), LayoutUnit::Min()));
 }
 
 TEST(NGExclusionSpaceTest, ZeroInlineSizeOpportunity) {
