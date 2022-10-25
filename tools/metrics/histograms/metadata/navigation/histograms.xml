@@ -1084,6 +1084,17 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.OnBeforeUnloadTotalTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Milliseconds spent to process all the beforeunload events in JavaScript and
+    waiting time for beforeunload dialog is closed if necessary. Recorded only
+    when a non-reload navigation occurs.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.OriginAgentCluster.Result"
     enum="OriginAgentClusterEndResult" expires_after="2023-03-09">
   <owner>alexmos@chromium.org</owner>

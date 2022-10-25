@@ -1543,6 +1543,9 @@ void FrameLoader::ProcessFragment(const KURL& url,
 }
 
 bool FrameLoader::ShouldClose(bool is_reload) {
+  TRACE_EVENT1("loading", "FrameLoader::ShouldClose", "is_reload", is_reload);
+  const base::TimeTicks before_unload_events_start = base::TimeTicks::Now();
+
   Page* page = frame_->GetPage();
   if (!page || !page->GetChromeClient().CanOpenBeforeUnloadConfirmPanel())
     return true;
@@ -1607,6 +1610,13 @@ bool FrameLoader::ShouldClose(bool is_reload) {
     if (!descendant_frame->Tree().IsDescendantOf(frame_))
       continue;
     descendant_frame->GetDocument()->BeforeUnloadDoneWillUnload();
+  }
+
+  if (!is_reload) {
+    // Records only when a non-reload navigation occurs.
+    base::UmaHistogramMediumTimes(
+        "Navigation.OnBeforeUnloadTotalTime",
+        base::TimeTicks::Now() - before_unload_events_start);
   }
 
   return true;
