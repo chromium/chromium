@@ -74,9 +74,9 @@ import UIKit
   }
 }
 
-// MARK: OmniboxSuggestionCommands
+// MARK: Highlight
 
-extension PopupModel: OmniboxSuggestionCommands {
+extension PopupModel {
   public func highlightPreviousSuggestion() {
     // Pressing Up Arrow when there are no suggestions does nothing.
     if sections.isEmpty || sections.first!.matches.isEmpty {

@@ -367,35 +367,7 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   }
 }
 
-#pragma mark - OmniboxPopupRowCellDelegate
-
-- (void)trailingButtonTappedForCell:(OmniboxPopupRowCell*)cell {
-  NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
-  id<AutocompleteSuggestion> suggestion =
-      [self suggestionAtIndexPath:indexPath];
-  DCHECK(suggestion);
-  [self.delegate autocompleteResultConsumer:self
-           didTapTrailingButtonOnSuggestion:suggestion
-                                      inRow:indexPath.row];
-}
-
-#pragma mark - OmniboxReturnDelegate
-
-- (void)omniboxReturnPressed:(id)sender {
-  if (self.highlightedIndexPath) {
-    id<AutocompleteSuggestion> suggestion =
-        [self suggestionAtIndexPath:self.highlightedIndexPath];
-    if (suggestion) {
-      [self.delegate autocompleteResultConsumer:self
-                            didSelectSuggestion:suggestion
-                                          inRow:self.highlightedIndexPath.row];
-      return;
-    }
-  }
-  [self.acceptReturnDelegate omniboxReturnPressed:sender];
-}
-
-#pragma mark - OmniboxSuggestionCommands
+#pragma mark OmniboxKeyboardDelegate Private
 
 - (void)highlightPreviousSuggestion {
   NSIndexPath* path = self.highlightedIndexPath;
@@ -481,8 +453,6 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   self.highlightedIndexPath = path;
 }
 
-#pragma mark OmniboxSuggestionCommands Private
-
 - (void)highlightRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   [cell setHighlighted:YES animated:NO];
@@ -498,6 +468,34 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
       [self suggestionAtIndexPath:self.highlightedIndexPath];
   DCHECK(suggestion);
   [self.matchPreviewDelegate setPreviewSuggestion:suggestion isFirstUpdate:NO];
+}
+
+#pragma mark - OmniboxPopupRowCellDelegate
+
+- (void)trailingButtonTappedForCell:(OmniboxPopupRowCell*)cell {
+  NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+  id<AutocompleteSuggestion> suggestion =
+      [self suggestionAtIndexPath:indexPath];
+  DCHECK(suggestion);
+  [self.delegate autocompleteResultConsumer:self
+           didTapTrailingButtonOnSuggestion:suggestion
+                                      inRow:indexPath.row];
+}
+
+#pragma mark - OmniboxReturnDelegate
+
+- (void)omniboxReturnPressed:(id)sender {
+  if (self.highlightedIndexPath) {
+    id<AutocompleteSuggestion> suggestion =
+        [self suggestionAtIndexPath:self.highlightedIndexPath];
+    if (suggestion) {
+      [self.delegate autocompleteResultConsumer:self
+                            didSelectSuggestion:suggestion
+                                          inRow:self.highlightedIndexPath.row];
+      return;
+    }
+  }
+  [self.acceptReturnDelegate omniboxReturnPressed:sender];
 }
 
 #pragma mark - Table view delegate

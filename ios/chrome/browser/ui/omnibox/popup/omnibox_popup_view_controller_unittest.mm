@@ -23,6 +23,22 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
     [[preview_delegate_ expect] setPreviewSuggestion:suggestion
                                        isFirstUpdate:is_first_update];
   }
+  BOOL PerformKeyboardAction(OmniboxKeyboardAction keyboardAction) {
+    BOOL canPerform =
+        [popup_view_controller_ canPerformKeyboardAction:keyboardAction];
+    if (canPerform) {
+      [popup_view_controller_ performKeyboardAction:keyboardAction];
+    }
+    return canPerform;
+  }
+
+  BOOL MoveHighlightUp() {
+    return PerformKeyboardAction(OmniboxKeyboardActionUpArrow);
+  }
+
+  BOOL MoveHighlightDown() {
+    return PerformKeyboardAction(OmniboxKeyboardActionDownArrow);
+  }
 
   NSArray<id<AutocompleteSuggestion>>* GenerateMockSuggestions(
       NSUInteger nb_suggestions) {
@@ -86,7 +102,7 @@ TEST_F(OmniboxPopupViewControllerTest,
     // down arrow.
     ExpectPreviewSuggestion(
         suggestion_groups_[preselectedGroupIndex].suggestions[0], NO);
-    [popup_view_controller_ highlightNextSuggestion];
+    EXPECT_TRUE(MoveHighlightDown());
     [preview_delegate_ verify];
   }
 }
@@ -104,10 +120,10 @@ TEST_F(OmniboxPopupViewControllerTest, UpDownArrowWithZeroMatches) {
              isFirstUpdate:NO];
 
   // Up arrow key with zero suggestions should do nothing.
-  [popup_view_controller_ highlightPreviousSuggestion];
+  EXPECT_TRUE(MoveHighlightUp());
 
   // Down arrow key with zero suggestions should do nothing.
-  [popup_view_controller_ highlightNextSuggestion];
+  EXPECT_TRUE(MoveHighlightDown());
 }
 
 // Tests highlighting suggestions with one group of suggestions.
@@ -120,12 +136,12 @@ TEST_F(OmniboxPopupViewControllerTest, UpDownArrowWithOneGroup) {
 
   // Up Arrow when nothing is highlighted and when no group is above preselected
   // group, does nothing.
-  [popup_view_controller_ highlightPreviousSuggestion];
+  EXPECT_TRUE(MoveHighlightUp());
 
   // Down Arrow highlights the next suggestion.
   for (NSUInteger i = 0; i < first_suggestion_group_.suggestions.count; ++i) {
     ExpectPreviewSuggestion(first_suggestion_group_.suggestions[i], NO);
-    [popup_view_controller_ highlightNextSuggestion];
+    EXPECT_TRUE(MoveHighlightDown());
     [preview_delegate_ verify];
   }
 
@@ -135,21 +151,21 @@ TEST_F(OmniboxPopupViewControllerTest, UpDownArrowWithOneGroup) {
       first_suggestion_group_
           .suggestions[first_suggestion_group_.suggestions.count - 1],
       NO);
-  [popup_view_controller_ highlightNextSuggestion];
+  EXPECT_TRUE(MoveHighlightDown());
   [preview_delegate_ verify];
 
   // Up Arrow highlights the previous suggestion.
   for (NSInteger i = first_suggestion_group_.suggestions.count - 2; i >= 0;
        --i) {
     ExpectPreviewSuggestion(first_suggestion_group_.suggestions[i], NO);
-    [popup_view_controller_ highlightPreviousSuggestion];
+    EXPECT_TRUE(MoveHighlightUp());
     [preview_delegate_ verify];
   }
 
   // Up Arrow when the first sugggestion is highlighted continues to highlight
   // the first suggestion.
   ExpectPreviewSuggestion(first_suggestion_group_.suggestions[0], NO);
-  [popup_view_controller_ highlightPreviousSuggestion];
+  EXPECT_TRUE(MoveHighlightUp());
   [preview_delegate_ verify];
 }
 
@@ -168,13 +184,13 @@ TEST_F(OmniboxPopupViewControllerTest, UpDownArrowGroupSwitch) {
       first_suggestion_group_
           .suggestions[first_suggestion_group_.suggestions.count - 1],
       NO);
-  [popup_view_controller_ highlightPreviousSuggestion];
+  EXPECT_TRUE(MoveHighlightUp());
   [preview_delegate_ verify];
 
   // Down Arrow when the last suggestion of the first group is highlighted,
   // highlights the first suggestion of the second group.
   ExpectPreviewSuggestion(second_suggestion_group_.suggestions[0], NO);
-  [popup_view_controller_ highlightNextSuggestion];
+  EXPECT_TRUE(MoveHighlightDown());
   [preview_delegate_ verify];
 
   // Up Arrow when the first suggestion of the second group is highlighted,
@@ -183,7 +199,7 @@ TEST_F(OmniboxPopupViewControllerTest, UpDownArrowGroupSwitch) {
       first_suggestion_group_
           .suggestions[first_suggestion_group_.suggestions.count - 1],
       NO);
-  [popup_view_controller_ highlightPreviousSuggestion];
+  EXPECT_TRUE(MoveHighlightUp());
   [preview_delegate_ verify];
 }
 
@@ -205,7 +221,7 @@ TEST_F(OmniboxPopupViewControllerTest, ReturnHighlightedSuggestion) {
 
   // Select first suggestion with down arrow.
   ExpectPreviewSuggestion(first_suggestion_group_.suggestions[0], NO);
-  [popup_view_controller_ highlightNextSuggestion];
+  EXPECT_TRUE(MoveHighlightDown());
   [preview_delegate_ verify];
 
   // Pressing return key when a suggestion is highlighted call the

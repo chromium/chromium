@@ -124,9 +124,6 @@
     self.popupViewController.largeIconService = largeIconService;
     self.popupViewController.largeIconCache = cache;
     self.popupViewController.carouselMenuProvider = self.mediator;
-    [self.browser->GetCommandDispatcher()
-        startDispatchingToTarget:self.popupViewController
-                     forProtocol:@protocol(OmniboxSuggestionCommands)];
 
     self.mediator.consumer = self.popupViewController;
     self.popupViewController.matchPreviewDelegate =
@@ -159,8 +156,6 @@
 
 - (void)stop {
   _popupView.reset();
-  [self.browser->GetCommandDispatcher()
-      stopDispatchingForProtocol:@protocol(OmniboxSuggestionCommands)];
 }
 
 - (BOOL)isOpen {

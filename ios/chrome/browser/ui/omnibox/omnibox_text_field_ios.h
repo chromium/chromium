@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/commands/omnibox_suggestion_commands.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_delegate.h"
 
@@ -104,10 +103,6 @@ typedef enum {
 // Object that handles arrow keys behavior in Omnibox dispatching to multiple
 // OmniboxKeyboardDelegates.
 @property(nonatomic, weak) id<OmniboxKeyboardDelegate> omniboxKeyboardDelegate;
-
-// The object handling suggestion commands.
-@property(nonatomic, weak) id<OmniboxSuggestionCommands>
-    suggestionCommandsEndpoint;
 
 // Text displayed when in pre-edit state.
 @property(nonatomic, strong) NSString* preEditText;

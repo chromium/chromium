@@ -25,7 +25,6 @@ source_set("commands") {
     "load_query_commands.h",
     "new_tab_page_commands.h",
     "omnibox_commands.h",
-    "omnibox_suggestion_commands.h",
     "open_new_tab_command.h",
     "open_new_tab_command.mm",
     "page_info_commands.h",

@@ -132,11 +132,6 @@
 
   self.viewController.textChangeDelegate = _editView.get();
 
-  // Configure the textfield.
-  self.textField.suggestionCommandsEndpoint =
-      static_cast<id<OmniboxSuggestionCommands>>(
-          self.browser->GetCommandDispatcher());
-
   self.keyboardDelegate = [[OmniboxAssistiveKeyboardDelegateImpl alloc] init];
   self.keyboardDelegate.applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
