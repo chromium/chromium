@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="LightweightReactions.AssetsFetchDuration.{Outcome}" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.Editing.Tapped{Button}.NumberOf{Action}"
-    units="times" expires_after="2022-12-04">
+    units="times" expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.EditingDone" enum="BooleanContinueChoice"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationCancelled" enum="Boolean"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationCancelled.Duration"
-    units="ms" expires_after="2022-12-04">
+    units="ms" expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationCancelled.Progress"
-    units="%" expires_after="2022-12-04">
+    units="%" expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.OrientationChange"
-    enum="DeviceOrientation" expires_after="2022-12-04">
+    enum="DeviceOrientation" expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.ShareDestination"
-    enum="NoteShareDestination" expires_after="2022-12-04">
+    enum="NoteShareDestination" expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.TimeTo{Action}" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
