@@ -87,7 +87,8 @@ export class AlbumsSubpage extends WithPersonalizationStore {
 
   private getTitleInnerHtml_(): string {
     if (this.topicSource === TopicSource.kGooglePhotos) {
-      return this.i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosTitle');
+      return this.i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosTitle')
+          .toString();
     } else {
       return this.i18n('ambientModeTopicSourceArtGalleryDescription');
     }

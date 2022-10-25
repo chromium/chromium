@@ -29,7 +29,7 @@ import './update_warning_dialog.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -470,7 +470,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     return this.showFirmwareUpdatesApp_ && this.firmwareUpdateCount_ > 0;
   }
 
-  private getUpdateStatusMessage_(): string {
+  private getUpdateStatusMessage_(): TrustedHTML {
     switch (this.currentUpdateStatusEvent_.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
@@ -495,7 +495,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
           return this.i18nAdvanced('aboutUpgradeUpdatingChannelSwitch', {
             substitutions: [
               this.i18nAdvanced(
-                  browserChannelToI18nId(this.targetChannel_, this.isLts_)),
+                      browserChannelToI18nId(this.targetChannel_, this.isLts_))
+                  .toString(),
               progressPercent,
             ],
           });
@@ -525,21 +526,16 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
       case UpdateStatus.DEFERRED:
         return this.i18nAdvanced('aboutUpgradeNotUpToDate');
       default:
-        function formatMessage(msg: string) {
-          return (parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
-                      .firstChild as HTMLElement)
-              .innerHTML;
-        }
         let result = '';
         const message = this.currentUpdateStatusEvent_.message;
         if (message) {
-          result += formatMessage(message);
+          result += message;
         }
         const connectMessage = this.currentUpdateStatusEvent_.connectionTypes;
         if (connectMessage) {
-          result += '<div>' + formatMessage(connectMessage) + '</div>';
+          result += `<div>${connectMessage}</div>`;
         }
-        return result;
+        return sanitizeInnerHtml(result, {tags: ['br', 'pre']});
     }
   }
 
@@ -614,11 +610,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
 
   private getRelaunchButtonText_(): string {
     if (this.checkStatus_(UpdateStatus.NEARLY_UPDATED)) {
-      if (this.isPowerwash_()) {
-        return this.i18nAdvanced('aboutRelaunchAndPowerwash');
-      } else {
-        return this.i18nAdvanced('aboutRelaunch');
-      }
+      return this.i18n(
+          this.isPowerwash_() ? 'aboutRelaunchAndPowerwash' : 'aboutRelaunch');
     }
     return '';
   }
@@ -659,7 +652,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
    * @param showCrostiniLicense True if Crostini is enabled and
    * Crostini UI is allowed.
    */
-  private getAboutProductOsLicense_(showCrostiniLicense: boolean): string {
+  private getAboutProductOsLicense_(showCrostiniLicense: boolean): TrustedHTML {
     return showCrostiniLicense ?
         this.i18nAdvanced('aboutProductOsWithLinuxLicense') :
         this.i18nAdvanced('aboutProductOsLicense');
@@ -722,8 +715,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
 
   private getReportIssueLabel_(): string {
     return loadTimeData.getBoolean('isOsFeedbackEnabled') ?
-        this.i18nAdvanced('aboutSendFeedback') :
-        this.i18nAdvanced('aboutReportAnIssue');
+        this.i18n('aboutSendFeedback') :
+        this.i18n('aboutReportAnIssue');
   }
   // </if>
 

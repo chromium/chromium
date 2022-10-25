@@ -109,7 +109,7 @@ class ManagementUiElement extends ManagementUiElementBase {
   private subtitle_: string;
 
   // <if expr="not chromeos_ash">
-  private managementNoticeHtml_: string;
+  private managementNoticeHtml_: TrustedHTML;
   // </if>
 
   private managed_: boolean;
@@ -372,13 +372,15 @@ class ManagementUiElement extends ManagementUiElementBase {
       try {
         // Sanitizing the message could throw an error if it contains non
         // supported markup.
-        this.eolAdminMessage_ = sanitizeInnerHtml(data.eolAdminMessage);
+        sanitizeInnerHtml(data.eolAdminMessage);
+        this.eolAdminMessage_ = data.eolAdminMessage;
       } catch (e) {
         this.eolAdminMessage_ = '';
       }
       // </if>
       // <if expr="not chromeos_ash">
-      this.managementNoticeHtml_ = data.browserManagementNotice;
+      this.managementNoticeHtml_ =
+          sanitizeInnerHtml(data.browserManagementNotice);
       // </if>
     });
   }

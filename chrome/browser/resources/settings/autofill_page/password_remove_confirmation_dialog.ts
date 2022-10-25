@@ -77,9 +77,9 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
    * Returns the remove password description with a linkified change password
    * URL. Requires the change password URL to be present and secure.
    */
-  private getRemovePasswordDescriptionHtml_(): string {
+  private getRemovePasswordDescriptionHtml_(): TrustedHTML {
     if (!this.hasSecureChangePasswordUrl_()) {
-      return '';
+      return window.trustedTypes!.emptyHTML;
     }
 
     const url: string|undefined = this.item.changePasswordUrl;

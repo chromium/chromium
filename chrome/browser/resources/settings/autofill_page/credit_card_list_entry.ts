@@ -152,10 +152,10 @@ class SettingsCreditCardListEntryElement extends
 
   private getSecondarySublabel_(): string {
     if (this.isVirtualCardEnrolled_()) {
-      return this.i18nAdvanced('virtualCardTurnedOn');
+      return this.i18n('virtualCardTurnedOn');
     }
     if (this.isVirtualCardEnrollmentEligible_()) {
-      return this.i18nAdvanced('virtualCardAvailable');
+      return this.i18n('virtualCardAvailable');
     }
     return this.creditCard.metadata!.summarySublabel!;
   }
@@ -172,9 +172,9 @@ class SettingsCreditCardListEntryElement extends
 
   private getPaymentsLabel_(): string {
     if (this.creditCard.metadata!.isCached) {
-      return this.i18nAdvanced('googlePaymentsCached');
+      return this.i18n('googlePaymentsCached');
     }
-    return this.i18nAdvanced('googlePayments');
+    return this.i18n('googlePayments');
   }
 }
 

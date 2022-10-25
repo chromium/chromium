@@ -22,9 +22,10 @@ import '../settings_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -280,9 +281,9 @@ export class SettingsClearBrowsingDataDialogElement extends
   private tabsNames_: string[];
   private installedApps_: InstalledApp[];
   private installedAppsFlagEnabled_: boolean;
-  private googleSearchHistoryString_: string;
+  private googleSearchHistoryString_: TrustedHTML;
   private isNonGoogleDse_: boolean;
-  private nonGoogleSearchHistoryString_: string;
+  private nonGoogleSearchHistoryString_: TrustedHTML;
 
   private browserProxy_: ClearBrowsingDataBrowserProxy =
       ClearBrowsingDataBrowserProxyImpl.getInstance();
@@ -365,7 +366,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     this.shouldShowCookieException_ = event.shouldShowCookieException;
     this.$.clearBrowsingDataDialog.classList.add('fully-rendered');
     this.isNonGoogleDse_ = event.isNonGoogleDse;
-    this.nonGoogleSearchHistoryString_ = event.nonGoogleSearchHistoryString;
+    this.nonGoogleSearchHistoryString_ =
+        sanitizeInnerHtml(event.nonGoogleSearchHistoryString);
   }
 
   /** Choose a label for the history checkbox. */
@@ -585,7 +587,8 @@ export class SettingsClearBrowsingDataDialogElement extends
         !this.isSyncPaused_ && !this.hasPassphraseError_;
   }
 
-  private computeGoogleSearchHistoryString_(isNonGoogleDse: boolean): string {
+  private computeGoogleSearchHistoryString_(isNonGoogleDse: boolean):
+      TrustedHTML {
     return isNonGoogleDse ?
         this.i18nAdvanced('clearGoogleSearchHistoryNonGoogleDse') :
         this.i18nAdvanced('clearGoogleSearchHistoryGoogleDse');

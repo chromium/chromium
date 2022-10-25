@@ -23,10 +23,10 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -227,7 +227,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     return this.currentUpdateStatusEvent_!.status === UpdateStatus.FAILED;
   }
 
-  private getUpdateStatusMessage_(): string {
+  private getUpdateStatusMessage_(): TrustedHTML {
     switch (this.currentUpdateStatusEvent_!.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
@@ -252,21 +252,17 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         }
         return this.i18nAdvanced('aboutUpgradeUpdating');
       default:
-        function formatMessage(msg: string) {
-          return (parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
-                      .firstChild as HTMLElement)
-              .innerHTML;
-        }
         let result = '';
         const message = this.currentUpdateStatusEvent_!.message;
         if (message) {
-          result += formatMessage(message);
+          result += message;
         }
         const connectMessage = this.currentUpdateStatusEvent_!.connectionTypes;
         if (connectMessage) {
-          result += '<div>' + formatMessage(connectMessage) + '</div>';
+          result += `<div>${connectMessage}</div>`;
         }
-        return result;
+
+        return sanitizeInnerHtml(result, {tags: ['br', 'pre']});
     }
   }
 

@@ -35,7 +35,7 @@ export class GooglePhotosZeroState extends WithPersonalizationStore {
   private isDarkModeActive_: boolean;
 
   /** Returns the message to be displayed. */
-  private getMessage_(): string {
+  private getMessage_(): TrustedHTML {
     return this.i18nAdvanced('googlePhotosZeroStateMessage', {
       substitutions: [
         '<a target="_blank" href="https://photos.google.com">photos.google.com</a>',

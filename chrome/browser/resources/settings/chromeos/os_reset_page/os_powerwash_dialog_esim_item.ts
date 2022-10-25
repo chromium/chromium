@@ -10,6 +10,7 @@
 import '../../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -55,15 +56,15 @@ class OsSettingsPowerwashDialogEsimItemElement extends
     });
   }
 
-  private getItemInnerHtml_(): string {
+  private getItemInnerHtml_(): TrustedHTML {
     if (!this.profileProperties_) {
-      return '';
+      return window.trustedTypes!.emptyHTML;
     }
     const profileName = this.getProfileName_(this.profileProperties_);
     const providerName = this.escapeHtml_(
         String.fromCharCode(...this.profileProperties_.serviceProvider.data));
     if (!providerName) {
-      return profileName;
+      return sanitizeInnerHtml(profileName);
     }
     return this.i18nAdvanced(
         'powerwashDialogESimListItemTitle',

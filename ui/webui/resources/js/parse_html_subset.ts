@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 export interface SanitizeInnerHtmlOpts {
   substitutions?: string[];
@@ -16,14 +16,47 @@ export interface SanitizeInnerHtmlOpts {
  * @param rawString The unsanitized string
  * @param opts Optional additional allowed tags and attributes.
  */
-export function sanitizeInnerHtml(
+function sanitizeInnerHtmlInternal(
     rawString: string, opts?: SanitizeInnerHtmlOpts): string {
   opts = opts || {};
-  const html =
-      parseHtmlSubset('<b>' + rawString + '</b>', opts.tags, opts.attrs)
-          .firstElementChild!;
+  const html = parseHtmlSubset(`<b>${rawString}</b>`, opts.tags, opts.attrs)
+                   .firstElementChild!;
   return html.innerHTML;
 }
+
+// <if expr="not is_ios">
+let sanitizedPolicy: TrustedTypePolicy|null = null;
+
+/**
+ * Same as |sanitizeInnerHtmlInternal|, but it passes through sanitizedPolicy
+ * to create a TrustedHTML.
+ */
+export function sanitizeInnerHtml(
+    rawString: string, opts?: SanitizeInnerHtmlOpts): TrustedHTML {
+  assert(window.trustedTypes);
+  if (sanitizedPolicy === null) {
+    // Initialize |sanitizedPolicy| lazily.
+    sanitizedPolicy = window.trustedTypes.createPolicy('sanitize-inner-html', {
+      createHTML: sanitizeInnerHtmlInternal,
+      createScript: () => assertNotReached(),
+      createScriptURL: () => assertNotReached(),
+    });
+  }
+  return sanitizedPolicy.createHTML(rawString, opts);
+}
+// </if>
+
+// <if expr="is_ios">
+/**
+ * Delegates to sanitizeInnerHtmlInternal() since on iOS there is no
+ * window.trustedTypes support yet.
+ */
+export function sanitizeInnerHtml(
+    rawString: string, opts?: SanitizeInnerHtmlOpts): string {
+  assert(!window.trustedTypes);
+  return sanitizeInnerHtmlInternal(rawString, opts);
+}
+// </if>
 
 type AllowFunction = (node: Node, value: string) => boolean;
 

@@ -102,9 +102,10 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
     super();
 
     this.quickAnswersSubLabel_ = this.getAriaLabelledSubLabel_(
-        this.i18nAdvanced('quickAnswersEnableDescriptionWithLink'));
+        this.i18nAdvanced('quickAnswersEnableDescriptionWithLink').toString());
     this.translationSubLabel_ = this.getAriaLabelledSubLabel_(
-        this.i18nAdvanced('quickAnswersTranslationEnableDescription'));
+        this.i18nAdvanced('quickAnswersTranslationEnableDescription')
+            .toString());
   }
 
   override currentRouteChanged(route: Route, _oldRoute?: Route) {

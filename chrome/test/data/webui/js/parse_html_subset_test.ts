@@ -127,11 +127,11 @@ suite('ParseHtmlSubsetModuleTest', function() {
   test('sanitizeInnerHtml', function() {
     assertEquals(
         '<a href="chrome://foo"></a>',
-        sanitizeInnerHtml('<a href="chrome://foo"></a>'));
+        sanitizeInnerHtml('<a href="chrome://foo"></a>').toString());
     assertThrows(() => {
       sanitizeInnerHtml('<iframe></iframe>');
     }, 'IFRAME is not supported');
-    assertEquals('<div></div>', sanitizeInnerHtml('<div></div>'));
+    assertEquals('<div></div>', sanitizeInnerHtml('<div></div>').toString());
   });
 
   test('on error async', function(done) {

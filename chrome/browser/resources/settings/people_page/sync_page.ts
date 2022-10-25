@@ -235,7 +235,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private showSetupCancelDialog_: boolean;
   // </if>
 
-  private enterPassphraseLabel_: string;
+  private enterPassphraseLabel_: TrustedHTML;
   private existingPassphraseLabel_: string;
 
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
@@ -546,15 +546,15 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     return !!this.syncPrefs && this.syncPrefs.encryptAllData;
   }
 
-  private computeEnterPassphraseLabel_(): string {
+  private computeEnterPassphraseLabel_(): TrustedHTML {
     if (!this.syncPrefs || !this.syncPrefs.encryptAllData) {
-      return '';
+      return window.trustedTypes!.emptyHTML;
     }
 
     if (!this.syncPrefs.explicitPassphraseTime) {
       // TODO(crbug.com/1207432): There's no reason why this dateless label
       // shouldn't link to 'syncErrorsHelpUrl' like the other one.
-      return this.i18n('enterPassphraseLabel');
+      return this.i18nAdvanced('enterPassphraseLabel');
     }
 
     return this.i18nAdvanced('enterPassphraseLabelWithDate', {

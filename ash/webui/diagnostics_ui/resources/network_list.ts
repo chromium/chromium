@@ -154,7 +154,7 @@ export class NetworkListElement extends NetworkListElementBase {
     }
   }
 
-  protected getSettingsString_(): string {
+  protected getSettingsString_(): TrustedHTML {
     return this.i18nAdvanced('settingsLinkText');
   }
 }

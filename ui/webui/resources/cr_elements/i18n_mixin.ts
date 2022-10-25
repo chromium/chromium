@@ -112,7 +112,7 @@ export const I18nMixin = dedupingMixin(
 
 export interface I18nMixinInterface {
   i18n(id: string, ...varArgs: Array<string|number>): string;
-  i18nAdvanced(id: string, opts?: SanitizeInnerHtmlOpts): string;
+  i18nAdvanced(id: string, opts?: SanitizeInnerHtmlOpts): TrustedHTML;
   i18nDynamic(locale: string, id: string, ...varArgs: string[]): string;
   i18nRecursive(locale: string, id: string, ...varArgs: string[]): string;
   i18nExists(id: string): boolean;

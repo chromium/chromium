@@ -237,23 +237,23 @@ export class PrintPreviewPreviewAreaElement extends
   /**
    * @return The current preview area message to display.
    */
-  private currentMessage_(): string {
+  private currentMessage_(): TrustedHTML {
     switch (this.previewState) {
       case PreviewAreaState.LOADING:
-        return this.i18n('loading');
+        return this.i18nAdvanced('loading');
       case PreviewAreaState.DISPLAY_PREVIEW:
-        return '';
+        return window.trustedTypes!.emptyHTML;
       // <if expr="is_macosx">
       case PreviewAreaState.OPEN_IN_PREVIEW_LOADING:
       case PreviewAreaState.OPEN_IN_PREVIEW_LOADED:
-        return this.i18n('openingPDFInPreview');
+        return this.i18nAdvanced('openingPDFInPreview');
       // </if>
       case PreviewAreaState.ERROR:
         // The preview area is responsible for displaying all errors except
         // print failed.
         return this.getErrorMessage_();
       default:
-        return '';
+        return window.trustedTypes!.emptyHTML;
     }
   }
 
@@ -732,13 +732,13 @@ export class PrintPreviewPreviewAreaElement extends
 
   private onStateOrErrorChange_() {
     if ((this.state === State.ERROR || this.state === State.FATAL_ERROR) &&
-        this.getErrorMessage_() !== '') {
+        this.getErrorMessage_().toString() !== '') {
       this.previewState = PreviewAreaState.ERROR;
     }
   }
 
   /** @return The error message to display in the preview area. */
-  private getErrorMessage_(): string {
+  private getErrorMessage_(): TrustedHTML {
     switch (this.error) {
       case Error.INVALID_PRINTER:
         return this.i18nAdvanced('invalidPrinterSettings', {
@@ -747,12 +747,12 @@ export class PrintPreviewPreviewAreaElement extends
         });
       // <if expr="is_chromeos">
       case Error.NO_DESTINATIONS:
-        return this.i18n('noDestinationsMessage');
+        return this.i18nAdvanced('noDestinationsMessage');
       // </if>
       case Error.PREVIEW_FAILED:
-        return this.i18n('previewFailed');
+        return this.i18nAdvanced('previewFailed');
       default:
-        return '';
+        return window.trustedTypes!.emptyHTML;
     }
   }
 }

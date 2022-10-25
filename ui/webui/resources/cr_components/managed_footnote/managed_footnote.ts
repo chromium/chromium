@@ -73,7 +73,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   }
 
   /** @return Message to display to the user. */
-  private getManagementString_(): string {
+  private getManagementString_(): TrustedHTML {
     // <if expr="chromeos_ash">
     if (this.showDeviceInfo) {
       return this.i18nAdvanced('deviceManagedByOrg');

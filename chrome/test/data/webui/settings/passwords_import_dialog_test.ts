@@ -154,6 +154,7 @@ suite('PasswordsImportDialog', function() {
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
     assertEquals(
         importDialog.i18nAdvanced('importPasswordsSuccessTip')
+            .toString()
             .replace('<b></b>', 'test.csv'),
         importDialog.$.successTip.textContent!.trim());
 
@@ -185,6 +186,7 @@ suite('PasswordsImportDialog', function() {
                 'importPasswordsBadFormatError',
                 {substitutions: [IMPORT_HELP_LANDING_PAGE]},
                 )
+            .toString()
             .replace('<b></b>', '<b>test.csv</b>'));
   });
 

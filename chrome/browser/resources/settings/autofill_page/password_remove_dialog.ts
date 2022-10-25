@@ -143,7 +143,7 @@ export class PasswordRemoveDialogElement extends
     return !this.removeFromAccountChecked_ && !this.removeFromDeviceChecked_;
   }
 
-  private getDialogBodyMessage_(): string {
+  private getDialogBodyMessage_(): TrustedHTML {
     return this.i18nAdvanced(
         'passwordRemoveDialogBody',
         {substitutions: [this.duplicatedPassword.urls.shown], tags: ['b']});

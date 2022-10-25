@@ -260,8 +260,10 @@ suite('ClearBrowsingDataDesktop', function() {
         if (signedIn) {
           assertEquals(
               isNonGoogleDse ?
-                  element.i18nAdvanced('clearGoogleSearchHistoryNonGoogleDse') :
-                  element.i18nAdvanced('clearGoogleSearchHistoryGoogleDse'),
+                  element.i18nAdvanced('clearGoogleSearchHistoryNonGoogleDse')
+                      .toString() :
+                  element.i18nAdvanced('clearGoogleSearchHistoryGoogleDse')
+                      .toString(),
               element.shadowRoot!
                   .querySelector<HTMLElement>(
                       '#googleSearchHistoryLabel')!.innerHTML,

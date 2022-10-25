@@ -85,10 +85,11 @@ export class SettingsResetProfileDialogElement extends
   private browserProxy_: ResetBrowserProxy =
       ResetBrowserProxyImpl.getInstance();
 
-  private getExplanationText_(): string {
+  private getExplanationText_(): TrustedHTML {
     if (this.isTriggered_) {
-      return loadTimeData.getStringF(
-          'triggeredResetPageExplanation', this.triggeredResetToolName_);
+      return this.i18nAdvanced(
+          'triggeredResetPageExplanation',
+          {substitutions: [this.triggeredResetToolName_]});
     }
 
     if (loadTimeData.getBoolean('showExplanationWithBulletPoints')) {
@@ -97,7 +98,7 @@ export class SettingsResetProfileDialogElement extends
       });
     }
 
-    return loadTimeData.getStringF('resetPageExplanation');
+    return this.i18nAdvanced('resetPageExplanation');
   }
 
   private getPageTitle_(): string {

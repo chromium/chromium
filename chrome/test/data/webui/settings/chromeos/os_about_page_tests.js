@@ -222,8 +222,9 @@ suite('AboutPageTest', function() {
 
     assertEquals(
         page.i18nAdvanced(
-            'aboutRollbackInProgress',
-            {substitutions: [page.deviceManager_, progress + '%']}),
+                'aboutRollbackInProgress',
+                {substitutions: [page.deviceManager_, progress + '%']})
+            .toString(),
         statusMessageEl.innerHTML);
 
     fireStatusChanged(
@@ -231,7 +232,8 @@ suite('AboutPageTest', function() {
 
     assertEquals(
         page.i18nAdvanced(
-            'aboutRollbackSuccess', {substitutions: [page.deviceManager_]}),
+                'aboutRollbackSuccess', {substitutions: [page.deviceManager_]})
+            .toString(),
         statusMessageEl.innerHTML);
   });
 

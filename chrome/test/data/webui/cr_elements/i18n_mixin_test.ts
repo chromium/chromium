@@ -57,7 +57,8 @@ suite('I18nMixinTest', function() {
 
   test('i18n advanced', function() {
     assertEquals(
-        allowedByDefault, testElement.i18nAdvanced('allowedByDefault'));
+        allowedByDefault,
+        testElement.i18nAdvanced('allowedByDefault').toString());
     testElement.i18nAdvanced('customAttr', {attrs: ['is']});
     testElement.i18nAdvanced('optionalTag', {tags: ['img']});
   });

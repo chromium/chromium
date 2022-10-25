@@ -166,7 +166,7 @@ export class SettingsPasswordCheckElement extends
     };
   }
 
-  private title_: string;
+  private title_: TrustedHTML;
   private mutedPasswordsTitle_: string;
   private canUsePasswordCheckup_: boolean;
   private isButtonHidden_: boolean;
@@ -317,7 +317,7 @@ export class SettingsPasswordCheckElement extends
    * @return A relevant help text for weak passwords. Contains a link that
    * depends on whether the user is syncing passwords or not.
    */
-  private getWeakPasswordsHelpText_(): string {
+  private getWeakPasswordsHelpText_(): TrustedHTML {
     return this.i18nAdvanced(
         this.isSyncingPasswords ? 'weakPasswordsDescriptionGeneration' :
                                   'weakPasswordsDescription');
@@ -439,36 +439,42 @@ export class SettingsPasswordCheckElement extends
   /**
    * @return the title message indicating the state of the last/ongoing check.
    */
-  private computeTitle_(): string {
+  private computeTitle_(): TrustedHTML {
     switch (this.status.state) {
       case CheckState.IDLE:
-        return this.waitsForFirstCheck_() ? '' : this.i18n('checkedPasswords');
+        return this.waitsForFirstCheck_() ?
+            window.trustedTypes!.emptyHTML :
+            this.i18nAdvanced('checkedPasswords');
       case CheckState.CANCELED:
-        return this.i18n('checkPasswordsCanceled');
+        return this.i18nAdvanced('checkPasswordsCanceled');
       case CheckState.RUNNING:
         // Returns the progress of a running check. Ensures that both numbers
         // are at least 1.
         const alreadyProcessed = this.status.alreadyProcessed || 0;
-        return this.i18n(
-            'checkPasswordsProgress', alreadyProcessed + 1,
-            Math.max(this.status.remainingInQueue! + alreadyProcessed, 1));
+        return this.i18nAdvanced('checkPasswordsProgress', {
+          substitutions: [
+            String(alreadyProcessed + 1),
+            String(
+                Math.max(this.status.remainingInQueue! + alreadyProcessed, 1)),
+          ],
+        });
       case CheckState.OFFLINE:
-        return this.i18n('checkPasswordsErrorOffline');
+        return this.i18nAdvanced('checkPasswordsErrorOffline');
       case CheckState.SIGNED_OUT:
         // When user is signed out we run the password weakness check. Since it
         // works very fast, we always shows "Checked passwords" in this case.
-        return this.i18n('checkedPasswords');
+        return this.i18nAdvanced('checkedPasswords');
       case CheckState.NO_PASSWORDS:
-        return this.i18n('checkPasswordsErrorNoPasswords');
+        return this.i18nAdvanced('checkPasswordsErrorNoPasswords');
       case CheckState.QUOTA_LIMIT:
         // Note: For the checkup case we embed the link as HTML, thus we need to
         // use i18nAdvanced() here as well as the `inner-h-t-m-l` attribute in
         // the DOM.
         return this.canUsePasswordCheckup_ ?
             this.i18nAdvanced('checkPasswordsErrorQuotaGoogleAccount') :
-            this.i18n('checkPasswordsErrorQuota');
+            this.i18nAdvanced('checkPasswordsErrorQuota');
       case CheckState.OTHER_ERROR:
-        return this.i18n('checkPasswordsErrorGeneric');
+        return this.i18nAdvanced('checkPasswordsErrorGeneric');
       default:
         assertNotReached('Can\'t find a title for state: ' + this.status.state);
     }
@@ -683,7 +689,7 @@ export class SettingsPasswordCheckElement extends
    * if a user is signed out. This label depends on whether the user already had
    * compromised credentials that were found in the past.
    */
-  private getSignedOutUserLabel_(): string {
+  private getSignedOutUserLabel_(): TrustedHTML {
     // This label contains the link, thus we need to use i18nAdvanced() here as
     // well as the `inner-h-t-m-l` attribute in the DOM.
     return this.i18nAdvanced(

@@ -16,9 +16,10 @@ import '../controls/settings_checkbox.js';
 import '../prefs/prefs.js';
 import '../settings_shared.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
@@ -254,7 +255,7 @@ export class SettingsChromeCleanupPageElement extends
   }
 
   prefs: {software_reporter: {reporting: chrome.settingsPrivate.PrefObject}};
-  private title_: string;
+  private title_: TrustedHTML;
   private explanation_: string;
   private isWaitingForResult_: boolean;
   private showActionButton_: boolean;
@@ -496,10 +497,12 @@ export class SettingsChromeCleanupPageElement extends
     const components = this.cardStateToComponentsMap_!.get(state);
     assert(components);
 
-    this.title_ = components!.title || '';
-    this.explanation_ = components!.explanation || '';
-    this.updateActionButton_(components!.actionButton);
-    this.updateCardFlags_(components!.flags);
+    this.title_ = components.title === null ?
+        window.trustedTypes!.emptyHTML :
+        sanitizeInnerHtml(components.title);
+    this.explanation_ = components.explanation || '';
+    this.updateActionButton_(components.actionButton);
+    this.updateCardFlags_(components.flags);
   }
 
   /**
@@ -652,7 +655,8 @@ export class SettingsChromeCleanupPageElement extends
       [
         ChromeCleanerCardState.CLEANUP_SUCCEEDED,
         {
-          title: this.i18nAdvanced('chromeCleanupTitleRemoved', {tags: ['a']}),
+          title: this.i18nAdvanced('chromeCleanupTitleRemoved', {tags: ['a']})
+                     .toString(),
           explanation: null,
           actionButton: null,
           flags: ChromeCleanupCardFlags.NONE,
