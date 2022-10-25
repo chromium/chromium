@@ -14,9 +14,13 @@
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
-namespace content {
+namespace ui {
 
-class BrowserAccessibilityManager;
+class AXPlatformTreeManager;
+
+}  // namespace ui
+
+namespace content {
 
 // This class has two distinct event recording code paths. When we are
 // recording events in-process (typically this is used for
@@ -31,7 +35,7 @@ class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
     : public ui::AXEventRecorder {
  public:
   explicit AccessibilityEventRecorderAuraLinux(
-      BrowserAccessibilityManager* manager,
+      ui::AXPlatformTreeManager* manager,
       base::ProcessId pid,
       const ui::AXTreeSelector& selector);
 
@@ -66,7 +70,7 @@ class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
 
   raw_ptr<AtspiEventListener> atspi_event_listener_ = nullptr;
   // TODO: should be either removed or converted to a weakptr.
-  const raw_ptr<BrowserAccessibilityManager> manager_;
+  const raw_ptr<ui::AXPlatformTreeManager> manager_;
   base::ProcessId pid_;
   ui::AXTreeSelector selector_;
   static AccessibilityEventRecorderAuraLinux* instance_;

@@ -12,7 +12,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
 namespace content {
@@ -59,7 +59,7 @@ bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
 }
 
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
-    BrowserAccessibilityManager* manager,
+    ui::AXPlatformTreeManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector)
     : manager_(manager), pid_(pid), selector_(selector) {
@@ -139,7 +139,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     unsigned int n_params,
     const GValue* params) {
   // If we don't have a root object, it means the tree is being destroyed.
-  if (!manager_->GetBrowserAccessibilityRoot()) {
+  if (!manager_->RootDelegate()) {
     RemoveATKEventListeners();
     return;
   }
