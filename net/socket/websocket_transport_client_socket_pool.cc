@@ -350,7 +350,8 @@ void WebSocketTransportClientSocketPool::InvokeUserCallbackLater(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebSocketTransportClientSocketPool::InvokeUserCallback,
-                     weak_factory_.GetWeakPtr(), handle, std::move(callback),
+                     weak_factory_.GetWeakPtr(),
+                     base::UnsafeDanglingUntriaged(handle), std::move(callback),
                      rv));
 }
 

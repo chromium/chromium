@@ -140,7 +140,8 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
 #else
   service = std::make_unique<GCMProfileService>(
       profile->GetPrefs(), profile->GetPath(),
-      base::BindRepeating(&RequestProxyResolvingSocketFactory, profile),
+      base::BindRepeating(&RequestProxyResolvingSocketFactory,
+                          base::UnsafeDanglingUntriaged(profile)),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       content::GetNetworkConnectionTracker(), chrome::GetChannel(),

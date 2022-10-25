@@ -717,7 +717,7 @@ void FileMetricsProvider::ScheduleSourcesCheck() {
       FROM_HERE,
       base::BindOnce(
           &FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner,
-          base::Unretained(this), base::Unretained(check_list)),
+          base::UnsafeDanglingUntriaged(this), base::Unretained(check_list)),
       base::BindOnce(&FileMetricsProvider::RecordSourcesChecked,
                      weak_factory_.GetWeakPtr(), base::Owned(check_list)));
 }

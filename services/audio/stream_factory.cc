@@ -280,8 +280,8 @@ void StreamFactory::DestroyMuter(LocalMuter* muter) {
   };
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(do_destroy, weak_ptr_factory_.GetWeakPtr(), muter));
+      FROM_HERE, base::BindOnce(do_destroy, weak_ptr_factory_.GetWeakPtr(),
+                                base::UnsafeDanglingUntriaged(muter)));
 }
 
 void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
