@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
@@ -79,7 +80,8 @@ class TimestampedSameOriginQueue {
   size_t size() const { return items_.size(); }
   bool empty() const { return items_.empty(); }
 
-  // Removes the items [first, last[.
+  // Removes the items [first, last[. Iterators to erased elements are
+  // invalidated. Other iterators are not affected.
   void erase(const_iterator first, const_iterator last) {
     items_.erase(first, last);
     if (empty())
@@ -148,15 +150,24 @@ class MultiStepImportMerger {
   void ProcessMultiStepImport(AutofillProfile& profile,
                               ProfileImportMetadata& import_metadata);
 
-  void AddMultiStepImportCandidate(
-      const AutofillProfile& profile,
-      const ProfileImportMetadata& import_metadata);
+  void AddMultiStepImportCandidate(const AutofillProfile& profile,
+                                   const ProfileImportMetadata& import_metadata,
+                                   bool is_imported);
 
   const absl::optional<url::Origin>& origin() const {
     return multistep_candidates_.origin();
   }
 
   void Clear() { multistep_candidates_.Clear(); }
+
+  // Stored profiles can be deleted/modified by the user/through sync, etc. This
+  // potentially invalidates `multistep_candidates_`.
+  // This function verifies all already imported `multistep_candidates_`
+  // against the corresponding profile stored in the `personal_data_manager`.
+  // Profiles that no longer exist in the personal data manager are removed from
+  // `multistep_candidates`. Similarly, profiles that were in modified in the
+  // personal data manager are updated in `multistep_candidates`.
+  void OnPersonalDataChanged(PersonalDataManager& personal_data_manager);
 
   void OnBrowsingHistoryCleared(const history::DeletionInfo& deletion_info);
 
@@ -205,6 +216,9 @@ class MultiStepImportMerger {
     AutofillProfile profile;
     // Metadata about how `profile` was constructed.
     ProfileImportMetadata import_metadata;
+    // Whether the profile is already imported and only stored for multi-step
+    // complements.
+    bool is_imported;
   };
   TimestampedSameOriginQueue<MultiStepFormProfileCandidate>
       multistep_candidates_;

@@ -1041,6 +1041,13 @@ bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
   return true;
 }
 
+void FormDataImporter::OnPersonalDataChanged() {
+  // `personal_data_manager_` cannot be null, because the callback cannot be
+  // registered otherwise.
+  DCHECK(personal_data_manager_);
+  multistep_importer_.OnPersonalDataChanged(*personal_data_manager_);
+}
+
 void FormDataImporter::OnBrowsingHistoryCleared(
     const history::DeletionInfo& deletion_info) {
   multistep_importer_.OnBrowsingHistoryCleared(deletion_info);

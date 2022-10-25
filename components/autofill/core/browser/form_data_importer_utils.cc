@@ -211,14 +211,16 @@ void MultiStepImportMerger::ProcessMultiStepImport(
     // complemented during later imports. Complete profiles for multi-step
     // complements are added in the AddressProfileSaveManager after a user
     // decision was made.
-    AddMultiStepImportCandidate(profile, import_metadata);
+    AddMultiStepImportCandidate(profile, import_metadata,
+                                /*is_imported=*/false);
   }
 }
 
 void MultiStepImportMerger::AddMultiStepImportCandidate(
     const AutofillProfile& profile,
-    const ProfileImportMetadata& import_metadata) {
-  multistep_candidates_.Push({profile, import_metadata},
+    const ProfileImportMetadata& import_metadata,
+    bool is_imported) {
+  multistep_candidates_.Push({profile, import_metadata, is_imported},
                              import_metadata.origin);
 }
 
@@ -326,6 +328,36 @@ void MultiStepImportMerger::OnBrowsingHistoryCleared(
     const history::DeletionInfo& deletion_info) {
   if (IsOriginPartOfDeletionInfo(multistep_candidates_.origin(), deletion_info))
     Clear();
+}
+
+void MultiStepImportMerger::OnPersonalDataChanged(
+    PersonalDataManager& personal_data_manager) {
+  // Complete profiles are only stored if multi-step complements are enabled.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableMultiStepImports) ||
+      !features::kAutofillEnableMultiStepImportComplements.Get()) {
+    return;
+  }
+
+  auto it = multistep_candidates_.begin();
+  while (it != multistep_candidates_.end()) {
+    // `it` might get erased, so `it++` at the end of the loop doesn't suffice.
+    auto next = std::next(it);
+    // Incomplete profiles are not imported yet, so they cannot have changed.
+    if (it->is_imported) {
+      AutofillProfile* stored_profile =
+          personal_data_manager.GetProfileByGUID(it->profile.guid());
+      if (!stored_profile) {
+        // The profile was deleted, so we shouldn't offer importing it again.
+        multistep_candidates_.erase(it, next);
+      } else if (it->profile != *stored_profile) {
+        // The profile was edited in some way. Make sure that we offer updates
+        // for the latest version.
+        it->profile = *stored_profile;
+      }
+    }
+    it = next;
+  }
 }
 
 FormAssociator::FormAssociator() = default;

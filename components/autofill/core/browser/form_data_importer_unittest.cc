@@ -335,27 +335,41 @@ AutofillProfile ConstructThirdProfile() {
 
 // Returns a form with the default profile. The AutofillProfile that is imported
 // from this form should be similar to the profile create by calling
-// |ConstructDefaultProfile()|.
+// `ConstructDefaultProfile()`.
 std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
       GetDefaultProfileTypeValuePairs());
 }
 
-// Same as |ConstructDefaultFormStructure()| but split into two parts to test
-// multi-step imports (see |GetSplitDefaultProfileTypeValuePairs()|).
+// Constructs a form structure containing only an email field, set to
+// `kDefaultMail`. This is useful for testing multi-step complements.
+std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
+  // The autocomplete attribute is set manually, because for small forms (number
+  // of fields < kMinRequiredFieldsForHeuristics), no heuristics are used.
+  FormData form =
+      ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
+  const char* autocomplete = "email";
+  form.fields[0].autocomplete_attribute = autocomplete;
+  form.fields[0].parsed_autocomplete =
+      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
+  return ConstructFormStructureFromFormData(form);
+}
+
+// Same as `ConstructDefaultFormStructure()` but split into two parts to test
+// multi-step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
 std::unique_ptr<FormStructure> ConstructSplitDefaultProfileFormStructure(
     int part) {
   return ConstructFormStructureFromTypeValuePairs(
       GetSplitDefaultProfileTypeValuePairs(part));
 }
 
-// Same as |ConstructDefaultFormStructure()| but for the second profile.
+// Same as `ConstructDefaultFormStructure()` but for the second profile.
 std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
       GetSecondProfileTypeValuePairs());
 }
 
-// Same as |ConstructDefaultFormStructure()| but for the third profile.
+// Same as `ConstructDefaultFormStructure()` but for the third profile.
 std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
       GetThirdProfileTypeValuePairs());
@@ -4316,7 +4330,7 @@ TEST_P(FormDataImporterTest, MultiStepImport) {
 }
 
 // Tests that a complemented country is discarded in favour of an observed one.
-TEST_P(FormDataImporterTest, MultiStepImportComplementCountryEarly) {
+TEST_P(FormDataImporterTest, MultiStepImport_ComplementCountryEarly) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({features::kAutofillEnableMultiStepImports,
                              features::kAutofillComplementCountryEarly},
@@ -4346,7 +4360,7 @@ TEST_P(FormDataImporterTest, MultiStepImportComplementCountryEarly) {
 // Tests that when multi-step complements are enabled, complete profiles those
 // import was accepted are added as a multi-step candidate. This enables
 // complementing the profile with additional information on further pages.
-TEST_P(FormDataImporterTest, MultiStepImportComplement) {
+TEST_P(FormDataImporterTest, MultiStepImport_Complement) {
   base::test::ScopedFeatureList multistep_import_with_complement_feature;
   multistep_import_with_complement_feature.InitAndEnableFeatureWithParameters(
       features::kAutofillEnableMultiStepImports,
@@ -4354,9 +4368,7 @@ TEST_P(FormDataImporterTest, MultiStepImportComplement) {
 
   // Import the default profile without an email address.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  EXPECT_EQ(type_value_pairs[2].first, EMAIL_ADDRESS);
-  type_value_pairs.erase(type_value_pairs.begin() + 2);
-
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
   // Using `ImportAddressProfileAndVerifyImportOfDefaultProfile()` doesn't
@@ -4369,21 +4381,77 @@ TEST_P(FormDataImporterTest, MultiStepImportComplement) {
   // Import the email address in a separate form. Without multi-step updates,
   // this information cannot be associated to a profile. The resulting profile
   // is the default one.
-  // The autocomplete attribute is set manually, because for small forms (number
-  // of fields < kMinRequiredFieldsForHeuristics), no heuristics are used.
-  FormData form =
-      ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
-  const char* autocomplete = "email";
-  form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete =
-      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
-  form_structure = ConstructFormStructureFromFormData(form);
+  form_structure = ConstructDefaultEmailFormStructure();
   ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
+}
+
+// Tests that when an imported profile is modified through external means (e.g.
+// via the settings), the multi-step complement candidate is updated accordingly
+// and the correct profile update occurs.
+TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
+  base::test::ScopedFeatureList multistep_import_with_complement_feature;
+  multistep_import_with_complement_feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillEnableMultiStepImports,
+      {{features::kAutofillEnableMultiStepImportComplements.name, "true"}});
+
+  // Import the default profile without an email address.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(*form_structure));
+  VerifyExpectationForImportedAddressProfiles(
+      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
+
+  // Update the profile's ZIP through external means.
+  AutofillProfile profile = *personal_data_manager_->GetProfiles()[0];
+  profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_ZIP, u"12345", kLocale,
+      structured_address::VerificationStatus::kObserved);
+  personal_data_manager_->UpdateProfile(profile);
+  WaitForOnPersonalDataChanged();
+
+  // Expect that the updated profile is complemented with an email address.
+  form_structure = ConstructDefaultEmailFormStructure();
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  expected_profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_ZIP, u"12345", kLocale,
+      structured_address::VerificationStatus::kObserved);
+  ImportAddressProfilesAndVerifyExpectation(*form_structure,
+                                            {expected_profile});
+}
+
+// Tests that when an imported profile is deleted through external means (e.g.
+// via the settings), the multi-step complement candidate is removed and no
+// further updates related to it are offered.
+TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
+  base::test::ScopedFeatureList multistep_import_with_complement_feature;
+  multistep_import_with_complement_feature.InitAndEnableFeatureWithParameters(
+      features::kAutofillEnableMultiStepImports,
+      {{features::kAutofillEnableMultiStepImportComplements.name, "true"}});
+
+  // Import the default profile without an email address.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(*form_structure));
+  VerifyExpectationForImportedAddressProfiles(
+      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
+
+  // Remove the profile through external means.
+  personal_data_manager_->RemoveByGUID(
+      personal_data_manager_->GetProfiles()[0]->guid());
+  WaitForOnPersonalDataChanged();
+
+  // Expect that the removed profile cannot be updated with an email address.
+  form_structure = ConstructDefaultEmailFormStructure();
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
 // Tests that multi-step candidate profiles from different origins are not
 // merged.
-TEST_P(FormDataImporterTest, MultiStepImportDifferentOrigin) {
+TEST_P(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
   base::test::ScopedFeatureList multistep_import_feature;
   multistep_import_feature.InitAndEnableFeature(
       features::kAutofillEnableMultiStepImports);
@@ -4397,11 +4465,11 @@ TEST_P(FormDataImporterTest, MultiStepImportDifferentOrigin) {
   form = ConstructSplitDefaultFormData(/*part=*/2);
   form.url = GURL("https://wwww.bar.com");
   form_structure = ConstructFormStructureFromFormData(form);
-  ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
 // Tests that multi-step candidates profiles are invalidated after some TTL.
-TEST_P(FormDataImporterTest, MultiStepImportTTL) {
+TEST_P(FormDataImporterTest, MultiStepImport_TTL) {
   base::test::ScopedFeatureList multistep_import_feature_set_ttl;
   multistep_import_feature_set_ttl.InitAndEnableFeatureWithParameters(
       features::kAutofillEnableMultiStepImports,
@@ -4415,12 +4483,12 @@ TEST_P(FormDataImporterTest, MultiStepImportTTL) {
   test_clock.Advance(base::Minutes(31));
 
   form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
-  ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
 // Tests that multi-step candidates profiles are cleared if the browsing history
 // is deleted.
-TEST_P(FormDataImporterTest, MultiStepImportDeleteOnBrowsingHistoryCleared) {
+TEST_P(FormDataImporterTest, MultiStepImport_DeleteOnBrowsingHistoryCleared) {
   base::test::ScopedFeatureList multistep_import_feature;
   multistep_import_feature.InitAndEnableFeature(
       features::kAutofillEnableMultiStepImports);
@@ -4436,7 +4504,7 @@ TEST_P(FormDataImporterTest, MultiStepImportDeleteOnBrowsingHistoryCleared) {
           /*favicon_urls=*/{}));
 
   form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
-  ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
 // Tests that the FormAssociator is correctly integrated in FormDataImporter and

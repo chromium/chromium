@@ -86,18 +86,18 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return virtual_card_enrollment_manager_.get();
   }
 
-  void AddMultiStepImportCandidate(
-      const AutofillProfile& profile,
-      const ProfileImportMetadata& import_metadata) {
-    multistep_importer_.AddMultiStepImportCandidate(profile, import_metadata);
+  void AddMultiStepImportCandidate(const AutofillProfile& profile,
+                                   const ProfileImportMetadata& import_metadata,
+                                   bool is_imported) {
+    multistep_importer_.AddMultiStepImportCandidate(profile, import_metadata,
+                                                    is_imported);
   }
-
-  void ClearMultiStepImportCandidates() { multistep_importer_.Clear(); }
 
   // See comment for |fetched_card_instrument_id_|.
   void SetFetchedCardInstrumentId(int64_t instrument_id);
 
   // PersonalDataManagerObserver
+  void OnPersonalDataChanged() override;
   void OnBrowsingHistoryCleared(
       const history::DeletionInfo& deletion_info) override;
 
