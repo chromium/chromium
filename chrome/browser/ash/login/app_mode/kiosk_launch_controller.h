@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -12,11 +14,14 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
-#include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
-#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
+#include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+
+namespace app_mode {
+class ForceInstallObserver;
+}  // namespace app_mode
 
 namespace ash {
 class LoginDisplayHost;
@@ -58,11 +63,9 @@ class LoginDisplayHost;
 //
 // It is all encompassed within the combination of two states -- AppState and
 // NetworkUI state.
-class KioskLaunchController
-    : public KioskProfileLoader::Delegate,
-      public AppLaunchSplashScreenView::Delegate,
-      public KioskAppLauncher::Delegate,
-      public extensions::ForceInstalledTracker::Observer {
+class KioskLaunchController : public KioskProfileLoader::Delegate,
+                              public AppLaunchSplashScreenView::Delegate,
+                              public KioskAppLauncher::Delegate {
  public:
   class KioskProfileLoadFailedObserver : public base::CheckedObserver {
    public:
@@ -162,13 +165,6 @@ class KioskLaunchController
   void OnProfileLoadFailed(KioskAppLaunchError::Error error) override;
   void OnOldEncryptionDetected(const UserContext& user_context) override;
 
-  // ForceInstalledTracker::Observer:
-  void OnForceInstalledExtensionsReady() override;
-  void OnForceInstalledExtensionFailed(
-      const extensions::ExtensionId& extension_id,
-      extensions::InstallStageTracker::FailureReason reason,
-      bool is_from_store) override;
-
   void OnOwnerSigninSuccess();
 
   // Whether the network could be configured during launching.
@@ -186,11 +182,10 @@ class KioskLaunchController
 
   // Continues launching after forced extensions are installed if required.
   // If it times out waiting for extensions to install, logs metrics via UMA.
-  void FinishForcedExtensionsInstall(bool timeout);
+  void FinishForcedExtensionsInstall(
+      app_mode::ForceInstallObserver::Result result);
 
   void OnNetworkWaitTimedOut();
-  void StartTimerToWaitForExtensions();
-  void OnExtensionWaitTimedOut();
   void OnTimerFire();
   void CloseSplashScreen();
   void CleanUp();
@@ -231,27 +226,10 @@ class KioskLaunchController
   // network configuration to continue.
   base::OneShotTimer network_wait_timer_;
 
-  // A timer that fires when the force-installed extensions were not ready
-  // within the allocated time.
-  base::OneShotTimer extension_wait_timer_;
-
-  // Tracks the moment when extensions start to be installed.
-  absl::optional<base::Time> extension_start_time_;
-
   // Tracks the moment when Kiosk launcher is started.
   base::Time launcher_start_time_;
 
-  // Observe the installation status of extensions in Ash. This object is
-  // only used when Lacros is disabled.
-  base::ScopedObservation<extensions::ForceInstalledTracker,
-                          extensions::ForceInstalledTracker::Observer>
-      force_installed_observation_for_ash_{this};
-
-  // Observe the installation status of extensions in Lacros. This object is
-  // only used when Lacros is enabled.
-  base::ScopedObservation<crosapi::ForceInstalledTrackerAsh,
-                          extensions::ForceInstalledTracker::Observer>
-      force_installed_observation_for_lacros_{this};
+  std::unique_ptr<app_mode::ForceInstallObserver> force_install_observer_;
 
   base::ObserverList<KioskProfileLoadFailedObserver>
       profile_load_failed_observers_;

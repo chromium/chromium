@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
@@ -24,9 +23,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
+#include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -34,19 +31,12 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
-#include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/common/chrome_features.h"
-#include "components/policy/core/browser/policy_error_map.h"
-#include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/policy_constants.h"
 #include "content/public/browser/network_service_instance.h"
 
 namespace ash {
@@ -59,11 +49,6 @@ constexpr base::TimeDelta kKioskSplashScreenMinTime = base::Seconds(10);
 // changed in tests.
 constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
-
-// Time of waiting for the force-installed extension to be ready to start
-// application window. Can be changed in tests.
-constexpr base::TimeDelta kKioskExtensionWaitTime = base::Minutes(2);
-base::TimeDelta g_extension_wait_time = kKioskExtensionWaitTime;
 
 // Whether we should skip the wait for minimum screen show time.
 bool g_skip_splash_wait_for_testing = false;
@@ -113,26 +98,6 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
   }
 }
 
-void RecordKioskExtensionInstallError(
-    extensions::InstallStageTracker::FailureReason reason,
-    bool is_from_store) {
-  if (is_from_store) {
-    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.WebStore",
-                                  reason);
-  } else {
-    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.OffStore",
-                                  reason);
-  }
-}
-
-void RecordKioskExtensionInstallTimedOut(bool timeout) {
-  UMA_HISTOGRAM_BOOLEAN("Kiosk.Extensions.InstallTimedOut", timeout);
-}
-
-void RecordKioskExtensionInstallDuration(base::TimeDelta time_delta) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration", time_delta);
-}
-
 void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
   switch (type) {
     case KioskAppType::kArcApp:
@@ -146,39 +111,6 @@ void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
       break;
   }
 }
-
-extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
-  extensions::ExtensionSystem* system =
-      extensions::ExtensionSystem::Get(profile);
-  DCHECK(system);
-
-  extensions::ExtensionService* service = system->extension_service();
-  return service ? service->force_installed_tracker() : nullptr;
-}
-
-bool IsExtensionInstallForcelistPolicyValid() {
-  policy::PolicyService* policy_service = g_browser_process->platform_part()
-                                              ->browser_policy_connector_ash()
-                                              ->GetPolicyService();
-  DCHECK(policy_service);
-
-  const policy::PolicyMap& map =
-      policy_service->GetPolicies(policy::PolicyNamespace(
-          policy::PolicyDomain::POLICY_DOMAIN_CHROME, std::string()));
-
-  extensions::ExtensionInstallForceListPolicyHandler handler;
-  policy::PolicyErrorMap errors;
-  handler.CheckPolicySettings(map, &errors);
-  return errors.GetErrors(policy::key::kExtensionInstallForcelist).empty();
-}
-
-crosapi::ForceInstalledTrackerAsh* GetForceInstalledTrackerAsh() {
-  CHECK(crosapi::CrosapiManager::IsInitialized());
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->force_installed_tracker_ash();
-}
-
 // This is a not-owning wrapper around ArcKioskAppService which allows to be
 // plugged into a unique_ptr safely.
 // TODO(apotapchuk): Remove this when ARC kiosk is fully deprecated.
@@ -425,11 +357,10 @@ void KioskLaunchController::CleanUp() {
   DCHECK(!cleaned_up_);
   cleaned_up_ = true;
 
-  extension_wait_timer_.Stop();
   network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
 
-  extension_start_time_ = absl::nullopt;
+  force_install_observer_.reset();
 
   kiosk_profile_loader_.reset();
   // Can be null in tests.
@@ -476,47 +407,23 @@ void KioskLaunchController::OnAppPrepared() {
   if (network_ui_state_ != NetworkUIState::kNotShowing)
     return;
 
-  if (!IsExtensionInstallForcelistPolicyValid()) {
-    SYSLOG(WARNING) << "The ExtensionInstallForcelist policy value is invalid.";
-
-    splash_screen_view_->ShowErrorMessage(
-        KioskAppLaunchError::Error::kExtensionsPolicyInvalid);
-    FinishForcedExtensionsInstall(/*timeout=*/false);
-    return;
-  }
-
   app_state_ = AppState::kInstallingExtensions;
 
-  // Launch lacros-chrome if the corresponding feature flags are enabled.
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
-    crosapi::ForceInstalledTrackerAsh* tracker_ash =
-        GetForceInstalledTrackerAsh();
-
-    if (tracker_ash && !tracker_ash->IsReady()) {
-      // Start observing the installation status of extensions in Lacros.
-      force_installed_observation_for_lacros_.Observe(
-          GetForceInstalledTrackerAsh());
-      StartTimerToWaitForExtensions();
-    } else {
-      FinishForcedExtensionsInstall(/*timeout=*/false);
-    }
-
-    // Initialize and start Lacros for preparing force-installed extensions.
-    if (!crosapi::BrowserManager::Get()->IsRunningOrWillRun())
-      crosapi::BrowserManager::Get()->InitializeAndStartIfNeeded();
-
-    return;
+  // Initialize and start Lacros for preparing force-installed extensions.
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession() &&
+      !crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
+    SYSLOG(INFO) << "Launching lacros for web kiosk";
+    crosapi::BrowserManager::Get()->InitializeAndStartIfNeeded();
   }
 
-  extensions::ForceInstalledTracker* tracker =
-      GetForceInstalledTracker(profile_);
+  splash_screen_view_->UpdateAppLaunchState(
+      AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
+  splash_screen_view_->Show();
 
-  if (tracker && !tracker->IsReady()) {
-    force_installed_observation_for_ash_.Observe(tracker);
-    StartTimerToWaitForExtensions();
-  } else {
-    FinishForcedExtensionsInstall(/*timeout=*/false);
-  }
+  force_install_observer_ = std::make_unique<app_mode::ForceInstallObserver>(
+      profile_,
+      base::BindOnce(&KioskLaunchController::FinishForcedExtensionsInstall,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KioskLaunchController::InitializeNetwork() {
@@ -555,23 +462,6 @@ void KioskLaunchController::OnNetworkWaitTimedOut() {
     std::move(*network_timeout_callback).Run();
     network_timeout_callback = nullptr;
   }
-}
-
-void KioskLaunchController::StartTimerToWaitForExtensions() {
-  extension_start_time_ = absl::make_optional(base::Time::Now());
-  extension_wait_timer_.Start(FROM_HERE, g_extension_wait_time, this,
-                              &KioskLaunchController::OnExtensionWaitTimedOut);
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
-  splash_screen_view_->Show();
-}
-
-void KioskLaunchController::OnExtensionWaitTimedOut() {
-  SYSLOG(WARNING) << "OnExtensionWaitTimedout...";
-
-  splash_screen_view_->ShowErrorMessage(
-      KioskAppLaunchError::Error::kExtensionsLoadTimeout);
-  FinishForcedExtensionsInstall(/*timeout=*/true);
 }
 
 bool KioskLaunchController::IsNetworkReady() const {
@@ -641,21 +531,23 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
     LaunchApp();
 }
 
-void KioskLaunchController::FinishForcedExtensionsInstall(bool timeout) {
+void KioskLaunchController::FinishForcedExtensionsInstall(
+    app_mode::ForceInstallObserver::Result result) {
   app_state_ = AppState::kInstalled;
+  force_install_observer_.reset();
 
-  // If forced extension install was started, record UMA metrics for extension
-  // install.
-  if (extension_start_time_) {
-    RecordKioskExtensionInstallTimedOut(timeout);
-    RecordKioskExtensionInstallDuration(base::Time::Now() -
-                                        *extension_start_time_);
+  switch (result) {
+    case app_mode::ForceInstallObserver::Result::kTimeout:
+      splash_screen_view_->ShowErrorMessage(
+          KioskAppLaunchError::Error::kExtensionsLoadTimeout);
+      break;
+    case app_mode::ForceInstallObserver::Result::kInvalidPolicy:
+      splash_screen_view_->ShowErrorMessage(
+          KioskAppLaunchError::Error::kExtensionsPolicyInvalid);
+      break;
+    case app_mode::ForceInstallObserver::Result::kSuccess:
+      break;
   }
-
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession())
-    force_installed_observation_for_lacros_.Reset();
-  else
-    force_installed_observation_for_ash_.Reset();
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
@@ -714,17 +606,6 @@ void KioskLaunchController::OnOldEncryptionDetected(
   migration_screen->SetupInitialView();
 }
 
-void KioskLaunchController::OnForceInstalledExtensionsReady() {
-  FinishForcedExtensionsInstall(/*timeout=*/false);
-}
-
-void KioskLaunchController::OnForceInstalledExtensionFailed(
-    const extensions::ExtensionId& extension_id,
-    extensions::InstallStageTracker::FailureReason reason,
-    bool is_from_store) {
-  RecordKioskExtensionInstallError(reason, is_from_store);
-}
-
 void KioskLaunchController::OnOwnerSigninSuccess() {
   ShowNetworkConfigureUI();
 }
@@ -740,7 +621,8 @@ bool KioskLaunchController::CanConfigureNetwork() {
             &should_prompt)) {
       return should_prompt;
     }
-    // Default to true to allow network configuration if the policy is missing.
+    // Default to true to allow network configuration if the policy is
+    // missing.
     return true;
   }
 
@@ -808,8 +690,9 @@ void KioskLaunchController::OnNetworkConfigRequested() {
       break;
     case AppState::kInstallingApp:
     case AppState::kInstallingExtensions:
-      // When requesting to show network configure UI, we should cancel current
-      // installation and restart it as soon as the network is configured.
+      // When requesting to show network configure UI, we should cancel
+      // current installation and restart it as soon as the network is
+      // configured.
       app_state_ = AppState::kInitNetwork;
       app_launcher_->RestartLauncher();
       MaybeShowNetworkConfigureUI();
@@ -837,8 +720,8 @@ void KioskLaunchController::OnNetworkConfigFinished() {
 
 void KioskLaunchController::OnNetworkStateChanged(bool online) {
   if (app_state_ == AppState::kInitNetwork && online) {
-    // If the network timed out, we should exit network config dialog as soon as
-    // we are back online.
+    // If the network timed out, we should exit network config dialog as soon
+    // as we are back online.
     if (network_ui_state_ == NetworkUIState::kNotShowing ||
         network_wait_timedout_) {
       network_wait_timer_.Stop();
