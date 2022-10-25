@@ -198,9 +198,10 @@ class AndroidRndisConfigurator(object):
   def _EnumerateHostInterfaces(self):
     host_platform = platform.GetHostPlatform().GetOSName()
     if host_platform == 'linux':
-      return subprocess.check_output(['ip', 'addr']).splitlines()
+      return subprocess.check_output(['ip', 'addr'],
+                                     encoding='utf8').splitlines()
     if host_platform == 'mac':
-      return subprocess.check_output(['ifconfig']).splitlines()
+      return subprocess.check_output(['ifconfig'], encoding='utf8').splitlines()
     raise NotImplementedError('Platform %s not supported!' % host_platform)
 
   # pylint: disable=inconsistent-return-statements
@@ -220,7 +221,8 @@ class AndroidRndisConfigurator(object):
               self._DEVICE_IP_ADDRESS], stdout=devnull, stderr=devnull)
         # Check if ARP cache now has device in it.
         arp = subprocess.check_output(
-            ['arp', '-i', interface_name, self._DEVICE_IP_ADDRESS])
+            ['arp', '-i', interface_name, self._DEVICE_IP_ADDRESS],
+            encoding='utf8')
         if device_mac_address in arp:
           return interface_name
       elif ether_address in line:
@@ -245,7 +247,7 @@ class AndroidRndisConfigurator(object):
       return False
 
     def HoRNDISLoaded():
-      return 'HoRNDIS' in subprocess.check_output(['kextstat'])
+      return 'HoRNDIS' in subprocess.check_output(['kextstat'], encoding='utf8')
 
     if HoRNDISLoaded():
       return True
@@ -425,7 +427,7 @@ doit &
     if not HasHostAddress():
       if platform.GetHostPlatform().GetOSName() == 'mac':
         if 'Telemetry' not in subprocess.check_output(
-            ['networksetup', '-listallnetworkservices']):
+            ['networksetup', '-listallnetworkservices'], encoding='utf8'):
           subprocess.check_call(
               ['/usr/bin/sudo', 'networksetup',
                '-createnetworkservice', 'Telemetry', host_iface])
