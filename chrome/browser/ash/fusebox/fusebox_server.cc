@@ -227,29 +227,6 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
   }
 }
 
-void RunReadDirCallback(
-    Server::ReadDirCallback callback,
-    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
-    bool read_only,
-    uint64_t cookie,
-    base::File::Error error_code,
-    storage::AsyncFileUtil::EntryList entry_list,
-    bool has_more) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  fusebox::DirEntryListProto protos;
-  for (const auto& entry : entry_list) {
-    bool is_directory = entry.type == filesystem::mojom::FsFileType::DIRECTORY;
-    auto* proto = protos.add_entries();
-    proto->set_is_directory(is_directory);
-    proto->set_name(entry.name.value());
-    proto->set_mode_bits(Server::MakeModeBits(is_directory, read_only));
-  }
-
-  callback.Run(cookie, FileErrorToErrno(error_code), std::move(protos),
-               has_more);
-}
-
 void RunStatCallback(
     Server::StatCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
@@ -452,35 +429,6 @@ void Server::Read(std::string fs_url_as_string,
       FROM_HERE,
       base::BindOnce(&ReadOnIOThread, common.fs_context, common.fs_url, offset,
                      static_cast<int64_t>(length), std::move(callback)));
-}
-
-void Server::ReadDir(std::string fs_url_as_string,
-                     uint64_t cookie,
-                     ReadDirCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
-  if (common.is_moniker_root ||
-      (common.error_code != base::File::Error::FILE_OK)) {
-    constexpr bool has_more = false;
-    callback.Run(cookie, FileErrorToErrno(common.error_code),
-                 fusebox::DirEntryListProto(), has_more);
-    return;
-  }
-
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindRepeating(&RunReadDirCallback, callback, common.fs_context,
-                          common.read_only, cookie));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindRepeating(
-          base::IgnoreResult(
-              &storage::FileSystemOperationRunner::ReadDirectory),
-          // Unretained is safe: common.fs_context owns its operation_runner.
-          base::Unretained(common.fs_context->operation_runner()),
-          common.fs_url, std::move(outer_callback)));
 }
 
 void Server::ReadDir2(ReadDir2RequestProto request_proto,

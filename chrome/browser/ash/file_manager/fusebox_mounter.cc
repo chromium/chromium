@@ -16,15 +16,12 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
 namespace file_manager {
 
 // static
 FuseBoxMounter* FuseBoxMounter::Create(std::string uri) {
-  if (!ash::FuseBoxReverseClient::Get())
-    return nullptr;
   if (!ash::features::IsFileManagerFuseBoxEnabled())
     return nullptr;
   return new FuseBoxMounter(std::move(uri));
@@ -47,43 +44,24 @@ void FuseBoxMounter::Mount(FuseBoxDiskMountManager* disk_mount_manager) {
 
 void FuseBoxMounter::AttachStorage(const std::string& subdir,
                                    const std::string& url,
-                                   bool read_only,
-                                   StorageResult callback) {
-  auto* client = ash::FuseBoxReverseClient::Get();
-  DCHECK(client);
-
+                                   bool read_only) {
   if (!mounted_) {
-    std::move(callback).Run(ENODEV);
     return;
   }
-
   fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
   if (fusebox_server) {
     fusebox_server->RegisterFSURLPrefix(subdir, url, read_only);
   }
-
-  std::string name =
-      base::JoinString({subdir, subdir, read_only ? "ro" : ""}, " ");
-
-  client->AttachStorage(name, std::move(callback));
 }
 
-void FuseBoxMounter::DetachStorage(const std::string& subdir,
-                                   StorageResult callback) {
-  auto* client = ash::FuseBoxReverseClient::Get();
-  DCHECK(client);
-
+void FuseBoxMounter::DetachStorage(const std::string& subdir) {
   if (!mounted_) {
-    std::move(callback).Run(ENODEV);
     return;
   }
-
   fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
   if (fusebox_server) {
     fusebox_server->UnregisterFSURLPrefix(subdir);
   }
-
-  client->DetachStorage(subdir, std::move(callback));
 }
 
 void FuseBoxMounter::Unmount(FuseBoxDiskMountManager* disk_mount_manager) {

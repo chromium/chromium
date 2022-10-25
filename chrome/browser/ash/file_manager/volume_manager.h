@@ -537,27 +537,6 @@ class VolumeManager : public KeyedService,
                       const std::string& display_name);
   void RemoveSmbFsVolume(const base::FilePath& mount_point);
 
-  void OnFuseboxAttachStorageADP(const std::string& subdir,
-                                 const std::string& authority,
-                                 const std::string& root_id,
-                                 const std::string& document_id,
-                                 const std::string& title,
-                                 const std::string& summary,
-                                 const GURL icon_url,
-                                 bool read_only,
-                                 int error);
-  void OnFuseboxAttachStorageMTP(const std::string& subdir,
-                                 const std::string& fsid,
-                                 const std::string& label,
-                                 bool read_only,
-                                 int error);
-  void OnFuseboxAttachStorageProvidedFileSystem(
-      const std::string& subdir,
-      const std::string& fsid,
-      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-      MountContext volume_context,
-      int error);
-
   void ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(std::string* volume_id) const;
 
   SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }

@@ -102,19 +102,6 @@ class Server {
             int32_t length,
             ReadCallback callback);
 
-  // Deprecated: use ReadDir2 instead.
-  //
-  // ReadDir lists the directory's children. The results may be sent back over
-  // multiple RPC messages, each with the same client-chosen cookie value.
-  using ReadDirCallback =
-      base::RepeatingCallback<void(uint64_t cookie,
-                                   int32_t posix_error_code,
-                                   fusebox::DirEntryListProto dir_entry_list,
-                                   bool has_more)>;
-  void ReadDir(std::string fs_url_as_string,
-               uint64_t cookie,
-               ReadDirCallback callback);
-
   // ReadDir2 lists the directory's children. The results will be sent back in
   // the responses of one or more request-response RPC pairs. The first request
   // and last response have a zero cookie value. The remaining RPCs will have

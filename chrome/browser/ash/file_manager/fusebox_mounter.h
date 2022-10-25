@@ -31,20 +31,16 @@ class FuseBoxMounter {
   // Mount fusebox daemon.
   void Mount(FuseBoxDiskMountManager* disk_mount_manager);
 
-  // Storage result: |error| is a POSIX errno value.
-  using StorageResult = base::OnceCallback<void(int error)>;
-
   // Attach fusebox storage: adds fusebox daemon <mount-point>/subdir used to
   // serve the content of the Chrome storage::FileSystemURL |url| via FUSE to
   // the Linux file system. The <mount-point>/subdir content is read-write by
   // default: use |read_only| true to make the content read-only.
   void AttachStorage(const std::string& subdir,
                      const std::string& url,
-                     bool read_only,
-                     StorageResult callback);
+                     bool read_only);
 
   // Detach fusebox storage: removes fusebox <mountpoint>/subdir.
-  void DetachStorage(const std::string& subdir, StorageResult callback);
+  void DetachStorage(const std::string& subdir);
 
   // Unmount fusebox daemon.
   void Unmount(FuseBoxDiskMountManager* disk_mount_manager);
