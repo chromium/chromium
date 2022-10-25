@@ -5443,6 +5443,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE" desc="Text shown in the extensions settings for items that might have been forcefully added to Chrome without the user's knowledge">
         This extension is not listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE">$1<ex>Chrome Web Store</ex></ph> and may have been added without your knowledge.
       </message>
+      <message name="IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE_LEARN_MORE" desc="Text read by screen readers for a link labeled 'Learn more' that links to a Help article about disabled extensions.">
+        Learn more about disabled extensions.
+      </message>
       <message name="IDS_EXTENSIONS_DISABLE_DEVELOPER_MODE_TITLE" desc="Title of a dialog warning users they have development mode extensions running">
         Disable developer mode extensions
       </message>
@@ -9075,6 +9078,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <!-- Enhanced Safe Browsing CRX allowlist warning -->
         <message name="IDS_EXTENSIONS_SAFE_BROWSING_CRX_ALLOWLIST_WARNING" desc="A warning shown in 'chrome://extensions' when the extension is not included in the Enhanced Safe Browsing CRX allowlist.">
            This extension is not trusted by Enhanced Safe Browsing.
+        </message>
+        <message name="IDS_EXTENSIONS_SAFE_BROWSING_CRX_ALLOWLIST_WARNING_LEARN_MORE" desc="Text read by screen readers for a link labeled 'Learn more' that links to a Help article about Enhanced Safe Browsing.">
+          Learn more about Enhanced Safe Browsing.
+        </message>
+        <message name="IDS_EXTENSIONS_ACCESS_REQUESTS_LEARN_MORE" desc="Text read by screen readers for a link labeled 'Learn more' that links to a Help article about Extensions' access requests.">
+          Learn more about access requests.
         </message>
 
         <!-- Reset Profile Settings strings -->

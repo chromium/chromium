@@ -218,7 +218,8 @@
         <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
         <span>
           $i18n{itemSuspiciousInstall}
-          <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}">
+          <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}"
+              aria-label="$i18n{itemSuspiciousInstallLearnMore}">
             $i18n{learnMore}
           </a>
         </span>
@@ -251,7 +252,8 @@
       </iron-icon>
       <span class="cr-secondary-text">
         $i18n{itemAllowlistWarning}
-        <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank">
+        <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank"
+            aria-label="$i18n{itemAllowlistWarningLearnMoreLabel}">
           $i18n{learnMore}
         </a>
       </span>
@@ -374,7 +376,8 @@
                           on-change="onShowAccessRequestsChange_">
               <div id="access-toggle-and-link">
                 <span>$i18n{itemShowAccessRequestsInToolbar}</span>
-                <a class="link-icon-button" aria-label="$i18n{learnMore}"
+                <a class="link-icon-button"
+                    aria-label="$i18n{itemShowAccessRequestsLearnMore}"
                     href="$i18n{showAccessRequestsInToolbarLearnMoreLink}"
                     target="_blank">
                   <iron-icon icon="cr:help-outline"></iron-icon>

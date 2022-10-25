@@ -238,7 +238,8 @@
           <span id="suspicious-warning" aria-describedby="a11yAssociation"
               hidden$="[[!data.disableReasons.suspiciousInstall]]">
             $i18n{itemSuspiciousInstall}
-            <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}">
+            <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}"
+                aria-label="$i18n{itemSuspiciousInstallLearnMore}">
               $i18n{learnMore}
             </a>
           </span>
@@ -259,7 +260,8 @@
           </iron-icon>
           <span class="cr-secondary-text" aria-describedby="a11yAssociation">
             $i18n{itemAllowlistWarning}
-            <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank">
+            <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank"
+                aria-label="$i18n{itemAllowlistWarningLearnMoreLabel}">
               $i18n{learnMore}
             </a>
           </span>
