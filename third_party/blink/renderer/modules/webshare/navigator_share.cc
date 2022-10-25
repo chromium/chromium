@@ -213,7 +213,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
                                     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kAbortError,
+        DOMExceptionCode::kInvalidStateError,
         "Internal error: window frame is missing (the navigator may be "
         "detached).");
     return ScriptPromise();
