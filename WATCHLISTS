@@ -173,6 +173,9 @@
     'arc_mojom': {
       'filepath': 'components/arc/mojom/',
     },
+    'arc_nearby_share': {
+      'filepath': 'chrome/browser/ash/arc/nearby_share'
+    },
     'arc_net': {
       'filepath': 'components/arc/net/',
     },
@@ -2295,6 +2298,7 @@
     'arc_ime': ['yhanada+watch@chromium.org'],
     'arc_kiosk': ['poromov+watch@chromium.org'],
     'arc_mojom': ['hashimoto+watch@chromium.org'],
+    'arc_nearby_share': ['alanding+watch@chromium.org'],
     'arc_net': ['abhishekbh@chromium.org',
                 'cernekee@chromium.org',
                 'snanda@chromium.org'],
