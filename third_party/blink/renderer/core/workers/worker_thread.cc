@@ -880,6 +880,13 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
   DCHECK(!is_in_back_forward_cache ||
          state == mojom::blink::FrameLifecycleState::kFrozen);
 
+  // Ensure we aren't trying to pause a worker that should be terminating.
+  {
+    base::AutoLock locker(lock_);
+    if (thread_state_ != ThreadState::kRunning)
+      return;
+  }
+
   pause_or_freeze_count_++;
   GlobalScope()->SetIsInBackForwardCache(is_in_back_forward_cache);
   GlobalScope()->SetLifecycleState(state);
