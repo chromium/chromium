@@ -25,11 +25,12 @@ class TwoClientWebAppsIntegrationTestBase
   void CloseBrowserSynchronously(Browser* browser) override;
   void AddBlankTabAndShow(Browser* browser) override;
   const net::EmbeddedTestServer* EmbeddedTestServer() const override;
-  std::vector<Profile*> GetAllProfiles() override;
+  Profile* GetDefaultProfile() override;
   bool IsSyncTest() override;
   void SyncTurnOff() override;
   void SyncTurnOn() override;
   void AwaitWebAppQuiescence() override;
+  Profile* GetProfileClient(ProfileClient client) override;
 
  protected:
   void SetUp() override;

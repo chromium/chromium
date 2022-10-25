@@ -191,7 +191,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
     virtual void CloseBrowserSynchronously(Browser* browser) = 0;
     virtual void AddBlankTabAndShow(Browser* browser) = 0;
     virtual const net::EmbeddedTestServer* EmbeddedTestServer() const = 0;
-    virtual std::vector<Profile*> GetAllProfiles() = 0;
+    virtual Profile* GetDefaultProfile() = 0;
 
     // Functionality specific to web app integration test type (e.g. sync or
     // non-sync tests).
@@ -199,6 +199,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
     virtual void SyncTurnOff() = 0;
     virtual void SyncTurnOn() = 0;
     virtual void AwaitWebAppQuiescence() = 0;
+    virtual Profile* GetProfileClient(ProfileClient client) = 0;
   };
 
   explicit WebAppIntegrationTestDriver(TestDelegate* delegate);
@@ -376,12 +377,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::vector<base::FilePath> GetTestFilePaths(FilesOptions file_options);
 
   Browser* browser();
-  Profile* profile() {
-    if (!active_profile_) {
-      active_profile_ = delegate_->GetAllProfiles()[0];
-    }
-    return active_profile_;
-  }
+  Profile* profile();
+  std::vector<Profile*> GetAllProfiles();
+
   Browser* app_browser() { return app_browser_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   PageActionIconView* pwa_install_view();
@@ -458,13 +456,13 @@ class WebAppIntegrationTest : public InProcessBrowserTest,
   void CloseBrowserSynchronously(Browser* browser) override;
   void AddBlankTabAndShow(Browser* browser) override;
   const net::EmbeddedTestServer* EmbeddedTestServer() const override;
-
-  std::vector<Profile*> GetAllProfiles() override;
+  Profile* GetDefaultProfile() override;
 
   bool IsSyncTest() override;
   void SyncTurnOff() override;
   void SyncTurnOn() override;
   void AwaitWebAppQuiescence() override;
+  Profile* GetProfileClient(ProfileClient client) override;
 
  protected:
   WebAppIntegrationTestDriver helper_;

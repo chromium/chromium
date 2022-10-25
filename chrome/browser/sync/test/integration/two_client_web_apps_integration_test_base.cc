@@ -35,15 +35,8 @@ TwoClientWebAppsIntegrationTestBase::EmbeddedTestServer() const {
   return embedded_test_server();
 }
 
-std::vector<Profile*> TwoClientWebAppsIntegrationTestBase::GetAllProfiles() {
-  std::vector<Profile*> profiles = WebAppsSyncTestBase::GetAllProfiles();
-  size_t profile_count = profiles.size();
-  for (size_t i = 0; i < profile_count; ++i) {
-    std::vector<Profile*> otr_profiles =
-        profiles[i]->GetAllOffTheRecordProfiles();
-    profiles.insert(profiles.end(), otr_profiles.begin(), otr_profiles.end());
-  }
-  return profiles;
+Profile* TwoClientWebAppsIntegrationTestBase::GetDefaultProfile() {
+  return GetProfile(0);
 }
 
 bool TwoClientWebAppsIntegrationTestBase::IsSyncTest() {
@@ -65,6 +58,18 @@ void TwoClientWebAppsIntegrationTestBase::SyncTurnOn() {
 
 void TwoClientWebAppsIntegrationTestBase::AwaitWebAppQuiescence() {
   ASSERT_TRUE(apps_helper::AwaitWebAppQuiescence(GetAllProfiles()));
+}
+
+Profile* TwoClientWebAppsIntegrationTestBase::GetProfileClient(
+    ProfileClient client) {
+  switch (client) {
+    case ProfileClient::kClient1:
+      return GetProfile(0);
+    case ProfileClient::kClient2:
+      return GetProfile(1);
+  }
+  NOTREACHED();
+  return nullptr;
 }
 
 void TwoClientWebAppsIntegrationTestBase::SetUp() {

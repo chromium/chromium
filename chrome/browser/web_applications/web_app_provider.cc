@@ -86,6 +86,8 @@ WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
   CHECK_IS_TEST();
 
   WebAppProvider* provider = GetForLocalAppsUnchecked(profile);
+  if (!provider)
+    return nullptr;
 
   if (provider->on_registry_ready().is_signaled())
     return provider;

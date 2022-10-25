@@ -33,6 +33,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
@@ -819,8 +820,10 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   observation_.Reset();
   if (delegate_->IsSyncTest())
     SyncTurnOff();
-  for (auto* profile : delegate_->GetAllProfiles()) {
+  for (auto* profile : GetAllProfiles()) {
     auto* provider = GetProviderForProfile(profile);
+    if (!provider)
+      continue;
     std::vector<AppId> app_ids = provider->registrar().GetAppIds();
     for (auto& app_id : app_ids) {
       LOG(INFO) << "TearDownOnMainThread: Uninstalling " << app_id << ".";
@@ -876,7 +879,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 
   // Print debug information if there was a failure.
   if (testing::Test::HasFailure()) {
-    for (auto* profile : delegate_->GetAllProfiles()) {
+    for (auto* profile : GetAllProfiles()) {
       base::RunLoop debug_info_loop;
       WebAppInternalsSource::BuildWebAppInternalsJson(
           profile, base::BindLambdaForTesting([&](base::Value debug_info) {
@@ -1721,18 +1724,10 @@ void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
 void WebAppIntegrationTestDriver::SwitchProfileClients(ProfileClient client) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
-  std::vector<Profile*> profiles = delegate_->GetAllProfiles();
-  ASSERT_EQ(2U, profiles.size())
-      << "Cannot switch profile clients if delegate only supports one profile";
   DCHECK(active_profile_);
-  switch (client) {
-    case ProfileClient::kClient1:
-      active_profile_ = profiles[0];
-      break;
-    case ProfileClient::kClient2:
-      active_profile_ = profiles[1];
-      break;
-  }
+  active_profile_ = delegate_->GetProfileClient(client);
+  DCHECK(active_profile_)
+      << "Cannot switch profile clients if delegate only supports one profile";
   delegate_->AwaitWebAppQuiescence();
   AfterStateChangeAction();
 }
@@ -2575,8 +2570,8 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
     const AppId& app_id,
     base::StringPiece old_name) {
   LOG(INFO) << "Manifest update received for " << app_id << ".";
-  DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
-      << "Manifest update waiting only supported on single profile tests.";
+  DCHECK(!delegate_->IsSyncTest())
+      << "Manifest update waiting only supported on non-sync tests.";
 
   previous_manifest_updates_.insert(app_id);
   if (waiting_for_update_id_ == app_id) {
@@ -2617,7 +2612,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   --executing_action_level_;
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 #if BUILDFLAG(IS_MAC)
-  for (auto* profile : delegate_->GetAllProfiles()) {
+  for (auto* profile : GetAllProfiles()) {
     std::vector<AppId> app_ids = provider()->registrar().GetAppIds();
     for (auto& app_id : app_ids) {
       auto* app_shim_manager = apps::AppShimManager::Get();
@@ -2695,7 +2690,7 @@ WebAppProvider* WebAppIntegrationTestDriver::GetProviderForProfile(
 std::unique_ptr<StateSnapshot>
 WebAppIntegrationTestDriver::ConstructStateSnapshot() {
   base::flat_map<Profile*, ProfileState> profile_state_map;
-  for (Profile* profile : delegate_->GetAllProfiles()) {
+  for (Profile* profile : GetAllProfiles()) {
     base::flat_map<Browser*, BrowserState> browser_state;
     auto* browser_list = BrowserList::GetInstance();
     for (Browser* browser : *browser_list) {
@@ -2733,35 +2728,39 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
                                 launch_icon_shown));
     }
 
-    WebAppRegistrar& registrar = GetProviderForProfile(profile)->registrar();
-    auto app_ids = registrar.GetAppIds();
+    WebAppProvider* provider = GetProviderForProfile(profile);
     base::flat_map<AppId, AppState> app_state;
-    for (const auto& app_id : app_ids) {
-      std::string manifest_launcher_icon_filename;
-      std::vector<apps::IconInfo> icon_infos =
-          provider()->registrar().GetAppIconInfos(app_id);
-      for (const auto& info : icon_infos) {
-        int icon_size = info.square_size_px.value_or(-1);
-        if (icon_size == kLauncherIconSize) {
-          manifest_launcher_icon_filename = info.url.ExtractFileName();
+    if (provider) {
+      WebAppRegistrar& registrar = provider->registrar();
+      auto app_ids = registrar.GetAppIds();
+      for (const auto& app_id : app_ids) {
+        std::string manifest_launcher_icon_filename;
+        std::vector<apps::IconInfo> icon_infos =
+            registrar.GetAppIconInfos(app_id);
+        for (const auto& info : icon_infos) {
+          int icon_size = info.square_size_px.value_or(-1);
+          if (icon_size == kLauncherIconSize) {
+            manifest_launcher_icon_filename = info.url.ExtractFileName();
+          }
         }
-      }
-      auto state = AppState(
-          app_id, registrar.GetAppShortName(app_id),
-          registrar.GetAppScope(app_id),
-          ConvertOsLoginMode(registrar.GetAppRunOnOsLoginMode(app_id).value),
-          registrar.GetAppEffectiveDisplayMode(app_id),
-          registrar.GetAppUserDisplayMode(app_id),
-          manifest_launcher_icon_filename, registrar.IsLocallyInstalled(app_id),
-          IsShortcutAndIconCreated(profile, registrar.GetAppShortName(app_id),
-                                   app_id),
-          registrar.IsIsolated(app_id));
+        auto state = AppState(
+            app_id, registrar.GetAppShortName(app_id),
+            registrar.GetAppScope(app_id),
+            ConvertOsLoginMode(registrar.GetAppRunOnOsLoginMode(app_id).value),
+            registrar.GetAppEffectiveDisplayMode(app_id),
+            registrar.GetAppUserDisplayMode(app_id),
+            manifest_launcher_icon_filename,
+            registrar.IsLocallyInstalled(app_id),
+            IsShortcutAndIconCreated(profile, registrar.GetAppShortName(app_id),
+                                     app_id),
+            registrar.IsIsolated(app_id));
 #if !BUILDFLAG(IS_CHROMEOS)
       if (registrar.IsLocallyInstalled(app_id)) {
         CheckAppSettingsAppState(profile->GetOriginalProfile(), state);
       }
 #endif
       app_state.emplace(app_id, state);
+      }
     }
 
     profile_state_map.emplace(
@@ -3112,6 +3111,24 @@ Browser* WebAppIntegrationTestDriver::browser() {
   return browser;
 }
 
+Profile* WebAppIntegrationTestDriver::profile() {
+  if (!active_profile_)
+    active_profile_ = delegate_->GetDefaultProfile();
+  return active_profile_;
+}
+
+std::vector<Profile*> WebAppIntegrationTestDriver::GetAllProfiles() {
+  std::vector<Profile*> profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  size_t profile_count = profiles.size();
+  for (size_t i = 0; i < profile_count; ++i) {
+    std::vector<Profile*> otr_profiles =
+        profiles[i]->GetAllOffTheRecordProfiles();
+    profiles.insert(profiles.end(), otr_profiles.begin(), otr_profiles.end());
+  }
+  return profiles;
+}
+
 PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
   PageActionIconView* pwa_install_view =
       BrowserView::GetBrowserViewForBrowser(browser())
@@ -3194,11 +3211,8 @@ const net::EmbeddedTestServer* WebAppIntegrationTest::EmbeddedTestServer()
   return embedded_test_server();
 }
 
-std::vector<Profile*> WebAppIntegrationTest::GetAllProfiles() {
-  std::vector<Profile*> profiles =
-      browser()->profile()->GetAllOffTheRecordProfiles();
-  profiles.insert(profiles.begin(), browser()->profile());
-  return profiles;
+Profile* WebAppIntegrationTest::GetDefaultProfile() {
+  return browser()->profile();
 }
 
 bool WebAppIntegrationTest::IsSyncTest() {
@@ -3213,6 +3227,10 @@ void WebAppIntegrationTest::SyncTurnOn() {
 }
 void WebAppIntegrationTest::AwaitWebAppQuiescence() {
   NOTREACHED();
+}
+Profile* WebAppIntegrationTest::GetProfileClient(ProfileClient client) {
+  NOTREACHED();
+  return nullptr;
 }
 
 }  // namespace web_app::integration_tests
