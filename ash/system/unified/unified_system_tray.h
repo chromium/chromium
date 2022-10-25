@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_view.h"
@@ -65,7 +66,8 @@ class ASH_EXPORT UnifiedSystemTray
     : public TrayBackgroundView,
       public ShelfConfig::Observer,
       public ShellObserver,
-      public UnifiedSystemTrayController::Observer {
+      public UnifiedSystemTrayController::Observer,
+      public TabletModeObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -210,6 +212,10 @@ class ASH_EXPORT UnifiedSystemTray
   // UnifiedSystemTrayController::Observer:
   void OnOpeningCalendarView() override;
   void OnTransitioningFromCalendarToMainView() override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   // Gets called when an action is performed on the `DateTray`.
   void OnDateTrayActionPerformed(const ui::Event& event);

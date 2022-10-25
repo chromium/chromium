@@ -573,6 +573,10 @@ void TrayBackgroundView::UpdateBackground() {
   layer()->SetBackgroundBlur(
       ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
   layer()->SetClipRect(GetBackgroundBounds());
+
+  const views::Widget* widget = GetWidget();
+  if (widget)
+    layer()->SetColor(ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 }
 
 void TrayBackgroundView::OnAnimationAborted() {

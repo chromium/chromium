@@ -285,11 +285,13 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
 
   ShelfConfig::Get()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
-  ShelfConfig::Get()->RemoveObserver(this);
+  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
+  ShelfConfig::Get()->RemoveObserver(this);
 
   DestroyBubbles();
 
@@ -520,6 +522,14 @@ void UnifiedSystemTray::OnTransitioningFromCalendarToMainView() {
   SetIsActive(true);
   for (auto& observer : observers_)
     observer.OnLeavingCalendarView();
+}
+
+void UnifiedSystemTray::OnTabletModeStarted() {
+  UpdateLayout();
+}
+
+void UnifiedSystemTray::OnTabletModeEnded() {
+  UpdateLayout();
 }
 
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
