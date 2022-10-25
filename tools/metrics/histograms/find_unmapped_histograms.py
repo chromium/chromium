@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -88,28 +89,59 @@ HISTOGRAM_REGEX = re.compile(r"""
     ([^,)]*)       # Capture the first parameter to the macro
     [,)]           # Match the comma/paren that delineates the first parameter
     """, re.VERBOSE)
-STANDARD_HISTOGRAM_SUFFIXES = frozenset(['TIMES', 'MEDIUM_TIMES', 'LONG_TIMES',
-                                         'LONG_TIMES_100', 'CUSTOM_TIMES',
-                                         'COUNTS', 'COUNTS_100', 'COUNTS_1000',
-                                         'COUNTS_10000', 'CUSTOM_COUNTS',
-                                         'MEMORY_KB', 'MEMORY_MB',
-                                         'MEMORY_LARGE_MB', 'PERCENTAGE',
-                                         'BOOLEAN', 'ENUMERATION',
-                                         'CUSTOM_ENUMERATION'])
-OTHER_STANDARD_HISTOGRAMS = frozenset(['SCOPED_UMA_HISTOGRAM_TIMER',
-                                       'SCOPED_UMA_HISTOGRAM_LONG_TIMER'])
+# Note: Order matches histogram_macros.h.
+STANDARD_HISTOGRAM_SUFFIXES = frozenset([
+    'ENUMERATION',
+    'SCALED_ENUMERATION',
+    'BOOLEAN',
+    'EXACT_LINEAR',
+    'PERCENTAGE',
+    'SCALED_EXACT_LINEAR',
+    'COUNTS_100',
+    'COUNTS_1000',
+    'COUNTS_10000',
+    'COUNTS_100000',
+    'COUNTS_1M',
+    'COUNTS_10M',
+    'CUSTOM_COUNTS',
+    'TIMES',
+    'MEDIUM_TIMES',
+    'LONG_TIMES',
+    'LONG_TIMES_100',
+    'CUSTOM_TIMES',
+    'CUSTOM_MICROSECONDS_TIMES',
+    'MEMORY_KB',
+    'MEMORY_MEDIUM_MB',
+    'MEMORY_LARGE_MB',
+    'SPARSE',
+    'COUNTS',
+    'MEMORY_MB',
+])
+OTHER_STANDARD_HISTOGRAMS = frozenset([
+    'SCOPED_UMA_HISTOGRAM_TIMER',
+    'SCOPED_UMA_HISTOGRAM_LONG_TIMER',
+    'SCOPED_UMA_HISTOGRAM_TIMER_MICROS',
+])
 # The following suffixes are not defined in //base/metrics but the first
 # argument to the macro is the full name of the histogram as a literal string.
-STANDARD_LIKE_SUFFIXES = frozenset(['SCROLL_LATENCY_SHORT',
-                                    'SCROLL_LATENCY_LONG',
-                                    'TOUCH_TO_SCROLL_LATENCY',
-                                    'LARGE_MEMORY_MB', 'MEGABYTES_LINEAR',
-                                    'LINEAR', 'ALLOCATED_MEGABYTES',
-                                    'CUSTOM_TIMES_MICROS',
-                                    'TIME_IN_MINUTES_MONTH_RANGE',
-                                    'TIMES_16H', 'MINUTES', 'MBYTES',
-                                    'ASPECT_RATIO', 'LOCATION_RESPONSE_TIMES',
-                                    'LOCK_TIMES', 'OOM_KILL_TIME_INTERVAL'])
+STANDARD_LIKE_SUFFIXES = frozenset([
+    'SCROLL_LATENCY_SHORT',
+    'SCROLL_LATENCY_LONG',
+    'TOUCH_TO_SCROLL_LATENCY',
+    'LARGE_MEMORY_MB',
+    'MEGABYTES_LINEAR',
+    'LINEAR',
+    'ALLOCATED_MEGABYTES',
+    'CUSTOM_TIMES_MICROS',
+    'TIME_IN_MINUTES_MONTH_RANGE',
+    'TIMES_16H',
+    'MINUTES',
+    'MBYTES',
+    'ASPECT_RATIO',
+    'LOCATION_RESPONSE_TIMES',
+    'LOCK_TIMES',
+    'OOM_KILL_TIME_INTERVAL',
+])
 OTHER_STANDARD_LIKE_HISTOGRAMS = frozenset(['SCOPED_BLINK_UMA_HISTOGRAM_TIMER'])
 
 
@@ -120,7 +152,7 @@ def RunGit(command):
   logging.info(' '.join(command))
   shell = (os.name == 'nt')
   proc = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE)
-  out = proc.communicate()[0].strip()
+  out = proc.communicate()[0].strip().decode('utf-8')
   return out
 
 
@@ -325,7 +357,7 @@ def hashHistogramName(name):
   Returns:
     Histogram hash as a string representing a hex number (with leading 0x).
   """
-  return '0x' + hashlib.md5(name).hexdigest()[:16]
+  return '0x' + hashlib.md5(name.encode('utf-8')).hexdigest()[:16]
 
 
 def output_csv(unmapped_histograms, location_map):
@@ -357,7 +389,7 @@ def main():
   # Find default paths.
   default_root = path_util.GetInputFile('/')
   default_extra_histograms_path = path_util.GetInputFile(
-      'tools/histograms/histograms.xml')
+      'tools/metrics/histograms/histograms.xml')
 
   # Parse command line options
   parser = optparse.OptionParser()
