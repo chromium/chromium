@@ -176,23 +176,27 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
 }
 
 PrerenderHost::~PrerenderHost() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnHostDestroyed(
         final_status_.value_or(PrerenderFinalStatus::kDestroyed));
+  }
 
-  if (!final_status_)
+  if (!final_status_) {
     RecordFinalStatus(PrerenderFinalStatus::kDestroyed,
                       attributes_.initiator_ukm_id, ukm::kInvalidSourceId);
+  }
 
   // If we are still waiting on test loop, we can assume the page loading step
   // has been cancelled and the PrerenderHost is being discarded without
   // completing loading the page.
-  if (on_wait_loading_finished_)
+  if (on_wait_loading_finished_) {
     std::move(on_wait_loading_finished_)
         .Run(PrerenderHost::LoadingOutcome::kPrerenderingCancelled);
+  }
 
-  if (frame_tree_)
+  if (frame_tree_) {
     frame_tree_->Shutdown();
+  }
 }
 
 void PrerenderHost::DidStopLoading() {
