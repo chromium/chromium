@@ -40,7 +40,7 @@ makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
 requestHelper @ console-xhr-logging.js:14
 (anonymous) @ VM:1
-VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED 200
+VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED 200 (OK)
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
@@ -76,7 +76,7 @@ makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
 requestHelper @ console-xhr-logging.js:14
 (anonymous) @ VM:1
-VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED 200
+VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED 200 (OK)
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
