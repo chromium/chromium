@@ -87,13 +87,8 @@ std::unique_ptr<SearchController> CreateSearchController(
   // check can be removed and replaced by just creating a
   // SearchControllerImplNew.
   std::unique_ptr<SearchController> controller;
-  if (app_list_features::IsCategoricalSearchEnabled()) {
-    controller = std::make_unique<SearchControllerImplNew>(
-        model_updater, list_controller, notifier, profile);
-  } else {
-    controller = std::make_unique<SearchControllerImpl>(
-        model_updater, list_controller, notifier, profile);
-  }
+  controller = std::make_unique<SearchControllerImplNew>(
+      model_updater, list_controller, notifier, profile);
 
   // Set up rankers for search results.
   controller->InitializeRankers();

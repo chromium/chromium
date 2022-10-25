@@ -17,8 +17,7 @@ void TestSearchController::StartSearch(const std::u16string& query) {
   // The search controller used when categorical search is enabled clears all
   // results when starging another search query - simulate this behavior in
   // tests when categorical search is enabled.
-  if (!ash::IsContinueSectionResultType(provider_->ResultType()) &&
-      app_list_features::IsCategoricalSearchEnabled()) {
+  if (!ash::IsContinueSectionResultType(provider_->ResultType())) {
     last_results_.clear();
   }
   provider_->Start(query);
@@ -26,11 +25,7 @@ void TestSearchController::StartSearch(const std::u16string& query) {
 
 void TestSearchController::StartZeroState(base::OnceClosure on_done,
                                           base::TimeDelta timeout) {
-  // The search controller used when categorical search is enabled clears all
-  // results when starging another search query - simulate this behavior in
-  // tests when categorical search is enabled.
-  if (app_list_features::IsCategoricalSearchEnabled())
-    last_results_.clear();
+  last_results_.clear();
   provider_->StartZeroState();
 }
 

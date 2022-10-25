@@ -74,11 +74,8 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
 
   // With categorical search enabled, app results are displayed as normal list
   // items.
-  const int badge_size = app_list_features::IsCategoricalSearchEnabled()
-                             ? ash::SharedAppListConfig::instance()
-                                   .search_list_badge_icon_dimension()
-                             : ash::SharedAppListConfig::instance()
-                                   .search_tile_badge_icon_dimension();
+  const int badge_size =
+      ash::SharedAppListConfig::instance().search_list_badge_icon_dimension();
   badge_icon_loader_ =
       std::make_unique<AppServiceAppIconLoader>(profile_, badge_size, this);
   badge_icon_loader_->FetchImage(GetAppId());

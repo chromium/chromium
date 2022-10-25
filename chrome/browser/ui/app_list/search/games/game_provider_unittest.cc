@@ -90,11 +90,7 @@ class GameProviderTest : public testing::Test,
   }
 
   const SearchProvider::Results& LastResults() {
-    if (app_list_features::IsCategoricalSearchEnabled()) {
-      return search_controller_->last_results();
-    } else {
-      return provider_->results();
-    }
+    return search_controller_->last_results();
   }
 
   void SetUpTestingIndex() {

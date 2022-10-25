@@ -38,9 +38,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppListLaunchRecording);
 // Enables using exact string search for non latin locales.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableExactMatchForNonLatinLocale);
 
-// Enables categorical search in the launcher.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kCategoricalSearch);
-
 // Forces the launcher to show the continue section even if there are no file
 // suggestions.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kForceShowContinueSection);
@@ -76,7 +73,6 @@ ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
-ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsSearchResultInlineIconEnabled();
 ASH_PUBLIC_EXPORT bool IsQuickActionShowBubbleLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
@@ -86,7 +82,6 @@ ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAnimateScaleOnTabletModeTransitionEnabled();
 
 ASH_PUBLIC_EXPORT std::string AppSearchResultRankerPredictorName();
-ASH_PUBLIC_EXPORT std::string CategoricalSearchType();
 
 }  // namespace app_list_features
 

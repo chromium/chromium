@@ -47,11 +47,7 @@ class AssistantTextSearchProviderTest : public AppListTestBase {
   }
 
   const SearchProvider::Results& LastResults() {
-    if (app_list_features::IsCategoricalSearchEnabled()) {
-      return search_controller_.last_results();
-    } else {
-      return search_provider_->results();
-    }
+    return search_controller_.last_results();
   }
 
   void VerifyResultAt(size_t index, const std::string& text) {

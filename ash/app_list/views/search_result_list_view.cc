@@ -73,12 +73,6 @@ constexpr int kAnswerCardMaxResults = 1;
 // view in the 'ProductivityLauncherSearchView'.
 constexpr int kAnimatedOffsetMultiplier = 4;
 
-size_t GetMaxSearchResultListItems() {
-  if (app_list_features::IsCategoricalSearchEnabled())
-    return kMaxResultsWithCategoricalSearch;
-  return SharedAppListConfig::instance().max_search_result_list_items();
-}
-
 // Maps 'AppListSearchResultCategory' to 'SearchResultListType'.
 SearchResultListView::SearchResultListType CategoryToListType(
     ash::AppListSearchResultCategory category) {
@@ -140,7 +134,7 @@ SearchResultListView::SearchResultListView(
   results_container_->AddChildView(title_label_);
 
   size_t result_count =
-      GetMaxSearchResultListItems() +
+      kMaxResultsWithCategoricalSearch +
       SharedAppListConfig::instance().max_assistant_search_result_list_items();
 
   for (size_t i = 0; i < result_count; ++i) {
@@ -580,7 +574,7 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
           results(),
           base::BindRepeating(&SearchResultListView::FilterBestMatches,
                               base::Unretained(this)),
-          GetMaxSearchResultListItems());
+          kMaxResultsWithCategoricalSearch);
     case SearchResultListType::kApps:
     case SearchResultListType::kAppShortcuts:
     case SearchResultListType::kWeb:
@@ -596,7 +590,7 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
           base::BindRepeating(
               &SearchResultListView::FilterSearchResultsByCategory,
               base::Unretained(this), search_category),
-          GetMaxSearchResultListItems());
+          kMaxResultsWithCategoricalSearch);
   }
 }
 

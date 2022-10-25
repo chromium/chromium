@@ -110,15 +110,12 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
   TestSearchController search_controller;
   auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
       kMaxResults, profile(), controller_.get());
-  ArcAppShortcutsSearchProvider* provider_ptr = provider.get();
   search_controller.AddProvider(0, std::move(provider));
   EXPECT_TRUE(search_controller.last_results().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
   search_controller.StartSearch(kQuery);
-  const auto& results = app_list_features::IsCategoricalSearchEnabled()
-                            ? search_controller.last_results()
-                            : provider_ptr->results();
+  const auto& results = search_controller.last_results();
   EXPECT_EQ(kMaxResults, results.size());
   // Verify search results.
   for (size_t i = 0; i < results.size(); ++i) {
@@ -141,15 +138,12 @@ TEST_P(ArcAppShortcutsSearchProviderTest, EmptyQuery) {
   TestSearchController search_controller;
   auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
       kMaxResults, profile(), controller_.get());
-  ArcAppShortcutsSearchProvider* provider_ptr = provider.get();
   search_controller.AddProvider(0, std::move(provider));
   EXPECT_TRUE(search_controller.last_results().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
   search_controller.StartSearch(kQuery);
-  const auto& results = app_list_features::IsCategoricalSearchEnabled()
-                            ? search_controller.last_results()
-                            : provider_ptr->results();
+  const auto& results = search_controller.last_results();
   EXPECT_EQ(kMaxResults, results.size());
   // Verify search results.
   for (size_t i = 0; i < results.size(); ++i) {

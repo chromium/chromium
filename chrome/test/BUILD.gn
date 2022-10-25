@@ -7393,7 +7393,6 @@ test("unit_tests") {
       "../browser/ui/app_list/search/help_app_zero_state_provider_unittest.cc",
       "../browser/ui/app_list/search/keyboard_shortcut_provider_unittest.cc",
       "../browser/ui/app_list/search/keyboard_shortcut_result_unittest.cc",
-      "../browser/ui/app_list/search/mixer_unittest.cc",
       "../browser/ui/app_list/search/omnibox/omnibox_answer_result_unittest.cc",
       "../browser/ui/app_list/search/omnibox/omnibox_lacros_provider_unittest.cc",
       "../browser/ui/app_list/search/omnibox/omnibox_provider_unittest.cc",

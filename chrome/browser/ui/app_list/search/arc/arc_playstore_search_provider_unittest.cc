@@ -72,11 +72,7 @@ class ArcPlayStoreSearchProviderTest
   ArcPlayStoreSearchProvider* provider() { return provider_; }
 
   const SearchProvider::Results& LastResults() {
-    if (app_list_features::IsCategoricalSearchEnabled()) {
-      return search_controller_->last_results();
-    } else {
-      return provider()->results();
-    }
+    return search_controller_->last_results();
   }
 
   void StartSearch(const std::u16string& query) {

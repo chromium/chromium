@@ -43,7 +43,6 @@ SearchControllerImpl::SearchControllerImpl(
           std::make_unique<SearchMetricsManager>(profile, notifier)),
       list_controller_(list_controller),
       notifier_(notifier) {
-  DCHECK(!app_list_features::IsCategoricalSearchEnabled());
   if (notifier_)
     notifier_->AddObserver(this);
 }
@@ -135,11 +134,17 @@ void SearchControllerImpl::AddProvider(
 
 void SearchControllerImpl::SetResults(const SearchProvider* provider,
                                       Results results) {
+  // TODO(crbug.com/1199206): Clean up this function as
+  // IsCategoricalSearchEnabled is true as productivity launcher is enabled by
+  // default now.
   // Should only be called when IsCategoricalSearchEnabled is true.
   NOTREACHED();
 }
 
 void SearchControllerImpl::Publish() {
+  // TODO(crbug.com/1199206): Clean up this function as
+  // IsCategoricalSearchEnabled is true as productivity launcher is enabled by
+  // default now.
   // Should only be called when IsCategoricalSearchEnabled is true.
   NOTREACHED();
 }

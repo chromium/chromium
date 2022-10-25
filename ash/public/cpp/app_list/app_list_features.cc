@@ -28,9 +28,6 @@ BASE_FEATURE(kEnableAppListLaunchRecording,
 BASE_FEATURE(kEnableExactMatchForNonLatinLocale,
              "EnableExactMatchForNonLatinLocale",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCategoricalSearch,
-             "CategoricalSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
 BASE_FEATURE(kForceShowContinueSection,
              "ForceShowContinueSection",
@@ -86,16 +83,9 @@ bool IsAppListLaunchRecordingEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppListLaunchRecording);
 }
 
-bool IsCategoricalSearchEnabled() {
-  // Force categorical search for the latest version of the launcher.
-  return ash::features::IsProductivityLauncherEnabled() ||
-         base::FeatureList::IsEnabled(kCategoricalSearch);
-}
-
 bool IsSearchResultInlineIconEnabled() {
   // Inline Icons are only supported for categorical search.
-  return IsCategoricalSearchEnabled() &&
-         base::FeatureList::IsEnabled(kSearchResultInlineIcon);
+  return base::FeatureList::IsEnabled(kSearchResultInlineIcon);
 }
 
 bool IsQuickActionShowBubbleLauncherEnabled() {
@@ -104,12 +94,7 @@ bool IsQuickActionShowBubbleLauncherEnabled() {
 
 bool IsDynamicSearchUpdateAnimationEnabled() {
   // Search update animations are only supported for categorical search.
-  return IsCategoricalSearchEnabled() &&
-         base::FeatureList::IsEnabled(kDynamicSearchUpdateAnimation);
-}
-
-std::string CategoricalSearchType() {
-  return GetFieldTrialParamValueByFeature(kCategoricalSearch, "ranking");
+  return base::FeatureList::IsEnabled(kDynamicSearchUpdateAnimation);
 }
 
 base::TimeDelta DynamicSearchUpdateAnimationDuration() {

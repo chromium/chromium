@@ -36,7 +36,6 @@ using Section = chromeos::settings::mojom::Section;
 constexpr char kOsSettingsResultPrefix[] = "os-settings://";
 
 constexpr size_t kNumRequestedResults = 5u;
-constexpr size_t kMaxShownResults = 2u;
 
 // Various error states of the OsSettingsProvider. kOk is currently not emitted,
 // but may be used in future. These values persist to logs. Entries should not
@@ -349,16 +348,6 @@ std::vector<SettingsResultPtr> OsSettingsProvider::FilterResults(
       clean_results.erase(clean_results.begin() + i);
       --i;
     }
-  }
-
-  // Categorical search has its own maximum-results mechanisms, so only cap
-  // results if it is not enabled.
-  //
-  // TODO(crbug.com/1199206): This can be cleaned up once categorical search is
-  // launched.
-  if (clean_results.size() > static_cast<size_t>(kMaxShownResults) &&
-      !app_list_features::IsCategoricalSearchEnabled()) {
-    clean_results.resize(kMaxShownResults);
   }
 
   return clean_results;

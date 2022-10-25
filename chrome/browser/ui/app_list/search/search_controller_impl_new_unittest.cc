@@ -11,7 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -160,10 +159,6 @@ class SearchControllerImplNewTest : public testing::Test {
   ~SearchControllerImplNewTest() override = default;
 
   void SetUp() override {
-    // TODO(crbug.com/1258415): Feature list can be removed after launch.
-    scoped_feature_list_.InitWithFeatures(
-        {app_list_features::kCategoricalSearch}, {});
-
     search_controller_ = std::make_unique<SearchControllerImplNew>(
         /*model_updater=*/&model_updater_, /*list_controller=*/nullptr,
         /*notifier=*/nullptr, &profile_);
@@ -231,7 +226,6 @@ class SearchControllerImplNewTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
   FakeAppListModelUpdater model_updater_{&profile_, /*order_delegate=*/nullptr};
   std::unique_ptr<SearchControllerImplNew> search_controller_;

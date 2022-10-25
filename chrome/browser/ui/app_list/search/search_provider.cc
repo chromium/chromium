@@ -26,30 +26,16 @@ void SearchProvider::Add(std::unique_ptr<ChromeSearchResult> result) {
 // interface.
 
 void SearchProvider::SwapResults(Results* new_results) {
-  if (app_list_features::IsCategoricalSearchEnabled()) {
-    Results results;
-    results.swap(*new_results);
-    if (search_controller_)
-      search_controller_->SetResults(this, std::move(results));
-    FireResultChanged();
-  } else {
-    results_.swap(*new_results);
-    FireResultChanged();
-  }
+  Results results;
+  results.swap(*new_results);
+  if (search_controller_)
+    search_controller_->SetResults(this, std::move(results));
+  FireResultChanged();
 }
 
-void SearchProvider::ClearResults() {
-  if (!app_list_features::IsCategoricalSearchEnabled()) {
-    results_.clear();
-    FireResultChanged();
-  }
-}
+void SearchProvider::ClearResults() {}
 
-void SearchProvider::ClearResultsSilently() {
-  if (!app_list_features::IsCategoricalSearchEnabled()) {
-    results_.clear();
-  }
-}
+void SearchProvider::ClearResultsSilently() {}
 
 void SearchProvider::FireResultChanged() {
   if (result_changed_callback_.is_null())

@@ -50,8 +50,6 @@ TestContinueFilesSearchProvider::TestContinueFilesSearchProvider() = default;
 TestContinueFilesSearchProvider::~TestContinueFilesSearchProvider() = default;
 
 void TestContinueFilesSearchProvider::StartZeroState() {
-  DCHECK(app_list_features::IsCategoricalSearchEnabled());
-
   auto create_result = [](int index) -> std::unique_ptr<ChromeSearchResult> {
     const std::string id = base::StringPrintf("continue_task_%d", index);
     return std::make_unique<TestContinueSectionSearchResult>(id);

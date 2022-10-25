@@ -41,7 +41,6 @@ namespace {
 constexpr size_t kMinQueryLength = 3u;
 constexpr double kMinScore = 0.4;
 constexpr size_t kNumRequestedResults = 5u;
-constexpr size_t kMaxShownResults = 2u;
 
 // The end result of a list search. Logged once per time a list search finishes.
 // Not logged if the search is canceled by a new search starting. Not logged for
@@ -184,11 +183,6 @@ void HelpAppProvider::OnSearchReturned(
   SearchProvider::Results search_results;
   for (const auto& result : sorted_results) {
     if (result->relevance_score < kMinScore) {
-      break;
-    } else if (!app_list_features::IsCategoricalSearchEnabled() &&
-               search_results.size() == kMaxShownResults) {
-      // Categorical search imposes its own maximums on search results
-      // elsewhere.
       break;
     }
 

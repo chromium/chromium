@@ -49,11 +49,7 @@ class KeyboardShortcutProviderTest
   void Wait() { task_environment_.RunUntilIdle(); }
 
   const SearchProvider::Results& results() {
-    if (app_list_features::IsCategoricalSearchEnabled()) {
-      return search_controller_->last_results();
-    } else {
-      return provider_->results();
-    }
+    return search_controller_->last_results();
   }
 
   void StartSearch(const std::u16string& query) {

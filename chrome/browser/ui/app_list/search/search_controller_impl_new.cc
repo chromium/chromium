@@ -59,9 +59,7 @@ SearchControllerImplNew::SearchControllerImplNew(
       metrics_manager_(
           std::make_unique<SearchMetricsManager>(profile, notifier)),
       model_updater_(model_updater),
-      list_controller_(list_controller) {
-  DCHECK(app_list_features::IsCategoricalSearchEnabled());
-}
+      list_controller_(list_controller) {}
 
 SearchControllerImplNew::~SearchControllerImplNew() {}
 

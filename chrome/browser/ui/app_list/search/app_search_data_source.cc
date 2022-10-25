@@ -425,9 +425,8 @@ void AppSearchDataSource::Refresh() {
 
     // TODO(crbug.com/826982): add the "can load in incognito" concept to
     // the App Service and use it here, similar to ExtensionDataSource.
-    const std::string name = app_list_features::IsCategoricalSearchEnabled()
-                                 ? update.Name()
-                                 : update.ShortName();
+    const std::string name = update.Name();
+
     apps_.emplace_back(std::make_unique<AppInfo>(
         update.AppId(), name, GetAppLastActivityTime(update)));
     // TODO(crbug.com/1364452): Test that non-recommendable apps are not shown
