@@ -120,8 +120,9 @@ TEST_F(RTCEncodedVideoStreamTransformerTest,
        TransformerForwardsFrameToTransformerCallback) {
   EXPECT_FALSE(encoded_video_stream_transformer_.HasTransformerCallback());
   encoded_video_stream_transformer_.SetTransformerCallback(
-      WTF::BindRepeating(&MockTransformerCallbackHolder::OnEncodedFrame,
-                         WTF::Unretained(&mock_transformer_callback_holder_)));
+      WTF::CrossThreadBindRepeating(
+          &MockTransformerCallbackHolder::OnEncodedFrame,
+          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
   EXPECT_TRUE(encoded_video_stream_transformer_.HasTransformerCallback());
 
   EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame);

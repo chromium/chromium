@@ -33,6 +33,8 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_sender_source_optimizer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_sender_sink_optimizer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_sender_source_optimizer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
@@ -411,8 +413,11 @@ RTCRtpSender::RTCRtpSender(RTCPeerConnection* pc,
         sender_->GetEncodedAudioStreamTransformer()->GetBroker();
     RegisterEncodedAudioStreamCallback();
   }
-  if (encoded_insertable_streams_ && kind_ == "video")
+  if (encoded_insertable_streams_ && kind_ == "video") {
+    encoded_video_transformer_ =
+        sender_->GetEncodedVideoStreamTransformer()->GetBroker();
     RegisterEncodedVideoStreamCallback();
+  }
 }
 
 MediaStreamTrack* RTCRtpSender::track() {
@@ -717,6 +722,14 @@ void RTCRtpSender::ContextDestroyed() {
     base::AutoLock locker(audio_underlying_sink_lock_);
     audio_to_packetizer_underlying_sink_.Clear();
   }
+  {
+    base::AutoLock locker(video_underlying_source_lock_);
+    video_from_encoder_underlying_source_.Clear();
+  }
+  {
+    base::AutoLock locker(video_underlying_sink_lock_);
+    video_to_packetizer_underlying_sink_.Clear();
+  }
 }
 
 void RTCRtpSender::Trace(Visitor* visitor) const {
@@ -728,8 +741,6 @@ void RTCRtpSender::Trace(Visitor* visitor) const {
   visitor->Trace(last_returned_parameters_);
   visitor->Trace(transceiver_);
   visitor->Trace(encoded_audio_streams_);
-  visitor->Trace(video_from_encoder_underlying_source_);
-  visitor->Trace(video_to_packetizer_underlying_sink_);
   visitor->Trace(encoded_video_streams_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
@@ -886,7 +897,7 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
         ReadableStream::CreateWithCountQueueingStrategy(
             script_state, audio_from_encoder_underlying_source_,
             /*high_water_mark=*/0, AllowPerChunkTransferring(false),
-            absl::make_unique<RtcEncodedAudioSenderSourceOptimizer>(
+            std::make_unique<RtcEncodedAudioSenderSourceOptimizer>(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
     encoded_audio_streams_->setReadable(readable_stream);
@@ -912,7 +923,7 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
     writable_stream = WritableStream::CreateWithCountQueueingStrategy(
         script_state, audio_to_packetizer_underlying_sink_,
         /*high_water_mark=*/1,
-        absl::make_unique<RtcEncodedAudioSenderSinkOptimizer>(
+        std::make_unique<RtcEncodedAudioSenderSinkOptimizer>(
             std::move(set_underlying_sink), encoded_audio_transformer_));
   }
 
@@ -929,67 +940,115 @@ void RTCRtpSender::OnAudioFrameFromEncoder(
 
 void RTCRtpSender::RegisterEncodedVideoStreamCallback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!web_sender()
-              ->GetEncodedVideoStreamTransformer()
-              ->HasTransformerCallback());
   DCHECK_EQ(kind_, "video");
-  web_sender()->GetEncodedVideoStreamTransformer()->SetTransformerCallback(
-      WTF::BindRepeating(&RTCRtpSender::OnVideoFrameFromEncoder,
-                         WrapWeakPersistent(this)));
+  encoded_video_transformer_->SetTransformerCallback(
+      WTF::CrossThreadBindRepeating(&RTCRtpSender::OnVideoFrameFromEncoder,
+                                    WrapCrossThreadWeakPersistent(this)));
 }
 
 void RTCRtpSender::UnregisterEncodedVideoStreamCallback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  web_sender()->GetEncodedVideoStreamTransformer()->ResetTransformerCallback();
+  encoded_video_transformer_->ResetTransformerCallback();
+}
+
+void RTCRtpSender::SetVideoUnderlyingSource(
+    RTCEncodedVideoUnderlyingSource* new_underlying_source,
+    scoped_refptr<base::SingleThreadTaskRunner> new_source_task_runner) {
+  if (!GetExecutionContext()) {
+    // If our context is destroyed, then the RTCRtpSender, underlying
+    // source(s), and transformer are about to be garbage collected, so there's
+    // no reason to continue.
+    return;
+  }
+  {
+    base::AutoLock locker(video_underlying_source_lock_);
+    video_from_encoder_underlying_source_->OnSourceTransferStarted();
+    video_from_encoder_underlying_source_ = new_underlying_source;
+  }
+
+  encoded_video_transformer_->SetSourceTaskRunner(
+      std::move(new_source_task_runner));
+}
+
+void RTCRtpSender::SetVideoUnderlyingSink(
+    RTCEncodedVideoUnderlyingSink* new_underlying_sink) {
+  if (!GetExecutionContext()) {
+    // If our context is destroyed, then the RTCRtpSender and underlying
+    // sink(s) are about to be garbage collected, so there's no reason to
+    // continue.
+    return;
+  }
+  base::AutoLock locker(video_underlying_sink_lock_);
+  video_to_packetizer_underlying_sink_ = new_underlying_sink;
 }
 
 void RTCRtpSender::InitializeEncodedVideoStreams(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!video_from_encoder_underlying_source_);
-  DCHECK(!video_to_packetizer_underlying_sink_);
   DCHECK(!encoded_video_streams_);
   DCHECK(encoded_insertable_streams_);
 
   encoded_video_streams_ = RTCInsertableStreams::Create();
 
-  // Set up readable stream.
-  video_from_encoder_underlying_source_ =
-      MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
-          script_state,
-          WTF::BindOnce(&RTCRtpSender::UnregisterEncodedVideoStreamCallback,
-                        WrapWeakPersistent(this)));
-  // The high water mark for the readable stream is set to 0 so that frames are
-  // removed from the queue right away, without introducing any buffering.
-  ReadableStream* readable_stream =
-      ReadableStream::CreateWithCountQueueingStrategy(
-          script_state, video_from_encoder_underlying_source_,
-          /*high_water_mark=*/0);
-  encoded_video_streams_->setReadable(readable_stream);
+  {
+    base::AutoLock locker(video_underlying_source_lock_);
+    DCHECK(!video_from_encoder_underlying_source_);
 
-  // Set up writable stream.
-  video_to_packetizer_underlying_sink_ =
-      MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-          script_state,
-          WTF::BindRepeating(
-              [](RTCRtpSender* sender) -> RTCEncodedVideoStreamTransformer* {
-                return sender ? sender->web_sender()
-                                    ->GetEncodedVideoStreamTransformer()
-                              : nullptr;
-              },
-              WrapWeakPersistent(this)),
-          webrtc::TransformableFrameInterface::Direction::kSender);
-  // The high water mark for the stream is set to 1 so that the stream is
-  // ready to write, but without queuing frames.
-  WritableStream* writable_stream =
-      WritableStream::CreateWithCountQueueingStrategy(
-          script_state, video_to_packetizer_underlying_sink_,
-          /*high_water_mark=*/1);
+    // Set up readable.
+    video_from_encoder_underlying_source_ =
+        MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
+            script_state,
+            WTF::CrossThreadBindOnce(
+                &RTCRtpSender::UnregisterEncodedVideoStreamCallback,
+                WrapCrossThreadWeakPersistent(this)));
+
+    auto set_underlying_source =
+        WTF::CrossThreadBindRepeating(&RTCRtpSender::SetVideoUnderlyingSource,
+                                      WrapCrossThreadWeakPersistent(this));
+    auto disconnect_callback = WTF::CrossThreadBindOnce(
+        &RTCRtpSender::UnregisterEncodedVideoStreamCallback,
+        WrapCrossThreadWeakPersistent(this));
+    // The high water mark for the readable stream is set to 0 so that frames
+    // are removed from the queue right away, without introducing a new buffer.
+    ReadableStream* readable_stream =
+        ReadableStream::CreateWithCountQueueingStrategy(
+            script_state, video_from_encoder_underlying_source_,
+            /*high_water_mark=*/0, AllowPerChunkTransferring(false),
+            std::make_unique<RtcEncodedVideoSenderSourceOptimizer>(
+                std::move(set_underlying_source),
+                std::move(disconnect_callback)));
+    encoded_video_streams_->setReadable(readable_stream);
+  }
+
+  WritableStream* writable_stream;
+  {
+    base::AutoLock locker(video_underlying_sink_lock_);
+    DCHECK(!video_to_packetizer_underlying_sink_);
+
+    // Set up writable.
+    video_to_packetizer_underlying_sink_ =
+        MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
+            script_state, encoded_video_transformer_,
+            webrtc::TransformableFrameInterface::Direction::kSender);
+
+    auto set_underlying_sink =
+        WTF::CrossThreadBindOnce(&RTCRtpSender::SetVideoUnderlyingSink,
+                                 WrapCrossThreadWeakPersistent(this));
+
+    // The high water mark for the stream is set to 1 so that the stream seems
+    // ready to write, but without queuing frames.
+    writable_stream = WritableStream::CreateWithCountQueueingStrategy(
+        script_state, video_to_packetizer_underlying_sink_,
+        /*high_water_mark=*/1,
+        std::make_unique<RtcEncodedVideoSenderSinkOptimizer>(
+            std::move(set_underlying_sink), encoded_video_transformer_));
+  }
+
   encoded_video_streams_->setWritable(writable_stream);
 }
 
 void RTCRtpSender::OnVideoFrameFromEncoder(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::AutoLock locker(video_underlying_source_lock_);
   if (video_from_encoder_underlying_source_) {
     video_from_encoder_underlying_source_->OnFrameFromSource(std::move(frame));
   }

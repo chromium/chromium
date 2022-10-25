@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
@@ -23,7 +24,7 @@ class RTCEncodedVideoUnderlyingSourceTest : public testing::Test {
  public:
   RTCEncodedVideoUnderlyingSource* CreateSource(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
-        script_state, WTF::BindOnce(disconnect_callback_.Get()));
+        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
   }
 
  protected:
