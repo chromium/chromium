@@ -3430,8 +3430,14 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
+// TODO(crbug.com/1375007): Very flaky on Mac and slightly on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StartBasicPrintCancel DISABLED_StartBasicPrintCancel
+#else
+#define MAYBE_StartBasicPrintCancel StartBasicPrintCancel
+#endif
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
-                       StartBasicPrintCancel) {
+                       MAYBE_StartBasicPrintCancel) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInAskUserForSettings();
@@ -3469,6 +3475,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
 // cases.
 // TODO(crbug.com/1374188)  Re-enable for Linux once `AskForUserSettings()` is
 // able to be pushed OOP for Linux.
+#undef MAYBE_StartBasicPrintCancel
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_StartBasicPrintCancel DISABLED_StartBasicPrintCancel
 #else
