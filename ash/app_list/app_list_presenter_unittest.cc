@@ -3563,6 +3563,31 @@ TEST_F(AppListPresenterHomeLauncherTest, ShowAppListForTabletMode) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
+TEST_F(AppListPresenterHomeLauncherTest,
+       RunZeroStateSearchWhenShownOnTabletModeTransition) {
+  EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  EnableTabletMode(true);
+  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
+}
+
+TEST_F(AppListPresenterHomeLauncherTest,
+       RunZeroStateSearchWhenShownAfterMinimizingWindows) {
+  EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
+  GetAppListTestHelper()->CheckVisibility(false);
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+
+  EnableTabletMode(true);
+  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
+
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
+}
+
 // Tests that the app list window's parent is changed after entering tablet
 // mode.
 TEST_F(AppListPresenterHomeLauncherTest, ParentWindowContainer) {

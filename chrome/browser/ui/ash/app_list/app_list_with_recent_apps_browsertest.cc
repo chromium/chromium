@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/test/app_list_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -65,4 +66,28 @@ IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest, MouseClickAtRecentApp) {
       "Apps.NewUserFirstLauncherAction.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromRecentApps),
       /*expected_bucket_count=*/1);
+}
+
+// Tests that recent apps are shown in tablet mode app list after transition
+// from bubble launcher search to tablet mode.
+IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest,
+                       RecentAppsShownInTabletModeAfterClearingSearch) {
+  // Minimize the browser window so tablet mode launcher becomes visible
+  // immediately after transition to tablet mode.
+  browser()->window()->Minimize();
+
+  views::View* recent_app = app_list_test_api_.GetRecentAppAt(0);
+  ASSERT_TRUE(recent_app);
+
+  // Simulate launcher search.
+  app_list_test_api_.SimulateSearch(u"foo");
+
+  // Transition to tablet mode while bubble launcher is showing search UI, to
+  // verify that recent apps are not empty if launcher is shown just after
+  // clearing search.
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  app_list_test_api_.WaitForAppListShowAnimation(/*is_bubble_window =*/false);
+
+  recent_app = app_list_test_api_.GetRecentAppAt(0);
+  ASSERT_TRUE(recent_app);
 }

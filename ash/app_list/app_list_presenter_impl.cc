@@ -231,7 +231,6 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   showing_app_list_ = true;
 
   is_target_visibility_show_ = true;
-  OnVisibilityWillChange(GetTargetVisibility(), display_id);
   RequestPresentationTime(display_id, event_time_stamp);
 
   if (!view_) {
@@ -241,6 +240,7 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
     view_->GetWidget()->GetNativeWindow()->TrackOcclusionState();
   }
 
+  OnVisibilityWillChange(GetTargetVisibility(), display_id);
   controller_->UpdateLauncherContainer(display_id);
 
   // App list needs to know the new shelf layout in order to calculate its
