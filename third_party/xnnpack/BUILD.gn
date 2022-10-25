@@ -73,7 +73,7 @@ source_set("xnnpack") {
     ":amalgam_avx",
     ":amalgam_avx512f",
     ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
-    ":amalgam_avx512vbmi",
+    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi",
     ":amalgam_f16c",
     ":amalgam_f16c-fma",
     ":amalgam_f16c-fma-avx2",
@@ -173,8 +173,15 @@ source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
   public_configs = [ ":xnnpack_config" ]
 }
 
-source_set("amalgam_avx512vbmi") {
-  cflags = [ "-mavx512vbmi" ]
+source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi") {
+  cflags = [
+    "-mavx512bw",
+    "-mavx512cd",
+    "-mavx512dq",
+    "-mavx512f",
+    "-mavx512vbmi",
+    "-mavx512vl",
+  ]
 
   sources = [ "src/src/amalgam/avx512vbmi.c" ]
 

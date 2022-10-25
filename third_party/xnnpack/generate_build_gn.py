@@ -198,8 +198,9 @@ def _objectbuild_from_bazel_log(log_line):
   dir = ''
   args = []
   for i, arg in enumerate(split):
-    if arg == '-c':
-      src = os.path.join('src', split[i + 1])
+    if arg == '-c' and split[i + 1].startswith("external/XNNPACK/"):
+      src = os.path.join('src', split[i + 1][len("external/XNNPACK/"):])
+      # |src| should look like 'src/src/...'.
       src_path = src.split('/')
       if len(src_path) == 3:
         dir = 'xnnpack'
@@ -209,11 +210,18 @@ def _objectbuild_from_bazel_log(log_line):
      args.append(arg)
   return ObjectBuild(src=src, dir=dir, args=args)
 
-def _cwd():
+def _xnnpack_dir():
   """
   Returns the absolute path of //third_party/xnnpack/.
   """
   return os.path.dirname(os.path.realpath(__file__))
+
+def _tflite_dir():
+  """
+  Returns the absolute path of //third_party/tflite/src/tensorflow/lite/.
+  """
+  tp_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+  return os.path.join(tp_dir, "tflite", "src", "tensorflow", "lite")
 
 def _run_bazel_cmd(args):
   """
@@ -232,7 +240,7 @@ def _run_bazel_cmd(args):
   })
   proc = subprocess.Popen(cmd,
     text=True,
-    cwd=os.path.join(_cwd(), 'src'),
+    cwd=_tflite_dir(),
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
     env=env)
@@ -254,19 +262,19 @@ def _run_bazel_cmd(args):
 def ListAllSrcs():
   """
   Runs a bazel command to query and and return all source files for XNNPACK, but
-  not any dependancies, as relative paths to //third_party/xnnpack/.
+  not any dependencies, as relative paths to //third_party/xnnpack/.
   """
-  logging.info('Querying for the list of all srcs in :xnnpack_for_tflite...')
+  logging.info('Querying for the list of all XNNPACK srcs in :tensorflowlite')
   out = _run_bazel_cmd([
     'cquery',
-    'kind("source file", deps(:xnnpack_for_tflite))',
+    'kind("source file", deps(:tensorflowlite))',
     '--define',
     'xnn_enable_jit=false',
   ])
   srcs = []
   for line in out.split('\n'):
-    if line.startswith('//:'):
-      srcs.append(os.path.join('src', line.split()[0][3:]))
+    if line.startswith('@XNNPACK//:'):
+      srcs.append(os.path.join('src', line.split()[0][len("@XNNPACK//:"):]))
   return srcs
 
 def GenerateObjectBuilds(srcs):
@@ -279,7 +287,7 @@ def GenerateObjectBuilds(srcs):
   logging.info('Building xnnpack with bazel...')
   logs = _run_bazel_cmd([
     'build',
-    ':xnnpack_for_tflite',
+    ':tensorflowlite',
     '-s',
     '-c', 'opt',
     '--define',
@@ -359,7 +367,7 @@ def main():
       xnnpack_ss,
       [NameForSourceSet(ss) for ss in other_sss])
 
-  out_path = os.path.join(_cwd(), 'BUILD.gn')
+  out_path = os.path.join(_xnnpack_dir(), 'BUILD.gn')
   logging.info('Writing to ' + out_path)
   with open(out_path, 'w') as f:
     f.write(_HEADER)
