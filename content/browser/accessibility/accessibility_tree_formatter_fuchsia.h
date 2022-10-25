@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_FUCHSIA_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_FUCHSIA_H_
 
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
@@ -31,13 +30,13 @@ class CONTENT_EXPORT AccessibilityTreeFormatterFuchsia
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  void RecursiveBuildTree(const BrowserAccessibility& node,
+  void RecursiveBuildTree(const ui::AXPlatformNodeDelegate& node,
                           base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
       const base::Value::Dict& node) const override;
 
-  void AddProperties(const BrowserAccessibility& node,
+  void AddProperties(const ui::AXPlatformNodeDelegate& node,
                      base::Value::Dict* dict) const;
 };
 

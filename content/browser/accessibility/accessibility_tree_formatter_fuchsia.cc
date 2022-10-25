@@ -206,16 +206,13 @@ base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildTree(
     return base::Value::Dict();
   }
 
-  BrowserAccessibility* root_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
-
   base::Value::Dict dict;
-  RecursiveBuildTree(*root_internal, &dict);
+  RecursiveBuildTree(*root, &dict);
   return dict;
 }
 
 void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
-    const BrowserAccessibility& node,
+    const ui::AXPlatformNodeDelegate& node,
     base::Value::Dict* dict) const {
   if (!ShouldDumpNode(node))
     return;
@@ -235,11 +232,10 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
             ui::AXPlatformNodeBase::GetFromUniqueId(child_id));
     DCHECK(child_node);
 
-    BrowserAccessibilityFuchsia* child_browser_accessibility =
-        static_cast<BrowserAccessibilityFuchsia*>(child_node->GetDelegate());
+    ui::AXPlatformNodeDelegate* child_delegate = child_node->GetDelegate();
 
     base::Value::Dict child_dict;
-    RecursiveBuildTree(*child_browser_accessibility, &child_dict);
+    RecursiveBuildTree(*child_delegate, &child_dict);
     children.Append(std::move(child_dict));
   }
   dict->Set(kChildrenDictAttr, std::move(children));
@@ -249,12 +245,12 @@ base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
   base::Value::Dict dict;
-  AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
+  AddProperties(*node, &dict);
   return dict;
 }
 
 void AccessibilityTreeFormatterFuchsia::AddProperties(
-    const BrowserAccessibility& node,
+    const ui::AXPlatformNodeDelegate& node,
     base::Value::Dict* dict) const {
   dict->Set("id", node.GetId());
 
