@@ -4,12 +4,20 @@
 
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/default_user_image.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace default_user_image {
+namespace {
+
+constexpr char k100PercentPrefix[] = "default_100_percent/";
+constexpr char k200PercentPrefix[] = "default_200_percent/";
+
+}  // namespace
+
+namespace ash::default_user_image {
 
 TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligible) {
   std::vector<DefaultUserImage> current_default_images =
@@ -26,5 +34,51 @@ TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligible) {
   }
 }
 
-}  // namespace default_user_image
-}  // namespace ash
+TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligibleWithFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
+
+  std::vector<DefaultUserImage> current_default_images =
+      default_user_image::GetCurrentImageSet();
+
+  for (auto& image : current_default_images) {
+    const auto index = image.index;
+    EXPECT_TRUE(IsValidIndex(index));
+    EXPECT_TRUE(IsInCurrentImageSet(index));
+
+    const auto default_user_image = GetDefaultUserImage(index);
+    EXPECT_EQ(default_user_image.url, image.url);
+    EXPECT_EQ(default_user_image.title, image.title);
+
+    const auto url_string = image.url.spec();
+
+    // Current image set should have support for 200 percent scale factor.
+    EXPECT_NE(url_string.find(k200PercentPrefix), base::StringPiece::npos);
+  }
+}
+
+TEST(DefaultUserImagesTest, AllDefaultImagesShouldHaveCorrectInfoWithFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
+
+  for (auto index = 0; index < kDefaultImagesCount; index++) {
+    EXPECT_TRUE(IsValidIndex(index));
+    bool is_current = IsInCurrentImageSet(index);
+
+    const auto default_user_image = GetDefaultUserImage(index);
+
+    // Images in the current set should have a valid title.
+    if (is_current) {
+      EXPECT_FALSE(default_user_image.title.empty());
+    }
+
+    const auto url_string = default_user_image.url.spec();
+    if (index <= kLastLegacyImageIndex) {
+      EXPECT_NE(url_string.find(k100PercentPrefix), base::StringPiece::npos);
+    } else {
+      EXPECT_NE(url_string.find(k200PercentPrefix), base::StringPiece::npos);
+    }
+  }
+}
+
+}  // namespace ash::default_user_image

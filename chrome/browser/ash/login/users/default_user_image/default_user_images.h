@@ -37,6 +37,11 @@ extern const int kDefaultImagesCount;
 // existing users may have images with smaller indices.
 extern const int kFirstDefaultImageIndex;
 
+// The last index of legacy avatar images. Images in the legacy asset only have
+// 100 percent scale factor version. Note that although the legacy asset has
+// been deprecated, it might be still used by existing users.
+extern const int kLastLegacyImageIndex;
+
 // Histogram value for user image selected from file or photo.
 extern const int kHistogramImageExternal;
 // Histogram value for a user image taken from the camera.

@@ -55,42 +55,42 @@ struct DefaultImageInfo {
 // clang-format off
 constexpr DefaultImageInfo kDefaultImageInfo[] = {
     // No description for deprecated user image 0-18.
-    {IDR_LOGIN_DEFAULT_USER, 0, Eligibility::kDeprecated, "avatar_anonymous.png"},
+    {IDR_LOGIN_DEFAULT_USER, 0, Eligibility::kDeprecated, "legacy/avatar_anonymous.png"},
     // Original set of images.
-    {IDR_LOGIN_DEFAULT_USER_1, 0, Eligibility::kDeprecated, "avatar_bee.png"},
-    {IDR_LOGIN_DEFAULT_USER_2, 0, Eligibility::kDeprecated, "avatar_briefcase.png"},
-    {IDR_LOGIN_DEFAULT_USER_3, 0, Eligibility::kDeprecated, "avatar_circles.png"},
-    {IDR_LOGIN_DEFAULT_USER_4, 0, Eligibility::kDeprecated, "avatar_cloud.png"},
-    {IDR_LOGIN_DEFAULT_USER_5, 0, Eligibility::kDeprecated, "avatar_cupcake.png"},
-    {IDR_LOGIN_DEFAULT_USER_6, 0, Eligibility::kDeprecated, "avatar_day.png"},
-    {IDR_LOGIN_DEFAULT_USER_7, 0, Eligibility::kDeprecated, "avatar_flower.png"},
-    {IDR_LOGIN_DEFAULT_USER_8, 0, Eligibility::kDeprecated, "avatar_globe.png"},
-    {IDR_LOGIN_DEFAULT_USER_9, 0, Eligibility::kDeprecated, "avatar_hotair.png"},
-    {IDR_LOGIN_DEFAULT_USER_10, 0, Eligibility::kDeprecated, "avatar_ladybug.png"},
-    {IDR_LOGIN_DEFAULT_USER_11, 0, Eligibility::kDeprecated, "avatar_leaf.png"},
-    {IDR_LOGIN_DEFAULT_USER_12, 0, Eligibility::kDeprecated, "avatar_night.png"},
-    {IDR_LOGIN_DEFAULT_USER_13, 0, Eligibility::kDeprecated, "avatar_plane.png"},
-    {IDR_LOGIN_DEFAULT_USER_14, 0, Eligibility::kDeprecated, "avatar_robot_body.png"},
-    {IDR_LOGIN_DEFAULT_USER_15, 0, Eligibility::kDeprecated, "avatar_robot_head.png"},
-    {IDR_LOGIN_DEFAULT_USER_16, 0, Eligibility::kDeprecated, "avatar_toolbox.png"},
-    {IDR_LOGIN_DEFAULT_USER_17, 0, Eligibility::kDeprecated, "avatar_user_color.png"},
-    {IDR_LOGIN_DEFAULT_USER_18, 0, Eligibility::kDeprecated, "avatar_user_enterprise.png"},
+    {IDR_LOGIN_DEFAULT_USER_1, 0, Eligibility::kDeprecated, "legacy/avatar_bee.png"},
+    {IDR_LOGIN_DEFAULT_USER_2, 0, Eligibility::kDeprecated, "legacy/avatar_briefcase.png"},
+    {IDR_LOGIN_DEFAULT_USER_3, 0, Eligibility::kDeprecated, "legacy/avatar_circles.png"},
+    {IDR_LOGIN_DEFAULT_USER_4, 0, Eligibility::kDeprecated, "legacy/avatar_cloud.png"},
+    {IDR_LOGIN_DEFAULT_USER_5, 0, Eligibility::kDeprecated, "legacy/avatar_cupcake.png"},
+    {IDR_LOGIN_DEFAULT_USER_6, 0, Eligibility::kDeprecated, "legacy/avatar_day.png"},
+    {IDR_LOGIN_DEFAULT_USER_7, 0, Eligibility::kDeprecated, "legacy/avatar_flower.png"},
+    {IDR_LOGIN_DEFAULT_USER_8, 0, Eligibility::kDeprecated, "legacy/avatar_globe.png"},
+    {IDR_LOGIN_DEFAULT_USER_9, 0, Eligibility::kDeprecated, "legacy/avatar_hotair.png"},
+    {IDR_LOGIN_DEFAULT_USER_10, 0, Eligibility::kDeprecated, "legacy/avatar_ladybug.png"},
+    {IDR_LOGIN_DEFAULT_USER_11, 0, Eligibility::kDeprecated, "legacy/avatar_leaf.png"},
+    {IDR_LOGIN_DEFAULT_USER_12, 0, Eligibility::kDeprecated, "legacy/avatar_night.png"},
+    {IDR_LOGIN_DEFAULT_USER_13, 0, Eligibility::kDeprecated, "legacy/avatar_plane.png"},
+    {IDR_LOGIN_DEFAULT_USER_14, 0, Eligibility::kDeprecated, "legacy/avatar_robot_body.png"},
+    {IDR_LOGIN_DEFAULT_USER_15, 0, Eligibility::kDeprecated, "legacy/avatar_robot_head.png"},
+    {IDR_LOGIN_DEFAULT_USER_16, 0, Eligibility::kDeprecated, "legacy/avatar_toolbox.png"},
+    {IDR_LOGIN_DEFAULT_USER_17, 0, Eligibility::kDeprecated, "legacy/avatar_user_color.png"},
+    {IDR_LOGIN_DEFAULT_USER_18, 0, Eligibility::kDeprecated, "legacy/avatar_user_enterprise.png"},
     // Second set of images.
-    {IDR_LOGIN_DEFAULT_USER_19, IDS_LOGIN_DEFAULT_USER_DESC_19, Eligibility::kDeprecated, "avatar_bicycle.png"},
-    {IDR_LOGIN_DEFAULT_USER_20, IDS_LOGIN_DEFAULT_USER_DESC_20, Eligibility::kDeprecated, "avatar_bokeh.png"},
-    {IDR_LOGIN_DEFAULT_USER_21, IDS_LOGIN_DEFAULT_USER_DESC_21, Eligibility::kDeprecated, "avatar_chess.png"},
-    {IDR_LOGIN_DEFAULT_USER_22, IDS_LOGIN_DEFAULT_USER_DESC_22, Eligibility::kDeprecated, "avatar_coffee.png"},
-    {IDR_LOGIN_DEFAULT_USER_23, IDS_LOGIN_DEFAULT_USER_DESC_23, Eligibility::kDeprecated, "avatar_dragonfly.png"},
-    {IDR_LOGIN_DEFAULT_USER_24, IDS_LOGIN_DEFAULT_USER_DESC_24, Eligibility::kDeprecated, "avatar_frog.png"},
-    {IDR_LOGIN_DEFAULT_USER_25, IDS_LOGIN_DEFAULT_USER_DESC_25, Eligibility::kDeprecated, "avatar_ganzania.png"},
-    {IDR_LOGIN_DEFAULT_USER_26, IDS_LOGIN_DEFAULT_USER_DESC_26, Eligibility::kDeprecated, "avatar_jackrussellterrier.png"},
-    {IDR_LOGIN_DEFAULT_USER_27, IDS_LOGIN_DEFAULT_USER_DESC_27, Eligibility::kDeprecated, "avatar_jellyfish.png"},
-    {IDR_LOGIN_DEFAULT_USER_28, IDS_LOGIN_DEFAULT_USER_DESC_28, Eligibility::kDeprecated, "avatar_kiwi.png"},
-    {IDR_LOGIN_DEFAULT_USER_29, IDS_LOGIN_DEFAULT_USER_DESC_29, Eligibility::kDeprecated, "avatar_penguin.png"},
-    {IDR_LOGIN_DEFAULT_USER_30, IDS_LOGIN_DEFAULT_USER_DESC_30, Eligibility::kDeprecated, "avatar_rainbowfish.png"},
-    {IDR_LOGIN_DEFAULT_USER_31, IDS_LOGIN_DEFAULT_USER_DESC_31, Eligibility::kDeprecated, "avatar_recordplayer.png"},
-    {IDR_LOGIN_DEFAULT_USER_32, IDS_LOGIN_DEFAULT_USER_DESC_32, Eligibility::kDeprecated, "avatar_upsidedown.png"},
-    {IDR_LOGIN_DEFAULT_USER_33, IDS_LOGIN_DEFAULT_USER_DESC_33, Eligibility::kDeprecated, "avatar_cat.png"},
+    {IDR_LOGIN_DEFAULT_USER_19, IDS_LOGIN_DEFAULT_USER_DESC_19, Eligibility::kDeprecated, "legacy/avatar_bicycle.png"},
+    {IDR_LOGIN_DEFAULT_USER_20, IDS_LOGIN_DEFAULT_USER_DESC_20, Eligibility::kDeprecated, "legacy/avatar_bokeh.png"},
+    {IDR_LOGIN_DEFAULT_USER_21, IDS_LOGIN_DEFAULT_USER_DESC_21, Eligibility::kDeprecated, "legacy/avatar_chess.png"},
+    {IDR_LOGIN_DEFAULT_USER_22, IDS_LOGIN_DEFAULT_USER_DESC_22, Eligibility::kDeprecated, "legacy/avatar_coffee.png"},
+    {IDR_LOGIN_DEFAULT_USER_23, IDS_LOGIN_DEFAULT_USER_DESC_23, Eligibility::kDeprecated, "legacy/avatar_dragonfly.png"},
+    {IDR_LOGIN_DEFAULT_USER_24, IDS_LOGIN_DEFAULT_USER_DESC_24, Eligibility::kDeprecated, "legacy/avatar_frog.png"},
+    {IDR_LOGIN_DEFAULT_USER_25, IDS_LOGIN_DEFAULT_USER_DESC_25, Eligibility::kDeprecated, "legacy/avatar_ganzania.png"},
+    {IDR_LOGIN_DEFAULT_USER_26, IDS_LOGIN_DEFAULT_USER_DESC_26, Eligibility::kDeprecated, "legacy/avatar_jackrussellterrier.png"},
+    {IDR_LOGIN_DEFAULT_USER_27, IDS_LOGIN_DEFAULT_USER_DESC_27, Eligibility::kDeprecated, "legacy/avatar_jellyfish.png"},
+    {IDR_LOGIN_DEFAULT_USER_28, IDS_LOGIN_DEFAULT_USER_DESC_28, Eligibility::kDeprecated, "legacy/avatar_kiwi.png"},
+    {IDR_LOGIN_DEFAULT_USER_29, IDS_LOGIN_DEFAULT_USER_DESC_29, Eligibility::kDeprecated, "legacy/avatar_penguin.png"},
+    {IDR_LOGIN_DEFAULT_USER_30, IDS_LOGIN_DEFAULT_USER_DESC_30, Eligibility::kDeprecated, "legacy/avatar_rainbowfish.png"},
+    {IDR_LOGIN_DEFAULT_USER_31, IDS_LOGIN_DEFAULT_USER_DESC_31, Eligibility::kDeprecated, "legacy/avatar_recordplayer.png"},
+    {IDR_LOGIN_DEFAULT_USER_32, IDS_LOGIN_DEFAULT_USER_DESC_32, Eligibility::kDeprecated, "legacy/avatar_upsidedown.png"},
+    {IDR_LOGIN_DEFAULT_USER_33, IDS_LOGIN_DEFAULT_USER_DESC_33, Eligibility::kDeprecated, "legacy/avatar_cat.png"},
     // Third set of images.
     {IDR_LOGIN_DEFAULT_USER_34, IDS_LOGIN_DEFAULT_USER_DESC_34, Eligibility::kDeprecated, "origami/avatar_penguin.png"},
     {IDR_LOGIN_DEFAULT_USER_35, IDS_LOGIN_DEFAULT_USER_DESC_35, Eligibility::kDeprecated, "origami/avatar_fox.png"},
@@ -288,18 +288,42 @@ const DefaultImageSourceInfoIds kDefaultImageSourceInfoIds[] = {
     {IDS_LOGIN_DEFAULT_USER_AUTHOR_33, IDS_LOGIN_DEFAULT_USER_WEBSITE_33},
 };
 
-const char kDefaultUrlPrefix[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER_";
-const char kZeroDefaultUrl[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER";
-// TODO(b/244369871): Support 1x/2x images based on pixel density.
-const char kGstaticImagePrefix[] =
-    "https://www.gstatic.com/chromecast/home/chromeos/avatars/"
-    "default_200_percent/";
+constexpr char kDefaultUrlPrefix[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER_";
+constexpr char kZeroDefaultUrl[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER";
+constexpr char kGstaticImagePrefix[] =
+    "https://www.gstatic.com/chromecast/home/chromeos/avatars/";
+constexpr char k100PercentPrefix[] = "default_100_percent/";
+constexpr char k200PercentPrefix[] = "default_200_percent/";
+
+const std::string GetUrlPrefixForScaleFactor(
+    ui::ResourceScaleFactor scale_factor) {
+  switch (scale_factor) {
+    case ui::kScaleFactorNone:
+    case ui::k100Percent:
+      return k100PercentPrefix;
+    case ui::k200Percent:
+      return k200PercentPrefix;
+    case ui::k300Percent:
+    case ui::NUM_SCALE_FACTORS:
+      NOTIMPLEMENTED();
+      return k100PercentPrefix;
+  }
+}
+
+ui::ResourceScaleFactor GetMaximumScaleFactorForDefaultImage(int index) {
+  if (index <= kLastLegacyImageIndex)
+    return ui::k100Percent;
+  else
+    return ui::k200Percent;
+}
 
 }  // namespace
 
 const int kDefaultImagesCount = std::size(kDefaultImageInfo);
 
 const int kFirstDefaultImageIndex = 48;
+
+const int kLastLegacyImageIndex = 33;
 
 // Limit random default image index to prevent undesirable UI behavior when
 // selecting an image with a high index. E.g. automatic scrolling of picture
@@ -325,8 +349,11 @@ GURL GetDefaultImageUrl(int index) {
   DCHECK(index >= 0 && index < kDefaultImagesCount);
 
   if (ash::features::IsAvatarsCloudMigrationEnabled()) {
-    return GURL(
-        base::StrCat({kGstaticImagePrefix, kDefaultImageInfo[index].path}));
+    // TODO(b/244369871): Support 1x/2x images based on pixel density.
+    auto scale_factor_prefix =
+        GetUrlPrefixForScaleFactor(GetMaximumScaleFactorForDefaultImage(index));
+    return GURL(base::StrCat({kGstaticImagePrefix, scale_factor_prefix,
+                              kDefaultImageInfo[index].path}));
   }
 
   if (index == 0)
