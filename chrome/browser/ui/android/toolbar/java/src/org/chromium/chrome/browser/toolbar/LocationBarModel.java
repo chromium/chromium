@@ -175,6 +175,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private long mNativeLocationBarModelAndroid;
     private ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
             new ObserverList<>();
+    protected GURL mVisibleGurl = GURL.emptyGURL();
+    protected String mFormattedFullUrl;
+    protected String mUrlForDisplay;
 
     /**
      * Default constructor for this class.
@@ -206,13 +209,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         mOptimizationsEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS);
         mLastUsedNonOTRProfile = Profile.getLastUsedRegularProfile();
+        mNativeLocationBarModelAndroid = LocationBarModelJni.get().init(LocationBarModel.this);
+
         if (mOptimizationsEnabled) {
             mSpannableDisplayTextCache = new LruCache<>(LRU_CACHE_SIZE);
             mChromeAutocompleteSchemeClassifier =
                     new ChromeAutocompleteSchemeClassifier(getProfile());
+            recalculateFormattedUrls();
         }
-
-        mNativeLocationBarModelAndroid = LocationBarModelJni.get().init(LocationBarModel.this);
     }
 
     /**
@@ -290,6 +294,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public GURL getCurrentGurl() {
+        if (mOptimizationsEnabled) {
+            return mVisibleGurl;
+        }
+
         if (isInOverviewAndShowingOmnibox()) {
             return UrlConstants.ntpGurl();
         }
@@ -298,7 +306,26 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return tab != null && tab.isInitialized() ? tab.getUrl() : GURL.emptyGURL();
     }
 
+    @VisibleForTesting
+    void updateVisibleGurl() {
+        if (!mOptimizationsEnabled) return;
+        try (TraceEvent te = TraceEvent.scoped("LocationBarModel.updateVisibleGurl")) {
+            if (isInOverviewAndShowingOmnibox()) {
+                mFormattedFullUrl = "";
+                mUrlForDisplay = "";
+                mVisibleGurl = UrlConstants.ntpGurl();
+            }
+
+            GURL gurl = getUrlOfVisibleNavigationEntry();
+            if (!gurl.equals(mVisibleGurl)) {
+                mVisibleGurl = gurl;
+                recalculateFormattedUrls();
+            }
+        }
+    }
+
     public void notifyUrlChanged() {
+        updateVisibleGurl();
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
             observer.onUrlChanged();
         }
@@ -419,7 +446,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                     }
                 }
             } finally {
-                if (!mOptimizationsEnabled) autocompleteSchemeClassifier.destroy();
+                if (!mOptimizationsEnabled) {
+                    autocompleteSchemeClassifier.destroy();
+                }
             }
         }
         return UrlBarData.forUrlAndText(url, spannableDisplayText, editingText);
@@ -716,22 +745,55 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void notifySecurityStateChanged() {
+        @ConnectionSecurityLevel
+        int securityLevel = getSecurityLevel();
+        if (securityLevel == ConnectionSecurityLevel.DANGEROUS) {
+            recalculateFormattedUrls();
+        }
+
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
             observer.onSecurityStateChanged();
         }
     }
 
+    private void recalculateFormattedUrls() {
+        mFormattedFullUrl = calculateFormattedFullUrl();
+        mUrlForDisplay = calculateUrlForDisplay();
+    }
+
+    private String getFormattedFullUrl() {
+        if (mOptimizationsEnabled) {
+            return mFormattedFullUrl;
+        }
+
+        return calculateFormattedFullUrl();
+    }
+
+    private String getUrlForDisplay() {
+        if (mOptimizationsEnabled) {
+            return mUrlForDisplay;
+        }
+
+        return calculateUrlForDisplay();
+    }
+
     /** @return The formatted URL suitable for editing. */
-    public String getFormattedFullUrl() {
+    protected String calculateFormattedFullUrl() {
         if (mNativeLocationBarModelAndroid == 0) return "";
         return LocationBarModelJni.get().getFormattedFullURL(
                 mNativeLocationBarModelAndroid, LocationBarModel.this);
     }
 
     /** @return The formatted URL suitable for display only. */
-    public String getUrlForDisplay() {
+    protected String calculateUrlForDisplay() {
         if (mNativeLocationBarModelAndroid == 0) return "";
         return LocationBarModelJni.get().getURLForDisplay(
+                mNativeLocationBarModelAndroid, LocationBarModel.this);
+    }
+
+    protected GURL getUrlOfVisibleNavigationEntry() {
+        if (mNativeLocationBarModelAndroid == 0) return GURL.emptyGURL();
+        return LocationBarModelJni.get().getUrlOfVisibleNavigationEntry(
                 mNativeLocationBarModelAndroid, LocationBarModel.this);
     }
 
@@ -761,6 +823,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         void destroy(long nativeLocationBarModelAndroid, LocationBarModel caller);
         String getFormattedFullURL(long nativeLocationBarModelAndroid, LocationBarModel caller);
         String getURLForDisplay(long nativeLocationBarModelAndroid, LocationBarModel caller);
+        GURL getUrlOfVisibleNavigationEntry(
+                long nativeLocationBarModelAndroid, LocationBarModel caller);
         int getPageClassification(long nativeLocationBarModelAndroid, LocationBarModel caller,
                 boolean isFocusedFromFakebox, boolean isPrefetch);
     }

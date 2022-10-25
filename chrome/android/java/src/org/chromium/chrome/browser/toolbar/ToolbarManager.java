@@ -1951,7 +1951,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 tab != null ? tab.isIncognito() : mTabModelSelector.isIncognitoSelected();
         mLocationBarModel.setTab(tab, isIncognito);
 
-        updateCurrentTabDisplayStatus();
+        updateTabLoadingState(true);
 
         // This method is called prior to action mode destroy callback for incognito <-> normal
         // tab switch. Makes sure the action mode toolbar is hidden before selecting the new tab.
@@ -2069,11 +2069,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mBottomControlsCoordinatorSupplier.get() != null) {
             mBottomControlsCoordinatorSupplier.get().setLayoutStateProvider(mLayoutStateProvider);
         }
-    }
-
-    private void updateCurrentTabDisplayStatus() {
-        mLocationBarModel.notifyUrlChanged();
-        updateTabLoadingState(true);
     }
 
     private void updateTabLoadingState(boolean updateUrl) {
