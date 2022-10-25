@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_action_handler.h"
 
 @protocol WhatsNewMediatorConsumer;
+@protocol ApplicationCommands;
 
 class UrlLoadingBrowserAgent;
 
@@ -21,7 +22,14 @@ class UrlLoadingBrowserAgent;
 // The delegate object that manages interactions with What's New table view.
 @property(nonatomic, weak) id<WhatsNewMediatorConsumer> consumer;
 
+// Url loading agent.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingAgent;
+
+// Browser coordinator command handler.
+@property(nonatomic, weak) id<ApplicationCommands> handler;
+
+// The view controller that presents the popup menu.
+@property(nonatomic, weak) UIViewController* baseViewController;
 
 @end
 

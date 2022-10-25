@@ -397,7 +397,6 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
 - (void)didTapPrimaryActionButton {
   [self.actionHandler didTapActionButton:self.type];
-  [self.delegate dismissWhatsNewDetailView:self];
 }
 
 - (void)didTaplearnMoreActionButton {
