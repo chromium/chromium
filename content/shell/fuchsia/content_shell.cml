@@ -7,6 +7,7 @@
     "vulkan/client.shard.cml",
     "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
     "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
+    "//build/config/fuchsia/test/test_fonts.shard.test-cml",
   ],
   program: {
     binary: "content_shell",
@@ -17,7 +18,6 @@
         "fuchsia.accessibility.semantics.SemanticsManager",
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
-        "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.input.virtualkeyboard.ControllerCreator",
         "fuchsia.intl.PropertyProvider",
