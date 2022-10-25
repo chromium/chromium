@@ -41,7 +41,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final Supplier<ImageFetcher> mImageFetcherSupplier;
     private boolean mOmniBoxAnswerColorReversal;
-    private boolean mOmniBoxAnswerColorReversalFinanceOnly;
+    private boolean mOmniBoxAnswerColorReversalAppliesToFinanceOnly;
 
     /**
      * @param context An Android context.
@@ -64,18 +64,18 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     public void onNativeInitialized() {
         super.onNativeInitialized();
-        mOmniBoxAnswerColorReversal =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE);
-        boolean financeReversalEnabled = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
-                "omnibox_answer_color_reversal_finance_only",
-                /* default= */ true);
         String stockColorReversalCountryList = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
                 "omnibox_answer_color_reversal_countries");
-        mOmniBoxAnswerColorReversalFinanceOnly = financeReversalEnabled
-                && stockColorReversalCountryList != null
+        mOmniBoxAnswerColorReversal =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
                 && stockColorReversalCountryList.contains(LocaleUtils.getDefaultLocaleString());
+
+        mOmniBoxAnswerColorReversalAppliesToFinanceOnly =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
+                        "omnibox_answer_color_reversal_finance_only",
+                        /* default= */ true);
     }
 
     @Override
@@ -151,8 +151,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         @AnswerType
         int answerType = suggestion.getAnswer() == null ? AnswerType.INVALID
                                                         : suggestion.getAnswer().getType();
-        boolean suggestionTextColorReversal = checkColorReversalRequired(
-                answerType, mOmniBoxAnswerColorReversal, mOmniBoxAnswerColorReversalFinanceOnly);
+        boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details = AnswerTextNewLayout.from(getContext(), suggestion,
                 mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
                 suggestionTextColorReversal);
@@ -189,22 +188,26 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      *
      */
     @VisibleForTesting
-    public static boolean checkColorReversalRequired(@AnswerType int answerType,
-            boolean omniBoxAnswerColorReversal, boolean omniBoxAnswerColorReversalFinanceOnly) {
+    public boolean checkColorReversalRequired(@AnswerType int answerType) {
         boolean isFinanceAnswer = answerType == AnswerType.FINANCE;
-        return (omniBoxAnswerColorReversal && !omniBoxAnswerColorReversalFinanceOnly)
-                || (omniBoxAnswerColorReversal && omniBoxAnswerColorReversalFinanceOnly
-                        && isFinanceAnswer);
+        // Flag disabled, or country not eligible.
+        if (!mOmniBoxAnswerColorReversal) return false;
+        // Flag enabled for finance only, but answer type is not finance.
+        if (mOmniBoxAnswerColorReversalAppliesToFinanceOnly && !isFinanceAnswer) return false;
+        // All other cases.
+        return true;
     }
 
     /* Returns whether Omnibox answer color reversal is enabled. */
-    public boolean isOmniboxAnswerColorReversalEnabled() {
+    @VisibleForTesting
+    /* package */ boolean isOmniboxAnswerColorReversalEnabledForTesting() {
         return mOmniBoxAnswerColorReversal;
     }
 
     /* Returns whether Omnibox answer color reversal is enabled to finance answer only. */
-    public boolean isOmniboxAnswerColorReversalFinanceOnlyEnabled() {
-        return mOmniBoxAnswerColorReversalFinanceOnly;
+    @VisibleForTesting
+    /* package */ boolean isOmniboxAnswerColorReversalAppliedToFinanceOnlyForTesting() {
+        return mOmniBoxAnswerColorReversalAppliesToFinanceOnly;
     }
 
     /**

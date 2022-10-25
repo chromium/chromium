@@ -203,12 +203,13 @@ public class AnswerSuggestionProcessorUnitTest {
     }
 
     void setColorReversalFeatureValues(
-            boolean flagEnabled, boolean financeOnly, String countryList) {
+            boolean flagEnabled, boolean flagAffectsFinanceOnly, String countryList) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE, flagEnabled);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
-                "omnibox_answer_color_reversal_finance_only", String.valueOf(financeOnly));
+                "omnibox_answer_color_reversal_finance_only",
+                String.valueOf(flagAffectsFinanceOnly));
         testValues.addFieldTrialParamOverride(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
                 "omnibox_answer_color_reversal_countries", countryList);
         FeatureList.setTestValues(testValues);
@@ -219,8 +220,12 @@ public class AnswerSuggestionProcessorUnitTest {
     public void onNativeInitialized_checkColorReversalDisable() {
         setColorReversalFeatureValues(false, false, "");
         mProcessor.onNativeInitialized();
-        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalEnabled());
-        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
+        // Flag disabled.
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalEnabledForTesting());
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalAppliedToFinanceOnlyForTesting());
+        // Confirm no color reversal for any answer types.
+        Assert.assertFalse(mProcessor.checkColorReversalRequired(AnswerType.FINANCE));
+        Assert.assertFalse(mProcessor.checkColorReversalRequired(AnswerType.WEATHER));
     }
 
     @Test
@@ -230,8 +235,14 @@ public class AnswerSuggestionProcessorUnitTest {
         Locale.setDefault(new Locale("ja", "JP"));
 
         mProcessor.onNativeInitialized();
-        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalEnabled());
-        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
+        // Country not eligible (no eligible countries).
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalEnabledForTesting());
+        // Note: value below is irrelevant, but reflects that eligible countries should
+        // flip colors only for Finance answers.
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalAppliedToFinanceOnlyForTesting());
+        // Confirm no color reversal for any answer types.
+        Assert.assertFalse(mProcessor.checkColorReversalRequired(AnswerType.FINANCE));
+        Assert.assertFalse(mProcessor.checkColorReversalRequired(AnswerType.WEATHER));
     }
 
     @Test
@@ -241,8 +252,14 @@ public class AnswerSuggestionProcessorUnitTest {
         Locale.setDefault(new Locale("ja", "JP"));
 
         mProcessor.onNativeInitialized();
-        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalEnabled());
-        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
+        // Country not eligible (not on the list of countries).
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalEnabledForTesting());
+        // Note: value below is irrelevant, but reflects that eligible countries should
+        // flip colors only for Finance answers.
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalAppliedToFinanceOnlyForTesting());
+        // Confirm no color reversal for any answer types.
+        Assert.assertFalse(mProcessor.checkColorReversalRequired(AnswerType.FINANCE));
+        Assert.assertFalse(mProcessor.checkColorReversalRequired(AnswerType.WEATHER));
     }
 
     @Test
@@ -252,8 +269,12 @@ public class AnswerSuggestionProcessorUnitTest {
         Locale.setDefault(new Locale("ja", "JP"));
 
         mProcessor.onNativeInitialized();
-        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalEnabled());
-        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
+        // Country eligible (on the list of countries).
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalEnabledForTesting());
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalAppliedToFinanceOnlyForTesting());
+        // Confirm color reversal for finance type only.
+        Assert.assertTrue(mProcessor.checkColorReversalRequired(AnswerType.FINANCE));
+        Assert.assertFalse(mProcessor.checkColorReversalRequired(AnswerType.WEATHER));
     }
 
     @Test
@@ -522,11 +543,10 @@ public class AnswerSuggestionProcessorUnitTest {
     public void checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalIsFalse() {
         // Function should return false if omniBoxAnswerColorReversal is false regardless of
         // omniBoxAnswerColorReversalFinanceOnly value and answer type.
+        setColorReversalFeatureValues(false, false, "");
+        mProcessor.onNativeInitialized();
         for (@AnswerType int type : ANSWER_TYPES) {
-            Assert.assertEquals(false,
-                    AnswerSuggestionProcessor.checkColorReversalRequired(type, false, false));
-            Assert.assertEquals(
-                    false, AnswerSuggestionProcessor.checkColorReversalRequired(type, false, true));
+            Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
         }
     }
 
@@ -536,9 +556,11 @@ public class AnswerSuggestionProcessorUnitTest {
     checkColorReversalRequired_ReturnsTrueIfOmniBoxAnswerColorReversalIsTrueAndFinanceOnlyIsFalse() {
         // Function should return true if omniBoxAnswerColorReversal and
         // omniBoxAnswerColorReversalFinanceOnly are true regardless of answer type.
+        setColorReversalFeatureValues(true, false, "ja-JP");
+        Locale.setDefault(new Locale("ja", "JP"));
+        mProcessor.onNativeInitialized();
         for (@AnswerType int type : ANSWER_TYPES) {
-            Assert.assertEquals(
-                    true, AnswerSuggestionProcessor.checkColorReversalRequired(type, true, false));
+            Assert.assertTrue(mProcessor.checkColorReversalRequired(type));
         }
     }
 
@@ -546,17 +568,19 @@ public class AnswerSuggestionProcessorUnitTest {
     @SmallTest
     public void
     checkColorReversalRequired_ReturnsTrueIfAnswerIsFinanceAndFinanceOnlyIsTrue_AndFailsOtherwise() {
+        setColorReversalFeatureValues(true, true, "ja-JP");
+        Locale.setDefault(new Locale("ja", "JP"));
+        mProcessor.onNativeInitialized();
+
         for (@AnswerType int type : ANSWER_TYPES) {
             if (type == AnswerType.FINANCE) {
                 // Function should return true if omniBoxAnswerColorReversal and
                 // omniBoxAnswerColorReversalFinanceOnly are true and answer type is finance.
-                Assert.assertEquals(true,
-                        AnswerSuggestionProcessor.checkColorReversalRequired(type, true, true));
+                Assert.assertTrue(mProcessor.checkColorReversalRequired(type));
             } else {
                 // Function should return false if omniBoxAnswerColorReversal and
                 // omniBoxAnswerColorReversalFinanceOnly are true and answer type is otherwise.
-                Assert.assertEquals(false,
-                        AnswerSuggestionProcessor.checkColorReversalRequired(type, true, true));
+                Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
             }
         }
     }
