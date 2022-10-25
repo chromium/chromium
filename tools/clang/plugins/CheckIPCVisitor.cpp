@@ -138,8 +138,7 @@ bool CheckIPCVisitor::ValidateCheckedTuple(
   }
 
   bool valid = true;
-  for (unsigned i = 0; i != spec->getNumArgs(); ++i) {
-    const TemplateArgument& arg = spec->getArg(i);
+  for (const TemplateArgument& arg : spec->template_arguments()) {
     CheckDetails details;
     if (CheckTemplateArgument(arg, &details)) {
       continue;
@@ -222,7 +221,7 @@ bool CheckIPCVisitor::CheckType(QualType type, CheckDetails* details) const {
 
   while (true) {
     if (auto* spec = dyn_cast<TemplateSpecializationType>(type)) {
-      for (const TemplateArgument& arg: *spec) {
+      for (const TemplateArgument& arg : spec->template_arguments()) {
         if (!CheckTemplateArgument(arg, details)) {
           return false;
         }
