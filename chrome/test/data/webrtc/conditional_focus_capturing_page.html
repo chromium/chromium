@@ -9,20 +9,29 @@
 
       // Calls getDisplayMedia().
       // Calling with |busyWaitMs| set to a positive value leads to hogging
-      // the CPU for that long *before* calling focus().
+      // the CPU for that long *before* calling focus() or setFocusBehavior().
       // Then:
-      // * If (focusCallValue == ''), don't call focus().
-      // * If (focusCallValue != ''), call focus(focusCallValue).
-      // * If |onCorrectMicrotask|, focus() is called on the microtask
-      //   on which getDisplayMedia's Promise was resolved. Otherwise, it is
-      //   scheduled to be called in a later task.
-      async function captureOtherTab(busyWaitMs, focusCallValue, onCorrectMicrotask) {
+      // * If |useCaptureController| is true, pass new CaptureController to
+      //   getDisplayMedia options.
+      // * If (focusCallValue == ''), don't call focus() and setFocusBehavior().
+      // * If (focusCallValue != ''), call setFocusBehavior(focusCallValue) if
+      //   |useCaptureController| is true, otherwise call focus(focusCallValue).
+      // * If |onCorrectMicrotask|, focus() or setFocusBehavior() is called
+      //   on the microtask on which getDisplayMedia's Promise was resolved.
+      //   Otherwise, it is scheduled to be called in a later task.
+      async function captureOtherTab(busyWaitMs, focusCallValue, useCaptureController, onCorrectMicrotask) {
         try {
-          const mediaStream = await navigator.mediaDevices.getDisplayMedia();
+          const options = {};
+          let controller;
+          if (useCaptureController) {
+            controller = new CaptureController();
+            options.controller = controller;
+          }
+          const mediaStream = await navigator.mediaDevices.getDisplayMedia(options);
           if (onCorrectMicrotask) {
-            handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue);
+            handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue, controller);
           } else {
-            setTimeout(handleCaptureSuccess, 0, mediaStream, busyWaitMs, focusCallValue);
+            setTimeout(handleCaptureSuccess, 0, mediaStream, busyWaitMs, focusCallValue, controller);
           }
         } catch (error) {
           window.domAutomationController.send("capture-failure");
@@ -36,7 +45,7 @@
         }
       }
 
-      function handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue) {
+      function handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue, controller) {
         mediaStreamKeepAlive = mediaStream;
 
         if (busyWaitMs > 0) {
@@ -46,7 +55,11 @@
         if (focusCallValue) {
           const [track] = mediaStream.getVideoTracks();
           try {
-            track.focus(focusCallValue);
+            if (controller) {
+              controller.setFocusBehavior(focusCallValue);
+            } else {
+              track.focus(focusCallValue);
+            }
           } catch (error) {
             window.domAutomationController.send(`${error}`);
           }
@@ -81,6 +94,25 @@
           }
         } catch (error) {
           window.domAutomationController.send("capture-failure");
+        }
+      }
+
+      // Calls setFocusBehavior(focusCallValueBeforeCapture) before
+      // getDisplayMedia({ controller} ). Then
+      // if (focusCallValueAfterCapture != '') call
+      // setFocusBehavior(focusCallValueAfterCapture) on the microtask on which
+      // getDisplayMedia's Promise was resolved.
+      async function callSetFocusBehaviorBeforeCapture(focusCallValueBeforeCapture, focusCallValueAfterCapture) {
+        try {
+          const controller = new CaptureController();
+          controller.setFocusBehavior(focusCallValueBeforeCapture);
+          await navigator.mediaDevices.getDisplayMedia({ controller });
+          if (focusCallValueAfterCapture) {
+            controller.setFocusBehavior(focusCallValueAfterCapture);
+          }
+          window.domAutomationController.send("capture-success");
+        } catch (error) {
+          window.domAutomationController.send(`${error}`);
         }
       }
     </script>

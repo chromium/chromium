@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
@@ -482,7 +483,8 @@ UserMediaRequest* UserMediaRequest::Create(
 
   UserMediaRequest* const result = MakeGarbageCollected<UserMediaRequest>(
       context, client, media_type, audio, video, options->preferCurrentTab(),
-      options->autoSelectAllScreens(), callbacks, surface);
+      options->autoSelectAllScreens(), options->getControllerOr(nullptr),
+      callbacks, surface);
 
   // The default is to include.
   // Note that this option is no-op if audio is not requested.
@@ -538,7 +540,8 @@ UserMediaRequest* UserMediaRequest::CreateForTesting(
   return MakeGarbageCollected<UserMediaRequest>(
       nullptr, nullptr, UserMediaRequestType::kUserMedia, audio, video,
       /*should_prefer_current_tab=*/false, /*auto_select_all_screens=*/false,
-      nullptr, IdentifiableSurface());
+      /*capture_controller=*/nullptr, /*callbacks=*/nullptr,
+      IdentifiableSurface());
 }
 
 UserMediaRequest::UserMediaRequest(ExecutionContext* context,
@@ -548,12 +551,14 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
                                    MediaConstraints video,
                                    bool should_prefer_current_tab,
                                    bool auto_select_all_screens,
+                                   CaptureController* capture_controller,
                                    Callbacks* callbacks,
                                    IdentifiableSurface surface)
     : ExecutionContextLifecycleObserver(context),
       media_type_(media_type),
       audio_(audio),
       video_(video),
+      capture_controller_(capture_controller),
       should_prefer_current_tab_(should_prefer_current_tab),
       auto_select_all_screens_(auto_select_all_screens),
       should_disable_hardware_noise_suppression_(
@@ -746,7 +751,7 @@ void UserMediaRequest::OnMediaStreamsInitialized(MediaStreamVector streams) {
     }
   }
   // After this call, the execution context may be invalid.
-  callbacks_->OnSuccess(streams);
+  callbacks_->OnSuccess(streams, capture_controller_);
   is_resolved_ = true;
 }
 
@@ -862,6 +867,7 @@ void UserMediaRequest::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(callbacks_);
   visitor->Trace(transferred_track_);
+  visitor->Trace(capture_controller_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

@@ -472,6 +472,10 @@
       status: "stable",
     },
     {
+      name: "CaptureController",
+      status: {"Android": "", "default": "experimental"},
+    },
+    {
       name: "CaptureHandle",
       depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "stable"},

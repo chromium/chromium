@@ -1212,6 +1212,10 @@ interface CanvasRenderingContext2D
     setter textBaseline
     setter textRendering
     setter wordSpacing
+interface CaptureController
+    attribute @@toStringTag
+    method constructor
+    method setFocusBehavior
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor

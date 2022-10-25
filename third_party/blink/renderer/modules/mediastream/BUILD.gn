@@ -12,6 +12,8 @@ blink_modules_sources("mediastream") {
     "apply_constraints_request.h",
     "browser_capture_media_stream_track.cc",
     "browser_capture_media_stream_track.h",
+    "capture_controller.cc",
+    "capture_controller.h",
     "crop_target.cc",
     "crop_target.h",
     "dom_window_media_stream.h",

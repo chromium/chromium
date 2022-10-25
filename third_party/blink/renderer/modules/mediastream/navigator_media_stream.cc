@@ -58,7 +58,8 @@ class V8Callbacks final : public blink::UserMediaRequest::Callbacks {
     UserMediaRequest::Callbacks::Trace(visitor);
   }
 
-  void OnSuccess(const MediaStreamVector& streams) override {
+  void OnSuccess(const MediaStreamVector& streams,
+                 CaptureController* capture_controller) override {
     DCHECK_EQ(streams.size(), 1u);
     success_callback_->InvokeAndReportException(nullptr, streams[0]);
   }

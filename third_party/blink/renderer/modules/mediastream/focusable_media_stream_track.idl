@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/conditional-focus/
-enum CaptureStartFocusBehavior {
-  "focus-captured-surface",
-  "no-focus-change"
-};
-
+// TODO(crbug.com/1215480): Remove this file entirely.
 // https://wicg.github.io/conditional-focus/
 [
     Exposed = Window,

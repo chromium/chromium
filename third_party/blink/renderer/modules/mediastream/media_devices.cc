@@ -65,14 +65,16 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
   PromiseResolverCallbacks(
       UserMediaRequestType media_type,
       ScriptPromiseResolver* resolver,
-      base::OnceCallback<void(const String&, MediaStreamTrack*)>
-          on_success_follow_up)
+      base::OnceCallback<void(const String&,
+                              MediaStreamTrack*,
+                              CaptureController*)> on_success_follow_up)
       : media_type_(media_type),
         resolver_(resolver),
         on_success_follow_up_(std::move(on_success_follow_up)) {}
   ~PromiseResolverCallbacks() override = default;
 
-  void OnSuccess(const MediaStreamVector& streams) override {
+  void OnSuccess(const MediaStreamVector& streams,
+                 CaptureController* capture_controller) override {
     if (media_type_ == UserMediaRequestType::kDisplayMediaSet) {
       OnSuccessGetDisplayMediaSet(streams);
       return;
@@ -91,6 +93,9 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
       MediaStreamTrackVector video_tracks = stream->getVideoTracks();
       DCHECK_EQ(video_tracks.size(), 1u);
       video_track = video_tracks[0];
+      if (capture_controller) {
+        capture_controller->SetVideoTrack(video_track, stream->id().Utf8());
+      }
     }
 
     // Resolve Promise<MediaStream> on a microtask.
@@ -98,7 +103,8 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
     // Enqueue the follow-up microtask, if any is intended.
     if (on_success_follow_up_ && video_track) {
-      std::move(on_success_follow_up_).Run(stream->id(), video_track);
+      std::move(on_success_follow_up_)
+          .Run(stream->id(), video_track, capture_controller);
     }
   }
 
@@ -122,7 +128,7 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
   const UserMediaRequestType media_type_;
 
   Member<ScriptPromiseResolver> resolver_;
-  base::OnceCallback<void(const String&, MediaStreamTrack*)>
+  base::OnceCallback<void(const String&, MediaStreamTrack*, CaptureController*)>
       on_success_follow_up_;
 };
 
@@ -192,10 +198,12 @@ MediaStreamConstraints* ToMediaStreamConstraints(
     options->setPreferCurrentTab(source->preferCurrentTab());
   if (source->hasAutoSelectAllScreens())
     options->setAutoSelectAllScreens(source->autoSelectAllScreens());
-  if (source->hasSystemAudio())
-    options->setSystemAudio(source->systemAudio());
+  if (source->hasController())
+    options->setController(source->controller());
   if (source->hasSelfBrowserSurface())
     options->setSelfBrowserSurface(source->selfBrowserSurface());
+  if (source->hasSystemAudio())
+    options->setSystemAudio(source->systemAudio());
   if (source->hasSurfaceSwitching())
     options->setSurfaceSwitching(source->surfaceSwitching());
   return options;
@@ -275,9 +283,11 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-  base::OnceCallback<void(const String&, MediaStreamTrack*)>
+  base::OnceCallback<void(const String&, MediaStreamTrack*, CaptureController*)>
       on_success_follow_up;
 #if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1215480): Don't set on_success_follow_up if no
+  // capture_controller.
   if (media_type == UserMediaRequestType::kDisplayMedia) {
     on_success_follow_up = WTF::BindOnce(
         &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
@@ -383,6 +393,18 @@ ScriptPromise MediaDevices::getDisplayMedia(
         "The autoSelectAllScreens property is not allowed for usage with "
         "getDisplayMedia.");
     return ScriptPromise();
+  }
+
+  if (CaptureController* const capture_controller =
+          options->getControllerOr(nullptr)) {
+    if (capture_controller->IsBound()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "setFocusBehavior() can only be called before getDisplayMedia() or "
+          "immediately after.");
+      return ScriptPromise();
+    }
+    capture_controller->SetIsBound(true);
   }
 
   return SendUserMediaRequest(script_state, UserMediaRequestType::kDisplayMedia,
@@ -807,18 +829,21 @@ void MediaDevices::Trace(Visitor* visitor) const {
 #if !BUILDFLAG(IS_ANDROID)
 void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
     const String& id,
-    MediaStreamTrack* track) {
+    MediaStreamTrack* track,
+    CaptureController* capture_controller) {
   ExecutionContext* const context = GetExecutionContext();
   if (!context)
     return;
 
-  context->GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&MediaDevices::CloseFocusWindowOfOpportunity,
-                    WrapWeakPersistent(this), id, WrapWeakPersistent(track)));
+  context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+      &MediaDevices::CloseFocusWindowOfOpportunity, WrapWeakPersistent(this),
+      id, WrapWeakPersistent(track), WrapWeakPersistent(capture_controller)));
 }
 
-void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
-                                                 MediaStreamTrack* track) {
+void MediaDevices::CloseFocusWindowOfOpportunity(
+    const String& id,
+    MediaStreamTrack* track,
+    CaptureController* capture_controller) {
   if (!track) {
     return;
   }
@@ -831,6 +856,13 @@ void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
   LocalDOMWindow* const window = To<LocalDOMWindow>(context);
   if (!window) {
     return;
+  }
+
+  DCHECK(!capture_controller ||
+         RuntimeEnabledFeatures::ConditionalFocusEnabled(context));
+  if (RuntimeEnabledFeatures::ConditionalFocusEnabled(context) &&
+      capture_controller) {
+    capture_controller->FinalizeFocusDecision();
   }
 
   // Inform the track that further calls to focus() should raise an exception.

@@ -143,12 +143,15 @@ class MODULES_EXPORT MediaDevices final
 #if !BUILDFLAG(IS_ANDROID)
   // Manage the window of opportunity that occurs immediately after
   // display-capture starts. The application can call MediaStreamTrack.focus()
-  // on the microtask where the Promise<MediaStream> was resolved; later calls
-  // raise an exception.
+  // or CaptureController.setFocusBehavior() on the microtask where the
+  // Promise<MediaStream> was resolved; later calls raise an exception.
   // |id| identifies the source, and therefore the track, on the browser-side.
   void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(const String&,
-                                                       MediaStreamTrack*);
-  void CloseFocusWindowOfOpportunity(const String&, MediaStreamTrack*);
+                                                       MediaStreamTrack*,
+                                                       CaptureController*);
+  void CloseFocusWindowOfOpportunity(const String&,
+                                     MediaStreamTrack*,
+                                     CaptureController*);
 
   // Receives a message from the browser process with the crop-ID it has
   // assigned to |element|.

@@ -36,20 +36,24 @@ dictionary DisplayMediaStreamOptions {
 
     // https://wicg.github.io/prefer-current-tab/#prefer-current-tab
     boolean preferCurrentTab = false;
-
     [
       RuntimeEnabled = GetDisplayMediaSetAutoSelectAllScreens
     ] boolean autoSelectAllScreens = false;
 
-    // https://github.com/w3c/mediacapture-screen-share/pull/222/files
+    // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-controller
     [
-      RuntimeEnabled = SystemAudioConstraint
-    ] SystemAudioPreferenceEnum systemAudio;
+      RuntimeEnabled = CaptureController
+    ] CaptureController controller;
 
     // https://github.com/w3c/mediacapture-screen-share/pull/216/files
     [
       RuntimeEnabled = SelfBrowserSurfaceConstraint
     ] SelfCapturePreferenceEnum selfBrowserSurface;
+
+    // https://github.com/w3c/mediacapture-screen-share/pull/222/files
+    [
+      RuntimeEnabled = SystemAudioConstraint
+    ] SystemAudioPreferenceEnum systemAudio;
 
     // https://github.com/w3c/mediacapture-screen-share/pull/225/files
     [
@@ -67,7 +71,8 @@ dictionary MediaStreamConstraints {
     (boolean or MediaTrackConstraints) audio = false;
     boolean preferCurrentTab = false;
     boolean autoSelectAllScreens = false;
-    SystemAudioPreferenceEnum systemAudio;
+    CaptureController controller;
     SelfCapturePreferenceEnum selfBrowserSurface;
+    SystemAudioPreferenceEnum systemAudio;
     SurfaceSwitchingPreferenceEnum surfaceSwitching;
 };

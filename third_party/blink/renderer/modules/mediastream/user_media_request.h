@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
@@ -77,7 +78,8 @@ class MODULES_EXPORT UserMediaRequest final
    public:
     virtual ~Callbacks() = default;
 
-    virtual void OnSuccess(const MediaStreamVector&) = 0;
+    virtual void OnSuccess(const MediaStreamVector&,
+                           CaptureController* capture_controller) = 0;
     virtual void OnError(ScriptWrappable* callback_this_value,
                          const V8MediaStreamError* error) = 0;
 
@@ -106,6 +108,7 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaConstraints video,
                    bool should_prefer_current_tab,
                    bool auto_select_all_screens,
+                   CaptureController* capture_controller,
                    Callbacks*,
                    IdentifiableSurface surface);
   ~UserMediaRequest() override;
@@ -209,6 +212,7 @@ class MODULES_EXPORT UserMediaRequest final
   UserMediaRequestType media_type_;
   MediaConstraints audio_;
   MediaConstraints video_;
+  const Member<CaptureController> capture_controller_;
   const bool should_prefer_current_tab_ = false;
   bool exclude_system_audio_ = false;
   bool exclude_self_browser_surface_ = false;
