@@ -144,6 +144,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       const std::string& browser_context_id,
       base::OnceCallback<void(absl::optional<bool>)> callback);
 
+  void SynchronouslyResetDBHelperForTesting() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    db_helper_.SynchronouslyResetForTest();  // IN-TEST
+  }
+
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.

@@ -313,9 +313,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
 }
 
-// TODO(https://crbug.com/1377748): Re-enable this test once it is not flaky.
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       DISABLED_ClearSiteDataOnChangedSetsForContext_Successful) {
+       ClearSiteDataOnChangedSetsForContext_Successful) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kFirstPartySets,
@@ -366,7 +365,11 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
     histogram.ExpectUniqueSample(
         kFirstPartySetsClearSiteDataOutcomeHistogram,
         FirstPartySetsHandlerImpl::ClearSiteDataOutcomeType::kSuccess, 1);
+
+    // Make sure the database is closed properly before being opened again.
+    handler.SynchronouslyResetDBHelperForTesting();
   }
+
   // Verify FPS transition clearing is working for non-empty sites-to-clear
   // list.
   {
