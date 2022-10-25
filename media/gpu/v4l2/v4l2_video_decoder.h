@@ -194,16 +194,14 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // DmabufVideoFramePool::Initialize() during Initialize().
   size_t num_output_frames_ = 1;
 
-  // Aspect ratio from config to use for output frames.
-  VideoAspectRatio aspect_ratio_;
-
-  // Callbacks passed from Initialize().
+  // Callback passed from Initialize().
   OutputCB output_cb_;
 
-  // Hold onto profile and color space passed in from Initialize() so that
-  // it is available for InitializeBackend().
+  // Initialize()-passed configuration options.
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoAspectRatio aspect_ratio_;
   VideoColorSpace color_space_;
+  bool low_delay_;
 
   // V4L2 input and output queue.
   scoped_refptr<V4L2Queue> input_queue_;

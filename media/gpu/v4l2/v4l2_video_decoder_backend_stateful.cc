@@ -41,6 +41,42 @@ bool IsVp9KSVCSupportedDriver(const std::string& driver_name) {
   const std::string kVP9KSVCSupportedDrivers[] = {"qcom-venus"};
   return base::Contains(kVP9KSVCSupportedDrivers, driver_name);
 }
+
+// Estimates the amount of buffers needed in the CAPTURE queue to serve both the
+// codec reference requirements and the Renderer pipeline.
+size_t EstimateRequiredNumCAPTUREBuffers(V4L2Device* const v4l2_device,
+                                         bool low_latency) {
+  DCHECK(v4l2_device);
+
+  // Estimate the amount of buffers needed for the CAPTURE queue and for codec
+  // reference requirements. For VP9 and AV1, the maximum number of reference
+  // frames is constant and 8 (for VP8 is 4); for H.264 and other ITU-T codecs,
+  // we query it from the driver.
+  constexpr size_t kDefaultNumReferenceFrames = 8;
+  size_t num_capture_buffers = kDefaultNumReferenceFrames;
+  // On QC Venus, this control ranges between 1 and 32 at the time of writing.
+  auto ctrl = v4l2_device->GetCtrl(V4L2_CID_MIN_BUFFERS_FOR_CAPTURE);
+  if (ctrl) {
+    VLOGF(2) << "V4L2_CID_MIN_BUFFERS_FOR_CAPTURE  = " << ctrl->value;
+    num_capture_buffers =
+        std::max(base::checked_cast<size_t>(ctrl->value), num_capture_buffers);
+  }
+
+  // kMaxVideoFrames is meant to be the amount of VideoFrames needed to populate
+  // the whole Renderer playback pipeline when there's no smoothing playback
+  // queue, i.e. in low latency scenarios such as WebRTC etc. For non-low
+  // latency scenarios, a large smoothing playback is used in the Renderer
+  // process. Heuristically, the extra depth needed is in the range of 15 or
+  // so, so we need to add a few extra buffers.
+  constexpr size_t kExpectedNonLatencyPipelineDepth = 16;
+  static_assert(kExpectedNonLatencyPipelineDepth > limits::kMaxVideoFrames,
+                "kMaxVideoFrames is expected to be relatively small");
+  if (low_latency)
+    return num_capture_buffers + limits::kMaxVideoFrames + 1;
+  else
+    return num_capture_buffers + kExpectedNonLatencyPipelineDepth;
+}
+
 }  // namespace
 
 V4L2StatefulVideoDecoderBackend::DecodeRequest::DecodeRequest(
@@ -66,11 +102,13 @@ V4L2StatefulVideoDecoderBackend::V4L2StatefulVideoDecoderBackend(
     scoped_refptr<V4L2Device> device,
     VideoCodecProfile profile,
     const VideoColorSpace& color_space,
+    bool low_latency,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : V4L2VideoDecoderBackend(client, std::move(device)),
       driver_name_(device_->GetDriverName()),
       profile_(profile),
       color_space_(color_space),
+      low_latency_(low_latency),
       task_runner_(task_runner) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -616,13 +654,10 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
     return;
   }
 
-  auto ctrl = device_->GetCtrl(V4L2_CID_MIN_BUFFERS_FOR_CAPTURE);
-  constexpr size_t kDefaultNumOutputBuffers = 7;
-  constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   const size_t num_output_buffers =
-      (ctrl ? ctrl->value : kDefaultNumOutputBuffers) + kPicsInPipeline;
-  if (!ctrl)
-    VLOGF(1) << "Using default minimum number of CAPTURE buffers";
+      EstimateRequiredNumCAPTUREBuffers(device_.get(), low_latency_);
+  VLOGF(2) << "Estimated " << num_output_buffers
+           << " buffers needed for the CAPTURE queue";
 
   // Signal that we are flushing and initiate the resolution change.
   // Our flush will be done when we receive a buffer with the LAST flag on the
