@@ -879,9 +879,8 @@ bool GridStyleChanged(const ComputedStyle* old_style,
 
 bool AlignmentChanged(const ComputedStyle* old_style,
                       const ComputedStyle& current_style) {
-  return old_style->AlignSelfPosition() != current_style.AlignSelfPosition() ||
-         old_style->JustifySelfPosition() !=
-             current_style.JustifySelfPosition();
+  return old_style->AlignSelf() != current_style.AlignSelf() ||
+         old_style->JustifySelf() != current_style.JustifySelf();
 }
 
 }  // namespace

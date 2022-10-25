@@ -1418,6 +1418,7 @@
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "align-items",
@@ -1429,6 +1430,7 @@
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "alignment-baseline",
@@ -1451,6 +1453,7 @@
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "anchor-name",
@@ -2953,6 +2956,7 @@
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "justify-items",
@@ -2964,6 +2968,7 @@
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "justify-self",
@@ -2975,6 +2980,7 @@
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "left",

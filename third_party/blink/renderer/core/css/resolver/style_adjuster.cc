@@ -957,7 +957,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   AdjustForForcedColorsMode(style);
 
   // Let the theme also have a crack at adjusting the style.
-  LayoutTheme::GetTheme().AdjustStyle(element, style);
+  LayoutTheme::GetTheme().AdjustStyle(element, style, builder);
 
   AdjustStyleForInert(style, element);
 
@@ -1035,9 +1035,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // If the inherited value of justify-items includes the 'legacy'
   // keyword (plus 'left', 'right' or 'center'), 'legacy' computes to
   // the the inherited value.  Otherwise, 'auto' computes to 'normal'.
-  if (parent_style.JustifyItemsPositionType() == ItemPositionType::kLegacy &&
-      style.JustifyItemsPosition() == ItemPosition::kLegacy) {
-    style.SetJustifyItems(parent_style.JustifyItems());
+  if (parent_style.JustifyItems().PositionType() == ItemPositionType::kLegacy &&
+      style.JustifyItems().GetPosition() == ItemPosition::kLegacy) {
+    builder.SetJustifyItems(parent_style.JustifyItems());
   }
 
   AdjustEffectiveTouchAction(style, parent_style, element, is_svg_root);

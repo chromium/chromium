@@ -1042,7 +1042,7 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent(
       is_webkit_box ? BoxPackToContentDistribution(style.BoxPack())
                     : style.ResolvedJustifyContentDistribution(
                           ContentAlignmentNormalBehavior());
-  OverflowAlignment overflow = style.JustifyContentOverflowAlignment();
+  OverflowAlignment overflow = style.JustifyContent().Overflow();
   // For flex, justify-content: stretch behaves as flex-start:
   // https://drafts.csswg.org/css-align/#distribution-flex
   if (!is_webkit_box && distribution == ContentDistributionType::kStretch) {
@@ -1059,7 +1059,7 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedAlignContent(
       style.ResolvedAlignContentPosition(ContentAlignmentNormalBehavior());
   ContentDistributionType distribution =
       style.ResolvedAlignContentDistribution(ContentAlignmentNormalBehavior());
-  OverflowAlignment overflow = style.AlignContentOverflowAlignment();
+  OverflowAlignment overflow = style.AlignContent().Overflow();
   return StyleContentAlignmentData(position, distribution, overflow);
 }
 

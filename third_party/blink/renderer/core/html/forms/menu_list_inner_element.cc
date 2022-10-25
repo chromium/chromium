@@ -52,10 +52,11 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
   // when the content overflows, treat it the same as align-items: flex-start.
   // But we only do that for the cases where html.css would otherwise use
   // center.
-  if (parent_style.AlignItemsPosition() == ItemPosition::kCenter) {
+  if (parent_style.AlignItems().GetPosition() == ItemPosition::kCenter) {
     style->SetMarginTop(Length());
     style->SetMarginBottom(Length());
-    style->SetAlignSelfPosition(ItemPosition::kFlexStart);
+    style_builder.SetAlignSelf(StyleSelfAlignmentData(
+        ItemPosition::kStart, OverflowAlignment::kDefault));
   }
 
   // We set margin-left/right instead of padding-left/right to clip text by

@@ -197,7 +197,9 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
   return part;
 }
 
-void LayoutTheme::AdjustStyle(const Element* element, ComputedStyle& style) {
+void LayoutTheme::AdjustStyle(const Element* element,
+                              ComputedStyle& style,
+                              ComputedStyleBuilder& builder) {
   ControlPart original_part = style.Appearance();
   style.SetEffectiveAppearance(original_part);
   if (original_part == ControlPart::kNoControlPart)
@@ -249,7 +251,7 @@ void LayoutTheme::AdjustStyle(const Element* element, ComputedStyle& style) {
   }
 
   if (IsSliderContainer(*element))
-    AdjustSliderContainerStyle(*element, style);
+    AdjustSliderContainerStyle(*element, style, builder);
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
@@ -430,8 +432,10 @@ void LayoutTheme::AdjustMenuListStyle(ComputedStyle& style) const {
 
 void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&) const {}
 
-void LayoutTheme::AdjustSliderContainerStyle(const Element& element,
-                                             ComputedStyle& style) const {
+void LayoutTheme::AdjustSliderContainerStyle(
+    const Element& element,
+    ComputedStyle& style,
+    ComputedStyleBuilder& builder) const {
   DCHECK(IsSliderContainer(element));
 
   if (style.EffectiveAppearance() == kSliderVerticalPart) {
@@ -443,8 +447,8 @@ void LayoutTheme::AdjustSliderContainerStyle(const Element& element,
     style.SetTouchAction(TouchAction::kPanY);
     style.SetWritingMode(WritingMode::kHorizontalTb);
     if (To<HTMLInputElement>(element.OwnerShadowHost())->list()) {
-      style.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
-                                                OverflowAlignment::kUnsafe));
+      builder.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
+                                                  OverflowAlignment::kUnsafe));
     }
   }
   style.SetEffectiveAppearance(kNoControlPart);
