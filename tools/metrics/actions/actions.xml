@@ -31438,8 +31438,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_BrightnessChanged" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <obsolete>
+    Replaced with Ash.QuickSettings.Slider.{SliderBehavior} on 10/2022.
+  </obsolete>
+  <owner>jamescook@chromium.org</owner>
+  <description>
+    Recorded when the screen brightness changes, for any reason (including both
+    UI actions and non-UI actions).
+  </description>
 </action>
 
 <action name="StatusArea_CapsLock_Detailed">
