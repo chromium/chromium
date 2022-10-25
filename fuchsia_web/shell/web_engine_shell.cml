@@ -1,0 +1,71 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{
+  include: [
+    "syslog/client.shard.cml",
+    "vulkan/client.shard.cml",
+
+    // CML shards intended for tests are used here because this component is
+    // launched as a test. While it doesn't fit the typical use-case for a test
+    // component, it's a useful way to be able to launch the component from a
+    // host tool and have it run somewhere it can get the capabilities it needs
+    // to function correctly.
+    "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
+    "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
+  ],
+  program: {
+    binary: "web_engine_shell_exec",
+  },
+  use: [
+    {
+      protocol: [
+        "fuchsia.feedback.ComponentDataRegister",
+        "fuchsia.feedback.CrashReportingProductRegister",
+        "fuchsia.sys.Environment",
+        "fuchsia.sys.Launcher",
+        "fuchsia.sys.Loader",
+      ],
+    },
+    {
+      storage: "data",
+      path: "/data",
+    },
+    {
+      storage: "tmp",
+      path: "/tmp",
+    },
+    // Uses below this line are for web_instance.cmx
+    {
+      protocol: [
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.buildinfo.Provider",
+        "fuchsia.device.NameProvider",
+        "fuchsia.fonts.Provider",
+        "fuchsia.hwinfo.Product",
+        "fuchsia.input.virtualkeyboard.ControllerCreator",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.kernel.VmexResource",
+        "fuchsia.media.Audio",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.media.SessionAudioConsumerFactory",
+        "fuchsia.mediacodec.CodecFactory",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        "fuchsia.ui.input3.Keyboard",
+        "fuchsia.ui.policy.Presenter",
+        "fuchsia.ui.scenic.Scenic",
+      ],
+    },
+    {
+      protocol: "fuchsia.tracing.perfetto.ProducerConnector",
+      availability: "optional",
+    },
+  ],
+}

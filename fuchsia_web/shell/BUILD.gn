@@ -34,6 +34,12 @@ source_set("remote_debugging_port") {
 
 fuchsia_component("web_engine_shell_component") {
   testonly = true
+  manifest = "web_engine_shell.cml"
+  data_deps = [ ":web_engine_shell_exec" ]
+}
+
+fuchsia_component("web_engine_shell_component_v1") {
+  testonly = true
   manifest = "web_engine_shell.cmx"
   data_deps = [ ":web_engine_shell_exec" ]
 }
@@ -43,7 +49,10 @@ fuchsia_package("web_engine_shell_pkg") {
 
   # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
   package_name = "web_engine_shell"
-  deps = [ ":web_engine_shell_component" ]
+  deps = [
+    ":web_engine_shell_component",
+    ":web_engine_shell_component_v1",
+  ]
 }
 
 fuchsia_package_installer("web_engine_shell") {
