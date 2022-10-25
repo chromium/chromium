@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import Enums
-import UIKit
 import XCTest
 
 class EnumTest: XCTestCase {
@@ -18,16 +17,10 @@ class EnumTest: XCTestCase {
     let x = kThree
     XCTAssertEqual(x, kThree, "Implicitly typed enum doesn't match")
 
-    // Implicit type, |anotherCOlor| is a |Color|.
+    // Implicit type, |anotherColor| is a |Color|.
     let anotherColor = kYellow
     XCTAssertEqual(anotherColor, kYellow, "")
     XCTAssertNotEqual(anotherColor, kBlue)
-
-    // These correctly fail. Cannot convert |Int| to |Color|.
-    // anotherColor = kTwo
-    // anotherColor = x
-    // let integer : Int = kBlue
-
   }
 
   func testClassEnum() throws {
@@ -35,9 +28,5 @@ class EnumTest: XCTestCase {
     XCTAssertEqual(pet, Pet.goat, "")
     XCTAssertNotEqual(pet, Pet.dogcow, "")
     XCTAssertNotEqual(Pet.goat, Pet.dogcow)
-
-    // These correctly fail. Cannot convert |Int| <-> |Pet|.
-    // let animal : Pet = 7
-    // let number : Int = Pet.goat
   }
 }
