@@ -25,7 +25,7 @@ class PLATFORM_EXPORT ResourceFinishObserver
  public:
   ResourceFinishObserver() {
     // Pointer registration is needed for sorting in NotifyFinishObservers.
-    recordreplay::RegisterPointer(this);
+    recordreplay::RegisterPointer("ResourceFinishObserver", this);
   }
   virtual ~ResourceFinishObserver() {
     recordreplay::UnregisterPointer(this);

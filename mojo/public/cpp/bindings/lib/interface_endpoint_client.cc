@@ -158,7 +158,7 @@ InterfaceEndpointClient::InterfaceEndpointClient(
       task_runner_(std::move(runner)),
       control_message_handler_(this, interface_version),
       interface_name_(interface_name) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("InterfaceEndpointClient", this);
   DCHECK(handle_.is_valid());
 
   // TODO(yzshen): the way to use validator (or message filter in general)

@@ -342,7 +342,7 @@ LayoutObject::LayoutObject(Node* node)
   // Pointer registration is needed for hashing in the following places:
   // FragmentPaintPropertyTreeBuilder::UpdateTransform
   // LayoutObjectWithDepth ordering
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("LayoutObject", this);
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
     GetFrameView()->IncrementLayoutObjectCount();

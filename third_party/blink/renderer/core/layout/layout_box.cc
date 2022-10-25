@@ -425,7 +425,7 @@ LayoutBox::LayoutBox(ContainerNode* node)
       intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()),
       inline_box_wrapper_(nullptr) {
   // Pointer registration is needed for storing in SnapCoordinator::UpdateSnapContainerData.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("LayoutBox", this);
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();

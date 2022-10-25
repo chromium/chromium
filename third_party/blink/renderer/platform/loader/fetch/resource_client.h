@@ -45,7 +45,7 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
  public:
   ResourceClient() {
     // Pointer registration is needed by ResourceClientWalker.
-    recordreplay::RegisterPointer(this);
+    recordreplay::RegisterPointer("ResourceClient", this);
   }
   virtual ~ResourceClient() {
     recordreplay::UnregisterPointer(this);

@@ -70,7 +70,7 @@ StorageArea::StorageArea(LocalDOMWindow* window,
       storage_type_(storage_type),
       should_enqueue_events_(should_enqueue_events) {
   // Pointer registration is needed for sorting in CachedStorageArea::EnqueueStorageEvent.
-  recordreplay::RegisterPointer(static_cast<CachedStorageArea::Source*>(this));
+  recordreplay::RegisterPointer("StorageArea", static_cast<CachedStorageArea::Source*>(this));
   DCHECK(window);
   DCHECK(cached_area_);
   cached_area_->RegisterSource(this);

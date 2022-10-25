@@ -23,7 +23,7 @@ Watch::Watch(const scoped_refptr<WatcherDispatcher>& watcher,
       condition_(condition),
       notification_lock_("Watch.notification_lock_") {
   // Pointer registration is needed for sorting in WatcherDispatcher::WatchSet.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("Watch", this);
 }
 
 bool Watch::NotifyState(const HandleSignalsState& state,

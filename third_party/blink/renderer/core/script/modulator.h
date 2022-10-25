@@ -50,7 +50,7 @@ class CORE_EXPORT SingleModuleClient
   SingleModuleClient() {
     // Pointer registration is needed for sorting in
     // ModuleMap::Entry::NotifyNewSingleModuleFinished.
-    recordreplay::RegisterPointer(this);
+    recordreplay::RegisterPointer("SingleModuleClient", this);
   }
   virtual ~SingleModuleClient() {
     recordreplay::UnregisterPointer(this);

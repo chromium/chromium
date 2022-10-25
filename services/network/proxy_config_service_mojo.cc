@@ -15,7 +15,7 @@ ProxyConfigServiceMojo::ProxyConfigServiceMojo(
         proxy_config_client_receiver,
     base::Optional<net::ProxyConfigWithAnnotation> initial_proxy_config,
     mojo::PendingRemote<mojom::ProxyConfigPollerClient> proxy_poller_client) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("ProxyConfigServiceMojo", this);
   DCHECK(initial_proxy_config || proxy_config_client_receiver.is_valid());
 
   if (initial_proxy_config)

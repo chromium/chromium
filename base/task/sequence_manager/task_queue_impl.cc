@@ -147,7 +147,7 @@ TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
       should_notify_observers_(spec.should_notify_observers),
       delayed_fence_allowed_(spec.delayed_fence_allowed) {
   // Pointer registration is needed for sorting in SequenceManagerImpl queues.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("TaskQueueImpl", this);
   DCHECK(time_domain);
   UpdateCrossThreadQueueStateLocked();
   // SequenceManager can't be set later, so we need to prevent task runners

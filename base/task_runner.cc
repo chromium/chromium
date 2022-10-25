@@ -14,18 +14,18 @@
 
 #include <dlfcn.h>
 
-static void (*gRecordReplayRegisterPointerFn)(void*);
+static void (*gRecordReplayRegisterPointerFn)(const char*, void*);
 
-static bool RecordReplayRegisterPointer(void* ptr) {
+static bool RecordReplayRegisterPointer(const char* name, void* ptr) {
   if (!gRecordReplayRegisterPointerFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayRegisterPointer");
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayRegisterPointerWithName");
     if (!fnptr) {
       return false;
     }
-    gRecordReplayRegisterPointerFn = reinterpret_cast<void(*)(void*)>(fnptr);
+    gRecordReplayRegisterPointerFn = reinterpret_cast<void(*)(const char*, void*)>(fnptr);
   }
 
-  gRecordReplayRegisterPointerFn(ptr);
+  gRecordReplayRegisterPointerFn(name, ptr);
   return true;
 }
 
@@ -85,7 +85,7 @@ bool TaskRunner::PostTaskAndReply(const Location& from_here,
 }
 
 TaskRunner::TaskRunner() {
-  if (RecordReplayRegisterPointer(this)) {
+  if (RecordReplayRegisterPointer("TaskRunner", this)) {
     // Leak task runners when recording/replaying, as they can be destroyed at
     // non-deterministic points and this is simpler than ordering uses of their
     // reference count.

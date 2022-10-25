@@ -446,7 +446,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
                     this,
                     &ResourceLoader::CancelTimerFired) {
   // Pointer registration is needed for sorting in ResourceFetcher.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("ResourceLoader", this);
   DCHECK(resource_);
   DCHECK(fetcher_);
 

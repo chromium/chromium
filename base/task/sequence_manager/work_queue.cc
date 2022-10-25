@@ -18,7 +18,7 @@ WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
                      const char* name,
                      QueueType queue_type)
     : task_queue_(task_queue), name_(name), queue_type_(queue_type) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("WorkQueue", this);
 }
 
 Value WorkQueue::AsValue(TimeTicks now) const {

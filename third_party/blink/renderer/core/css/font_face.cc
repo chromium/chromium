@@ -232,14 +232,14 @@ FontFace* FontFace::Create(Document* document,
 
 FontFace::FontFace(ExecutionContext* context)
     : ExecutionContextClient(context), status_(kUnloaded) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("FontFace", this);
 }
 
 FontFace::FontFace(ExecutionContext* context,
                    const AtomicString& family,
                    const FontFaceDescriptors* descriptors)
     : ExecutionContextClient(context), family_(family), status_(kUnloaded) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("FontFace", this);
   SetPropertyFromString(context, descriptors->style(),
                         AtRuleDescriptorID::FontStyle);
   SetPropertyFromString(context, descriptors->weight(),

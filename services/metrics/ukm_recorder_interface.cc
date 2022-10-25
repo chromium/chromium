@@ -15,7 +15,7 @@ namespace metrics {
 
 UkmRecorderInterface::UkmRecorderInterface(ukm::UkmRecorder* ukm_recorder)
     : ukm_recorder_(ukm_recorder) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("UkmRecorderInterface", this);
 }
 
 UkmRecorderInterface::~UkmRecorderInterface() {

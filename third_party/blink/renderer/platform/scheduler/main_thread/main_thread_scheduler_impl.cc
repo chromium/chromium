@@ -259,7 +259,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       any_thread_(this),
       policy_may_need_update_(&any_thread_lock_, "MainThreadSchedulerImpl.policy_may_need_update_"),
       notify_agent_strategy_task_posted_(&any_thread_lock_) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("MainThreadSchedulerImpl", this);
   helper_.AttachToCurrentThread();
 
   // Compositor task queue and default task queue should be managed by

@@ -72,7 +72,7 @@ PictureLayerTilingSet::PictureLayerTilingSet(
       tree_(tree),
       client_(client),
       max_preraster_distance_(max_preraster_distance) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("PictureLayerTilingSet", this);
 }
 
 PictureLayerTilingSet::~PictureLayerTilingSet() {

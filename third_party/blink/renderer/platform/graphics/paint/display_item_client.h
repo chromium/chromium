@@ -30,7 +30,7 @@ class PLATFORM_EXPORT DisplayItemClient {
  public:
   DisplayItemClient() {
     // Pointer registration is needed for GetKey.
-    recordreplay::RegisterPointer(this);
+    recordreplay::RegisterPointer("DisplayItemClient", this);
 
 #if DCHECK_IS_ON()
     OnCreate();

@@ -101,7 +101,7 @@ MessagePipeDispatcher::MessagePipeDispatcher(NodeController* node_controller,
   node_controller_->SetPortObserver(
       port_, base::MakeRefCounted<PortObserverThunk>(this));
 
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("MessagePipeDispatcher", this);
 }
 
 bool MessagePipeDispatcher::Fuse(MessagePipeDispatcher* other) {

@@ -150,7 +150,7 @@ class PLATFORM_EXPORT ScriptWrappable
   ScriptWrappable() {
     // Register wrappables so that we have a consistent identifier that can be
     // used in assertions.
-    recordreplay::RegisterPointer(this);
+    recordreplay::RegisterPointer("ScriptWrappable", this);
   }
 
  private:

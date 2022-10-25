@@ -45,7 +45,7 @@ PictureLayerTiling::PictureLayerTiling(
       min_preraster_distance_(min_preraster_distance),
       max_preraster_distance_(max_preraster_distance),
       can_use_lcd_text_(can_use_lcd_text) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("PictureLayerTiling", this);
   DCHECK(!raster_source->IsSolidColor());
   DCHECK_GE(raster_transform.translation().x(), 0.f);
   DCHECK_LT(raster_transform.translation().x(), 1.f);

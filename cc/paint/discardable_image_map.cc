@@ -318,7 +318,7 @@ class DiscardableImageGenerator {
 }  // namespace
 
 DiscardableImageMap::DiscardableImageMap() {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("DiscardableImageMap", this);
 }
 
 DiscardableImageMap::~DiscardableImageMap() {

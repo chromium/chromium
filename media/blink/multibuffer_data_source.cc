@@ -134,7 +134,7 @@ MultibufferDataSource::MultibufferDataSource(
       host_(host),
       downloading_cb_(std::move(downloading_cb)) {
   // https://linear.app/replay/issue/RUN-468
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("MultibufferDataSource", this);
 
   weak_ptr_ = weak_factory_.GetWeakPtr();
   DCHECK(host_);

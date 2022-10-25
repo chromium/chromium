@@ -126,7 +126,7 @@ DedicatedWorkerObjectProxy::DedicatedWorkerObjectProxy(
     : ThreadedObjectProxyBase(parent_execution_context_task_runners),
       token_(token),
       messaging_proxy_weak_ptr_(messaging_proxy_weak_ptr) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("DedicatedWorkerObjectProxy", this);
 }
 
 CrossThreadWeakPersistent<ThreadedMessagingProxyBase>

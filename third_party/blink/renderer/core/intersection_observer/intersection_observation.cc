@@ -39,7 +39,7 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
       // different sentinel value.
       last_threshold_index_(kMaxThresholdIndex - 1) {
   // Pointer registration is needed for sorting in IntersectionObserverController::ComputeIntersections.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("IntersectionObservation", this);
   if (!observer.RootIsImplicit())
     cached_rects_ = std::make_unique<IntersectionGeometry::CachedRects>();
 }

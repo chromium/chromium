@@ -168,7 +168,7 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 }
 
 SyncHandleRegistry::SyncHandleRegistry() {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("SyncHandleRegistry", this);
 }
 
 SyncHandleRegistry::~SyncHandleRegistry() {

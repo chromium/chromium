@@ -240,7 +240,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
  public:
   RuleSet() : rule_count_(0) {
     // Pointer registration is needed for sorting within StyleEngine methods.
-    recordreplay::RegisterPointer(this);
+    recordreplay::RegisterPointer("RuleSet", this);
   }
   ~RuleSet() {
     recordreplay::UnregisterPointer(this);

@@ -473,7 +473,7 @@ WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy,
       parent_thread_default_task_runner_(
           std::move(parent_thread_default_task_runner)),
       shutdown_event_(RefCountedWaitableEvent::Create()) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("WorkerThread", this);
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   MutexLocker lock(ThreadSetMutex());
   InitializingWorkerThreads().insert(this);

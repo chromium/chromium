@@ -18,7 +18,7 @@ TimeDomain::TimeDomain()
     : sequence_manager_(nullptr),
       associated_thread_(MakeRefCounted<internal::AssociatedThreadId>()) {
   // TimeDomains can be compared based on their pointer IDs, see sequence_manager_impl.h
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("TimeDomain", this);
 }
 
 TimeDomain::~TimeDomain() {

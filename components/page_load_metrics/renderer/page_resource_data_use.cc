@@ -28,11 +28,11 @@ PageResourceDataUse::PageResourceDataUse()
       completed_before_fcp_(false),
       cache_type_(mojom::CacheType::kNotCached) {
   // Pointer registration is needed for sorting in PageTimingMetricsSender.modified_resources_
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("PageResourceDataUse", this);
 }
 
 PageResourceDataUse::PageResourceDataUse(const PageResourceDataUse& other) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("PageResourceDataUse", this);
 }
 
 PageResourceDataUse::~PageResourceDataUse() {

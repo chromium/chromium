@@ -114,7 +114,7 @@ InvalidationSet::InvalidationSet(InvalidationType type)
       invalidates_self_(false),
       is_alive_(true) {
   // Pointer IDs are used in recording assertions.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("InvalidationSet", this);
 }
 
 bool InvalidationSet::InvalidatesElement(Element& element) const {

@@ -11,7 +11,7 @@ namespace blink {
 
 ContextLifecycleObserver::ContextLifecycleObserver() {
   // Registration is currently needed for ContextLifecycleNotifier::NotifyContextDestroyed.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("ContextLifecycleObserver", this);
 }
 
 ContextLifecycleObserver::~ContextLifecycleObserver() {

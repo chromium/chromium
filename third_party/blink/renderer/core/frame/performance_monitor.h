@@ -57,7 +57,7 @@ class CORE_EXPORT PerformanceMonitor final
   class CORE_EXPORT Client : public GarbageCollectedMixin {
    public:
     // Pointer registration is needed for sorting keys in ClientThresholds maps.
-    Client() { recordreplay::RegisterPointer(this); }
+    Client() { recordreplay::RegisterPointer("PerformanceMonitor::Client", this); }
     ~Client() { recordreplay::UnregisterPointer(this); }
 
     virtual void ReportLongTask(base::TimeTicks start_time,

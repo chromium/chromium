@@ -41,7 +41,7 @@ ChannelProxy::Context::Context(
       channel_connected_called_(false),
       message_filter_router_(new MessageFilterRouter()),
       peer_pid_(base::kNullProcessId) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("ChannelProxy::Context", this);
   DCHECK(ipc_task_runner_.get());
   // The Listener thread where Messages are handled must be a separate thread
   // to avoid oversubscribing the IO thread. If you trigger this error, you

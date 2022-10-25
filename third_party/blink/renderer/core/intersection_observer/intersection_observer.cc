@@ -276,7 +276,7 @@ IntersectionObserver::IntersectionObserver(
       can_use_cached_rects_(0),
       use_overflow_clip_edge_(use_overflow_clip_edge) {
   // Pointer registration is needed for sorting in IntersectionObserverController::ComputeIntersections.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("IntersectionObserver", this);
   switch (margin.size()) {
     case 0:
       break;

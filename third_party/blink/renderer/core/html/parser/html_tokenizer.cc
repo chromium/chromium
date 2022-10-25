@@ -71,7 +71,7 @@ static inline bool VectorEqualsString(const Vector<LChar, 32>& vector,
 
 HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options)
     : input_stream_preprocessor_(this), options_(options) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("HTMLTokenizer", this);
   Reset();
 }
 

@@ -21,7 +21,7 @@ WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
     : handler_(handler),
       lock_("WatcherDispatcher.lock_") {
   // Registering dispatchers is needed for deterministic sort order in WatcherSets.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("WatcherDispatcher", this);
 }
 
 void WatcherDispatcher::NotifyHandleState(Dispatcher* dispatcher,

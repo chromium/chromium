@@ -329,7 +329,7 @@ MultiplexRouter::MultiplexRouter(
                  primary_interface_name),
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("MultiplexRouter", this);
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 

@@ -10,7 +10,7 @@ namespace mojo {
 namespace core {
 
 WatcherSet::WatcherSet(Dispatcher* owner) : owner_(owner) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("WatcherSet", this);
 }
 
 WatcherSet::~WatcherSet() {

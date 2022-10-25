@@ -40,7 +40,7 @@ bool FileHandlerManager::disable_automatic_file_handler_cleanup_for_testing_ =
     false;
 
 FileHandlerManager::FileHandlerManager(Profile* profile) : profile_(profile) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("FileHandlerManager", this);
 }
 
 FileHandlerManager::~FileHandlerManager() {

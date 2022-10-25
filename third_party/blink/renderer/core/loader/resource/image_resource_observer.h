@@ -46,7 +46,7 @@ class CORE_EXPORT ImageResourceObserver {
 
   ImageResourceObserver() {
     // Pointer registration is needed for sorting in e.g. ImageResourceContent::NotifyObservers.
-    recordreplay::RegisterPointer(this);
+    recordreplay::RegisterPointer("ImageResourceObserver", this);
   }
 
   virtual ~ImageResourceObserver() {

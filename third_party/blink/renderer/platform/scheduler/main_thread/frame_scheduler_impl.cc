@@ -205,7 +205,7 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Loading")) {
   // Pointer registration is needed for sorting in PageSchedulerImpl.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("FrameSchedulerImpl", this);
   frame_task_queue_controller_.reset(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
 }

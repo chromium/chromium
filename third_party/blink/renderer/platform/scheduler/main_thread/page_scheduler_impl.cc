@@ -195,7 +195,7 @@ PageSchedulerImpl::PageSchedulerImpl(
       delay_for_background_and_network_idle_tab_freezing_(
           GetDelayForBackgroundAndNetworkIdleTabFreezing()) {
   // Pointer registration is needed for sorting in MainThreadSchedulerImpl.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("PageSchedulerImpl", this);
   page_lifecycle_state_tracker_.reset(new PageLifecycleStateTracker(
       this, kDefaultPageVisibility == PageVisibilityState::kVisible
                 ? PageLifecycleState::kActive

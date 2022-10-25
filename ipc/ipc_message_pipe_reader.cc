@@ -30,7 +30,7 @@ MessagePipeReader::MessagePipeReader(
     : delegate_(delegate),
       sender_(std::move(sender)),
       receiver_(this, std::move(receiver)) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("MessagePipeReader", this);
   sender_.set_disconnect_handler(
       base::BindOnce(&MessagePipeReader::OnPipeError, base::Unretained(this),
                      MOJO_RESULT_FAILED_PRECONDITION));

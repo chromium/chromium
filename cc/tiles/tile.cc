@@ -41,7 +41,7 @@ Tile::Tile(TileManager* tile_manager,
       can_use_lcd_text_(info.can_use_lcd_text),
       raster_task_scheduled_with_checker_images_(false),
       id_(tile_manager->GetUniqueTileId()) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("Tile", this);
   raster_rects_.emplace_back(info.content_rect, info.raster_transform);
 }
 

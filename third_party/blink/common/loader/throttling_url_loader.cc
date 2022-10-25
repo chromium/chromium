@@ -425,7 +425,7 @@ ThrottlingURLLoader::ThrottlingURLLoader(
     network::mojom::URLLoaderClient* client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : forwarding_client_(client), traffic_annotation_(traffic_annotation) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("ThrottlingURLLoader", this);
   throttles_.reserve(throttles.size());
   for (auto& throttle : throttles)
     throttles_.emplace_back(this, std::move(throttle));

@@ -253,7 +253,7 @@ Animation::Animation(ExecutionContext* execution_context,
       compositor_group_(0),
       effect_suppressed_(false) {
   // Pointer registration is needed for sorting in Animation::HasLowerCompositeOrdering.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("Animation", this);
 
   if (content_) {
     if (content_->GetAnimation()) {

@@ -21,7 +21,7 @@ namespace blink {
 
 SVGResourceClient::SVGResourceClient() {
   // Pointer registration is needed for sorting after CopyKeysToVector calls.
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("SVGResourceClient", this);
 }
 
 SVGResourceClient::~SVGResourceClient() {

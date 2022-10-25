@@ -130,7 +130,7 @@ Performance::Performance(
           task_runner_,
           this,
           &Performance::FireResourceTimingBufferFull) {
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("Performance", this);
   unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
       base::DefaultClock::GetInstance()->Now().ToDoubleT() -
       tick_clock_->NowTicks().since_origin().InSecondsF());
