@@ -73,7 +73,7 @@ class CORE_EXPORT StyleColor {
     return color_keyword_;
   }
 
-  Color Resolve(Color current_color,
+  Color Resolve(const Color& current_color,
                 mojom::blink::ColorScheme color_scheme,
                 bool* is_current_color = nullptr,
                 bool is_forced_color = false) const;

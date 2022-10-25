@@ -9,7 +9,7 @@
 
 namespace blink {
 
-Color StyleColor::Resolve(Color current_color,
+Color StyleColor::Resolve(const Color& current_color,
                           mojom::blink::ColorScheme color_scheme,
                           bool* is_current_color,
                           bool is_forced_color) const {

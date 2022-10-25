@@ -423,10 +423,6 @@ SkColor4f Color::toSkColor4f() const {
   }
 }
 
-bool Color::HasAlpha() const {
-  return Alpha() < 255;
-}
-
 int Color::Red() const {
   return RedChannel(Rgb());
 }
@@ -435,9 +431,6 @@ int Color::Green() const {
 }
 int Color::Blue() const {
   return BlueChannel(Rgb());
-}
-int Color::Alpha() const {
-  return AlphaChannel(Rgb());
 }
 
 RGBA32 Color::Rgb() const {

@@ -231,7 +231,7 @@ class PLATFORM_EXPORT Color {
   bool SetNamedColor(const String&);
 
   // Return true if the color is not opaque.
-  bool HasAlpha() const;
+  bool HasAlpha() const { return Alpha() < 255; }
 
   // Access the color as though it were created using rgba syntax. This will
   // clamp all colors to an 8-bit sRGB representation. All callers of these
@@ -240,7 +240,10 @@ class PLATFORM_EXPORT Color {
   int Red() const;
   int Green() const;
   int Blue() const;
-  int Alpha() const;
+
+  // No colorspace conversions affect alpha.
+  int Alpha() const { return static_cast<int>(lrintf(alpha_ * 255.0f)); }
+
   RGBA32 Rgb() const;
   void GetRGBA(float& r, float& g, float& b, float& a) const;
   void GetRGBA(double& r, double& g, double& b, double& a) const;
