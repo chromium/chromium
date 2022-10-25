@@ -89,41 +89,27 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
 }
 
 + (UIKeyCommand*)cr_showNextTab {
-  // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
-  // by default. It handles flipping the direction of arrows.
-  NSString* arrowNext;
+  UIKeyCommand* keyCommand =
+      [self cr_commandWithInput:@"\t"
+                  modifierFlags:Control
+                         action:@selector(keyCommand_showNextTab)
+                        titleID:IDS_IOS_KEYBOARD_NEXT_TAB];
   if (@available(iOS 15.0, *)) {
-    arrowNext = UIKeyInputRightArrow;
-  } else {
-    if (UseRTLLayout()) {
-      arrowNext = UIKeyInputLeftArrow;
-    } else {
-      arrowNext = UIKeyInputRightArrow;
-    }
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
   }
-  return [self cr_commandWithInput:arrowNext
-                     modifierFlags:AltCommand
-                            action:@selector(keyCommand_showNextTab)
-                           titleID:IDS_IOS_KEYBOARD_NEXT_TAB];
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_showPreviousTab {
-  // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
-  // by default. It handles flipping the direction of arrows.
-  NSString* arrowPrevious;
+  UIKeyCommand* keyCommand =
+      [self cr_commandWithInput:@"\t"
+                  modifierFlags:ControlShift
+                         action:@selector(keyCommand_showPreviousTab)
+                        titleID:IDS_IOS_KEYBOARD_PREVIOUS_TAB];
   if (@available(iOS 15.0, *)) {
-    arrowPrevious = UIKeyInputLeftArrow;
-  } else {
-    if (UseRTLLayout()) {
-      arrowPrevious = UIKeyInputRightArrow;
-    } else {
-      arrowPrevious = UIKeyInputLeftArrow;
-    }
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
   }
-  return [self cr_commandWithInput:arrowPrevious
-                     modifierFlags:AltCommand
-                            action:@selector(keyCommand_showPreviousTab)
-                           titleID:IDS_IOS_KEYBOARD_PREVIOUS_TAB];
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_showNextTab_2 {
@@ -163,25 +149,39 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
 }
 
 + (UIKeyCommand*)cr_showNextTab_3 {
-  UIKeyCommand* keyCommand =
-      [self keyCommandWithInput:@"\t"
-                  modifierFlags:Control
-                         action:@selector(keyCommand_showNextTab)];
+  // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
+  // by default. It handles flipping the direction of arrows.
+  NSString* arrowNext;
   if (@available(iOS 15.0, *)) {
-    keyCommand.wantsPriorityOverSystemBehavior = YES;
+    arrowNext = UIKeyInputRightArrow;
+  } else {
+    if (UseRTLLayout()) {
+      arrowNext = UIKeyInputLeftArrow;
+    } else {
+      arrowNext = UIKeyInputRightArrow;
+    }
   }
-  return keyCommand;
+  return [self keyCommandWithInput:arrowNext
+                     modifierFlags:AltCommand
+                            action:@selector(keyCommand_showNextTab)];
 }
 
 + (UIKeyCommand*)cr_showPreviousTab_3 {
-  UIKeyCommand* keyCommand =
-      [self keyCommandWithInput:@"\t"
-                  modifierFlags:ControlShift
-                         action:@selector(keyCommand_showPreviousTab)];
+  // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
+  // by default. It handles flipping the direction of arrows.
+  NSString* arrowPrevious;
   if (@available(iOS 15.0, *)) {
-    keyCommand.wantsPriorityOverSystemBehavior = YES;
+    arrowPrevious = UIKeyInputLeftArrow;
+  } else {
+    if (UseRTLLayout()) {
+      arrowPrevious = UIKeyInputRightArrow;
+    } else {
+      arrowPrevious = UIKeyInputLeftArrow;
+    }
   }
-  return keyCommand;
+  return [self keyCommandWithInput:arrowPrevious
+                     modifierFlags:AltCommand
+                            action:@selector(keyCommand_showPreviousTab)];
 }
 
 + (UIKeyCommand*)cr_addToBookmarks {
