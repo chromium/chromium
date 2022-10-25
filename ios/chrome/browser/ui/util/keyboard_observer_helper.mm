@@ -19,17 +19,6 @@
 // Flag that indicates if the keyboard is on screen.
 @property(nonatomic, readwrite, getter=isKeyboardVisible) BOOL keyboardVisible;
 
-// Current keyboard state.
-@property(nonatomic, readwrite, getter=getKeyboardState)
-    KeyboardState keyboardState;
-
-// The last known keyboard view. If this changes, it probably means that the
-// application lost focus in multiwindow mode.
-@property(nonatomic, weak) UIView* keyboardView;
-
-// Mutable array storing weak pointers to consumers.
-@property(nonatomic, strong) NSPointerArray* consumers;
-
 @end
 
 @implementation KeyboardObserverHelper
@@ -45,28 +34,20 @@
   return sharedInstance;
 }
 
-#pragma mark - Public instance methods
-
-- (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer {
-  [self.consumers addPointer:(__bridge void*)consumer];
-  [self.consumers compact];
-}
-
-- (CGFloat)visibleKeyboardHeight {
-  if (self.keyboardState.isVisible && !self.keyboardState.isHardware &&
-      !self.keyboardState.isUndocked) {
-    // Software keyboard is visible and covers the full width of the screen
-    // (docked). Returns the keyboard + accessory height.
-    return CGRectGetHeight(self.keyboardView.frame);
-  } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE &&
-             self.keyboardState.isVisible && !self.keyboardState.isUndocked) {
-    // Keyboard is visible but hardware, only the accessory covers the full
-    // width of the display, the keyboard is hidden below the display. Returns
-    // the accessory's height.
-    return CurrentScreenHeight() - self.keyboardView.frame.origin.y;
-  } else {
++ (CGFloat)keyboardHeightInWindow:(UIWindow*)window {
+  if (!window) {
     return 0;
   }
+  UIView* keyboardView = [KeyboardObserverHelper keyboardViewInWindow:window];
+  CGRect keyboardFrame = keyboardView.frame;
+  BOOL keyboardCoversFullWidth =
+      CGRectGetWidth(keyboardFrame) >= CGRectGetWidth(window.bounds);
+  BOOL isDocked = CGRectGetMaxY(keyboardFrame) >= CGRectGetMaxY(window.bounds);
+  if (!keyboardCoversFullWidth || !isDocked) {
+    return 0;
+  }
+  CGRect intersection = CGRectIntersection(keyboardFrame, window.bounds);
+  return CGRectGetHeight(intersection);
 }
 
 #pragma mark - Private instance methods
@@ -84,55 +65,58 @@
            selector:@selector(keyboardWillHide:)
                name:UIKeyboardWillHideNotification
              object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(keyboardWillDidChangeFrame:)
-               name:UIKeyboardWillChangeFrameNotification
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(keyboardWillDidChangeFrame:)
-               name:UIKeyboardDidChangeFrameNotification
-             object:nil];
-    _consumers =
-        [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsWeakMemory];
+    _keyboardVisible = NO;
   }
   return self;
 }
 
 #pragma mark - Private class methods
 
-+ (UIView*)keyboardView {
-  NSArray* windows = [UIApplication sharedApplication].windows;
-  NSUInteger expectedMinWindows =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) ? 2 : 3;
-  if (windows.count < expectedMinWindows)
+// Returns the keyboard view in `window`.
+// keyboard view coordinates {x: keyboard x in window coordinate,
+//                            y: keyboard y in window coordinate}
+// When the keyboard is docked and software (the keyboard spans across the full
+// width of the screen):
+// - Fixed window (full screen, split screen):
+//     keyboard size is {width: screen width,
+//                       height: keyboard height}
+// - Floating window (slide over, stage manager):
+//     keyboard size is {width: window width,
+//                       height: keyboard and window intersection height}
+// When the keyboard is hardware:
+// - Fixed window (full screen, split screen):
+//     keyboard view size is {width: screen width,
+//                            height: accessory height}
+// - Slide over:
+//     keyboard view size is {width: window width,
+//                           height: accessory and window intersection height}
+// - Stage manager:
+//     keyboard view size is {width: window width, height: 0}
++ (UIView*)keyboardViewInWindow:(UIWindow*)window {
+  if (!window || !window.windowScene || !window.windowScene.windows.count) {
     return nil;
+  }
 
-  UIWindow* window = windows.lastObject;
-
-  for (UIView* subview in window.subviews) {
-    if ([NSStringFromClass([subview class]) rangeOfString:@"PeripheralHost"]
-            .location != NSNotFound) {
-      return subview;
-    }
-    if ([NSStringFromClass([subview class]) rangeOfString:@"SetContainer"]
-            .location != NSNotFound) {
-      for (UIView* subsubview in subview.subviews) {
-        if ([NSStringFromClass([subsubview class]) rangeOfString:@"SetHost"]
-                .location != NSNotFound) {
-          return subsubview;
+  // Iterate windows in reverse order from frontmost to back.
+  for (UIWindow* w in window.windowScene.windows.reverseObjectEnumerator) {
+    for (UIView* subview in w.subviews) {
+      if ([NSStringFromClass([subview class]) rangeOfString:@"PeripheralHost"]
+              .location != NSNotFound) {
+        return subview;
+      }
+      if ([NSStringFromClass([subview class]) rangeOfString:@"SetContainer"]
+              .location != NSNotFound) {
+        for (UIView* subsubview in subview.subviews) {
+          if ([NSStringFromClass([subsubview class]) rangeOfString:@"SetHost"]
+                  .location != NSNotFound) {
+            return subsubview;
+          }
         }
       }
     }
   }
 
   return nil;
-}
-
-+ (UIScreen*)keyboardScreen {
-  UIView* keyboardView = [self keyboardView];
-  return keyboardView.window.screen;
 }
 
 #pragma mark - Keyboard Notifications
@@ -143,38 +127,6 @@
 
 - (void)keyboardWillHide:(NSNotification*)notification {
   self.keyboardVisible = NO;
-}
-
-- (void)keyboardWillDidChangeFrame:(NSNotification*)notification {
-  [self updateKeyboardState];
-}
-
-#pragma mark Keyboard State Detection
-
-// Update keyboard state by looking at keyboard frame.
-- (void)updateKeyboardState {
-  UIView* keyboardView = KeyboardObserverHelper.keyboardView;
-
-  CGFloat windowHeight = [UIScreen mainScreen].bounds.size.height;
-  CGRect keyboardFrame = keyboardView.frame;
-  BOOL isVisible = CGRectGetMinY(keyboardFrame) < windowHeight;
-  BOOL isUndocked = CGRectGetMaxY(keyboardFrame) < windowHeight;
-  BOOL isHardware = isVisible && CGRectGetMaxY(keyboardFrame) > windowHeight;
-
-  // Only notify if a change is detected.
-  if (isVisible != self.keyboardState.isVisible ||
-      isUndocked != self.keyboardState.isUndocked ||
-      isHardware != self.keyboardState.isHardware ||
-      keyboardView != self.keyboardView) {
-    self.keyboardState = {isVisible, isUndocked, isHardware};
-    self.keyboardView = keyboardView;
-    // Notify on the next cycle.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      for (id<KeyboardObserverHelperConsumer> consumer in self.consumers) {
-        [consumer keyboardWillChangeToState:self.keyboardState];
-      }
-    });
-  }
 }
 
 @end

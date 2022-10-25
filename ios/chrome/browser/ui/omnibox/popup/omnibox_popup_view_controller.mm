@@ -63,8 +63,7 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 @interface OmniboxPopupViewController () <UITableViewDataSource,
                                           UITableViewDelegate,
                                           OmniboxPopupCarouselCellDelegate,
-                                          OmniboxPopupRowCellDelegate,
-                                          KeyboardObserverHelperConsumer>
+                                          OmniboxPopupRowCellDelegate>
 
 // Index path of currently highlighted row. The rows can be highlighted by
 // tapping and holding on them or by using arrow keys on a hardware keyboard.
@@ -133,10 +132,6 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
                             name:UIKeyboardDidShowNotification
                           object:nil];
     }
-    // Listen to keyboard observer to detect `KeyboardState` changes in order to
-    // update the estimated number of visible suggestions.
-    [KeyboardObserverHelper.sharedKeyboardObserver addConsumer:self];
-
     // Listen to keyboard frame change event to detect keyboard frame changes
     // (ex: when changing input method) to update the estimated number of
     // visible suggestions.
@@ -740,13 +735,13 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 // Adjust the inset on the table view to prevent keyboard from overlapping the
 // text.
 - (void)updateContentInsetForKeyboard {
-  UIScreen* currentScreen = self.tableView.window.screen;
+  UIWindow* currentWindow = self.tableView.window;
   CGRect absoluteRect =
       [self.tableView convertRect:self.tableView.bounds
-                toCoordinateSpace:currentScreen.coordinateSpace];
-  CGFloat screenHeight = currentScreen.bounds.size.height;
-  CGFloat bottomInset = screenHeight - self.tableView.contentSize.height -
-                        _keyboardHeight - absoluteRect.origin.y -
+                toCoordinateSpace:currentWindow.coordinateSpace];
+  CGFloat windowHeight = CGRectGetHeight(currentWindow.bounds);
+  CGFloat bottomInset = windowHeight - self.tableView.contentSize.height -
+                        self.keyboardHeight - absoluteRect.origin.y -
                         self.bottomPadding - self.topPadding;
   bottomInset = MAX(self.bottomPadding, -bottomInset);
   self.tableView.contentInset =
@@ -812,27 +807,19 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 #pragma mark - Keyboard events
 
 - (void)keyboardDidShow:(NSNotification*)notification {
-  NSDictionary* keyboardInfo = [notification userInfo];
-  NSValue* keyboardFrameValue =
-      [keyboardInfo valueForKey:UIKeyboardFrameEndUserInfoKey];
   self.keyboardHeight =
-      KeyboardObserverHelper.keyboardScreen == self.view.window.screen
-          ? CurrentKeyboardHeight(keyboardFrameValue)
-          : 0;
+      [KeyboardObserverHelper keyboardHeightInWindow:self.tableView.window];
   if (self.tableView.contentSize.height > 0)
     [self updateContentInsetForKeyboard];
 }
 
 - (void)keyboardDidChangeFrame:(NSNotification*)notification {
-  if (KeyboardObserverHelper.sharedKeyboardObserver.visibleKeyboardHeight > 0) {
+  CGFloat keyboardHeight =
+      [KeyboardObserverHelper keyboardHeightInWindow:self.tableView.window];
+  if (self.keyboardHeight != keyboardHeight) {
+    self.keyboardHeight = keyboardHeight;
     self.shouldUpdateVisibleSuggestionCount = YES;
   }
-}
-
-#pragma mark - KeyboardObserverHelperConsumer
-
-- (void)keyboardWillChangeToState:(KeyboardState)keyboardState {
-  self.shouldUpdateVisibleSuggestionCount = YES;
 }
 
 #pragma mark - Content size events
@@ -870,18 +857,14 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 }
 
 - (void)updateVisibleSuggestionCount {
-  CGFloat keyboardHeight =
-      [[KeyboardObserverHelper sharedKeyboardObserver] visibleKeyboardHeight];
-  UIScreen* currentScreen = self.tableView.window.screen;
-  CGRect tableViewFrameInCurrentScreenCoordinateSpace =
+  CGRect tableViewFrameInCurrentWindowCoordinateSpace =
       [self.tableView convertRect:self.tableView.bounds
-                toCoordinateSpace:currentScreen.coordinateSpace];
+                toCoordinateSpace:self.tableView.window.coordinateSpace];
   // Computes the visible area between the omnibox and the keyboard.
   CGFloat visibleTableViewHeight =
-      CurrentScreenHeight() -
-      tableViewFrameInCurrentScreenCoordinateSpace.origin.y - keyboardHeight -
-      self.tableView.contentInset.top;
-
+      CGRectGetHeight(self.tableView.window.bounds) -
+      tableViewFrameInCurrentWindowCoordinateSpace.origin.y -
+      self.keyboardHeight - self.tableView.contentInset.top;
   // Use font size to estimate the size of a omnibox search suggestion.
   CGFloat fontSizeHeight = [@"T" sizeWithAttributes:@{
                              NSFontAttributeName : [UIFont

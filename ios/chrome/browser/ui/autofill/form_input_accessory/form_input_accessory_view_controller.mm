@@ -49,9 +49,6 @@
     id<ManualFillAccessoryViewControllerDelegate>
         manualFillAccessoryViewControllerDelegate;
 
-// Remember last keyboard state to allow resuming properly.
-@property(nonatomic, assign) KeyboardState lastKeyboardState;
-
 @end
 
 @implementation FormInputAccessoryViewController

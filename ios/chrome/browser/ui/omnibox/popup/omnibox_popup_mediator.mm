@@ -124,6 +124,10 @@ const CGFloat kOmniboxIconSize = 16;
 
 - (void)requestResultsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount {
+  // If no suggestions are visible, consider all of them visible.
+  if (visibleSuggestionCount == 0) {
+    visibleSuggestionCount = _currentResult.size();
+  }
   NSUInteger visibleSuggestions =
       MIN(visibleSuggestionCount, _currentResult.size());
   if (visibleSuggestions > 0) {

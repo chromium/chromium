@@ -7,28 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol EdgeLayoutGuideProvider;
-
-// Struct to track the current keyboard state.
-typedef struct {
-  // Is YES if the keyboard is visible or becoming visible.
-  BOOL isVisible;
-  // Is YES if keyboard is or becoming undocked from bottom of screen.
-  BOOL isUndocked;
-  // Is YES if a hardware keyboard is in use and only the top part of the
-  // software keyboard is showing.
-  BOOL isHardware;
-} KeyboardState;
-
-// Delegate informed about the visible/hidden state of the keyboard.
-@protocol KeyboardObserverHelperConsumer <NSObject>
-
-// Indicates that the keyboard state changed, at least on one of the
-// `KeyboardState` aspects.
-- (void)keyboardWillChangeToState:(KeyboardState)keyboardState;
-
-@end
-
 // Helper to observe the keyboard and report updates.
 @interface KeyboardObserverHelper : NSObject
 
@@ -37,20 +15,17 @@ typedef struct {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Adds consumer of KeyboardObserverHelper.
-- (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer;
-
-// Flag that indicates if the keyboard is visible.
+// Flag that indicates if the docked software keyboard is visible. Undocked,
+// floating and split keyboard are considered hidden even if they are on the
+// screen. Note: The hardware keyboard is considered visible when a text field
+// becomes first responder. If the software keyboard is shown then hidden, the
+// hardware keyboard is considered hidden.
 @property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
 
-// Returns keyboard's height if it covers the full width of the display,
-// otherwise returns 0. Note: This includes the keyboard accessory's height.
-// See also: `keyboardScreen`.
-@property(nonatomic, readonly) CGFloat visibleKeyboardHeight;
-
-// Screen where the keyboard is displayed. For use in multi-screen set-ups, like
-// Stage Manager.
-+ (UIScreen*)keyboardScreen;
+// Returns keyboard's height if it's docked, otherwise returns 0. Note: This
+// includes the keyboard accessory's height, with an exception on iPad with
+// stage manager enabled. (cf. keyboardViewInWindow)
++ (CGFloat)keyboardHeightInWindow:(UIWindow*)window;
 
 @end
 
