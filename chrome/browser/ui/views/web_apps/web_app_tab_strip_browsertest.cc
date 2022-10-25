@@ -41,6 +41,7 @@
 #include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 
 namespace {
@@ -548,6 +549,32 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NoFavicons) {
   // No favicons shown for web apps.
   EXPECT_FALSE(tab_strip->delegate()->ShouldDisplayFavicon(
       tab_strip->GetActiveWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
+                       OnlyThrottlePrimaryMainFrame) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  content::WebContents* web_contents = tab_strip->GetActiveWebContents();
+
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  GURL iframe_url = embedded_test_server()->GetURL("/iframe_blank.html");
+  GURL iframe_nav_url =
+      embedded_test_server()->GetURL("/web_apps/get_manifest.html");
+
+  content::TestNavigationObserver nav_observer(web_contents, 1);
+  EXPECT_TRUE(
+      content::NavigateIframeToURL(web_contents, "test", iframe_nav_url));
+  nav_observer.Wait();
+
+  // Expect the navigation happened in the iframe and no new tab was opened.
+  EXPECT_EQ(iframe_nav_url, nav_observer.last_navigation_url());
+  EXPECT_EQ(tab_strip->count(), 1);
 }
 
 }  // namespace web_app
