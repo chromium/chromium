@@ -276,6 +276,7 @@ void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
 
   double progress = interpolable_grid_track_list.GetProgress();
   bool is_for_columns = property_id_ == CSSPropertyID::kGridTemplateColumns;
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   ComputedStyle* style = state.Style();
   CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
   ComputedGridTrackList computed_grid_track_list(
@@ -291,9 +292,9 @@ void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
           progress);
 
   if (is_for_columns)
-    style->SetGridTemplateColumns(computed_grid_track_list);
+    builder.SetGridTemplateColumns(computed_grid_track_list);
   else
-    style->SetGridTemplateRows(computed_grid_track_list);
+    builder.SetGridTemplateRows(computed_grid_track_list);
 }
 
 void CSSGridTemplatePropertyInterpolationType::Composite(

@@ -137,10 +137,10 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       builder.SetFillOpacity(value);
       return true;
     case CSSPropertyID::kFlexGrow:
-      style.SetFlexGrow(value);
+      builder.SetFlexGrow(value);
       return true;
     case CSSPropertyID::kFlexShrink:
-      style.SetFlexShrink(value);
+      builder.SetFlexShrink(value);
       return true;
     case CSSPropertyID::kFloodOpacity:
       builder.SetFloodOpacity(value);

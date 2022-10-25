@@ -51,20 +51,21 @@ scoped_refptr<ComputedStyle> EditingViewPortElement::CustomStyleForLayoutObject(
     const StyleRecalcContext&) {
   // FXIME: Move these styles to html.css.
 
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
-  style->InheritFrom(OwnerShadowHost()->ComputedStyleRef());
+  ComputedStyleBuilder style_builder =
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+  style_builder.MutableInternalStyle()->InheritFrom(
+      OwnerShadowHost()->ComputedStyleRef());
 
-  style->SetFlexGrow(1);
-  style->SetMinWidth(Length::Fixed(0));
-  style->SetDisplay(EDisplay::kBlock);
-  style->SetDirection(TextDirection::kLtr);
+  style_builder.SetFlexGrow(1);
+  style_builder.SetMinWidth(Length::Fixed(0));
+  style_builder.SetDisplay(EDisplay::kBlock);
+  style_builder.SetDirection(TextDirection::kLtr);
 
   // We don't want the shadow dom to be editable, so we set this block to
   // read-only in case the input itself is editable.
-  style->SetUserModify(EUserModify::kReadOnly);
+  style_builder.SetUserModify(EUserModify::kReadOnly);
 
-  return style;
+  return style_builder.TakeStyle();
 }
 
 // ---------------------------

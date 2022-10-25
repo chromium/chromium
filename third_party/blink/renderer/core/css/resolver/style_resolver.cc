@@ -1547,6 +1547,11 @@ scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
   return ComputedStyle::Clone(*initial_style_);
 }
 
+ComputedStyleBuilder StyleResolver::CreateComputedStyleBuilder() const {
+  DCHECK(initial_style_);
+  return ComputedStyleBuilder(*initial_style_);
+}
+
 float StyleResolver::InitialZoom() const {
   const Document& document = GetDocument();
   if (const LocalFrame* frame = document.GetFrame())

@@ -339,7 +339,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetCy(value);
       return true;
     case CSSPropertyID::kFlexBasis:
-      style.SetFlexBasis(value);
+      builder.SetFlexBasis(value);
       return true;
     case CSSPropertyID::kHeight:
       style.SetHeight(value);

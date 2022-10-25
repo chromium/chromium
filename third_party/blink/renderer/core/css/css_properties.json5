@@ -2625,6 +2625,7 @@
       converter: "ConvertLengthSizing",
       typedom_types: ["Keyword", "Length", "Percentage"],
       keywords: ["auto", "fit-content", "min-content", "max-content", "content"],
+      readonly: true,
     },
     {
       name: "flex-direction",
@@ -2634,6 +2635,7 @@
       typedom_types: ["Keyword"],
       keywords: ["row", "row-reverse", "column", "column-reverse"],
       default_value: "row",
+      readonly: true,
     },
     {
       name: "flex-grow",
@@ -2644,6 +2646,7 @@
       default_value: "0.0f",
       type_name: "float",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "flex-shrink",
@@ -2654,6 +2657,7 @@
       default_value: "1.0f",
       type_name: "float",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "flex-wrap",
@@ -2663,6 +2667,7 @@
       typedom_types: ["Keyword"],
       keywords: ["nowrap", "wrap", "wrap-reverse"],
       default_value: "nowrap",
+      readonly: true,
     },
     {
       name: "float",
@@ -2722,6 +2727,7 @@
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
+      readonly: true,
     },
     {
       name: "grid-auto-flow",
@@ -2735,6 +2741,7 @@
       converter: "ConvertGridAutoFlow",
       keywords: ["row", "column"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "grid-auto-rows",
@@ -2748,6 +2755,7 @@
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
+      readonly: true,
     },
     {
       name: "grid-column-end",
@@ -2760,6 +2768,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      readonly: true,
     },
     {
       name: "grid-column-start",
@@ -2772,6 +2781,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      readonly: true,
     },
     {
       name: "grid-row-end",
@@ -2784,6 +2794,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      readonly: true,
     },
     {
       name: "grid-row-start",
@@ -2796,6 +2807,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      readonly: true,
     },
     {
       name: "grid-template-areas",
@@ -2820,6 +2832,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "grid-template-rows",
@@ -2837,6 +2850,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "height",

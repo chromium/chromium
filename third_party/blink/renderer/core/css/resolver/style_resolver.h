@@ -75,6 +75,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   // Create a new ComputedStyle copy based on the initial style singleton.
   scoped_refptr<ComputedStyle> CreateComputedStyle() const;
+  ComputedStyleBuilder CreateComputedStyleBuilder() const;
 
   // Create a ComputedStyle for initial styles to be used as the basis for the
   // root element style. In addition to initial values things like zoom, font,
