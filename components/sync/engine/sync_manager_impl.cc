@@ -446,7 +446,6 @@ void SyncManagerImpl::OnIncomingInvalidation(
     handler->RecordRemoteInvalidation(std::move(invalidation));
   }
   sync_status_tracker_->IncrementNotificationsReceived();
-  scheduler_->ScheduleInvalidationNudge(type);
 }
 
 void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {

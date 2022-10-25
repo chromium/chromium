@@ -20,8 +20,6 @@ void FakeSyncScheduler::ScheduleLocalNudge(ModelType type) {}
 
 void FakeSyncScheduler::ScheduleLocalRefreshRequest(ModelTypeSet types) {}
 
-void FakeSyncScheduler::ScheduleInvalidationNudge(ModelType type) {}
-
 void FakeSyncScheduler::SetHasPendingInvalidations(ModelType type,
                                                    bool has_invalidation) {}
 

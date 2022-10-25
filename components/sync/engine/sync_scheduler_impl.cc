@@ -229,6 +229,9 @@ ModelTypeSet SyncSchedulerImpl::GetEnabledAndUnblockedTypes() {
 void SyncSchedulerImpl::SetHasPendingInvalidations(ModelType type,
                                                    bool has_invalidation) {
   nudge_tracker_.SetHasPendingInvalidations(type, has_invalidation);
+  if (has_invalidation) {
+    ScheduleInvalidationNudge(type);
+  }
 }
 
 void SyncSchedulerImpl::SendInitialSnapshot() {
