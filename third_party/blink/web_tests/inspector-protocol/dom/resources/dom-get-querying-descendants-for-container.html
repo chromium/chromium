@@ -13,6 +13,15 @@
   height: 100px;
 }
 
+#container-unnamed-style {
+  --foo: bar;
+}
+
+#container-named-style {
+  container-name: container-named-style;
+  --foo: bar;
+}
+
 @container ((min-width: 50px) and (min-height: 50px)) {
   .query-unnamed { margin-top: 5px; }
 }
@@ -28,6 +37,14 @@
 @container container-named-other (min-height: 50px) {
   .query-named-other { margin-top: 20px; }
 }
+
+@container style(--foo: bar) {
+  .query-unnamed-style { margin-top: 5px; }
+}
+
+@container container-named-style style(--foo: bar) {
+  .query-named-style { margin-top: 10px; }
+}
 </style>
 <body>
 <div id="container-unnamed">
@@ -41,6 +58,18 @@
   </div>
   <div>
     <div class="query-unnamed desc-unnamed"></div>
+  </div>
+</div>
+
+<div id="container-named-style">
+  <div class="query-named-style desc-named-style"></div>
+  <div id="container-unnamed-style">
+    <div class="query-unnamed-style desc-unnamed-style"></div>
+    <div class="query-unnamed-style desc-unnamed-style">
+      <div class="query-named-style desc-named-style"></div>
+      <div class="query-unnamed-style"></div>
+    </div>
+    <div class="query-named-style desc-named-style"></div>
   </div>
 </div>
 </body>

@@ -34,6 +34,8 @@
 
   await testQueryingDescendantsResult('#container-unnamed', '.desc-unnamed');
   await testQueryingDescendantsResult('#container-named', '.desc-named');
+  await testQueryingDescendantsResult('#container-unnamed-style', '.desc-unnamed-style');
+  await testQueryingDescendantsResult('#container-named-style', '.desc-named-style');
 
   testRunner.completeTest();
 });

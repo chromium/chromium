@@ -3,4 +3,8 @@ Are the returned nodes the expected descendants for #container-unnamed?
 true
 Are the returned nodes the expected descendants for #container-named?
 true
+Are the returned nodes the expected descendants for #container-unnamed-style?
+true
+Are the returned nodes the expected descendants for #container-named-style?
+true
 
