@@ -1,6 +1,6 @@
 {
-  "version": "13.20",
-  "log_list_timestamp": "2022-10-17T12:56:01Z",
+  "version": "14.9",
+  "log_list_timestamp": "2022-10-25T12:55:23Z",
   "operators": [
     {
       "name": "Google",
@@ -268,8 +268,8 @@
           "url": "https://yeti2023.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2019-10-31T19:22:00Z"
+            "retired": {
+              "timestamp": "2022-09-29T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -380,8 +380,8 @@
           "url": "https://yeti2022-2.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2022-05-20T00:00:00Z"
+            "retired": {
+              "timestamp": "2022-09-29T00:00:00Z"
             }
           },
           "temporal_interval": {
