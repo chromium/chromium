@@ -29,7 +29,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
@@ -83,10 +82,10 @@ views::View* AddTextfield(views::Widget* widget) {
   // Give the text field a non-zero size, otherwise things like tapping on it
   // will fail.
   result->SetSize(gfx::Size(20, 10));
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  result->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  // Focusable views need an accessible name to pass the accessibility paint
+  // checks.
+  result->SetAccessibleName(u"Name");
+
   return result;
 }
 
