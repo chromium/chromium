@@ -4,8 +4,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_SYSTEM_WEB_APP_DELEGATE_MAP_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_SYSTEM_WEB_APP_DELEGATE_MAP_UTILS_H_
 
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

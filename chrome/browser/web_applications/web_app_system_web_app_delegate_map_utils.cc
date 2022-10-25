@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "url/gurl.h"
