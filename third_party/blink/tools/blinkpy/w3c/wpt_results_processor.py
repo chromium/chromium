@@ -81,6 +81,8 @@ class WPTResultsProcessor(object):
         # automatically from //src/<target>.
         port_options.ensure_value('configuration', None)
         port_options.ensure_value('target', options.target)
+        port_options.ensure_value('manifest_update', False)
+
         port = host.port_factory.get(options=port_options)
 
         results_dir = host.filesystem.dirname(options.wpt_results)
