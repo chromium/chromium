@@ -32,18 +32,18 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
         future extensions or use cases.
     -   Negative policies (*Disable*, *Disallow*) are verboten because setting
         something to "true" to disable it confuses people.
-2.  Declare the policy in the [policies.yaml] file.
+2.  Declare the policy in the [policies.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
     -   This file contains the policy names and their ids.
 3.  If you need to add a new policy group, create a directory with the name of
-    that group under [policy group].
+    that group under [policy group](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
     -  Inside the newly created directory, create a `.group.details.yaml` file
        with the caption and description of the group. This group is used for
        documentation and policy template generation, so it is recommended to
        group policies in meaningful groups.
-    -  Use [.group.details.yaml](https:/cs.chromium.org/chromium/components/policy/resources/new_policy_templates/.group.details.yaml)
+    -  Use [.group.details.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/.group.details.yaml)
        as a templates for group definition.
-4.  Create a file named `PolicyName.yaml` under the appropriate [policy group].
-    You may use [policy.yaml] to start off your policy.
+4.  Create a file named `PolicyName.yaml` under the appropriate [policy group](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
+    You may use [policy.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) to start off your policy.
     -   This file contains meta-level descriptions of all policies and is used
         to generate code, policy templates (ADM/ADMX for Windows and the
         application manifest for Mac), as well as documentation. Please make
@@ -69,7 +69,7 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
             policy as recommended and allow the user to override it in the UI,
             using a command line switch or an extension.
     - The complete list of attributes and their expected values can be found in
-      the [policy.yaml] file.
+      the [policy.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) file.
     -   The textual policy description should include the following:
         -   What features of Chrome are affected.
         -   Which behavior and/or UI/UX changes the policy triggers.
@@ -82,8 +82,8 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
     -   See [description_guidelines.md](description_guidelines.md)
         for additional guidelines when creating a description, including how
         various products should be referenced.
-4.  Create a policy atomic group.
-   -  If you are adding multiple policies that are closely related and interact
+5.  Create a policy atomic group.
+    -  If you are adding multiple policies that are closely related and interact
       with each other, you should put them in policy atomic group. An atomic
       policy group is used in the Chromium code and affects how policies are
       applied. When enabled by the admin, this ensures that policies from an
@@ -91,11 +91,11 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
       policies from multiple sources. This [feature](https://chromeenterprise.google/intl/en_ca/policies/atomic-groups/)
       is controlled by the policy [PolicyAtomicGroupsEnabled](https://chromeenterprise.google/intl/en_ca/policies/#PolicyAtomicGroupsEnabled).
 
-      -  Declare the atomic group in the [policies.yaml] file.
+        -  Declare the atomic group in the [policies.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
     -  Create a `policy_atomic_groups.yaml` file in the group where you added the
        policies if it does not already exist.
-       You may use [policy.yaml] as reference.
-5.  Create a preference and map the policy value to it.
+       You may use [policy.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) as reference.
+6.  Create a preference and map the policy value to it.
     -   All policy values need to be mapped into a prefs value before being used
         unless the policy is needed before PrefService initialization.
     -   To map the policy:
@@ -116,7 +116,7 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
             and
             [policy_test_cases.json](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/data/policy/policy_test_cases.json)
             file.
-6.  Disable the user setting UI when the policy is applied.
+7.  Disable the user setting UI when the policy is applied.
     -   If your feature can be controlled by GUI in `chrome://settings`, the
         associated option should be disabled when the policy controlling it is
         managed.
@@ -125,7 +125,7 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
         -   The setting needs an
             [indicator](https://cs.chromium.org/chromium/src/ui/webui/resources/images/business.svg)
             to tell users that the setting is enforced by the administrator.
-7.  Support `dynamic_refresh` if possible.
+8.  Support `dynamic_refresh` if possible.
     -   We strongly encourage developers to make their policies support this
         attribute. It means the admin can change the policy value and Chrome
         will honor the change at run-time without requiring a restart of the
@@ -136,7 +136,7 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
         [PrefChangeRegistrar](https://cs.chromium.org/chromium/src/components/prefs/pref_change_registrar.h)
         to listen to the preference change notification and update UI or
         browser behavior right away.
-8.  Adding a device policy for ChromeOS.
+9.  Adding a device policy for ChromeOS.
     -   Most policies that are used by the browser can be shared between desktop
         and ChromeOS. However, you need a few additional steps for a device
         policy on ChromeOS.
@@ -146,14 +146,14 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
         -   Update
             `chrome/browser/ash/policy/core/device_policy_decoder.{h,cc}`
             for the new policy.
-9.  Test the policy.
+10.  Test the policy.
     -   Add a test to verify the policy. You can add a test in
         `chrome/browser/policy/<area>_policy_browsertest.cc` or with the policy
         implementation. For example, a network policy test can be put into
         `chrome/browser/net`. Ideally, your test would set the policy, fire up
         the browser, and interact with the browser just as a user would do to
         check whether the policy takes effect.
-10.  Manually testing your policy.
+11.  Manually testing your policy.
     -   Windows: The simplest way to test is to write the registry keys manually
         to `Software\Policies\Chromium` (for Chromium builds) or
         `Software\Policies\Google\Chrome` (for Google Chrome branded builds). If
@@ -174,11 +174,11 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
         If you'd just like to do a quick test for ChromeOS, the Linux code is
         also functional on CrOS, see
         [Linux Quick Start](https://www.chromium.org/administrators/linux-quick-start).
-11.  If you are adding a new policy that supersedes an older one, verify that the
+12.  If you are adding a new policy that supersedes an older one, verify that the
     new policy works as expected even if the old policy is set (allowing us to
     set both during the transition time when Chrome versions honoring the old
     and the new policies coexist).
-12. If your policy has interactions with other policies, make sure to document,
+13. If your policy has interactions with other policies, make sure to document,
     test and cover these by automated tests.
 
 ## Launch a policy
@@ -309,7 +309,7 @@ put the deprecated flag if you deprecate a policy.
 To enforce the above rules concerning policy modification and ensure no
 backwards incompatible changes are introduced, presubmit checks
 will be performed on every change to
-[templates](https:/cs.chromium.org/chromium/components/policy/resources/templates/policy_definitions/).
+[templates](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
 
 The presubmit checks perform the following verifications:
 
@@ -414,7 +414,3 @@ than regular consumer behavior.
 
 1. The `future_on` flag can disable policy on Beta of Stable channel only if the
    policy value is copied to `PrefService` in Step 3 of **Adding a new policy**.
-
-[policies.yaml]: https:/cs.chromium.org/chromium/components/policy/resources/templates/policies.yaml
-[policy.yaml]: https:/cs.chromium.org/chromium/components/policy/resources/new_policy_templates/policy.yaml
-[policy group]: https:/cs.chromium.org/chromium/components/policy/resources/templates/policy_definitions/
