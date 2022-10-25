@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/android/message_payload_type.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
@@ -24,15 +23,7 @@ namespace content::android {
 CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobject>
 ConvertWebMessagePayloadToJava(const blink::WebMessagePayload& payload);
 
-CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobject>
-ConvertJsWebMessagePtrToJava(js_injection::mojom::JsWebMessagePtr message);
-
 CONTENT_EXPORT blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
-    const base::android::ScopedJavaLocalRef<
-        jobject>& /* org.chromium.content_public.browser.MessagePayload */);
-
-CONTENT_EXPORT js_injection::mojom::JsWebMessagePtr
-ConvertToJsWebMessagePtrFromJava(
     const base::android::ScopedJavaLocalRef<
         jobject>& /* org.chromium.content_public.browser.MessagePayload */);
 
