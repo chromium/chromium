@@ -4,6 +4,7 @@
 
 #include "fuchsia_web/runners/common/web_component.h"
 
+#include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
@@ -85,6 +86,10 @@ void WebComponent::StartComponent() {
     }
     DestroyComponent(status, fuchsia::sys::TerminationReason::EXITED);
   });
+
+  // Route logging from the Frame to the component's LogSink.
+  frame_->SetConsoleLogSink(
+      startup_context()->svc()->Connect<fuchsia::logger::LogSink>());
 
   fuchsia::web::ContentAreaSettings settings;
   settings.set_autoplay_policy(
