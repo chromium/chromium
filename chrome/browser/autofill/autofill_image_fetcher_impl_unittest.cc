@@ -67,6 +67,11 @@ class AutofillImageFetcherImplTest : public testing::Test {
     }
   }
 
+  gfx::Image& GetTestImage(int resource_id) {
+    return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
+        resource_id);
+  }
+
   image_fetcher::MockImageFetcher* mock_image_fetcher() {
     return image_fetcher_.get();
   }
@@ -87,17 +92,14 @@ TEST_F(AutofillImageFetcherImplTest, FetchImage_Success) {
 
   // The credit card network images cannot be found in the tests, but it should
   // be okay since we don't care what the images are.
-  gfx::Image fake_image1 =
-      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-          IDR_DEFAULT_FAVICON);
-  gfx::Image fake_image2 =
-      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-          IDR_DEFAULT_FAVICON_DARK);
+  gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
+  gfx::Image fake_image2 = GetTestImage(IDR_DEFAULT_FAVICON_DARK);
   GURL fake_url1 = GURL("http://www.example.com/fake_image1");
   GURL fake_url2 = GURL("http://www.example.com/fake_image2");
 
-  std::map<GURL, gfx::Image> expected_images = {{fake_url1, fake_image1},
-                                                {fake_url2, fake_image2}};
+  std::map<GURL, gfx::Image> expected_images = {
+      {fake_url1, AutofillImageFetcherImpl::ApplyGreyOverlay(fake_image1)},
+      {fake_url2, AutofillImageFetcherImpl::ApplyGreyOverlay(fake_image2)}};
 
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
@@ -136,11 +138,10 @@ TEST_F(AutofillImageFetcherImplTest, FetchImage_InvalidUrlFailure) {
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  gfx::Image fake_image1 =
-      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-          IDR_DEFAULT_FAVICON);
+  gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
   GURL fake_url1 = GURL("http://www.example.com/fake_image1");
-  std::map<GURL, gfx::Image> expected_images = {{fake_url1, fake_image1}};
+  std::map<GURL, gfx::Image> expected_images = {
+      {fake_url1, AutofillImageFetcherImpl::ApplyGreyOverlay(fake_image1)}};
 
   std::map<GURL, gfx::Image> received_images;
   const auto callback =

@@ -15,6 +15,8 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace autofill {
 
@@ -50,6 +52,9 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
           }
         }
       })");
+
+// The SkAlpha value for the image grey overlay.
+constexpr double kImageOverlayAlpha = 0.04;  // 4%
 
 }  // namespace
 
@@ -92,8 +97,25 @@ void AutofillImageFetcherImpl::OnCardArtImageFetched(
   }
   AutofillMetrics::LogImageFetchResult(/*succeeded=*/!card_art_image.IsEmpty());
 
-  std::move(barrier_callback)
-      .Run(std::make_unique<CreditCardArtImage>(card_art_url, card_art_image));
+  auto credit_card_art_image =
+      std::make_unique<CreditCardArtImage>(card_art_url, gfx::Image());
+  if (!card_art_image.IsEmpty()) {
+    credit_card_art_image->card_art_image =
+        AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
+  }
+
+  std::move(barrier_callback).Run(std::move(credit_card_art_image));
+}
+
+// static
+gfx::Image AutofillImageFetcherImpl::ApplyGreyOverlay(const gfx::Image& image) {
+  // Create a solid dark grey mask for the image.
+  gfx::ImageSkia mask = gfx::ImageSkiaOperations::CreateColorMask(
+      image.AsImageSkia(), SK_ColorDKGRAY);
+  // Apply the mask to the original card art image with alpha set to
+  // `kImageOverlayAlpha`.
+  return gfx::Image(gfx::ImageSkiaOperations::CreateBlendedImage(
+      image.AsImageSkia(), mask, kImageOverlayAlpha));
 }
 
 void AutofillImageFetcherImpl::FetchImageForURL(

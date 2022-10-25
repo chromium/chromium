@@ -49,6 +49,9 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
       const gfx::Image& card_art_image,
       const image_fetcher::RequestMetadata& metadata);
 
+  // Returns the image with a grey overlay mask.
+  static gfx::Image ApplyGreyOverlay(const gfx::Image& image);
+
  protected:
   // The image fetcher attached.
   raw_ptr<image_fetcher::ImageFetcher> image_fetcher_ = nullptr;
