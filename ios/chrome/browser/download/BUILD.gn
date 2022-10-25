@@ -23,6 +23,8 @@ source_set("download") {
     "download_manager_tab_helper_delegate.h",
     "external_app_util.h",
     "external_app_util.mm",
+    "installation_notifier.h",
+    "installation_notifier.mm",
     "pass_kit_tab_helper.h",
     "pass_kit_tab_helper.mm",
     "pass_kit_tab_helper_delegate.h",
@@ -87,6 +89,7 @@ source_set("unit_tests") {
     "download_directory_util_unittest.mm",
     "download_manager_tab_helper_unittest.mm",
     "google_drive_app_util_unittest.mm",
+    "installation_notifier_unittest.mm",
     "pass_kit_tab_helper_unittest.mm",
     "vcard_tab_helper_unittest.mm",
   ]

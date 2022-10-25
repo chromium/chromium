@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/installation_notifier.h"
+#import "ios/chrome/browser/download/installation_notifier.h"
 
 #import "base/task/current_thread.h"
 
@@ -19,7 +19,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface FakeDispatcher : NSObject<DispatcherProtocol>
+@interface FakeDispatcher : NSObject <DispatcherProtocol>
 - (int64_t)lastDelayInNSec;
 @end
 
@@ -215,15 +215,17 @@ TEST_F(InstallationNotifierTest, TestExponentialBackoff) {
                       }];
   // Registering for the installation of another application and making sure
   // that the delay is reset to the initial delay.
-  [dispatcher_ executeAfter:
-                   3 block:^{
-    VerifyDelay(3);
-    [installationNotifier_
-        registerForInstallationNotifications:notificationReceiver1_
-                                withSelector:@selector(receivedNotification)
-                                   forScheme:@"bar-scheme"
-                                startPolling:NO];
-  }];
+  [dispatcher_
+      executeAfter:3
+             block:^{
+               VerifyDelay(3);
+               [installationNotifier_
+                   registerForInstallationNotifications:notificationReceiver1_
+                                           withSelector:@selector
+                                           (receivedNotification)
+                                              forScheme:@"bar-scheme"
+                                           startPolling:NO];
+             }];
   [dispatcher_ executeAfter:4
                       block:^{
                         VerifyDelay(0);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/installation_notifier.h"
+#import "ios/chrome/browser/download/installation_notifier.h"
 
 #import <UIKit/UIKit.h>
 #import <stdint.h>
@@ -31,7 +31,7 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
 };
 }  // namespace
 
-@interface DefaultDispatcher : NSObject<DispatcherProtocol>
+@interface DefaultDispatcher : NSObject <DispatcherProtocol>
 @end
 
 @implementation DefaultDispatcher
@@ -179,9 +179,8 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   __block BOOL keepPolling = NO;
   NSMutableSet* keysToDelete = [NSMutableSet set];
-  [_installedAppObservers enumerateKeysAndObjectsUsingBlock:^(id scheme,
-                                                              id observers,
-                                                              BOOL* stop) {
+  [_installedAppObservers enumerateKeysAndObjectsUsingBlock:^(
+                              id scheme, id observers, BOOL* stop) {
     DCHECK([scheme isKindOfClass:[NSString class]]);
     DCHECK([observers isKindOfClass:[NSMutableSet class]]);
     DCHECK([observers count] > 0);

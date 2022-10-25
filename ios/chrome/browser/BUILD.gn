@@ -15,8 +15,6 @@ source_set("browser") {
   sources = [
     "chrome_constants.cc",
     "chrome_constants.h",
-    "installation_notifier.h",
-    "installation_notifier.mm",
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
   ]
@@ -221,10 +219,7 @@ source_set("browser_impl") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "installation_notifier_unittest.mm",
-    "url/url_util_unittest.mm",
-  ]
+  sources = [ "url/url_util_unittest.mm" ]
   deps = [
     ":browser",
     "//base",

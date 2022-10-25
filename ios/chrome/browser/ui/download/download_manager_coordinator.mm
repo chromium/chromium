@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/external_app_util.h"
-#import "ios/chrome/browser/installation_notifier.h"
+#import "ios/chrome/browser/download/installation_notifier.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"

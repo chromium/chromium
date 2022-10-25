@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INSTALLATION_NOTIFIER_H_
-#define IOS_CHROME_BROWSER_INSTALLATION_NOTIFIER_H_
+#ifndef IOS_CHROME_BROWSER_DOWNLOAD_INSTALLATION_NOTIFIER_H_
+#define IOS_CHROME_BROWSER_DOWNLOAD_INSTALLATION_NOTIFIER_H_
 
 #import <Foundation/Foundation.h>
 #include <stdint.h>
 
 // Protocol used to mock the delayed dispatching for the unit tests.
 // Calls `block` after `delayInNSec`.
-@protocol DispatcherProtocol<NSObject>
+@protocol DispatcherProtocol <NSObject>
 - (void)dispatchAfter:(int64_t)delayInNSec withBlock:(dispatch_block_t)block;
 @end
 
@@ -38,4 +38,4 @@
 - (void)stopPolling;
 @end
 
-#endif  // IOS_CHROME_BROWSER_INSTALLATION_NOTIFIER_H_
+#endif  // IOS_CHROME_BROWSER_DOWNLOAD_INSTALLATION_NOTIFIER_H_
