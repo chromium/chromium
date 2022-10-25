@@ -10,17 +10,28 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "headless/app/headless_shell_switches.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 
 namespace headless {
 
-namespace {
+namespace switches {
 static const char kResetResults[] = "reset-results";
+static const char kDumpConsoleMessages[] = "dump-console-messages";
 static const char kDumpDevToolsProtocol[] = "dump-devtools-protocol";
+static const char kDumpTestResult[] = "dump-test-result";
+}  // namespace switches
+
+namespace {
+
+static const base::FilePath kTestsDirectory(
+    FILE_PATH_LITERAL("headless/test/data/protocol"));
+
 }  // namespace
 
 HeadlessProtocolBrowserTest::HeadlessProtocolBrowserTest() {
@@ -29,11 +40,13 @@ HeadlessProtocolBrowserTest::HeadlessProtocolBrowserTest() {
   EXPECT_TRUE(embedded_test_server()->Start());
 }
 
+HeadlessProtocolBrowserTest::~HeadlessProtocolBrowserTest() = default;
+
 void HeadlessProtocolBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(::network::switches::kHostResolverRules,
                                   "MAP *.test 127.0.0.1");
-  HeadlessAsyncDevTooledBrowserTest::SetUpCommandLine(command_line);
+  HeadlessDevTooledBrowserTest::SetUpCommandLine(command_line);
 
   // Make sure the navigations spawn new processes. We run test harness
   // in one process (harness.test) and tests in another.
@@ -44,29 +57,57 @@ void HeadlessProtocolBrowserTest::SetUpCommandLine(
   command_line->AppendSwitch(switches::kNoSystemProxyConfigService);
 }
 
-std::vector<std::string> HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
-  return {};
+base::Value::Dict HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
+  return base::Value::Dict();
 }
 
 void HeadlessProtocolBrowserTest::RunDevTooledTest() {
-  browser_devtools_client_->SetRawProtocolListener(this);
-  devtools_client_->GetRuntime()->GetExperimental()->AddObserver(this);
-  devtools_client_->GetRuntime()->Enable();
-  devtools_client_->GetRuntime()->GetExperimental()->AddBinding(
-      headless::runtime::AddBindingParams::Builder()
-          .SetName("sendProtocolMessage")
-          .Build(),
-      base::BindOnce(&HeadlessProtocolBrowserTest::BindingCreated,
-                     base::Unretained(this)));
+  scoped_refptr<content::DevToolsAgentHost> agent_host =
+      content::DevToolsAgentHost::GetOrCreateFor(
+          HeadlessWebContentsImpl::From(web_contents_)->web_contents());
+
+  // Set up Page domain.
+  devtools_client_.AddEventHandler(
+      "Page.loadEventFired",
+      base::BindRepeating(&HeadlessProtocolBrowserTest::OnLoadEventFired,
+                          base::Unretained(this)));
+  devtools_client_.SendCommand("Page.enable");
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDumpConsoleMessages)) {
+    // Set up Runtime domain to intercept console messages.
+    devtools_client_.AddEventHandler(
+        "Runtime.consoleAPICalled",
+        base::BindRepeating(&HeadlessProtocolBrowserTest::OnConsoleAPICalled,
+                            base::Unretained(this)));
+    devtools_client_.SendCommand("Runtime.enable");
+  }
+
+  // Expose DevTools protocol to the target.
+  {
+    base::Value::Dict params;
+    params.Set("targetId", agent_host->GetId());
+    browser_devtools_client_.SendCommand("Target.exposeDevToolsProtocol",
+                                         std::move(params));
+  }
+
+  // Navigate to test harness page
+  GURL page_url = embedded_test_server()->GetURL(
+      "harness.test", "/protocol/inspector-protocol-test.html");
+  {
+    base::Value::Dict params;
+    params.Set("url", page_url.spec());
+    devtools_client_.SendCommand("Page.navigate", std::move(params));
+  }
 }
 
-void HeadlessProtocolBrowserTest::BindingCreated(
-    std::unique_ptr<headless::runtime::AddBindingResult>) {
+void HeadlessProtocolBrowserTest::OnLoadEventFired(
+    const base::Value::Dict& params) {
+  DCHECK_EQ(*params.FindString("method"), "Page.loadEventFired");
+
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath src_dir;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
-  static const base::FilePath kTestsDirectory(
-      FILE_PATH_LITERAL("headless/test/data/protocol"));
   base::FilePath test_path =
       src_dir.Append(kTestsDirectory).AppendASCII(script_name_);
   std::string script;
@@ -80,55 +121,47 @@ void HeadlessProtocolBrowserTest::BindingCreated(
   GURL target_url =
       embedded_test_server()->GetURL("127.0.0.1", "/protocol/" + script_name_);
 
-  std::string extra_params;
-  for (const auto& param : GetPageUrlExtraParams()) {
-    extra_params += "&" + param;
+  base::Value::Dict test_params;
+  test_params.Set("test", test_url.spec());
+  test_params.Set("target", target_url.spec());
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDumpDevToolsProtocol)) {
+    test_params.Set("dumpDevToolsProtocol", true);
   }
+  test_params.Merge(GetPageUrlExtraParams());
 
-  GURL page_url = embedded_test_server()->GetURL(
-      "harness.test",
-      "/protocol/inspector-protocol-test.html?test=" + test_url.spec() +
-          "&target=" + target_url.spec() + extra_params);
-  devtools_client_->GetPage()->Navigate(page_url.spec());
+  std::string json_test_params;
+  base::JSONWriter::Write(test_params, &json_test_params);
+  std::string evaluate_script =
+      "runTest(JSON.parse('" + json_test_params + "'))";
+
+  base::Value::Dict evaluate_params;
+  evaluate_params.Set("expression", evaluate_script);
+  evaluate_params.Set("awaitPromise", true);
+  evaluate_params.Set("returnByValue", true);
+  devtools_client_.SendCommand(
+      "Runtime.evaluate", std::move(evaluate_params),
+      base::BindOnce(&HeadlessProtocolBrowserTest::OnEvaluateResult,
+                     base::Unretained(this)));
 }
 
-void HeadlessProtocolBrowserTest::OnBindingCalled(
-    const runtime::BindingCalledParams& params) {
-  std::string json_message = params.GetPayload();
-  absl::optional<base::Value> message = base::JSONReader::Read(json_message);
-
-  if (!message || !message->is_dict()) {
-    LOG(ERROR) << "Poorly formed message " << json_message;
-    FinishTest();
-    return;
+void HeadlessProtocolBrowserTest::OnEvaluateResult(base::Value::Dict params) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDumpTestResult)) {
+    std::string json_params;
+    base::JSONWriter::Write(params, &json_params);
+    LOG(ERROR) << "Test result: " << json_params;
   }
 
-  const base::Value::Dict& message_dict = message->GetDict();
+  const std::string* output =
+      params.FindStringByDottedPath("result.result.value");
+  ProcessTestResult(output ? *output : std::string());
 
-  const std::string* method = message_dict.FindString("method");
-  if (!method || !message_dict.FindDict("params") ||
-      !message_dict.FindInt("id")) {
-    LOG(ERROR) << "Poorly formed message " << json_message;
-    FinishTest();
-    return;
-  }
+  FinishTest();
+}
 
-  if (*method != "DONE") {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            kDumpDevToolsProtocol)) {
-      LOG(INFO) << "FromJS: " << json_message;
-    }
-    // Pass unhandled commands onto the inspector.
-    browser_devtools_client_->SendRawDevToolsMessage(json_message);
-    return;
-  }
-
-  const std::string* maybe_test_result = message_dict.FindString("result");
-  const std::string test_result =
-      maybe_test_result ? *maybe_test_result : std::string();
-  static const base::FilePath kTestsDirectory(
-      FILE_PATH_LITERAL("headless/test/data/protocol"));
-
+void HeadlessProtocolBrowserTest::ProcessTestResult(
+    const std::string& test_result) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath src_dir;
@@ -138,7 +171,8 @@ void HeadlessProtocolBrowserTest::OnBindingCalled(
           .AppendASCII(script_name_.substr(0, script_name_.length() - 3) +
                        "-expected.txt");
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kResetResults)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kResetResults)) {
     LOG(INFO) << "Updating expectations at " << expectation_path;
     int result = base::WriteFile(expectation_path, test_result.data(),
                                  static_cast<int>(test_result.size()));
@@ -149,31 +183,31 @@ void HeadlessProtocolBrowserTest::OnBindingCalled(
   if (!base::ReadFileToString(expectation_path, &expectation)) {
     ADD_FAILURE() << "Unable to read expectations at " << expectation_path;
   }
+
   EXPECT_EQ(test_result, expectation);
-  FinishTest();
 }
 
-bool HeadlessProtocolBrowserTest::OnProtocolMessage(
-    base::span<const uint8_t> json_message,
-    const base::DictionaryValue& parsed_message) {
-  SendMessageToJS(base::StringPiece(
-      reinterpret_cast<const char*>(json_message.data()), json_message.size()));
-  return true;
-}
+void HeadlessProtocolBrowserTest::OnConsoleAPICalled(
+    const base::Value::Dict& params) {
+  DCHECK_EQ(*params.FindString("method"), "Runtime.consoleAPICalled");
 
-void HeadlessProtocolBrowserTest::SendMessageToJS(base::StringPiece message) {
-  if (test_finished_)
+  const base::Value::List* args = params.FindListByDottedPath("params.args");
+  if (!args || args->empty())
     return;
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kDumpDevToolsProtocol)) {
-    LOG(INFO) << "ToJS: " << message;
+  const base::Value* value = args->front().GetDict().Find("value");
+  switch (value->type()) {
+    case base::Value::Type::NONE:
+    case base::Value::Type::BOOLEAN:
+    case base::Value::Type::INTEGER:
+    case base::Value::Type::DOUBLE:
+    case base::Value::Type::STRING:
+      LOG(INFO) << value->DebugString();
+      return;
+    default:
+      LOG(INFO) << "Unhandled value type: " << value->type();
+      return;
   }
-
-  std::string encoded;
-  base::Base64Encode(message, &encoded);
-  devtools_client_->GetRuntime()->Evaluate("onmessage(atob(\"" + encoded +
-                                           "\"))");
 }
 
 void HeadlessProtocolBrowserTest::FinishTest() {
@@ -322,9 +356,11 @@ class HeadlessProtocolBrowserTestWithProxy
   net::EmbeddedTestServer* proxy_server() { return &proxy_server_; }
 
  protected:
-  std::vector<std::string> GetPageUrlExtraParams() override {
+  base::Value::Dict GetPageUrlExtraParams() override {
     std::string proxy = proxy_server()->host_port_pair().ToString();
-    return {"&proxy=" + proxy};
+    base::Value::Dict dict;
+    dict.Set("proxy", proxy);
+    return dict;
   }
 
  private:

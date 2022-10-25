@@ -57,7 +57,12 @@ var TestRunner = class {
   }
 
   params(name) {
-    return name ? this._params.get(name) : this._params;
+    if (name) {
+      return this._params instanceof URLSearchParams
+          ? this._params.get(name) : this._params[name];
+    }
+
+    return this._params;
   }
 
   _logObject(object, title, stabilizeNames = TestRunner.stabilizeNames) {
@@ -576,6 +581,8 @@ testRunner.setPopupBlockingEnabled(false);
 
 window.addEventListener('load', () => {
   var params = new URLSearchParams(window.location.search);
+  if (!params.get('test'))
+    return;
 
   var testScriptURL = params.get('test');
   var testBaseURL = testScriptURL.substring(0, testScriptURL.lastIndexOf('/') + 1);

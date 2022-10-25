@@ -1,0 +1,75 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_DEVTOOLS_SIMPLE_DEVTOOLS_PROTOCOL_CLIENT_SIMPLE_DEVTOOLS_PROTOCOL_CLIENT_H_
+#define COMPONENTS_DEVTOOLS_SIMPLE_DEVTOOLS_PROTOCOL_CLIENT_SIMPLE_DEVTOOLS_PROTOCOL_CLIENT_H_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/values.h"
+#include "content/public/browser/devtools_agent_host.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace simple_devtools_protocol_client {
+
+class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
+ public:
+  typedef base::OnceCallback<void(base::Value::Dict)> ResponseCallback;
+  typedef base::RepeatingCallback<void(const base::Value::Dict&)> EventCallback;
+
+  SimpleDevToolsProtocolClient();
+  ~SimpleDevToolsProtocolClient() override;
+
+  void AttachClient(scoped_refptr<content::DevToolsAgentHost> agent_host);
+  void DetachClient();
+
+  void AttachToBrowser();
+  void AttachToWebContents(content::WebContents* web_contents);
+
+  void AddEventHandler(const std::string& event_name,
+                       EventCallback event_callback);
+  void RemoveEventHandler(const std::string& event_name,
+                          const EventCallback& event_callback);
+
+  void SendSessionCommand(const std::string method,
+                          base::Value::Dict params,
+                          const std::string session_id,
+                          ResponseCallback response_callback);
+
+  void SendCommand(const std::string method,
+                   base::Value::Dict params,
+                   ResponseCallback response_callback);
+
+  void SendCommand(const std::string method,
+                   ResponseCallback response_callback);
+
+  void SendCommand(const std::string method, base::Value::Dict params);
+
+  void SendCommand(const std::string method);
+
+ protected:
+  // content::DevToolsAgentHostClient implementation.
+  void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
+                               base::span<const uint8_t> json_message) override;
+  void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
+
+  bool HasEventHandler(const std::string& event_name,
+                       const EventCallback& event_callback);
+
+  scoped_refptr<content::DevToolsAgentHost> agent_host_;
+  base::flat_map<int, ResponseCallback> pending_response_map_;
+  base::flat_map<std::string, std::vector<EventCallback>> event_map_;
+};
+
+}  // namespace simple_devtools_protocol_client
+
+#endif  // COMPONENTS_DEVTOOLS_SIMPLE_DEVTOOLS_PROTOCOL_CLIENT_SIMPLE_DEVTOOLS_PROTOCOL_CLIENT_H_

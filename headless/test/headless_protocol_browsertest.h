@@ -9,38 +9,34 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
+#include "base/values.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
-#include "headless/public/devtools/domains/runtime.h"
-#include "headless/public/headless_devtools_client.h"
 #include "headless/test/headless_browser_test.h"
+#include "headless/test/headless_devtooled_browsertest.h"
 
 namespace headless {
 
-class HeadlessProtocolBrowserTest
-    : public HeadlessAsyncDevTooledBrowserTest,
-      public HeadlessDevToolsClient::RawProtocolListener,
-      public runtime::ExperimentalObserver {
+class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
  public:
   HeadlessProtocolBrowserTest();
+  ~HeadlessProtocolBrowserTest() override;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  virtual std::vector<std::string> GetPageUrlExtraParams();
+  virtual base::Value::Dict GetPageUrlExtraParams();
 
  private:
   // HeadlessWebContentsObserver implementation.
   void RunDevTooledTest() override;
-  void BindingCreated(std::unique_ptr<headless::runtime::AddBindingResult>);
 
-  // runtime::Observer implementation.
-  void OnBindingCalled(const runtime::BindingCalledParams& params) override;
+  void OnLoadEventFired(const base::Value::Dict& params);
+  void OnEvaluateResult(base::Value::Dict params);
+  void OnConsoleAPICalled(const base::Value::Dict& params);
 
-  // HeadlessDevToolsClient::RawProtocolListener
-  bool OnProtocolMessage(base::span<const uint8_t> json_message,
-                         const base::DictionaryValue& parsed_message) override;
-
-  void SendMessageToJS(base::StringPiece message);
+  void ProcessTestResult(const std::string& test_result);
   void FinishTest();
 
  protected:
