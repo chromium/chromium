@@ -24,7 +24,6 @@ class RenderFrameHost;
 
 namespace js_injection {
 
-struct JsWebMessage;
 class WebMessageHost;
 class WebMessageHostFactory;
 

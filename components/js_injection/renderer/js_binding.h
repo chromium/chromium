@@ -28,7 +28,6 @@ class RenderFrame;
 
 namespace js_injection {
 class JsCommunication;
-struct JsWebMessage;
 
 // A gin::Wrappable class used for providing JavaScript API. JsCommunication
 // creates an instance of JsBinding for each unique name exposed to the page.

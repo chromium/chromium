@@ -12,8 +12,6 @@ class Page;
 
 namespace js_injection {
 
-struct JsWebMessage;
-
 // Used to send messages to the page.
 class WebMessageReplyProxy {
  public:
