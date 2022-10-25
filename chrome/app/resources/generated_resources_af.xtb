@@ -1532,6 +1532,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2352810082280059586">Sluitskermnotas word outomaties in <ph name="LOCK_SCREEN_APP_NAME" /> gestoor. Jou mees onlangse nota sal op die sluitskerm bly.</translation>
 <translation id="2353297238722298836">Kamera en mikrofoon word toegelaat</translation>
 <translation id="2355314311311231464">Voorsiening het misluk omdat jou rekeningbesonderhede nie opgehaal kon word nie. Probeer weer. Foutkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Energiebespaarderopsies</translation>
 <translation id="2355604387869345912">Skakel kitsverbinding aan</translation>
 <translation id="2356070529366658676">Vra</translation>
 <translation id="2357330829548294574">Verwyder <ph name="USER_NAME" /></translation>
@@ -5667,6 +5668,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6295855836753816081">Stoor tans …</translation>
 <translation id="629730747756840877">Rekening</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-programme te installeer</translation>
+<translation id="6300125580697461004">Stuur terugvoer oor energiebespaarder</translation>
 <translation id="6300177430812514606">Mag nie data klaar stuur of ontvang nie</translation>
 <translation id="630065524203833229">Gaan uit</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kon nie outomaties opgestel word nie. Spesifiseer asseblief gevorderde drukkerbesonderhede. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -5867,6 +5869,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6494327278868541139">Wys besonderhede oor gevorderde beskerming</translation>
 <translation id="6494445798847293442">Nie 'n Sertifiseringoutoriteit nie</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Hierdie data het sensitiewe of gevaarlike inhoud}=1{Hierdie lêer het sensitiewe of gevaarlike inhoud}other{Hierdie lêers het sensitiewe of gevaarlike inhoud}}</translation>
+<translation id="6497548114956205206">Kom meer te wete oor energiebespaarder</translation>
 <translation id="6497784818439587832">Verander skermgrootte om items op jou skerm groter of kleiner te maak</translation>
 <translation id="6497789971060331894">Muis – omgekeerde rollees</translation>
 <translation id="6498249116389603658">Al jou tale</translation>
@@ -6917,6 +6920,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7495778526395737099">Het jy jou ou wagwoord vergeet?</translation>
 <translation id="7497981768003291373">Jy het geen onlangs vasgevangde WebRTC-teksloglêers nie.</translation>
 <translation id="7501957181231305652">of</translation>
+<translation id="7502220299952823578">Voeg by die "hou hierdie werwe altyd aktief"-lys</translation>
 <translation id="7503191893372251637">Netscape-sertifikaattipe</translation>
 <translation id="7503985202154027481">'n Rekord van jou besoek aan hierdie werf sal op jou sekuriteitsleutel gehou word.</translation>
 <translation id="750509436279396091">Maak aflaaivouer oop</translation>
@@ -7425,6 +7429,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7955177647836564772">As Smart Lock aan is en jou foon is ontsluit, hoef jy nie ’n wagwoord of PIN in te voer nie</translation>
 <translation id="7956373551960864128">Jou gestoorde drukkers</translation>
 <translation id="7957074856830851026">Sien toestelinligting soos sy reeksnommer of bate-ID</translation>
+<translation id="7957186326898555886">Stuur terugvoer oor geheuebespaarder</translation>
 <translation id="7959074893852789871">Die lêer bevat veelvuldige sertifikate, waarvan sommige nie ingevoer is nie:</translation>
 <translation id="7959665254555683862">Nuwe Incognito-oortjie</translation>
 <translation id="7961015016161918242">Nooit</translation>
@@ -7844,6 +7849,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8340547030807793004">Meer handelinge vir <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Gaan <ph name="BEGIN_BOLD" />1 werf<ph name="END_BOLD" /> na wat onlangs baie kennisgewings gestuur het}other{Gaan <ph name="BEGIN_BOLD" />{NUM_SITES} werwe<ph name="END_BOLD" /> na wat onlangs baie kennisgewings gestuur het}}</translation>
 <translation id="8342221978608739536">Het nie probeer nie</translation>
+<translation id="8342399870062010251">Kom meer te wete oor geheuebespaarder</translation>
 <translation id="8342861492835240085">Kies 'n versameling</translation>
 <translation id="8345848587667658367">Jy kan nou jou foon se onlangse foto's, media, kennisgewings en programme bekyk</translation>
 <translation id="8347227221149377169">Druktake</translation>
@@ -8052,6 +8058,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8549316893834449916">Jy sal jou Google-rekening gebruik om by jou Chromebook aan te meld – dieselfde rekening as wat jy vir Gmail, Drive, YouTube en meer gebruik.</translation>
 <translation id="8551388862522347954">Lisensies</translation>
 <translation id="8551588720239073785">Datum- en tydinstellings</translation>
+<translation id="8552102814346875916">Stoor op die "hou hierdie werwe altyd aktief"-lys</translation>
 <translation id="8553342806078037065">Bestuur ander mense</translation>
 <translation id="8554899698005018844">Geen taal nie</translation>
 <translation id="855604308879080518">Gee Android-programme toegang tot USB-toestelle op hierdie Chromebook. Toestemming sal versoek word elke keer wanneer jy by 'n USB-toestel inprop. Individuele Android-programme sal vir bykomende toestemmings vra.</translation>

@@ -1519,6 +1519,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2352810082280059586">Bloķēšanas ekrāna piezīmes tiek automātiski saglabātas lietotnē <ph name="LOCK_SCREEN_APP_NAME" />. Jūsu jaunākās piezīmes paliks bloķēšanas ekrānā.</translation>
 <translation id="2353297238722298836">Kameras un mikrofona lietošana ir atļauta</translation>
 <translation id="2355314311311231464">Nodrošināšana neizdevās, jo nevarēja izgūt jūsu konta datus. Lūdzu, mēģiniet vēlreiz. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Enerģijas taupīšanas opcijas</translation>
 <translation id="2355604387869345912">Tūlītējas piesaistes ieslēgšana</translation>
 <translation id="2356070529366658676">Vaicāt</translation>
 <translation id="2357330829548294574">Noņemt <ph name="USER_NAME" /></translation>
@@ -5649,6 +5650,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6295855836753816081">Notiek saglabāšana...</translation>
 <translation id="629730747756840877">Konts</translation>
 <translation id="6298962879096096191">Izmantojiet Google Play, lai instalētu Android lietotnes</translation>
+<translation id="6300125580697461004">Sniegt atsauksmes par enerģijas taupīšanas režīmu</translation>
 <translation id="6300177430812514606">Nedrīkst pabeigt datu sūtīšanu vai saņemšanu</translation>
 <translation id="630065524203833229">I&amp;ziet</translation>
 <translation id="6300718114348072351">Printeri (<ph name="PRINTER_NAME" />) neizdevās konfigurēt automātiski. Lūdzu, norādiet detalizētu informāciju par printeri. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
@@ -5849,6 +5851,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6494327278868541139">Rādīt uzlabotās aizsardzības informāciju</translation>
 <translation id="6494445798847293442">Nav sertifikāta izdevējiestāde</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Šie dati ietver sensitīvu vai bīstamu saturu.}=1{Šis fails ietver sensitīvu vai bīstamu saturu.}zero{Šie faili ietver sensitīvu vai bīstamu saturu.}one{Šie faili ietver sensitīvu vai bīstamu saturu.}other{Šie faili ietver sensitīvu vai bīstamu saturu.}}</translation>
+<translation id="6497548114956205206">Uzzināt vairāk par enerģijas taupīšanas režīmu</translation>
 <translation id="6497784818439587832">Mainiet attēlojuma lielumu, lai samazinātu vai palielinātu ekrānā redzamos vienumus.</translation>
 <translation id="6497789971060331894">Peles ritināšana atpakaļgaitā</translation>
 <translation id="6498249116389603658">&amp;Visas valodas</translation>
@@ -6903,6 +6906,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7495778526395737099">Vai aizmirsāt savu iepriekšējo paroli?</translation>
 <translation id="7497981768003291373">Jums nav nesen ierakstītu WebRTC tekstu žurnālu.</translation>
 <translation id="7501957181231305652">vai</translation>
+<translation id="7502220299952823578">Pievienot sarakstam “Vienmēr saglabāt šīs vietnes aktīvas”</translation>
 <translation id="7503191893372251637">Netscape sertifikāta veids</translation>
 <translation id="7503985202154027481">Ieraksts par jūsu apmeklējumu šajā vietnē tiks reģistrēts jūsu drošības atslēgā.</translation>
 <translation id="750509436279396091">Atvērt lejupielāžu mapi</translation>
@@ -7410,6 +7414,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7955177647836564772">Ja ir ieslēgta funkcija Smart Lock un tālrunis ir atbloķēts, nav jāievada parole vai PIN</translation>
 <translation id="7956373551960864128">Jūsu saglabātie printeri</translation>
 <translation id="7957074856830851026">Skatīt informāciju par ierīci, piemēram, sērijas numuru vai īpašuma ID</translation>
+<translation id="7957186326898555886">Sūtīt atsauksmes par atmiņas taupīšanas režīmu</translation>
 <translation id="7959074893852789871">Failā bija iekļauti vairāki sertifikāti, no kuriem daži netika importēti:</translation>
 <translation id="7959665254555683862">Jauna inkognito &amp;cilne</translation>
 <translation id="7961015016161918242">Nekad</translation>
@@ -7830,6 +7835,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8340547030807793004"><ph name="DEVICE" />: citas darbības</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Pārskatiet <ph name="BEGIN_BOLD" />1 vietni<ph name="END_BOLD" />, no kuras nesen tika nosūtīts daudz paziņojumu.}zero{Pārskatiet <ph name="BEGIN_BOLD" />{NUM_SITES} vietnes<ph name="END_BOLD" />, no kurām nesen tika nosūtīts daudz paziņojumu.}one{Pārskatiet <ph name="BEGIN_BOLD" />{NUM_SITES} vietni<ph name="END_BOLD" />, no kurām nesen tika nosūtīts daudz paziņojumu.}other{Pārskatiet <ph name="BEGIN_BOLD" />{NUM_SITES} vietnes<ph name="END_BOLD" />, no kurām nesen tika nosūtīts daudz paziņojumu.}}</translation>
 <translation id="8342221978608739536">Nemēģināju skatīt</translation>
+<translation id="8342399870062010251">Uzzināt vairāk par atmiņas taupīšanas režīmu</translation>
 <translation id="8342861492835240085">Kolekcijas atlase</translation>
 <translation id="8345848587667658367">Tagad varat skatīt tālruņa jaunākos fotoattēlus, multivides saturu, paziņojumus un lietotnes.</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
@@ -8038,6 +8044,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8549316893834449916">Chromebook datorā pierakstīsieties ar Google kontu — to pašu kontu, ko izmantojat pakalpojumā Gmail un YouTube, Google diskā un citos pakalpojumos.</translation>
 <translation id="8551388862522347954">Licences</translation>
 <translation id="8551588720239073785">Datuma un laika iestatījumi</translation>
+<translation id="8552102814346875916">Saglabāt sarakstā “Vienmēr saglabāt šīs vietnes aktīvas”</translation>
 <translation id="8553342806078037065">Pārvaldīt citas personas</translation>
 <translation id="8554899698005018844">Nav valodas</translation>
 <translation id="855604308879080518">Atļaujiet Android lietotnēm piekļūt USB ierīcēm šajā Chromebook datorā. Atļauja tiks pieprasīta ikreiz, kad pievienosiet USB ierīci. Noteiktas Android lietotnes pieprasīs papildu atļaujas.</translation>

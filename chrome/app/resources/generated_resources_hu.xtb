@@ -1531,6 +1531,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2352810082280059586">A lezárási képernyő jegyzeteit a rendszer automatikusan elmenti ide: <ph name="LOCK_SCREEN_APP_NAME" />. A legutolsó jegyzet megmarad a lezárási képernyőn.</translation>
 <translation id="2353297238722298836">Kamera és mikrofon engedélyezve</translation>
 <translation id="2355314311311231464">Hiba történt az ellátási folyamat során, mert nem sikerült a fiókadatok lekérése. Próbálja újra. Hibakód: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Az Energiatakarékos mód beállításai</translation>
 <translation id="2355604387869345912">Azonnali internetmegosztás bekapcsolása</translation>
 <translation id="2356070529366658676">Kérés</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> eltávolítása</translation>
@@ -6916,6 +6917,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7495778526395737099">Elfelejtette régi jelszavát?</translation>
 <translation id="7497981768003291373">Nincsenek mostanában rögzített szöveges WebRTC-naplói.</translation>
 <translation id="7501957181231305652">vagy</translation>
+<translation id="7502220299952823578">Hozzáadás az „Ezek a webhelyek mindig legyenek aktívak” listához</translation>
 <translation id="7503191893372251637">Netscape-tanúsítvány típusa</translation>
 <translation id="7503985202154027481">A biztonsági hardverkulcs tárolni fogja, hogy Ön felkereste ezt a webhelyet.</translation>
 <translation id="750509436279396091">Letöltések mappa megnyitása</translation>

@@ -1533,6 +1533,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2352810082280059586">Amanothi okukhiya isikrini alondolozwa ngokuzenzakalela ku-<ph name="LOCK_SCREEN_APP_NAME" />. Inothi lakho lakamuva kakhulu lizohlala ekukhiyeni isikrini.</translation>
 <translation id="2353297238722298836">Ikhamera nemakrofoni ivunyelwe</translation>
 <translation id="2355314311311231464">Ihlulekile ukulungiselela ngoba imininingwane ye-akhawunti yakho ayibuyisekanga. Sicela uzame futhi. Ikhodi yephutha: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Okukhethwa kukho kokonga amandla</translation>
 <translation id="2355604387869345912">Vula i-Tethering esheshayo</translation>
 <translation id="2356070529366658676">Buza</translation>
 <translation id="2357330829548294574">Susa u-<ph name="USER_NAME" /></translation>
@@ -5669,6 +5670,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6295855836753816081">Iyalondoloza...</translation>
 <translation id="629730747756840877">I-akhawunti</translation>
 <translation id="6298962879096096191">Sebenzisa i-Google Play ukuze ufake izinhlelo zokusebenza ze-Android</translation>
+<translation id="6300125580697461004">Thumela impendulo mayelana nesilondolozi samandla</translation>
 <translation id="6300177430812514606">Ayivumelekile ukuqeda ukuthumela noma ukwamukela idatha</translation>
 <translation id="630065524203833229">Phuma</translation>
 <translation id="6300718114348072351">I-<ph name="PRINTER_NAME" /> ayikwazanga ukulungiselelwa ngokuzenzakalela. Sicela ucacise imininingwane yephrinta ethuthukisiwe. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
@@ -5869,6 +5871,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6494327278868541139">Bonisa imininingwane yokuvikeleka okuthuthukisiwe</translation>
 <translation id="6494445798847293442">Akulona Igunya Lokuqinisekisa</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Le datha inokuqukethwe okuzwelayo noma okuyingozi}=1{Leli fayela linokuqukethwe okuzwelayo noma okuyingozi}one{Lawa mafayela anokuqukethwe okuzwelayo noma okuyingozi}other{Lawa mafayela anokuqukethwe okuzwelayo noma okuyingozi}}</translation>
+<translation id="6497548114956205206">Buyekeza ekusetshenzisweni komkhawulokudonsa olungisiwe</translation>
 <translation id="6497784818439587832">Shintsha usayizi wokubonisa ukuze wenze izinto esikrinini sakho zibe zincane noma zibe zinkulu</translation>
 <translation id="6497789971060331894">Ukuskrola ngokuphendukezela igundane</translation>
 <translation id="6498249116389603658">&amp;Zonke izilimi zakho</translation>
@@ -6921,6 +6924,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7495778526395737099">Ukhohlwe iphasiwedi yakho?</translation>
 <translation id="7497981768003291373">Awunawo amalogi ombhalo athathwa kamuva we-WebRTC.</translation>
 <translation id="7501957181231305652">noma</translation>
+<translation id="7502220299952823578">Faka ohlwini oluthi "gcina njalo lawa masayithi esebenza"</translation>
 <translation id="7503191893372251637">Uhlobo lwesitifiketi se-Netscape</translation>
 <translation id="7503985202154027481">Irekhodi lokuvakasha kwakho kuleli sayithi lizogcinwa kukhiye wakho wokuqinisekisa ubunikazi</translation>
 <translation id="750509436279396091">Vula ifolda yokulandwa</translation>
@@ -7428,6 +7432,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7955177647836564772">Uma i-Smart Lock sivuliwe futhi ifoni yakho ivuliwe, awudingi ukufaka iphasiwedi noma iphinikhodi</translation>
 <translation id="7956373551960864128">Amaphrinta akho alondoloziwe</translation>
 <translation id="7957074856830851026">Bona ulwazi lwedivayisi, njengenombolo yomkhiqizo noma i-ID yefa</translation>
+<translation id="7957186326898555886">Thumela impendulo mayelana nesilondolozi senkumbulo</translation>
 <translation id="7959074893852789871">Ifayela beliqukethe izitifiketi eziningi, ezinye zazo ezingazange zingeniswe:</translation>
 <translation id="7959665254555683862">I-Incognito Entsha Nethebhu</translation>
 <translation id="7961015016161918242">Ngeke</translation>
@@ -7847,6 +7852,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8340547030807793004">Izenzo ezengeziwe ze-<ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Buyekeza <ph name="BEGIN_BOLD" />isayithi eli-1<ph name="END_BOLD" /> elisanda kuthumela izaziso eziningi}one{Buyekeza <ph name="BEGIN_BOLD" />amasayithi angu-{NUM_SITES}<ph name="END_BOLD" /> asanda kuthumela izaziso eziningi}other{Buyekeza <ph name="BEGIN_BOLD" />amasayithi angu-{NUM_SITES}<ph name="END_BOLD" /> asanda kuthumela izaziso eziningi}}</translation>
 <translation id="8342221978608739536">Ayizamanga</translation>
+<translation id="8342399870062010251">Funda kabanzi mayelana nesilondolozi senkumbulo</translation>
 <translation id="8342861492835240085">Khetha iqoqo</translation>
 <translation id="8345848587667658367">Manje usungabuka izithombe zefoni yakho zakamuva, imidiya, izaziso, nama-app</translation>
 <translation id="8347227221149377169">Imisebenzi yokuphrinta</translation>
@@ -8055,6 +8061,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8549316893834449916">Uzosebenzisa i-akhawunti yakho ye-Google ukungena ngemvume ku-Chromebook yakho– i-akhawunti efanayo oyisebenzisela i-Gmail, IDrayivu, i-YouTube, nokuningi.</translation>
 <translation id="8551388862522347954">Amalayisense</translation>
 <translation id="8551588720239073785">Amasethingi edethi nesikhathi</translation>
+<translation id="8552102814346875916">Londoloza ohlwini oluthi "hlala ugcina lawa masayithi esebenza".</translation>
 <translation id="8553342806078037065">Phatha abanye abantu</translation>
 <translation id="8554899698005018844">Akunalimi</translation>
 <translation id="855604308879080518">Vumela ama-app we-Android ukuthi afinyelele kumadivayisi we-USB kule Chromebook. Imvume izocelwa njalo lapho uxhuma idivayisi ye-USB. Ama-app we-Android ngamanye azocela izimvume ezengeziwe.</translation>

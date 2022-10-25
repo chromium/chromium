@@ -1514,6 +1514,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2352810082280059586">Las notas de la pantalla bloqueada se guardan automáticamente en <ph name="LOCK_SCREEN_APP_NAME" />. La nota más reciente permanecerá en la pantalla bloqueada.</translation>
 <translation id="2353297238722298836">Cámara y micrófono permitidos</translation>
 <translation id="2355314311311231464">No es posible completar el aprovisionamiento porque no se pudieron recuperar los detalles de tu cuenta. Vuelve a intentarlo. Código de error: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opciones de ahorro de energía</translation>
 <translation id="2355604387869345912">Activar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2357330829548294574">Quitar <ph name="USER_NAME" /></translation>
@@ -5647,6 +5648,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6295855836753816081">Guardando…</translation>
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6298962879096096191">Usar Google Play para instalar apps de Android</translation>
+<translation id="6300125580697461004">Enviar comentarios sobre el ahorro de energía</translation>
 <translation id="6300177430812514606">No puede completar el envío ni la recepción de datos</translation>
 <translation id="630065524203833229">&amp;Salir</translation>
 <translation id="6300718114348072351">No se pudo configurar <ph name="PRINTER_NAME" /> automáticamente. Especifica los detalles avanzados de la impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -5847,6 +5849,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad de certificación</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Estos datos incluyen contenido sensible o peligroso}=1{Este archivo incluye contenido sensible o peligroso}other{Estos archivos incluyen contenido sensible o peligroso}}</translation>
+<translation id="6497548114956205206">Más información sobre el ahorro de energía</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para agrandar o achicar los elementos que aparecen en pantalla.</translation>
 <translation id="6497789971060331894">Desplazamiento invertido del mouse</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
@@ -6897,6 +6900,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7495778526395737099">¿Olvidaste la contraseña anterior?</translation>
 <translation id="7497981768003291373">No capturaste ningún registro de texto de WebRTC recientemente.</translation>
 <translation id="7501957181231305652">o</translation>
+<translation id="7502220299952823578">Agregar a la lista "Mantener estos sitios siempre activos"</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503985202154027481">En tu llave de seguridad, se guardará un registro de tu visita a este sitio.</translation>
 <translation id="750509436279396091">Abrir carpeta de descargas</translation>
@@ -7405,6 +7409,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7955177647836564772">Si la función Smart Lock está activada y tu teléfono está desbloqueado, no tendrás que ingresar un PIN ni una contraseña.</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o la ID del activo</translation>
+<translation id="7957186326898555886">Enviar comentarios sobre el ahorro de memoria</translation>
 <translation id="7959074893852789871">El archivo contenía múltiples certificados. Algunos fueron importados:</translation>
 <translation id="7959665254555683862">Nueva pestaña de incógnito</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -7825,6 +7830,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8340547030807793004">Más acciones para <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que envió muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que enviaron muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
+<translation id="8342399870062010251">Más información sobre el ahorro de memoria</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes ver las apps, las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
@@ -8033,6 +8039,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8549316893834449916">Usarás tu Cuenta de Google para acceder a la Chromebook; es la misma que usas para Gmail, Drive, YouTube y otros servicios.</translation>
 <translation id="8551388862522347954">Licencias</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
+<translation id="8552102814346875916">Guardar en la lista "Mantener estos sitios siempre activos"</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
 <translation id="855604308879080518">Permite que las apps para Android accedan a dispositivos USB en esta Chromebook. Se solicitará permiso cada vez que conectes un dispositivo USB. Las apps para Android individuales solicitarán permisos adicionales.</translation>

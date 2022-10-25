@@ -1517,6 +1517,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2352810082280059586">Notities op het vergrendelscherm worden automatisch opgeslagen in <ph name="LOCK_SCREEN_APP_NAME" />. Je laatste notitie blijft op het vergrendelscherm staan.</translation>
 <translation id="2353297238722298836">Camera en microfoon toegestaan</translation>
 <translation id="2355314311311231464">Het instelproces is mislukt omdat je accountgegevens niet kunnen worden opgehaald. Probeer het opnieuw. Foutcode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opties voor energiebesparing</translation>
 <translation id="2355604387869345912">Instant-tethering aanzetten</translation>
 <translation id="2356070529366658676">Vragen</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> verwijderen</translation>
@@ -5644,6 +5645,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6295855836753816081">Opslaan...</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-apps te installeren</translation>
+<translation id="6300125580697461004">Feedback over energiebesparing sturen</translation>
 <translation id="6300177430812514606">Geen toestemming om het sturen of ontvangen van gegevens te voltooien</translation>
 <translation id="630065524203833229">&amp;Sluiten</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kan niet automatisch worden ingesteld. Geef geavanceerde printergegevens op. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -5844,6 +5846,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6494327278868541139">Details van geoptimaliseerde beveiliging bekijken</translation>
 <translation id="6494445798847293442">Geen certificeringsinstantie</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Deze gegevens bevatten gevoelige of gevaarlijke content}=1{Dit bestand bevat gevoelige of gevaarlijke content}other{Deze bestanden bevatten gevoelige of gevaarlijke content}}</translation>
+<translation id="6497548114956205206">Meer informatie over energiebesparing</translation>
 <translation id="6497784818439587832">Wijzig de weergavegrootte om items op het scherm kleiner of groter te maken.</translation>
 <translation id="6497789971060331894">Omgekeerd scrollen muis</translation>
 <translation id="6498249116389603658">&amp;Al je talen</translation>
@@ -6893,6 +6896,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7495778526395737099">Je oude wachtwoord vergeten?</translation>
 <translation id="7497981768003291373">Je hebt geen onlangs vastgelegde WebRTC-tekstlogboeken.</translation>
 <translation id="7501957181231305652">of</translation>
+<translation id="7502220299952823578">Toevoegen aan de lijst Deze sites altijd actief houden</translation>
 <translation id="7503191893372251637">Type Netscape-certificaat</translation>
 <translation id="7503985202154027481">Er wordt een record van je bezoek aan deze site geregistreerd in je beveiligingssleutel.</translation>
 <translation id="750509436279396091">Map 'Downloads' openen</translation>
@@ -7399,6 +7403,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7955177647836564772">Als Smart Lock aanstaat en je telefoon is ontgrendeld, hoef je geen wachtwoord of pincode in te vullen.</translation>
 <translation id="7956373551960864128">Je opgeslagen printers</translation>
 <translation id="7957074856830851026">Apparaatgegevens bekijken, zoals serienummer of item-ID</translation>
+<translation id="7957186326898555886">Feedback over geheugenbesparing sturen</translation>
 <translation id="7959074893852789871">Het bestand bevat meerdere certificaten. Sommige van deze certificaten zijn niet geïmporteerd:</translation>
 <translation id="7959665254555683862">Nieuw incognito&amp;tabblad</translation>
 <translation id="7961015016161918242">Nooit</translation>
@@ -7819,6 +7824,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8340547030807793004">Meer acties voor <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> bekijken die onlangs veel meldingen heeft gestuurd}other{<ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> bekijken die onlangs veel meldingen hebben gestuurd}}</translation>
 <translation id="8342221978608739536">Niet geprobeerd</translation>
+<translation id="8342399870062010251">Meer informatie over geheugenbesparing</translation>
 <translation id="8342861492835240085">Een verzameling selecteren</translation>
 <translation id="8345848587667658367">Je kunt nu de recente foto's, media, meldingen en apps van je telefoon bekijken</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
@@ -8027,6 +8033,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8549316893834449916">Je gebruikt je Google-account om in te loggen op je Chromebook. Dit is hetzelfde account dat je gebruikt voor Gmail, Drive, YouTube en meer.</translation>
 <translation id="8551388862522347954">Licenties</translation>
 <translation id="8551588720239073785">Instellingen voor datum en tijd</translation>
+<translation id="8552102814346875916">Opslaan in de lijst Deze sites altijd actief houden</translation>
 <translation id="8553342806078037065">Andere mensen beheren</translation>
 <translation id="8554899698005018844">Geen taal</translation>
 <translation id="855604308879080518">Geef Android-apps toegang tot USB-apparaten op deze Chromebook. Telkens als je een USB-apparaat aansluit, wordt er toestemming gevraagd. Afzonderlijke Android-apps vragen om aanvullende rechten.</translation>

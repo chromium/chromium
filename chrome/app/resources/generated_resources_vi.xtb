@@ -1532,6 +1532,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2352810082280059586">Ghi chú trên màn hình khóa được tự động lưu vào <ph name="LOCK_SCREEN_APP_NAME" />. Ghi chú mới nhất của bạn sẽ vẫn còn trên màn hình khóa.</translation>
 <translation id="2353297238722298836">Cho phép máy ảnh và micrô</translation>
 <translation id="2355314311311231464">Không cấp phép được do không thể lấy thông tin chi tiết về tài khoản của bạn. Vui lòng thử lại. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Các tuỳ chọn về trình tiết kiệm năng lượng</translation>
 <translation id="2355604387869345912">Bật tính năng Chia sẻ Internet tức thì</translation>
 <translation id="2356070529366658676">Yêu cầu</translation>
 <translation id="2357330829548294574">Xóa <ph name="USER_NAME" /></translation>
@@ -5666,6 +5667,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6295855836753816081">Đang lưu...</translation>
 <translation id="629730747756840877">Tài khoản</translation>
 <translation id="6298962879096096191">Sử dụng Google Play để cài đặt các ứng dụng Android</translation>
+<translation id="6300125580697461004">Gửi ý kiến phản hồi về trình tiết kiệm pin</translation>
 <translation id="6300177430812514606">Không được phép kết thúc quá trình gửi hoặc nhận dữ liệu</translation>
 <translation id="630065524203833229">T&amp;hoát</translation>
 <translation id="6300718114348072351">Không thể tự động định cấu hình cho <ph name="PRINTER_NAME" />. Vui lòng chỉ định các tùy chọn cài đặt nâng cao cho máy in. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -5866,6 +5868,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6494327278868541139">Hiển thị thông tin chi tiết về phương thức bảo vệ nâng cao</translation>
 <translation id="6494445798847293442">Không phải tổ chức phát hành chứng chỉ</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Dữ liệu này có chứa nội dung nhạy cảm hoặc nguy hiểm}=1{Tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm}other{Các tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm}}</translation>
+<translation id="6497548114956205206">Tìm hiểu thêm về trình tiết kiệm pin</translation>
 <translation id="6497784818439587832">Thay đổi kích thước hiển thị để thu nhỏ hoặc phóng to các mục trên màn hình</translation>
 <translation id="6497789971060331894">Đảo ngược hướng cuộn chuột</translation>
 <translation id="6498249116389603658">&amp;Tất cả ngôn ngữ của bạn</translation>
@@ -6916,6 +6919,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7495778526395737099">Quên mật khẩu cũ của bạn?</translation>
 <translation id="7497981768003291373">Bạn không ghi nhật ký văn bản WebRTC nào gần đây.</translation>
 <translation id="7501957181231305652">hoặc</translation>
+<translation id="7502220299952823578">Thêm vào danh sách "luôn duy trì các trang web này ở trạng thái hoạt động"</translation>
 <translation id="7503191893372251637">Loại Chứng chỉ Netscape</translation>
 <translation id="7503985202154027481">Khóa bảo mật sẽ lưu giữ bản ghi lượt truy cập của bạn vào trang web này.</translation>
 <translation id="750509436279396091">Mở thư mục tệp đã tải xuống</translation>
@@ -7424,6 +7428,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7955177647836564772">Nếu bật Smart Lock và mở khoá điện thoại, bạn sẽ không cần nhập mật khẩu hoặc mã PIN</translation>
 <translation id="7956373551960864128">Các máy in bạn đã lưu</translation>
 <translation id="7957074856830851026">Xem thông tin thiết bị, chẳng hạn như số sê-ri hoặc mã tài sản</translation>
+<translation id="7957186326898555886">Gửi ý kiến phản hồi về trình tiết kiệm bộ nhớ</translation>
 <translation id="7959074893852789871">Tệp có chứa nhiều chứng chỉ, một vài chứng chỉ trong đó chưa được nhập:</translation>
 <translation id="7959665254555683862">&amp;Thẻ ẩn danh mới</translation>
 <translation id="7961015016161918242">Không bao giờ</translation>
@@ -7844,6 +7849,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8340547030807793004">Thao tác khác cho <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Xem lại <ph name="BEGIN_BOLD" />1 trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}other{Xem lại <ph name="BEGIN_BOLD" />{NUM_SITES} trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}}</translation>
 <translation id="8342221978608739536">Chưa thử</translation>
+<translation id="8342399870062010251">Tìm hiểu thêm về trình tiết kiệm bộ nhớ</translation>
 <translation id="8342861492835240085">Chọn một bộ sưu tập</translation>
 <translation id="8345848587667658367">Giờ đây, bạn có thể xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại của mình.</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
@@ -8052,6 +8058,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8549316893834449916">Bạn sẽ dùng Tài khoản Google để đăng nhập vào Chromebook. Đây cũng chính là tài khoản bạn dùng cho Gmail, Drive, YouTube và nhiều sản phẩm khác.</translation>
 <translation id="8551388862522347954">Giấy phép</translation>
 <translation id="8551588720239073785">Cài đặt ngày và giờ</translation>
+<translation id="8552102814346875916">Lưu vào danh sách "luôn duy trì các trang web này ở trạng thái hoạt động"</translation>
 <translation id="8553342806078037065">Quản lý những người khác</translation>
 <translation id="8554899698005018844">Không có ngôn ngữ nào</translation>
 <translation id="855604308879080518">Cho phép ứng dụng Android truy cập thiết bị USB trên Chromebook này. Hệ thống sẽ yêu cầu cấp quyền mỗi lần bạn cắm thiết bị USB. Từng dụng Android sẽ yêu cầu thêm các quyền riêng.</translation>

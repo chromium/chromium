@@ -1504,6 +1504,7 @@
 <translation id="2352810082280059586">ロック画面のメモは<ph name="LOCK_SCREEN_APP_NAME" />に自動的に保存されます。最新のメモはロック画面に表示されます。</translation>
 <translation id="2353297238722298836">カメラとマイクを使用できます</translation>
 <translation id="2355314311311231464">アカウントの詳細を取得できなかったため、プロピジョニングに失敗しました。もう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
+<translation id="2355477091455974894">省エネツールのオプション</translation>
 <translation id="2355604387869345912">インスタント テザリングをオンにする</translation>
 <translation id="2356070529366658676">確認する</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> を削除</translation>
@@ -5615,6 +5616,7 @@
 <translation id="6295855836753816081">保存しています...</translation>
 <translation id="629730747756840877">アカウント</translation>
 <translation id="6298962879096096191">Google Play を使用して Android アプリをインストールします</translation>
+<translation id="6300125580697461004">省エネツールに関するフィードバックを送信する</translation>
 <translation id="6300177430812514606">データの送受信の完了を許可しないサイト</translation>
 <translation id="630065524203833229">終了(&amp;X)</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> を自動的に設定できませんでした。プリンタの詳細設定を指定してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -5814,6 +5816,7 @@
 <translation id="6494327278868541139">保護強化機能の詳細を表示</translation>
 <translation id="6494445798847293442">認証局ではありません</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{このデータにはデリケートなコンテンツまたは危険なコンテンツが含まれています}=1{このファイルにはデリケートなコンテンツまたは危険なコンテンツが含まれています}other{これらのファイルにはデリケートなコンテンツまたは危険なコンテンツが含まれています}}</translation>
+<translation id="6497548114956205206">省エネツールの詳細</translation>
 <translation id="6497784818439587832">画面上の項目のサイズを変えるには、表示サイズを変更します</translation>
 <translation id="6497789971060331894">マウスの逆スクロール</translation>
 <translation id="6498249116389603658">選択したすべての言語(&amp;A)</translation>
@@ -6857,6 +6860,7 @@
 <translation id="7495778526395737099">パスワードを忘れた場合</translation>
 <translation id="7497981768003291373">最近記録された WebRTC テキストログはありません。</translation>
 <translation id="7501957181231305652">または</translation>
+<translation id="7502220299952823578">常にアクティブにするサイトのリストに追加</translation>
 <translation id="7503191893372251637">Netscape 証明書タイプ</translation>
 <translation id="7503985202154027481">このサイトへのアクセスの記録がセキュリティ キーに保存されます。</translation>
 <translation id="750509436279396091">ダウンロード フォルダを開く</translation>
@@ -7362,6 +7366,7 @@
 <translation id="7955177647836564772">Smart Lock がオンになっていて、スマートフォンのロックが解除されている場合、パスワードや PIN を入力する必要はありません</translation>
 <translation id="7956373551960864128">保存されているプリンタ</translation>
 <translation id="7957074856830851026">シリアル番号やアセット ID などのデバイス情報を読み取る</translation>
+<translation id="7957186326898555886">メモリセーバーに関するフィードバックを送信する</translation>
 <translation id="7959074893852789871">ファイルに含まれる複数の証明書のうち、一部をインポートできませんでした:</translation>
 <translation id="7959665254555683862">新しいシークレット タブ(&amp;T)</translation>
 <translation id="7961015016161918242">使用しない</translation>
@@ -7777,6 +7782,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> に対するその他の操作</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{最近、通知を多数受け取った <ph name="BEGIN_BOLD" />1 件のサイト<ph name="END_BOLD" />を確認する}other{最近、通知を多数受け取った <ph name="BEGIN_BOLD" />{NUM_SITES} 件のサイト<ph name="END_BOLD" />を確認する}}</translation>
 <translation id="8342221978608739536">試していない</translation>
+<translation id="8342399870062010251">メモリセーバーの詳細</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
 <translation id="8345848587667658367">スマートフォンの最近の写真、メディア、通知、アプリを表示できるようになりました</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
@@ -7985,6 +7991,7 @@
 <translation id="8549316893834449916">Chromebook には Google アカウント（Gmail、ドライブ、YouTube などで使用しているのと同じアカウント）を使用してログインします。</translation>
 <translation id="8551388862522347954">ライセンス</translation>
 <translation id="8551588720239073785">日時の設定</translation>
+<translation id="8552102814346875916">常にアクティブにするサイトのリストに保存</translation>
 <translation id="8553342806078037065">他のユーザーを管理</translation>
 <translation id="8554899698005018844">言語設定なし</translation>
 <translation id="855604308879080518">この Chromebook で Android アプリから USB デバイスへのアクセスを許可します。USB デバイスを接続するたびに許可するよう要求されます。一部の Android アプリでは、他の権限も許可するよう要求される場合があります。</translation>

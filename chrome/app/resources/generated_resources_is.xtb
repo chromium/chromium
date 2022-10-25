@@ -1533,6 +1533,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2352810082280059586">Glósur á lásskjá eru sjálfkrafa vistaðar í <ph name="LOCK_SCREEN_APP_NAME" />. Nýjustu glósurnar birtast áfram á lásskjánum.</translation>
 <translation id="2353297238722298836">Myndavél og hljóðnemi eru leyfð</translation>
 <translation id="2355314311311231464">Úthlutun mistókst þar sem ekki var hægt að sækja reikningsupplýsingarnar þínar. Reyndu aftur. Villukóði: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Valkostir orkusparnaðar</translation>
 <translation id="2355604387869345912">Kveikja á skynditjóðrun</translation>
 <translation id="2356070529366658676">Spyrja</translation>
 <translation id="2357330829548294574">Fjarlægja <ph name="USER_NAME" /></translation>
@@ -5667,6 +5668,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6295855836753816081">Vistar...</translation>
 <translation id="629730747756840877">Reikningur</translation>
 <translation id="6298962879096096191">Notaðu Google Play til að setja upp Android forrit</translation>
+<translation id="6300125580697461004">Senda inn ábendingu um orkusparnað</translation>
 <translation id="6300177430812514606">Mega ekki ljúka við að senda eða móttaka gögn</translation>
 <translation id="630065524203833229">Hætta</translation>
 <translation id="6300718114348072351">Ekki tókst að stilla <ph name="PRINTER_NAME" /> sjálfvirkt. Tilgreindu ítarlegar prentaraupplýsingar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -5867,6 +5869,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6494327278868541139">Sýna upplýsingar um aukna vernd</translation>
 <translation id="6494445798847293442">Ekki vottunarstöð</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Þessi gögn innihalda viðkvæmt eða hættulegt efni}=1{Þessi skrá inniheldur viðkvæmt eða hættulegt efni}one{Þessar skrár innihalda viðkvæmt eða hættulegt efni}other{Þessar skrár innihalda viðkvæmt eða hættulegt efni}}</translation>
+<translation id="6497548114956205206">Nánar um orkusparnað</translation>
 <translation id="6497784818439587832">Breyta skjástærð til að minnka eða stækka atriði á skjánum</translation>
 <translation id="6497789971060331894">Öfug fletting músar</translation>
 <translation id="6498249116389603658">Öll &amp;tungumálin þín</translation>
@@ -6919,6 +6922,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7495778526395737099">Gleymdirðu gamla aðgangsorðinu þínu?</translation>
 <translation id="7497981768003291373">Þú ert ekki með neina nýlega WebRTC-textaannála.</translation>
 <translation id="7501957181231305652">eða</translation>
+<translation id="7502220299952823578">Bættu við listann „Ávallt halda þessum síðum óvirkum“</translation>
 <translation id="7503191893372251637">Tegund Netscape-vottorðs</translation>
 <translation id="7503985202154027481">Færsla um heimsókn þína á þetta vefsvæði verður vistuð á öryggislyklinum þínum.</translation>
 <translation id="750509436279396091">Opna niðurhalsmöppu</translation>
@@ -7427,6 +7431,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7955177647836564772">Ef kveikt er á Smart Lock og síminn er ólæstur þarftu ekki að slá inn aðgangsorð eða PIN-númer</translation>
 <translation id="7956373551960864128">Vistaðir prentarar þínir</translation>
 <translation id="7957074856830851026">Sjá upplýsingar um tæki, svo sem raðnúmer eða eignarauðkenni</translation>
+<translation id="7957186326898555886">Senda inn ábendingu um minnissparnað</translation>
 <translation id="7959074893852789871">Skráin innihélt mörg vottorð en sum þeirra voru ekki flutt inn:</translation>
 <translation id="7959665254555683862">Nýr huliðsflipi</translation>
 <translation id="7961015016161918242">Aldrei</translation>
@@ -7846,6 +7851,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8340547030807793004">Fleiri aðgerðir fyrir <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Yfirfara <ph name="BEGIN_BOLD" />1 vefsvæði<ph name="END_BOLD" /> sem sendi margar tilkynningar undanfarið}one{Yfirfara <ph name="BEGIN_BOLD" />{NUM_SITES} vefsvæði<ph name="END_BOLD" /> sem sendi margar tilkynningar undanfarið}other{Yfirfara <ph name="BEGIN_BOLD" />{NUM_SITES} vefsvæði<ph name="END_BOLD" /> sem sendu margar tilkynningar undanfarið}}</translation>
 <translation id="8342221978608739536">Prófaði ekki</translation>
+<translation id="8342399870062010251">Nánar um minnissparnað</translation>
 <translation id="8342861492835240085">Velja safn</translation>
 <translation id="8345848587667658367">Nú geturðu séð nýlegar myndir, margmiðlunarefni, tilkynningar og forrit símans</translation>
 <translation id="8347227221149377169">Prentverk</translation>
@@ -8054,6 +8060,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8549316893834449916">Þú munt skrá þig inn á Chromebook með Google reikningnum þínum sem þú notar einnig fyrir Gmail, Drive, YouTube og fleira.</translation>
 <translation id="8551388862522347954">Leyfi</translation>
 <translation id="8551588720239073785">Dagsetningar- og tímastillingar</translation>
+<translation id="8552102814346875916">Vista á listann „Ávallt halda þessum síðum óvirkum“</translation>
 <translation id="8553342806078037065">Stjórna öðrum notendum</translation>
 <translation id="8554899698005018844">Ekkert tungumál</translation>
 <translation id="855604308879080518">Veita Android forritum aðgang að USB-tækjum í þessari Chromebook. Beðið verður um heimild í hvert sinn sem þú stingur USB-tæki í samband. Hvert og eitt Android forrit mun biðja um viðbótarheimildir.</translation>

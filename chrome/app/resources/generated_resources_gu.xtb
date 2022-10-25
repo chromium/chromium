@@ -1515,6 +1515,7 @@
 <translation id="2352810082280059586">લૉક સ્ક્રીન નોંધ ઑટોમૅટિક રીતે <ph name="LOCK_SCREEN_APP_NAME" /> પર સાચવવામાં આવે છે. તમારી સૌથી તાજેતરની નોંધ લૉક સ્ક્રીન પર રહેશે.</translation>
 <translation id="2353297238722298836">કૅમેરા અને માઇક્રોફોનની મંજૂરી</translation>
 <translation id="2355314311311231464">તમારા એકાઉન્ટની વિગતો ફરી મેળવી શકાઈ ન હોવાને કારણે સેટઅપ કરવું નિષ્ફળ રહ્યું. કૃપા કરીને ફરી પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">એનર્જી સેવરના વિકલ્પો</translation>
 <translation id="2355604387869345912">ઝટપટ ઇન્ટરનેટ શેર કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="2356070529366658676">કહો</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> કાઢી નાખો</translation>
@@ -5650,6 +5651,7 @@ USB ડિવાઇસ</translation>
 <translation id="6295855836753816081">સાચવી રહ્યું છે...</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
 <translation id="6298962879096096191">Android ઍપ્લિકેશનોને ઇન્સ્ટૉલ કરવા માટે Google Play નો ઉપયોગ કરો</translation>
+<translation id="6300125580697461004">એનર્જી સેવર મોડ વિશે પ્રતિસાદ મોકલો</translation>
 <translation id="6300177430812514606">ડેટા મોકલવા કે પ્રાપ્ત કરવાનું સમાપ્ત કરવાની મંજૂરી નથી</translation>
 <translation id="630065524203833229">&amp;બહાર નીકળો</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" />ને ઑટોમૅટિક રીતે ગોઠવી શકાતું નથી. કૃપા કરીને વિગતવાર પ્રિન્ટરની વિગતો જણાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -5850,6 +5852,7 @@ USB ડિવાઇસ</translation>
 <translation id="6494327278868541139">વધારાની સુરક્ષાની વિગતો બતાવો</translation>
 <translation id="6494445798847293442">કોઈ પ્રમાણન અધિકારી નથી</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{આ ડેટામાં સંવેદનશીલ અથવા જોખમી કન્ટેન્ટ છે}=1{આ ફાઇલમાં સંવેદનશીલ અથવા જોખમી કન્ટેન્ટ છે}one{આ ફાઇલમાં સંવેદનશીલ અથવા જોખમી કન્ટેન્ટ છે}other{આ ફાઇલોમાં સંવેદનશીલ અથવા જોખમી કન્ટેન્ટ છે}}</translation>
+<translation id="6497548114956205206">એનર્જી સેવર મોડ વિશે વધુ જાણો</translation>
 <translation id="6497784818439587832">તમારી સ્ક્રીન પરની આઇટમને વધુ નાની અથવા વધુ મોટી કરવા માટે ડિસ્પ્લેનું કદ બદલો</translation>
 <translation id="6497789971060331894">માઉસનું રિવર્સ સ્ક્રોલિંગ</translation>
 <translation id="6498249116389603658">&amp;તમારી બધી ભાષાઓ</translation>
@@ -6902,6 +6905,7 @@ USB ડિવાઇસ</translation>
 <translation id="7495778526395737099">તમારો જૂનો પાસવર્ડ ભૂલી ગયા છો?</translation>
 <translation id="7497981768003291373">તમારી પાસે તાજેતરમાં કૅપ્ચર કરેલ કોઈ WebRTC ટેક્સ્ટ લૉગ નથી.</translation>
 <translation id="7501957181231305652">અથવા</translation>
+<translation id="7502220299952823578">"આ સાઇટને હંમેશાં સક્રિય રાખો" સૂચિમાં ઉમેરો</translation>
 <translation id="7503191893372251637">નેટસ્કેપ પ્રમાણપત્રનો પ્રકાર</translation>
 <translation id="7503985202154027481">આ સાઇટની તમારી મુલાકાતનો રેકોર્ડ તમારા સુરક્ષા કોડ પર રાખવામાં આવશે.</translation>
 <translation id="750509436279396091">ડાઉનલોડ્સ ફોલ્ડર ખોલો</translation>
@@ -7409,6 +7413,7 @@ USB ડિવાઇસ</translation>
 <translation id="7955177647836564772">જો Smart Lock ચાલુ કરેલું હોય અને તમારો ફોન અનલૉક કરેલો હોય, તો તમારે પાસવર્ડ કે પિન દાખલ કરવાની જરૂર રહેતી નથી</translation>
 <translation id="7956373551960864128">તમે સાચવેલું પ્રિન્ટર</translation>
 <translation id="7957074856830851026">ડિવાઇસ વિશેની માહિતી જુઓ, જેમ કે તેનો અનુક્રમ નંબર અથવા અસેટ ID</translation>
+<translation id="7957186326898555886">મેમરી સેવર મોડ વિશે પ્રતિસાદ મોકલો</translation>
 <translation id="7959074893852789871">ફાઇલમાં બહુવિધ પ્રમાણપત્રો રહેલા છે, તેમાંનાં કેટલાક આયાત કરેલા નથી:</translation>
 <translation id="7959665254555683862">નવી છૂપી ટૅબ</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
@@ -7824,6 +7829,7 @@ USB ડિવાઇસ</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{જે <ph name="BEGIN_BOLD" />1 સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}one{જે <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}other{જે <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}}</translation>
 <translation id="8342221978608739536">પ્રયાસ કર્યો ન હતો</translation>
+<translation id="8342399870062010251">મેમરી સેવર મોડ વિશે વધુ જાણો</translation>
 <translation id="8342861492835240085">સંગ્રહ પસંદ કરો</translation>
 <translation id="8345848587667658367">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોઈ શકો છો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
@@ -8032,6 +8038,7 @@ USB ડિવાઇસ</translation>
 <translation id="8549316893834449916">તમારા Chromebookમાં સાઇન ઇન કરવા માટે તમે તમારા Google એકાઉન્ટનો ઉપયોગ કરી શકો છો – Gmail, Drive, YouTube અને બીજા ઘણા માટે તમે ઉપયોગમાં લેતા એકાઉન્ટ વડે જ.</translation>
 <translation id="8551388862522347954">લાઇસેંસીસ</translation>
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
+<translation id="8552102814346875916">"આ સાઇટને હંમેશાં સક્રિય રાખો" સૂચિમાં સાચવો</translation>
 <translation id="8553342806078037065">અન્ય લોકોને મેનેજ કરો</translation>
 <translation id="8554899698005018844">કોઈ ભાષા નથી</translation>
 <translation id="855604308879080518">આ Chromebook પર Androidની બધી ઍપને USB ડિવાઇસ ઍક્સેસ કરવાની સુવિધા આપો. તમે જ્યારે પણ કોઈ USB ડિવાઇસ પ્લગ-ઇન કરશો, ત્યારે પરવાનગી માટે વિનંતી કરવામાં આવશે. Androidની જુદી જુદી ઍપ દ્વારા વધારાની પરવાનગીઓ માટે પૂછવામાં આવશે.</translation>

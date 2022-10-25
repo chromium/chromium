@@ -1533,6 +1533,7 @@
 <translation id="2352810082280059586">잠금 화면 메모는 자동으로 <ph name="LOCK_SCREEN_APP_NAME" />에 저장됩니다. 가장 최근 메모는 잠금 화면에 계속 표시됩니다.</translation>
 <translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
 <translation id="2355314311311231464">계정 세부정보를 가져올 수 없으므로 프로비저닝할 수 없습니다. 다시 시도해 주세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
+<translation id="2355477091455974894">절전 모드 옵션</translation>
 <translation id="2355604387869345912">인스턴트 테더링 켜기</translation>
 <translation id="2356070529366658676">확인</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> 삭제</translation>
@@ -5665,6 +5666,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6295855836753816081">저장 중...</translation>
 <translation id="629730747756840877">계정</translation>
 <translation id="6298962879096096191">Google Play를 사용하여 Android 앱을 설치합니다.</translation>
+<translation id="6300125580697461004">에너지 절약 모드에 관한 의견 보내기</translation>
 <translation id="6300177430812514606">데이터 전송 또는 수신 완료가 허용되지 않음</translation>
 <translation id="630065524203833229">종료(&amp;X)</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" />을(를) 자동으로 설정할 수 없습니다. 고급 프린터 세부정보를 지정해 주세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -5865,6 +5867,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6494327278868541139">향상된 보안 세부정보 표시</translation>
 <translation id="6494445798847293442">인증 기관이 아닙니다.</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{민감하거나 위험한 콘텐츠가 있는 데이터입니다.}=1{민감하거나 위험한 콘텐츠가 있는 파일입니다.}other{민감하거나 위험한 콘텐츠가 있는 파일입니다.}}</translation>
+<translation id="6497548114956205206">에너지 절약 모드에 관해 자세히 알아보기</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
 <translation id="6498249116389603658">모든 언어(&amp;A)</translation>
@@ -6915,6 +6918,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7495778526395737099">이전 암호를 잊으셨나요?</translation>
 <translation id="7497981768003291373">최근 캡처한 WebRTC 텍스트 로그가 없습니다.</translation>
 <translation id="7501957181231305652">또는</translation>
+<translation id="7502220299952823578">'항상 사이트를 활성 상태로 유지' 목록에 추가</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">이 사이트를 방문한 기록이 보안 키에 보관됩니다.</translation>
 <translation id="750509436279396091">다운로드 폴더 열기</translation>
@@ -7424,6 +7428,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7955177647836564772">Smart Lock이 사용 설정되어 있고 휴대전화가 잠금 해제되어 있는 경우 비밀번호나 PIN을 입력하지 않아도 됩니다.</translation>
 <translation id="7956373551960864128">저장한 프린터</translation>
 <translation id="7957074856830851026">일련번호 또는 기기 ID와 같은 기기 정보 보기</translation>
+<translation id="7957186326898555886">메모리 절약 모드에 관한 의견 보내기</translation>
 <translation id="7959074893852789871">파일에 여러 인증서가 있지만 그 중 일부를 가져올 수 없습니다.</translation>
 <translation id="7959665254555683862">새 시크릿 탭(&amp;T)</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
@@ -7844,6 +7849,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" />의 작업 메뉴 더보기</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 1개<ph name="END_BOLD" />를 검토합니다.}other{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 {NUM_SITES}개<ph name="END_BOLD" />를 검토합니다.}}</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
+<translation id="8342399870062010251">메모리 절약 모드에 관해 자세히 알아보기</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
@@ -8052,6 +8058,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8549316893834449916">Gmail, 드라이브, YouTube 등에 사용하는 계정과 동일한 Google 계정으로 Chromebook에 로그인합니다.</translation>
 <translation id="8551388862522347954">라이선스</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
+<translation id="8552102814346875916">'다음 사이트를 항상 활성 상태로 유지' 목록에 저장</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>
 <translation id="8554899698005018844">언어가 없음</translation>
 <translation id="855604308879080518">Android 앱이 Chromebook에 연결된 USB 기기에 액세스하도록 허용합니다. USB 기기를 삽입할 때마다 권한 요청이 표시됩니다. 추가 권한은 각 Android 앱에서 개별적으로 요청합니다.</translation>

@@ -1518,6 +1518,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2352810082280059586">Les notes d'écran de verrouillage sont automatiquement enregistrées dans <ph name="LOCK_SCREEN_APP_NAME" />. Votre note la plus récente restera sur l'écran de verrouillage.</translation>
 <translation id="2353297238722298836">La caméra et le microphone sont autorisés</translation>
 <translation id="2355314311311231464">L'approvisionnement a échoué parce que les renseignements de votre compte n'ont pas pu être récupérés. Veuillez réessayer. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Options d'économiseur d'énergie</translation>
 <translation id="2355604387869345912">Activer le partage de connexion instantané</translation>
 <translation id="2356070529366658676">Demander</translation>
 <translation id="2357330829548294574">Supprimer <ph name="USER_NAME" /></translation>
@@ -5652,6 +5653,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6295855836753816081">Enregistrement en cours...</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6298962879096096191">Utilisez Google Play pour installer des applications Android</translation>
+<translation id="6300125580697461004">Envoyer des commentaires à propos de l'économiseur d'énergie</translation>
 <translation id="6300177430812514606">Non autorisés à terminer l'envoi ou la réception de données</translation>
 <translation id="630065524203833229">&amp;Quitter</translation>
 <translation id="6300718114348072351">Impossible de configurer automatiquement l'imprimante <ph name="PRINTER_NAME" />. Veuillez spécifier les détails avancés de l'imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -5852,6 +5854,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6494327278868541139">Afficher les renseignements sur la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Le contenu de ces données est délicat ou dangereux}=1{Le contenu de ce fichier est délicat ou dangereux}one{Le contenu de ce fichier est délicat ou dangereux}other{Le contenu de ces fichiers est délicat ou dangereux}}</translation>
+<translation id="6497548114956205206">En savoir plus à propos de l'économiseur d'énergie</translation>
 <translation id="6497784818439587832">Modifier la taille d'affichage pour rétrécir ou agrandir les éléments sur votre écran</translation>
 <translation id="6497789971060331894">Défilement inversé de la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
@@ -6904,6 +6907,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7495778526395737099">Vous avez oublié votre ancien mot de passe?</translation>
 <translation id="7497981768003291373">Aucun journal de texte WebRTC n'a été créé récemment.</translation>
 <translation id="7501957181231305652">ou</translation>
+<translation id="7502220299952823578">Ajouter à la liste « Toujours garder ces sites actifs »</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
 <translation id="7503985202154027481">Une trace de votre visite sur ce site sera enregistrée sur votre clé de sécurité.</translation>
 <translation id="750509436279396091">Ouvrir le dossier des téléchargements</translation>
@@ -7412,6 +7416,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7955177647836564772">Lorsque Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin d'entrer de mot de passe ni de NIP</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7957074856830851026">Consulter des renseignements sur l'appareil, comme son numéro de série ou son identifiant d'appareil</translation>
+<translation id="7957186326898555886">Envoyer des commentaires à propos de l'économiseur de mémoire</translation>
 <translation id="7959074893852789871">Le fichier contenait plusieurs certificats, dont certains n'ont pas été importés :</translation>
 <translation id="7959665254555683862">&amp;Nouvel onglet de navigation privée</translation>
 <translation id="7961015016161918242">Jamais</translation>
@@ -7831,6 +7836,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8340547030807793004">Autres actions pour <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examiner <ph name="BEGIN_BOLD" />un site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}one{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}other{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> qui ont envoyé beaucoup de notifications récemment}}</translation>
 <translation id="8342221978608739536">Je n'ai pas essayé</translation>
+<translation id="8342399870062010251">En savoir plus à propos de l'économiseur de mémoire</translation>
 <translation id="8342861492835240085">Sélectionner une collection</translation>
 <translation id="8345848587667658367">Vous pouvez maintenant afficher les photos, les notifications, les applications et les contenus multimédias récents de votre téléphone</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
@@ -8039,6 +8045,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8549316893834449916">Vous utiliserez votre compte Google pour vous connecter à votre Chromebook. Il s'agit du même compte que vous utilisez pour Gmail, Disque, YouTube et d'autres produits.</translation>
 <translation id="8551388862522347954">Licences</translation>
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>
+<translation id="8552102814346875916">Enregistrer dans la liste « Toujours garder ces sites actifs »</translation>
 <translation id="8553342806078037065">Gérer d'autres personnes</translation>
 <translation id="8554899698005018844">Aucune langue</translation>
 <translation id="855604308879080518">Laissez les applications Android accéder aux appareils USB sur ce Chromebook. Une autorisation sera demandée chaque fois que vous brancherez un appareil USB. Des autorisations supplémentaires seront demandées pour chaque application Android.</translation>

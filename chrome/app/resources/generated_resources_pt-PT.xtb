@@ -1517,6 +1517,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2352810082280059586">As notas do ecrã de bloqueio são automaticamente guardadas na aplicação <ph name="LOCK_SCREEN_APP_NAME" />. A nota mais recente permanece no ecrã de bloqueio.</translation>
 <translation id="2353297238722298836">Câmara e microfone permitidos</translation>
 <translation id="2355314311311231464">A Administração de contas falhou porque não foi possível obter os detalhes da sua conta. Tente novamente. Código de erro: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opções de poupança de energia</translation>
 <translation id="2355604387869345912">Ativar Ligação (à Internet) via telemóvel instantânea</translation>
 <translation id="2356070529366658676">Perguntar</translation>
 <translation id="2357330829548294574">Remover <ph name="USER_NAME" /></translation>
@@ -5652,6 +5653,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6295855836753816081">A guardar...</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6298962879096096191">Utilizar o Google Play para instalar aplicações para Android</translation>
+<translation id="6300125580697461004">Enviar feedback sobre a poupança de energia</translation>
 <translation id="6300177430812514606">Sem autorização para concluir o envio ou a receção de dados</translation>
 <translation id="630065524203833229">&amp;Sair</translation>
 <translation id="6300718114348072351">Não foi possível configurar automaticamente a <ph name="PRINTER_NAME" />. Especifique detalhes avançados da impressora. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
@@ -5852,6 +5854,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6494327278868541139">Mostrar detalhes de proteção melhorada</translation>
 <translation id="6494445798847293442">Não é uma autoridade de certificação</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Estes dados têm conteúdo sensível ou perigoso.}=1{Este ficheiro tem conteúdo sensível ou perigoso.}other{Estes ficheiros têm conteúdo sensível ou perigoso.}}</translation>
+<translation id="6497548114956205206">Saber mais sobre a poupança de energia</translation>
 <translation id="6497784818439587832">Altere o tamanho da visualização para diminuir ou aumentar o tamanho dos itens no ecrã</translation>
 <translation id="6497789971060331894">Deslocamento inverso do rato</translation>
 <translation id="6498249116389603658">&amp;Todos os seus idiomas</translation>
@@ -6902,6 +6905,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7495778526395737099">Esqueceu-se da sua palavra-passe antiga?</translation>
 <translation id="7497981768003291373">Não existem registos de textos WebRTC capturados recentemente.</translation>
 <translation id="7501957181231305652">ou</translation>
+<translation id="7502220299952823578">Adicionar à lista "manter sempre estes sites ativos"</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503985202154027481">É mantido um registo da sua visita a este site na sua chave de segurança.</translation>
 <translation id="750509436279396091">Abrir a pasta de transferências</translation>
@@ -7410,6 +7414,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7955177647836564772">Se o Smart Lock estiver ativado e o telemóvel estiver desbloqueado, não precisa de introduzir uma palavra-passe ou um PIN</translation>
 <translation id="7956373551960864128">As suas impressoras guardadas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o respetivo número de série ou ID do recurso</translation>
+<translation id="7957186326898555886">Enviar feedback sobre a Poupança de memória</translation>
 <translation id="7959074893852789871">O ficheiro continha vários certificados, sendo que alguns deles não foram importados:</translation>
 <translation id="7959665254555683862">Novo &amp;separador de navegação anónima</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -7830,6 +7835,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8340547030807793004">Mais ações para <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Reveja <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> que enviou recentemente muitas notificações}other{Reveja <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que enviaram recentemente muitas notificações}}</translation>
 <translation id="8342221978608739536">Não tentei</translation>
+<translation id="8342399870062010251">Saber mais sobre a Poupança de memória</translation>
 <translation id="8342861492835240085">Selecionar uma coleção</translation>
 <translation id="8345848587667658367">Agora, pode ver as fotos, o conteúdo multimédia, as notificações e as apps recentes do seu telemóvel</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
@@ -8038,6 +8044,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8549316893834449916">Utilize a sua Conta Google para iniciar sessão no seu Chromebook, isto é, a mesma conta que utiliza para o Gmail, o Drive, o YouTube e muito mais.</translation>
 <translation id="8551388862522347954">Licenças</translation>
 <translation id="8551588720239073785">Definições de data e hora</translation>
+<translation id="8552102814346875916">Guardar na lista "Manter sempre estes sites ativos"</translation>
 <translation id="8553342806078037065">Gerir outras pessoas</translation>
 <translation id="8554899698005018844">Nenhum idioma</translation>
 <translation id="855604308879080518">Permita que as apps Android acedam a dispositivos USB neste Chromebook. A autorização será pedida sempre que ligar um dispositivo USB. As apps Android individuais irão pedir autorizações adicionais.</translation>

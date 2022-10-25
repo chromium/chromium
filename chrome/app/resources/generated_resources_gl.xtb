@@ -1516,6 +1516,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2352810082280059586">As notas da pantalla de bloqueo gárdanse automaticamente na aplicación <ph name="LOCK_SCREEN_APP_NAME" />. A túa nota máis recente permanecerá na pantalla de bloqueo.</translation>
 <translation id="2353297238722298836">Permítense a cámara e o micrófono</translation>
 <translation id="2355314311311231464">Produciuse un erro no abastecemento porque non se puideron recuperar os detalles da túa conta. Téntao de novo. Código de erro: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opcións de aforro de enerxía</translation>
 <translation id="2355604387869345912">Activar Conexión compartida instantánea</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2357330829548294574">Quitar <ph name="USER_NAME" /></translation>
@@ -5646,6 +5647,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6295855836753816081">Gardando...</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6298962879096096191">Utiliza Google Play para instalar aplicacións para Android</translation>
+<translation id="6300125580697461004">Enviar comentarios sobre Aforro de enerxía</translation>
 <translation id="6300177430812514606">Sitios que non poden rematar de enviar ou recibir datos</translation>
 <translation id="630065524203833229">Sa&amp;ír</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> non se puido configurar automaticamente. Indica os detalles avanzados da impresora. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -5846,6 +5848,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6494327278868541139">Mostrar detalles de protección mellorada</translation>
 <translation id="6494445798847293442">Non é unha autoridade de certificación</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Estes datos inclúen contido confidencial ou perigoso}=1{Este ficheiro inclúe contido confidencial ou perigoso}other{Estes ficheiros inclúen contido confidencial ou perigoso}}</translation>
+<translation id="6497548114956205206">Máis información sobre Aforro de enerxía</translation>
 <translation id="6497784818439587832">Cambia o tamaño da pantalla para que os elementos que se mostran nela sexan máis pequenos ou máis grandes</translation>
 <translation id="6497789971060331894">Desprazamento inverso do rato</translation>
 <translation id="6498249116389603658">&amp;Todos os teus idiomas</translation>
@@ -6896,6 +6899,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7495778526395737099">Esqueciches o teu contrasinal anterior?</translation>
 <translation id="7497981768003291373">Non se capturou ningún rexistro WebRTC recentemente.</translation>
 <translation id="7501957181231305652">ou</translation>
+<translation id="7502220299952823578">Engadir á lista Sitios que se manteñen sempre activos</translation>
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>
 <translation id="7503985202154027481">Conservarase un rexistro da túa visita a este sitio na túa chave de seguranza.</translation>
 <translation id="750509436279396091">Abrir cartafol de descargas</translation>
@@ -7404,6 +7408,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7955177647836564772">Se activas Smart Lock e o teu teléfono está desbloqueado, non é necesario que poñas un contrasinal ou PIN</translation>
 <translation id="7956373551960864128">As túas impresoras gardadas</translation>
 <translation id="7957074856830851026">Consultar información do dispositivo, como o seu número de serie ou código de identificación de recurso</translation>
+<translation id="7957186326898555886">Enviar comentarios sobre Aforro de memoria</translation>
 <translation id="7959074893852789871">O ficheiro contiña varios certificados, algúns dos cales non se importaron:</translation>
 <translation id="7959665254555683862">Nova pestana do modo de incógni&amp;to</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -7823,6 +7828,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8340547030807793004">Máis accións para <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisar <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que enviou moitas notificacións recentemente}other{Revisar <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que enviaron moitas notificacións recentemente}}</translation>
 <translation id="8342221978608739536">Non se intentou</translation>
+<translation id="8342399870062010251">Máis información sobre Aforro de memoria</translation>
 <translation id="8342861492835240085">Seleccionar unha colección</translation>
 <translation id="8345848587667658367">Xa podes acceder ás aplicacións, ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
@@ -8031,6 +8037,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8549316893834449916">Usarás a túa Conta de Google (a mesma que utilizas para Gmail, Drive ou YouTube, entre outros servizos) para iniciar sesión no Chromebook.</translation>
 <translation id="8551388862522347954">Licenzas</translation>
 <translation id="8551588720239073785">Configuración de data e hora</translation>
+<translation id="8552102814346875916">Gardar na lista Sitios que se manteñen sempre activos</translation>
 <translation id="8553342806078037065">Xestionar outras persoas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
 <translation id="855604308879080518">Permite que as aplicacións para Android accedan a dispositivos USB neste Chromebook. Pediráseche permiso cada vez que conectes un dispositivo USB. As distintas aplicacións para Android solicitarán outros permisos adicionais.</translation>

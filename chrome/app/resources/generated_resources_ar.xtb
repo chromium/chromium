@@ -1517,6 +1517,7 @@
 <translation id="2352810082280059586">يتم حفظ ملاحظات شاشة القفل تلقائيًا إلى <ph name="LOCK_SCREEN_APP_NAME" />. ستظل أحدث ملاحظة في شاشة القفل.</translation>
 <translation id="2353297238722298836">تم السماح باستخدام الكاميرا والميكروفون</translation>
 <translation id="2355314311311231464">تعذَّرت عملية الإعداد بسبب عدم التمكّن من استرداد تفاصيل حسابك. يُرجى إعادة المحاولة. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
+<translation id="2355477091455974894">خيارات توفير الطاقة</translation>
 <translation id="2355604387869345912">تفعيل ميزة "التوصيل الفوري"</translation>
 <translation id="2356070529366658676">طلب</translation>
 <translation id="2357330829548294574">إزالة <ph name="USER_NAME" /></translation>
@@ -6895,6 +6896,7 @@
 <translation id="7495778526395737099">هل نسيت كلمة المرور القديمة؟</translation>
 <translation id="7497981768003291373">‏ليست لديك أي سجلَّات نصية WebRTC تم التقاطها مؤخرًا.</translation>
 <translation id="7501957181231305652">أو</translation>
+<translation id="7502220299952823578">الإضافة إلى قائمة "إبقاء المواقع الإلكترونية التالية نشطة طوال الوقت"</translation>
 <translation id="7503191893372251637">‏نوع شهادات Netscape</translation>
 <translation id="7503985202154027481">سيتم حفظ سجلّ زيارتك لهذا الموقع الإلكتروني في مفتاح الأمان.</translation>
 <translation id="750509436279396091">فتح مجلد "المحتوى الذي تم تنزيله"</translation>

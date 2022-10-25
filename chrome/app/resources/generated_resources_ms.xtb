@@ -1532,6 +1532,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2352810082280059586">Nota kunci skrin disimpan secara automatik ke <ph name="LOCK_SCREEN_APP_NAME" />. Nota terbaharu anda akan kekal pada kunci skrin.</translation>
 <translation id="2353297238722298836">Kamera dan mikrofon dibenarkan</translation>
 <translation id="2355314311311231464">Peruntukan gagal kerana butiran akaun anda tidak dapat didapatkan kembali. Sila cuba lagi. Kod ralat: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Pilihan penjimat tenaga</translation>
 <translation id="2355604387869345912">Hidupkan Penambatan Segera</translation>
 <translation id="2356070529366658676">Tanya</translation>
 <translation id="2357330829548294574">Alih keluar <ph name="USER_NAME" /></translation>
@@ -5666,6 +5667,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
 <translation id="629730747756840877">Akaun</translation>
 <translation id="6298962879096096191">Gunakan Google Play untuk memasang apl Android</translation>
+<translation id="6300125580697461004">Hantar maklum balas tentang penjimat tenaga</translation>
 <translation id="6300177430812514606">Tidak dibenarkan untuk menyelesaikan penghantaran atau penerimaan data</translation>
 <translation id="630065524203833229">K&amp;eluar</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> tidak dapat dikonfigurasi secara automatik. Sila nyatakan butiran terperinci pencetak. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -5866,6 +5868,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6494327278868541139">Paparkan butiran perlindungan dipertingkatkan</translation>
 <translation id="6494445798847293442">Bukan Pihak Berkuasa Pensijilan</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Data ini mengandungi kandungan sensitif atau berbahaya}=1{Fail ini mengandungi kandungan sensitif atau berbahaya}other{Fail ini mengandungi kandungan sensitif atau berbahaya}}</translation>
+<translation id="6497548114956205206">Ketahui lebih lanjut tentang penjimat tenaga</translation>
 <translation id="6497784818439587832">Tukar saiz paparan untuk menjadikan item pada skrin anda lebih kecil atau lebih besar</translation>
 <translation id="6497789971060331894">Penatalan terbalik tetikus</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa anda</translation>
@@ -6916,6 +6919,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7495778526395737099">Terlupa kata laluan lama anda?</translation>
 <translation id="7497981768003291373">Anda tiada log teks WebRTC yang dirakam baru-baru ini.</translation>
 <translation id="7501957181231305652">atau</translation>
+<translation id="7502220299952823578">Tambahkan pada senarai "sentiasa pastikan laman ini aktif"</translation>
 <translation id="7503191893372251637">Jenis Sijil Netscape</translation>
 <translation id="7503985202154027481">Rekod lawatan anda ke tapak ini akan disimpan pada kunci keselamatan anda.</translation>
 <translation id="750509436279396091">Buka folder muat turun</translation>
@@ -7424,6 +7428,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7955177647836564772">Jika Smart Lock dihidupkan dan telefon anda tidak berkunci, anda tidak perlu memasukkan kata laluan atau PIN</translation>
 <translation id="7956373551960864128">Pencetak yang disimpan</translation>
 <translation id="7957074856830851026">Lihat maklumat peranti, seperti nombor siri atau ID aset peranti</translation>
+<translation id="7957186326898555886">Hantar maklum balas tentang penyimpan memori</translation>
 <translation id="7959074893852789871">Fail mengandungi berbilang sijil, beberapa daripadanya tidak diimport:</translation>
 <translation id="7959665254555683862">&amp;Tab Inkognito Baharu</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
@@ -7844,6 +7849,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8340547030807793004">Lagi tindakan untuk <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Semak <ph name="BEGIN_BOLD" />1 laman<ph name="END_BOLD" /> yang menghantar banyak pemberitahuan baru-baru ini}other{Semak <ph name="BEGIN_BOLD" />{NUM_SITES} laman<ph name="END_BOLD" /> yang menghantar banyak pemberitahuan baru-baru ini}}</translation>
 <translation id="8342221978608739536">Tidak mencuba</translation>
+<translation id="8342399870062010251">Ketahui lebih lanjut tentang penyimpan memori</translation>
 <translation id="8342861492835240085">Pilih koleksi</translation>
 <translation id="8345848587667658367">Kini anda dapat melihat foto, media, pemberitahuan dan apl terbaharu telefon anda</translation>
 <translation id="8347227221149377169">Tugas cetak</translation>
@@ -8053,6 +8059,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8549316893834449916">Anda akan menggunakan Akaun Google anda untuk mendaftar masuk ke Chromebook anda – akaun sama yang anda gunakan untuk Gmail, Drive, YouTube dan banyak lagi.</translation>
 <translation id="8551388862522347954">Lesen</translation>
 <translation id="8551588720239073785">Tetapan tarikh dan masa</translation>
+<translation id="8552102814346875916">Simpan pada senarai "sentiasa pastikan laman ini aktif"</translation>
 <translation id="8553342806078037065">Urus orang lain</translation>
 <translation id="8554899698005018844">Tiada bahasa</translation>
 <translation id="855604308879080518">Benarkan Apl Android mengakses peranti USB pada Chromebook ini. Kebenaran akan diminta setiap kali anda memalamkan peranti USB. Setiap Apl Android akan meminta kebenaran tambahan.</translation>

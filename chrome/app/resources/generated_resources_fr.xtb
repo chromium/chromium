@@ -1518,6 +1518,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2352810082280059586">Les notes rédigées sur l'écran de verrouillage sont automatiquement enregistrées dans <ph name="LOCK_SCREEN_APP_NAME" />. Votre note la plus récente restera sur l'écran de verrouillage.</translation>
 <translation id="2353297238722298836">Caméra et micro autorisés</translation>
 <translation id="2355314311311231464">Échec de la configuration dû à l'impossibilité de récupérer les informations liées à votre compte. Veuillez réessayer. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Options d'économie d'énergie</translation>
 <translation id="2355604387869345912">Activer le partage de connexion instantané</translation>
 <translation id="2356070529366658676">Demander</translation>
 <translation id="2357330829548294574">Supprimer <ph name="USER_NAME" /></translation>
@@ -6904,6 +6905,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7495778526395737099">Vous avez oublié votre ancien mot de passe ?</translation>
 <translation id="7497981768003291373">Aucun journal texte WebRTC n'a été créé récemment.</translation>
 <translation id="7501957181231305652">ou</translation>
+<translation id="7502220299952823578">Ajouter à la liste "Toujours laisser ces sites actifs"</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
 <translation id="7503985202154027481">Une trace de votre visite sur le site sera conservée sur votre clé de sécurité.</translation>
 <translation id="750509436279396091">Ouvrir le dossier des téléchargements</translation>

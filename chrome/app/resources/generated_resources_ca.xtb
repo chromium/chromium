@@ -1517,6 +1517,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2352810082280059586">Les notes de la pantalla de bloqueig es desen automàticament a <ph name="LOCK_SCREEN_APP_NAME" />. La nota més recent romandrà a la pantalla de bloqueig.</translation>
 <translation id="2353297238722298836">La càmera i el micròfon es poden utilitzar</translation>
 <translation id="2355314311311231464">S'ha produït un problema amb el proveïment perquè no s'ha pogut recuperar la informació del compte. Torna-ho a provar. Codi d'error: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opcions d'estalvi d'energia</translation>
 <translation id="2355604387869345912">Activa la compartició de xarxa instantània</translation>
 <translation id="2356070529366658676">Pregunta-ho</translation>
 <translation id="2357330829548294574">Suprimeix <ph name="USER_NAME" /></translation>
@@ -5648,6 +5649,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6295855836753816081">S'està desant…</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6298962879096096191">Utilitza Google Play per instal·lar aplicacions per a Android</translation>
+<translation id="6300125580697461004">Envia suggeriments sobre l'estalvi d'energia</translation>
 <translation id="6300177430812514606">Sense permís per acabar d'enviar o de rebre dades</translation>
 <translation id="630065524203833229">S&amp;urt</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> no s'ha pogut configurar automàticament. Especifica els detalls avançats de la impressora. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -5848,6 +5850,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6494327278868541139">Mostra els detalls de la protecció millorada</translation>
 <translation id="6494445798847293442">No és una entitat emissora de certificats</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Aquestes dades inclouen contingut sensible o perillós}=1{Aquest fitxer inclou contingut sensible o perillós}other{Aquests fitxers inclouen contingut sensible o perillós}}</translation>
+<translation id="6497548114956205206">Més informació sobre l'estalvi d'energia</translation>
 <translation id="6497784818439587832">Canvia la mida de visualització per ampliar o reduir els elements de la pantalla</translation>
 <translation id="6497789971060331894">Desplaçament invers del ratolí</translation>
 <translation id="6498249116389603658">&amp;Tots els vostres idiomes</translation>
@@ -6898,6 +6901,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7495778526395737099">Heu oblidat la contrasenya antiga?</translation>
 <translation id="7497981768003291373">No s'ha capturat cap registre de text de WebRTC recentment.</translation>
 <translation id="7501957181231305652">o</translation>
+<translation id="7502220299952823578">Afegeix a la llista Mantén aquests llocs web sempre actius</translation>
 <translation id="7503191893372251637">Tipus de certificat de Netscape</translation>
 <translation id="7503985202154027481">La clau de seguretat conservarà un registre de la teva visita a aquest lloc web.</translation>
 <translation id="750509436279396091">Obre la carpeta de baixades</translation>
@@ -7406,6 +7410,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7955177647836564772">Si Smart Lock està activat i el telèfon està desbloquejat, no caldrà que introdueixis cap contrasenya ni cap PIN</translation>
 <translation id="7956373551960864128">Les teves impressores desades</translation>
 <translation id="7957074856830851026">Mostra la informació del dispositiu, com ara el número de sèrie o l'identificador de recurs</translation>
+<translation id="7957186326898555886">Envia suggeriments sobre l'estalvi de memòria</translation>
 <translation id="7959074893852789871">El fitxer contenia certificats múltiples, però alguns no s'han importat:</translation>
 <translation id="7959665254555683862">Pestanya &amp;d'incògnit nova</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -7827,6 +7832,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8340547030807793004">Més accions per a <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 lloc web<ph name="END_BOLD" /> que ha enviat moltes notificacions recentment}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} llocs web<ph name="END_BOLD" /> que han enviat moltes notificacions recentment}}</translation>
 <translation id="8342221978608739536">No ho he provat</translation>
+<translation id="8342399870062010251">Més informació sobre l'estalvi de memòria</translation>
 <translation id="8342861492835240085">Selecciona una col·lecció</translation>
 <translation id="8345848587667658367">Ara pots consultar les aplicacions, les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
@@ -8035,6 +8041,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8549316893834449916">Utilitzaràs el teu Compte de Google per iniciar la sessió al Chromebook. És el mateix compte que fas servir per a Gmail, Drive i YouTube, entre d'altres.</translation>
 <translation id="8551388862522347954">Llicències</translation>
 <translation id="8551588720239073785">Configuració de data i hora</translation>
+<translation id="8552102814346875916">Desa a la llista Mantén aquests llocs web sempre actius</translation>
 <translation id="8553342806078037065">Gestiona altres usuaris</translation>
 <translation id="8554899698005018844">Cap idioma</translation>
 <translation id="855604308879080518">Permet que les aplicacions d'Android accedeixin als dispositius USB en aquest Chromebook. El permís se sol·licitarà cada cop que endollis un dispositiu USB. Cada aplicació d'Android demanarà permisos addicionals.</translation>

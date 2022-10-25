@@ -1526,6 +1526,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2352810082280059586">Notater på låseskjermen lagres automatisk i <ph name="LOCK_SCREEN_APP_NAME" />. Det nyeste notatet ditt forblir på låseskjermen.</translation>
 <translation id="2353297238722298836">Kameraet og mikrofonen er tillatt</translation>
 <translation id="2355314311311231464">Klargjøringen mislyktes fordi kontoopplysningene dine ikke kunne hentes. Prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Alternativer for strømsparing</translation>
 <translation id="2355604387869345912">Slå på umiddelbar internettdeling</translation>
 <translation id="2356070529366658676">Spør</translation>
 <translation id="2357330829548294574">Fjern <ph name="USER_NAME" /></translation>
@@ -5656,6 +5657,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6295855836753816081">Lagrer …</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6298962879096096191">Bruk Google Play til å installere Android-apper</translation>
+<translation id="6300125580697461004">Send tilbakemelding om strømsparing</translation>
 <translation id="6300177430812514606">Nettsteder som ikke har lov til å fullføre sending eller mottak av data</translation>
 <translation id="630065524203833229">&amp;Avslutt</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kunne ikke konfigureres automatisk. Angi avanserte detaljer om skriveren. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -5856,6 +5858,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6494327278868541139">Vis detaljer om økt beskyttelse</translation>
 <translation id="6494445798847293442">Ikke en sertifiseringsinstans</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Disse dataene har sensitivt eller farlig innhold}=1{Denne filen har sensitivt eller farlig innhold}other{Disse filene har sensitivt eller farlig innhold}}</translation>
+<translation id="6497548114956205206">Finn ut mer om strømsparing</translation>
 <translation id="6497784818439587832">Endre skjermstørrelsen for å gjøre elementer på skjermen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulling med musen</translation>
 <translation id="6498249116389603658">&amp;Alle språkene dine</translation>
@@ -6906,6 +6909,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7495778526395737099">Har du glemt det gamle passordet?</translation>
 <translation id="7497981768003291373">Du har ingen nylig lagrede WebRTC-tekstlogger.</translation>
 <translation id="7501957181231305652">eller</translation>
+<translation id="7502220299952823578">Legg til på «La disse nettstedene alltid være aktive»-listen</translation>
 <translation id="7503191893372251637">Netscape sertifikattype</translation>
 <translation id="7503985202154027481">Besøket ditt på dette nettstedet registreres på sikkerhetsnøkkelen.</translation>
 <translation id="750509436279396091">Åpne nedlastingsmappen</translation>
@@ -7414,6 +7418,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7955177647836564772">Hvis Smart Lock er slått på og telefonen låses opp, trenger du ikke å oppgi passord eller PIN-kode</translation>
 <translation id="7956373551960864128">Dine lagrede skrivere</translation>
 <translation id="7957074856830851026">Se informasjon om enheten, som for eksempel serienummeret eller element-ID-en</translation>
+<translation id="7957186326898555886">Send tilbakemelding om minnesparing</translation>
 <translation id="7959074893852789871">Filen inneholdt flere sertifikater, og enkelte av dem ble ikke importert:</translation>
 <translation id="7959665254555683862">Ny inkognito&amp;fane</translation>
 <translation id="7961015016161918242">Aldri</translation>
@@ -7834,6 +7839,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Gjennomgå <ph name="BEGIN_BOLD" />1 nettsted<ph name="END_BOLD" /> som nylig har sendt mange varsler}other{Gjennomgå <ph name="BEGIN_BOLD" />{NUM_SITES} nettsteder<ph name="END_BOLD" /> som nylig har sendt mange varsler}}</translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>
+<translation id="8342399870062010251">Finn ut mer om minnesparing</translation>
 <translation id="8342861492835240085">Velg en samling</translation>
 <translation id="8345848587667658367">Nå kan du se telefonens nylige bilder, medier, varsler og apper</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
@@ -8042,6 +8048,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8549316893834449916">Du bruker Google-kontoen din til å logge på Chromebook – den samme kontoen som du bruker for Gmail, Disk, YouTube med mer.</translation>
 <translation id="8551388862522347954">Lisenser</translation>
 <translation id="8551588720239073785">Innstillinger for dato og klokkeslett</translation>
+<translation id="8552102814346875916">Lagre på «La disse nettstedene alltid være aktive»-listen</translation>
 <translation id="8553342806078037065">Administrer andre</translation>
 <translation id="8554899698005018844">Ingen språk</translation>
 <translation id="855604308879080518">Gi Android-apper tilgang til USB-enheter på denne Chromebooken. Du blir spurt om tillatelse hver gang du kobler til en USB-enhet. Individuelle Android-apper kommer til å spørre om tilleggstillatelser.</translation>

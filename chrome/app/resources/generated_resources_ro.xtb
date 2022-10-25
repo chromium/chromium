@@ -1518,6 +1518,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2352810082280059586">Notele de pe ecranul de blocare sunt salvate automat în <ph name="LOCK_SCREEN_APP_NAME" />. Cea mai recentă notă va rămâne pe ecranul de blocare.</translation>
 <translation id="2353297238722298836">Camera foto și microfonul sunt permise</translation>
 <translation id="2355314311311231464">Provizionarea nu a reușit, deoarece detaliile contului nu au putut fi preluate. Încearcă din nou. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opțiuni pentru economisirea energiei</translation>
 <translation id="2355604387869345912">Activează Tetheringul instantaneu</translation>
 <translation id="2356070529366658676">Întreabă-mă</translation>
 <translation id="2357330829548294574">Șterge utilizatorul <ph name="USER_NAME" /></translation>
@@ -5651,6 +5652,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6295855836753816081">Se salvează...</translation>
 <translation id="629730747756840877">Cont</translation>
 <translation id="6298962879096096191">Folosește Google Play pentru a instala aplicații Android</translation>
+<translation id="6300125580697461004">Trimite feedback despre Economisirea energiei</translation>
 <translation id="6300177430812514606">Nu au permisiunea de a finaliza trimiterea sau primirea datelor</translation>
 <translation id="630065524203833229">&amp;Ieși</translation>
 <translation id="6300718114348072351">Imprimanta <ph name="PRINTER_NAME" /> nu a putut fi configurată automat. Indică detaliile de printare avansate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -5851,6 +5853,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6494327278868541139">Afișează detalii despre protecția îmbunătățită</translation>
 <translation id="6494445798847293442">Nu este o Autoritate de certificare</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Aceste date includ conținut sensibil sau periculos}=1{Acest fișier include conținut sensibil sau periculos}few{Aceste fișiere includ conținut sensibil sau periculos}other{Aceste fișiere includ conținut sensibil sau periculos}}</translation>
+<translation id="6497548114956205206">Află mai multe despre Economisirea energiei</translation>
 <translation id="6497784818439587832">Modifică dimensiunea de afișare pentru a micșora sau a mări elementele de pe ecran</translation>
 <translation id="6497789971060331894">Derularea inversă cu mouse-ul</translation>
 <translation id="6498249116389603658">&amp;Toate limbile tale</translation>
@@ -6903,6 +6906,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7495778526395737099">Ai uitat parola anterioară?</translation>
 <translation id="7497981768003291373">Nu ai jurnale text WebRTC înregistrate recent.</translation>
 <translation id="7501957181231305652">sau</translation>
+<translation id="7502220299952823578">Adaugă în lista Menține întotdeauna active aceste site-uri</translation>
 <translation id="7503191893372251637">Tip de certificat Netscape</translation>
 <translation id="7503985202154027481">O înregistrare a vizitei site-ului va fi păstrată pe cheia ta de securitate.</translation>
 <translation id="750509436279396091">Deschideți dosarul de descărcări</translation>
@@ -7411,6 +7415,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7955177647836564772">Dacă Smart Lock este activat și telefonul este deblocat, nu este nevoie să introduci parola sau codul PIN</translation>
 <translation id="7956373551960864128">Imprimante salvate</translation>
 <translation id="7957074856830851026">Vezi informații despre dispozitiv, cum ar fi numărul de serie sau ID-ul de material</translation>
+<translation id="7957186326898555886">Trimite feedback despre Economisirea memoriei</translation>
 <translation id="7959074893852789871">Fișierul a conținut mai multe certificate, unele dintre acestea nefiind importate:</translation>
 <translation id="7959665254555683862">Filă incognito &amp;nouă</translation>
 <translation id="7961015016161918242">Niciodată</translation>
@@ -7831,6 +7836,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8340547030807793004">Mai multe acțiuni pentru <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examinează <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> care a trimis recent multe notificări}few{Examinează <ph name="BEGIN_BOLD" />{NUM_SITES} site-uri<ph name="END_BOLD" /> care au trimis recent multe notificări}other{Examinează <ph name="BEGIN_BOLD" />{NUM_SITES} de site-uri<ph name="END_BOLD" /> care au trimis recent multe notificări}}</translation>
 <translation id="8342221978608739536">Nu am încercat</translation>
+<translation id="8342399870062010251">Află mai multe despre Economisirea memoriei</translation>
 <translation id="8342861492835240085">Selectează o colecție</translation>
 <translation id="8345848587667658367">Acum poți vedea fotografiile, conținutul media, notificările și aplicațiile recente ale telefonului</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
@@ -8039,6 +8045,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8549316893834449916">Vei folosi Contul Google ca să te conectezi la Chromebook; e același cont pe care îl folosești pentru Gmail, Drive, YouTube și altele.</translation>
 <translation id="8551388862522347954">Licențe</translation>
 <translation id="8551588720239073785">Setări de dată și oră</translation>
+<translation id="8552102814346875916">Adaugă în lista Menține întotdeauna active aceste site-uri</translation>
 <translation id="8553342806078037065">Gestionează alte persoane</translation>
 <translation id="8554899698005018844">Nicio limbă</translation>
 <translation id="855604308879080518">Permite accesul aplicațiilor pentru Android la dispozitivele USB conectate la acest Chromebook. Permisiunea va fi solicitată de fiecare dată când conectezi un dispozitiv USB. Aplicațiile pentru Android individuale vor solicita permisiuni suplimentare.</translation>

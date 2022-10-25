@@ -1533,6 +1533,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2352810082280059586">Noter på låseskærmen gemmes automatisk i <ph name="LOCK_SCREEN_APP_NAME" />. Din seneste note forbliver på låseskærmen.</translation>
 <translation id="2353297238722298836">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="2355314311311231464">Provisioneringen mislykkedes, fordi dine kontooplysninger ikke kunne hentes. Prøv igen. Fejlkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Valgmuligheder for energisparefunktion</translation>
 <translation id="2355604387869345912">Aktivér Automatisk netdeling</translation>
 <translation id="2356070529366658676">Spørg</translation>
 <translation id="2357330829548294574">Fjern <ph name="USER_NAME" /></translation>
@@ -5667,6 +5668,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6295855836753816081">Gemmer...</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
+<translation id="6300125580697461004">Send feedback om energisparefunktionen</translation>
 <translation id="6300177430812514606">Har ikke tilladelse til at sende eller modtage data</translation>
 <translation id="630065524203833229">Af&amp;slut</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kunne ikke konfigureres automatisk. Angiv avancerede indstillinger for printeren. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -5867,6 +5869,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6494327278868541139">Vis oplysninger om forbedret beskyttelse</translation>
 <translation id="6494445798847293442">Ikke et nøglecenter</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Disse data har følsomt eller farligt indhold}=1{Denne fil har følsomt eller farligt indhold}one{Denne fil har følsomt eller farligt indhold}other{Disse filer har følsomt eller farligt indhold}}</translation>
+<translation id="6497548114956205206">Få flere oplysninger om energisparefunktionen</translation>
 <translation id="6497784818439587832">Skift visningsstørrelse for at gøre elementer på skærmen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulning på mus</translation>
 <translation id="6498249116389603658">&amp;Alle dine sprog</translation>
@@ -6919,6 +6922,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7495778526395737099">Har du glemt din gamle adgangskode?</translation>
 <translation id="7497981768003291373">Du har ingen nyligt registrerede WebRTC-tekstlogfiler.</translation>
 <translation id="7501957181231305652">eller</translation>
+<translation id="7502220299952823578">Føj til listen "Sørg for, at disse websites altid er aktive"</translation>
 <translation id="7503191893372251637">Netscape-certifikatstype</translation>
 <translation id="7503985202154027481">En registrering af dit besøg på dette website gemmes på din sikkerhedsnøgle.</translation>
 <translation id="750509436279396091">Åbn mappen med downloads</translation>
@@ -7426,6 +7430,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7955177647836564772">Hvis Smart Lock er aktiveret, og din telefon er låst op, behøver du ikke at angive en adgangskode eller pinkode</translation>
 <translation id="7956373551960864128">Dine gemte printere</translation>
 <translation id="7957074856830851026">Se enhedsoplysninger som f.eks. serienummer eller aktiv-id</translation>
+<translation id="7957186326898555886">Send feedback om hukommelsessparefunktionen</translation>
 <translation id="7959074893852789871">Filen indeholdt flere certifikater, hvoraf nogle af dem ikke blev importeret:</translation>
 <translation id="7959665254555683862">Ny inkognitofane</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -7846,6 +7851,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Gennemgå <ph name="BEGIN_BOLD" />1 website<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}one{Gennemgå <ph name="BEGIN_BOLD" />{NUM_SITES} website<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}other{Gennemgå <ph name="BEGIN_BOLD" />{NUM_SITES} websites<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}}</translation>
 <translation id="8342221978608739536">Jeg prøvede ikke</translation>
+<translation id="8342399870062010251">Få flere oplysninger om hukommelsessparefunktionen</translation>
 <translation id="8342861492835240085">Vælg en samling</translation>
 <translation id="8345848587667658367">Du kan nu se din telefons seneste billeder, medier, notifikationer og apps</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
@@ -8054,6 +8060,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8549316893834449916">Du skal bruge din Google-konto til at logge ind på din Chromebook – den samme konto, som du bruger i Gmail, i Drev, på YouTube m.m.</translation>
 <translation id="8551388862522347954">Licenser</translation>
 <translation id="8551588720239073785">Indstillinger for dato og tid</translation>
+<translation id="8552102814346875916">Gem på listen "Sørg for, at disse websites altid er aktive"</translation>
 <translation id="8553342806078037065">Administrer andre personer</translation>
 <translation id="8554899698005018844">Intet sprog</translation>
 <translation id="855604308879080518">Giv Android-apps adgangstilladelse til USB-enheder på denne Chromebook. Der anmodes om tilladelsen, hver gang du tilslutter en USB-enhed. Individuelle Android-apps anmoder om yderligere tilladelser.</translation>

@@ -1532,6 +1532,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2352810082280059586">Catatan layar kunci disimpan otomatis ke <ph name="LOCK_SCREEN_APP_NAME" />. Catatan terbaru akan tetap berada di layar kunci.</translation>
 <translation id="2353297238722298836">Kamera dan mikrofon diizinkan</translation>
 <translation id="2355314311311231464">Penyediaan gagal karena detail akun Anda tidak dapat diambil. Coba lagi. Kode error: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opsi penghemat energi</translation>
 <translation id="2355604387869345912">Nyalakan Tethering Instan</translation>
 <translation id="2356070529366658676">Tanya</translation>
 <translation id="2357330829548294574">Hapus <ph name="USER_NAME" /></translation>
@@ -5666,6 +5667,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
 <translation id="629730747756840877">Akun</translation>
 <translation id="6298962879096096191">Menggunakan Google Play untuk memasang aplikasi Android</translation>
+<translation id="6300125580697461004">Kirim masukan tentang penghemat energi</translation>
 <translation id="6300177430812514606">Tidak diizinkan menyelesaikan pengiriman atau penerimaan data</translation>
 <translation id="630065524203833229">K&amp;eluar</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> tidak dapat dikonfigurasi secara otomatis. Harap tentukan detail printer lanjutan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -5866,6 +5868,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6494327278868541139">Tampilkan detail perlindungan yang ditingkatkan</translation>
 <translation id="6494445798847293442">Bukan Otoritas Sertifikasi</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Data ini berisi konten sensitif atau berbahaya}=1{File ini berisi konten sensitif atau berbahaya}other{File ini berisi konten sensitif atau berbahaya}}</translation>
+<translation id="6497548114956205206">Pelajari penghemat energi lebih lanjut</translation>
 <translation id="6497784818439587832">Ubah ukuran layar untuk membuat item di layar menjadi lebih besar atau lebih kecil</translation>
 <translation id="6497789971060331894">Scroll terbalik mouse</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa Anda</translation>
@@ -6916,6 +6919,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7495778526395737099">Lupa password lama?</translation>
 <translation id="7497981768003291373">Anda tidak memiliki log teks WebRTC yang direkam baru-baru ini.</translation>
 <translation id="7501957181231305652">atau</translation>
+<translation id="7502220299952823578">Tambahkan ke daftar "selalu aktifkan situs ini"</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">Data kunjungan Anda ke situs ini akan disimpan di kunci keamanan.</translation>
 <translation id="750509436279396091">Buka folder download</translation>
@@ -7424,6 +7428,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7955177647836564772">Jika Smart Lock diaktifkan dan ponsel tidak terkunci, Anda tidak perlu memasukkan sandi atau PIN</translation>
 <translation id="7956373551960864128">Printer yang Anda simpan</translation>
 <translation id="7957074856830851026">Melihat informasi perangkat, seperti nomor seri atau ID aset</translation>
+<translation id="7957186326898555886">Kirim masukan tentang penghemat memori</translation>
 <translation id="7959074893852789871">File berisi beberapa sertifikat, beberapa di antaranya tidak diimpor.</translation>
 <translation id="7959665254555683862">&amp;Tab Samaran Baru</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
@@ -7844,6 +7849,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8340547030807793004">Tindakan lainnya untuk <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Tinjau <ph name="BEGIN_BOLD" />1 situs<ph name="END_BOLD" /> yang baru-baru ini mengirim banyak notifikasi}other{Tinjau <ph name="BEGIN_BOLD" />{NUM_SITES} situs<ph name="END_BOLD" /> yang baru-baru ini mengirim banyak notifikasi}}</translation>
 <translation id="8342221978608739536">Tidak mencoba</translation>
+<translation id="8342399870062010251">Pelajari penghemat memori lebih lanjut</translation>
 <translation id="8342861492835240085">Pilih koleksi</translation>
 <translation id="8345848587667658367">Anda kini dapat melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="8347227221149377169">Pekerjaan cetak</translation>
@@ -8052,6 +8058,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8549316893834449916">Anda akan menggunakan Akun Google Anda untuk login ke Chromebook. Akun tersebut sama dengan yang digunakan untuk Gmail, Drive, YouTube, dan lainnya.</translation>
 <translation id="8551388862522347954">Lisensi</translation>
 <translation id="8551588720239073785">Setelan tanggal dan waktu</translation>
+<translation id="8552102814346875916">Simpan ke daftar "selalu aktifkan situs ini"</translation>
 <translation id="8553342806078037065">Kelola orang lain</translation>
 <translation id="8554899698005018844">Tidak ada bahasa</translation>
 <translation id="855604308879080518">Mengizinkan aplikasi Android mengakses perangkat USB di Chromebook ini. Anda akan dimintai izin setiap kali mencolokkan perangkat USB. Setiap aplikasi Android akan meminta izin tambahan.</translation>

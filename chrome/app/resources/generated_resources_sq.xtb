@@ -1515,6 +1515,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2352810082280059586">Shënimet në ekranin e kyçjes ruhen automatikisht te <ph name="LOCK_SCREEN_APP_NAME" />. Shënimi yt më i fundit do të qëndrojë në ekranin e kyçjes.</translation>
 <translation id="2353297238722298836">Kamera dhe mikrofoni lejohen</translation>
 <translation id="2355314311311231464">Përgatitja dështoi sepse detajet e llogarisë sate nuk mund të merreshin. Provo përsëri. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opsionet e kursyesit të energjisë</translation>
 <translation id="2355604387869345912">Aktivizo "Ndarjen e internetit në çast"</translation>
 <translation id="2356070529366658676">Pyet</translation>
 <translation id="2357330829548294574">Hiqe <ph name="USER_NAME" /></translation>
@@ -5648,6 +5649,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6295855836753816081">Po ruan...</translation>
 <translation id="629730747756840877">Llogaria</translation>
 <translation id="6298962879096096191">Përdor Google Play për të instaluar aplikacionet e Android</translation>
+<translation id="6300125580697461004">Dërgo komente për kursyesin e energjisë</translation>
 <translation id="6300177430812514606">Nuk lejohen të përfundojnë dërgimin ose marrjen e të dhënave</translation>
 <translation id="630065524203833229">D&amp;il</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> nuk mund të konfigurohej automatikisht. Përcakto detajet e përparuara të printerit. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -5848,6 +5850,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6494327278868541139">Shfaq detajet e mbrojtjes së përforcuar</translation>
 <translation id="6494445798847293442">Nuk është një autoritet certifikimi</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Këto të dhëna kanë përmbajtje delikate ose të rrezikshme}=1{Ky skedar ka përmbajtje delikate ose të rrezikshme}other{Këta skedarë kanë përmbajtje delikate ose të rrezikshme}}</translation>
+<translation id="6497548114956205206">Mëso më shumë për kursyesin e energjisë</translation>
 <translation id="6497784818439587832">Ndrysho madhësinë e ekranit për t'i bërë më të vegjël ose më të mëdhenj artikujt në ekran</translation>
 <translation id="6497789971060331894">Lëvizja e kundërt e miut</translation>
 <translation id="6498249116389603658">&amp;Të gjitha gjuhët e tua</translation>
@@ -6898,6 +6901,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7495778526395737099">Harrove fjalëkalimin e vjetër?</translation>
 <translation id="7497981768003291373">Nuk ke evidenca teksti WebRTC të regjistruara së fundi.</translation>
 <translation id="7501957181231305652">ose</translation>
+<translation id="7502220299952823578">Shto te lista "Mbaji gjithmonë aktive këto sajte"</translation>
 <translation id="7503191893372251637">Lloji i certifikatës Netscape</translation>
 <translation id="7503985202154027481">Një regjistrim i vizitës sate në këtë sajt do të ruhet në çelësin tënd të sigurisë.</translation>
 <translation id="750509436279396091">Hap dosjen e shkarkimeve</translation>
@@ -7405,6 +7409,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7955177647836564772">Nëse Smart Lock është aktivizuar dhe telefoni yt është i shkyçur, nuk është e nevojshme të futësh një fjalëkalim ose kod PIN</translation>
 <translation id="7956373551960864128">Printerët e tu të ruajtur</translation>
 <translation id="7957074856830851026">Të shikojë informacionet e pajisjes, të tilla si numri i serisë ose ID-ja e punës</translation>
+<translation id="7957186326898555886">Dërgo komente për kursyesin e energjisë</translation>
 <translation id="7959074893852789871">Skedari përmbante shumë certifikata, disa prej të cilave nuk u importuan:</translation>
 <translation id="7959665254555683862">Skedë &amp;e re "e fshehtë"</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
@@ -7824,6 +7829,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8340547030807793004">Më shumë veprime për <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Rishiko <ph name="BEGIN_BOLD" />1 sajt<ph name="END_BOLD" /> që ka dërguar së fundi shumë njoftime}other{Rishiko <ph name="BEGIN_BOLD" />{NUM_SITES} sajte<ph name="END_BOLD" /> që kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="8342221978608739536">Nuk e provova</translation>
+<translation id="8342399870062010251">Mëso më shumë për kursyesin e energjisë</translation>
 <translation id="8342861492835240085">Zgjidh një koleksion</translation>
 <translation id="8345848587667658367">Tani mund të shikosh aplikacionet, njoftimet, mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="8347227221149377169">Printimet</translation>
@@ -8032,6 +8038,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8549316893834449916">Për t'u identifikuar në pajisjen tënde Chromebook do të përdorësh "Llogarinë tënde të Google", të njëjtën llogari që përdor për Gmail, "Diskun", YouTube etj.</translation>
 <translation id="8551388862522347954">Licencat</translation>
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
+<translation id="8552102814346875916">Ruaj te lista "Mbaji gjithmonë aktive këto sajte"</translation>
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
 <translation id="8554899698005018844">Nuk ka gjuhë</translation>
 <translation id="855604308879080518">Lejo që aplikacionet për Android të kenë qasje në pajisjet USB në këtë Chromebook. Do të kërkohet leje sa herë që lidh një pajisje USB. Aplikacionet individuale për Android do të kërkojnë leje shtesë.</translation>

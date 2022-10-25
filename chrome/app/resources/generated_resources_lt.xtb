@@ -1535,6 +1535,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2352810082280059586">Užrakinimo ekrano pastabos automatiškai išsaugomos „<ph name="LOCK_SCREEN_APP_NAME" />“. Naujausia pastaba liks užrakinimo ekrane.</translation>
 <translation id="2353297238722298836">Fotoaparatas ir mikrofonas leidžiami</translation>
 <translation id="2355314311311231464">Nepavyko aprūpinti, nes negalima gauti išsamios paskyros informacijos. Bandykite dar kartą. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Energijos taupymo priemonės parinktys</translation>
 <translation id="2355604387869345912">Įjungti momentinio įrenginio kaip modemo naudojimą</translation>
 <translation id="2356070529366658676">Paklausti</translation>
 <translation id="2357330829548294574">Pašalinti <ph name="USER_NAME" /></translation>
@@ -5670,6 +5671,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6295855836753816081">Išsaugoma...</translation>
 <translation id="629730747756840877">Paskyra</translation>
 <translation id="6298962879096096191">Naudoti „Google Play“ diegiant „Android“ programas</translation>
+<translation id="6300125580697461004">Siųsti atsiliepimą apie Energijos taupymo priemonę</translation>
 <translation id="6300177430812514606">Neleidžiama baigti siųsti ar gauti duomenų</translation>
 <translation id="630065524203833229">I&amp;šeiti</translation>
 <translation id="6300718114348072351">„<ph name="PRINTER_NAME" />“ nepavyko sukonfigūruoti automatiškai. Nurodykite išplėstinius spausdintuvo duomenis. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -5870,6 +5872,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6494327278868541139">Rodyti išsamią informaciją apie sustiprintą apsaugą</translation>
 <translation id="6494445798847293442">Ne sertifikavimo institucija</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Šiuose duomenyse yra neskelbtino arba pavojingo turinio}=1{Šiame faile yra neskelbtino arba pavojingo turinio}one{Šiuose failuose yra neskelbtino arba pavojingo turinio}few{Šiuose failuose yra neskelbtino arba pavojingo turinio}many{Šiuose failuose yra neskelbtino arba pavojingo turinio}other{Šiuose failuose yra neskelbtino arba pavojingo turinio}}</translation>
+<translation id="6497548114956205206">Sužinokite daugiau apie Energijos taupymo priemonę</translation>
 <translation id="6497784818439587832">Pakeiskite ekrano dydį, kad sumažintumėte ar padidintumėte ekrane rodomus elementus</translation>
 <translation id="6497789971060331894">Atvirkštinis slinkimas pele</translation>
 <translation id="6498249116389603658">&amp;Visos jūsų kalbos</translation>
@@ -6926,6 +6929,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7495778526395737099">Pamiršote seną slaptažodį?</translation>
 <translation id="7497981768003291373">Neturite neseniai užfiksuotų „WebRTC“ teksto žurnalų.</translation>
 <translation id="7501957181231305652">arba</translation>
+<translation id="7502220299952823578">Pridėti prie sąrašo „Visada suaktyvinti šias svetaines“</translation>
 <translation id="7503191893372251637">„Netscape“ sertifikato tipas</translation>
 <translation id="7503985202154027481">Saugos rakte bus saugomas įrašas apie apsilankymą šioje svetainėje.</translation>
 <translation id="750509436279396091">Atidaryti atsisiuntimų aplanką</translation>
@@ -7434,6 +7438,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7955177647836564772">Jei „Smart Lock“ įjungta ir telefonas atrakintas, slaptažodžio ar PIN kodo įvesti nereikia</translation>
 <translation id="7956373551960864128">Išsaugoti spausdintuvai</translation>
 <translation id="7957074856830851026">Žr. įrenginio informaciją, pvz., jo serijos numerį ar ištekliaus ID</translation>
+<translation id="7957186326898555886">Siųsti atsiliepimą apie Atminties taupymo priemonę</translation>
 <translation id="7959074893852789871">Faile buvo keli sertifikatai; kai kurie iš jų nebuvo importuoti:</translation>
 <translation id="7959665254555683862">Naujas inkognito &amp;skirtukas</translation>
 <translation id="7961015016161918242">Niekada</translation>
@@ -7854,6 +7859,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8340547030807793004">Daugiau veiksmų (<ph name="DEVICE" />)</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Peržiūrėkite <ph name="BEGIN_BOLD" />1 svetainę<ph name="END_BOLD" />, kuri neseniai išsiuntė daug pranešimų}one{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetainę<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}few{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetaines<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}many{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetainės<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}other{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetainių<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}}</translation>
 <translation id="8342221978608739536">Nebandžiau</translation>
+<translation id="8342399870062010251">Sužinokite daugiau apie Atminties taupymo priemonę</translation>
 <translation id="8342861492835240085">Pasirinkti kolekciją</translation>
 <translation id="8345848587667658367">Dabar galite peržiūrėti naujausias telefono nuotraukas, mediją, pranešimus ir programas</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
@@ -8062,6 +8068,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8549316893834449916">Prie „Chromebook“ prisijunkite naudodami „Google“ paskyrą – tą pačią, kurią naudodami jungiatės prie „Gmail“, Disko, „YouTube“ ir kitur.</translation>
 <translation id="8551388862522347954">Licencijos</translation>
 <translation id="8551588720239073785">Datos ir laiko nustatymai</translation>
+<translation id="8552102814346875916">Išsaugoti sąraše „Visada suaktyvinti šias svetaines“</translation>
 <translation id="8553342806078037065">Tvarkyti kitus žmones</translation>
 <translation id="8554899698005018844">Kalbos nėra</translation>
 <translation id="855604308879080518">Leiskite „Android“ programoms pasiekti USB įrenginius šiame „Chromebook“. Leidimo užklausa bus pateikta kaskart prijungus USB įrenginį. Atskiros „Android“ programos prašys papildomų leidimų.</translation>

@@ -1531,6 +1531,7 @@
 <translation id="2352810082280059586">लॉक स्‍क्रीन नोट <ph name="LOCK_SCREEN_APP_NAME" /> वर आपोआप सेव्ह केल्या जातात. तुमची सर्वात अलीकडील नोट लॉक स्‍क्रीनवर राहील.</translation>
 <translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
 <translation id="2355314311311231464">तुमच्या खात्याचे तपशील मिळवता न आल्याने तरतूद करता आली नाही. कृपया पुन्हा प्रयत्न करा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">एनर्जी सेव्हर पर्याय</translation>
 <translation id="2355604387869345912">इंस्टंट टेदरिंग सुरू करा</translation>
 <translation id="2356070529366658676">विचारा</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> काढा</translation>
@@ -5664,6 +5665,7 @@
 <translation id="6295855836753816081">सेव्ह करत आहे...</translation>
 <translation id="629730747756840877">खाते</translation>
 <translation id="6298962879096096191">Android ॲप्स इंस्टॉल करण्‍यासाठी Google Play वापरा</translation>
+<translation id="6300125580697461004">एनर्जी सेव्हरबद्दल फीडबॅक पाठवा</translation>
 <translation id="6300177430812514606">डेटा पाठवण्याची किंवा मिळवण्याची क्रिया पूर्ण करण्याची अनुमती नाही</translation>
 <translation id="630065524203833229">नि&amp;र्गमन</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> आपोआप कॉंफिगर होऊ शकत नाही. कृपया प्रगत प्रिंटर तपशील नमूद करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -5864,6 +5866,7 @@
 <translation id="6494327278868541139">वर्धित संरक्षणाचे तपशील दाखवा</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकृतता नाही</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{या डेटामध्ये संवेदनशील किंवा धोकादायक आशय आहे}=1{या फाइलमध्ये संवेदनशील किंवा धोकादायक आशय आहे}other{या फाइलमध्ये संवेदनशील किंवा धोकादायक आशय आहे}}</translation>
+<translation id="6497548114956205206">एनर्जी सेव्हरबद्दल अधिक जाणून घ्या</translation>
 <translation id="6497784818439587832">तुमच्या स्क्रीनवरील आयटम लहान किंवा मोठे करण्यासाठी डिस्प्लेचा आकार बदला</translation>
 <translation id="6497789971060331894">माउस रिव्हर्स स्क्रोलिंग</translation>
 <translation id="6498249116389603658">&amp;आपल्या सर्व भाषा</translation>
@@ -6914,6 +6917,7 @@
 <translation id="7495778526395737099">तुमचा जुना पासवर्ड विसरला?</translation>
 <translation id="7497981768003291373">तुमच्याकडे नुकतेच कॅप्चर केलेले कोणतेही WebRTC मजकूर लॉग नाहीत.</translation>
 <translation id="7501957181231305652">किंवा</translation>
+<translation id="7502220299952823578">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये जोडा</translation>
 <translation id="7503191893372251637">Netscape सर्टिफिकेट प्रकार</translation>
 <translation id="7503985202154027481">तुम्ही या साइटला भेट दिल्याचे रेकॉर्ड तुमच्या सिक्युरिटी कीवर ठेवले जातील.</translation>
 <translation id="750509436279396091">डाउनलोड फोल्डर उघडा</translation>
@@ -7420,6 +7424,7 @@
 <translation id="7955177647836564772">Smart Lock सुरू असल्यास आणि तुमचा फोन अनलॉक केलेला असल्यास, तुम्ही पासवर्ड किंवा पिन एंटर करणे आवश्यक नाही</translation>
 <translation id="7956373551960864128">तुमचे सेव्ह केलेले प्रिंटर</translation>
 <translation id="7957074856830851026">सिरीअल नंबर किंवा मालमत्ता आयडी यांसारखी डिव्हाइसची माहिती पहा</translation>
+<translation id="7957186326898555886">मेमरी सेव्हरबद्दल फीडबॅक पाठवा</translation>
 <translation id="7959074893852789871">फाइलमध्ये एकाधिक प्रमाणपत्रे आहेत, यापैकी काही इंपोर्ट झाली नाहीत: </translation>
 <translation id="7959665254555683862">नवीन गुप्त टॅब</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
@@ -7840,6 +7845,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> साठी आणखी कृती</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{अलीकडे खूप सूचना पाठवलेल्या <ph name="BEGIN_BOLD" />एका साइट<ph name="END_BOLD" /> चे पुनरावलोकन करा}other{अलीकडे खूप सूचना पाठवलेल्या <ph name="BEGIN_BOLD" />{NUM_SITES} साइट<ph name="END_BOLD" /> चे पुनरावलोकन करा}}</translation>
 <translation id="8342221978608739536">वापरून पहिले नाही</translation>
+<translation id="8342399870062010251">मेमरी सेव्हरबद्दल अधिक जाणून घ्या</translation>
 <translation id="8342861492835240085">संकलन निवडा</translation>
 <translation id="8345848587667658367">तुम्ही आता तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स पाहू शकता</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
@@ -8048,6 +8054,7 @@
 <translation id="8549316893834449916">तुमच्या Chromebook मध्ये साइन इन करण्यासाठी तुम्ही तुमचे Google खाते वापराल – जे तुम्ही Gmail, Drive, YouTube आणि बर्‍याच गोष्टींसाठी वापरता.</translation>
 <translation id="8551388862522347954">परवाने</translation>
 <translation id="8551588720239073785">तारीख आणि वेळ सेटिंग्ज</translation>
+<translation id="8552102814346875916">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये सेव्ह करा</translation>
 <translation id="8553342806078037065">इतर लोक व्यवस्थापित करा</translation>
 <translation id="8554899698005018844">कोणतीही भाषा नाही</translation>
 <translation id="855604308879080518">Android अ‍ॅप्सना या Chromebook वर USB डिव्हाइस अ‍ॅक्सेस करू द्या. तुम्ही USB डिव्हाइस प्लग इन केल्यावर परवानगीची विनंती केली जाईल. वैयक्तिक Android अ‍ॅप्स अतिरिक्त परवानग्यांची विनंती करतील.</translation>

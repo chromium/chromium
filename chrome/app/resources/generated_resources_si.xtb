@@ -1521,6 +1521,7 @@
 <translation id="2352810082280059586">අගුලු තිර සටහන් ස්වයංක්‍රියව <ph name="LOCK_SCREEN_APP_NAME" /> වෙත සුරැකේ. ඔබගේ වඩාත් මෑත සටහන අගුලු තිරය මත පවතිනු ඇත.</translation>
 <translation id="2353297238722298836">කැමරාව සහ මයික්‍රෆෝනයට ඉඩ දෙන ලදී</translation>
 <translation id="2355314311311231464">ඔබගේ ගිණුම් විස්තර යළි ලබා ගත නොහැකි වූ බැවින් ප්‍රතිපාදනය අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">බලශක්ති සුරැකුම් විකල්ප</translation>
 <translation id="2355604387869345912">ක්‍ෂණික ටෙදරින් සක්‍රීය කරන්න</translation>
 <translation id="2356070529366658676">විමසන්න</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ඉවත් කරන්න</translation>
@@ -5656,6 +5657,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6295855836753816081">සුරකිමින්...</translation>
 <translation id="629730747756840877">ගිණුම</translation>
 <translation id="6298962879096096191">Android යෙදුම් ස්ථාපනය කිරීමට Google Play භාවිත කරන්න</translation>
+<translation id="6300125580697461004">බලශක්ති සුරැකුම පිළිබඳ ප්‍රතිපෝෂණය යවන්න</translation>
 <translation id="6300177430812514606">දත්ත යැවීම හෝ ලැබීම අවසන් කිරීමට ඉඩ නොදේ</translation>
 <translation id="630065524203833229">පිට&amp;වන්න</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> ස්වංයක්‍රීයව වින්‍යාස කිරීමට නොහැකි විය. උසස් මුද්‍රක විස්තර සඳහන් කරන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
@@ -5856,6 +5858,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6494327278868541139">වැඩි දියුණු කළ ආරක්ෂණ විස්තර පෙන්වන්න</translation>
 <translation id="6494445798847293442">සහතිකකරණ අධිකාරියක් නොවේ</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{මෙම දත්ත තුළ සංවේදී හෝ අනතුරුදායක අන්තර්ගතය ඇත}=1{මෙම ගොනුව තුළ සංවේදී හෝ අනතුරුදායක අන්තර්ගතය ඇත}one{මෙම ගොනු තුළ සංවේදී හෝ අනතුරුදායක අන්තර්ගතය ඇත}other{මෙම ගොනු තුළ සංවේදී හෝ අනතුරුදායක අන්තර්ගතය ඇත}}</translation>
+<translation id="6497548114956205206">බලශක්ති සුරැකුම පිළිබඳ තව දැන ගන්න</translation>
 <translation id="6497784818439587832">ඔබේ තිරයෙහි ඇති අයිතම කුඩා හෝ විශාල කිරීමට සංදර්ශක ප්‍රමාණය වෙනස් කරන්න</translation>
 <translation id="6497789971060331894">මූසික ආපස්සට අනුචලනය</translation>
 <translation id="6498249116389603658">ඔබගේ සියලුම භාෂා</translation>
@@ -6906,6 +6909,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7495778526395737099">ඔබගේ පැරැණි මුරපදය අමතකද?</translation>
 <translation id="7497981768003291373">ඔබට මෑතකදී හසුකර ගත් WebRTC ලොග් නැත.</translation>
 <translation id="7501957181231305652">හෝ</translation>
+<translation id="7502220299952823578">"මෙම අඩවි සැම විටම සක්‍රියව තබා ගන්න" ලැයිස්තුවට එක් කරන්න</translation>
 <translation id="7503191893372251637">Netscape සහතික වර්ගය</translation>
 <translation id="7503985202154027481">ඔබේ ආරක්‍ෂක යතුරේ මෙම වෙබ් අඩවිය වෙත ඔබේ පැමිණීමේ සටහනක් තබනු ලැබේ.</translation>
 <translation id="750509436279396091">බාගැනීම් ෆෝල්ඩරය විවෘත කරන්න</translation>
@@ -7413,6 +7417,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7955177647836564772">Smart Lock ක්‍රියාත්මක කර ඔබේ දුරකථනය අගුළු හැර තිබේ නම්, ඔබට මුරපදයක් හෝ PIN අංකයක් ඇතුළු කිරීමට අවශ්‍ය නොවේ</translation>
 <translation id="7956373551960864128">ඔබේ සුරැකි මුද්‍රක</translation>
 <translation id="7957074856830851026">එහි අනුක්‍රමික අංකය හෝ වත්කම් ID යනාදි උපාංග තොරතුරු බලන්න</translation>
+<translation id="7957186326898555886">මතක සුරකිනය පිළිබඳ ප්‍රතිපෝෂණය යවන්න</translation>
 <translation id="7959074893852789871">ගොනුවේ බොහෝ සහතික අඩංගු වේ, එයින් සමහරක් ආනයනය නොකරන ලදී:</translation>
 <translation id="7959665254555683862">නව අප්‍රකට &amp;ටැබය</translation>
 <translation id="7961015016161918242">කිසිවිට එපා</translation>
@@ -7832,6 +7837,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8340547030807793004"><ph name="DEVICE" /> සඳහා තවත් ක්‍රියා</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{මෑත දී බොහෝ දැනුම්දීම් එවූ <ph name="BEGIN_BOLD" />1 අඩවියක්<ph name="END_BOLD" /> සමාලෝචනය කරන්න}one{මෑත දී බොහෝ දැනුම්දීම් එවූ <ph name="BEGIN_BOLD" />අඩවි {NUM_SITES}ක්<ph name="END_BOLD" /> සමාලෝචන කරන්න}other{මෑත දී බොහෝ දැනුම්දීම් එවූ <ph name="BEGIN_BOLD" />අඩවි {NUM_SITES}ක්<ph name="END_BOLD" /> සමාලෝචන කරන්න}}</translation>
 <translation id="8342221978608739536">උත්සාහ නොකරන ලදී</translation>
+<translation id="8342399870062010251">මතක සුරකිනය පිළිබඳ තව දැන ගන්න</translation>
 <translation id="8342861492835240085">එකතුවක් තෝරන්න</translation>
 <translation id="8345848587667658367">ඔබට දැන් ඔබගේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය, දැනුම්දීම් සහ යෙදුම් බැලිය හැකිය</translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
@@ -8040,6 +8046,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8549316893834449916">ඔබගේ Chromebook වෙත පිරීමට ඔබ ඔබගේ Google ගිණුම භාවිත කරනු ඇත – Gmail, Drive, YouTube සහ තවත් දේ සඳහා ඔබ භාවිත කරන ගිණුම.</translation>
 <translation id="8551388862522347954">වරපත්</translation>
 <translation id="8551588720239073785">දිනය සහ වේලාව සැකසීම්</translation>
+<translation id="8552102814346875916">"මෙම අඩවි සැම විටම සක්‍රියව තබා ගන්න" ලැයිස්තුවට සුරකින්න</translation>
 <translation id="8553342806078037065">අනෙක් පුද්ගලයින් කළමනාකරණය කරන්න</translation>
 <translation id="8554899698005018844">භාෂාවක් නැත</translation>
 <translation id="855604308879080518">Android යෙදුම්වලට මෙම Chromebook හි USB උපාංග වෙත ප්‍රවේශ වීමට ඉඩ දෙන්න. ඔබ USB උපාංගයක් පේනුගත කරන සෑම අවස්ථාවකම අවසරය ඉල්ලනු ඇත. තනි Android යෙදුම් අතිරේක අවසර ඉල්ලනු ඇත.</translation>

@@ -1517,6 +1517,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2352810082280059586">Le note sulla schermata di blocco vengono salvate automaticamente nell'app <ph name="LOCK_SCREEN_APP_NAME" />. La nota più recente rimarrà sulla schermata di blocco.</translation>
 <translation id="2353297238722298836">Videocamera e microfono consentiti</translation>
 <translation id="2355314311311231464">Provisioning non andato a buon fine perché non è stato possibile recuperare i dati dell'account. Riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opzioni per il risparmio energetico</translation>
 <translation id="2355604387869345912">Attiva tethering istantaneo</translation>
 <translation id="2356070529366658676">Chiedi</translation>
 <translation id="2357330829548294574">Rimuovi <ph name="USER_NAME" /></translation>
@@ -5647,6 +5648,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6295855836753816081">Salvataggio in corso...</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6298962879096096191">Utilizza Google Play per installare le app Android</translation>
+<translation id="6300125580697461004">Invia feedback sulla modalità Risparmio energetico</translation>
 <translation id="6300177430812514606">Non possono terminare di inviare o ricevere dati</translation>
 <translation id="630065524203833229">E&amp;sci</translation>
 <translation id="6300718114348072351">Impossibile configurare automaticamente la stampante <ph name="PRINTER_NAME" />. Specifica dettagli avanzati della stampante. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
@@ -5847,6 +5849,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6494327278868541139">Mostra dettagli della protezione avanzata</translation>
 <translation id="6494445798847293442">Non è un'autorità di certificazione</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Questi dati includono contenuti sensibili o pericolosi}=1{Questo file include contenuti sensibili o pericolosi}other{Questi file includono contenuti sensibili o pericolosi}}</translation>
+<translation id="6497548114956205206">Scopri di più sulla modalità Risparmio energetico</translation>
 <translation id="6497784818439587832">Modifica le dimensioni del display per ingrandire o ridurre gli elementi visualizzati sullo schermo</translation>
 <translation id="6497789971060331894">Scorrimento invertito del mouse</translation>
 <translation id="6498249116389603658">&amp;Tutte le tue lingue</translation>
@@ -6897,6 +6900,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7495778526395737099">Hai dimenticato la vecchia password?</translation>
 <translation id="7497981768003291373">Nessun log di testo WebRTC acquisito di recente.</translation>
 <translation id="7501957181231305652">oppure</translation>
+<translation id="7502220299952823578">Aggiungi all'elenco "mantieni questi siti sempre attivi"</translation>
 <translation id="7503191893372251637">Tipo di certificato Netscape</translation>
 <translation id="7503985202154027481">Sul tuo token di sicurezza verrà memorizzato un record della tua visita a questo sito.</translation>
 <translation id="750509436279396091">Apri cartella dei download</translation>
@@ -7405,6 +7409,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7955177647836564772">Se la funzionalità Smart Lock è attiva e il telefono è sbloccato, non è necessario inserire una password o un PIN</translation>
 <translation id="7956373551960864128">Stampanti salvate</translation>
 <translation id="7957074856830851026">Visualizzazione di informazioni del dispositivo, ad esempio numero di serie o ID asset</translation>
+<translation id="7957186326898555886">Invia feedback sulla modalità Risparmio memoria</translation>
 <translation id="7959074893852789871">Il file conteneva più certificati, alcuni dei quali non sono stati importati:</translation>
 <translation id="7959665254555683862">Nuova scheda di navigazione in incognito</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -7825,6 +7830,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8340547030807793004">Altre azioni per <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Controlla <ph name="BEGIN_BOLD" />1 sito<ph name="END_BOLD" /> che di recente ha inviato molte notifiche}other{Controlla <ph name="BEGIN_BOLD" />{NUM_SITES}<ph name="END_BOLD" /> siti che di recente hanno inviato molte notifiche}}</translation>
 <translation id="8342221978608739536">Non ho provato</translation>
+<translation id="8342399870062010251">Scopri di più sulla modalità Risparmio memoria</translation>
 <translation id="8342861492835240085">Seleziona una raccolta</translation>
 <translation id="8345848587667658367">Ora puoi visualizzare le foto recenti, i contenuti multimediali, le notifiche e le app del tuo telefono</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
@@ -8033,6 +8039,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8549316893834449916">Utilizzerai il tuo Account Google per accedere al Chromebook: lo stesso che usi per accedere a Gmail, Drive, YouTube e altro ancora.</translation>
 <translation id="8551388862522347954">Licenze</translation>
 <translation id="8551588720239073785">Impostazioni di data e ora</translation>
+<translation id="8552102814346875916">Salva nell'elenco "Mantieni questi siti sempre attivi"</translation>
 <translation id="8553342806078037065">Gestisci altre persone</translation>
 <translation id="8554899698005018844">Nessuna lingua</translation>
 <translation id="855604308879080518">Consenti alle app per Android di accedere ai dispositivi USB su questo Chromebook. L'autorizzazione verrà richiesta ogni volta che inserisci un dispositivo USB. Le singole app per Android richiederanno autorizzazioni aggiuntive.</translation>

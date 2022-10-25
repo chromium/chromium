@@ -1514,6 +1514,7 @@
 <translation id="2352810082280059586">螢幕鎖定記事內容會自動儲存到「<ph name="LOCK_SCREEN_APP_NAME" />」。你最近的記事仍會保留在鎖定畫面上。</translation>
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
 <translation id="2355314311311231464">無法擷取你的帳戶詳細資料，因此佈建失敗。請再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
+<translation id="2355477091455974894">節能模式選項</translation>
 <translation id="2355604387869345912">開啟即時網路共用功能</translation>
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2357330829548294574">移除「<ph name="USER_NAME" />」</translation>
@@ -1810,7 +1811,7 @@
 <translation id="2642111877055905627">足球</translation>
 <translation id="2643698698624765890">如要管理擴充功能，只要按一下 [視窗] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="2645047101481282803">你的裝置是由 <ph name="PROFILE_NAME" /> 管理</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2645515095874728277">這個帳戶的密碼已儲存在這部裝置上</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
 <translation id="2652129567809778422">選取密碼</translation>
@@ -5632,6 +5633,7 @@
 <translation id="6295855836753816081">儲存中...</translation>
 <translation id="629730747756840877">帳戶</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
+<translation id="6300125580697461004">提供你對節能模式的意見回饋</translation>
 <translation id="6300177430812514606">不得完成資料的傳送或接收</translation>
 <translation id="630065524203833229">結束(&amp;X)</translation>
 <translation id="6300718114348072351">無法自動設定「<ph name="PRINTER_NAME" />」。請手動設定印表機的進階選項。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5832,6 +5834,7 @@
 <translation id="6494327278868541139">顯示強化防護功能詳細資料</translation>
 <translation id="6494445798847293442">這不是憑證授權單位</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{這項資料含有敏感內容或危險內容}=1{這個檔案含有敏感內容或危險內容}other{這些檔案含有敏感內容或危險內容}}</translation>
+<translation id="6497548114956205206">進一步瞭解節能模式</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選全部語言(&amp;A)</translation>
@@ -6879,6 +6882,7 @@
 <translation id="7495778526395737099">忘記舊密碼了嗎？</translation>
 <translation id="7497981768003291373">你最近並未擷取 WebRTC 文字記錄。</translation>
 <translation id="7501957181231305652">或</translation>
+<translation id="7502220299952823578">新增至「一律啟用這些網站」清單</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
 <translation id="7503985202154027481">你的安全金鑰會保留你造訪這個網站的記錄。</translation>
 <translation id="750509436279396091">開啟下載內容資料夾</translation>
@@ -7385,6 +7389,7 @@
 <translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機處於解鎖狀態，你就不必輸入密碼或 PIN 碼</translation>
 <translation id="7956373551960864128">已儲存的印表機</translation>
 <translation id="7957074856830851026">查看裝置資訊，例如裝置序號或資產 ID</translation>
+<translation id="7957186326898555886">提供你對記憶體節省模式的意見回饋</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
 <translation id="7959665254555683862">新無痕分頁</translation>
 <translation id="7961015016161918242">一律不要</translation>
@@ -7804,6 +7809,7 @@
 <translation id="8340547030807793004">可對 <ph name="DEVICE" /> 執行的其他動作</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 (1 個)<ph name="END_BOLD" />}other{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 ({NUM_SITES} 個)<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">沒有試過</translation>
+<translation id="8342399870062010251">進一步瞭解記憶體節省模式</translation>
 <translation id="8342861492835240085">選取集合</translation>
 <translation id="8345848587667658367">你現在可以查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
@@ -8011,6 +8017,7 @@
 <translation id="8549316893834449916">你將使用 Google 帳戶登入 Chromebook，Google 帳戶是你用於 Gmail、雲端硬碟、YouTube 和其他服務的帳戶。</translation>
 <translation id="8551388862522347954">授權</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
+<translation id="8552102814346875916">儲存到「一律啟用這些網站」清單</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未指定語言</translation>
 <translation id="855604308879080518">允許 Android 應用程式在這台 Chromebook 上存取 USB 裝置。每次你插入 USB 裝置時，系統皆會要求權限。個別 Android 應用程式會要求額外權限。</translation>

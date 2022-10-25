@@ -1529,6 +1529,7 @@
 <translation id="2352810082280059586">یادداشت‌های صفحه درحالت قفل به‌طور خودکار در <ph name="LOCK_SCREEN_APP_NAME" /> ذخیره می‌شوند. جدیدترین یادداشت روی صفحه قفل باقی می‌ماند.</translation>
 <translation id="2353297238722298836">دوربین و میکروفون مجاز هستند</translation>
 <translation id="2355314311311231464">آماده‌سازی انجام نشد زیرا نمی‌توان جزئیات حسابتان را دریافت کرد. لطفاً دوباره امتحان کنید. کد خطا: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">گزینه‌های بهینه‌سازی انرژی</translation>
 <translation id="2355604387869345912">روشن کردن «اشتراک‌گذاری اینترنت فوری»</translation>
 <translation id="2356070529366658676">سؤال شود</translation>
 <translation id="2357330829548294574">حذف <ph name="USER_NAME" /></translation>
@@ -6915,6 +6916,7 @@
 <translation id="7495778526395737099">گذرواژه قدیمی‌تان را فراموش کردید؟</translation>
 <translation id="7497981768003291373">‏هیچ گزارش نوشتاری WebRTC که اخیراً ثبت شده باشد ندارید.</translation>
 <translation id="7501957181231305652">یا</translation>
+<translation id="7502220299952823578">افزودن به فهرست «این سایت‌ها همیشه فعال نگه داشته شود»</translation>
 <translation id="7503191893372251637">‏نوع گواهی Netscape</translation>
 <translation id="7503985202154027481">سابقه بازدیدتان از این سایت در کلید امنیتی‌تان نگه‌داری می‌شود.</translation>
 <translation id="750509436279396091">باز کردن پوشه بارگیری‌ها</translation>

@@ -1519,6 +1519,7 @@
 <translation id="2352810082280059586">مقفل اسکرین کے نوٹس خودکار طور پر <ph name="LOCK_SCREEN_APP_NAME" /> میں محفوظ ہوتے ہیں۔ آپ کا حالیہ ترین نوٹ مقفل اسکرین پر باقی رہے گا۔</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="2355314311311231464">فراہمی ناکام ہو گئی کیوں کہ آپ کے اکاؤنٹ کی تفصیلات بازیافت نہیں کی جا سکیں۔ براہ کرم دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
+<translation id="2355477091455974894">توانائی بچانے کے اختیارات</translation>
 <translation id="2355604387869345912">فوری ٹیدرنگ آن کریں</translation>
 <translation id="2356070529366658676">پوچھیں</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ہٹائیں</translation>
@@ -5651,6 +5652,7 @@
 <translation id="6295855836753816081">محفوظ کیا جا رہا ہے…</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6298962879096096191">‏Android ایپس کو انسٹال کرنے کیلئے Google Play استعمال کریں</translation>
+<translation id="6300125580697461004">انرجی سیور کے بارے میں تاثرات بھیجیں</translation>
 <translation id="6300177430812514606">ڈیٹا بھیجنے یا موصول کرنے کو مکمل کرنے کی اجازت نہیں ہے</translation>
 <translation id="630065524203833229">&amp;خارج ہوں</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> کو خودکار طور پر کنفیگر نہیں کیا جا سکا۔ براہ کرم پرنٹر کی جدید ترین تفصیلات بیان کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -5851,6 +5853,7 @@
 <translation id="6494327278868541139">بہتر کردہ تحفظ کی تفصیلات دکھائیں</translation>
 <translation id="6494445798847293442">سرٹیفیکیشن ادارہ نہیں ہے</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{اس ڈیٹا میں حساس یا خطرناک مواد ہے}=1{اس فائل میں حساس یا خطرناک مواد ہے}other{ان فائلز میں حساس یا خطرناک مواد ہے}}</translation>
+<translation id="6497548114956205206">اپنے انرجی سیور کے بارے میں مزید جانیں</translation>
 <translation id="6497784818439587832">اپنی اسکرین پر موجود آئٹمز کو چھوٹا یا بڑا کرنے کے لیے ڈسپلے کا سائز تبدیل کریں</translation>
 <translation id="6497789971060331894">ماؤس کی معکوس اسکرولنگ</translation>
 <translation id="6498249116389603658">&amp;آپ کی سبھی زبانیں</translation>
@@ -6901,6 +6904,7 @@
 <translation id="7495778526395737099">اپنا پرانا پاس ورڈ بھول گئے؟</translation>
 <translation id="7497981768003291373">‏آپ کے پاس حالیہ کیپچر کردہ کوئی WebRTC ٹیکسٹ لاگ نہیں ہے۔</translation>
 <translation id="7501957181231305652">یا</translation>
+<translation id="7502220299952823578">"ان سائٹس کو ہمیشہ فعال رکھیں" کی فہرست میں شامل کریں</translation>
 <translation id="7503191893372251637">‏Netscape سرٹیفیکیٹ کی قسم</translation>
 <translation id="7503985202154027481">آپ کی سیکیورٹی کلید پر آپ کے اس سائٹ کو ملاحظہ کرنے کا ریکارڈ رکھا جائے گا۔</translation>
 <translation id="750509436279396091">ڈاؤن لوڈز کا فولڈر کھولیں</translation>
@@ -7409,6 +7413,7 @@
 <translation id="7955177647836564772">‏Smart Lock کے آن ہونے اور آپ کے فون کے غیر مقفل ہونے پر آپ کو پاس ورڈ یا PIN درج کرنے کی ضرورت نہیں ہے</translation>
 <translation id="7956373551960864128">آپ کے محفوظ کردہ پرنٹرز</translation>
 <translation id="7957074856830851026">‏آلہ کی معلومات دیکھیں، جیسے اس کا نمبر شمار یا اثاثہ ID</translation>
+<translation id="7957186326898555886">میموری سیور کے بارے میں تاثرات بھیجیں</translation>
 <translation id="7959074893852789871">فائل میں متعدد سرٹیفیکیٹس شامل ہیں، ان میں سے کچھ کو درآمد نہیں کیا گیا:</translation>
 <translation id="7959665254555683862">نیا پوشیدگی ٹیب</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
@@ -7828,6 +7833,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="8342221978608739536">کوشش نہیں کی</translation>
+<translation id="8342399870062010251">میموری سیور کے بارے میں مزید جانیں</translation>
 <translation id="8342861492835240085">ایک مجموعہ منتخب کریں</translation>
 <translation id="8345848587667658367">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھ سکتے ہیں</translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
@@ -8036,6 +8042,7 @@
 <translation id="8549316893834449916">‏آپ اپنے Google اکاؤنٹ کو اپنے Chromebook میں سائن ان کرنے کیلئے استعمال کریں گے - وہی اکاؤنٹ جسے آپ Gmail, Drive, YouTube اور بہت کچھ کے لئے استعمال کرتے ہیں۔</translation>
 <translation id="8551388862522347954">لائسنسز</translation>
 <translation id="8551588720239073785">تاریخ اور وقت کی ترتیبات</translation>
+<translation id="8552102814346875916">"ان سائٹس کو ہمیشہ فعال رکھیں" کی فہرست میں محفوظ کریں</translation>
 <translation id="8553342806078037065">دوسرے لوگوں کا نظم کریں</translation>
 <translation id="8554899698005018844">کوئی زبان نہیں</translation>
 <translation id="855604308879080518">‏Android ایپس کو اس Chromebook پر USB آلات تک رسائی دینے دیں۔ ہر بار جب آپ USB آلہ کو پلگ ان کریں گے تو اجازت کی درخواست کی جائے گی۔ انفرادی Android ایپس اضافی اجازتیں طلب کریں گی۔</translation>

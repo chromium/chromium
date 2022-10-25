@@ -1516,6 +1516,7 @@
 <translation id="2352810082280059586">Белешке на закључаном екрану се аутоматски чувају у апликацији <ph name="LOCK_SCREEN_APP_NAME" />. Најновија белешка ће остати на закључаном екрану.</translation>
 <translation id="2353297238722298836">Камера и микрофон су дозвољени</translation>
 <translation id="2355314311311231464">Додела није успела јер детаљи о налогу нису преузети. Пробајте поново. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Опције за уштеду енергије</translation>
 <translation id="2355604387869345912">Укључи тренутно привезивање</translation>
 <translation id="2356070529366658676">Питај</translation>
 <translation id="2357330829548294574">Уклоните корисника <ph name="USER_NAME" /></translation>
@@ -5649,6 +5650,7 @@
 <translation id="6295855836753816081">Чува се…</translation>
 <translation id="629730747756840877">налог</translation>
 <translation id="6298962879096096191">Користите Google Play да бисте инсталирали Android апликације</translation>
+<translation id="6300125580697461004">Пошаљите повратне информације о уштеди енергије</translation>
 <translation id="6300177430812514606">Није им дозвољено да довршавају слање или примање података</translation>
 <translation id="630065524203833229">И&amp;зађи</translation>
 <translation id="6300718114348072351">Штампач <ph name="PRINTER_NAME" /> не може да се конфигурише аутоматски. Наведите податке о напредном подешавању штампача. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -5849,6 +5851,7 @@
 <translation id="6494327278868541139">Прикажи детаље о напредној заштити</translation>
 <translation id="6494445798847293442">Није ауторитет за издавање сертификата</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Ови подаци садрже осетљив или опасан садржај}=1{Ова датотека садржи осетљив или опасан садржај}one{Ове датотеке садрже осетљив или опасан садржај}few{Ове датотеке садрже осетљив или опасан садржај}other{Ове датотеке садрже осетљив или опасан садржај}}</translation>
+<translation id="6497548114956205206">Сазнајте више о уштеди енергије</translation>
 <translation id="6497784818439587832">Промените величину приказа да бисте умањили или увећали ставке на екрану</translation>
 <translation id="6497789971060331894">Обрнуто померање мишем</translation>
 <translation id="6498249116389603658">&amp;Сви ваши језици</translation>
@@ -6903,6 +6906,7 @@
 <translation id="7495778526395737099">Заборавили сте стару лозинку?</translation>
 <translation id="7497981768003291373">Нисте недавно снимили ниједну WebRTC евиденцију текста.</translation>
 <translation id="7501957181231305652">или</translation>
+<translation id="7502220299952823578">Додај на листу Увек задржи ове сајтове активним</translation>
 <translation id="7503191893372251637">Тип Netscape сертификата</translation>
 <translation id="7503985202154027481">Посета овом сајту ће бити забележена на безбедносном кључу.</translation>
 <translation id="750509436279396091">Отвори директоријум Преузимања</translation>
@@ -7411,6 +7415,7 @@
 <translation id="7955177647836564772">Ако је Smart Lock укључен и телефон је откључан, не морате да уносите лозинку или PIN</translation>
 <translation id="7956373551960864128">Сачувани штампачи</translation>
 <translation id="7957074856830851026">Преглед информација о уређају, као што је серијски број или ИД дела</translation>
+<translation id="7957186326898555886">Пошаљите повратне информације о уштеди меморије</translation>
 <translation id="7959074893852789871">Датотека садржи више сертификата, од којих неки нису увезени:</translation>
 <translation id="7959665254555683862">Нова картица без архивирања</translation>
 <translation id="7961015016161918242">Никад</translation>
@@ -7831,6 +7836,7 @@
 <translation id="8340547030807793004">Још радњи за <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Прегледајте <ph name="BEGIN_BOLD" />1 сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}one{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}few{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајта<ph name="END_BOLD" /> која су недавно послала много обавештења}other{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајтова<ph name="END_BOLD" /> који су недавно послали много обавештења}}</translation>
 <translation id="8342221978608739536">Нисам покушао/ла</translation>
+<translation id="8342399870062010251">Сазнајте више о уштеди меморије</translation>
 <translation id="8342861492835240085">Изаберите колекцију</translation>
 <translation id="8345848587667658367">Сада можете да прегледате недавне слике, медије, обавештења и апликације на телефону</translation>
 <translation id="8347227221149377169">Задаци штампања</translation>
@@ -8039,6 +8045,7 @@
 <translation id="8549316893834449916">За пријављивање на Chromebook ћете користити Google налог – исти који користите и за Gmail, Диск, YouTube и друго.</translation>
 <translation id="8551388862522347954">Лиценце</translation>
 <translation id="8551588720239073785">Подешавања датума и времена</translation>
+<translation id="8552102814346875916">Сачувајте на листи Увек задржи ове сајтове активним</translation>
 <translation id="8553342806078037065">Управљање другим људима</translation>
 <translation id="8554899698005018844">Без језика</translation>
 <translation id="855604308879080518">Омогућите Android апликацијама да приступају USB уређајима на овом Chromebook-у. Оне ће тражити дозволу сваки пут када укључите USB уређај. Појединачне Android апликације ће тражити додатне дозволе.</translation>

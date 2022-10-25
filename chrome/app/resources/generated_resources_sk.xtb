@@ -1519,6 +1519,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2352810082280059586">Poznámky na uzamknutej obrazovke sa automaticky ukladajú do aplikácie <ph name="LOCK_SCREEN_APP_NAME" />. Na uzamknutej obrazovke zostane posledná poznámka.</translation>
 <translation id="2353297238722298836">Kamera a mikrofón sú povolené</translation>
 <translation id="2355314311311231464">Poskytovanie bolo neúspešné, pretože sa nepodarilo načítať podrobnosti o vašom účte. Skúste to znova. Kód chyby: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Možnosti šetriča energie</translation>
 <translation id="2355604387869345912">Zapnúť dynamický tethering</translation>
 <translation id="2356070529366658676">Opýtať sa</translation>
 <translation id="2357330829548294574">Odobrať používateľa <ph name="USER_NAME" /></translation>
@@ -5652,6 +5653,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6295855836753816081">Ukladá sa...</translation>
 <translation id="629730747756840877">Účet</translation>
 <translation id="6298962879096096191">Inštalácia aplikácií pre Android pomocou služby Google Play</translation>
+<translation id="6300125580697461004">Odoslať spätnú väzbu k šetriču energie</translation>
 <translation id="6300177430812514606">Nemôže dokončiť odosielanie ani prijímanie dát</translation>
 <translation id="630065524203833229">U&amp;končiť</translation>
 <translation id="6300718114348072351">Tlačiareň <ph name="PRINTER_NAME" /> sa nepodarilo automaticky nakonfigurovať. Špecifikujte rozšírené podrobnosti o tlačiarni. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -5852,6 +5854,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6494327278868541139">Zobraziť podrobnosti o rozšírenej ochrane</translation>
 <translation id="6494445798847293442">Položka nie je certifikačnou autoritou</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Tieto údaje majú citlivý alebo nebezpečný obsah}=1{Tento súbor má citlivý alebo nebezpečný obsah}few{Tieto súbory majú citlivý alebo nebezpečný obsah}many{Tieto súbory majú citlivý alebo nebezpečný obsah}other{Tieto súbory majú citlivý alebo nebezpečný obsah}}</translation>
+<translation id="6497548114956205206">Ďalšie informácie o šetriči energie</translation>
 <translation id="6497784818439587832">Zmenou veľkosti zobrazenia môžete položky na obrazovke zmenšiť alebo zväčšiť</translation>
 <translation id="6497789971060331894">Obrátené posúvanie myšou</translation>
 <translation id="6498249116389603658">&amp;Všetky vaše jazyky</translation>
@@ -6906,6 +6909,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7495778526395737099">Zabudli ste svoje staré heslo?</translation>
 <translation id="7497981768003291373">Nemáte žiadne nedávno zaznamenané textové denníky WebRTC.</translation>
 <translation id="7501957181231305652">alebo</translation>
+<translation id="7502220299952823578">Pridať do zoznamu Vždy nechať tieto weby aktívne</translation>
 <translation id="7503191893372251637">Netscape – typ certifikátu </translation>
 <translation id="7503985202154027481">V bezpečnostnom kľúči sa uchová záznam vašej návštevy tohto webu.</translation>
 <translation id="750509436279396091">Otvoriť priečinok stiahnutých súborov</translation>
@@ -7414,6 +7418,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7955177647836564772">Ak je funkcia Smart Lock zapnutá a telefón odomknutý, nemusíte zadávať heslo ani PIN</translation>
 <translation id="7956373551960864128">Vaše uložené tlačiarne</translation>
 <translation id="7957074856830851026">Zobrazte si informácie o zariadení, napríklad sériové číslo alebo identifikátor diela</translation>
+<translation id="7957186326898555886">Odoslať spätnú väzbu k Šetriču pamäte</translation>
 <translation id="7959074893852789871">Súbor obsahoval viacero certifikátov a niektoré z nich neboli importované:</translation>
 <translation id="7959665254555683862">Nová karta inkognito</translation>
 <translation id="7961015016161918242">Nikdy</translation>
@@ -7834,6 +7839,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8340547030807793004">Ďalšie akcie pre zariadenie: <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Skontrolujte <ph name="BEGIN_BOLD" />1 web<ph name="END_BOLD" />, ktorý v poslednom čase odoslal veľa upozornení}few{Skontrolujte <ph name="BEGIN_BOLD" />{NUM_SITES} weby<ph name="END_BOLD" />, ktoré v poslednom čase odoslali veľa upozornení}many{Review <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> that recently sent a lot of notifications}other{Skontrolujte <ph name="BEGIN_BOLD" />{NUM_SITES} webov<ph name="END_BOLD" />, ktoré v poslednom čase odoslali veľa upozornení}}</translation>
 <translation id="8342221978608739536">Nepokúsil(a) som sa o to</translation>
+<translation id="8342399870062010251">Ďalšie informácie o Šetriči pamäte</translation>
 <translation id="8342861492835240085">Vybrať zbierku</translation>
 <translation id="8345848587667658367">Teraz si môžete zobraziť najnovšie fotky, médiá, upozornenia a aplikácie svojho telefónu</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
@@ -8042,6 +8048,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8549316893834449916">Do Chromebooku sa prihlásite svojím účtom Google. Je to ten istý účet, ktorý používate s Gmailom, Diskom, službou YouTube a ďalšími.</translation>
 <translation id="8551388862522347954">Licencie</translation>
 <translation id="8551588720239073785">Nastavenia dátumu a času</translation>
+<translation id="8552102814346875916">Pridať do zoznamu Vždy nechať tieto weby aktívne</translation>
 <translation id="8553342806078037065">Spravovať ďalšie osoby</translation>
 <translation id="8554899698005018844">Žiadny jazyk</translation>
 <translation id="855604308879080518">Povoľte aplikáciám pre Android prístup k zariadeniam USB v tomto Chromebooku. Povolenie sa bude požadovať pri každom pripojení zariadenia USB. Jednotlivé aplikácie pre Android budú požadovať ďalšie povolenia.</translation>

@@ -1533,6 +1533,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2352810082280059586">As anotações na tela de bloqueio são salvas automaticamente no <ph name="LOCK_SCREEN_APP_NAME" />. Sua anotação mais recente ficará na tela de bloqueio.</translation>
 <translation id="2353297238722298836">Câmera e microfone permitidos</translation>
 <translation id="2355314311311231464">O provisionamento falhou porque não foi possível recuperar os detalhes da sua conta. Tente novamente. Código do erro: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opções de economia de energia</translation>
 <translation id="2355604387869345912">Ativar tethering instantâneo</translation>
 <translation id="2356070529366658676">Perguntar</translation>
 <translation id="2357330829548294574">Remover <ph name="USER_NAME" /></translation>
@@ -5669,6 +5670,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6295855836753816081">Salvando...</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6298962879096096191">Usar o Google Play para instalar apps do Android</translation>
+<translation id="6300125580697461004">Enviar feedback sobre a economia de energia</translation>
 <translation id="6300177430812514606">Bloquear o término de envio ou recebimento de dados</translation>
 <translation id="630065524203833229">&amp;Sair</translation>
 <translation id="6300718114348072351">Não foi possível configurar <ph name="PRINTER_NAME" /> automaticamente. Especifique as configurações avançadas da impressora. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -5869,6 +5871,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6494327278868541139">Mostrar detalhes da proteção reforçada</translation>
 <translation id="6494445798847293442">Não é uma Autoridade de certificação</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Esses dados têm conteúdo confidencial ou perigoso}=1{Esse arquivo tem conteúdo confidencial ou perigoso}one{Esse arquivo tem conteúdo confidencial ou perigoso}other{Esses arquivos têm conteúdo confidencial ou perigoso}}</translation>
+<translation id="6497548114956205206">Saiba mais sobre a economia de energia</translation>
 <translation id="6497784818439587832">Mude o tamanho da tela para aumentar ou diminuir os itens nela.</translation>
 <translation id="6497789971060331894">Rolagem reversa do mouse</translation>
 <translation id="6498249116389603658">&amp;Todos os seus idiomas</translation>
@@ -6921,6 +6924,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7495778526395737099">Esqueceu sua senha antiga?</translation>
 <translation id="7497981768003291373">Você não tem nenhum registro de texto WebRTC capturado recentemente.</translation>
 <translation id="7501957181231305652">ou</translation>
+<translation id="7502220299952823578">Adicionar à lista "Sempre manter estes sites ativos"</translation>
 <translation id="7503191893372251637">Tipo de certificado do Netscape</translation>
 <translation id="7503985202154027481">Um registro da visita a este site será mantido na sua chave de segurança.</translation>
 <translation id="750509436279396091">Abrir pasta de downloads</translation>
@@ -7429,6 +7433,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7955177647836564772">Se o Smart Lock estiver ativado e o smartphone desbloqueado, você não vai precisar digitar uma senha ou um PIN</translation>
 <translation id="7956373551960864128">Suas impressoras salvas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o número de série ou o ID do recurso</translation>
+<translation id="7957186326898555886">Enviar feedback sobre a Economia de memória</translation>
 <translation id="7959074893852789871">O arquivo continha vários certificados e alguns deles não foram importados:</translation>
 <translation id="7959665254555683862">Nova guia anônima</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -7849,6 +7854,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8340547030807793004">Mais ações para o dispositivo <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revise <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> que enviou muitas notificações recentemente.}one{Revise <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> que enviou muitas notificações recentemente}other{Revise <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que enviaram muitas notificações recentemente}}</translation>
 <translation id="8342221978608739536">Não tentei</translation>
+<translation id="8342399870062010251">Saiba mais sobre a Economia de memória</translation>
 <translation id="8342861492835240085">Selecione uma coleção</translation>
 <translation id="8345848587667658367">Agora, você pode ver apps, mídias, notificações e fotos recentes do seu smartphone</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
@@ -8057,6 +8063,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8549316893834449916">Para fazer login no Chromebook, você usará a mesma Conta do Google usada no Gmail, Drive, YouTube e outros serviços.</translation>
 <translation id="8551388862522347954">Licenças</translation>
 <translation id="8551588720239073785">Configurações de data e hora</translation>
+<translation id="8552102814346875916">Salvar na lista "Sempre manter estes sites ativos"</translation>
 <translation id="8553342806078037065">Gerenciar outras pessoas</translation>
 <translation id="8554899698005018844">Sem idioma</translation>
 <translation id="855604308879080518">Permitir que apps Android acessem dispositivos USB neste Chromebook. A permissão será solicitada sempre que você conectar um dispositivo USB. Apps Android individuais vão solicitar outras permissões.</translation>

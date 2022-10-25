@@ -1530,6 +1530,7 @@
 <translation id="2352810082280059586">লক স্ক্ৰীনৰ টোকাসমূহ স্বয়ংক্ৰিয়ভাৱে <ph name="LOCK_SCREEN_APP_NAME" />ত ছেভ কৰা হয়। আপোনাৰ সকলোতকৈ শেহতীয়া টোকাটো লক স্ক্ৰীনত থাকিব।</translation>
 <translation id="2353297238722298836">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2355314311311231464">আপোনাৰ একাউণ্টৰ সবিশেষ পুনৰুদ্ধাৰ কৰিব নোৱৰাৰ বাবে প্ৰ’ভিজনিং বিফল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
+<translation id="2355477091455974894">শক্তি সঞ্চয়কাৰীৰ বিকল্প</translation>
 <translation id="2355604387869345912">তাৎক্ষণিক টেডাৰিং অন কৰক</translation>
 <translation id="2356070529366658676">সোধক</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> আঁতৰাওক</translation>
@@ -6915,6 +6916,7 @@
 <translation id="7495778526395737099">আপোনাৰ পুৰণা পাছৱৰ্ড পাহৰিলে নেকি?</translation>
 <translation id="7497981768003291373">আপোনাৰ শেহতীয়াকৈ কেপশ্বাৰ কৰা কোনো WebRTC পাঠ লগ নাই।</translation>
 <translation id="7501957181231305652">অথবা</translation>
+<translation id="7502220299952823578">"এই ছাইটসমূহ সদায় সক্ৰিয় কৰি ৰাখক"ৰ সূচীত যোগ দিয়ক</translation>
 <translation id="7503191893372251637">Netscapeৰ প্ৰমাণপত্ৰৰ প্ৰকাৰ</translation>
 <translation id="7503985202154027481">আপুনি এই ছাইটলৈ যোৱাৰ এটা ৰেকৰ্ড আপোনাৰ সুৰক্ষা চাবিত ৰখা হ’ব।</translation>
 <translation id="750509436279396091">ডাউনল’ড ফ’ল্ডাৰ খোলক</translation>

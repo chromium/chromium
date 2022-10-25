@@ -1529,6 +1529,7 @@
 <translation id="2352810082280059586">लॉक स्क्रीन के नोट <ph name="LOCK_SCREEN_APP_NAME" /> में अपने आप सेव किए जाते हैं. आपका सबसे हाल का नोट लॉक स्क्रीन पर ही रहेगा.</translation>
 <translation id="2353297238722298836">कैमरे और माइक्रोफ़ोन की अनुमति है</translation>
 <translation id="2355314311311231464">सेट अप नहीं किया जा सका, क्योंकि आपके खाते की जानकारी डाउनलोड नहीं हो सकी. कृपया फिर से कोशिश करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">एनर्जी सेवर मोड के विकल्प</translation>
 <translation id="2355604387869345912">इंस्टैंट टेदरिंग चालू करें</translation>
 <translation id="2356070529366658676">पूछें</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> हटाएं</translation>
@@ -5648,6 +5649,7 @@
 <translation id="6295855836753816081">सहेज रहा है...</translation>
 <translation id="629730747756840877">खाता</translation>
 <translation id="6298962879096096191">Android ऐप्लिकेशन इंस्टॉल करने के लिए Google Play का उपयोग करें</translation>
+<translation id="6300125580697461004">एनर्जी सेवर के बारे में सुझाव, शिकायत या राय भेजें</translation>
 <translation id="6300177430812514606">डेटा भेजने या पाने की अनुमति नहीं है</translation>
 <translation id="630065524203833229">&amp;बाहर निकलें</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> को अपने-आप कॉन्फ़िगर नहीं किया जा सका. कृपया प्रिंटर की बेहतर जानकारी के बारे में बताएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -5848,6 +5850,7 @@
 <translation id="6494327278868541139">बेहतर सुरक्षा की जानकारी देखें</translation>
 <translation id="6494445798847293442">यह प्रमाणन प्राधिकरण नहीं हैै</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{इस डेटा में संवेदनशील या खतरनाक सामग्री है}=1{इस फ़ाइल में संवेदनशील या खतरनाक सामग्री है}one{इस फ़ाइल में संवेदनशील या खतरनाक सामग्री है}other{इन फ़ाइलों में संवेदनशील या खतरनाक सामग्री है}}</translation>
+<translation id="6497548114956205206">एनर्जी सेवर के बारे में ज़्यादा जानें</translation>
 <translation id="6497784818439587832">अपनी स्क्रीन पर मौजूद आइटम को छोटा या बड़ा करने के लिए, डिसप्ले का साइज़ बदलें</translation>
 <translation id="6497789971060331894">माउस से उल्टा स्क्रोल करने की रफ़्तार</translation>
 <translation id="6498249116389603658">&amp;आपकी सभी भाषाएं</translation>
@@ -6897,6 +6900,7 @@
 <translation id="7495778526395737099">क्या आप अपना पुराना पासवर्ड भूल गए हैं?</translation>
 <translation id="7497981768003291373">आपके पास हाल ही में कैप्चर किया गया कोई WebRTC लेख लॉग नहीं है.</translation>
 <translation id="7501957181231305652">या</translation>
+<translation id="7502220299952823578">"इन साइटों को हमेशा चालू रखें" सूची में जोड़ें</translation>
 <translation id="7503191893372251637">Netscape प्रमाणपत्र प्रकार</translation>
 <translation id="7503985202154027481">आपके इस साइट पर आने का रिकॉर्ड आपकी सुरक्षा कुंजी पर रह जाएगा.</translation>
 <translation id="750509436279396091">डाउनलोड फ़ोल्‍डर खोलें</translation>
@@ -7402,6 +7406,7 @@
 <translation id="7955177647836564772">अगर Smart Lock चालू है और आपका फ़ोन अनलॉक है, तो आपको पासवर्ड या पिन डालने की ज़रूरत नहीं होगी</translation>
 <translation id="7956373551960864128">आपके सेव किए गए प्रिंटर</translation>
 <translation id="7957074856830851026">डिवाइस की जानकारी देखें, जैसे कि सीरियल नंबर या एसेट आईडी</translation>
+<translation id="7957186326898555886">मेमोरी सेवर के बारे में सुझाव, शिकायत या राय भेजें</translation>
 <translation id="7959074893852789871">फ़ाइल में एकाधिक प्रमाणपत्र थे, जिनमें से कुछ को आयात नहीं किया गया था:</translation>
 <translation id="7959665254555683862">नया गुप्त टैब</translation>
 <translation id="7961015016161918242">कभी नहीं</translation>
@@ -7821,6 +7826,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> से जुड़ी और कार्रवाइयां</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{उस <ph name="BEGIN_BOLD" />1 साइट<ph name="END_BOLD" /> की समीक्षा करें जिसने हाल ही में कई सूचनाएं भेजी हैं}one{उस <ph name="BEGIN_BOLD" />{NUM_SITES} साइट<ph name="END_BOLD" /> की समीक्षा करें जिसने हाल ही में कई सूचनाएं भेजी हैं}other{उन <ph name="BEGIN_BOLD" />{NUM_SITES} साइटों<ph name="END_BOLD" /> की समीक्षा करें जिन्होंने हाल ही में कई सूचनाएं भेजी हैं}}</translation>
 <translation id="8342221978608739536">कोशिश नहीं की गई</translation>
+<translation id="8342399870062010251">मेमोरी सेवर के बारे में ज़्यादा जानें</translation>
 <translation id="8342861492835240085">कोई संग्रह चुनें</translation>
 <translation id="8345848587667658367">अब आपके पास अपने फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
@@ -8028,6 +8034,7 @@
 <translation id="8549316893834449916">आप Chromebook में साइन इन करने के लिए, Google खाते का इस्तेमाल करेंगे. यह वही खाता है जिसे आप Gmail, Drive, YouTube वगैरह के लिए इस्तेमाल करते हैं.</translation>
 <translation id="8551388862522347954">लाइसेंस</translation>
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>
+<translation id="8552102814346875916">"इन साइटों को हमेशा चालू रखें" सूची में सेव करें</translation>
 <translation id="8553342806078037065">अन्य लोगों को प्रबंधित करें</translation>
 <translation id="8554899698005018844">कोई भाषा नहीं</translation>
 <translation id="855604308879080518">Android ऐप्लिकेशन को इस Chromebook में यूएसबी डिवाइसों को ऐक्सेस करने की अनुमति दें. यूएसबी डिवाइस को प्लग-इन किए जाने पर, हर बार अनुमति मांगी जाएगी. Android का हर ऐप्लिकेशन कुछ और भी अनुमतियां मांगेगा.</translation>

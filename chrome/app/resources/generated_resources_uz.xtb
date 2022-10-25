@@ -1519,6 +1519,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2352810082280059586">Ekran qulfi qaydlari <ph name="LOCK_SCREEN_APP_NAME" /> ilovasiga avtomatik saqlanadi. Oxirgi qaydlar qulflangan ekranda ko‘rsatiladi.</translation>
 <translation id="2353297238722298836">Kamera va mikrofondan foydalanish mumkin</translation>
 <translation id="2355314311311231464">Tekshiruv vaqtida xatolik yuz berdi, chunki hisob maʼlumotlari yuklanmadi. Qaytadan urining. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Energiya tejash parametrlari</translation>
 <translation id="2355604387869345912">Tezkor modem rejimini yoqish</translation>
 <translation id="2356070529366658676">So‘ralsin</translation>
 <translation id="2357330829548294574">Olib tashlash: <ph name="USER_NAME" /></translation>
@@ -5653,6 +5654,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6295855836753816081">Saqlanmoqda...</translation>
 <translation id="629730747756840877">Hisob</translation>
 <translation id="6298962879096096191">Android ilovalarini o‘rnatish uchun Google Play ishlatilsin</translation>
+<translation id="6300125580697461004">Energiya tejalishi haqida fikr-mulohaza yuborish</translation>
 <translation id="6300177430812514606">Maʼlumotlarni yuborish yoki qabul qilishni tugatish taqiqlangan</translation>
 <translation id="630065524203833229">&amp;Chiqish</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> printeri avtomatik sozlanmadi. Printer uchun batafsil axborotlarni kiriting. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -5853,6 +5855,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6494327278868541139">Kuchaytirilgan himoya tafsilotlarini ochish</translation>
 <translation id="6494445798847293442">Sertifikatlashtirish markazi emas</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Bu maʼlumotlarda maxfiy yoki xavfli kontent bor}=1{Bu faylda maxfiy yoki xavfli kontent bor}other{Bu fayllarda maxfiy yoki xavfli kontent bor}}</translation>
+<translation id="6497548114956205206">Energiya tejalishi haqida batafsil</translation>
 <translation id="6497784818439587832">Ekrandagi elementlarni kichiklashtirish yoki kattalashtirish uchun ekran oʻlchamini oʻzgartiring</translation>
 <translation id="6497789971060331894">Sichqoncha bilan teskari aylantirish</translation>
 <translation id="6498249116389603658">Barcha tillar</translation>
@@ -6903,6 +6906,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7495778526395737099">Eski parolingizni unutdingizmi?</translation>
 <translation id="7497981768003291373">Yaqinda yozilgan WebRTC matnli jurnallari topilmadi.</translation>
 <translation id="7501957181231305652">yoki</translation>
+<translation id="7502220299952823578">“quyidagi saytlar doim faol qolsin” roʻyxatiga kiritish</translation>
 <translation id="7503191893372251637">Netscape sertifikati turi</translation>
 <translation id="7503985202154027481">Joriy saytga tashrifingiz haqidagi axborot elektron kalitga saqlanadi.</translation>
 <translation id="750509436279396091">Yuklamalar jildini ochish</translation>
@@ -7410,6 +7414,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7955177647836564772">Smart Lock yoqilgan va telefoningiz qulfdan chiqarilgan boʻlsa, parol yoki PIN kodni kiritishingiz shart emas</translation>
 <translation id="7956373551960864128">Saqlangan printerlar</translation>
 <translation id="7957074856830851026">Seriya raqami va obyekt identifikatori kabi qurilma axborotini koʻrish</translation>
+<translation id="7957186326898555886">Operativ xotira tejalishi haqida fikr-mulohaza yuborish</translation>
 <translation id="7959074893852789871">Faylda import qilinmagan bir necha sertifikatlar mavjud:</translation>
 <translation id="7959665254555683862">Yangi inkognito &amp;varaq</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
@@ -7829,6 +7834,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8340547030807793004"><ph name="DEVICE" /> uchun boshqa amallar</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Yaqinda juda koʻp bildirishnomalar yuborgan <ph name="BEGIN_BOLD" />1 ta saytni<ph name="END_BOLD" /> tekshiring}other{Yaqinda juda koʻp bildirishnomalar yuborgan <ph name="BEGIN_BOLD" />{NUM_SITES} ta<ph name="END_BOLD" /> saytni tekshiring}}</translation>
 <translation id="8342221978608739536">Sinab koʻrmadim</translation>
+<translation id="8342399870062010251">Operativ xotira tejalishi haqida batafsil</translation>
 <translation id="8342861492835240085">To‘plamni tanlang</translation>
 <translation id="8345848587667658367">Endi siz telefoningizdagi oxirgi rasmlar, multimedia, bildirishnomalar va ilovalarni koʻra olasiz</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
@@ -8037,6 +8043,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8549316893834449916">Chromebook qurilmangizga – Gmail, Drive, YouTube va boshqa xizmatlarda ishlatadigan Google hisobingizdan kirish mumkin.</translation>
 <translation id="8551388862522347954">Litsenziyalar</translation>
 <translation id="8551588720239073785">Sana va vaqt sozlamalari</translation>
+<translation id="8552102814346875916">“quyidagi saytlar doim faol qolsin” roʻyxatiga saqlash</translation>
 <translation id="8553342806078037065">Boshqa foydalanuvchilarni boshqarish</translation>
 <translation id="8554899698005018844">Til tanlanmagan</translation>
 <translation id="855604308879080518">Android ilovalarga bu Chromebook USB qurilmalaridan foydalanishiga ruxsat berish. Har safar USB qurilma ulanganda ruxsat soʻraladi. Ayrim Android ilovalar qoʻshimcha ruxsatlar soʻrashi ham mumkin.</translation>

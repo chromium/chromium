@@ -1511,6 +1511,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2352810082280059586">Notizen auf dem Sperrbildschirm werden automatisch in <ph name="LOCK_SCREEN_APP_NAME" /> gespeichert. Deine letzte Notiz wird weiterhin auf dem Sperrbildschirm angezeigt.</translation>
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
 <translation id="2355314311311231464">Die Bereitstellung ist nicht möglich, weil die Kontodetails nicht abgerufen werden konnten. Bitte noch einmal versuchen. Fehlercode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Energiesparoptionen</translation>
 <translation id="2355604387869345912">Instant Tethering einschalten</translation>
 <translation id="2356070529366658676">Nachfragen</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> entfernen</translation>
@@ -5630,6 +5631,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
+<translation id="6300125580697461004">Feedback zum Energiesparmodus geben</translation>
 <translation id="6300177430812514606">Dürfen den Datenversand und ‑empfang nicht abschließen</translation>
 <translation id="630065524203833229">&amp;Beenden</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> konnte nicht automatisch konfiguriert werden. Bitte lege erweiterte Einstellungen für den Drucker fest. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -5830,6 +5832,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6494327278868541139">Details zum erweiterten Schutz anzeigen</translation>
 <translation id="6494445798847293442">Keine Zertifizierungsstelle</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Diese Daten enthalten vertrauliche oder schädliche Inhalte}=1{Diese Datei enthält vertrauliche oder schädliche Inhalte}other{Diese Dateien enthalten vertrauliche oder schädliche Inhalte}}</translation>
+<translation id="6497548114956205206">Weitere Informationen zum Energiesparmodus</translation>
 <translation id="6497784818439587832">Du kannst die Bildschirmgröße ändern, um Elemente auf dem Bildschirm zu verkleinern oder zu vergrößern</translation>
 <translation id="6497789971060331894">Gegenläufiges Scrollen für Maus</translation>
 <translation id="6498249116389603658">&amp;Alle deine Sprachen</translation>
@@ -6877,6 +6880,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7495778526395737099">Hast du dein altes Passwort vergessen?</translation>
 <translation id="7497981768003291373">Es sind keine kürzlich erfassten WebRTC-Textprotokolle vorhanden.</translation>
 <translation id="7501957181231305652">oder</translation>
+<translation id="7502220299952823578">Zur Liste „Diese Websites immer aktiv lassen“ hinzufügen</translation>
 <translation id="7503191893372251637">Netscape-Zertifikatstyp</translation>
 <translation id="7503985202154027481">Auf deinem Sicherheitsschlüssel wird zum Besuch dieser Website ein Datensatz angelegt.</translation>
 <translation id="750509436279396091">Downloadordner öffnen</translation>
@@ -7383,6 +7387,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7955177647836564772">Wenn Smart Lock aktiviert ist und dein Smartphone entsperrt ist, musst du weder ein Passwort noch eine PIN eingeben</translation>
 <translation id="7956373551960864128">Deine gespeicherten Drucker</translation>
 <translation id="7957074856830851026">Geräteinformationen wie Seriennummer oder Asset-ID abrufen</translation>
+<translation id="7957186326898555886">Feedback zum Arbeitsspeicher-Sparmodus geben</translation>
 <translation id="7959074893852789871">Die Datei enthielt mehrere Zertifikate, von denen einige nicht importiert wurden:</translation>
 <translation id="7959665254555683862">Neuer Inkognito&amp;tab</translation>
 <translation id="7961015016161918242">Nie</translation>
@@ -7802,6 +7807,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8340547030807793004">Weitere Aktionen für „<ph name="DEVICE" />“</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Hier kannst du dir <ph name="BEGIN_BOLD" />1 Website<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{Hier kannst du dir <ph name="BEGIN_BOLD" />{NUM_SITES}<ph name="END_BOLD" /> Websites ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
 <translation id="8342221978608739536">Nicht ausprobiert</translation>
+<translation id="8342399870062010251">Weitere Informationen zum Arbeitsspeicher-Sparmodus</translation>
 <translation id="8342861492835240085">Sammlung auswählen</translation>
 <translation id="8345848587667658367">Du kannst jetzt die neuesten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone ansehen</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
@@ -8009,6 +8015,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8549316893834449916">Du kannst dein Google-Konto verwenden, um dich auf deinem Chromebook anzumelden – also mit demselben Konto, das du schon für Gmail, Drive, YouTube und andere Google-Dienste verwendest.</translation>
 <translation id="8551388862522347954">Lizenzen</translation>
 <translation id="8551588720239073785">Datums- und Uhrzeiteinstellungen</translation>
+<translation id="8552102814346875916">In der Liste „Diese Websites immer aktiv lassen“ speichern</translation>
 <translation id="8553342806078037065">Andere Personen verwalten</translation>
 <translation id="8554899698005018844">Keine Sprache</translation>
 <translation id="855604308879080518">Android-Apps auf diesem Chromebook erlauben, auf USB-Geräte zuzugreifen. Die Berechtigung wird jedes Mal angefragt, wenn du ein USB-Gerät verbindest. Einige Android-Apps werden nach zusätzlichen Berechtigungen fragen.</translation>

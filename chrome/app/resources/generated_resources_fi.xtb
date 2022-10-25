@@ -1531,6 +1531,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2352810082280059586">Lukitusnäytön ilmoitukset tallennetaan automaattisesti sovellukseen <ph name="LOCK_SCREEN_APP_NAME" />. Viimeisin ilmoitus pysyy lukitusnäytöllä.</translation>
 <translation id="2353297238722298836">Kamera ja mikrofoni sallittu</translation>
 <translation id="2355314311311231464">Käyttäjien valinta epäonnistui, koska tilitietojasi ei voitu hakea. Yritä uudelleen. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Virransäästöasetukset</translation>
 <translation id="2355604387869345912">Laita yhteyden pikajakaminen päälle</translation>
 <translation id="2356070529366658676">Kysy</translation>
 <translation id="2357330829548294574">Poista <ph name="USER_NAME" /></translation>
@@ -5662,6 +5663,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6295855836753816081">Tallennetaan…</translation>
 <translation id="629730747756840877">Tili</translation>
 <translation id="6298962879096096191">Asenna Android-sovelluksia Google Playn avulla</translation>
+<translation id="6300125580697461004">Lähetä palautetta virransäästöstä</translation>
 <translation id="6300177430812514606">Tietojen lähetyksen tai vastaanoton viimeistely kielletty</translation>
 <translation id="630065524203833229">Poist&amp;u</translation>
 <translation id="6300718114348072351">Automaattinen määritys epäonnistui: <ph name="PRINTER_NAME" />. Määritä tulostimen lisäasetukset. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -5862,6 +5864,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6494327278868541139">Näytä tiedot parannetusta suojauksesta</translation>
 <translation id="6494445798847293442">Ei varmenteen myöntäjä</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Tämä data sisältää arkaluontoista tai vaarallista sisältöä}=1{Tämä tiedosto sisältää arkaluontoista tai vaarallista sisältöä}other{Nämä tiedostot sisältävät arkaluontoista tai vaarallista sisältöä}}</translation>
+<translation id="6497548114956205206">Lue lisää virransäästöstä</translation>
 <translation id="6497784818439587832">Voit pienentää tai suurentaa näytöllä olevia kohteita muuttamalla näytön kokoa</translation>
 <translation id="6497789971060331894">Hiiren käänteinen vieritys</translation>
 <translation id="6498249116389603658">K&amp;aikki valitsemasi kielet</translation>
@@ -6912,6 +6915,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7495778526395737099">Unohtuiko vanha salasana?</translation>
 <translation id="7497981768003291373">Sinulla ei ole äskettäin tallennettuja WebRTC-tekstilokeja.</translation>
 <translation id="7501957181231305652">tai</translation>
+<translation id="7502220299952823578">Lisää "Pidä nämä sivustot aina aktiivisina" ‐luetteloon</translation>
 <translation id="7503191893372251637">Netscape-varmennetyyppi</translation>
 <translation id="7503985202154027481">Tieto käynnistäsi tällä sivustolla tallentuu suojausavaimeesi.</translation>
 <translation id="750509436279396091">Avaa latauskansio</translation>
@@ -7419,6 +7423,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7955177647836564772">Jos Smart Lock on päällä ja puhelimesi on lukitsematon, salasanaa tai PIN-koodia ei tarvitse lisätä</translation>
 <translation id="7956373551960864128">Tallentamasi tulostimet</translation>
 <translation id="7957074856830851026">Katso laitteen tietoja, esim. sarjanumero tai sisältökohteen tunnus</translation>
+<translation id="7957186326898555886">Lähetä palautetta muistinsäästöstä</translation>
 <translation id="7959074893852789871">Tiedostossa oli useita varmenteita, joista kaikkia ei tuotu:</translation>
 <translation id="7959665254555683862">Uusi incognito-välilehti</translation>
 <translation id="7961015016161918242">Ei koskaan</translation>
@@ -7839,6 +7844,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8340547030807793004"><ph name="DEVICE" />: lisää toimintoja</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Tarkista <ph name="BEGIN_BOLD" />1 sivusto<ph name="END_BOLD" />, jolta on lähetetty paljon ilmoituksia viime aikoina}other{Tarkista <ph name="BEGIN_BOLD" />{NUM_SITES} sivustoa<ph name="END_BOLD" />, joilta on lähetetty paljon ilmoituksia viime aikoina}}</translation>
 <translation id="8342221978608739536">En kokeillut</translation>
+<translation id="8342399870062010251">Lue lisää muistinsäästöstä</translation>
 <translation id="8342861492835240085">Valitse kokoelma</translation>
 <translation id="8345848587667658367">Voit nyt nähdä puhelimen viimeaikaiset kuvat, median, ilmoitukset ja sovellukset</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
@@ -8047,6 +8053,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8549316893834449916">Google-tiliä käytetään Chromebookille kirjautumiseen. Käytät samaa tiliä myös esim. Gmailissa, Drivessa ja YouTubessa.</translation>
 <translation id="8551388862522347954">Käyttöoikeudet</translation>
 <translation id="8551588720239073785">Aika- ja päivämääräasetukset</translation>
+<translation id="8552102814346875916">Tallenna "Pidä nämä sivustot aina aktiivisina" ‐listaan</translation>
 <translation id="8553342806078037065">Hallitse muita ihmisiä</translation>
 <translation id="8554899698005018844">Ei kieltä</translation>
 <translation id="855604308879080518">Salli Android-sovellusten pääsy tämän Chromebookin USB-laitteisiin. Lupaa pyydetään aina, kun liität uuden USB-laitteen. Yksittäiset Android-sovellukset pyytävät lisälupia.</translation>

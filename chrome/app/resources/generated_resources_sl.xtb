@@ -1535,6 +1535,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2352810082280059586">Zapiski na zaklenjenem zaslonu so samodejno shranjeni v aplikacijo <ph name="LOCK_SCREEN_APP_NAME" />. Zadnji zapisek ostane na zaklenjenem zaslonu.</translation>
 <translation id="2353297238722298836">Kamera in mikrofon sta dovoljena</translation>
 <translation id="2355314311311231464">Omogočanje uporabe ni uspelo, ker ni bilo mogoče pridobiti podrobnosti računa. Poskusite znova. Koda napake: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Možnosti varčevanja z energijo</translation>
 <translation id="2355604387869345912">Vklop takojšnje povezave računalnika z internetom prek mobilnega telefona</translation>
 <translation id="2356070529366658676">Vprašaj</translation>
 <translation id="2357330829548294574">Odstranitev uporabnika <ph name="USER_NAME" /></translation>
@@ -5671,6 +5672,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6295855836753816081">Shranjevanje ...</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6298962879096096191">Uporaba Googla Play za nameščanje aplikacij za Android</translation>
+<translation id="6300125580697461004">Pošljite povratne informacije o varčevanju z energijo</translation>
 <translation id="6300177430812514606">Ni dovoljeno dokončanje pošiljanja ali prejemanja podatkov</translation>
 <translation id="630065524203833229">I&amp;zhod</translation>
 <translation id="6300718114348072351">Tiskalnika <ph name="PRINTER_NAME" /> ni bilo mogoče samodejno konfigurirati. Določite dodatne podrobnosti tiskalnika. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
@@ -5871,6 +5873,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6494327278868541139">Prikaz podatkov o izboljšani zaščiti</translation>
 <translation id="6494445798847293442">Ni overitelj potrdil</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{V teh podatkih je občutljiva ali nevarna vsebina}=1{V tej datoteki je občutljiva ali nevarna vsebina}one{V teh datotekah je občutljiva ali nevarna vsebina}two{V teh datotekah je občutljiva ali nevarna vsebina}few{V teh datotekah je občutljiva ali nevarna vsebina}other{V teh datotekah je občutljiva ali nevarna vsebina}}</translation>
+<translation id="6497548114956205206">Preberite več o varčevanju z energijo</translation>
 <translation id="6497784818439587832">Spremenite velikost zaslona, če želite pomanjšati ali povečati elemente na zaslonu.</translation>
 <translation id="6497789971060331894">Obratno pomikanje z miško</translation>
 <translation id="6498249116389603658">&amp;Vsi jeziki</translation>
@@ -6927,6 +6930,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7495778526395737099">Ste pozabili staro geslo?</translation>
 <translation id="7497981768003291373">Nimate nedavno zajetih besedilnih dnevnikov za WebRTC.</translation>
 <translation id="7501957181231305652">ali</translation>
+<translation id="7502220299952823578">Dodaj na seznam »Ta spletna mesta naj bodo vedno aktivna«</translation>
 <translation id="7503191893372251637">Vrsta Netscapeovega potrdila</translation>
 <translation id="7503985202154027481">Na varnostnem ključu se bo zabeležil obisk tega spletnega mesta.</translation>
 <translation id="750509436279396091">Odpiranje mape s prenosi</translation>
@@ -7435,6 +7439,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7955177647836564772">Če je vklopljena funkcija Smart Lock in je telefon odklenjen, vam ni treba vnesti gesla ali kode PIN.</translation>
 <translation id="7956373551960864128">Shranjeni tiskalniki</translation>
 <translation id="7957074856830851026">Prikaz podatkov o napravi, denimo serijske številke ali ID-ja sredstva</translation>
+<translation id="7957186326898555886">Pošljite povratne informacije o varčevanju s pomnilnikom</translation>
 <translation id="7959074893852789871">Datoteka je vsebovala več potrdil in nekatera niso bila uvožena:</translation>
 <translation id="7959665254555683862">Novi anonimni &amp;zavihek</translation>
 <translation id="7961015016161918242">Nikoli</translation>
@@ -7855,6 +7860,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8340547030807793004">Več dejanj za <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Preglejte <ph name="BEGIN_BOLD" />1 spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}one{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}two{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletni mesti<ph name="END_BOLD" />, ki sta v zadnjem času poslali veliko obvestil}few{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletna mesta<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}other{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletnih mest<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}}</translation>
 <translation id="8342221978608739536">Nisem poskusil(-a)</translation>
+<translation id="8342399870062010251">Preberite več o varčevanju s pomnilnikom</translation>
 <translation id="8342861492835240085">Izberi zbirko</translation>
 <translation id="8345848587667658367">Zdaj si lahko ogledate nedavne fotografije, predstavnost, obvestila in aplikacije telefona</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
@@ -8063,6 +8069,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8549316893834449916">V Chromebook se boste prijavili z računom Google – istim računom, ki ga uporabljate za Gmail, Drive, YouTube in drugo.</translation>
 <translation id="8551388862522347954">Licence</translation>
 <translation id="8551588720239073785">Nastavitve datuma in ure</translation>
+<translation id="8552102814346875916">Shrani na seznam »Ta spletna mesta naj bodo vedno aktivna«</translation>
 <translation id="8553342806078037065">Upravljanje drugih oseb</translation>
 <translation id="8554899698005018844">Brez jezika</translation>
 <translation id="855604308879080518">Aplikacijam za Android omogočite dostop do naprav USB v tem Chromebooku. Dovoljenje bo zahtevano vsakič, ko priključite napravo USB. Posamezne aplikacije za Android bodo zahtevale dodatna dovoljenja.</translation>

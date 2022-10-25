@@ -1533,6 +1533,7 @@
 <translation id="2352810082280059586">লক স্ক্রিন নোটগুলি নিজে থেকেই <ph name="LOCK_SCREEN_APP_NAME" /> এ সেভ হয়ে যায়। সবথেকে সাম্প্রতিক নোটটি লক স্ক্রিনে রয়ে যায়।</translation>
 <translation id="2353297238722298836">ক্যামেরা এবং মাইক্রোফোন ব্যবহারে অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2355314311311231464">প্রভিশনিং করা যায়নি কারণ আপনার অ্যাকাউন্টের বিবরণ পুনরুদ্ধার করা সম্ভব হয়নি। আবার চেষ্টা করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
+<translation id="2355477091455974894">পাওয়ার সেভার বিকল্প</translation>
 <translation id="2355604387869345912">ইনস্ট্যান্ট টিথারিং চালু করুন</translation>
 <translation id="2356070529366658676">জিজ্ঞাসা করুন</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" />-কে সরান</translation>
@@ -6922,6 +6923,7 @@
 <translation id="7495778526395737099">আপনার পুরানো পাসওয়ার্ড ভুলে গেছেন?</translation>
 <translation id="7497981768003291373">আপনার সাম্প্রতিক কোনও ক্যাপচার করা WebRTC টেক্সট লগ নেই।</translation>
 <translation id="7501957181231305652">অথবা</translation>
+<translation id="7502220299952823578">"সব সময় এইসব সাইট অ্যাক্টিভ রাখুন" তালিকায় যোগ করুন</translation>
 <translation id="7503191893372251637">Netscape সার্টিফিকেটের প্রকার</translation>
 <translation id="7503985202154027481">আপনার এই সাইটে যাওয়ার রেকর্ড নিরাপত্তা কীয়ে সেভ করা থাকবে।</translation>
 <translation id="750509436279396091">ডাউনলোড ফোল্ডার খুলুন</translation>

@@ -1535,6 +1535,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2352810082280059586">Mae nodiadau clo sgrîn yn cael eu cadw'n awtomatig i <ph name="LOCK_SCREEN_APP_NAME" />. Bydd eich nodyn diweddaraf yn aros ar y clo sgrîn.</translation>
 <translation id="2353297238722298836">Caniateir y camera a'r meicroffon</translation>
 <translation id="2355314311311231464">Wedi methu â darparu oherwydd na ellid adfer manylion eich cyfrif. Rhowch gynnig arall arni. Cod gwall: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opsiynau arbedwr ynni</translation>
 <translation id="2355604387869345912">Troi Rhannu Cysylltiad Sydyn ymlaen</translation>
 <translation id="2356070529366658676">Gofyn</translation>
 <translation id="2357330829548294574">Tynnu <ph name="USER_NAME" /></translation>
@@ -5669,6 +5670,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
 <translation id="629730747756840877">Cyfrif</translation>
 <translation id="6298962879096096191">Defnyddio Google Play i osod apiau Android</translation>
+<translation id="6300125580697461004">Anfon adborth am yr arbedwr ynni</translation>
 <translation id="6300177430812514606">Ni chaniateir gorffen anfon na derbyn data</translation>
 <translation id="630065524203833229">Gadael</translation>
 <translation id="6300718114348072351">Ni ellid ffurfweddu <ph name="PRINTER_NAME" /> yn awtomatig. Nodwch fanylion mwy fanwl am yr argraffydd. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
@@ -5869,6 +5871,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6494327278868541139">Dangos manylion gwell amddiffyniad</translation>
 <translation id="6494445798847293442">Nid yw'n Awdurdod Ardystio</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Mae cynnwys sensitif neu beryglus yn y data hyn}=1{Mae cynnwys sensitif neu beryglus yn y ffeil hon}two{Mae cynnwys sensitif neu beryglus yn y ffeiliau hyn}few{Mae cynnwys sensitif neu beryglus yn y ffeiliau hyn}many{Mae cynnwys sensitif neu beryglus yn y ffeiliau hyn}other{Mae cynnwys sensitif neu beryglus yn y ffeiliau hyn}}</translation>
+<translation id="6497548114956205206">Dysgu rhagor am yr arbedwr ynni</translation>
 <translation id="6497784818439587832">Newidiwch y maint dangos i wneud eitemau ar eich sgrîn yn llai neu'n fwy</translation>
 <translation id="6497789971060331894">Sgrolio tuag yn ôl gyda'r llygoden</translation>
 <translation id="6498249116389603658">&amp;Eich holl ieithoedd</translation>
@@ -6927,6 +6930,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7495778526395737099">Wedi anghofio eich hen gyfrinair?</translation>
 <translation id="7497981768003291373">Nid ydych wedi dal logiau testun WebRTC yn ddiweddar.</translation>
 <translation id="7501957181231305652">neu</translation>
+<translation id="7502220299952823578">Ychwanegu at y rhestr "cadw'r gwefannau hyn yn weithredol bob amser"</translation>
 <translation id="7503191893372251637">Math o Dystysgrif Netscape</translation>
 <translation id="7503985202154027481">Bydd cofnod o'ch ymweliad â'r wefan hon yn cael ei gadw ar eich allwedd ddiogelwch.</translation>
 <translation id="750509436279396091">Agor y ffolder lawrlwythiadau</translation>
@@ -7435,6 +7439,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7955177647836564772">Os caiff Smart Lock ei droi ymlaen a bod eich ffôn wedi'i ddatgloi, nid oes angen i chi roi cyfrinair na PIN</translation>
 <translation id="7956373551960864128">Argraffyddion rydych wedi'u cadw</translation>
 <translation id="7957074856830851026">Gweld gwybodaeth am y ddyfais, megis ei rhif cyfresol neu rif adnabod ased</translation>
+<translation id="7957186326898555886">Anfon adborth am yr arbedwr cof</translation>
 <translation id="7959074893852789871">Roedd y ffeil yn cynnwys sawl tystysgrif, ac ni fewnforiwyd rhai ohonynt:</translation>
 <translation id="7959665254555683862">Tab Anhysbys &amp;Newydd</translation>
 <translation id="7961015016161918242">Byth</translation>
@@ -7854,6 +7859,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8340547030807793004">Rhagor o gamau gweithredu ar gyfer <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Adolygwch <ph name="BEGIN_BOLD" />1 wefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}zero{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}two{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} wefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}few{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}many{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}other{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}}</translation>
 <translation id="8342221978608739536">Heb geisio</translation>
+<translation id="8342399870062010251">Dysgu rhagor am yr arbedwr cof</translation>
 <translation id="8342861492835240085">Dewis casgliad</translation>
 <translation id="8345848587667658367">Gallwch bellach weld lluniau, cyfryngau, hysbysiadau ac apiau diweddar eich ffôn</translation>
 <translation id="8347227221149377169">Ffeiliau i'w hargraffu</translation>
@@ -8062,6 +8068,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8549316893834449916">Byddwch yn defnyddio'ch Cyfrif Google i fewngofnodi i'ch Chromebook - yr un cyfrif rydych yn ei ddefnyddio ar gyfer Gmail, Drive, YouTube, a rhagor.</translation>
 <translation id="8551388862522347954">Trwyddedau</translation>
 <translation id="8551588720239073785">Gosodiadau dyddiad ac amser</translation>
+<translation id="8552102814346875916">Cadw i'r rhestr "cadw'r gwefannau hyn yn weithredol bob amser"</translation>
 <translation id="8553342806078037065">Rheoli pobl eraill</translation>
 <translation id="8554899698005018844">Dim iaith</translation>
 <translation id="855604308879080518">Gadewch i apiau Android gyrchu dyfeisiau USB ar y Chromebook hwn. Gofynnir am ganiatâd bob tro y byddwch yn plygio dyfais USB i mewn. Bydd apiau Android unigol yn gofyn am ganiatâd ychwanegol.</translation>

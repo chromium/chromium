@@ -1504,6 +1504,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2352810082280059586">Notatki na ekranie blokady są automatycznie zapisywane w aplikacji <ph name="LOCK_SCREEN_APP_NAME" />. Ostatnia notatka pozostanie na ekranie blokady.</translation>
 <translation id="2353297238722298836">Zezwolono na dostęp do kamery i mikrofonu</translation>
 <translation id="2355314311311231464">Wystąpił błąd obsługi administracyjnej, ponieważ nie udało się pobrać szczegółów konta. Spróbuj jeszcze raz. Kod błędu: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">Opcje oszczędzania energii</translation>
 <translation id="2355604387869345912">Włącz błyskawiczne połączenie w tetheringu</translation>
 <translation id="2356070529366658676">Pytaj</translation>
 <translation id="2357330829548294574">Usuń: <ph name="USER_NAME" /></translation>
@@ -5636,6 +5637,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6295855836753816081">Zapisuję…</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6298962879096096191">Użyj Google Play, by zainstalować aplikacje na Androida</translation>
+<translation id="6300125580697461004">Prześlij opinię o oszczędzaniu energii</translation>
 <translation id="6300177430812514606">Nie zezwolono na kończenie wysyłania i otrzymywania danych</translation>
 <translation id="630065524203833229">Z&amp;akończ</translation>
 <translation id="6300718114348072351">Nie udało się automatycznie skonfigurować drukarki <ph name="PRINTER_NAME" />. Określ zaawansowane ustawienia drukarki. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -5836,6 +5838,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6494327278868541139">Pokaż szczegóły silniejszej ochrony</translation>
 <translation id="6494445798847293442">To nie jest urząd certyfikacji</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Te dane zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym.}=1{Ten plik zawiera treści niebezpieczne lub treści o charakterze kontrowersyjnym.}few{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym.}many{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym.}other{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym.}}</translation>
+<translation id="6497548114956205206">Więcej informacji o oszczędzaniu energii</translation>
 <translation id="6497784818439587832">Umożliwia zmienianie rozmiaru wyświetlacza, aby elementy na ekranie były mniejsze lub większe</translation>
 <translation id="6497789971060331894">Odwrotne przewijanie myszą</translation>
 <translation id="6498249116389603658">&amp;Wszystkie Twoje języki</translation>
@@ -6888,6 +6891,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7495778526395737099">Nie pamiętasz starego hasła?</translation>
 <translation id="7497981768003291373">Nie ma zapisanych ostatnio logów tekstowych WebRTC.</translation>
 <translation id="7501957181231305652">lub</translation>
+<translation id="7502220299952823578">Dodaj do listy „Zawsze pozostawiaj te witryny aktywne”</translation>
 <translation id="7503191893372251637">Typ certyfikatu firmy Netscape</translation>
 <translation id="7503985202154027481">Wizyta na tej stronie zostanie zarejestrowana na Twoim kluczu bezpieczeństwa.</translation>
 <translation id="750509436279396091">Otwórz folder pobierania</translation>
@@ -7396,6 +7400,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7955177647836564772">Jeśli funkcja Smart Lock jest włączona, a telefon odblokowany, nie musisz wpisywać hasła ani kodu PIN</translation>
 <translation id="7956373551960864128">Twoje zapisane drukarki</translation>
 <translation id="7957074856830851026">Sprawdzanie informacji z urządzenia, takich jak numer seryjny lub identyfikator zasobu</translation>
+<translation id="7957186326898555886">Prześlij opinię o oszczędzaniu pamięci</translation>
 <translation id="7959074893852789871">Plik zawierał wiele certyfikatów, z których niektóre nie zostały zaimportowane:</translation>
 <translation id="7959665254555683862">Nowa &amp;karta incognito</translation>
 <translation id="7961015016161918242">Nigdy</translation>
@@ -7816,6 +7821,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8340547030807793004">Więcej działań dotyczących: <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Sprawdź <ph name="BEGIN_BOLD" />1 witrynę<ph name="END_BOLD" />, która ostatnio wysłała wiele powiadomień}few{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryny<ph name="END_BOLD" />, które ostatnio wysłały wiele powiadomień}many{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryn<ph name="END_BOLD" />, które ostatnio wysłały wiele powiadomień}other{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryny<ph name="END_BOLD" />, która ostatnio wysłała wiele powiadomień}}</translation>
 <translation id="8342221978608739536">Nie wiem</translation>
+<translation id="8342399870062010251">Więcej informacji o oszczędzaniu pamięci</translation>
 <translation id="8342861492835240085">Wybierz kolekcję</translation>
 <translation id="8345848587667658367">Możesz teraz wyświetlać najnowsze zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
@@ -8024,6 +8030,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8549316893834449916">Do logowania się na Chromebooku będziesz używać swojego konta Google – tego samego co w Gmailu, na Dysku, w YouTube i w innych usługach Google.</translation>
 <translation id="8551388862522347954">Licencje</translation>
 <translation id="8551588720239073785">Ustawienia daty i godziny</translation>
+<translation id="8552102814346875916">Zapisz na liście „Zawsze pozostawiaj te witryny aktywne”</translation>
 <translation id="8553342806078037065">Zarządzaj innymi osobami</translation>
 <translation id="8554899698005018844">Brak języka</translation>
 <translation id="855604308879080518">Zezwalaj aplikacjom na Androida na dostęp do urządzeń USB na tym Chromebooku. Prośba o pozwolenie będzie wysyłana za każdym razem, gdy podłączysz urządzenie USB. Poszczególne aplikacje na Androida będą prosić o dodatkowe uprawnienia.</translation>
