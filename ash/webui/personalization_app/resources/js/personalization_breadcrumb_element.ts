@@ -226,10 +226,6 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     return this.i18n('ariaLabelHome');
   }
 
-  private onBackClick_() {
-    window.history.back();
-  }
-
   private onBreadcrumbClick_(e: RepeaterEvent) {
     const index = e.model.index;
     // stay in same page if the user clicks on the last breadcrumb,
