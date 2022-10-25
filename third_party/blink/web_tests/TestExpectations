@@ -3379,6 +3379,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-fonts/font-size-adjust-012.html [ Failure ]
 crbug.com/626703 external/wpt/fetch/cross-origin-resource-policy/script-loads.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/element-script.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/element-script.sub.html [ Timeout ]

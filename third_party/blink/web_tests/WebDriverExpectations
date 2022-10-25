@@ -88,6 +88,11 @@ crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shado
 crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shadow_root/find.py>>test_find_element[xpath-//a] [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/execute_async_script/node.py>>test_document_as_object [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/execute_async_script/node.py>>test_element_reference[frame] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/execute_async_script/node.py>>test_element_reference[window] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/execute_script/node.py>>test_element_reference[frame] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/execute_script/node.py>>test_element_reference[window] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/element_send_keys/form_controls.py>>test_date [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/new_session/create_firstMatch.py>>test_valid[browserVersion-None] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_mouse.py>>test_drag_and_drop_with_draggable_element[0] [ Failure ]
