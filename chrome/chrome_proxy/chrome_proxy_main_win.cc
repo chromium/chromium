@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "chrome/common/chrome_switches.h"
 
 namespace {
 
@@ -58,6 +59,15 @@ int WINAPI wWinMain(HINSTANCE instance,
   CHECK_EQ(base::FilePath(argv[0]).BaseName().value(), kChromeProxyExecutable);
   for (size_t i = 1; i < argv.size(); ++i)
     chrome_command_line.AppendArgNative(argv[i]);
+
+  // Pass to Chrome the path of the shortcut, if any, that launched
+  // chrome_proxy.exe. This is used to record LaunchMode metrics.
+  STARTUPINFOW si = {sizeof(si)};
+  ::GetStartupInfoW(&si);
+  if (si.dwFlags & STARTF_TITLEISLINKNAME) {
+    chrome_command_line.AppendSwitchNative(switches::kSourceShortcut,
+                                           si.lpTitle);
+  }
 
   base::LaunchOptions launch_options;
   launch_options.current_directory = chrome_dir;

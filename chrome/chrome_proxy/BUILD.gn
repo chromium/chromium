@@ -16,6 +16,7 @@ executable("chrome_proxy") {
     ":chrome_proxy_version",
     "//base",
     "//chrome/app/version_assembly:chrome_exe_manifest",
+    "//chrome/common:non_code_constants",
   ]
 
   data_deps = [ "//chrome/app/version_assembly:version_assembly_manifest" ]

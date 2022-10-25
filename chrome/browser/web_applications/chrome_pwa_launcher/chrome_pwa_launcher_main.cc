@@ -59,6 +59,13 @@ web_app::WebAppLauncherLaunchResult LaunchPwa(
   command_line.AppendSwitchASCII(switches::kPwaLauncherVersion,
                                  PRODUCT_VERSION);
 
+  // Pass to Chrome the path of the shortcut, if any, that started the launcher.
+  // This is used to record LaunchMode metrics.
+  STARTUPINFOW si = {sizeof(si)};
+  ::GetStartupInfoW(&si);
+  if (si.dwFlags & STARTF_TITLEISLINKNAME)
+    command_line.AppendSwitchNative(switches::kSourceShortcut, si.lpTitle);
+
   base::LaunchOptions launch_options;
   launch_options.current_directory = chrome_path.DirName();
   launch_options.grant_foreground_privilege = true;
