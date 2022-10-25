@@ -667,6 +667,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsExperimentalRgbKeyboardPatternsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsExternalKeyboardInDiagnosticsAppEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFaceMLSwaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairLowPowerEnabled();

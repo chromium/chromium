@@ -4,6 +4,11 @@
 
 module ash.mojom.face_ml_app;
 
+struct UserInformation {
+  string user_name;   // User name.
+  bool is_signed_in;  // Whether user has signed in FaceML.
+};
+
 // Implemented in the browser process and is used for a renderer to establish
 // bidirectonal communication.
 interface PageHandlerFactory {
@@ -15,6 +20,8 @@ interface PageHandlerFactory {
 // Implemented in the browser process. The Face ML App WebUI uses
 // this interface to request information from the browser process.
 interface PageHandler {
+  // Returns the basic information of current Chrome user.
+  GetCurrentUserInformation() => (UserInformation user_info);
 };
 
 // Lives in the renderer process. Implemented in JavaScript to handle requests

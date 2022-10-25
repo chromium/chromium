@@ -2442,6 +2442,10 @@ bool IsExternalKeyboardInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableExternalKeyboardsInDiagnostics);
 }
 
+bool IsFaceMLSwaEnabled() {
+  return base::FeatureList::IsEnabled(kFaceMLApp);
+}
+
 bool IsFamilyLinkOnSchoolDeviceEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
 }

@@ -17,6 +17,7 @@ static_library("face_ml_app_ui") {
     "face_ml_page_handler.h",
     "url_constants.cc",
     "url_constants.h",
+    "user_provider.h",
   ]
 
   deps = [

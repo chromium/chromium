@@ -17,6 +17,13 @@ window.pageHandler = pageHandler;
 window.callbackRouter = callbackRouter;
 
 (async () => {
+  const content = document.querySelector<HTMLElement>('#app-top-bar')!;
+  content.textContent = 'Welcome to the Face ML app!';
+  const {userInfo} = await pageHandler.getCurrentUserInformation();
+  document.querySelector<HTMLInputElement>('#user-name')!.value =
+      userInfo.userName;
+  document.querySelector<HTMLInputElement>('#is-signed-in')!.value =
+      userInfo.isSignedIn ? 'Signed In' : 'Not signed in';
   const topbar = document.querySelector<HTMLElement>('#app-top-bar')!;
   topbar.style.display = 'none';
   //(TODO:b/243653034): Populate topbar via page handler.

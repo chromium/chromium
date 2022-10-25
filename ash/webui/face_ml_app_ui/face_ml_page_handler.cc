@@ -6,8 +6,12 @@
 
 #include <utility>
 
+#include "base/bind.h"
+#include "base/task/thread_pool.h"
+
 namespace ash {
-FaceMLPageHandler::FaceMLPageHandler() = default;
+FaceMLPageHandler::FaceMLPageHandler(FaceMLAppUI* face_ml_app_ui)
+    : face_ml_app_ui_(*face_ml_app_ui) {}
 FaceMLPageHandler::~FaceMLPageHandler() = default;
 
 void FaceMLPageHandler::BindInterface(
@@ -17,4 +21,10 @@ void FaceMLPageHandler::BindInterface(
   page_.Bind(std::move(pending_page));
 }
 
+void FaceMLPageHandler::GetCurrentUserInformation(
+    GetCurrentUserInformationCallback callback) {
+  mojom::face_ml_app::UserInformation user_info =
+      face_ml_app_ui_->GetUserProvider()->GetCurrentUserInformation();
+  std::move(callback).Run(user_info.Clone());
+}
 }  // namespace ash

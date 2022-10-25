@@ -7,16 +7,21 @@
 
 #include "ash/webui/face_ml_app_ui/face_ml_app_ui.h"
 #include "ash/webui/face_ml_app_ui/mojom/face_ml_app_ui.mojom.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
+
+class FaceMLAppUI;
+
 // Implements the PageHandler interface.
 class FaceMLPageHandler : public mojom::face_ml_app::PageHandler {
  public:
-  FaceMLPageHandler();
+  explicit FaceMLPageHandler(FaceMLAppUI* face_ml_app_ui);
   ~FaceMLPageHandler() override;
 
   FaceMLPageHandler(const FaceMLPageHandler&) = delete;
@@ -27,8 +32,12 @@ class FaceMLPageHandler : public mojom::face_ml_app::PageHandler {
       mojo::PendingRemote<mojom::face_ml_app::Page> pending_page);
 
  private:
+  void GetCurrentUserInformation(
+      GetCurrentUserInformationCallback callback) override;
+
   mojo::Receiver<mojom::face_ml_app::PageHandler> receiver_{this};
   mojo::Remote<mojom::face_ml_app::Page> page_;
+  base::raw_ref<FaceMLAppUI> face_ml_app_ui_;  // Owns |this|.
 };
 
 }  // namespace ash

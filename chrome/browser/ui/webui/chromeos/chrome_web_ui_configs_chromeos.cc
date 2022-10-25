@@ -9,7 +9,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
-#include "ash/webui/face_ml_app_ui/face_ml_app_ui.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_ui.h"
@@ -47,7 +46,6 @@ void RegisterAshChromeWebUIConfigs() {
                           ChromeCameraAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::FaceMLAppUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)

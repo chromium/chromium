@@ -5,9 +5,12 @@
 #ifndef ASH_WEBUI_FACE_ML_APP_UI_FACE_ML_APP_UI_H_
 #define ASH_WEBUI_FACE_ML_APP_UI_FACE_ML_APP_UI_H_
 
+#include <memory>
+
 #include "ash/webui/face_ml_app_ui/face_ml_page_handler.h"
 #include "ash/webui/face_ml_app_ui/mojom/face_ml_app_ui.mojom.h"
 #include "ash/webui/face_ml_app_ui/url_constants.h"
+#include "ash/webui/face_ml_app_ui/user_provider.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,13 +26,15 @@ class FaceMLPageHandler;
 class FaceMLAppUI : public ui::MojoWebUIController,
                     public mojom::face_ml_app::PageHandlerFactory {
  public:
-  explicit FaceMLAppUI(content::WebUI* web_ui);
+  FaceMLAppUI(content::WebUI* web_ui,
+              std::unique_ptr<UserProvider> user_provider);
   FaceMLAppUI(const FaceMLAppUI&) = delete;
   FaceMLAppUI& operator=(const FaceMLAppUI&) = delete;
   ~FaceMLAppUI() override;
 
   void BindInterface(
       mojo::PendingReceiver<mojom::face_ml_app::PageHandlerFactory> factory);
+  UserProvider* GetUserProvider() { return user_provider_.get(); }
 
  private:
   // mojom::face_ml_app::PageHandlerFactory:
@@ -43,18 +48,10 @@ class FaceMLAppUI : public ui::MojoWebUIController,
 
   // Called navigating to a WebUI page to create page handler.
   void WebUIPrimaryPageChanged(content::Page& page) override;
+  std::unique_ptr<UserProvider> user_provider_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
-
-// The WebUIConfig for chrome://face-ml/.
-class FaceMLAppUIConfig : public SystemWebAppUIConfig<FaceMLAppUI> {
- public:
-  FaceMLAppUIConfig()
-      : SystemWebAppUIConfig(kChromeUIFaceMLAppHost,
-                             SystemWebAppType::FACE_ML) {}
-};
-
 }  // namespace ash
 
 #endif  // ASH_WEBUI_FACE_ML_APP_UI_FACE_ML_APP_UI_H_
