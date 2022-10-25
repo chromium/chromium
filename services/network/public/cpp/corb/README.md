@@ -160,7 +160,7 @@ Decisions are based on four factors:
 
 | | "ORB v0.1" | ORB | Comment |
 | --- | --- | --- | --- |
-| MIME type: JavaScript, text/css, image/svg+xml | n/a (allow, unless it "sniffs" wrong. This follows from the rules below.) | **allow** (without sniffing) | Known-good "no-cors" MIME types.
+| MIME type: JavaScript | n/a (allow, unless it "sniffs" wrong. This follows from the rules below.) | **allow** (without sniffing) | Known-good "no-cors" MIME types.
 | MIME type: HTML, JSON, XML, text/plain | **block** (if nosniff) | **block** (if nosniff) | MIME types that have historically been accepted in "no-cors" requests. We hope developers set the "nosniff" header.
 | MIME type: zip + gzip, various MS office types; protobuf, text/csv | **block** | **block** | "Never sniff" MIME types. Not allowed in any "no-cors" requests.
 | MIME type: audio/* or video/* | **allow** | **block** (unless it "sniffs" okay. This follows from the rules below. I'd expect most resources to "sniff" okay, though, so in practice these would likely be mostly allowed.) | "ORB v0.1" relaxes audio + video handling, and just lets all audio + video MIME types pass.
