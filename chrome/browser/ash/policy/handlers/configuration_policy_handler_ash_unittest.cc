@@ -309,45 +309,6 @@ TEST(NetworkConfigurationPolicyHandlerTest, Sanitization) {
   EXPECT_EQ(std::string::npos, sanitized_onc.find("pass"));
 }
 
-TEST(PinnedLauncherAppsPolicyHandler, PrefTranslation) {
-  base::Value list(base::Value::Type::LIST);
-  PolicyMap policy_map;
-  PrefValueMap prefs;
-  base::Value expected_pinned_apps(base::Value::Type::LIST);
-  PinnedLauncherAppsPolicyHandler handler;
-
-  policy_map.Set(key::kPinnedLauncherApps, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
-  handler.ApplyPolicySettings(policy_map, &prefs);
-  EXPECT_EQ(expected_pinned_apps,
-            GetPref(&prefs, prefs::kPolicyPinnedLauncherApps));
-
-  // Extension IDs are OK.
-  base::Value entry1("abcdefghijklmnopabcdefghijklmnop");
-  base::Value entry1_dict(base::Value::Type::DICTIONARY);
-  entry1_dict.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, entry1.Clone());
-  expected_pinned_apps.Append(std::move(entry1_dict));
-  list.Append(entry1.Clone());
-
-  // Android appds are OK.
-  base::Value entry2("com.google.android.gm");
-  auto entry2_dict = base::Value(base::Value::Type::DICTIONARY);
-  entry2_dict.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, entry2.Clone());
-  expected_pinned_apps.Append(std::move(entry2_dict));
-  list.Append(entry2.Clone());
-
-  // Anything else is not OK.
-  base::Value entry3("invalid");
-  list.Append(entry3.Clone());
-
-  policy_map.Set(key::kPinnedLauncherApps, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
-  prefs.Clear();
-  handler.ApplyPolicySettings(policy_map, &prefs);
-  EXPECT_EQ(expected_pinned_apps,
-            GetPref(&prefs, prefs::kPolicyPinnedLauncherApps));
-}
-
 TEST_F(LoginScreenPowerManagementPolicyHandlerTest, Empty) {
   PolicyMap policy_map;
   LoginScreenPowerManagementPolicyHandler handler(chrome_schema_);

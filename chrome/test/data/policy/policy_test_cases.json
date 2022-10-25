@@ -8774,11 +8774,40 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "policy_pinned_launcher_apps": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "PinnedLauncherApps": []
         },
         "prefs": {
           "policy_pinned_launcher_apps": {}
+        }
+      },
+      {
+        "policies": {
+          "PinnedLauncherApps": [
+            "abcdefghijklmnopabcdefghijklmnop",
+            "com.google.android.pm",
+            "https://google.com",
+            "camera",
+            "unknown_id_should_be_filtered"
+          ]
+        },
+        "prefs": {
+          "policy_pinned_launcher_apps" : {
+            "value": [
+              { "id": "abcdefghijklmnopabcdefghijklmnop" },
+              { "id": "com.google.android.pm" },
+              { "id": "https://google.com" },
+              { "id": "camera" }
+            ]
+          }
         }
       }
     ]
@@ -20159,6 +20188,15 @@
           }, {
             "policy_id": "pnomlkjighijklmnopabcdefghijklff",
             "file_extensions": ["docx", "pdf"]
+          }, {
+            "policy_id": "com.android.google.pm",
+            "file_extensions": ["arc", "arcpp"]
+          }, {
+            "policy_id": "projector",
+            "file_extensions": ["proj"]
+          }, {
+            "policy_id": "unknown_id_should_be_filtered",
+            "file_extensions": ["filtered"]
           }]
         },
         "prefs": {
@@ -20166,7 +20204,10 @@
             "value": {
               ".maps": "https://google.com/maps",
               ".docx": "pnomlkjighijklmnopabcdefghijklff",
-              ".pdf": "pnomlkjighijklmnopabcdefghijklff"
+              ".pdf": "pnomlkjighijklmnopabcdefghijklff",
+              ".arc": "com.android.google.pm",
+              ".arcpp": "com.android.google.pm",
+              ".proj": "projector"
             }
           }
         }

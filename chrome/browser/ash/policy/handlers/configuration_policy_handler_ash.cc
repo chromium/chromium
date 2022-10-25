@@ -22,6 +22,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -342,25 +343,20 @@ NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
 PinnedLauncherAppsPolicyHandler::PinnedLauncherAppsPolicyHandler()
     : ListPolicyHandler(key::kPinnedLauncherApps, base::Value::Type::STRING) {}
 
-PinnedLauncherAppsPolicyHandler::~PinnedLauncherAppsPolicyHandler() {}
+PinnedLauncherAppsPolicyHandler::~PinnedLauncherAppsPolicyHandler() = default;
 
 bool PinnedLauncherAppsPolicyHandler::CheckListEntry(const base::Value& value) {
-  // Assume it's an Android app if it contains a dot.
-  const std::string& str = value.GetString();
-  if (str.find(".") != std::string::npos)
-    return true;
-
-  // Otherwise, check if it's an extension id.
-  return crx_file::id_util::IdIsValid(str);
+  const std::string policy_id = value.GetString();
+  return apps_util::IsSupportedAppTypePolicyId(policy_id);
 }
 
 void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
                                                 PrefValueMap* prefs) {
   DCHECK(filtered_list.is_list());
   base::Value::List pinned_apps_list;
-  for (const base::Value& entry : filtered_list.GetList()) {
-    base::Value app_dict(base::Value::Type::DICTIONARY);
-    app_dict.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, entry.Clone());
+  for (base::Value& entry : filtered_list.GetList()) {
+    base::Value::Dict app_dict;
+    app_dict.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, std::move(entry));
     pinned_apps_list.Append(std::move(app_dict));
   }
   prefs->SetValue(prefs::kPolicyPinnedLauncherApps,
@@ -387,12 +383,19 @@ bool DefaultHandlersForFileExtensionsPolicyHandler::CheckPolicySettings(
 
   base::flat_map<std::string, std::string> file_extension_to_policy_id;
 
-  for (const auto& policy_entry : policy_value->GetList()) {
-    const auto& policy_entry_dict = policy_entry.GetDict();
+  const auto& list = policy_value->GetList();
+  for (uint32_t index = 0; index < list.size(); index++) {
+    const auto& policy_entry_dict = list[index].GetDict();
 
     const std::string* policy_id =
         policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
     DCHECK(policy_id);
+
+    if (!apps_util::IsSupportedAppTypePolicyId(*policy_id)) {
+      errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
+                       PolicyErrorPath{index, kPolicyEntryPolicyIdKey});
+      continue;
+    }
 
     const auto* file_extensions =
         policy_entry_dict.FindList(kPolicyEntryFileExtensionsKey);
@@ -433,6 +436,10 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
 
     const std::string* policy_id =
         policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
+    if (!apps_util::IsSupportedAppTypePolicyId(*policy_id)) {
+      continue;
+    }
+
     const auto* file_extensions =
         policy_entry_dict.FindList(kPolicyEntryFileExtensionsKey);
 

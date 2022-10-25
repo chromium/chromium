@@ -13,7 +13,6 @@
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/common/policy_map.h"
-#include "components/prefs/pref_registry_simple.h"
 
 namespace policy {
 
