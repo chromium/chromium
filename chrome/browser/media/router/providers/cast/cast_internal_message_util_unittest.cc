@@ -151,8 +151,16 @@ TEST_F(CastInternalMessageUtilDeathTest,
   EXPECT_DCHECK_DEATH(message->app_message_body());
 }
 
+// TODO(crbug.com/1378312): This test sometimes times out on the Win debug bot.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_CastInternalMessageFromClientConnectString \
+  DISABLED_CastInternalMessageFromClientConnectString
+#else
+#define MAYBE_CastInternalMessageFromClientConnectString \
+  CastInternalMessageFromClientConnectString
+#endif
 TEST_F(CastInternalMessageUtilDeathTest,
-       CastInternalMessageFromClientConnectString) {
+       MAYBE_CastInternalMessageFromClientConnectString) {
   std::string message_str = R"({
       "type": "client_connect",
       "clientId": "12345",
