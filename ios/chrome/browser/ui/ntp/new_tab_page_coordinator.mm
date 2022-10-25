@@ -835,6 +835,18 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 #pragma mark - FeedControlDelegate
 
 - (FollowingFeedSortType)followingFeedSortType {
+  if (IsFollowingFeedDefaultSortTypeEnabled()) {
+    BOOL hasDefaultBeenChanged = self.prefService->GetBoolean(
+        prefs::kDefaultFollowingFeedSortTypeChanged);
+    if (hasDefaultBeenChanged) {
+      return (FollowingFeedSortType)self.prefService->GetInteger(
+          prefs::kNTPFollowingFeedSortType);
+    } else {
+      return IsDefaultFollowingFeedSortTypeGroupedByPublisher()
+                 ? FollowingFeedSortTypeByPublisher
+                 : FollowingFeedSortTypeByLatest;
+    }
+  }
   // TODO(crbug.com/1352935): Add a DCHECK to make sure the coordinator isn't
   // stopped when we check this. That would require us to use the NTPHelper to
   // get this information.
@@ -875,6 +887,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   [self.feedMetricsRecorder recordFollowingFeedSortTypeSelected:sortType];
   [self.ntpViewController setContentOffsetToTop];
   self.prefService->SetInteger(prefs::kNTPFollowingFeedSortType, sortType);
+  self.prefService->SetBoolean(prefs::kDefaultFollowingFeedSortTypeChanged,
+                               true);
   self.discoverFeedService->SetFollowingFeedSortType(sortType);
   self.feedHeaderViewController.followingFeedSortType = sortType;
 
