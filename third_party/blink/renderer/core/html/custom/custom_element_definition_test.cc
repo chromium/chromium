@@ -53,7 +53,8 @@ TEST_F(CustomElementDefinitionTest,
   Element& element = *CreateElement("a-a").InDocument(&GetDocument());
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";
-  ResetCustomElementReactionStackForTest reset_reaction_stack;
+  ResetCustomElementReactionStackForTest reset_reaction_stack(
+      GetDocument().GetAgent());
   HeapVector<Member<Command>> commands;
   commands.push_back(MakeGarbageCollected<Unreached>(
       "upgrade failure should clear the reaction queue"));

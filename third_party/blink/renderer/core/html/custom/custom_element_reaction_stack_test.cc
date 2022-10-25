@@ -10,15 +10,18 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_test_helpers.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 TEST(CustomElementReactionStackTest, one) {
   Vector<char> log;
+  ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   HeapVector<Member<Command>> commands;
   commands.push_back(MakeGarbageCollected<Log>('a', log));
@@ -33,9 +36,11 @@ TEST(CustomElementReactionStackTest, one) {
 
 TEST(CustomElementReactionStackTest, multipleElements) {
   Vector<char> log;
+  ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -59,9 +64,11 @@ TEST(CustomElementReactionStackTest, multipleElements) {
 
 TEST(CustomElementReactionStackTest, popTopEmpty) {
   Vector<char> log;
+  ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   HeapVector<Member<Command>> commands;
   commands.push_back(MakeGarbageCollected<Log>('a', log));
@@ -77,9 +84,11 @@ TEST(CustomElementReactionStackTest, popTopEmpty) {
 
 TEST(CustomElementReactionStackTest, popTop) {
   Vector<char> log;
+  ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -106,9 +115,11 @@ TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
   Vector<char> log;
 
   Element& element = *CreateElement("a");
+  ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -140,8 +151,11 @@ TEST(CustomElementReactionStackTest, oneReactionQueuePerElement) {
 
   Element& element = *CreateElement("a");
 
+  ScopedNullExecutionContext execution_context;
+
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -209,9 +223,11 @@ TEST(CustomElementReactionStackTest, enqueueFromReaction) {
   Vector<char> log;
 
   Element& element = *CreateElement("a");
+  ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> subcommands;

@@ -229,7 +229,8 @@ void CustomElementDefinition::Upgrade(Element& element) {
   if (!succeeded) {
     // 4.13.5.?: If the above steps threw an exception, then element's custom
     // element state will remain "failed".
-    CustomElementReactionStack::Current().ClearQueue(element);
+    CustomElementReactionStack::From(element.GetDocument().GetAgent())
+        .ClearQueue(element);
     return;
   }
 

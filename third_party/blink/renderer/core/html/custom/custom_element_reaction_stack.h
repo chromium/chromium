@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_STACK_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -20,33 +21,40 @@ class Element;
 // https://html.spec.whatwg.org/C/#custom-element-reactions
 class CORE_EXPORT CustomElementReactionStack final
     : public GarbageCollected<CustomElementReactionStack>,
-      public NameClient {
+      public NameClient,
+      public Supplement<Agent> {
  public:
-  CustomElementReactionStack();
+  explicit CustomElementReactionStack(Agent& agent);
   CustomElementReactionStack(const CustomElementReactionStack&) = delete;
   CustomElementReactionStack& operator=(const CustomElementReactionStack&) =
       delete;
   ~CustomElementReactionStack() override = default;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override {
     return "CustomElementReactionStack";
   }
 
+  bool IsEmpty();
   void Push();
   void PopInvokingReactions();
   void EnqueueToCurrentQueue(Element&, CustomElementReaction&);
   void EnqueueToBackupQueue(Element&, CustomElementReaction&);
   void ClearQueue(Element&);
 
-  static CustomElementReactionStack& Current();
+  static CustomElementReactionStack& From(Agent& agent);
+  static const char kSupplementName[];
 
  private:
-  friend class CustomElementReactionStackTestSupport;
+  friend class ResetCustomElementReactionStackForTest;
 
   using ElementReactionQueueMap =
       HeapHashMap<Member<Element>, Member<CustomElementReactionQueue>>;
   ElementReactionQueueMap map_;
+
+  static CustomElementReactionStack* Swap(
+      Agent& agent,
+      CustomElementReactionStack* new_stack);
 
   using ElementQueue = HeapVector<Member<Element>, 1>;
   HeapVector<Member<ElementQueue>> stack_;
@@ -55,15 +63,6 @@ class CORE_EXPORT CustomElementReactionStack final
   void InvokeBackupQueue();
   void InvokeReactions(ElementQueue&);
   void Enqueue(Member<ElementQueue>&, Element&, CustomElementReaction&);
-};
-
-class CORE_EXPORT CustomElementReactionStackTestSupport final {
- private:
-  friend class ResetCustomElementReactionStackForTest;
-
-  CustomElementReactionStackTestSupport() = delete;
-  static CustomElementReactionStack* SetCurrentForTest(
-      CustomElementReactionStack*);
 };
 
 }  // namespace blink

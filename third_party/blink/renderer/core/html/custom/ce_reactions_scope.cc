@@ -6,40 +6,26 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 
 namespace blink {
 
-CEReactionsScope* CEReactionsScope::top_of_stack_ = nullptr;
-
 CEReactionsScope::CEReactionsScope(ExecutionContext* execution_context)
-    : prev_(top_of_stack_), work_to_do_(false) {
-  top_of_stack_ = this;
-}
+    : CEReactionsScope(*execution_context->GetAgent()) {}
 
 CEReactionsScope::CEReactionsScope(Agent& agent)
-    : prev_(top_of_stack_), work_to_do_(false) {
-  top_of_stack_ = this;
+    : stack_(CustomElementReactionStack::From(agent)) {
+  stack_.Push();
 }
 
 CEReactionsScope::~CEReactionsScope() {
-  if (work_to_do_)
-    InvokeReactions();
-  top_of_stack_ = top_of_stack_->prev_;
+  stack_.PopInvokingReactions();
 }
 
 void CEReactionsScope::EnqueueToCurrentQueue(Element& element,
                                              CustomElementReaction& reaction) {
-  if (!work_to_do_) {
-    work_to_do_ = true;
-    CustomElementReactionStack::Current().Push();
-  }
-  CustomElementReactionStack::Current().EnqueueToCurrentQueue(element,
-                                                              reaction);
-}
-
-void CEReactionsScope::InvokeReactions() {
-  CustomElementReactionStack::Current().PopInvokingReactions();
+  stack_.EnqueueToCurrentQueue(element, reaction);
 }
 
 }  // namespace blink
