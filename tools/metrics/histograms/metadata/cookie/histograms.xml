@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.IsPartitionedValid" enum="BooleanValid"
     expires_after="2023-04-09">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
     If a cookie line contains the Partitioned attribute, this histogram logs
@@ -546,7 +546,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.MaxSameSiteNoneCookiesPerKey" units="units"
     expires_after="2023-04-09">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Maximum number of SameSite=None cookies that belong to a single domain on
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.PartitionCount" units="partitions"
     expires_after="2023-04-16">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     This histogram records the number of cookie jar partitions. This metric is
@@ -594,7 +594,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.PartitionedCookieCount" units="cookies"
     expires_after="2023-04-16">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     This histogram records the number of cookies in the partitioned cookie jar.
@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.PartitionedCookiesInRequest" units="cookies"
     expires_after="2023-04-16">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     This histogram records the number of partitioned cookies in requests. Only
@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.SameSiteNoneSizeBytes" units="bytes"
     expires_after="2023-04-09">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Size of SameSite=None cookies in bytes. Counted whenever a cookie is set via
@@ -924,7 +924,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV15" units="ms"
     expires_after="2022-02-01">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
     The amount of time (ms) to migrate a v14 cookie database to v15. Migration
@@ -934,7 +934,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV16" units="ms"
     expires_after="2022-02-01">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
     The amount of time (ms) to migrate a v15 cookie database to v16. Migration
@@ -944,7 +944,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV17" units="ms"
     expires_after="2022-06-01">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
     The amount of time (ms) to migrate a v16 cookie database to v17. Migration

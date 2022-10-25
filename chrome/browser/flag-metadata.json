@@ -4789,7 +4789,7 @@
   },
   {
     "name": "nonced-partitioned-cookies",
-    "owners": [ "dylancutler" ],
+    "owners": [ "dylancutler@google.com" ],
     "expiry_milestone": 112
   },
   {
@@ -5457,12 +5457,12 @@
   },
   {
     "name": "partitioned-cookies",
-    "owners": [ "dylancutler" ],
+    "owners": [ "dylancutler@google.com" ],
     "expiry_milestone": 110
   },
   {
     "name": "partitioned-cookies-bypass-origin-trial",
-    "owners": [ "dylancutler" ],
+    "owners": [ "dylancutler@google.com" ],
     "expiry_milestone": 110
   },
   {

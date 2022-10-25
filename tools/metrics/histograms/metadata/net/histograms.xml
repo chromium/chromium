@@ -4324,7 +4324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK"
     enum="Boolean" expires_after="2023-04-09">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Logged whenever a partitioned cookie is set from a renderer process, which
@@ -4338,7 +4338,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.RestrictedCookieManager.PartitionedCookiesInScript"
     units="cookies" expires_after="2023-04-16">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Logs the number of partitioned cookies accessed by a script. Logged only
@@ -4348,7 +4348,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.RestrictedCookieManager.SetPartitionedCookie"
     enum="Boolean" expires_after="2022-12-06">
-  <owner>dylancutler@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     True iff the cookie set by RestrictedCookieManager is a partitioned cookie.
