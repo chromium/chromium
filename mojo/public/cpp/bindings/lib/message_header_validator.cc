@@ -80,7 +80,8 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
     return false;
   }
 
-  const internal::ContainerValidateParams validate_params(0, false, nullptr);
+  constexpr const internal::ContainerValidateParams& validate_params =
+      internal::GetArrayValidator<0, false, nullptr>();
   if (!internal::ValidateContainer(header_v2->payload_interface_ids,
                                    validation_context, &validate_params)) {
     return false;

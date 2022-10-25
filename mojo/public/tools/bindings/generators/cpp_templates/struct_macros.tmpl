@@ -37,8 +37,8 @@
   mojo::internal::MessageFragment<
       typename decltype({{fragment}}->{{name}})::BaseType>
       {{name}}_fragment({{fragment}}.message());
-  const mojo::internal::ContainerValidateParams {{name}}_validate_params(
-      {{kind|get_container_validate_params_ctor_args|indent(10)}});
+  constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
+      {{kind|get_container_validate_params_ctor_args|indent(6)}};
   mojo::internal::Serialize<{{serializer_type}}>(
       {{input_field}}, {{name}}_fragment, &{{name}}_validate_params);
   {{fragment}}->{{name}}.Set(

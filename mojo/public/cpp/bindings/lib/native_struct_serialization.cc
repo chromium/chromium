@@ -23,16 +23,16 @@ void UnmappedNativeStructSerializerImpl::Serialize(
 
   fragment.Allocate();
   MessageFragment<Array_Data<uint8_t>> data_fragment(fragment.message());
-  const mojo::internal::ContainerValidateParams data_validate_params(0, false,
-                                                                     nullptr);
+  constexpr const ContainerValidateParams& data_validate_params =
+      GetArrayValidator<0, false, nullptr>();
   mojo::internal::Serialize<ArrayDataView<uint8_t>>(input->data, data_fragment,
                                                     &data_validate_params);
   fragment->data.Set(data_fragment.data());
 
   MessageFragment<Array_Data<Pointer<native::internal::SerializedHandle_Data>>>
       handles_fragment(fragment.message());
-  const mojo::internal::ContainerValidateParams handles_validate_params(
-      0, false, nullptr);
+  constexpr const ContainerValidateParams& handles_validate_params =
+      GetArrayValidator<0, false, nullptr>();
   mojo::internal::Serialize<
       mojo::ArrayDataView<::mojo::native::SerializedHandleDataView>>(
       input->handles, handles_fragment, &handles_validate_params);

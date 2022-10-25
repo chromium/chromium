@@ -19,8 +19,8 @@
 {%-     endif %}
 {%-   endif %}
 {%-   if kind|is_array_kind or kind|is_string_kind or kind|is_map_kind %}
-  const mojo::internal::ContainerValidateParams {{name}}_validate_params(
-      {{kind|get_container_validate_params_ctor_args|indent(6)}});
+  constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
+      {{kind|get_container_validate_params_ctor_args|indent(6)}};
   if (!mojo::internal::ValidateContainer({{field_expr}}, validation_context,
                                          &{{name}}_validate_params)) {
     return false;

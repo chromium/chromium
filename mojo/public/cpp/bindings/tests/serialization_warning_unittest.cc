@@ -22,6 +22,9 @@ namespace test {
 namespace {
 
 using mojo::internal::ContainerValidateParams;
+using mojo::internal::GetArrayOfEnumsValidator;
+using mojo::internal::GetArrayValidator;
+using mojo::internal::GetMapValidator;
 
 // Creates an array of arrays of handles (2 X 3) for testing.
 std::vector<absl::optional<std::vector<ScopedHandle>>>
@@ -159,16 +162,16 @@ TEST_F(SerializationWarningTest, ArrayOfArraysOfHandles) {
   test_array[0] = absl::nullopt;
   (*test_array[1])[0] = ScopedHandle();
 
-  ContainerValidateParams validate_params_0(
-      0, true, new ContainerValidateParams(0, true, nullptr));
+  constexpr const ContainerValidateParams& validate_params_0 =
+      GetArrayValidator<0, true, &GetArrayValidator<0, true, nullptr>()>();
   TestArrayWarning<MojomType>(std::move(test_array),
                               mojo::internal::VALIDATION_ERROR_NONE,
                               &validate_params_0);
 
   test_array = CreateTestNestedHandleArray();
   test_array[0] = absl::nullopt;
-  ContainerValidateParams validate_params_1(
-      0, false, new ContainerValidateParams(0, true, nullptr));
+  constexpr const ContainerValidateParams& validate_params_1 =
+      GetArrayValidator<0, false, &GetArrayValidator<0, true, nullptr>()>();
   TestArrayWarning<MojomType>(
       std::move(test_array),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
@@ -176,8 +179,8 @@ TEST_F(SerializationWarningTest, ArrayOfArraysOfHandles) {
 
   test_array = CreateTestNestedHandleArray();
   (*test_array[1])[0] = ScopedHandle();
-  ContainerValidateParams validate_params_2(
-      0, true, new ContainerValidateParams(0, false, nullptr));
+  constexpr const ContainerValidateParams& validate_params_2 =
+      GetArrayValidator<0, true, &GetArrayValidator<0, false, nullptr>()>();
   TestArrayWarning<MojomType>(
       std::move(test_array),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE,
@@ -191,23 +194,23 @@ TEST_F(SerializationWarningTest, ArrayOfStrings) {
   for (size_t i = 0; i < test_array.size(); ++i)
     test_array[i] = "hello";
 
-  ContainerValidateParams validate_params_0(
-      0, true, new ContainerValidateParams(0, false, nullptr));
+  constexpr const ContainerValidateParams& validate_params_0 =
+      GetArrayValidator<0, true, &GetArrayValidator<0, false, nullptr>()>();
   TestArrayWarning<MojomType>(std::move(test_array),
                               mojo::internal::VALIDATION_ERROR_NONE,
                               &validate_params_0);
 
   std::vector<absl::optional<std::string>> optional_test_array(3);
-  ContainerValidateParams validate_params_1(
-      0, false, new ContainerValidateParams(0, false, nullptr));
+  constexpr const ContainerValidateParams& validate_params_1 =
+      GetArrayValidator<0, false, &GetArrayValidator<0, false, nullptr>()>();
   TestArrayWarning<MojomType>(
       std::move(optional_test_array),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
       &validate_params_1);
 
   test_array = std::vector<std::string>(2);
-  ContainerValidateParams validate_params_2(
-      3, true, new ContainerValidateParams(0, false, nullptr));
+  constexpr const ContainerValidateParams& validate_params_2 =
+      GetArrayValidator<3, true, &GetArrayValidator<0, false, nullptr>()>();
   TestArrayWarning<MojomType>(
       std::move(test_array),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,

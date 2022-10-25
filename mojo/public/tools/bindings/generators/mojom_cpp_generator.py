@@ -987,48 +987,35 @@ class Generator(generator.Generator):
 
   def _GetContainerValidateParamsCtorArgs(self, kind):
     if mojom.IsStringKind(kind):
-      expected_num_elements = 0
-      element_is_nullable = False
-      key_validate_params = "nullptr"
-      element_validate_params = "nullptr"
-      enum_validate_func = "nullptr"
+      return 'mojo::internal::GetArrayValidator<0, false, nullptr>()'
     elif mojom.IsMapKind(kind):
-      expected_num_elements = 0
-      element_is_nullable = False
       key_validate_params = self._GetNewContainerValidateParams(mojom.Array(
           kind=kind.key_kind))
       element_validate_params = self._GetNewContainerValidateParams(mojom.Array(
           kind=kind.value_kind))
-      enum_validate_func = "nullptr"
+      return (f'mojo::internal::GetMapValidator<*{key_validate_params}, '
+              f'*{element_validate_params}>()')
     else:  # mojom.IsArrayKind(kind)
       expected_num_elements = generator.ExpectedArraySize(kind) or 0
-      element_is_nullable = mojom.IsNullableKind(kind.kind)
-      key_validate_params = "nullptr"
       element_validate_params = self._GetNewContainerValidateParams(kind.kind)
       if mojom.IsEnumKind(kind.kind):
         enum_validate_func = ("%s::Validate" %
             self._GetQualifiedNameForKind(kind.kind, internal=True,
                                           flatten_nested_kind=True))
+        return (f'mojo::internal::GetArrayOfEnumsValidator<'
+                f'{expected_num_elements}, {enum_validate_func}>()')
       else:
-        enum_validate_func = "nullptr"
-
-    if enum_validate_func == "nullptr":
-      if key_validate_params == "nullptr":
-        return "%d, %s, %s" % (expected_num_elements,
-                               "true" if element_is_nullable else "false",
-                               element_validate_params)
-      else:
-        return "%s, %s" % (key_validate_params, element_validate_params)
-    else:
-      return "%d, %s" % (expected_num_elements, enum_validate_func)
+        element_is_nullable = ('true'
+                               if mojom.IsNullableKind(kind.kind) else 'false')
+        return (f'mojo::internal::GetArrayValidator<{expected_num_elements}, '
+                f'{element_is_nullable}, {element_validate_params}>()')
 
   def _GetNewContainerValidateParams(self, kind):
     if (not mojom.IsArrayKind(kind) and not mojom.IsMapKind(kind) and
         not mojom.IsStringKind(kind)):
       return "nullptr"
 
-    return "new mojo::internal::ContainerValidateParams(%s)" % (
-        self._GetContainerValidateParamsCtorArgs(kind))
+    return f'&{self._GetContainerValidateParamsCtorArgs(kind)}'
 
   def _GetCppDataViewType(self, kind, qualified=False):
     def _GetName(input_kind):

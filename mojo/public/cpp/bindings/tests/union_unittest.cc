@@ -57,9 +57,8 @@ size_t SerializeUnion(InputType& input,
   return message->payload_buffer()->cursor() - payload_start;
 }
 
-template <typename DataViewType, typename InputType>
+template <typename DataViewType, bool nullable_elements, typename InputType>
 size_t SerializeArray(InputType& input,
-                      bool nullable_elements,
                       mojo::Message* message,
                       typename DataViewType::Data_** out_data) {
   *message = mojo::Message(0, 0, 0, 0, nullptr);
@@ -67,8 +66,8 @@ size_t SerializeArray(InputType& input,
 
   mojo::internal::MessageFragment<typename DataViewType::Data_> fragment(
       *message);
-  mojo::internal::ContainerValidateParams validate_params(0, nullable_elements,
-                                                          nullptr);
+  constexpr const mojo::internal::ContainerValidateParams& validate_params =
+      mojo::internal::GetArrayValidator<0, nullable_elements, nullptr>();
   mojo::internal::Serialize<DataViewType>(input, fragment, &validate_params);
   *out_data = fragment.is_null() ? nullptr : fragment.data();
   return message->payload_buffer()->cursor() - payload_start;
@@ -486,8 +485,8 @@ TEST(UnionTest, PodUnionInArraySerialization) {
 
   mojo::Message message;
   mojo::internal::Array_Data<internal::PodUnion_Data>* data;
-  EXPECT_EQ(40U, SerializeArray<ArrayDataView<PodUnionDataView>>(
-                     array, false, &message, &data));
+  EXPECT_EQ(40U, (SerializeArray<ArrayDataView<PodUnionDataView>, false>(
+                     array, &message, &data)));
 
   std::vector<PodUnionPtr> array2;
   mojo::internal::Deserialize<ArrayDataView<PodUnionDataView>>(data, &array2,
@@ -504,8 +503,8 @@ TEST(UnionTest, PodUnionInArraySerializationWithNull) {
 
   mojo::Message message;
   mojo::internal::Array_Data<internal::PodUnion_Data>* data;
-  EXPECT_EQ(40U, SerializeArray<ArrayDataView<PodUnionDataView>>(
-                     array, true, &message, &data));
+  EXPECT_EQ(40U, (SerializeArray<ArrayDataView<PodUnionDataView>, true>(
+                     array, &message, &data)));
 
   std::vector<PodUnionPtr> array2;
   mojo::internal::Deserialize<ArrayDataView<PodUnionDataView>>(data, &array2,
@@ -523,8 +522,8 @@ TEST(UnionTest, ObjectUnionInArraySerialization) {
 
   mojo::Message message;
   mojo::internal::Array_Data<internal::ObjectUnion_Data>* data;
-  const size_t size = SerializeArray<ArrayDataView<ObjectUnionDataView>>(
-      array, false, &message, &data);
+  const size_t size = SerializeArray<ArrayDataView<ObjectUnionDataView>, false>(
+      array, &message, &data);
   EXPECT_EQ(72U, size);
 
   std::vector<char> new_buf;
@@ -536,7 +535,8 @@ TEST(UnionTest, ObjectUnionInArraySerialization) {
           new_buf.data());
   mojo::internal::ValidationContext validation_context(
       data, static_cast<uint32_t>(size), 0, 0);
-  mojo::internal::ContainerValidateParams validate_params(0, false, nullptr);
+  constexpr const mojo::internal::ContainerValidateParams& validate_params =
+      mojo::internal::GetArrayValidator<0, false, nullptr>();
   ASSERT_TRUE(mojo::internal::Array_Data<internal::ObjectUnion_Data>::Validate(
       data, &validation_context, &validate_params));
 
@@ -675,9 +675,10 @@ TEST(UnionTest, PodUnionInMapSerialization) {
 
   using DataType = typename mojo::internal::MojomTypeTraits<MojomType>::Data;
   mojo::internal::MessageFragment<DataType> fragment(message);
-  mojo::internal::ContainerValidateParams validate_params(
-      new mojo::internal::ContainerValidateParams(0, false, nullptr),
-      new mojo::internal::ContainerValidateParams(0, false, nullptr));
+  constexpr const mojo::internal::ContainerValidateParams& validate_params =
+      mojo::internal::GetMapValidator<
+          mojo::internal::GetArrayValidator<0, false, nullptr>(),
+          mojo::internal::GetArrayValidator<0, false, nullptr>()>();
   mojo::internal::Serialize<MojomType>(map, fragment, &validate_params);
   EXPECT_EQ(120U, message.payload_buffer()->cursor() - payload_start);
 
@@ -700,9 +701,10 @@ TEST(UnionTest, PodUnionInMapSerializationWithNull) {
 
   using DataType = mojo::internal::MojomTypeTraits<MojomType>::Data;
   mojo::internal::MessageFragment<DataType> fragment(message);
-  mojo::internal::ContainerValidateParams validate_params(
-      new mojo::internal::ContainerValidateParams(0, false, nullptr),
-      new mojo::internal::ContainerValidateParams(0, true, nullptr));
+  constexpr const mojo::internal::ContainerValidateParams& validate_params =
+      mojo::internal::GetMapValidator<
+          mojo::internal::GetArrayValidator<0, false, nullptr>(),
+          mojo::internal::GetArrayValidator<0, true, nullptr>()>();
   mojo::internal::Serialize<MojomType>(map, fragment, &validate_params);
   EXPECT_EQ(120U, message.payload_buffer()->cursor() - payload_start);
 

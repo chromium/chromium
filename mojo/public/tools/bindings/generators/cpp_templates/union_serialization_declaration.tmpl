@@ -40,8 +40,8 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
         mojo::internal::Serialize<{{serializer_type}}>(
             in_{{name}}, value_fragment, false);
 {%-     elif kind|is_array_kind or kind|is_map_kind %}
-        const ContainerValidateParams {{name}}_validate_params(
-            {{kind|get_container_validate_params_ctor_args|indent(16)}});
+        constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
+            {{kind|get_container_validate_params_ctor_args|indent(6)}};
         mojo::internal::Serialize<{{serializer_type}}>(
             in_{{name}}, value_fragment, &{{name}}_validate_params);
  {%-     else %}
