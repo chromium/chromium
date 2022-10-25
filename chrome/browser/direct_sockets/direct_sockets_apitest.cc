@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/crx_file/id_util.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -39,7 +37,7 @@ std::string GenerateManifest(
     absl::optional<base::Value::Dict> socket_permissions = {}) {
   base::Value::Dict manifest;
   manifest.Set(extensions::manifest_keys::kName,
-               "Direct Sockets in Chrome Extensions");
+               "Direct Sockets in Chrome Apps");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
   manifest.Set(extensions::manifest_keys::kVersion, "1.0");
 
@@ -68,22 +66,14 @@ class DirectSocketsApiTest : public extensions::ExtensionApiTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        ::switches::kIsolatedAppOrigins,
-        extensions::Extension::CreateOriginFromExtensionId(
-            GuessFutureExtensionId())
-            .Serialize());
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "DirectSockets");
   }
 
  protected:
   extensions::TestExtensionDir& dir() { return dir_; }
 
  private:
-  std::string GuessFutureExtensionId() {
-    return crx_file::id_util::GenerateIdForPath(dir().UnpackedPath());
-  }
-
   extensions::TestExtensionDir dir_;
 };
 
@@ -162,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpApiTest, TcpReadWrite) {
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(LoadExtension(dir().UnpackedPath()));
-
   EXPECT_TRUE(listener.WaitUntilSatisfied());
+
   listener.Reply(
       base::StringPrintf("%s:%d", host_port_pair.host().c_str(), port));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -257,6 +247,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpApiTest, UdpReadWrite) {
 
   ASSERT_TRUE(LoadExtension(dir().UnpackedPath()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
+
   listener.Reply(
       base::StringPrintf("%s:%d", host_port_pair.host().c_str(), port));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();

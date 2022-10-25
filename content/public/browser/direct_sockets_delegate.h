@@ -10,10 +10,11 @@
 
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace content {
 
-class RenderFrameHost;
+class BrowserContext;
 
 // Allows the embedder to alter the logic of some operations in
 // content::DirectSocketsServiceImpl.
@@ -22,9 +23,11 @@ class CONTENT_EXPORT DirectSocketsDelegate {
   virtual ~DirectSocketsDelegate() = default;
 
   // Allows embedders to introduce additional rules for specific
-  // addresses/ports.
+  // addresses/ports. |lock_url| is the URL to which the renderer
+  // process is locked.
   virtual bool ValidateAddressAndPort(
-      content::RenderFrameHost*,
+      content::BrowserContext* browser_context,
+      const GURL& lock_url,
       const std::string& address,
       uint16_t port,
       blink::mojom::DirectSocketProtocolType) const = 0;

@@ -2293,11 +2293,6 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
     const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return !!extensions::ExtensionRegistry::Get(browser_context)
-                 ->enabled_extensions()
-                 .GetExtensionOrAppByURL(url);
-  }
   if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
     // TODO(crbug.com/1363756): Remove the GetStorageIsolationKey call.
     Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -2307,6 +2302,20 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   }
 #endif
   return false;
+}
+
+bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
+    content::BrowserContext* browser_context,
+    const GURL& lock_url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Allow restricted context APIs in Chrome Apps.
+  auto* extension = extensions::ExtensionRegistry::Get(browser_context)
+                        ->enabled_extensions()
+                        .GetExtensionOrAppByURL(lock_url);
+  return extension && extension->is_platform_app();
+#else
+  return false;
+#endif
 }
 
 bool ChromeContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(

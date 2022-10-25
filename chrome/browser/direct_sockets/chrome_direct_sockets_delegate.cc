@@ -4,7 +4,7 @@
 
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/common/socket_permission_request.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
@@ -13,31 +13,33 @@
 
 namespace {
 
-bool IsExtensionFrame(content::RenderFrameHost* frame) {
-  return frame->GetLastCommittedURL().SchemeIs(extensions::kExtensionScheme);
+bool IsLockedToExtension(const GURL& lock_url) {
+  return lock_url.SchemeIs(extensions::kExtensionScheme);
 }
 
-const extensions::Extension* GetExtensionFromFrame(
-    content::RenderFrameHost* frame) {
-  return extensions::ExtensionRegistry::Get(frame->GetBrowserContext())
+const extensions::Extension* GetExtensionByLockUrl(
+    content::BrowserContext* browser_context,
+    const GURL& lock_url) {
+  return extensions::ExtensionRegistry::Get(browser_context)
       ->enabled_extensions()
-      .GetExtensionOrAppByURL(frame->GetLastCommittedURL());
+      .GetExtensionOrAppByURL(lock_url);
 }
 
 }  // namespace
 
 bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
-    content::RenderFrameHost* frame,
+    content::BrowserContext* browser_context,
+    const GURL& lock_url,
     const std::string& address,
     uint16_t port,
     blink::mojom::DirectSocketProtocolType protocol) const {
-  if (!IsExtensionFrame(frame)) {
+  if (!IsLockedToExtension(lock_url)) {
     return true;
   }
 
   // If we're running an extension, follow the chrome.sockets.* permission
   // model.
-  auto* extension = GetExtensionFromFrame(frame);
+  auto* extension = GetExtensionByLockUrl(browser_context, lock_url);
   DCHECK(extension);
   content::SocketPermissionRequest param(
       protocol == blink::mojom::DirectSocketProtocolType::kTcp

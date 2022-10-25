@@ -7,10 +7,12 @@
 #include "build/build_config.h"
 #include "content/browser/direct_sockets/direct_udp_socket_impl.h"
 #include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
+#include "content/browser/process_lock.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -58,6 +60,12 @@ bool IsFrameSufficientlyIsolated(content::RenderFrameHost* frame) {
   if (frame->GetWebExposedIsolationLevel() >=
       content::RenderFrameHost::WebExposedIsolationLevel::
           kMaybeIsolatedApplication) {
+    return true;
+  }
+
+  if (GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
+          frame->GetBrowserContext(),
+          frame->GetProcess()->GetProcessLock().lock_url())) {
     return true;
   }
 
@@ -150,9 +158,12 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
   const uint16_t remote_port = options->remote_port;
 
   if (auto* delegate = GetDelegate();
-      delegate && !delegate->ValidateAddressAndPort(
-                      &render_frame_host(), remote_host, remote_port,
-                      blink::mojom::DirectSocketProtocolType::kTcp)) {
+      delegate &&
+      !delegate->ValidateAddressAndPort(
+          render_frame_host().GetBrowserContext(),
+          render_frame_host().GetProcess()->GetProcessLock().lock_url(),
+          remote_host, remote_port,
+          blink::mojom::DirectSocketProtocolType::kTcp)) {
     std::move(callback).Run(net::ERR_ACCESS_DENIED, absl::nullopt,
                             absl::nullopt, mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
@@ -177,9 +188,12 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
   const uint16_t remote_port = options->remote_port;
 
   if (auto* delegate = GetDelegate();
-      delegate && !delegate->ValidateAddressAndPort(
-                      &render_frame_host(), remote_host, remote_port,
-                      blink::mojom::DirectSocketProtocolType::kUdp)) {
+      delegate &&
+      !delegate->ValidateAddressAndPort(
+          render_frame_host().GetBrowserContext(),
+          render_frame_host().GetProcess()->GetProcessLock().lock_url(),
+          remote_host, remote_port,
+          blink::mojom::DirectSocketProtocolType::kUdp)) {
     std::move(callback).Run(net::ERR_ACCESS_DENIED, absl::nullopt,
                             absl::nullopt);
     return;

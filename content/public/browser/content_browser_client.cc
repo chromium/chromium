@@ -328,6 +328,12 @@ bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return false;
 }
 
+bool ContentBrowserClient::IsIsolatedContextAllowedForUrl(
+    BrowserContext* browser_context,
+    const GURL& lock_url) {
+  return false;
+}
+
 bool ContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(
     BrowserContext* context) {
   return true;

@@ -632,6 +632,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url);
 
+  // Allows the embedder to enable access to Isolated Context Web APIs for the
+  // given |lock_url| -- the URL to which the renderer process is locked.
+  // See [IsolatedContext] IDL attribute for more details.
+  virtual bool IsIsolatedContextAllowedForUrl(BrowserContext* browser_context,
+                                              const GURL& lock_url);
+
   // Checks whether isolated apps developer mode is allowed by the
   // AllowIsolatedAppsDeveloperMode policy (chrome-only, the respective override
   // can be found in ChromeContentBrowserClient). Returns true by default.
