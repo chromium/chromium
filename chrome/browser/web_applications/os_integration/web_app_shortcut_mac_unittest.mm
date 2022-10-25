@@ -357,6 +357,40 @@ TEST_F(WebAppShortcutCreatorTest, FileHandlers) {
     EXPECT_NSEQ(extensions[2], @"pig");
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
+
+  // Register extensions and mime types in a separate profile.
+  const base::FilePath profile1 =
+      base::FilePath("user_data_dir").Append("Profile 1");
+  const base::FilePath profile2 =
+      base::FilePath("user_data_dir").Append("Profile 2");
+  info_->file_handler_extensions.clear();
+  info_->handlers_per_profile[profile1].file_handler_extensions = {".cow"};
+  info_->handlers_per_profile[profile2].file_handler_extensions = {
+      ".bbq", ".pig", ".", "byobb"};
+  info_->handlers_per_profile[profile1].file_handler_mime_types = {"foo/bar"};
+  info_->handlers_per_profile[profile2].file_handler_mime_types = {"moo/cow"};
+  EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED,
+                                               ShortcutLocations()));
+  {
+    NSDictionary* plist = [NSDictionary
+        dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+    NSArray* doc_types_array = plist[app_mode::kCFBundleDocumentTypesKey];
+    EXPECT_NE(doc_types_array, nil);
+    EXPECT_EQ(1u, [doc_types_array count]);
+    NSDictionary* doc_types_dict = doc_types_array[0];
+    EXPECT_NE(doc_types_dict, nil);
+    NSArray* mime_types = doc_types_dict[app_mode::kCFBundleTypeMIMETypesKey];
+    EXPECT_NE(mime_types, nil);
+    NSArray* extensions = doc_types_dict[app_mode::kCFBundleTypeExtensionsKey];
+    EXPECT_NE(extensions, nil);
+
+    EXPECT_EQ(2u, [extensions count]);
+    EXPECT_NSEQ(extensions[0], @"bbq");
+    EXPECT_NSEQ(extensions[1], @"pig");
+    EXPECT_EQ(1u, [mime_types count]);
+    EXPECT_NSEQ(mime_types[0], @"moo/cow");
+  }
+  EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
 }
 
 TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
@@ -403,6 +437,39 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
     EXPECT_EQ(2u, [handlers count]);
     EXPECT_NSEQ(handlers[0], @"mailto");
     EXPECT_NSEQ(handlers[1], @"web+testing");
+  }
+  EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
+
+  // Register protocol handlers in a separate profile.
+  const base::FilePath profile1 =
+      base::FilePath("user_data_dir").Append("Profile 1");
+  const base::FilePath profile2 =
+      base::FilePath("user_data_dir").Append("Profile 2");
+  info_->protocol_handlers.clear();
+  info_->handlers_per_profile[profile1].protocol_handlers = {"mailto"};
+  info_->handlers_per_profile[profile2].protocol_handlers = {"web+testing"};
+  EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED,
+                                               ShortcutLocations()));
+  {
+    NSDictionary* plist = [NSDictionary
+        dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
+    NSArray* protocol_types_value = plist[app_mode::kCFBundleURLTypesKey];
+    EXPECT_NE(protocol_types_value, nil);
+    EXPECT_EQ(1u, [protocol_types_value count]);
+    NSDictionary* protocol_types_dict = protocol_types_value[0];
+    EXPECT_NE(protocol_types_dict, nil);
+
+    // Verify CFBundleURLName is set.
+    EXPECT_NSEQ(
+        protocol_types_dict[app_mode::kCFBundleURLNameKey],
+        base::SysUTF8ToNSString(base::mac::BaseBundleID() +
+                                std::string(".app.") + info_->extension_id));
+
+    // Verify CFBundleURLSchemes is set, and contains the expected values.
+    NSArray* handlers = protocol_types_dict[app_mode::kCFBundleURLSchemesKey];
+    EXPECT_NE(handlers, nil);
+    EXPECT_EQ(1u, [handlers count]);
+    EXPECT_NSEQ(handlers[0], @"web+testing");
   }
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
 }

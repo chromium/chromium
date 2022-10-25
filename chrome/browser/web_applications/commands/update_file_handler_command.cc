@@ -118,12 +118,20 @@ void UpdateFileHandlerCommand::Start() {
                      &unregister_file_handlers_result));
   DCHECK_EQ(Result::kOk, unregister_file_handlers_result);
 
-  // TODO(https://crbug.com/1374916): get result from UpdateShortcuts.
-  os_integration_manager_->UpdateShortcuts(
-      app_id_, /*old_name=*/{},
-      base::BindOnce(&UpdateFileHandlerCommand::OnFileHandlerUpdated,
-                     weak_factory_.GetWeakPtr(), file_handling_enabled,
-                     Result::kOk));
+  // If we're enabling file handling, yet this app does not have any file
+  // handlers there is no need to update the shortcut, as doing so would be a
+  // no-op anyway.
+  const apps::FileHandlers* handlers = registrar_->GetAppFileHandlers(app_id_);
+  if (file_handling_enabled && (!handlers || handlers->empty())) {
+    OnFileHandlerUpdated(file_handling_enabled, Result::kOk);
+  } else {
+    // TODO(https://crbug.com/1374916): get result from UpdateShortcuts.
+    os_integration_manager_->UpdateShortcuts(
+        app_id_, /*old_name=*/{},
+        base::BindOnce(&UpdateFileHandlerCommand::OnFileHandlerUpdated,
+                       weak_factory_.GetWeakPtr(), file_handling_enabled,
+                       Result::kOk));
+  }
 #else
 
   os_integration_manager_->UpdateFileHandlers(

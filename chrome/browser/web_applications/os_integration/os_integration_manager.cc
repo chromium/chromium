@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
@@ -258,23 +259,20 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
       barrier->OnError(OsHookType::kShortcutsMenu);
   }
 
-  if (os_hooks[OsHookType::kShortcuts] || os_hooks[OsHookType::kRunOnOsLogin]) {
+  if (os_hooks[OsHookType::kRunOnOsLogin] &&
+      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
+    UnregisterRunOnOsLogin(app_id, barrier->CreateBarrierCallbackForType(
+                                       OsHookType::kRunOnOsLogin));
+  }
+
+  if (os_hooks[OsHookType::kShortcuts]) {
     std::unique_ptr<ShortcutInfo> shortcut_info = BuildShortcutInfo(app_id);
     base::FilePath shortcut_data_dir =
         internals::GetShortcutDataDir(*shortcut_info);
 
-    if (os_hooks[OsHookType::kRunOnOsLogin] &&
-        base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-      UnregisterRunOnOsLogin(
-          app_id, shortcut_info->profile_path, shortcut_info->title,
-          barrier->CreateBarrierCallbackForType(OsHookType::kRunOnOsLogin));
-    }
-
-    if (os_hooks[OsHookType::kShortcuts]) {
-      DeleteShortcuts(
-          app_id, shortcut_data_dir, std::move(shortcut_info),
-          barrier->CreateBarrierCallbackForType(OsHookType::kShortcuts));
-    }
+    DeleteShortcuts(
+        app_id, shortcut_data_dir, std::move(shortcut_info),
+        barrier->CreateBarrierCallbackForType(OsHookType::kShortcuts));
   }
   // unregistration and record errors during unregistration.
   if (os_hooks[OsHookType::kFileHandlers]) {
@@ -560,13 +558,12 @@ bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id,
                                        std::move(metrics_callback));
 }
 
-void OsIntegrationManager::UnregisterRunOnOsLogin(
-    const AppId& app_id,
-    const base::FilePath& profile_path,
-    const std::u16string& shortcut_title,
-    ResultCallback callback) {
-  ScheduleUnregisterRunOnOsLogin(sync_bridge_, app_id, profile_path,
-                                 shortcut_title, std::move(callback));
+void OsIntegrationManager::UnregisterRunOnOsLogin(const AppId& app_id,
+                                                  ResultCallback callback) {
+  ScheduleUnregisterRunOnOsLogin(
+      sync_bridge_, app_id, profile_->GetPath(),
+      base::UTF8ToUTF16(registrar_->GetAppShortName(app_id)),
+      std::move(callback));
 }
 
 void OsIntegrationManager::DeleteShortcuts(

@@ -409,6 +409,11 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC)
+  shortcut_info->handlers_per_profile =
+      AppShimRegistry::Get()->GetHandlersForApp(app->app_id());
+#endif
+
   return shortcut_info;
 }
 

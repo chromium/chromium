@@ -1142,10 +1142,24 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
   plist[app_mode::kNSHighResolutionCapableKey] = @YES;
 
   // 3. Fill in file handlers.
-  const auto file_handler_extensions =
+  // The plist needs to contain file handlers for all profiles the app is
+  // installed in. `info_->file_handler_extensions` only contains information
+  // for the current profile, so combine that with the information from
+  // `info_->handlers_per_profile`.
+  auto file_handler_extensions =
       GetFileHandlerExtensionsWithoutDot(info_->file_handler_extensions);
-  if (!file_handler_extensions.empty() ||
-      !info_->file_handler_mime_types.empty()) {
+  auto file_handler_mime_types = info_->file_handler_mime_types;
+  for (const auto& profile_handlers : info_->handlers_per_profile) {
+    if (profile_handlers.first == info_->profile_path)
+      continue;
+    auto extensions = GetFileHandlerExtensionsWithoutDot(
+        profile_handlers.second.file_handler_extensions);
+    file_handler_extensions.insert(extensions.begin(), extensions.end());
+    file_handler_mime_types.insert(
+        profile_handlers.second.file_handler_mime_types.begin(),
+        profile_handlers.second.file_handler_mime_types.end());
+  }
+  if (!file_handler_extensions.empty() || !file_handler_mime_types.empty()) {
     base::scoped_nsobject<NSMutableArray> doc_types_value(
         [[NSMutableArray alloc] init]);
     base::scoped_nsobject<NSMutableDictionary> doc_types_dict(
@@ -1159,10 +1173,10 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
                          forKey:app_mode::kCFBundleTypeExtensionsKey];
       ;
     }
-    if (!info_->file_handler_mime_types.empty()) {
+    if (!file_handler_mime_types.empty()) {
       base::scoped_nsobject<NSMutableArray> mime_types(
           [[NSMutableArray alloc] init]);
-      for (const auto& mime_type : info_->file_handler_mime_types)
+      for (const auto& mime_type : file_handler_mime_types)
         [mime_types addObject:base::SysUTF8ToNSString(mime_type)];
       [doc_types_dict setObject:mime_types
                          forKey:app_mode::kCFBundleTypeMIMETypesKey];
@@ -1172,10 +1186,21 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
   }
 
   // 4. Fill in protocol handlers
-  if (!info_->protocol_handlers.empty()) {
+  // Similarly to file handlers above, here too we need to combine handlers
+  // for the current profile with those for other profiles the app is installed
+  // in.
+  auto protocol_handlers = info_->protocol_handlers;
+  for (const auto& profile_handlers : info_->handlers_per_profile) {
+    if (profile_handlers.first == info_->profile_path)
+      continue;
+    protocol_handlers.insert(profile_handlers.second.protocol_handlers.begin(),
+                             profile_handlers.second.protocol_handlers.end());
+  }
+
+  if (!protocol_handlers.empty()) {
     base::scoped_nsobject<NSMutableArray> handlers(
         [[NSMutableArray alloc] init]);
-    for (const auto& protocol_handler : info_->protocol_handlers)
+    for (const auto& protocol_handler : protocol_handlers)
       [handlers addObject:base::SysUTF8ToNSString(protocol_handler)];
 
     plist[app_mode::kCFBundleURLTypesKey] = @[ @{

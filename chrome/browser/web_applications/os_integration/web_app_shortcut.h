@@ -25,6 +25,10 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#endif
+
 namespace base {
 class TaskRunner;
 }
@@ -140,6 +144,13 @@ struct ShortcutInfo {
   // for all profiles. The app itself has a profile switcher that may be used
   // to open windows for the various profiles. This is relevant only on macOS.
   bool is_multi_profile = false;
+
+#if BUILDFLAG(IS_MAC)
+  // On Mac OS creating shortcuts also needs some of this information for other
+  // profiles if this is a multi profile app.
+  using HandlerInfo = AppShimRegistry::HandlerInfo;
+  std::map<base::FilePath, HandlerInfo> handlers_per_profile;
+#endif
 
  private:
   // Since gfx::ImageFamily |favicon| has a non-thread-safe reference count in
