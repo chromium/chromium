@@ -4,8 +4,6 @@
 
 #include "ui/gfx/geometry/mask_filter_info.h"
 
-#include <sstream>
-
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -37,10 +35,8 @@ bool MaskFilterInfo::ApplyTransform(const Transform& transform) {
     return false;
   rounded_corner_bounds_ = RRectF(new_rect);
 
-  if (gradient_mask_ && !gradient_mask_->IsEmpty()) {
-    gradient_mask_->ApplyTransform(AxisTransform2d::FromScaleAndTranslation(
-        transform.To2dScale(), transform.To2dTranslation()));
-  }
+  if (gradient_mask_ && !gradient_mask_->IsEmpty())
+    gradient_mask_->ApplyTransform(transform);
 
   return true;
 }
@@ -60,7 +56,9 @@ std::string MaskFilterInfo::ToString() const {
   std::string result = "MaskFilterInfo{" + rounded_corner_bounds_.ToString();
 
   if (gradient_mask_)
-    result += ", gradient_mask=" + gradient_mask_->ToString() + "}";
+    result += ", gradient_mask=" + gradient_mask_->ToString();
+
+  result += "}";
 
   return result;
 }
