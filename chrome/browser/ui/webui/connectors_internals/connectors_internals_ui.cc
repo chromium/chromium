@@ -39,7 +39,8 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
       IDR_CONNECTORS_INTERNALS_INDEX_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types;");
+      "trusted-types static-types polymer-html-literal "
+      "polymer-template-event-attribute-policy;");
 
   content::WebUIDataSource::Add(profile, source);
 }

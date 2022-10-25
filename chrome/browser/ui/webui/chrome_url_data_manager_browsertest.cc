@@ -335,6 +335,9 @@ static constexpr const char* const kChromeUrls[] = {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://signin-email-confirmation",
 #endif
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    "chrome://connectors-internals",
+#endif
 #if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
     "chrome://nacl",
