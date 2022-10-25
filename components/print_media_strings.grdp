@@ -13,6 +13,10 @@
              desc="In Title Case: Media size shown to user in print preview for media ``A0''">
       A0
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A0X3_1189X2523MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A0x3''">
+      A0x3
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A10_26X37MM"
              desc="In Title Case: Media size shown to user in print preview for media ``A10''">
       A10
@@ -21,33 +25,105 @@
              desc="In Title Case: Media size shown to user in print preview for media ``A1''">
       A1
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A1X3_841X1783MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A1x3''">
+      A1x3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A1X4_841X2378MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A1x4''">
+      A1x4
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A2_420X594MM"
              desc="In Title Case: Media size shown to user in print preview for media ``A2''">
       A2
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A2X3_594X1261MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A2x3''">
+      A2x3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A2X4_594X1682MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A2x4''">
+      A2x4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A2X5_594X2102MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A2x5''">
+      A2x5
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A3_297X420MM"
              desc="In Title Case: Media size shown to user in print preview for media ``A3''">
       A3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A3_EXTRA_322X445MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A3 Extra''">
+      A3 Extra
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A3X3_420X891MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A3x3''">
+      A3x3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A3X4_420X1189MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A3x4''">
+      A3x4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A3X5_420X1486MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A3x5''">
+      A3x5
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A3X6_420X1783MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A3x6''">
+      A3x6
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A3X7_420X2080MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A3x7''">
+      A3x7
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A4_210X297MM"
              desc="In Title Case: Media size shown to user in print preview for media ``A4''">
       A4
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A4_EXTRA_235_5X322_3MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``A4-Extra''">
-      A4-Extra
+             desc="In Title Case: Media size shown to user in print preview for media ``A4 Extra''">
+      A4 Extra
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A4_TAB_225X297MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``A4-Tab''">
-      A4-Tab
+             desc="In Title Case: Media size shown to user in print preview for media ``A4 Tab''">
+      A4 Tab
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A4X3_297X630MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A4x3">
+      A4x3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A4X4_297X841MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A4x4''">
+      A4x4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A4X5_297X1051MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A4x5''">
+      A4x5
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A4X6_297X1261MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A4x6''">
+      A4x6
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A4X7_297X1471MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A4x7''">
+      A4x7
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A4X8_297X1682MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A4x8''">
+      A4x8
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_A4X9_297X1892MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``A4x9''">
+      A4x9
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A5_148X210MM"
              desc="In Title Case: Media size shown to user in print preview for media ``A5''">
       A5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A5_EXTRA_174X235MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``A5-Extra''">
-      A5-Extra
+             desc="In Title Case: Media size shown to user in print preview for media ``A5 Extra''">
+      A5 Extra
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_A6_105X148MM"
              desc="In Title Case: Media size shown to user in print preview for media ``A6''">
@@ -94,8 +170,8 @@
       Envelope B5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B5_EXTRA_201X276MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``B5-Extra''">
-      B5-Extra
+             desc="In Title Case: Media size shown to user in print preview for media ``B5 Extra''">
+      B5 Extra
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_B6C4_125X324MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope B6/C4''">
@@ -172,6 +248,50 @@
     <message name="PRINT_PREVIEW_MEDIA_ISO_DL_110X220MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope DL''.  This size is known as ``Envelope Chinese #5 / Envelope DL'' in Chinese.">
       Envelope DL
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_ID_1_53_98X85_6MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``ISO ID-1''">
+      ISO ID-1
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_RA0_860X1220MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``RA0''">
+      RA0
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_RA1_610X860MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``RA1''">
+      RA1
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_RA2_430X610MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``RA2''">
+      RA2
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_RA3_305X430MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``RA3''">
+      RA3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_RA4_215X305MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``RA4''">
+      RA4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_SRA0_900X1280MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``SRA0''">
+      SRA0
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_SRA1_640X900MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``SRA1''">
+      SRA1
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_SRA2_450X640MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``SRA2''">
+      SRA2
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_SRA3_320X450MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``SRA3''">
+      SRA3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_ISO_SRA4_225X320MM"
+             desc="In Title Case: Media size shown to user in print preview for media ``SRA4''">
+      SRA4
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JIS_B0_1030X1456MM"
              desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B0''">
