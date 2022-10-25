@@ -818,6 +818,41 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BasicBeforePrintAfterPrintSubFrame) {
   VerifyPagesPrinted(true, sub_render_frame);
 }
 
+// https://crbug.com/1372396
+//
+// There used to be a Blink bug when entering print preview with a monolithic
+// absolutely positioned box that extended into a page where the parent had no
+// representation. It could only be reproduced when entering print preview,
+// because print preview apparently enters print mode, runs a rendering
+// lifecycle update, leaves print mode *without* running a rendering lifecycle
+// update, then enter print mode a second time. When running a rendering
+// lifecycle update this time, we'd fail a DCHECK, because when leaving print
+// mode the first time, we'd mark for paint invalidation. Not handling it at
+// that point (no lifecycle update) is fine in principle, but it used to cause
+// some bad ancestry node marking when we got to the lifecycle update when
+// entering print mode for the second time.
+TEST_F(MAYBE_PrintRenderFrameHelperTest, MonolithicAbsposOverflowingParent) {
+  LoadHTML(R"HTML(
+    <style>
+      #trouble {
+        contain: size;
+        position: absolute;
+        top: 5000px;
+        width: 100px;
+        height: 100px;
+        background: lime;
+      }
+    </style>
+    <div style="position:relative; height:10000px;">
+      <div>
+        <div id="trouble"></div>
+      </div>
+    </div>
+  )HTML");
+
+  OnPrintPages();
+}
+
 #if BUILDFLAG(IS_APPLE)
 // TODO(estade): I don't think this test is worth porting to Linux. We will have
 // to rip out and replace most of the IPC code if we ever plan to improve
