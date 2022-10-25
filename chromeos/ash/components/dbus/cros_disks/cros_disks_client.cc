@@ -82,11 +82,11 @@ MountError CrosDisksMountErrorToChromeMountError(
     cros_disks::MountErrorType mount_error) {
   switch (mount_error) {
     case cros_disks::MOUNT_ERROR_NONE:
-      return MountError::kNone;
+      return MountError::kSuccess;
     case cros_disks::MOUNT_ERROR_UNKNOWN:
-      return MountError::kUnknown;
+      return MountError::kUnknownError;
     case cros_disks::MOUNT_ERROR_INTERNAL:
-      return MountError::kInternal;
+      return MountError::kInternalError;
     case cros_disks::MOUNT_ERROR_INVALID_ARGUMENT:
       return MountError::kInvalidArgument;
     case cros_disks::MOUNT_ERROR_INVALID_PATH:
@@ -132,7 +132,7 @@ MountError CrosDisksMountErrorToChromeMountError(
       return MountError::kBusy;
     default:
       LOG(ERROR) << "Unrecognised mount error code " << mount_error;
-      return MountError::kUnknown;
+      return MountError::kUnknownError;
   }
 }
 
@@ -429,20 +429,21 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
     const char kUnmountHistogramName[] = "CrosDisksClient.UnmountError";
     if (!response) {
-      UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, MountError::kUnknown);
-      std::move(callback).Run(MountError::kUnknown);
+      UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName,
+                                MountError::kUnknownError);
+      std::move(callback).Run(MountError::kUnknownError);
       return;
     }
 
     dbus::MessageReader reader(response);
     uint32_t error_code = 0;
-    MountError mount_error = MountError::kNone;
+    MountError mount_error = MountError::kSuccess;
     if (reader.PopUint32(&error_code)) {
       mount_error = CrosDisksMountErrorToChromeMountError(
           static_cast<cros_disks::MountErrorType>(error_code));
     } else {
       LOG(ERROR) << "Invalid response: " << response->ToString();
-      mount_error = MountError::kUnknown;
+      mount_error = MountError::kUnknownError;
     }
     UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, mount_error);
     std::move(callback).Run(mount_error);
@@ -596,15 +597,15 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void OnPartitionCompleted(PartitionCallback callback,
                             dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(PartitionError::kUnknown);
+      std::move(callback).Run(PartitionError::kUnknownError);
       return;
     }
-    uint32_t status = static_cast<uint32_t>(PartitionError::kUnknown);
+    uint32_t status = static_cast<uint32_t>(PartitionError::kUnknownError);
     dbus::MessageReader reader(response);
     if (!reader.PopUint32(&status)) {
       LOG(ERROR) << "Error reading SinglePartitionFormat response: "
                  << response->ToString();
-      std::move(callback).Run(PartitionError::kUnknown);
+      std::move(callback).Run(PartitionError::kUnknownError);
       return;
     }
     std::move(callback).Run(static_cast<PartitionError>(status));
@@ -684,9 +685,9 @@ std::ostream& operator<<(std::ostream& out, const MountError error) {
 #define PRINT_ERROR(s) \
   case MountError::s:  \
     return out << #s;
-    PRINT_ERROR(kNone)
-    PRINT_ERROR(kUnknown)
-    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kSuccess)
+    PRINT_ERROR(kUnknownError)
+    PRINT_ERROR(kInternalError)
     PRINT_ERROR(kInvalidArgument)
     PRINT_ERROR(kInvalidPath)
     PRINT_ERROR(kPathAlreadyMounted)
@@ -716,9 +717,9 @@ std::ostream& operator<<(std::ostream& out, const RenameError error) {
 #define PRINT_ERROR(s) \
   case RenameError::s: \
     return out << #s;
-    PRINT_ERROR(kNone)
-    PRINT_ERROR(kUnknown)
-    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kSuccess)
+    PRINT_ERROR(kUnknownError)
+    PRINT_ERROR(kInternalError)
     PRINT_ERROR(kInvalidDevicePath)
     PRINT_ERROR(kDeviceBeingRenamed)
     PRINT_ERROR(kUnsupportedFilesystem)
@@ -738,9 +739,9 @@ std::ostream& operator<<(std::ostream& out, const FormatError error) {
 #define PRINT_ERROR(s) \
   case FormatError::s: \
     return out << #s;
-    PRINT_ERROR(kNone)
-    PRINT_ERROR(kUnknown)
-    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kSuccess)
+    PRINT_ERROR(kUnknownError)
+    PRINT_ERROR(kInternalError)
     PRINT_ERROR(kInvalidDevicePath)
     PRINT_ERROR(kDeviceBeingFormatted)
     PRINT_ERROR(kUnsupportedFilesystem)
@@ -761,9 +762,9 @@ std::ostream& operator<<(std::ostream& out, const PartitionError error) {
 #define PRINT_ERROR(s)    \
   case PartitionError::s: \
     return out << #s;
-    PRINT_ERROR(kNone)
-    PRINT_ERROR(kUnknown)
-    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kSuccess)
+    PRINT_ERROR(kUnknownError)
+    PRINT_ERROR(kInternalError)
     PRINT_ERROR(kInvalidDevicePath)
     PRINT_ERROR(kDeviceBeingPartitioned)
     PRINT_ERROR(kProgramNotFound)
