@@ -10,7 +10,7 @@
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
-#include "components/js_injection/common/interfaces.mojom-forward.h"
+#include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "weblayer/browser/page_impl.h"

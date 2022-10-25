@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
