@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -58,6 +59,7 @@ import java.util.Objects;
  */
 public class LocationBarModel implements ToolbarDataProvider, LocationBarDataProvider {
     private static final int LRU_CACHE_SIZE = 10;
+
     static class SpannableDisplayTextCacheKey {
         @NonNull
         private final String mUrl;
@@ -167,6 +169,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private boolean mIsUsingBrandColor;
     private boolean mShouldShowOmniboxInOverviewMode;
     private boolean mIsShowingTabSwitcher;
+    @StartSurfaceState
+    private int mStartSurfaceState;
 
     private long mNativeLocationBarModelAndroid;
     private ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
@@ -471,14 +475,20 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     /**
-     * @return Whether the location bar is showing in overview mode. If the location bar should not
-     *  currently be showing in overview mode, returns false.
+     * Returns whether the location bar is showing and the app is in overview mode. "Overview mode"
+     * here is a catchall for "UI steady state without a selected tab." In practice, there are only
+     * two possible scenarios for overview mode: the start surface and the tab switcher, the latter
+     * of which does not show the omnibox. This effectively means that this method only returns true
+     * when the start surface homepage is showing.
      */
     @Override
     public boolean isInOverviewAndShowingOmnibox() {
         if (!mShouldShowOmniboxInOverviewMode) return false;
 
-        return mLayoutStateProvider != null && mIsShowingTabSwitcher;
+        return mLayoutStateProvider != null && mIsShowingTabSwitcher
+                && (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                        || mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
+                        || mStartSurfaceState == StartSurfaceState.SHOWING_START);
     }
 
     /**
@@ -735,6 +745,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         notifyUrlChanged();
         notifyPrimaryColorChanged();
         notifySecurityStateChanged();
+    }
+
+    /**
+     * Sets the current start surface state, which can be used to distinguish between e.g. the
+     * start-based tab switcher and the start surface homepage.
+     */
+    public void setStartSurfaceState(@StartSurfaceState int startSurfaceState) {
+        mStartSurfaceState = startSurfaceState;
     }
 
     @NativeMethods

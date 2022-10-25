@@ -97,6 +97,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private ToolbarControlContainer mControlContainer;
     private Supplier<ResourceManager> mResourceManagerSupplier;
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
+    private boolean mStartSurfaceToolbarVisible;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -175,7 +176,7 @@ public class TopToolbarCoordinator implements Toolbar {
                     isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
                     isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
                     startSurfaceLogoClickedCallback, mIsStartSurfaceRefactorEnabled,
-                    shouldCreateLogoInStartToolbar);
+                    shouldCreateLogoInStartToolbar, this::onStartSurfaceToolbarTransitionFinished);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
             mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
                     fullscreenToolbarStub, overviewModeMenuButtonCoordinator,
@@ -697,9 +698,23 @@ public class TopToolbarCoordinator implements Toolbar {
 
     private void updateToolbarLayoutVisibility() {
         assert mStartSurfaceToolbarCoordinator != null;
-        mToolbarLayout.onStartSurfaceStateChanged(
-                mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox(),
-                mStartSurfaceToolbarCoordinator.isOnHomepage());
+        // We continue to show the browsing mode toolbar while the tab switcher is fading in or out.
+        // Once this transition finishes, onStartSurfaceToolbarFinishedShowing() will reset the
+        // browsing mode toolbar's visibility to the correct value.
+        boolean showToolbar = mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox()
+                || (isShowingStartSurfaceTabSwitcher() && !mStartSurfaceToolbarVisible);
+        mToolbarLayout.onStartSurfaceStateChanged(showToolbar,
+                mStartSurfaceToolbarCoordinator.isOnHomepage(), isShowingStartSurfaceTabSwitcher());
+    }
+
+    private boolean isShowingStartSurfaceTabSwitcher() {
+        return mStartSurfaceToolbarCoordinator != null
+                && mStartSurfaceToolbarCoordinator.isShowingTabSwitcher();
+    }
+
+    private void onStartSurfaceToolbarTransitionFinished(boolean nowShowing) {
+        mStartSurfaceToolbarVisible = nowShowing;
+        updateToolbarLayoutVisibility();
     }
 
     @Override

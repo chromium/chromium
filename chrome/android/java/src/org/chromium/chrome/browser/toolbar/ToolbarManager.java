@@ -979,6 +979,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
 
             @Override
+            public void onFinishedShowing(int layoutType) {
+                if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mToolbar.onTabSwitcherTransitionFinished();
+                }
+            }
+
+            @Override
             public void onStartedHiding(
                     @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
@@ -1028,10 +1035,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
             mStartSurface = startSurface;
+            mStartSurfaceState = startSurface.getStartSurfaceState();
+            mLocationBarModel.setStartSurfaceState(mStartSurfaceState);
             if (!mIsStartSurfaceRefactorEnabled) {
                 mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
                     assert ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
                     mStartSurfaceState = newState;
+                    mLocationBarModel.setStartSurfaceState(mStartSurfaceState);
                     mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar, null);
                 };
                 // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|,

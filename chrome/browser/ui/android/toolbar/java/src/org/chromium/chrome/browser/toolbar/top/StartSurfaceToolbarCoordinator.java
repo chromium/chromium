@@ -69,7 +69,7 @@ public class StartSurfaceToolbarCoordinator {
             boolean isTabToGtsAnimationEnabled, boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
-            boolean shouldCreateLogoInToolbar) {
+            boolean shouldCreateLogoInToolbar, Callback<Boolean> finishedTransitionCallback) {
         mStub = startSurfaceToolbarStub;
 
         mPropertyModel =
@@ -78,7 +78,7 @@ public class StartSurfaceToolbarCoordinator {
                                 !StartSurfaceConfiguration
                                          .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue())
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
-                        .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
+                        .with(StartSurfaceToolbarProperties.IS_VISIBLE, false)
                         .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
                                 isGridTabSwitcherEnabled)
                         .build();
@@ -100,8 +100,8 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
                 isIncognitoModeEnabledSupplier, logoClickedCallback, isRefactorEnabled,
-                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(),
-                shouldCreateLogoInToolbar);
+                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(), shouldCreateLogoInToolbar,
+                finishedTransitionCallback);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -245,6 +245,10 @@ public class StartSurfaceToolbarCoordinator {
     /** Returns whether it's on the start surface homepage.*/
     boolean isOnHomepage() {
         return mToolbarMediator.isOnHomepage();
+    }
+
+    boolean isShowingTabSwitcher() {
+        return mToolbarMediator.isOnGridTabSwitcher();
     }
 
     /**

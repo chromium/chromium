@@ -24,12 +24,14 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,10 +47,15 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
@@ -62,6 +69,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
@@ -71,6 +79,9 @@ import org.chromium.ui.test.util.UiRestriction;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class ToolbarPhoneTest {
+    @ClassRule
+    public static DisableAnimationsTestRule sEnableAnimationsRule =
+            new DisableAnimationsTestRule(true);
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -364,6 +375,111 @@ public class ToolbarPhoneTest {
             locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
         });
         verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
+            ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+    public void
+    testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
+            Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
+        });
+
+        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        CriteriaHelper.pollUiThread(() -> {
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView.ViewHolder viewHolder =
+                    tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
+            if (viewHolder != null) {
+                viewHolder.itemView.performClick();
+                return true;
+            }
+            return false;
+        });
+        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
+            ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void
+    testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled_animationsEnabled() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
+            Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
+        });
+
+        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+            Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
+        }
+
+        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        CriteriaHelper.pollUiThread(() -> {
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView.ViewHolder viewHolder =
+                    tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
+            if (viewHolder != null) {
+                viewHolder.itemView.performClick();
+                return true;
+            }
+            return false;
+        });
+        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceDisabled() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
+            Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
+        });
+
+        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+            Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
+        }
+
+        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        CriteriaHelper.pollUiThread(() -> {
+            RecyclerView tabList = cta.findViewById(R.id.tab_list_view);
+            RecyclerView.ViewHolder viewHolder =
+                    tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
+            if (viewHolder != null) {
+                viewHolder.itemView.performClick();
+                return true;
+            }
+            return false;
+        });
+        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
     }
 
     private static class TestControlsVisibilityDelegate

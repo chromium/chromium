@@ -97,6 +97,7 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
     private CallbackController mCallbackController = new CallbackController();
+    private boolean mDestroyed;
 
     private boolean mNativeInitialized;
     private final int mDropdownStandardBackgroundColor;
@@ -297,6 +298,8 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
 
         mLocationBarMediator.destroy();
         mLocationBarMediator = null;
+
+        mDestroyed = true;
     }
 
     @Override
@@ -480,6 +483,10 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
     public LocationBarCoordinatorTablet getTabletCoordinator() {
         assert mSubCoordinator != null;
         return (LocationBarCoordinatorTablet) mSubCoordinator;
+    }
+
+    public boolean isDestroyed() {
+        return mDestroyed;
     }
 
     /** Initiates a pre-fetch of autocomplete suggestions. */

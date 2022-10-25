@@ -631,9 +631,12 @@ public abstract class ToolbarLayout
     /**
      * Called when start surface state is changed.
      * @param shouldBeVisible Whether toolbar layout should be visible.
-     * @param isShowingStartSurface Whether start surface homepage is showing.
+     * @param isShowingStartSurfaceHomepage Whether start surface homepage is showing.
+     * @param isShowingStartSurfaceTabSwitcher Whether the StartSurface-controlled TabSwitcher is
+     *         showing.
      */
-    void onStartSurfaceStateChanged(boolean shouldBeVisible, boolean isShowingStartSurface) {}
+    void onStartSurfaceStateChanged(boolean shouldBeVisible, boolean isShowingStartSurfaceHomepage,
+            boolean isShowingStartSurfaceTabSwitcher) {}
 
     /**
      * Force to hide toolbar shadow.

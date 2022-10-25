@@ -92,6 +92,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private LogoCoordinator mLogoCoordinator;
 
     private Animator mAlphaAnimator;
+    private Callback<Boolean> mFinishedTransitionCallback;
 
     StartSurfaceToolbarMediator(PropertyModel model,
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
@@ -102,7 +103,8 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
             boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
-            boolean shouldFetchDoodle, boolean shouldCreateLogoInToolbar) {
+            boolean shouldFetchDoodle, boolean shouldCreateLogoInToolbar,
+            Callback<Boolean> finishedTransitionCallback) {
         mPropertyModel = model;
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
@@ -119,6 +121,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mIdentityDiscController.addObserver(this);
         mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
         mIsRefactorEnabled = isRefactorEnabled;
+        mFinishedTransitionCallback = finishedTransitionCallback;
 
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
 
@@ -218,7 +221,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     }
 
     /** Returns whether it's on grid tab switcher surface. */
-    private boolean isOnGridTabSwitcher() {
+    boolean isOnGridTabSwitcher() {
         return mIsRefactorEnabled
                 ? mLayoutType == LayoutType.TAB_SWITCHER
                 : (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
@@ -371,6 +374,8 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private void finishAlphaAnimator(boolean shouldShowStartSurfaceToolbar) {
         mPropertyModel.set(ALPHA, 1.0f);
         mPropertyModel.set(IS_VISIBLE, shouldShowStartSurfaceToolbar);
+        mFinishedTransitionCallback.onResult(shouldShowStartSurfaceToolbar);
+
         mAlphaAnimator = null;
     }
 
