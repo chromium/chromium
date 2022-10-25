@@ -663,6 +663,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // AriaModalPrunesAXTree setting enabled, such as Mac.
   WeakMember<AXObject> active_aria_modal_dialog_;
 
+  // If non-null, this is the node that the current aria-activedescendant caused
+  // to have the selected state.
+  WeakMember<Node> last_selected_from_active_descendant_;
+
   std::unique_ptr<AXRelationCache> relation_cache_;
 
   bool processing_deferred_events_ = false;

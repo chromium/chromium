@@ -3053,6 +3053,12 @@ void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(
     PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
 }
 
+// In single selection containers, selection follows focus, so a selection
+// changed event must be fired. This ensures the AT is notified that the
+// selected state has changed, so that it does not read "unselected" as
+// the user navigates through the items. The event generator will handle
+// the correct events as long as the old and newly selected objects are marked
+// dirty.
 void AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout(Node* node) {
   DCHECK(node);
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
@@ -3061,6 +3067,16 @@ void AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout(Node* node) {
   AXObject* obj = Get(node);
   if (!obj)
     return;
+
+  // Mark the previous selected item dirty if it was selected viaa "selection
+  // follows focus".
+  if (last_selected_from_active_descendant_)
+    MarkElementDirtyWithCleanLayout(last_selected_from_active_descendant_);
+
+  // Mark the newly selected item dirty, and track it for use in the future.
+  MarkAXObjectDirtyWithCleanLayout(obj);
+  if (obj->IsSelectedFromFocus())
+    last_selected_from_active_descendant_ = node;
 
   PostNotification(obj, ax::mojom::Event::kCheckedStateChanged);
 
@@ -4476,6 +4492,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(agents_);
   visitor->Trace(document_);
   visitor->Trace(popup_document_);
+  visitor->Trace(last_selected_from_active_descendant_);
   visitor->Trace(accessible_node_mapping_);
   visitor->Trace(layout_object_mapping_);
   visitor->Trace(node_object_mapping_);
