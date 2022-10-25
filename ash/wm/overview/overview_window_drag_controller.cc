@@ -30,6 +30,7 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/aura/client/aura_constants.h"
@@ -126,23 +127,6 @@ float GetManhattanDistanceY(float point_y, const gfx::RectF& rect) {
 void RecordDrag(OverviewDragAction action) {
   base::UmaHistogramEnumeration("Ash.Overview.WindowDrag.Workflow", action);
 }
-
-// Runs the given |callback| when this object goes out of scope.
-class AtScopeExitRunner {
- public:
-  explicit AtScopeExitRunner(base::OnceClosure callback)
-      : callback_(std::move(callback)) {
-    DCHECK(!callback_.is_null());
-  }
-
-  AtScopeExitRunner(const AtScopeExitRunner&) = delete;
-  AtScopeExitRunner& operator=(const AtScopeExitRunner&) = delete;
-
-  ~AtScopeExitRunner() { std::move(callback_).Run(); }
-
- private:
-  base::OnceClosure callback_;
-};
 
 // Helps with handling the workflow where you drag an overview item from one
 // grid and drop into another grid. The challenge is that if the item represents
@@ -657,7 +641,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   // bar widget bounds. We can't do this before we attempt dropping the window
   // on a desk mini_view, since this will change where it is relative to the
   // current |location_in_screen|.
-  AtScopeExitRunner at_exit_runner{base::BindOnce([]() {
+  base::ScopedClosureRunner at_exit_runner(base::BindOnce([]() {
     // Overview might have exited if we snapped windows on both sides.
     auto* overview_controller = Shell::Get()->overview_controller();
     if (!overview_controller->InOverviewSession())
@@ -665,7 +649,7 @@ OverviewWindowDragController::CompleteNormalDrag(
 
     for (auto& grid : overview_controller->overview_session()->grid_list())
       grid->MaybeUpdateDesksWidgetBounds();
-  })};
+  }));
 
   aura::Window* target_root = GetRootWindowBeingDraggedIn();
   const bool is_dragged_to_other_display = target_root != item_->root_window();
