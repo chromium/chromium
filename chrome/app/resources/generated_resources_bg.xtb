@@ -460,6 +460,7 @@
            • изтрие „бисквитките“ и другите временни данни за сайтовете.
             <ph name="LINE_BREAKS" />
            Отметките, историята и запазените пароли няма да бъдат засегнати.</translation>
+<translation id="1425040197660226913">Качването не е възможно. Използвайте изображение, по-малко от 20 МБ.</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="142655739075382478">Приложението <ph name="APP_NAME" /> е блокирано</translation>
 <translation id="1426870617281699524">Кликнете върху „Нов опит“ и приемете подканата на компютъра си</translation>
@@ -584,6 +585,7 @@
 <translation id="1545177026077493356">Автоматичен павилионен режим</translation>
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
 <translation id="1545775234664667895">Инсталирана тема: <ph name="THEME_NAME" /></translation>
+<translation id="1546031833947068368">{COUNT,plural, =1{Прозорецът ви в режим „инкогнито“ няма да бъде отворен отново.}other{Вашите # прозореца в режим „инкогнито“ няма да бъдат отворени отново.}}</translation>
 <translation id="1546280085599573572">Това разширение промени страницата, която се показва при кликване върху бутона „Начална страница“.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> иска да инсталира <ph name="EXTENSION_TYPE" />, което може да:</translation>
 <translation id="1547808936554660006">Разбирам, че инсталираните потребителски профили за електронната SIM карта няма да бъдат премахнати чрез Powerwash</translation>
@@ -1013,6 +1015,7 @@
 <translation id="1908591798274282246">Повторно отваряне на затворената група</translation>
 <translation id="1909880997794698664">Наистина ли искате това устройство да е постоянно в павилионен режим?</translation>
 <translation id="1910721550319506122">Добре дошли!</translation>
+<translation id="1910736334623230603">Търсенето на няколко изображения не е възможно. Добавяйте само по едно.</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Затваряне</translation>
 <translation id="1916502483199172559">Стандартен червен аватар</translation>
@@ -1778,6 +1781,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2591895621127187078">Проверете имейла си, за да изберете нова парола</translation>
 <translation id="2593499352046705383">Преди да започнете, уверете се, че имате резервно копие на данните си. При инсталирането на <ph name="DEVICE_OS" /> твърдият ви диск ще бъде презаписан. Научете повече на адрес g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Потърсете с Google или въведете URL адрес</translation>
+<translation id="25957578727513093">За по-бърз достъп добавете пряк път към Google Мениджър на пароли</translation>
 <translation id="2599048253926156421">Потребителското име е копирано в буферната памет</translation>
 <translation id="2602501489742255173">Прекарайте пръст нагоре, за да започнете</translation>
 <translation id="2603115962224169880">Почистване на компютъра</translation>
@@ -2078,7 +2082,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="285241945869362924">Автоматично създава надписи за аудио- и видеосъдържание. Аудиозаписите и надписите остават на устройството ви.</translation>
 <translation id="2856776373509145513">Създаване на нов контейнер</translation>
 <translation id="2858138569776157458">Водещи сайтове</translation>
-<translation id="2859383038987078242">Провеждане на диагностични тестове на Chrome OS.</translation>
 <translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
 <translation id="2861941300086904918">Диспечер на сигурността за клиенти с директно изпълнение</translation>
 <translation id="2862815659905780618">Премахване на Linux средата на програмиране</translation>
@@ -2882,6 +2885,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3642699533549879077">Когато друг човек погледне към екрана, ще получите сигнал и съдържанието на известията ще бъде скрито.</translation>
 <translation id="3643962751030964445">Това устройство се управлява от <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Преместете малко пръста си, за да бъде заснета друга част от отпечатъка.</translation>
+<translation id="3647654707956482440">Тази връзка не е използваема. Проверете за правописни грешки или използвайте друга връзка, за да опитате отново.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Получихте <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}other{Получихте <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Открито е устройство <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3650753875413052677">Грешка при записването</translation>
@@ -4773,7 +4777,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (работи офлайн)</translation>
 <translation id="5454166040603940656">с/ъс <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Преглед на още резултати от търсенето</translation>
-<translation id="5455603387986949153">Четене на серийните номера на компонентите и устройството с ChromeOS Flex.</translation>
 <translation id="5457113250005438886">Невалидно</translation>
 <translation id="5457459357461771897">Четене и изтриване на снимки, музика и друга мултимедия от компютъра ви</translation>
 <translation id="5458214261780477893">Дворак</translation>
@@ -6785,6 +6788,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7371490947952970241">Можете да изключите местоположението, като деактивирате главната настройка за него на това устройство. Също така от настройките за местоположението сте в състояние да изключите определянето му чрез Wi-Fi, мобилни мрежи и сензори.</translation>
 <translation id="7371917887111892735">Разделите се свиват до ширината на фиксиран раздел</translation>
 <translation id="7374376573160927383">Управление на USB устройствата</translation>
+<translation id="7376124766545122644">Тази връзка не е използваема. Проверете дали започва с http:// или https://, за да опитате отново.</translation>
 <translation id="7376553024552204454">Открояване на курсора на мишката, когато се движи</translation>
 <translation id="737728204345822099">В ключа ви за сигурност може да се съхрани запис за посещението ви на този сайт.</translation>
 <translation id="7377451353532943397">Достъпът до сензорите да продължи да се блокира</translation>
@@ -6795,6 +6799,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7380622428988553498">Името на устройството съдържа невалидни знаци</translation>
 <translation id="7380768571499464492">Актуализирането на <ph name="PRINTER_NAME" /> завърши</translation>
 <translation id="7382085868019811559">Поддръжката на наследени браузъри (LBS) позволява URL адреси, отговарящи на определени шаблони, да се отварят в алтернативен браузър, който поддържа наследените функции, необходими за правилната работа на тези сайтове.</translation>
+<translation id="738322632977123193">Качването не е възможно. Използвайте изображение в един от следните формати: .jpg, .gif, .png, .bmp, .tif или .webp</translation>
 <translation id="73843634555824551">Въвеждане и клавиатури</translation>
 <translation id="7384687527486377545">Автоматично повторение за клавиатурата</translation>
 <translation id="7385490373498027129">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> ще бъдат изтрити за постоянно.</translation>
@@ -6959,7 +6964,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не реагира. Изберете „Принудително затваряне“, за да затворите приложението.</translation>
 <translation id="7535730537657706072">За да изчистите историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели</translation>
 <translation id="7537451260744431038">Сайтовете не могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница</translation>
-<translation id="7538932151125743389">Четене на серийните номера на компонентите и устройството с Chrome OS.</translation>
 <translation id="7540972813190816353">При проверката за актуализации възникна грешка: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> върна устройството към предишна версия. Моля, запазете важните файлове и го рестартирайте. Всички данни на устройството ще бъдат изтрити.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> чрез приложението <ph name="APP_NAME" /></translation>
@@ -7165,7 +7169,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7718490543420739837">Екранна клавиатура, диктуване, достъп с превключване и др.</translation>
 <translation id="7719367874908701697">Промяна на мащаба на страницата</translation>
 <translation id="7719588063158526969">Името на устройството е твърде дълго</translation>
-<translation id="7720216670798402294">Четене на информация за устройствата с Chrome OS и данните от тях.</translation>
 <translation id="7721179060400456005">Разрешаване на прозорците да се простират на няколко екрана</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7721258531237831532">Организацията ви изисква да имате потребителски профил</translation>
@@ -7227,7 +7230,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7768784765476638775">Прочитане на глас</translation>
 <translation id="7769748505895274502">Свиване на наскоро затворените</translation>
 <translation id="7770072242481632881">Инструмент за избор на елемент в страничния панел</translation>
-<translation id="7770406201819593386">Провеждане на диагностични тестове на ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Кликване с десния бутон на мишката</translation>
 <translation id="7770612696274572992">Изображение, копирано от друго устройство</translation>
 <translation id="7771452384635174008">Ориентация</translation>
@@ -8316,7 +8318,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8783834180813871000">Въведете кода за сдвояване през Bluetooth, след което натиснете Return или Enter.</translation>
 <translation id="8784626084144195648">Средна стойност при групирани данни</translation>
 <translation id="8785622406424941542">Писалка</translation>
-<translation id="8785680469435073309">Четене на информация за мрежата за ChromeOS Flex.</translation>
 <translation id="8786824282808281903">Когато детето ви види тази икона, то може да използва отпечатъка си за идентификация или за одобряване на покупки.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Група без име – 1 раздел}other{Група без име – # раздела}}</translation>
 <translation id="8791534160414513928">Изпращане на заявка „Do Not Track“ с трафика ви на сърфиране</translation>
@@ -8705,7 +8706,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9148058034647219655">Изход</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9148963623915467028">Този сайт има достъп до местоположението ви.</translation>
-<translation id="9149240486450525363">Четене на информация за мрежата за ChromeOS.</translation>
 <translation id="9149866541089851383">Редактиране...</translation>
 <translation id="9150045010208374699">Използване на камерата ви</translation>
 <translation id="9150079578948279438">Потребителският профил не бе премахнат. Моля, опитайте отново или се обърнете към оператора си за техническа поддръжка.</translation>
@@ -8737,7 +8737,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9174401638287877180">Изпращане на данни за употребата и диагностиката. Помогнете за подобряването на работата на детето ви с Android, като автоматично изпращате до Google диагностична информация и данни за употребата на устройството и приложенията. Тази информация няма да се използва за идентифициране на детето ви, а ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за детето ви, тези данни може да се запазват в профила му в Google.</translation>
 <translation id="9176476835295860688">Изпращане на данни за употребата и диагностиката. Понастоящем това устройство автоматично изпраща до Google диагностична информация и данни за употребата на устройството и приложенията. Това ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Тази <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> е наложена от собственика. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google. <ph name="BEGIN_LINK2" />Научете повече<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – установена е връзка с устройство с Bluetooth</translation>
-<translation id="9177949831069307748">Четене на информация за устройството с ChromeOS Flex и данните от него.</translation>
 <translation id="9178061802301856367">Изтриване на данните за вход</translation>
 <translation id="9179524979050048593">Потребителски имена на екрана за вход</translation>
 <translation id="9180281769944411366">Това може да отнеме няколко минути. Контейнерът за Linux стартира.</translation>

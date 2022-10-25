@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
 <translation id="1578784163189013834">Choose screensaver background</translation>
+<translation id="160633243685262989">Preview image</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Run charge test</translation>
 <translation id="1639239467298939599">Loading</translation>
@@ -672,6 +673,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7535791657097741517">Turn Light theme on</translation>
 <translation id="7550715992156305117">Diagnostic routines</translation>
 <translation id="7551123448725492271">Device is an audio device.</translation>
+<translation id="7559239713112547082">Preview screenshot</translation>
 <translation id="7561454561030345039">This action is managed by your administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB touchscreen</translation>
@@ -790,7 +792,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8834539327799336565">Currently connected</translation>
-<translation id="8841375032071747811">Back button</translation>
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8855781559874488009">Can't connect through firewall to HTTP websites</translation>
 <translation id="885701979325669005">Storage</translation>

@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">สเปน</translation>
 <translation id="5438282218546237410">ไม่มีผลการค้นหาสำหรับ <ph name="SEARCH_TERM" /></translation>
 <translation id="5449551289610225147">รหัสผ่านไม่ถูกต้อง</translation>
+<translation id="5459064203055649751">มีไฟล์ที่ชื่อ "<ph name="FILENAME" />" อยู่แล้ว ต้องการแทนที่ไฟล์ดังกล่าวด้วยไฟล์ที่คุณจะย้ายไหม</translation>
 <translation id="5463231940765244860">ป้อน</translation>
 <translation id="5469868506864199649">อิตาลี</translation>
 <translation id="5473333559083690127">ป้อน PIN ใหม่อีกครั้ง</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
 <translation id="649877868557234318">กำลังแตกข้อมูล <ph name="FILE_NAME" /> ไปที่ <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">ไม่อนุญาตพร็อกซีสำหรับเครือข่ายที่มีการแชร์</translation>
+<translation id="6503285896705205014">นโยบายของผู้ดูแลระบบบล็อกการคัดลอกไฟล์ <ph name="COUNT" /> ไฟล์</translation>
 <translation id="6509122719576673235">นอร์เวย์</translation>
 <translation id="6528513914570774834">อนุญาตให้ผู้ใช้อุปกรณ์นี้คนอื่นๆ ใช้เครือข่ายนี้ได้</translation>
 <translation id="653019979737152879">กำลังซิงค์ <ph name="FILE_NAME" />...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">ไม่รองรับไฟล์ประเภทนี้ <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="7359359531237882347">กำลังคัดลอก <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="7375951387215729722">รายชื่อไฟล์จัดเรียงตามคอลัมน์ "<ph name="COLUMN_NAME" />" จากมากไปหาน้อย</translation>
+<translation id="7377161162143020057">นโยบายของผู้ดูแลระบบบล็อกการคัดลอกไฟล์นี้</translation>
 <translation id="7402503521691663770">อุปกรณ์ Chrome OS Flex</translation>
 <translation id="7408870451288633753">เช็ก</translation>
 <translation id="7417453074306512035">แป้นพิมพ์ภาษาเอธิโอเปีย</translation>

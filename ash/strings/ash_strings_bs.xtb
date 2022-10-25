@@ -220,7 +220,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2107914222138020205">USB-C kabl ne podržava Thunderbolt. Performanse uređaja su možda ograničene.</translation>
 <translation id="2108303511227308752">Prečica na tastaturi Alt + Backspace je promijenjena. Da koristite tipku Delete, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="211328683600082144">UKLJUČI MIKROFON</translation>
-<translation id="2123115117533398272">ChromeOS prikazuje prijedloge novog sadržaja za istraživanje. Statistika se šalje radi poboljšanja kvaliteta isključivo ako ste odabrali da dijelite podatke o korištenju. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Novi sto</translation>
 <translation id="2132302418721800944">Snimanje cijelog ekrana</translation>
 <translation id="2135456203358955318">Priključeno povećalo</translation>
@@ -288,7 +287,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2542089167727451762">Dodirnite sliku profila</translation>
 <translation id="255671100581129685">Google Asistent nije dostupan u javnoj sesiji.</translation>
 <translation id="256712445991462162">fiksirano povećalo</translation>
-<translation id="2570734079541893434">Upravljajte postavkama</translation>
 <translation id="2573588302192866788">Povezivanje s uređajem <ph name="NAME" /> nije uspjelo</translation>
 <translation id="2575685495496069081">Višestruke prijave su onemogućene</translation>
 <translation id="2582112259361606227">Ponovo pokrenite da biste ažurirali</translation>
@@ -309,6 +307,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2678852583403169292">Meni Odaberite za govor</translation>
 <translation id="2689613560355655046">Radna površina 8</translation>
+<translation id="2695132445805301912">Prikaži tipke i klikove</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Pogledajte postavke tastature. Izabrana je tastatura <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Postavite tastaturu</translation>
@@ -1126,6 +1125,7 @@ Nova instalacija</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
 <translation id="731589979057211264">Shelf Party je uključen.</translation>
+<translation id="7340731148882810149">Izbornik automatskih klikova</translation>
 <translation id="7346909386216857016">Uredu, razumijem</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
 <translation id="735745346212279324">VPN veza je prekinuta</translation>
@@ -1303,6 +1303,7 @@ Nova instalacija</translation>
 <translation id="826107067893790409">Pritisnite Enter da otključate za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8270450402312105425">{0,plural, =1{Vratite uređaj na prethodnu verziju u roku od jednog sata}one{Vratite uređaj na prethodnu verziju u roku od # sata}few{Vratite uređaj na prethodnu verziju u roku od # sata}other{Vratite uređaj na prethodnu verziju u roku od # sati}}</translation>
+<translation id="8277261673056602147">Istaknite tekst na zaslonu</translation>
 <translation id="8284362522226889623">Prevucite ulijevo s četiri prsta da prebacite na prethodnu radnu površinu</translation>
 <translation id="828708037801473432">Isključeno</translation>
 <translation id="8297006494302853456">Slabo</translation>

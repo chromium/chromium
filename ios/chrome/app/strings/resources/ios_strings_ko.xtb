@@ -5,7 +5,6 @@
 <translation id="1013952917065545813">여기에 다시 돌아와 최근에 닫았던 탭을 다시 열 수 있습니다.</translation>
 <translation id="1016495303386450659">북마크가 업데이트되었습니다.</translation>
 <translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
-<translation id="1047726139967079566">현재 페이지를 북마크에 추가...</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="105093091697134113">다음 계정에서 타사의 정보 유출로 인해 노출되었거나 사기성 웹사이트에 입력된 비밀번호를 사용하고 있습니다. 비밀번호를 즉시 변경하여 계정을 안전하게 보호하세요.</translation>
 <translation id="105214722824962652">Google 계정에서 로그아웃되지 않습니다. 로그인할 경우 <ph name="BEGIN_LINK" />다른 활동 형식<ph name="END_LINK" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.
@@ -26,7 +25,6 @@
 <translation id="1112015203684611006">인쇄 실패</translation>
 <translation id="1125564390852150847">새 탭 만들기</translation>
 <translation id="1126809382673880764">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. Gmail, Google 검색과 같은 다른 Google 서비스에서는 가능한 경우 세이프 브라우징 보호가 계속 제공됩니다.</translation>
-<translation id="1135212215217513471">iOS용 Chrome 다운로드</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1147031633655575115"><ph name="USER" />님의 계정으로 로그인됨</translation>
 <translation id="1154984953698510061">다른 탭 보기</translation>
@@ -83,7 +81,6 @@
 <translation id="1509960214886564027">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="152234381334907219">저장하지 않음</translation>
 <translation id="1523341279170789507">모든 쿠키 허용</translation>
-<translation id="1524563461097350801">아니요</translation>
 <translation id="1531836666020185856">추천 기능</translation>
 <translation id="1535268707340844072">현재 설정에서는 일부 사이트의 기능이 손상될 수 있습니다. 모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="1540800554400757039">주소 1</translation>
@@ -122,7 +119,6 @@
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
-<translation id="1910975740091000991">iOS용 Chrome</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1930989359703290198">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -303,7 +299,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3324193307694657476">주소 2</translation>
 <translation id="3328801116991980348">사이트 정보</translation>
 <translation id="3329904751041170572">서버에 연결하지 못했습니다.</translation>
-<translation id="3335947283844343239">닫은 탭 다시 열기</translation>
 <translation id="3371831930909698441">번역을 사용할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="3377063233124932127">저장된 북마크, 비밀번호 등이 상단에 표시됩니다</translation>
 <translation id="3393920035788932672">팝업 허용</translation>
@@ -409,7 +404,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4249955472157341256">최신순 정렬</translation>
 <translation id="42618743927498729">사이트에서 가격이 인하되면 알림을 받습니다</translation>
 <translation id="4263576668337963058">사용 가능한 페이지 작업 표시</translation>
-<translation id="4267380167363222949">다음 탭</translation>
 <translation id="4272631900155121838">QR 코드를 스캔하려면 설정에서 카메라를 사용하도록 설정하세요.</translation>
 <translation id="4277990410970811858">세이프 브라우징</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
@@ -830,7 +824,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7356359962760467032">가격 추적 중지</translation>
 <translation id="7383797227493018512">읽기 목록</translation>
 <translation id="7398893703713203428">링크 만들기</translation>
-<translation id="739941347996872055">이전 탭</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906">읽지 않은 기사 <ph name="UNREAD_COUNT" />개 있음</translation>
 <translation id="7412027924265291969">계속</translation>
@@ -839,7 +832,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7438481509621345350">이제 새 탭을 열 때 <ph name="CHANNEL_NAME" /> 스토리가 표시됩니다</translation>
 <translation id="7454057999980797137">도/군</translation>
-<translation id="7456847797759667638">위치 열기...</translation>
 <translation id="7464701184726199289">모든 기기에서 동기화된 데이터가 삭제됩니다. 저장된 사이트 설정은 삭제되지 않으며 인터넷 사용 습관이 반영될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome 선택하기</translation>
 <translation id="7472734401283673885">회사명</translation>

@@ -220,7 +220,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2107914222138020205">O cabo USB-C não suporta Thunderbolt. O desempenho do dispositivo pode estar limitado.</translation>
 <translation id="2108303511227308752">O atalho de teclado Alt + retrocesso foi alterado. Para utilizar a tecla Eliminar, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + retrocesso.</translation>
 <translation id="211328683600082144">ATIVAR O MICROFONE</translation>
-<translation id="2123115117533398272">O ChromeOS mostra sugestões de novo conteúdo a explorar. Apenas envia estatísticas para melhorar a qualidade se tiver optado por partilhar os dados de utilização. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Novo espaço de trabalho</translation>
 <translation id="2132302418721800944">Gravar ecrã inteiro</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
@@ -288,7 +287,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2542089167727451762">Toque na imagem do perfil.</translation>
 <translation id="255671100581129685">O Assistente Google não está disponível para sessões públicas.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
-<translation id="2570734079541893434">Gerir definições</translation>
 <translation id="2573588302192866788">Não foi possível ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="2575685495496069081">O início de sessão integrado foi desativado</translation>
 <translation id="2582112259361606227">Reiniciar para atualizar</translation>
@@ -309,6 +307,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2673968385134502798">Jogos</translation>
 <translation id="2678852583403169292">Menu da funcionalidade Selecionar para falar</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
+<translation id="2695132445805301912">Mostrar teclas e cliques</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Veja as definições do teclado. Seleção: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Definir o teclado</translation>
@@ -1126,6 +1125,7 @@ Nova instalação</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Expanda a câmara</translation>
 <translation id="731589979057211264">O Shelf Party está ativado.</translation>
+<translation id="7340731148882810149">Menu de cliques automáticos</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
 <translation id="735745346212279324">VPN desligado</translation>
@@ -1303,6 +1303,7 @@ Nova instalação</translation>
 <translation id="826107067893790409">Prima Enter para desbloquear para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Alteração do dispositivo para uma versão anterior dentro de uma hora}other{Alteração do dispositivo para uma versão anterior dentro de # horas}}</translation>
+<translation id="8277261673056602147">Realce texto no ecrã</translation>
 <translation id="8284362522226889623">Deslize rapidamente para a esquerda com quatro dedos para mudar para o espaço de trabalho anterior.</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraca</translation>

@@ -646,6 +646,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି</translation>
 <translation id="6499681088828539489">ସେୟାର୍ ହୋଇଥିବା ନେଟ୍‌ୱାର୍କ ପାଇଁ ପ୍ରୋକ୍ସିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
+<translation id="6503285896705205014">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ <ph name="COUNT" />ଟି ଫାଇଲ କପି କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="6509122719576673235">ନରୱେଜିଆନ୍</translation>
 <translation id="6528513914570774834">ଏହି ଡିଭାଇସ୍‌ର ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଏହି ନେଟ୍‌ୱର୍କ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ସିଙ୍କ୍ ହେଉଛି...</translation>
@@ -748,6 +749,7 @@
 <translation id="7357762654218998920">ଏହି ଫାଇଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ChromeOSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ କପି ହେଉଛି...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ଦ୍ୱାରା ଫାଇଲ୍‌ର ତାଲିକା ବଡ଼ରୁ ସାନ କ୍ରମରେ ସଜାଯାଇଛି।</translation>
+<translation id="7377161162143020057">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲ କପି କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7402503521691663770">ChromeOS Flex ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="7408870451288633753">ଚେକ୍</translation>
 <translation id="7417453074306512035">ଇଥିଓପିକ୍ କୀବୋର୍ଡ</translation>

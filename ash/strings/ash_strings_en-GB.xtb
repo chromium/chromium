@@ -220,7 +220,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2107914222138020205">Your USB-C cable does not support Thunderbolt. Device performance may be limited.</translation>
 <translation id="2108303511227308752">The Alt + backspace keyboard shortcut has changed. To use the delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
 <translation id="211328683600082144">TURN ON MICROPHONE</translation>
-<translation id="2123115117533398272">Chrome OS shows suggestions for new content to explore. Sends statistics to improve quality only if you’ve chosen to share usage data. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">New desk</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
@@ -288,7 +287,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
-<translation id="2570734079541893434">Manage settings</translation>
 <translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
 <translation id="2582112259361606227">Restart to update</translation>

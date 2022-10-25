@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">Albumok</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
 <translation id="1578784163189013834">A képernyővédő hátterének kiválasztása</translation>
+<translation id="160633243685262989">Előnézeti kép</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1639239467298939599">Betöltés</translation>
@@ -672,6 +673,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7535791657097741517">Világos téma bekapcsolása</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7551123448725492271">Az eszköz egy audioeszköz.</translation>
+<translation id="7559239713112547082">Képernyőkép előnézete</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-érintőképernyő</translation>
@@ -790,7 +792,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Háttérkép</translation>
 <translation id="8834539327799336565">Csatlakoztatva</translation>
-<translation id="8841375032071747811">Vissza gomb</translation>
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8855781559874488009">Nem lehet a tűzfalon keresztül HTTP-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="885701979325669005">Tárolás</translation>

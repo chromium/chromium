@@ -220,7 +220,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2107914222138020205">USB-C kabelingiz Thunderbolt qurilmalar bilan ishlamaydi. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="2108303511227308752">Alt + Backspace tezkor tugmasi oʻzgardi. Delete tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Backspace tugmasini bosing.</translation>
 <translation id="211328683600082144">MIKROFONNI YOQISH</translation>
-<translation id="2123115117533398272">ChromeOS yangi kontent bilan tanishuvni taklif qiladi. Takliflar sifatini yaxshilash maqsadida faqat siz tanlagan statistik axborotlar yuboriladi. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Yangi ish stoli</translation>
 <translation id="2132302418721800944">Butun ekranni yozib olish</translation>
 <translation id="2135456203358955318">Mahkamlangan lupa</translation>
@@ -288,7 +287,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2542089167727451762">Profil rasmingizni bosing</translation>
 <translation id="255671100581129685">Google Assistent demo seansda ishlamaydi.</translation>
 <translation id="256712445991462162">mahkamlangan lupa</translation>
-<translation id="2570734079541893434">Sozlamalarni boshqarish</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> qurilmasi ulanmadi</translation>
 <translation id="2575685495496069081">Bir nechta hisobdan kirish funksiyasi yoqilmagan</translation>
 <translation id="2582112259361606227">Yangilash uchun qayta ishga tushiring</translation>
@@ -309,6 +307,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2673968385134502798">Oʻyinlar</translation>
 <translation id="2678852583403169292">Teginib tinglash menyusi</translation>
 <translation id="2689613560355655046">Desk 8</translation>
+<translation id="2695132445805301912">Tugmalar va kliklar chiqadi</translation>
 <translation id="2695305337569143674">veb</translation>
 <translation id="2697697418792422688">Klaviatura sozlamalarini ochish. <ph name="KEYBOARD_NAME" /> tanlandi.</translation>
 <translation id="2700493154570097719">Klaviaturani tanlash</translation>
@@ -1126,6 +1125,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Kamera tugmasini chiqarish</translation>
 <translation id="731589979057211264">Shelf Party yoniq.</translation>
+<translation id="7340731148882810149">Avtomatik kliklar menyusi</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Ekran klaviaturasi</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
@@ -1303,6 +1303,7 @@ yangi oʻrnatilgan</translation>
 <translation id="826107067893790409">Qurilmani <ph name="USER_EMAIL_ADDRESS" /> uchun qulfdan chiqarish uchun Enter tugmasini bosing</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8270450402312105425">{0,plural, =1{Qurilma tizimini bir soat ichida eski versiyaga qaytaring}other{Qurilma tizimini # soat ichida eski versiyaga qaytaring}}</translation>
+<translation id="8277261673056602147">Ekrandagi matnni tanlash</translation>
 <translation id="8284362522226889623">Avvalgi ish stoliga qaytish uchun 4 ta barmoq bilan chapga suring</translation>
 <translation id="828708037801473432">Yoqilmagan</translation>
 <translation id="8297006494302853456">Zaif</translation>

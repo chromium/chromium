@@ -3183,6 +3183,7 @@
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />，则意味着没有任何可用于查找此搜索服务提供商的关键字。</translation>
 <translation id="4090088362777472639">Ansible Playbook 的 SHA-256 哈希值。</translation>
+<translation id="4091040199847925434">禁止为帮助改进安全浏览功能而报告系统信息和网页内容</translation>
 <translation id="4097556069183835428">将此政策设为 None 会关闭放大镜。
 
       如果您设置了此政策，用户便无法更改该功能的状态。如果您未设置此政策，放大镜最初会处于关闭状态，但用户可随时开启它。</translation>

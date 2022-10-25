@@ -2089,7 +2089,6 @@
 <translation id="285241945869362924">Автоматски создава титлови за аудио и видеосодржини. Аудиото и титловите никогаш не го напуштаат уредот.</translation>
 <translation id="2856776373509145513">Создајте нов контејнер</translation>
 <translation id="2858138569776157458">Популарни</translation>
-<translation id="2859383038987078242">да извршува дијагностички тестови за Chrome OS</translation>
 <translation id="2861301611394761800">Ажурирањето на системот заврши. Рестартирајте го системот.</translation>
 <translation id="2861941300086904918">Управник за безбедност на матичен клиент</translation>
 <translation id="2862815659905780618">Отстранете ја Linux-околината за програмирање</translation>
@@ -2470,6 +2469,7 @@
 <translation id="3241680850019875542">Изберете го основниот директориум на наставката за пакување. За да ажурирате наставка, изберете ја и датотеката со приватен клуч за повторно да се употреби.</translation>
 <translation id="3242289508736283383">Апликацијата со атрибут на манифестот „kiosk_only“ мора да се инсталира во режим на киоск на Chrome OS</translation>
 <translation id="3242665648857227438">Профилов користи поставки за прокси за Chrome OS.</translation>
+<translation id="3243017971870859287">да чита сериски броеви на уред со ChromeOS Flex и на компоненти</translation>
 <translation id="3244294424315804309">Остави го звукот исклучен</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - мрежна грешка</translation>
 <translation id="3248902735035392926">Безбедноста е значајна. Одвојте малку време и <ph name="BEGIN_LINK" />проверите ги екстензиите сега<ph name="END_LINK" /></translation>
@@ -2526,6 +2526,7 @@
 <translation id="3297105622164376095">Дозволено е да се прикажува prompt за најавување од трети страни</translation>
 <translation id="3297536526040732495">Привремено ги поврзува податоциве со вашата сметка на Google кога сте најавени за да ве заштити на апликациите на Google</translation>
 <translation id="329838636886466101">Поправи</translation>
+<translation id="3298438307450647315">да чита податоци за уред со Chrome OS и податоци за уред</translation>
 <translation id="3298789223962368867">Внесена неважечка URL-адреса.</translation>
 <translation id="32991397311664836">Уреди:</translation>
 <translation id="33022249435934718">Рачки на ГДИ</translation>
@@ -2632,6 +2633,7 @@
 <translation id="3402255108239926910">Изберете аватар</translation>
 <translation id="3402585168444815892">Се регистрира во демо-режим</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">да чита податоци за уред со ChromeOS Flex и податоци за уред</translation>
 <translation id="3404065873681873169">Нема зачувани лозинки за сајтов</translation>
 <translation id="3405664148539009465">Приспособете ги фонтовите</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4044,6 +4046,7 @@
 <translation id="4726710355753484204">Користете Ctrl + Alt + копчето за зголемување осветленост за да зумирате.
 Користете Ctrl + Alt + копчето за намалување осветленост за да одзумирате.</translation>
 <translation id="4726710629007580002">Имаше предупредувања при обидот да се инсталира наставката:</translation>
+<translation id="472738079453283624">Производи</translation>
 <translation id="4727847987444062305">Управувана гостинска сесија</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Администраторот<ph name="END_LINK" /> ја исклучил проверката за штетен софтвер</translation>
@@ -4186,6 +4189,7 @@
 <translation id="486635084936119914">Отворај одредени типови датотеки автоматски по преземањето</translation>
 <translation id="4868281708609571334">Обучете го „Помошникот на Google“ да го препознава гласот на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Дијалогов не е нагласен во моментов. Притиснете Command-Shift-Опција A за да го нагласите дијалогов.</translation>
+<translation id="4869170227080975044">да чита податоци за мрежа на ChromeOS</translation>
 <translation id="4870724079713069532">Со апликацијава може да отворате и уредувате поддржани датотеки од File Explorer или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, одете на <ph name="BEGIN_LINK" />поставките за Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Внесете лозинка што ви ја обезбедил администраторот за да добиете информации за конфигурацијата</translation>
 <translation id="4870995365819149457">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и 1 друга апликација.</translation>
@@ -4784,7 +4788,6 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (работи офлајн)</translation>
 <translation id="5454166040603940656">со <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Гледајте повеќе резултати од пребарувањето</translation>
-<translation id="5455603387986949153">да ги чита сериските броеви на уредот со ChromeOS Flex и на компонентите</translation>
 <translation id="5457113250005438886">Неважечки</translation>
 <translation id="5457459357461771897">Читајте и бришете фотографии, музика и други медиуми од компјутерот</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -4919,6 +4922,7 @@
 <translation id="5571066253365925590">Bluetooth е овозможен</translation>
 <translation id="5571092938913434726">Глобални контроли за аудиовизуелни содржини</translation>
 <translation id="5571832155627049070">Приспособете го вашиот профил</translation>
+<translation id="5572252023412311448">Прикажете детали за сајт за <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Ќе добивате подобрени предлози во лентата за адреси</translation>
 <translation id="5572851009514199876">Започнете и најавете се на Chrome за да може Chrome да провери дали ви е дозволено да пристапите на сајтов.</translation>
 <translation id="557506220935336383">Погледнете дозволи за екстензии за други сајтови</translation>
@@ -6110,6 +6114,7 @@
 <translation id="6703212423117969852">Може да пробате пак во Chrome подоцна.</translation>
 <translation id="6703254819490889819">Врати го бекапот</translation>
 <translation id="6706210727756204531">Опсег</translation>
+<translation id="6707122714992751648">да извршува дијагностички тестови за Chrome OS</translation>
 <translation id="6707389671160270963">Сертификат на SSL-клиент</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> и уште 1 картичка}one{<ph name="PAGE_TITLE" /> и уште # картичка}other{<ph name="PAGE_TITLE" /> и уште # картички}}</translation>
 <translation id="6709133671862442373">Вести</translation>
@@ -6288,6 +6293,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="6860097299815761905">Поставки на прокси…</translation>
 <translation id="6860427144121307915">Отвори во картичка</translation>
+<translation id="6861179941841598556">Повеќе дејства за <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Сите екстензии се дозволени</translation>
 <translation id="686366188661646310">Да се избрише лозинката?</translation>
 <translation id="6865313869410766144">Автоматско пополнување податоци во формулар</translation>
@@ -6377,6 +6383,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
+<translation id="6949089178006131285">да чита податоци за мрежа на ChromeOS Flex</translation>
 <translation id="6949434160682548041">Лозинка (изборно)</translation>
 <translation id="6950627417367801484">Врати ги апликациите</translation>
 <translation id="6952242901357037157">Тука може да се прикажуваат и лозинките од <ph name="BEGIN_LINK" />сметката на Google<ph name="END_LINK" /></translation>
@@ -6975,7 +6982,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не одговара. Изберете „Затвори присилно“ за да ја затворите.</translation>
 <translation id="7535730537657706072">Затворете ги сите картички „Инкогнито“ за да ја избришете историјата на прелистувањето во режимот „Инкогнито“ од уредот</translation>
 <translation id="7537451260744431038">Сајтовите не може да користат колачиња за да го подобрат вашето доживување со прелистувањето, на пример, да ве одржат најавени или да запомнат ставки во кошничката за купување</translation>
-<translation id="7538932151125743389">да ги чита сериските броеви на уредот со Chrome OS и компонентите</translation>
 <translation id="7540972813190816353">Настана грешка при проверка за ажурирања: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> го врати уредов на претходна верзија. Зачувајте ги важните датотеки, а потоа рестартирајте. Ќе се избришат сите податоци на уредот.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> со апликацијата <ph name="APP_NAME" /></translation>
@@ -7181,7 +7187,6 @@
 <translation id="7718490543420739837">Тастатура на екран, диктирање, пристап со прекинувачи и друго</translation>
 <translation id="7719367874908701697">Зумирање страница</translation>
 <translation id="7719588063158526969">Името на уредот е предолго</translation>
-<translation id="7720216670798402294">да чита податоци за уред со Chrome OS и податоци за уред</translation>
 <translation id="7721179060400456005">Дозволи прозорците да растегнуваат прикази</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7721258531237831532">Вашата организација бара профил</translation>
@@ -7243,7 +7248,6 @@
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7769748505895274502">Соберете ги неодамна затворените</translation>
 <translation id="7770072242481632881">Избирач на странична табла</translation>
-<translation id="7770406201819593386">Извршете дијагностички тестови за ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Десен клик со глувче</translation>
 <translation id="7770612696274572992">Слика копирана од друг уред</translation>
 <translation id="7771452384635174008">Распоред</translation>
@@ -7998,6 +8002,7 @@
 <translation id="8463001014623882202">Овластувањето не успеа</translation>
 <translation id="846374874681391779">Лента за преземања</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> е оневозможен.</translation>
+<translation id="846399539692727039">да извршува дијагностички тестови за ChromeOS Flex</translation>
 <translation id="8464132254133862871">Корисничката сметка нема право на оваа услуга.</translation>
 <translation id="8465252176946159372">Неважечко</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> бара ваша дозвола за да се изврши</translation>
@@ -8144,6 +8149,7 @@
 <translation id="8624315169751085215">Копирај во привремената меморија</translation>
 <translation id="8624354461147303341">Сакам попусти</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">да чита сериски броеви на уред со Chrome OS и на компоненти</translation>
 <translation id="862542460444371744">&amp;Наставки</translation>
 <translation id="8625663000550647058">Не им е дозволено да го користат микрофонот</translation>
 <translation id="8625916342247441948">Не им дозволувај на сајтовите да се поврзуваат со HID-уреди</translation>
@@ -8335,7 +8341,6 @@
 <translation id="8783834180813871000">Напишете го кодот за спарување преку Bluetooth, а потоа притиснете Return или Enter.</translation>
 <translation id="8784626084144195648">Биниран просек</translation>
 <translation id="8785622406424941542">Пенкало</translation>
-<translation id="8785680469435073309">Прочитајте ги податоците за мрежа на ChromeOS Flex.</translation>
 <translation id="8786824282808281903">Кога детето ќе ја види иконава, отпечаток може да се користи за идентификација или за одобрување купувања.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Неименувана група - 1 картичка}one{Неименувана група - # картичка}other{Неименувана група - # картички}}</translation>
 <translation id="8791534160414513928">Испратете барање „Не следи“ со сообраќајот на прелистување</translation>
@@ -8724,7 +8729,6 @@
 <translation id="9148058034647219655">Излези</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>
 <translation id="9148963623915467028">Сајтов може да пристапува до вашата локација.</translation>
-<translation id="9149240486450525363">Прочитајте ги податоците за мрежа на ChromeOS.</translation>
 <translation id="9149866541089851383">Измени...</translation>
 <translation id="9150045010208374699">Користи ја камерата</translation>
 <translation id="9150079578948279438">Профилот не можеше да се отстрани. Обидете се повторно или побарајте техничка поддршка од вашиот оператор.</translation>
@@ -8756,7 +8760,6 @@
 <translation id="9174401638287877180">Испраќајте податоци за користење и дијагностика. Помогнете ни да го подобриме доживувањето на вашето дете на Android со автоматско испраќање дијагностички и податоци за користењето на уредот и апликациите до Google. Податоциве нема да се користат за идентификација на вашето дете, а ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“ за вашето дете, овие податоци може да се зачувуваат во сметката на Google на детето.</translation>
 <translation id="9176476835295860688">Испраќајте податоци за користење и дијагностика. Овој уред во моментов автоматски испраќа дијагностички и податоци за користењето на уредот и апликациите до Google. Овие податоци ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Оваа <ph name="BEGIN_LINK1" />поставка<ph name="END_LINK1" /> е наметната од сопственикот. Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“, овие податоци може да се зачувуваат во вашата сметка на Google. <ph name="BEGIN_LINK2" />Дознајте повеќе<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - поврзан е уред со Bluetooth</translation>
-<translation id="9177949831069307748">да чита податоци за уред со ChromeOS Flex и податоци за уредот</translation>
 <translation id="9178061802301856367">Избришете ги податоците за најавување</translation>
 <translation id="9179524979050048593">Корисничко име на екранот за најавување</translation>
 <translation id="9180281769944411366">Овој процес можеби ќе потрае неколку минути. Се стартува контејнерот за Linux.</translation>

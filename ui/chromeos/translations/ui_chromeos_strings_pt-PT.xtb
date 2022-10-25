@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">Espanhol</translation>
 <translation id="5438282218546237410">Não existem resultados para <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Palavra-passe inválida</translation>
+<translation id="5459064203055649751">Já existe um ficheiro com o nome "<ph name="FILENAME" />". Quer substituí-lo pelo que está a mover?</translation>
 <translation id="5463231940765244860">Introduzir</translation>
 <translation id="5469868506864199649">Italiano</translation>
 <translation id="5473333559083690127">Voltar a introduzir o PIN novo</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Gerida pelo administrador, Detalhes</translation>
 <translation id="649877868557234318">A extrair <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Não permitir proxies para redes partilhadas</translation>
+<translation id="6503285896705205014">A ação de mover <ph name="COUNT" /> ficheiros foi bloqueada pela política da pessoa que administra</translation>
 <translation id="6509122719576673235">Norueguês</translation>
 <translation id="6528513914570774834">Permitir que outros utilizadores deste dispositivo utilizem esta rede</translation>
 <translation id="653019979737152879">A sincronizar <ph name="FILE_NAME" />…</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Este tipo de ficheiro não é suportado. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir ficheiros no ChromeOS.</translation>
 <translation id="7359359531237882347">A copiar <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="7375951387215729722">Lista de ficheiros ordenada por <ph name="COLUMN_NAME" /> por ordem descendente.</translation>
+<translation id="7377161162143020057">A ação de copiar este ficheiro foi bloqueada pela política da pessoa que administra</translation>
 <translation id="7402503521691663770">Dispositivos com ChromeOS Flex</translation>
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>

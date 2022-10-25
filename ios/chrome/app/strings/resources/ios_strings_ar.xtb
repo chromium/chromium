@@ -5,7 +5,6 @@
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
 <translation id="1044891598689252897">ستعمل المواقع الإلكترونية بشكلٍ طبيعي.</translation>
-<translation id="1047726139967079566">وضع إشارة مرجعية على هذه الصفحة...</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="105093091697134113">تستخدِم الحسابات التالية كلمات مرور مكشوفة من خلال عملية اختراق لبيانات جهة خارجية أو تمّ إدخالها على موقع إلكتروني مريب. يجب تغيير كلمات المرور هذه فورًا للحفاظ على أمان حساباتك.</translation>
 <translation id="105214722824962652">‏لن يتم تسجيل خروجك من حساب Google. قد يتم حفظ <ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.
@@ -26,7 +25,6 @@
 <translation id="1112015203684611006">تعذّرت الطباعة.</translation>
 <translation id="1125564390852150847">إنشاء علامة تبويب جديدة.</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
-<translation id="1135212215217513471">‏الحصول على متصفِّح Chrome لنظام التشغيل iOS</translation>
 <translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
 <translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" />.</translation>
 <translation id="1154984953698510061">الانتقال إلى علامات التبويب الأخرى</translation>
@@ -85,7 +83,6 @@
 </translation>
 <translation id="1523341279170789507">السماح بكل ملفات تعريف الارتباط
 </translation>
-<translation id="1524563461097350801">لا، شكرًا</translation>
 <translation id="1531836666020185856">مميزة</translation>
 <translation id="1535268707340844072">قد يؤدي الإعداد الحالي إلى حدوث تعطُّل في بعض المواقع الإلكترونية. لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الاطّلاع على <ph name="BEGIN_LINK" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">العنوان 1</translation>
@@ -124,7 +121,6 @@
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
 <translation id="1870148520156231997">الكشف عن كلمة المرور</translation>
 <translation id="1872096359983322073">الكشاف</translation>
-<translation id="1910975740091000991">‏متصفِّح Chrome لنظام التشغيل iOS</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
 <translation id="1923342640370224680">الساعة الأخيرة</translation>
 <translation id="1930989359703290198">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -305,7 +301,6 @@
 <translation id="3324193307694657476">العنوان 2</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
 <translation id="3329904751041170572">تعذر الاتصال بالخادم.</translation>
-<translation id="3335947283844343239">إعادة فتح علامة التبويب المغلقة</translation>
 <translation id="3371831930909698441">الترجمة متوفّرة. الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>
 <translation id="3377063233124932127">ستظهر الآن الإشارات المرجعية وكلمات المرور المحفوظة وغيرها في أعلى الشاشة.</translation>
 <translation id="3393920035788932672">النوافذ المنبثقة المسموح بها</translation>
@@ -411,7 +406,6 @@
 <translation id="4249955472157341256">الترتيب حسب الأحدث</translation>
 <translation id="42618743927498729">يمكنك الحصول على تنبيه في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="4263576668337963058">عرض الإجراءات المتاحة على الصفحة</translation>
-<translation id="4267380167363222949">علامة التبويب التالية</translation>
 <translation id="4272631900155121838">لمسح رمز الاستجابة السريعة ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات</translation>
 <translation id="4277990410970811858">التصفُّح الآمن</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
@@ -832,7 +826,6 @@
 <translation id="7356359962760467032">إيقاف عملية تتبُّع السعر</translation>
 <translation id="7383797227493018512">قائمة القراءة</translation>
 <translation id="7398893703713203428">إنشاء رابط</translation>
-<translation id="739941347996872055">علامة التبويب السابقة</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> مقالة غير مقروءة</translation>
 <translation id="7412027924265291969">متابعة</translation>
@@ -841,7 +834,6 @@
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7438481509621345350">ستظهر لك قصص من <ph name="CHANNEL_NAME" /> عند فتح علامة تبويب جديدة</translation>
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
-<translation id="7456847797759667638">فتح موقع...</translation>
 <translation id="7464701184726199289">يمحو هذا الخيار البيانات المتزامنة من كافة الأجهزة. لن يتم حذف إعدادات الموقع الإلكتروني المحفوظة وقد تعكس عادات التصفح. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">‏3- اختَر Chrome.</translation>
 <translation id="7472734401283673885">اسم الشركة</translation>

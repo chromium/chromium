@@ -220,7 +220,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2107914222138020205">Il cavo USB-C non supporta Thunderbolt. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="2108303511227308752">La scorciatoia da tastiera Alt + Backspace è cambiata. Per usare il tasto Canc, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="211328683600082144">ATTIVA MICROFONO</translation>
-<translation id="2123115117533398272">ChromeOS mostra suggerimenti relativi a nuovi contenuti da esplorare. Invia statistiche per migliorare la qualità solo se hai scelto di condividere i dati sull'utilizzo. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Nuova scrivania</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
@@ -288,7 +287,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2542089167727451762">Tocca la tua immagine del profilo</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
-<translation id="2570734079541893434">Gestisci impostazioni</translation>
 <translation id="2573588302192866788">Impossibile connettere <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'accesso simultaneo è stato disattivato</translation>
 <translation id="2582112259361606227">Riavvia per aggiornare</translation>
@@ -309,6 +307,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2673968385134502798">Giochi</translation>
 <translation id="2678852583403169292">Menu Seleziona per ascoltare</translation>
 <translation id="2689613560355655046">Scrivania 8</translation>
+<translation id="2695132445805301912">Mostra tasti e clic</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Mostra le impostazioni della tastiera. Tastiera selezionata: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Imposta la tastiera</translation>
@@ -1127,6 +1126,7 @@ Nuova installazione</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Espandi fotocamera</translation>
 <translation id="731589979057211264">Modalità Shelf Party attiva.</translation>
+<translation id="7340731148882810149">Menu Clic automatici</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Tastiera sullo schermo</translation>
 <translation id="735745346212279324">VPN scollegata</translation>
@@ -1304,6 +1304,7 @@ Nuova installazione</translation>
 <translation id="826107067893790409">Premi INVIO per sbloccare per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
+<translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
 <translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>

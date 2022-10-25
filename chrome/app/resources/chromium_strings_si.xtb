@@ -64,6 +64,7 @@
 <translation id="2560420686485554789">Chromium හට ගොනු බාගැනීමට ආචයන ප්‍රවේශය අවශ්‍යයි</translation>
 <translation id="2572494885440352020">Chromium උදව්කරු</translation>
 <translation id="2583187216237139145">මෙම පැතිකඩ භාවිතා කරන විට ජනනය කරන කිනම් හෝ Chromium දත්ත (පිටුසන්, ඉතිහාසය, මුරපද සහ වෙනත් සැකසීම් වැනි) කාර්යාල පැතිකඩ පරිපාලක විසින් ඉවත් කළ හැකිය. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Chromium භාවිතා කිරීම දිගටම කරගෙන යන්න</translation>
 <translation id="2648074677641340862">ස්ථාපිත කරන අතරතුර මෙහෙයුම් පද්ධති දෝෂයක් හට ගැනුණි. කරුණාකර නැවත Chromium බාගන්න.</translation>
 <translation id="2661879430930417727">ඔබ උපාංගයක් බෙදා ගන්නේ නම්, මිතුරන්ට සහ පවුලේ අයට වෙන්ව බ්‍රවුස් කළ හැකි අතර ඔවුනට අවශ්‍ය ආකාරයට Chromium පිහිටුවිය හැකිය.</translation>
 <translation id="2669853942967761236">එය අනිෂ්ට මෘදුකාංග සැඟවිය හැකි නිසා Chromium මෙම ලේඛනාරක්ෂිත ගොනුව අවහිර කර ඇත</translation>
@@ -105,6 +106,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">තිබෙන Chromium පැතිකඩට මාරු වන්නද?</translation>
 <translation id="3412460710772753638">මෙම උපාංගයේ මුරපද කළමනාකරු තුළ</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{ඔබේ පරිපාලක Chromium මිනිත්තු 1කට වඩා අක්‍රිය නම් එය වැසීමට වින්‍යාස කර ඇත.}one{ඔබේ පරිපාලක Chromium මිනිත්තු #කට වඩා අක්‍රිය නම් එය වැසීමට වින්‍යාස කර ඇත.}other{ඔබේ පරිපාලක Chromium මිනිත්තු #කට වඩා අක්‍රිය නම් එය වැසීමට වින්‍යාස කර ඇත.}}</translation>
 <translation id="3430503420100763906">Chromium පැතිකඩවල් සමඟ ඔබට ඔබගේ සියලු Chromium දේවල් වෙන් කළ හැකිය. මිතුරන් සහ පවුලේ අය සඳහා පැතිකඩ තනන්න, නැතහොත් රැකියාව සහ විනෝදය අතර බෙදන්න.</translation>
 <translation id="347328004046849135">ඔබ සමථයට පත් වූ මුරපදයක් සමඟ පුරන විට Chromium ඔබට දැනුම් දෙයි</translation>
 <translation id="3474745554856756813">මෙය මෙම උපාංගයෙන් අයිතම <ph name="ITEMS_COUNT" />ක් මකනු ඇත. ඔබගේ දත්ත පසුව ලබා ගැනීමට, <ph name="USER_EMAIL" /> ලෙස Chromium වෙත පුරන්න.</translation>
@@ -186,6 +188,7 @@
 <translation id="538767207339317086">Chromium පුරනයට ඉඩ දෙන්න</translation>
 <translation id="5398878173008909840">Chromium හි නව සංස්කරණයක් පවතී.</translation>
 <translation id="5405650547142096840">Chromium වෙතින් ඉවත් කරන්න</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium දැන් වැසෙනු ඇත.}=1{Chromium තත්පර 1කින් වැසෙනු ඇත.}one{Chromium තත්පර #කින් වැසෙනු ඇත.}other{Chromium තත්පර #කින් වැසෙනු ඇත.}}</translation>
 <translation id="5427571867875391349">Chromium ඔබේ පෙරනිමි බ්‍රව්සරය ලෙස සකසන්න</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium බීටා</translation>
 <translation id="5473971139929175403">එය තවදුරටත් මෙම Linux ව්‍යාප්තියට සහාය නොදක්වන නිසා Chromium නිවැරදිව ක්‍රියා නොකළ හැකිය.</translation>
@@ -274,6 +277,7 @@
 <translation id="6940431691900807093">පසුව, ඔබ පිවිසෙන අඩවියක් ඔබ දකින වෙළඳ දැන්වීම් පුද්ගලිකකරණය කිරීම සඳහා ඔබගේ ලැදිකම් බැලීමට ඔබට Chromium වෙතින් ඉල්ලිය හැකිය. Chromium හට ලැදිකම් 3ක් දක්වා බෙදා ගත හැකිය.</translation>
 <translation id="6964305034639999644">සබැඳිය Chromium අ&amp;ප්‍රසිද්ධ කවුළුව තුළ විවෘත කරන්න</translation>
 <translation id="6978145336957848883">දුර්වල මුරපද අනුමානය කිරීමට පහසුයි. <ph name="BEGIN_LINK" />ඔබ සඳහා ප්‍රබල මුරපද තැනීමට සහ මතක තබා ගැනීමට<ph name="END_LINK" /> Chromium හට ඉඩ දෙන්න.</translation>
+<translation id="6984667024406244807">Chromium අක්‍රියයි</translation>
 <translation id="6985329841647292029">ChromiumOS නියම</translation>
 <translation id="6990124437352146030">Chromium හට මෙම අඩවිය සදහා ඔබේ මයික්‍රෆෝනයට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
 <translation id="7025789849649390912">ස්ථාපනය නැවතිණි.</translation>

@@ -545,6 +545,7 @@
 </translation>
 <translation id="5438282218546237410">Δεν υπάρχουν αποτελέσματα για <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Μη έγκυρος κωδικός πρόσβασης</translation>
+<translation id="5459064203055649751">Υπάρχει ήδη ένα αρχείο <ph name="FILENAME" />. Θέλετε να το αντικαταστήσετε με το αρχείο που μετακινείτε;</translation>
 <translation id="5463231940765244860">Εισαγωγή</translation>
 <translation id="5469868506864199649">Ιταλικά</translation>
 <translation id="5473333559083690127">Εισαγάγετε ξανά το νέο PIN</translation>
@@ -665,6 +666,7 @@
 <translation id="6495925982925244349">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="649877868557234318">Εξαγωγή του αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Να μην επιτρέπονται διακομιστές μεσολάβησης για κοινόχρηστα δίκτυα</translation>
+<translation id="6503285896705205014">Η αντιγραφή <ph name="COUNT" /> αρχείων έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="6509122719576673235">Νορβηγικά</translation>
 <translation id="6528513914570774834">Επιτρέψτε σε άλλους χρήστες της συσκευής να χρησιμοποιούν αυτό το δίκτυο</translation>
 <translation id="653019979737152879">Συγχρονισμός <ph name="FILE_NAME" />…</translation>
@@ -768,6 +770,7 @@
 <translation id="7357762654218998920">Δεν υποστηρίζεται αυτός ο τύπος αρχείου. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="7359359531237882347">Αντιγραφή <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="7375951387215729722">Η λίστα αρχείων ταξινομήθηκε κατά <ph name="COLUMN_NAME" /> σε φθίνουσα σειρά.</translation>
+<translation id="7377161162143020057">Η αντιγραφή αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="7402503521691663770">Συσκευές ChromeOS Flex</translation>
 <translation id="7408870451288633753">Τσεχικά</translation>
 <translation id="7417453074306512035">Πληκτρολόγιο Αιθιοπικών</translation>

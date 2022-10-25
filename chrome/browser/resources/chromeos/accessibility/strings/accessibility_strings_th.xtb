@@ -327,6 +327,7 @@
 <translation id="309749186376891736">เลื่อนเคอร์เซอร์</translation>
 <translation id="3103579948980282461">สีแดงอมม่วงปานกลาง</translation>
 <translation id="3104705064753753826">ข้อความแจ้งเตือน</translation>
+<translation id="3105857328626674463">ไฮไลต์คำก่อนหน้า</translation>
 <translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="311015743332597320">เลื่อน 4 นิ้วไปทางขวา</translation>
 <translation id="3112457281078985179">หากต้องการเปิดหรือปิด ChromeVox ให้ใช้ Control+Alt+Z</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">ลิงก์ที่เคยเข้าชมก่อนหน้า</translation>
 <translation id="3241638166094654466">จำนวนเซลล์ในแต่ละบรรทัด:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">ย้ายไปด้านท้าย</translation>
 <translation id="3260949043575829030">รายการที่คล้ายกันก่อนหน้า</translation>
 <translation id="3270069636408109001">ไม่มีตารางถัดไป</translation>
 <translation id="3273791280096244679">บันทึกป้ายกำกับ</translation>
@@ -946,6 +948,7 @@
 <translation id="743783356331413498">ตัวอย่าง</translation>
 <translation id="7439060726180460871">ไดเรกทอรี</translation>
 <translation id="744163271241493234">pwded</translation>
+<translation id="7443479558101073378">ไฮไลต์คำถัดไป</translation>
 <translation id="7465123027577412805">ใช้เสียงที่เป็นธรรมชาติไหม</translation>
 <translation id="7491962110804786152">แท็บ</translation>
 <translation id="7492497529767769458">ไปที่ส่วนถัดไป เช่น ถาดสถานะและ Launcher</translation>

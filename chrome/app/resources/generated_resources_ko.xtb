@@ -460,6 +460,7 @@
            • 쿠키 및 기타 임시 사이트 데이터 삭제
             <ph name="LINE_BREAKS" />
            북마크, 기록, 저장된 비밀번호는 영향을 받지 않습니다.</translation>
+<translation id="1425040197660226913">업로드할 수 없습니다. 20MB보다 작은 이미지를 사용하세요.</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> 앱이 차단됨</translation>
 <translation id="1426870617281699524">다시 시도를 클릭하고 컴퓨터에 표시된 메시지를 수락하세요</translation>
@@ -587,6 +588,7 @@
 <translation id="1545177026077493356">자동 키오스크 모드</translation>
 <translation id="1545749641540134597">QR 코드 스캔</translation>
 <translation id="1545775234664667895">테마('<ph name="THEME_NAME" />')를 설치했습니다.</translation>
+<translation id="1546031833947068368">{COUNT,plural, =1{시크릿 창이 다시 열리지 않습니다.}other{시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1546280085599573572">홈 버튼을 클릭하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다.</translation>
 <translation id="1547808936554660006">설치된 eSIM 프로필이 파워워시로 삭제되지 않음을 이해합니다</translation>
@@ -1017,6 +1019,7 @@
 <translation id="1908591798274282246">닫은 그룹 다시 열기</translation>
 <translation id="1909880997794698664">이 기기를 영구적으로 키오스크 모드로 유지하시겠습니까?</translation>
 <translation id="1910721550319506122">반갑습니다!</translation>
+<translation id="1910736334623230603">여러 이미지를 검색할 수 없습니다. 한 번에 이미지 하나씩 추가하세요.</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1916502483199172559">기본 빨간색 아바타</translation>
@@ -1534,6 +1537,7 @@
 <translation id="2352810082280059586">잠금 화면 메모는 자동으로 <ph name="LOCK_SCREEN_APP_NAME" />에 저장됩니다. 가장 최근 메모는 잠금 화면에 계속 표시됩니다.</translation>
 <translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
 <translation id="2355314311311231464">계정 세부정보를 가져올 수 없으므로 프로비저닝할 수 없습니다. 다시 시도해 주세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
+<translation id="2355477091455974894">절전 모드 옵션</translation>
 <translation id="2355604387869345912">인스턴트 테더링 켜기</translation>
 <translation id="2356070529366658676">확인</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> 삭제</translation>
@@ -1782,6 +1786,7 @@
 <translation id="2591895621127187078">이메일을 확인하여 새 비밀번호 선택</translation>
 <translation id="2593499352046705383">시작하기 전에 데이터를 백업해 두어야 합니다. <ph name="DEVICE_OS" /> 운영체제를 설치하면 하드 드라이브가 덮어쓰기됩니다. 다음 페이지에서 자세히 알아보세요. g.co/flex/InstallGuide</translation>
 <translation id="2594999711683503743">Google에서 검색하거나 URL을 입력하세요.</translation>
+<translation id="25957578727513093">여기로 더 빠르게 이동하려면 Google 비밀번호 관리자에 바로가기를 추가하세요.</translation>
 <translation id="2599048253926156421">사용자 이름이 클립보드에 복사됨</translation>
 <translation id="2602501489742255173">위로 스와이프하여 시작하기</translation>
 <translation id="2603115962224169880">컴퓨터 정리</translation>
@@ -2082,7 +2087,6 @@
 <translation id="285241945869362924">오디오 및 동영상 자막을 자동으로 생성합니다. 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
 <translation id="2856776373509145513">새 컨테이너 만들기</translation>
 <translation id="2858138569776157458">인기 사이트</translation>
-<translation id="2859383038987078242">ChromeOS 진단 테스트를 실행합니다.</translation>
 <translation id="2861301611394761800">시스템 업데이트가 완료되었습니다. 시스템을 다시 시작하세요.</translation>
 <translation id="2861941300086904918">네이티브 클라이언트 보안 관리자</translation>
 <translation id="2862815659905780618">Linux 개발 환경 삭제</translation>
@@ -2886,6 +2890,7 @@
 <translation id="3642699533549879077">다른 사람이 내 화면을 보면 알려 주고 알림 콘텐츠는 숨깁니다.</translation>
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" />에서 관리하는 기기입니다. <ph name="DEVICE_MANAGER" />에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
 <translation id="3645372836428131288">지문의 다른 부분이 인식되도록 손가락을 살짝 움직이세요.</translation>
+<translation id="3647654707956482440">이 링크를 사용할 수 없습니다. 오타가 있는지 확인하거나 다른 링크를 사용하여 다시 시도해 보세요.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> 발견됨</translation>
 <translation id="3650753875413052677">등록 오류</translation>
@@ -4774,7 +4779,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />(오프라인에서 사용 가능)</translation>
 <translation id="5454166040603940656">제공업체: <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">검색결과 더보기</translation>
-<translation id="5455603387986949153">ChromeOS Flex 기기와 구성요소의 일련번호를 읽습니다.</translation>
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5457459357461771897">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 삭제</translation>
 <translation id="5458214261780477893">드보락</translation>
@@ -6785,6 +6789,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7371490947952970241">이 기기에서 기본 위치 설정을 사용 중지하여 위치를 사용 중지할 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.</translation>
 <translation id="7371917887111892735">탭이 고정된 탭 폭으로 줄어듦</translation>
 <translation id="7374376573160927383">USB 기기 관리</translation>
+<translation id="7376124766545122644">이 링크를 사용할 수 없습니다. 링크가 'http://' 또는 'https://'로 시작하는지 확인한 후 다시 시도해 보세요.</translation>
 <translation id="7376553024552204454">이동 시 마우스 커서 강조표시</translation>
 <translation id="737728204345822099">이 사이트를 방문한 기록이 보안 키에 보관될 수 있습니다.</translation>
 <translation id="7377451353532943397">계속해서 센서 액세스 차단</translation>
@@ -6795,6 +6800,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7380622428988553498">기기 이름에 잘못된 문자가 포함되어 있습니다.</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> 업데이트됨</translation>
 <translation id="7382085868019811559">이전 브라우저 지원(LBS)을 사용하면 특정 사이트를 올바르게 실행하는 데 필요한 레거시 기능을 지원하는 대체 브라우저에서 해당 패턴의 URL을 열 수 있습니다.</translation>
+<translation id="738322632977123193">업로드할 수 없습니다. 이미지는 .jpg, .gif, .png, .bmp, .tif, .webp 형식 중 하나여야 합니다.</translation>
 <translation id="73843634555824551">입력 및 키보드</translation>
 <translation id="7384687527486377545">키보드 자동 반복</translation>
 <translation id="7385490373498027129">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제됩니다.</translation>
@@ -6923,6 +6929,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7495778526395737099">이전 암호를 잊으셨나요?</translation>
 <translation id="7497981768003291373">최근 캡처한 WebRTC 텍스트 로그가 없습니다.</translation>
 <translation id="7501957181231305652">또는</translation>
+<translation id="7502220299952823578">'항상 사이트를 활성 상태로 유지' 목록에 추가</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">이 사이트를 방문한 기록이 보안 키에 보관됩니다.</translation>
 <translation id="750509436279396091">다운로드 폴더 열기</translation>
@@ -6958,7 +6965,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 앱이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7535730537657706072">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
 <translation id="7537451260744431038">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 없습니다.</translation>
-<translation id="7538932151125743389">ChromeOS 기기와 구성요소 일련번호를 읽을 수 있습니다.</translation>
 <translation id="7540972813190816353">업데이트를 확인하는 동안 오류가 발생했습니다. <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" />에서 이 기기를 이전 버전으로 롤백했습니다. 중요한 파일을 저장한 다음 다시 시작하세요. 기기의 모든 데이터가 삭제됩니다</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> 앱으로 <ph name="ACTION_NAME" /></translation>
@@ -7164,7 +7170,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7718490543420739837">터치 키보드, 음성기록, 스위치 제어 등</translation>
 <translation id="7719367874908701697">페이지 확대/축소</translation>
 <translation id="7719588063158526969">기기 이름이 너무 깁니다.</translation>
-<translation id="7720216670798402294">ChromeOS 기기 정보 및 기기 데이터를 읽습니다.</translation>
 <translation id="7721179060400456005">창으로 디스플레이 채우기 허용</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" />(<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7721258531237831532">조직 프로필이 필요합니다</translation>
@@ -7226,7 +7231,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769748505895274502">최근에 닫은 탭 접기</translation>
 <translation id="7770072242481632881">측면 패널 선택기</translation>
-<translation id="7770406201819593386">ChromeOS Flex 진단 테스트를 실행합니다.</translation>
 <translation id="7770450735129978837">마우스 오른쪽 버튼 클릭</translation>
 <translation id="7770612696274572992">다른 기기에서 이미지가 복사됨</translation>
 <translation id="7771452384635174008">레이아웃</translation>
@@ -8316,7 +8320,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8783834180813871000">블루투스 페어링 코드를 입력하고 Return 또는 Enter 키를 누르세요.</translation>
 <translation id="8784626084144195648">비닝 평균</translation>
 <translation id="8785622406424941542">스타일러스</translation>
-<translation id="8785680469435073309">ChromeOS Flex 네트워크 정보를 읽습니다.</translation>
 <translation id="8786824282808281903">자녀에게 이 아이콘이 표시되면 자녀가 본인의 지문으로 신원을 확인하거나 구매를 승인할 수 있습니다</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{이름이 지정되지 않은 그룹 - 탭 1개}other{이름이 지정되지 않은 그룹 - 탭 #개}}</translation>
 <translation id="8791534160414513928">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
@@ -8705,7 +8708,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9148058034647219655">나가기</translation>
 <translation id="9148126808321036104">다시 로그인</translation>
 <translation id="9148963623915467028">이 사이트는 위치에 액세스할 수 있습니다.</translation>
-<translation id="9149240486450525363">ChromeOS 네트워크 정보를 읽습니다.</translation>
 <translation id="9149866541089851383">수정...</translation>
 <translation id="9150045010208374699">카메라 사용</translation>
 <translation id="9150079578948279438">프로필을 삭제할 수 없습니다. 다시 시도하거나 이동통신사에 기술 지원을 요청하세요.</translation>
@@ -8737,7 +8739,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9174401638287877180">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="9176476835295860688">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 블루투스 기기 연결됨</translation>
-<translation id="9177949831069307748">ChromeOS Flex 기기 정보와 기기 데이터를 읽습니다.</translation>
 <translation id="9178061802301856367">로그인 데이터 삭제</translation>
 <translation id="9179524979050048593">로그인 화면 사용자 이름</translation>
 <translation id="9180281769944411366">이 과정은 몇 분 정도 걸릴 수 있습니다. Linux 컨테이너를 시작합니다.</translation>

@@ -64,6 +64,7 @@
 <translation id="2560420686485554789">Chromium тражи приступ меморијском простору да би преузимао датотеке</translation>
 <translation id="2572494885440352020">Chromium помагач</translation>
 <translation id="2583187216237139145">Администратор пословног профила може да уклони све податке Chromium-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="2648074677641340862">Током инсталације је дошло до грешке у оперативном систему. Преузмите Chromium поново.</translation>
 <translation id="2661879430930417727">Ако делите уређај, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе</translation>
 <translation id="2669853942967761236">Chromium је блокирао овај фајл архиве јер можда крије малвер</translation>
@@ -105,6 +106,7 @@
 <translation id="3387527074123400161">Chromium ОС</translation>
 <translation id="3406848076815591792">Желите да пређете на постојећи Chromium профил?</translation>
 <translation id="3412460710772753638">У Менаџеру лозинки на овом уређају</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Администратор је конфигурисао Chromium да се затвара ако је неактиван дуже од 1 минута.}one{Администратор је конфигурисао Chromium да се затвара ако је неактиван дуже од # минута.}few{Администратор је конфигурисао Chromium да се затвара ако је неактиван дуже од # минута.}other{Администратор је конфигурисао Chromium да се затвара ако је неактиван дуже од # минута.}}</translation>
 <translation id="3430503420100763906">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. Направите профиле за пријатеље и породицу или раздвојите посао и забаву.</translation>
 <translation id="347328004046849135">Chromium ће вас обавестити када се пријавите помоћу угрожене лозинке</translation>
 <translation id="3474745554856756813">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
@@ -186,6 +188,7 @@
 <translation id="538767207339317086">Дозволи пријављивање у Chromium</translation>
 <translation id="5398878173008909840">Доступна је нова верзија Chromium-а.</translation>
 <translation id="5405650547142096840">Уклони из Chromium-а</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium ће се сада затворити.}=1{Chromium ће се затворити за 1 секунду.}one{Chromium ће се затворити за # секунду.}few{Chromium ће се затворити за # секунде.}other{Chromium ће се затворити за # секунди.}}</translation>
 <translation id="5427571867875391349">Подеси Chromium као подразумевани прегледач</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета</translation>
 <translation id="5473971139929175403">Chromium можда неће исправно радити зато што више није подржан на овој верзији Linux-а</translation>
@@ -274,6 +277,7 @@
 <translation id="6940431691900807093">Сајт који касније посетите може да затражи од Chromium-а приступ вашим интересовањима да би персонализовао огласе који вам се приказују. Chromium може да дели највише 3 интересовања.</translation>
 <translation id="6964305034639999644">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
 <translation id="6978145336957848883">Слабе лозинке лако могу да се погоде. Дозволите да Chromium <ph name="BEGIN_LINK" />прави и памти јаке лозинке за вас<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium је неактиван</translation>
 <translation id="6985329841647292029">Chromium ОС услови</translation>
 <translation id="6990124437352146030">Chromium тражи дозволу да приступи микрофону за овај сајт</translation>
 <translation id="7025789849649390912">Инсталација је прекинута.</translation>

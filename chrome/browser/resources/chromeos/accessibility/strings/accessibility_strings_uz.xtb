@@ -326,6 +326,7 @@
 <translation id="309749186376891736">Kursorni surish</translation>
 <translation id="3103579948980282461">Toʻq pushti</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
+<translation id="3105857328626674463">avvalgi soʻzni tanlash</translation>
 <translation id="3109724472072898302">Yig‘ilgan</translation>
 <translation id="311015743332597320">Toʻrtta barmoq bilan oʻngga suring</translation>
 <translation id="3112457281078985179">ChromeVox funksiyasini yoqish yoki o‘chirib qo‘yish uchun “Control + Alt + Z” tugmalar birikmasidan foydalaning.</translation>
@@ -354,6 +355,7 @@
 <translation id="3241052487511142956">Avvalgi tashrif buyurilgan havola</translation>
 <translation id="3241638166094654466">Har bir qatordagi katakchalar soni:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">oxiriga surish</translation>
 <translation id="3260949043575829030">Avvalgi oʻxshash obyekt</translation>
 <translation id="3270069636408109001">Bundan keyin boshqa jadval mavjud emas</translation>
 <translation id="3273791280096244679">Yorliqni saqlash</translation>
@@ -946,6 +948,7 @@
 <translation id="743783356331413498">Namuna</translation>
 <translation id="7439060726180460871">Katalog</translation>
 <translation id="744163271241493234">pwded</translation>
+<translation id="7443479558101073378">keyingi soʻzni tanlash</translation>
 <translation id="7465123027577412805">Tabiiy ovoz ishlatilsinmi?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Keyingi boʻlimga oʻtish. Masalan holat qatori yoki launcherga.</translation>

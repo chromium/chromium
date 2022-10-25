@@ -220,7 +220,6 @@
 <translation id="2107914222138020205">თქვენს USB-C კაბელს არ აქვს Thunderbolt-ის მხარდაჭერა. მოწყობილობის ეფექტურობა შეიძლება შეიზღუდოს.</translation>
 <translation id="2108303511227308752">კლავიატურის მალსახმობი Alt + Backspace შეიცვალა. წაშლის კლავიშით სარგებლობისთვის გამოიყენეთ კლავიშთა კომბინაცია <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="211328683600082144">მიკროფონის ჩართვა</translation>
-<translation id="2123115117533398272">ChromeOS გთავაზობთ ახალ კონტენტს. ხარისხის გაუმჯობესების მიზნით, გაგზავნის სტატისტიკას (მხოლოდ იმ შემთხვევაში, თუ არჩეული გაქვთ გამოყენების მონაცემების გაზიარება). <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">ახალი სამუშაო მაგიდა</translation>
 <translation id="2132302418721800944">ეკრანის სრულად ჩაწერა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
@@ -288,7 +287,6 @@
 <translation id="2542089167727451762">შეეხეთ თქვენს პროფილის სურათს</translation>
 <translation id="255671100581129685">Google ასისტენტი მიუწვდომელია საჯარო სესიაში.</translation>
 <translation id="256712445991462162">ჩამაგრებული ლუპა</translation>
-<translation id="2570734079541893434">პარამეტრების მართვა</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ვერ დაკავშირდა</translation>
 <translation id="2575685495496069081">სისტემაში მრავალჯერადი შესვლა გათიშულია</translation>
 <translation id="2582112259361606227">გადატვირთვა გასაახლებლად</translation>

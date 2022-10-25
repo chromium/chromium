@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">相簿</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1578784163189013834">選取螢幕保護程式背景</translation>
+<translation id="160633243685262989">預覽圖片</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -672,6 +673,7 @@
 <translation id="7535791657097741517">開啟淺色主題背景</translation>
 <translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7551123448725492271">裝置類型係音響裝置。</translation>
+<translation id="7559239713112547082">預覽螢幕截圖</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 觸控螢幕</translation>
@@ -790,7 +792,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8834539327799336565">目前已連接的裝置</translation>
-<translation id="8841375032071747811">[返回] 按鈕</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8855781559874488009">無法透過防火牆連線至 HTTP 網站</translation>
 <translation id="885701979325669005">儲存設備</translation>

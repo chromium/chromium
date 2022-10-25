@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">Àlbums</translation>
 <translation id="1572585716423026576">Defineix com a fons de pantalla</translation>
 <translation id="1578784163189013834">Tria el fons de l'estalvi de pantalla</translation>
+<translation id="160633243685262989">Previsualitza la imatge</translation>
 <translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
@@ -672,6 +673,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7535791657097741517">Activa el tema clar</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
 <translation id="7551123448725492271">El dispositiu és un dispositiu d'àudio.</translation>
+<translation id="7559239713112547082">Previsualitza la captura de pantalla</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla tàctil USB</translation>
@@ -790,7 +792,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fons de pantalla</translation>
 <translation id="8834539327799336565">Connectats actualment</translation>
-<translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8855781559874488009">No es pot establir la connexió amb llocs web HTTP a través del tallafoc</translation>
 <translation id="885701979325669005">Emmagatzematge</translation>

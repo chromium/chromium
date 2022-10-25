@@ -220,7 +220,6 @@
 <translation id="2107914222138020205">ខ្សែ USB-C របស់អ្នកមិនអាចប្រើ Thunderbolt បានទេ។ ប្រតិបត្តិការឧបករណ៍អាចត្រូវ​បានដាក់កំហិត។</translation>
 <translation id="2108303511227308752">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + Backspace។ ដើម្បីប្រើ​គ្រាប់ចុច Delete សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + backspace។</translation>
 <translation id="211328683600082144">បើក​មីក្រូហ្វូន</translation>
-<translation id="2123115117533398272">ChromeOS បង្ហាញ​ការណែនាំ​ខ្លឹមសារថ្មី​សម្រាប់ធ្វើការរុករក។ ផ្ញើស្ថិតិ ដើម្បីកែលម្អគុណភាព លុះត្រាតែអ្នក​បានជ្រើសរើស​ចែករំលែកទិន្នន័យ​ប្រើប្រាស់ប៉ុណ្ណោះ។ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">តុធ្វើការថ្មី</translation>
 <translation id="2132302418721800944">ថតវីដេអូ​ពេញអេក្រង់</translation>
 <translation id="2135456203358955318">កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត</translation>
@@ -288,7 +287,6 @@
 <translation id="2542089167727451762">ចុច​រូបភាព​កម្រងព័ត៌មាន​របស់អ្នក</translation>
 <translation id="255671100581129685">Google ជំនួយការ​មិន​អាចប្រើ​នៅក្នុងរយៈពេល​ចូលប្រើជាសាធារណៈបានទេ។</translation>
 <translation id="256712445991462162">កម្មវិធីពង្រីកដែលបានភ្ជាប់</translation>
-<translation id="2570734079541893434">គ្រប់គ្រង​ការកំណត់</translation>
 <translation id="2573588302192866788">មិន​អាចភ្ជាប់ <ph name="NAME" /> បានទេ</translation>
 <translation id="2575685495496069081">ការចូល​គណនី​ច្រើន​ត្រូវបាន​បិទ</translation>
 <translation id="2582112259361606227">ចាប់ផ្តើមឡើងវិញ​ដើម្បី​ដំឡើង​ជំនាន់</translation>
@@ -309,6 +307,7 @@
 <translation id="2673968385134502798">ហ្គេម</translation>
 <translation id="2678852583403169292">ម៉ឺនុយជ្រើសរើសដើម្បីអាន</translation>
 <translation id="2689613560355655046">តុទី 8</translation>
+<translation id="2695132445805301912">បង្ហាញគ្រាប់ចុច និងការចុច</translation>
 <translation id="2695305337569143674">បណ្ដាញ</translation>
 <translation id="2697697418792422688">បង្ហាញ​ការកំណត់​ក្ដារ​ចុច។ <ph name="KEYBOARD_NAME" /> ត្រូវបាន​ជ្រើសរើស។</translation>
 <translation id="2700493154570097719">កំណត់​ក្ដារចុច​របស់អ្នក</translation>
@@ -1126,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">ពង្រីកកាមេរ៉ា</translation>
 <translation id="731589979057211264">Shelf Party ត្រូវបាន​បើក។</translation>
+<translation id="7340731148882810149">ម៉ឺនុយចុចដោយស្វ័យប្រវត្តិ</translation>
 <translation id="7346909386216857016">យល់ព្រម ខ្ញុំយល់ហើយ</translation>
 <translation id="7348093485538360975">ក្តារចុចលើអេក្រង់</translation>
 <translation id="735745346212279324">VPN ត្រូវបានផ្តាច់</translation>
@@ -1303,6 +1303,7 @@
 <translation id="826107067893790409">ចុច "បញ្ចូល" ដើម្បី​ដោះសោ​សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">លុប</translation>
 <translation id="8270450402312105425">{0,plural, =1{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល​មួយម៉ោង}other{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល # ម៉ោង}}</translation>
+<translation id="8277261673056602147">រំលេចអក្សរនៅលើអេក្រង់របស់អ្នក</translation>
 <translation id="8284362522226889623">អូសទៅឆ្វេង​ដោយប្រើម្រាមដៃបួន ដើម្បីប្ដូរទៅតុមុន</translation>
 <translation id="828708037801473432">បិទ</translation>
 <translation id="8297006494302853456">ខ្សោយ</translation>

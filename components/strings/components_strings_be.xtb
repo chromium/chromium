@@ -2272,6 +2272,7 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Маштаб</translation>
 <translation id="7016992613359344582">Плацяжы могуць быць аднаразовыя або рэгулярныя, і іх можа быць цяжка заўважыць.</translation>
+<translation id="7023162328967545559">Папярэджанне адміністратара</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7030436163253143341">Сертыфікат несапраўдны</translation>
 <translation id="7031646650991750659">Якія праграмы Google Play вы ўсталявалі.</translation>
@@ -2458,6 +2459,7 @@
 <translation id="7489473601138133813">Матэрыялы для павышэння кваліфікацыі і планаванне кар'еры</translation>
 <translation id="7495528107193238112">Гэта змесціва заблакіравана. Каб вырашыць праблему, звярніцеся да ўладальніка сайта.</translation>
 <translation id="7497998058912824456">Кнопка "Стварыць дакумент". Каб хутка стварыць новы дакумент Google, націсніце Enter</translation>
+<translation id="7501663406926337752">Ваша арганізацыя пазначыла, што мэтавы сайт парушае правілы</translation>
 <translation id="7501853161948120656">Адукацыйныя матэрыялы</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" /> наступную інфармацыю:
         <ph name="BEGIN_LIST" />
@@ -2702,6 +2704,7 @@
 <translation id="8094917007353911263">Сетка, якую вы выкарыстоўваеце, можа запатрабаваць ад вас наведаць <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Несапраўдныя карткі выдалены</translation>
+<translation id="8100666323495101203">Ваша арганізацыя пазначыла, што сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> можа парушаць правілы. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Навуковыя канферэнцыі і публікацыі</translation>
 <translation id="8103161714697287722">Спосаб аплаты</translation>
 <translation id="8103643211515685474">Усё роўна надрукаваць</translation>

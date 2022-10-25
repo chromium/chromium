@@ -3229,6 +3229,7 @@ Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışı
 
       <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> protokolünün ayarlanmadan bırakılması, arama sağlayıcıyı etkinleştiren anahtar kelime olmadığı anlamına gelir.</translation>
 <translation id="4090088362777472639">Ansible başucu kitabının SHA-256 karması.</translation>
+<translation id="4091040199847925434">Güvenli Tarama'nın iyileştirilmesine yardımcı olmak için kullanılan sistem bilgilerinin ve sayfa içeriğinin raporlanmasını devre dışı bırak</translation>
 <translation id="4097556069183835428">Politikayı None (Yok) değerine ayarlamak, ekran büyütecini kapatır.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa ekran büyüteci ilk başta kapalıdır, ancak kullanıcılar istedikleri zaman açabilir.</translation>

@@ -2088,7 +2088,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="285241945869362924">Automatically creates captions for audio and video. Audio and captions never leave your device.</translation>
 <translation id="2856776373509145513">Create a new container</translation>
 <translation id="2858138569776157458">Top sites</translation>
-<translation id="2859383038987078242">Run Chrome OS diagnostic tests.</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Remove Linux development environment</translation>
@@ -2436,6 +2435,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3197453258332670132">With a right-click or long press, show related info for your text selection</translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3200061262156232574">In your shopping basket</translation>
+<translation id="3201237270673604992">Z to A</translation>
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">This tab's audio is being muted.</translation>
@@ -2469,6 +2469,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3241680850019875542">Select the root directory of the extension to pack. To update an extension, also select the private key file to reuse.</translation>
 <translation id="3242289508736283383">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
 <translation id="3242665648857227438">This profile uses Chrome OS proxy settings.</translation>
+<translation id="3243017971870859287">Read ChromeOS Flex device and component serial numbers</translation>
 <translation id="3244294424315804309">Continue muting sound</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
 <translation id="3248902735035392926">Safety matters. Take a moment and <ph name="BEGIN_LINK" />check your extensions now<ph name="END_LINK" /></translation>
@@ -2525,6 +2526,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3297105622164376095">Allowed to show third-party sign-in prompts</translation>
 <translation id="3297536526040732495">Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps</translation>
 <translation id="329838636886466101">Repair</translation>
+<translation id="3298438307450647315">Read ChromeOS device information and device data</translation>
 <translation id="3298789223962368867">Invalid URL entered.</translation>
 <translation id="32991397311664836">Devices:</translation>
 <translation id="33022249435934718">GDI Handles</translation>
@@ -2631,6 +2633,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3402255108239926910">Pick an avatar</translation>
 <translation id="3402585168444815892">Enrolling in demo mode</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Read ChromeOS Flex device information and device data</translation>
 <translation id="3404065873681873169">No passwords saved for this site</translation>
 <translation id="3405664148539009465">Customise fonts</translation>
 <translation id="3405763860805964263">...</translation>
@@ -3756,6 +3759,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4462159676511157176">Custom name servers</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> time limit set for <ph name="APP_NAME" /></translation>
+<translation id="4465649939134800363">Sort options</translation>
 <translation id="4466839823729730432">See your memories here</translation>
 <translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> can edit files in <ph name="FOLDERNAME" /></translation>
@@ -4043,6 +4047,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4726710355753484204">Use Ctrl + Alt + Brightness up to zoom in.
 Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4726710629007580002">There were warnings when trying to install this extension:</translation>
+<translation id="472738079453283624">Products</translation>
 <translation id="4727847987444062305">Managed guest session</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Your administrator<ph name="END_LINK" /> has turned off checking for harmful software</translation>
@@ -4185,6 +4190,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
 <translation id="4868281708609571334">Teach Google Assistant to recognise <ph name="SUPERVISED_USER_NAME" />’s voice</translation>
 <translation id="4868284252360267853">This dialogue is not currently focused. Press Command-Shift-Option A to focus this dialogue.</translation>
+<translation id="4869170227080975044">Read ChromeOS network information</translation>
 <translation id="4870724079713069532">You can open and edit supported files with this app from File Explorer or other apps. To control which files open in this app by default, go to <ph name="BEGIN_LINK" />Windows settings<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Enter admin-provided password to get configuration info</translation>
 <translation id="4870995365819149457">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and 1 other app.</translation>
@@ -4783,7 +4789,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (works offline)</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">See more search results</translation>
-<translation id="5455603387986949153">Read Chrome OS Flex device and component serial numbers.</translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5457459357461771897">Read and delete photos, music and other media from your computer</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -4918,6 +4923,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5571066253365925590">Bluetooth enabled</translation>
 <translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5571832155627049070">Customise your profile</translation>
+<translation id="5572252023412311448">Show site details for <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">You'll get improved suggestions in the address bar</translation>
 <translation id="5572851009514199876">Please start and sign in to Chrome so that Chrome can check whether you are allowed to access this site.</translation>
 <translation id="557506220935336383">See extension permissions for other sites</translation>
@@ -6107,6 +6113,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6703212423117969852">You can try again later in Chrome.</translation>
 <translation id="6703254819490889819">Restore backup</translation>
 <translation id="6706210727756204531">Scope</translation>
+<translation id="6707122714992751648">Run ChromeOS diagnostic tests</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> and 1 Other Tab}other{<ph name="PAGE_TITLE" /> and # Other Tabs}}</translation>
 <translation id="6709133671862442373">News</translation>
@@ -6266,6 +6273,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6843264316370513305">Network debugging</translation>
 <translation id="6843423766595476978">"Ok Google" is ready</translation>
 <translation id="6845038076637626672">Open Maximised</translation>
+<translation id="6845231585063669905">A to Z</translation>
 <translation id="6846178040388691741">'<ph name="EXTENSION_NAME" />' wants to print <ph name="FILE_NAME" /> with <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Free up space to continue</translation>
 <translation id="6848388270925200958">At the moment, you have some cards that can only be used on this device</translation>
@@ -6285,6 +6293,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Proxy settings...</translation>
 <translation id="6860427144121307915">Open in a Tab</translation>
+<translation id="6861179941841598556">More actions for <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">All extensions allowed</translation>
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6865313869410766144">Auto-fill form data</translation>
@@ -6374,6 +6383,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
         <ph name="BREAK" />
         <ph name="BREAK" />
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
+<translation id="6949089178006131285">Read ChromeOS Flex network information</translation>
 <translation id="6949434160682548041">Password (optional)</translation>
 <translation id="6950627417367801484">Restore apps</translation>
 <translation id="6952242901357037157">You can also show passwords from your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> here</translation>
@@ -6972,7 +6982,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> is not responding. Select 'Force close' to close the app.</translation>
 <translation id="7535730537657706072">To clear Incognito browsing history from your device, close all incognito tabs</translation>
 <translation id="7537451260744431038">Sites can't use cookies to improve your browsing experience, for example to keep you signed in or to remember items in your shopping basket</translation>
-<translation id="7538932151125743389">Read Chrome OS device and component serial numbers.</translation>
 <translation id="7540972813190816353">An error occurred while checking for updates: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> has put this device on a previous version. Please save important files, then restart. All data on the device will be deleted.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> with <ph name="APP_NAME" /> app</translation>
@@ -7178,7 +7187,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7718490543420739837">On-screen keyboard, dictation, Switch Access and more</translation>
 <translation id="7719367874908701697">Page zoom</translation>
 <translation id="7719588063158526969">Device name too long</translation>
-<translation id="7720216670798402294">Read Chrome OS Device information and device data.</translation>
 <translation id="7721179060400456005">Allow windows to span displays</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7721258531237831532">Your organisation requires a profile</translation>
@@ -7240,7 +7248,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769748505895274502">Collapse recently closed</translation>
 <translation id="7770072242481632881">Side panel selector</translation>
-<translation id="7770406201819593386">Run Chrome OS Flex diagnostic tests.</translation>
 <translation id="7770450735129978837">Right mouse click</translation>
 <translation id="7770612696274572992">Image copied from other device</translation>
 <translation id="7771452384635174008">Layout</translation>
@@ -7421,6 +7428,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7939073735115504773">Click this extension's icon to read and change <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Manage device certificates</translation>
 <translation id="7939412583708276221">Keep anyway</translation>
+<translation id="7940265372707990269">Sort by <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tethering readiness:</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943368935008348579">Download PDFs</translation>
@@ -7993,6 +8001,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8463001014623882202">Authorisation failed</translation>
 <translation id="846374874681391779">Downloads bar</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> disabled.</translation>
+<translation id="846399539692727039">Run ChromeOS Flex diagnostic tests</translation>
 <translation id="8464132254133862871">This user account is not eligible for the service.</translation>
 <translation id="8465252176946159372">Not valid</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> needs your permission to run</translation>
@@ -8139,6 +8148,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8624315169751085215">Copy to Clipboard</translation>
 <translation id="8624354461147303341">Get discounts</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Read ChromeOS device and component serial numbers</translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Not allowed to use your microphone</translation>
 <translation id="8625916342247441948">Don't allow sites to connect to HID devices</translation>
@@ -8329,7 +8339,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8783834180813871000">Type the pairing code then press Return or Enter</translation>
 <translation id="8784626084144195648">Binned Average</translation>
 <translation id="8785622406424941542">Stylus</translation>
-<translation id="8785680469435073309">Read ChromeOS Flex network information.</translation>
 <translation id="8786824282808281903">When your child sees this icon, a fingerprint can be used for identification or to approve purchases.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Unnamed Group – 1 Tab}other{Unnamed Group – # Tabs}}</translation>
 <translation id="8791534160414513928">Send a ‘Do Not Track’ request with your browsing traffic</translation>
@@ -8718,7 +8727,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9148963623915467028">This site can access your location.</translation>
-<translation id="9149240486450525363">Read ChromeOS network information.</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9150045010208374699">Use your camera</translation>
 <translation id="9150079578948279438">Profile could not be removed. Please try again or contact your operator for technical support.</translation>
@@ -8750,7 +8758,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9174401638287877180">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
 <translation id="9176476835295860688">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth device connected</translation>
-<translation id="9177949831069307748">Read Chrome OS Flex device information and device data.</translation>
 <translation id="9178061802301856367">Delete sign-in data</translation>
 <translation id="9179524979050048593">Sign-in screen username</translation>
 <translation id="9180281769944411366">This process may take a few minutes. Starting the Linux container.</translation>

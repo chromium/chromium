@@ -220,7 +220,6 @@
 <translation id="2107914222138020205">สาย USB-C ที่ใช้ไม่รองรับ Thunderbolt และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="2108303511227308752">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + Backspace หากต้องการใช้แป้น Delete ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="211328683600082144">เปิดไมโครโฟน</translation>
-<translation id="2123115117533398272">Chrome OS จะแสดงการแนะนำเนื้อหาใหม่ให้สำรวจ ส่งสถิติเพื่อปรับปรุงคุณภาพต่อเมื่อคุณเลือกที่จะแชร์ข้อมูลการใช้งาน <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">เดสก์ใหม่</translation>
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
@@ -288,7 +287,6 @@
 <translation id="2542089167727451762">แตะรูปโปรไฟล์</translation>
 <translation id="255671100581129685">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธารณะ</translation>
 <translation id="256712445991462162">แว่นขยายหน้าจอบางส่วน</translation>
-<translation id="2570734079541893434">จัดการการตั้งค่า</translation>
 <translation id="2573588302192866788">เชื่อมต่อ <ph name="NAME" /> ไม่ได้</translation>
 <translation id="2575685495496069081">ปิดใช้การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีอยู่</translation>
 <translation id="2582112259361606227">รีสตาร์ทเพื่ออัปเดต</translation>
@@ -309,6 +307,7 @@
 <translation id="2673968385134502798">เกม</translation>
 <translation id="2678852583403169292">เมนูเลือกเพื่อให้อ่าน</translation>
 <translation id="2689613560355655046">เดสก์ 8</translation>
+<translation id="2695132445805301912">แสดงแป้นและการคลิก</translation>
 <translation id="2695305337569143674">เว็บ</translation>
 <translation id="2697697418792422688">แสดงการตั้งค่าแป้นพิมพ์ เลือก <ph name="KEYBOARD_NAME" /> แล้ว</translation>
 <translation id="2700493154570097719">ตั้งค่าแป้นพิมพ์</translation>
@@ -1126,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
 <translation id="731589979057211264">Shelf Party เปิดอยู่</translation>
+<translation id="7340731148882810149">เมนูการคลิกอัตโนมัติ</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
@@ -1303,6 +1303,7 @@
 <translation id="826107067893790409">กด Enter เพื่อปลดล็อกสำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8270450402312105425">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 ชั่วโมง}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # ชั่วโมง}}</translation>
+<translation id="8277261673056602147">ไฮไลต์ข้อความในหน้าจอ</translation>
 <translation id="8284362522226889623">ใช้ 4 นิ้วเลื่อนไปทางซ้ายเพื่อเปลี่ยนไปใช้เดสก์ก่อนหน้า</translation>
 <translation id="828708037801473432">ปิด</translation>
 <translation id="8297006494302853456">อ่อน</translation>

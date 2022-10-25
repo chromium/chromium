@@ -2313,6 +2313,7 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Ниво на зумирање</translation>
 <translation id="7016992613359344582">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни.</translation>
+<translation id="7023162328967545559">Предупредување од администратор</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7030436163253143341">Сертификатот е неважечки</translation>
 <translation id="7031646650991750659">кои апликации од Google Play сте ги инсталирале</translation>
@@ -2500,6 +2501,7 @@
 <translation id="7489473601138133813">Ресурси и планирање кариера</translation>
 <translation id="7495528107193238112">Содржинава е блокирана. Контактирајте со сопственикот на сајтот за поправка на проблемот.</translation>
 <translation id="7497998058912824456">Копче за создавање документ, притиснете го копчето Enter за да набрзина создадете нов документ на Google</translation>
+<translation id="7501663406926337752">Сајтот е означен од вашата организација</translation>
 <translation id="7501853161948120656">Образовни ресурси</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />нема да ги зачувува<ph name="END_EMPHASIS" /> следниве податоци:
         <ph name="BEGIN_LIST" />
@@ -2746,6 +2748,7 @@
 <translation id="8094917007353911263">Мрежата што ја користите може да бара да ја посетите страницата <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Неважечките картички се отстранети</translation>
+<translation id="8100666323495101203">Вашата организација го препознава <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> како сајт кој можеби ги прекршува правилата. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Академски конференции и публикации</translation>
 <translation id="8103161714697287722">Начин на плаќање</translation>
 <translation id="8103643211515685474">Сепак отпечати</translation>

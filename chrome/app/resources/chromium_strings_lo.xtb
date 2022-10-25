@@ -64,6 +64,7 @@
 <translation id="2560420686485554789">Chromium ຕ້ອງການເຂົ້າເຖິງບ່ອນເກັບຂໍ້ມູນເພື່ອດາວໂຫຼດໄຟລ໌</translation>
 <translation id="2572494885440352020">ຜູ້​ຊ່ວຍ Chromium</translation>
 <translation id="2583187216237139145">ຜູ້ເບິ່ງແຍງລະບົບໂປຣໄຟລ໌ບ່ອນເຮັດວຽກສາມາດລຶບຂໍ້ມູນ Chromium ໃດໆກໍຕາມທີ່ສ້າງຂຶ້ນໃນລະຫວ່າງການນຳໃຊ້ໂປຣໄຟລ໌ນີ້ (ເຊັ່ນ: ການສ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆ) ອອກໄດ້. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">ສືບຕໍ່ນຳໃຊ້ Chromium</translation>
 <translation id="2648074677641340862">ເກີດຄວາມຜິດພາດດ້ານລະບົບປະຕິບັດການໃນລະຫວ່າງການຕິດຕັ້ງ. ກະລຸນາດາວໂຫຼດ Chromium ອີກ.</translation>
 <translation id="2661879430930417727">ຖ້າທ່ານໃຊ້ອຸປະກອນຮ່ວມກັນ, ໝູ່ ແລະ ຄອບຄົວສາມາດທ່ອງເວັບແຍກຕ່າງຫາກ ແລະ ຕັ້ງຄ່າ Chromium ໃນແບບທີ່ເຂົາເຈົ້າຕ້ອງການໄດ້</translation>
 <translation id="2669853942967761236">Chromium ບລັອກໄຟລ໌ແຟ້ມຈັດເກັບນີ້ແລ້ວເນື່ອງຈາກມັນເຊື່ອງເມົາແວໄວ້</translation>
@@ -105,6 +106,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ສະຫຼັບເປັນໂປຣໄຟລ໌ Chromium ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="3412460710772753638">ໃນຕົວຈັດການລະຫັດຜ່ານຢູ່ອຸປະກອນນີ້</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າໃຫ້ Chromium ປິດລົງຖ້າບໍ່ມີການນຳໃຊ້ຫຼາຍກວ່າ 1 ນາທີ.}other{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າໃຫ້ Chromium ປິດລົງຖ້າບໍ່ມີການນຳໃຊ້ຫຼາຍກວ່າ # ນາທີ.}}</translation>
 <translation id="3430503420100763906">ດ້ວຍໂປຣໄຟລ໌ Chromium ທ່ານສາມາດແຍກເນື້ອຫາ Chromium ຂອງທ່ານທັງໝົດໄດ້. ສ້າງໂປຣໄຟລ໌ສຳລັບໝູ່ ແລະ ຄອບຄົວ ຫຼື ແຍກຈາກກັນລະຫວ່າງວຽກ ແລະ ຄວາມມ່ວນ.</translation>
 <translation id="347328004046849135">Chromium ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="3474745554856756813">ນີ້ຈະລຶບ <ph name="ITEMS_COUNT" /> ລາຍການອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ເປັນ <ph name="USER_EMAIL" />.</translation>
@@ -186,6 +188,7 @@
 <translation id="538767207339317086">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="5398878173008909840">ມີ Chromium ລຸ້ນໃໝ່ຢູ່.</translation>
 <translation id="5405650547142096840">ເອົາ​ອອກ​ຈາກ Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium ຈະປິດດຽວນີ້.}=1{Chromium ຈະປິດໃນ 1 ວິນາທີ.}other{Chromium ຈະປິດໃນ # ວິນາທີ.}}</translation>
 <translation id="5427571867875391349">ຕັ້ງ Chromium ເປັນບຣາວ​ເຊີມາດຕະຖານຂອງທ່ານ</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium ອາດເຮັດວຽກໄດ້ບໍ່ຖືກຕ້ອງເນື່ອງຈາກ Linux distribution ນີ້ບໍ່ຮອງຮັບມັນອີກຕໍ່ໄປແລ້ວ.</translation>
@@ -274,6 +277,7 @@
 <translation id="6940431691900807093">ເວັບໄຊໃດໜຶ່ງທີ່ທ່ານເຂົ້າເບິ່ງຈະສາມາດຂໍ Chromium ເພື່ອເບິ່ງຄວາມສົນໃຈຂອງທ່ານໃນພາຍຫຼັງໄດ້ເພື່ອປັບແຕ່ງໂຄສະນາທີ່ທ່ານເຫັນໃຫ້ເປັນສ່ວນຕົວ. Chromium ສາມາດແບ່ງປັນຄວາມສົນໃຈໄດ້ສູງສຸດ 3 ຢ່າງ.</translation>
 <translation id="6964305034639999644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="6978145336957848883">ລະຫັດຜ່ານງ່າຍແມ່ນລະຫັດຜ່ານທີ່ເດົາໄດ້ງ່າຍ. ອະນຸຍາດໃຫ້ Chromium <ph name="BEGIN_LINK" />ສ້າງ ແລະ ຈື່ລະຫັດຜ່ານຍາກສຳລັບທ່ານ<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium ປິດນຳໃຊ້ຢູ່</translation>
 <translation id="6985329841647292029">ຂໍ້ກຳນົດ ChromiumOS</translation>
 <translation id="6990124437352146030">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="7025789849649390912">ຢຸດການຕິດຕັ້ງແລ້ວ.</translation>

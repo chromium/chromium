@@ -2273,6 +2273,7 @@
 <translation id="7012363358306927923">တရုတ် UnionPay</translation>
 <translation id="7014741021609395734">ဇူးမ်အဆင့်</translation>
 <translation id="7016992613359344582">ဤငွေကောက်ခံမှုများသည် တစ်ချိန်တစ်ခါတည်း ဖြစ်နိုင်သလို ထပ်တလဲလဲကောက်ခံမှုလည်း ဖြစ်နိုင်ပြီး သိသာမှုမရှိနိုင်ပါ။</translation>
+<translation id="7023162328967545559">စီမံခန့်ခွဲသူ သတိပေးချက်</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
 <translation id="7030436163253143341">အသိအမှတ်ပြုလက်မှတ် မမှန်ကန်ပါ</translation>
 <translation id="7031646650991750659">မည်သည့် Google Play အက်ပ်များကို သင်ထည့်သွင်းထားပါသလဲ</translation>
@@ -2459,6 +2460,7 @@
 <translation id="7489473601138133813">သက်မွေးဝမ်းကျောင်းမှု ရင်းမြစ်နှင့် စီစဉ်ခြင်း</translation>
 <translation id="7495528107193238112">ဤအကြောင်းအရာကို ပိတ်ထားသည်။ ပြဿနာကို ဖြေရှင်းရန် ဝဘ်ဆိုက်ပိုင်ရှင်ကို ဆက်သွယ်ပါ။</translation>
 <translation id="7497998058912824456">Doc ပြုလုပ်ရန် ခလုတ်၊ Google Doc အသစ် အမြန်ပြုလုပ်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
+<translation id="7501663406926337752">ဖွင့်မည့်ဝဘ်ဆိုက်ကို သင့်အဖွဲ့အစည်းက အလံပြထားသည်</translation>
 <translation id="7501853161948120656">ပညာရေးရင်းမြစ်များ</translation>
 <translation id="7506488012654002225">Chromium သည် အောက်ပါအချက်အလက်များကို <ph name="BEGIN_EMPHASIS" />သိမ်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />-
           <ph name="BEGIN_LIST" />
@@ -2704,6 +2706,7 @@
 <translation id="8094917007353911263">သင်အသုံးပြုနေသော ကွန်ယက်သည် <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> သို့ သင်သွားရောက်ကြည့်ရှုရန် လိုအပ်စေလိမ့်မည်။</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">အကျုံးမဝင်သော ကတ်များကို ဖယ်ရှားပြီးပါပြီ</translation>
+<translation id="8100666323495101203">သင့်အဖွဲ့အစည်းက <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ကို မူဝါဒချိုးဖောက်နိုင်သော ဝဘ်ဆိုက်အဖြစ် သတ်မှတ်ထားသည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">ပညာရပ်ဆိုင်ရာ အစည်းအဝေးနှင့် ထုတ်ဝေမှုများ</translation>
 <translation id="8103161714697287722">ငွေပေးချေမှု နည်းလမ်း</translation>
 <translation id="8103643211515685474">မည်သို့ပင်ဖြစ်စေ ပရင့်ထုတ်ရန်</translation>

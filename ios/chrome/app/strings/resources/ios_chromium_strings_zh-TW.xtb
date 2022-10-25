@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
 <translation id="1722370509450468186">密碼會儲存至你的帳戶 (<ph name="EMAIL" />)。</translation>
 <translation id="1736662517232558588">已清除 Chromium 資料</translation>
+<translation id="177102542580335555">這個 Chromium 設定檔即將啟用標準安全防護機制</translation>
 <translation id="1838412507805038478">Chromium 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="1843424232666537147">Chromium 的功能可讓你輕鬆管理網際網路數據傳輸和網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">登入以充分運用 Chromium 的各項功能。</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chromium 開啟。</translation>
+<translation id="4633738821577273991">一併為這個 Chromium 設定檔啟用安全瀏覽強化防護功能</translation>
 <translation id="4654936625574199632">為協助改善應用程式，Chromium 會將使用情形和當機報告傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">要清除這個裝置上的 Chromium 資料嗎？</translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>
 <translation id="8308172444429103994">Chromium 實用提示。在鍵盤頂端選取已儲存的密碼，即可加快登入速度。</translation>
+<translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="865600487977764604">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>

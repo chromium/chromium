@@ -5,7 +5,6 @@
 <translation id="1013952917065545813">Ви можете повернутися сюди, щоб відкрити нещодавно закриті вкладки</translation>
 <translation id="1016495303386450659">Закладку оновлено</translation>
 <translation id="1044891598689252897">Сайти працюватимуть у звичному режимі</translation>
-<translation id="1047726139967079566">Додати цю сторінку до закладок...</translation>
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="105093091697134113">Паролі облікових записів нижче було розкрито через порушення безпеки даних третьої сторони або введено на оманливому сайті. Негайно змініть їх, щоб захистити свої облікові записи.</translation>
 <translation id="105214722824962652">Ви не вийдете з облікового запису Google. Коли ви входите в обліковий запис Google, у ньому можуть зберігатися <ph name="BEGIN_LINK" />дані про інші дії<ph name="END_LINK" />. Ви можете будь-коли видалити їх.
@@ -26,7 +25,6 @@
 <translation id="1112015203684611006">Не надруковано.</translation>
 <translation id="1125564390852150847">Створити вкладку.</translation>
 <translation id="1126809382673880764">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Безпечний перегляд усе ще працюватиме в інших сервісах Google (у яких він доступний), як-от Gmail і Пошук.</translation>
-<translation id="1135212215217513471">Завантажити Chrome для iOS</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1147031633655575115">Ви ввійшли як <ph name="USER" /></translation>
 <translation id="1154984953698510061">Переглянути інші вкладки</translation>
@@ -83,7 +81,6 @@
 <translation id="1509960214886564027">Функції на багатьох сайтах можуть не працювати</translation>
 <translation id="152234381334907219">Ніколи не зберігалося</translation>
 <translation id="1523341279170789507">Дозволити всі файли cookie</translation>
-<translation id="1524563461097350801">Ні, дякую</translation>
 <translation id="1531836666020185856">Цікаве</translation>
 <translation id="1535268707340844072">Через поточні налаштування певні сайти можуть не працювати. Щоб керувати файлами cookie для всіх сайтів, перегляньте <ph name="BEGIN_LINK" />Налаштування файлів cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
@@ -123,7 +120,6 @@
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1891796056033961979">На цьому екрані відображаються збережені закладки, паролі, налаштування тощо.</translation>
-<translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
 <translation id="1923342640370224680">Остання година</translation>
 <translation id="1930989359703290198">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -304,7 +300,6 @@
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="3329904751041170572">Не вдалось під’єднатися до сервера.</translation>
-<translation id="3335947283844343239">Знову відкрити закриту вкладку</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3377063233124932127">Тепер ваші збережені закладки, паролі тощо відображаються вгорі екрана.</translation>
 <translation id="3393920035788932672">Спливаючі вікна дозволені</translation>
@@ -411,7 +406,6 @@
 <translation id="4249955472157341256">Сортувати за категорією "Останні"</translation>
 <translation id="42618743927498729">Отримуйте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="4263576668337963058">Показати доступні дії зі сторінкою</translation>
-<translation id="4267380167363222949">Наступна вкладка</translation>
 <translation id="4272631900155121838">Щоб відсканувати QR-код, увімкніть камеру в налаштуваннях</translation>
 <translation id="4277990410970811858">Безпечний перегляд</translation>
 <translation id="4281844954008187215">Умови використання</translation>
@@ -833,7 +827,6 @@
 <translation id="7356359962760467032">Вимкнути відстеження ціни</translation>
 <translation id="7383797227493018512">Список читання</translation>
 <translation id="7398893703713203428">Створити посилання</translation>
-<translation id="739941347996872055">Попередня вкладка</translation>
 <translation id="7400418766976504921">URL-адреса</translation>
 <translation id="7409985198648820906">Непрочитаних статей: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Продовжити</translation>
@@ -842,7 +835,6 @@
 <translation id="7435356471928173109">Вимкнено адміністратором</translation>
 <translation id="7438481509621345350">Тепер, відкривши нову вкладку, ви будете бачити історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7454057999980797137">Область</translation>
-<translation id="7456847797759667638">Відкрити розташування...</translation>
 <translation id="7459628154744868585">Покращений захист увімкнено</translation>
 <translation id="7464701184726199289">Синхронізовані дані буде видалено з усіх пристроїв. Збережені налаштування, які можуть стосуватися ваших зацікавлень в Інтернеті, не буде видалено. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Виберіть Chrome</translation>

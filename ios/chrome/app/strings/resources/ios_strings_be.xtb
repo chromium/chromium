@@ -5,7 +5,6 @@
 <translation id="1013952917065545813">Адсюль вы можаце адкрываць нядаўна закрытыя ўкладкі</translation>
 <translation id="1016495303386450659">Элемент абноўлены</translation>
 <translation id="1044891598689252897">Сайты будуць працаваць нармальна</translation>
-<translation id="1047726139967079566">Дадаць гэту старонку ў закладкі...</translation>
 <translation id="1049743911850919806">Інкогніта</translation>
 <translation id="105093091697134113">Наступныя ўліковыя запісы выкарыстоўваюць паролі, якія былі раскрыты пры ўцечцы даных на старонніх сэрвісах або ўведзены на падманным вэб-сайце. Каб абараніць свае ўліковыя запісы, неадкладна змяніце гэтыя паролі.</translation>
 <translation id="105214722824962652">З Уліковага запісу Google вы не выйдзеце. <ph name="BEGIN_LINK" />Іншыя дзеянні<ph name="END_LINK" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.
@@ -26,7 +25,6 @@
 <translation id="1112015203684611006">Памылка друкавання.</translation>
 <translation id="1125564390852150847">Стварыць новую ўкладку.</translation>
 <translation id="1126809382673880764">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Вы застаняцеся пад абаронай Бяспечнага прагляду пры карыстанні іншымі сэрвісамі Google, у якіх ён даступны, такімі як Gmail і Пошук.</translation>
-<translation id="1135212215217513471">Спампаваць Chrome для iOS</translation>
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1147031633655575115">Вы ўвайшлі як <ph name="USER" /></translation>
 <translation id="1154984953698510061">Паглядзець іншыя ўкладкі</translation>
@@ -83,7 +81,6 @@
 <translation id="1509960214886564027">Функцыі на многіх сайтах могуць перастаць працаваць</translation>
 <translation id="152234381334907219">Ніколі не захоўваліся</translation>
 <translation id="1523341279170789507">Дазволіць усе файлы cookie</translation>
-<translation id="1524563461097350801">Не, дзякуй</translation>
 <translation id="1531836666020185856">Варта звярнуць увагу</translation>
 <translation id="1535268707340844072">Бягучыя налады могуць прывесці да збояў у рабоце некаторых сайтаў. Каб кіраваць файламі cookie для ўсіх сайтаў, перайдзіце ў <ph name="BEGIN_LINK" />Налады файлаў cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Радок адраса 1</translation>
@@ -120,9 +117,9 @@
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Дададзена ў Спіс чытання</translation>
 <translation id="1832848789136765277">Каб не страціць доступ да сваіх сінхранізаваных даных, пацвердзіце сваю асобу</translation>
+<translation id="1857751338515529195">Перайсці на наступную ўкладку</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
-<translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Запампаваць на Google Дыск</translation>
 <translation id="1923342640370224680">За апошнюю гадзіну</translation>
 <translation id="1930989359703290198">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы. Уліковыя запісы, выкарыстоўваць якія не дазволена, не паказваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -150,6 +147,7 @@
 <translation id="2139867232736819575">Пошук скапіраванага тэксту</translation>
 <translation id="214201757571129614">Увайсці…</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
+<translation id="2150175299852799498">Chrome для мабільных прылад</translation>
 <translation id="2155145621546387786">Абагуліць Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Выберыце пароль</translation>
@@ -229,6 +227,7 @@
 <translation id="2783054063075604403">Не ўдалося стварыць спасылку</translation>
 <translation id="2786701870377699570">Шукайце ўкладкі на сінхранізаваных прыладах</translation>
 <translation id="2800683595868705743">Выйсці з пераключальніка ўкладак</translation>
+<translation id="2812727400746650635">Вярнуцца на папярэднюю ўкладку</translation>
 <translation id="2815198996063984598">2. Націсніце "Стандартны браўзер".</translation>
 <translation id="2820289420301699633">Ваш адміністратар можа кіраваць браўзерам Chrome і мае доступ да даных у ім</translation>
 <translation id="2830972654601096923">Кіраваць адрасамі...</translation>
@@ -303,7 +302,6 @@
 <translation id="3324193307694657476">Радок адраса 2</translation>
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
 <translation id="3329904751041170572">Не ўдалося падключыцца да сервера.</translation>
-<translation id="3335947283844343239">Паўторна адкрыць закрытыя ўкладкі</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="3377063233124932127">Цяпер вашы захаваныя закладкі, паролі і іншае змесціва будуць паказвацца ўверсе.</translation>
 <translation id="3393920035788932672">Усплывальныя вокны дазволены</translation>
@@ -409,7 +407,6 @@
 <translation id="4249955472157341256">Сартаваць па апошняй даце</translation>
 <translation id="42618743927498729">Пры зніжэнні цаны на любым з сайтаў вы атрымаеце абвестку.</translation>
 <translation id="4263576668337963058">Паказаць даступныя дзеянні са старонкай</translation>
-<translation id="4267380167363222949">Наступная ўкладка</translation>
 <translation id="4272631900155121838">Каб сканіраваць QR-код, уключыце камеру ў наладах</translation>
 <translation id="4277990410970811858">Бяспечны прагляд</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
@@ -454,6 +451,7 @@
 <translation id="4630540211544979320">Перакладаць вэб-старонкі</translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
+<translation id="4649294145748405669">Спампуйце Chrome – хуткі і бяспечны браўзер, створаны спецыяльна для вас.</translation>
 <translation id="4650125387981512669">Працягнуць як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google.</translation>
 <translation id="4659667755519643272">Перайсці да пераключальніка ўкладак</translation>
@@ -621,6 +619,7 @@
 <translation id="5913600720976431809">Параметры перакладу старонкі</translation>
 <translation id="5938160824633642847">Сховішча прылады амаль запоўнена. Вызваліце месца і паўтарыце спробу.</translation>
 <translation id="5948291296578561264">Гэта дазваляе захоўваць фота ў бібліятэцы.</translation>
+<translation id="5949969988218625680">Паказаць гісторыю</translation>
 <translation id="5951816930277761335">Абагульце спасылку</translation>
 <translation id="5955891643922670672">Паказваецца пазасеткавая версія</translation>
 <translation id="5957613098218939406">Дадатковыя параметры</translation>
@@ -701,6 +700,7 @@
 Вашы даныя былі зашыфраваны з дапамогай фразы-пароля <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="6418346271604475326">PDF рыхтуецца</translation>
 <translation id="6434591244308415567">Адбылася памылка. Паўтарыце спробу пазней.</translation>
+<translation id="6435817889602303010">Паўторна адкрыць апошнюю закрытую ўкладку</translation>
 <translation id="6439338047467462846">Дазволіць усе</translation>
 <translation id="6445051938772793705">Краіна</translation>
 <translation id="6445981559479772097">Паведамленне адпраўлена.</translation>
@@ -830,7 +830,6 @@
 <translation id="7356359962760467032">Перастаць адсочваць цану</translation>
 <translation id="7383797227493018512">Спіс для чытання</translation>
 <translation id="7398893703713203428">Стварыць спасылку</translation>
-<translation id="739941347996872055">Папярэдняя ўкладка</translation>
 <translation id="7400418766976504921">URL-адрас</translation>
 <translation id="7409985198648820906">Непрачытаных артыкулаў: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Працягнуць</translation>
@@ -839,7 +838,6 @@
 <translation id="7435356471928173109">Выключаны адміністратарам</translation>
 <translation id="7438481509621345350">Цяпер пры адкрыцці новай укладкі вы будзеце бачыць змесціва з сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="7454057999980797137">Штат/акруга</translation>
-<translation id="7456847797759667638">Адкрыць размяшчэнне...</translation>
 <translation id="7464701184726199289">Выдаляе сінхранізаваныя даныя з усіх прылад. Захаваныя налады сайтаў не будуць выдалены і могуць змяшчаць вашу гісторыю праглядаў. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Выберыце Chrome.</translation>
 <translation id="7472734401283673885">Назва кампаніі</translation>
@@ -868,6 +866,7 @@
 <translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
 <translation id="7726702057919861819">Меню → Гісторыя → Выдаліць гісторыю праглядаў</translation>
 <translation id="7741325291586284254">Старонка "Новая ўкладка ў рэжыме інкогніта"</translation>
+<translation id="7743314735291715910">Адкрыць размяшчэнне…</translation>
 <translation id="7756478488453921771">Меню → Налады → Спосабы аплаты</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>

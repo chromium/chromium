@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">Španska</translation>
 <translation id="5438282218546237410">Nema rezultata za <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Pogrešna lozinka</translation>
+<translation id="5459064203055649751">Datoteka s nazivom <ph name="FILENAME" /> već postoji. Želite li je zamijeniti onom koju premještate?</translation>
 <translation id="5463231940765244860">Otvori</translation>
 <translation id="5469868506864199649">italijanski</translation>
 <translation id="5473333559083690127">Ponovo unesite novi PIN</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja vaš administrator, detalji</translation>
 <translation id="649877868557234318">Izdvajanje fajla <ph name="FILE_NAME" /> u folder <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Nemoj dozvoliti proksi servere za dijeljene mreže</translation>
+<translation id="6503285896705205014">Administratorska pravila blokiraju premještanje <ph name="COUNT" /> datoteke/datoteka</translation>
 <translation id="6509122719576673235">Norveška</translation>
 <translation id="6528513914570774834">Dozvoli drugim korisnicima ovog uređaja da koriste ovu mrežu</translation>
 <translation id="653019979737152879">Sinhronizira se <ph name="FILE_NAME" />…</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Ova vrsta fajla nije podržana. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>
 <translation id="7359359531237882347">Kopiranje sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Spisak fajlova je poredan prema <ph name="COLUMN_NAME" /> u silaznom poretku.</translation>
+<translation id="7377161162143020057">Administratorska pravila blokiraju lijepljenje te datoteke</translation>
 <translation id="7402503521691663770">ChromeOS Flex uređaji</translation>
 <translation id="7408870451288633753">češki</translation>
 <translation id="7417453074306512035">Etiopijska tastatura</translation>

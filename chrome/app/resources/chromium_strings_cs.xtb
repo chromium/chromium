@@ -64,6 +64,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2560420686485554789">Aby bylo možné stahovat soubory, potřebuje Chromium přístup k úložišti</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">Veškerá data prohlížeče Chromium vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Pokračovat v používání prohlížeče Chromium</translation>
 <translation id="2648074677641340862">Během instalace došlo k chybě operačního systému. Stáhněte prosím Chromium znovu.</translation>
 <translation id="2661879430930417727">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet samostatně a nastavit si Chromium tak, jak potřebuje</translation>
 <translation id="2669853942967761236">Prohlížeč Chromium tento soubor archivu zablokoval, protože v něm může být skryt malware</translation>
@@ -105,6 +106,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Přepnout na stávající profil Chromium?</translation>
 <translation id="3412460710772753638">Ve Správci hesel na tomto zařízení</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{Administrátor nakonfiguroval prohlížeč Chromium tak, aby se po 1 minutě nečinnosti zavřel.}few{Administrátor nakonfiguroval prohlížeč Chromium tak, aby se po # minutách nečinnosti zavřel.}many{Administrátor nakonfiguroval prohlížeč Chromium tak, aby se po # minuty nečinnosti zavřel.}other{Administrátor nakonfiguroval prohlížeč Chromium tak, aby se po # minutách nečinnosti zavřel.}}</translation>
 <translation id="3430503420100763906">Pomocí profilů Chromium můžete všechny své údaje v prohlížeči Chromium uchovávat odděleně. Vytvořte profily pro přátele a rodinu nebo rozdělte činnosti mezi práci a zábavu.</translation>
 <translation id="347328004046849135">Pokud se přihlásíte pomocí prolomeného hesla, Chromium vám to oznámí</translation>
 <translation id="3474745554856756813">Z tohoto zařízení bude smazán následující počet položek: <ph name="ITEMS_COUNT" />. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
@@ -186,6 +188,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="538767207339317086">Povolit přihlášení do prohlížeče Chromium</translation>
 <translation id="5398878173008909840">K dispozici je nová verze prohlížeče Chromium.</translation>
 <translation id="5405650547142096840">Odstranit z prohlížeče Chromium</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium se teď zavře.}=1{Chromium se za 1 sekundu zavře.}few{Chromium se za # sekundy zavře.}many{Chromium se za # sekundy zavře.}other{Chromium se za # sekund zavře.}}</translation>
 <translation id="5427571867875391349">Nastavit Chromium jako výchozí prohlížeč</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Prohlížeč Chromium nemusí fungovat správně, protože v této distribuci Linuxu už není podporován</translation>
@@ -274,6 +277,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="6940431691900807093">Později může navštívený web požádat Chromium o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy. Chromium může sdílet až 3 zájmy.</translation>
 <translation id="6964305034639999644">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
 <translation id="6978145336957848883">Slabá hesla lze snadno uhodnout. Chromium vám může <ph name="BEGIN_LINK" />vytvářet a ukládat silná hesla<ph name="END_LINK" />.</translation>
+<translation id="6984667024406244807">Chromium není aktivní</translation>
 <translation id="6985329841647292029">Smluvní podmínky systému ChromiumOS</translation>
 <translation id="6990124437352146030">Chromium pro tento web potřebuje oprávnění k přístupu k mikrofonu</translation>
 <translation id="7025789849649390912">Instalace byla zastavena.</translation>

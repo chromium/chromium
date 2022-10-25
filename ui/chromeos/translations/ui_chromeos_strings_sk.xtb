@@ -652,6 +652,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> ovládaná správcom, podrobnosti</translation>
 <translation id="649877868557234318">Rozbaľuje sa súbor <ph name="FILE_NAME" /> do priečinka <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Zákaz proxy serverov pre zdieľané siete</translation>
+<translation id="6503285896705205014">Kopírovanie <ph name="COUNT" /> súborov je blokované pravidlami správcu</translation>
 <translation id="6509122719576673235">Nórčina</translation>
 <translation id="6528513914570774834">Povoliť ostatným používateľom zariadenia pripojiť sa k tejto sieti</translation>
 <translation id="653019979737152879">Prebieha synchronizácia súboru <ph name="FILE_NAME" />...</translation>
@@ -754,6 +755,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7357762654218998920">Tento typ súboru nie je podporovaný. Prečítajte si viac o <ph name="BEGIN_LINK_HELP" />otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347">Kopíruje sa viacero položiek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Zoznam súborov je usporiadaný podľa stĺpca <ph name="COLUMN_NAME" /> v zostupnom poradí.</translation>
+<translation id="7377161162143020057">Kopírovanie tohto súboru je blokované pravidlami správcu</translation>
 <translation id="7402503521691663770">Zariadenia so systémom Chrome OS Flex</translation>
 <translation id="7408870451288633753">Česká klávesnica</translation>
 <translation id="7417453074306512035">Etiópska klávesnica</translation>

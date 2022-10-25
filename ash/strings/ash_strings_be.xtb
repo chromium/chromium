@@ -220,7 +220,6 @@
 <translation id="2107914222138020205">Ваш кабель USB-C не падыходзіць для выкарыстання з Thunderbolt. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="2108303511227308752">Змянілася прызначэнне спалучэння клавіш Alt + Backspace. Каб выканаць дзеянне клавішы Delete, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="211328683600082144">УКЛЮЧЫЦЬ МІКРАФОН</translation>
-<translation id="2123115117533398272">Chrome OS паказвае прапановы для азнаямлення з новым змесцівам. Статыстыка для паляпшэння якасці прапаноў будзе адпраўляцца, толькі калі вы згадзіліся на абагульванне даных пра выкарыстанне. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Новы стол</translation>
 <translation id="2132302418721800944">Запіс усяго экрана</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
@@ -288,7 +287,6 @@
 <translation id="2542089167727451762">Націсніце відарыс профілю</translation>
 <translation id="255671100581129685">Памочнік Google недаступны ў агульнадаступным сеансе.</translation>
 <translation id="256712445991462162">прыстыкаваная лупа</translation>
-<translation id="2570734079541893434">Кіраваць наладамі</translation>
 <translation id="2573588302192866788">Не ўдалося падключыць прыладу "<ph name="NAME" />"</translation>
 <translation id="2575685495496069081">Уваход у некалькі ўліковых запісаў забаронены</translation>
 <translation id="2582112259361606227">Перазапусціць і абнавіць</translation>

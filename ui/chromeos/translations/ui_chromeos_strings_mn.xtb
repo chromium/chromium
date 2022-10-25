@@ -529,6 +529,7 @@
 <translation id="5428105026674456456">Испани</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />-н илэрц байхгүй байна.</translation>
 <translation id="5449551289610225147">Буруу нууц үг</translation>
+<translation id="5459064203055649751">"<ph name="FILENAME" />" нэртэй файл аль хэдийн байна. Та үүнийг зөөж байгаа файлаар солихыг хүсэж байна уу?</translation>
 <translation id="5463231940765244860">Оруулах</translation>
 <translation id="5469868506864199649">Итали хэл</translation>
 <translation id="5473333559083690127">Шинэ ПИН-г дахин оруулна уу</translation>
@@ -649,6 +650,7 @@
 <translation id="6495925982925244349">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу татаж авах</translation>
 <translation id="6499681088828539489">Хуваалцсан сүлжээнд проксийг зөвшөөрөхгүй</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> файлыг хуулахыг администраторын бодлогоор блоклосон</translation>
 <translation id="6509122719576673235">Норвег хэл</translation>
 <translation id="6528513914570774834">Энэ төхөөрөмжийн бусад хэрэглэгчдэд энэ сүлжээг ашиглах зөвшөөрөл олгох</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> синхрончилж байна...</translation>
@@ -751,6 +753,7 @@
 <translation id="7357762654218998920">Энэ файлын төрлийг дэмждэггүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулж байна...</translation>
 <translation id="7375951387215729722">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу буурах дарааллаар эрэмбэлсэн.</translation>
+<translation id="7377161162143020057">Энэ файлыг хуулахыг администраторын бодлогоор блоклосон</translation>
 <translation id="7402503521691663770">ChromeOS Flex төхөөрөмжүүд</translation>
 <translation id="7408870451288633753">Чех</translation>
 <translation id="7417453074306512035">Этиоп хэлний гар</translation>

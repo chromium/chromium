@@ -220,7 +220,6 @@
 <translation id="2107914222138020205">USB-C ケーブルは Thunderbolt に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="2108303511227308752">キーボード ショートカット「Alt+Backspace」が変更されました。Delete キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Backspace キーを押してください。</translation>
 <translation id="211328683600082144">マイクをオンにする</translation>
-<translation id="2123115117533398272">Chrome OS により新しいコンテンツの検索候補を表示します。使用状況データの共有を選択した場合のみ、検索候補の精度を向上させるために統計情報を送信します。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">新しいデスク</translation>
 <translation id="2132302418721800944">全画面を録画</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
@@ -287,7 +286,6 @@
 <translation id="2542089167727451762">プロフィール画像をタップしてください</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
-<translation id="2570734079541893434">設定を管理</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> を接続できませんでした</translation>
 <translation id="2575685495496069081">マルチログインは無効にされています</translation>
 <translation id="2582112259361606227">再起動して更新</translation>

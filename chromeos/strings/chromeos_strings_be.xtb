@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">Альбомы</translation>
 <translation id="1572585716423026576">Усталяваць як шпалеры</translation>
 <translation id="1578784163189013834">Выбраць фон застаўкі</translation>
+<translation id="160633243685262989">Перадпрагляд відарыса</translation>
 <translation id="1615335640928990664">Выкарыстанне трафіка з <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Выканаць праверку зарадкі</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
@@ -672,6 +673,7 @@
 <translation id="7535791657097741517">Уключыць светлую тэму</translation>
 <translation id="7550715992156305117">Паслядоўнасці дзеянняў для дыягностыкі</translation>
 <translation id="7551123448725492271">Гэта аўдыяпрылада.</translation>
+<translation id="7559239713112547082">Перадпрагляд здымка экрана</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сэнсарны экран з USB</translation>
@@ -790,7 +792,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Шпалеры</translation>
 <translation id="8834539327799336565">Падключаныя цяпер прылады</translation>
-<translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8845001906332463065">Атрымаць даведку</translation>
 <translation id="8855781559874488009">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTP</translation>
 <translation id="885701979325669005">Сховішча</translation>

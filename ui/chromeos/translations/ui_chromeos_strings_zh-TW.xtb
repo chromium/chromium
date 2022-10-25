@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">西班牙文</translation>
 <translation id="5438282218546237410">找不到與「<ph name="SEARCH_TERM" />」相符的結果。</translation>
 <translation id="5449551289610225147">密碼無效</translation>
+<translation id="5459064203055649751">已經有檔案使用「<ph name="FILENAME" />」這個名稱，要替換成你正在移動的這個檔案嗎？</translation>
 <translation id="5463231940765244860">輸入</translation>
 <translation id="5469868506864199649">義大利文</translation>
 <translation id="5473333559083690127">再次輸入新的 PIN 碼</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，詳細資料</translation>
 <translation id="649877868557234318">將 <ph name="FILE_NAME" /> 解壓縮至 <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">不允許共用網路使用 Proxy</translation>
+<translation id="6503285896705205014">根據系統管理員政策，你無法複製這 <ph name="COUNT" /> 個檔案</translation>
 <translation id="6509122719576673235">挪威文</translation>
 <translation id="6528513914570774834">允許這個裝置的其他使用者使用這個網路</translation>
 <translation id="653019979737152879">正在同步處理 <ph name="FILE_NAME" />...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">系統不支援這種檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
 <translation id="7359359531237882347">正在複製 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="7375951387215729722">檔案清單已依<ph name="COLUMN_NAME" />遞減排序。</translation>
+<translation id="7377161162143020057">根據系統管理員政策，你無法複製這個檔案</translation>
 <translation id="7402503521691663770">ChromeOS Flex 裝置</translation>
 <translation id="7408870451288633753">捷克文</translation>
 <translation id="7417453074306512035">衣索比亞文鍵盤</translation>

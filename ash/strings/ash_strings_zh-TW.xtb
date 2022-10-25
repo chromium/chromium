@@ -220,7 +220,6 @@
 <translation id="2107914222138020205">你的 USB-C 連接線不支援 Thunderbolt。裝置效能可能會因此受到限制。</translation>
 <translation id="2108303511227308752">「Alt + Backspace 鍵」的鍵盤快速鍵已變更。如要使用 Delete 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵。</translation>
 <translation id="211328683600082144">開啟麥克風</translation>
-<translation id="2123115117533398272">Chrome OS 會顯示建議項目，讓你探索新內容。只有當你選擇提供使用資料時，系統才會傳送統計資料用來改善建議內容的品質。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
 <translation id="2132302418721800944">錄製全螢幕畫面</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
@@ -288,7 +287,6 @@
 <translation id="2542089167727451762">輕觸你的個人資料圖片</translation>
 <translation id="255671100581129685">Google 助理不適用於公開工作階段。</translation>
 <translation id="256712445991462162">停駐放大鏡</translation>
-<translation id="2570734079541893434">管理設定</translation>
 <translation id="2573588302192866788">無法連結 <ph name="NAME" /></translation>
 <translation id="2575685495496069081">多重登入功能已停用</translation>
 <translation id="2582112259361606227">重新啟動即可更新</translation>
@@ -301,7 +299,7 @@
 <translation id="2620436844016719705">系統</translation>
 <translation id="2621713457727696555">已受到安全保護</translation>
 <translation id="263399434338050016">「全選」</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">擷取視窗畫面</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">按住並拖曳</translation>
@@ -309,6 +307,7 @@
 <translation id="2673968385134502798">遊戲</translation>
 <translation id="2678852583403169292">隨選朗讀選單</translation>
 <translation id="2689613560355655046">桌面 8</translation>
+<translation id="2695132445805301912">顯示按鍵和點擊</translation>
 <translation id="2695305337569143674">網路</translation>
 <translation id="2697697418792422688">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" />。</translation>
 <translation id="2700493154570097719">設定鍵盤</translation>
@@ -1124,6 +1123,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
 <translation id="731589979057211264">Shelf Party 已開啟。</translation>
+<translation id="7340731148882810149">自動點擊選單</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
@@ -1301,6 +1301,7 @@
 <translation id="826107067893790409">按下 Enter 鍵即可解除鎖定 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置復原為先前的版本}other{在 # 小時內將裝置復原為先前的版本}}</translation>
+<translation id="8277261673056602147">醒目顯示畫面上的文字</translation>
 <translation id="8284362522226889623">以四指向左滑動即可切換至上一個桌面</translation>
 <translation id="828708037801473432">關閉</translation>
 <translation id="8297006494302853456">弱</translation>

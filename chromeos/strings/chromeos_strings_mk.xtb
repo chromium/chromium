@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
 <translation id="1578784163189013834">Изберете заднина за заштитникот на екранот</translation>
+<translation id="160633243685262989">Прегледајте ја сликата</translation>
 <translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
@@ -672,6 +673,7 @@
 <translation id="7535791657097741517">Вклучи светла тема</translation>
 <translation id="7550715992156305117">Дијагностички рутини</translation>
 <translation id="7551123448725492271">Уредот е аудиоуред.</translation>
+<translation id="7559239713112547082">Прегледајте ја сликата од екранот</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Допирен екран со USB</translation>
@@ -790,7 +792,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>
 <translation id="8834539327799336565">Моментално поврзани</translation>
-<translation id="8841375032071747811">Копче за назад</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8855781559874488009">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTP</translation>
 <translation id="885701979325669005">Склад</translation>

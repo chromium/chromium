@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">อัลบั้ม</translation>
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
 <translation id="1578784163189013834">เลือกพื้นหลังของโปรแกรมรักษาหน้าจอ</translation>
+<translation id="160633243685262989">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
@@ -672,6 +673,7 @@
 <translation id="7535791657097741517">เปิดธีมสว่าง</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
 <translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
+<translation id="7559239713112547082">ดูตัวอย่างภาพหน้าจอ</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">หน้าจอสัมผัส USB</translation>
@@ -790,7 +792,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
-<translation id="8841375032071747811">ปุ่มกลับ</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8855781559874488009">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTP</translation>
 <translation id="885701979325669005">พื้นที่เก็บข้อมูล</translation>

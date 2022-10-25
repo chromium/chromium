@@ -5,7 +5,6 @@
 <translation id="1013952917065545813">Puedes volver aquí para abrir las pestañas que cerraste recientemente</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
 <translation id="1044891598689252897">Los sitios funcionarán normalmente</translation>
-<translation id="1047726139967079566">Agregar esta página a favoritos...</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="105093091697134113">Las siguientes cuentas utilizan contraseñas que estuvieron expuestas en una violación de la seguridad de los datos de terceros o que se ingresaron en un sitio web engañoso. Cambia las contraseñas de inmediato para proteger tus cuentas.</translation>
 <translation id="105214722824962652">No saldrás de tu Cuenta de Google. Es posible que se guarden <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.
@@ -26,7 +25,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1112015203684611006">Se produjo un error en la impresión.</translation>
 <translation id="1125564390852150847">Crea una pestaña nueva.</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
-<translation id="1135212215217513471">Obtener Chrome para iOS</translation>
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
@@ -83,7 +81,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
 <translation id="152234381334907219">Nunca guardado</translation>
 <translation id="1523341279170789507">Permitir todas las cookies</translation>
-<translation id="1524563461097350801">No, gracias</translation>
 <translation id="1531836666020185856">Destacados</translation>
 <translation id="1535268707340844072">Con tu configuración actual, es posible que algunos sitios fallen. Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />configuración de las cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
@@ -122,7 +119,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
 <translation id="1872096359983322073">Linterna</translation>
-<translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1930989359703290198">Tu organización te permite acceder solo con determinadas cuentas. Las cuentas no habilitadas están ocultas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -303,7 +299,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="3329904751041170572">No se pudo establecer conexión con el servidor.</translation>
-<translation id="3335947283844343239">Volver a abrir pestaña cerrada</translation>
 <translation id="3371831930909698441">Está disponible la traducción. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus favoritos, contraseñas y otros elementos que guardaste están en la parte superior.</translation>
 <translation id="3393920035788932672">Ventanas permitidas</translation>
@@ -409,7 +404,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
 <translation id="42618743927498729">Recibe una alerta si el precio disminuye en algún sitio.</translation>
 <translation id="4263576668337963058">Mostrar las acciones de página disponibles</translation>
-<translation id="4267380167363222949">Siguiente pestaña</translation>
 <translation id="4272631900155121838">Habilita la cámara en la configuración para escanear un código QR</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
@@ -830,7 +824,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7356359962760467032">Detener el seguimiento de precios</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
 <translation id="7398893703713203428">Crear vínculo</translation>
-<translation id="739941347996872055">Pestaña anterior</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artículos sin leer.</translation>
 <translation id="7412027924265291969">Continuar</translation>
@@ -839,7 +832,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7435356471928173109">El administrador desactivó la función</translation>
 <translation id="7438481509621345350">Ahora, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7454057999980797137">Estado/condado</translation>
-<translation id="7456847797759667638">Abrir ubicación...</translation>
 <translation id="7464701184726199289">Esta opción borra los datos sincronizados en todos los dispositivos. Las opciones de configuración de sitios guardadas no se borrarán y es posible que reflejen tus hábitos de navegación. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7472734401283673885">Nombre de empresa</translation>

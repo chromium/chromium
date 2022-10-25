@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">將 Chrome 設定為預設瀏覽器，即可在所有裝置上同步分頁、密碼和付款資料</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="1511320244449497906">您已登入 <ph name="DOMAIN" /> 的受管帳戶並正在同步資料，其系統管理員現可設定針對該帳戶的使用者政策，該政策可變更 Chrome 的行為。</translation>
+<translation id="1554731936187952550">Chrome 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="1682483655351012182">同步處理 Chromium 資料</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">此帳戶和所有未儲存的資料將從 Chrome 和此裝置上的其他 Google 應用程式中移除。</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome 允許您將帳戶同步至網路上，以節省時間。您可以在設定中新增或移除帳戶。</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
+<translation id="3503014945441706099">一併為這個 Chrome 設定檔啟用安全瀏覽強化防護功能</translation>
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3641179212828090796">使用儲存在 Chrome 中的密碼加快登入速度</translation>
@@ -137,6 +139,7 @@
   • Chromium 當機時，有關當機詳情可能會包括部分個人資料。
 
   • 開啟同步處理功能後，數據可能亦會包括先前瀏覽網址的資料。<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">這個 Chrome 設定檔即將啟用標準安全防護機制</translation>
 <translation id="9112744793181547300">要將 Chrome 設定為預設瀏覽器嗎？</translation>
 <translation id="9122931302567044771">這代表 Chrome 每次都會要求取得桌面版網站。</translation>
 </translationbundle>
