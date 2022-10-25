@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.Renderer.FrameProduction.TimeOverused"
-    units="microseconds" expires_after="2023-02-19">
+    units="microseconds" expires_after="2023-04-23">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metrics@chromium.org</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.Renderer.FrameProduction.TimeUnused"
-    units="microseconds" expires_after="2023-02-19">
+    units="microseconds" expires_after="2023-04-23">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metrics@chromium.org</owner>
   <summary>

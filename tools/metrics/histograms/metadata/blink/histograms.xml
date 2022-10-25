@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Animate.UpdateTime" units="microseconds"
-    expires_after="2023-02-19">
+    expires_after="2023-04-23">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.AutomaticLazyFrameLoad.Reason"
-    enum="AutomaticLazyFrameLoadReason" expires_after="2023-02-19">
+    enum="AutomaticLazyFrameLoadReason" expires_after="2023-04-23">
   <owner>sisidovski@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.AutomaticLazyLoadFrame"
-    enum="AutomaticLazyLoadFrameState" expires_after="2023-02-19">
+    enum="AutomaticLazyLoadFrameState" expires_after="2023-04-23">
   <owner>sisidovski@google.com</owner>
   <owner>kouhei@chromium.org</owner>
   <summary>
@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ContextMenu.ImageSelection.Outcome"
-    enum="ImageSelectionOutcome" expires_after="2023-02-19">
+    enum="ImageSelectionOutcome" expires_after="2023-04-23">
   <owner>benwgold@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -1172,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fonts.VariableFontsRatio"
-    enum="WebFontInstantiationResult" expires_after="2023-02-19">
+    enum="WebFontInstantiationResult" expires_after="2023-04-23">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -2017,7 +2017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
-    expires_after="M110">
+    expires_after="2023-04-23">
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
@@ -2087,7 +2087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Paint.PaintArtifactCompositorUpdateFirstReason"
-    enum="PaintArtifactCompositorUpdateReason" expires_after="2023-02-19">
+    enum="PaintArtifactCompositorUpdateReason" expires_after="2023-04-23">
   <owner>pdr@chromium.org</owner>
   <owner>rego@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2393,7 +2393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.SourceTextTime" units="microseconds"
-    expires_after="2023-02-19">
+    expires_after="2023-04-23">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@google.com</owner>
   <summary>

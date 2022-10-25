@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ShowPasswordCount" units="count"
-    expires_after="2022-12-11">
+    expires_after="2023-04-23">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -1337,7 +1337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordsInOtherApps.GoToIOSSetting"
-    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2023-04-23">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1348,7 +1348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordsInOtherApps.Open"
-    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2023-04-23">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.ProcessedCommand" enum="DownloadCommand"
-    expires_after="2023-01-07">
+    expires_after="2023-04-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Complete.IsOpenWhenCompleteSet" enum="BooleanSet"
-    expires_after="2023-01-07">
+    expires_after="2023-04-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Complete.IsShouldOpenFileBasedOnExtensionSet"
-    enum="BooleanSet" expires_after="2023-01-07">
+    enum="BooleanSet" expires_after="2023-04-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DownloadDangerPrompt"
-    enum="SBClientDownloadExtensions" expires_after="2023-02-19">
+    enum="SBClientDownloadExtensions" expires_after="2023-04-23">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -760,7 +760,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.NotPreferredOpeningInBrowserReasons"
     enum="DownloadNotPreferredOpeningInBrowserReason"
-    expires_after="2023-01-07">
+    expires_after="2023-04-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.OpenButtonPressed.IsDownloadCompleted"
-    enum="BooleanCompleted" expires_after="2023-01-07">
+    enum="BooleanCompleted" expires_after="2023-04-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -930,7 +930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Progress.InfoBar.Shown"
-    enum="DownloadInfoBar.ShownState" expires_after="2023-02-19">
+    enum="DownloadInfoBar.ShownState" expires_after="2023-04-23">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1174,7 +1174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Service.Finish.Type"
-    enum="Download.Service.CompletionType" expires_after="2023-02-19">
+    enum="Download.Service.CompletionType" expires_after="2023-04-23">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The completion type for downloads in download service.</summary>
@@ -1293,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.SetAlwaysOpenTo" enum="BooleanEnabled"
-    expires_after="2023-01-07">
+    expires_after="2023-04-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Count2" units="units" expires_after="2023-02-19">
+<histogram name="Cookie.Count2" units="units" expires_after="2023-04-23">
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
