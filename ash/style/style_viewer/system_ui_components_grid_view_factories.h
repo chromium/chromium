@@ -1,0 +1,22 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_STYLE_STYLE_VIEWER_SYSTEM_UI_COMPONENTS_GRID_VIEW_FACTORIES_H_
+#define ASH_STYLE_STYLE_VIEWER_SYSTEM_UI_COMPONENTS_GRID_VIEW_FACTORIES_H_
+
+#include <memory>
+
+namespace ash {
+
+class SystemUIComponentsGridView;
+
+// The factories of `SystemUIComponentsGridView` for different system UI
+// components in ash/style/.
+std::unique_ptr<SystemUIComponentsGridView> CreateIconButtonInstancesGridView();
+std::unique_ptr<SystemUIComponentsGridView> CreateIconSwitchInstancesGridView();
+std::unique_ptr<SystemUIComponentsGridView> CreatePillButtonInstancesGirdView();
+
+}  // namespace ash
+
+#endif  // ASH_STYLE_STYLE_VIEWER_SYSTEM_UI_COMPONENTS_GRID_VIEW_FACTORIES_H_
