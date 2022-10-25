@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -227,6 +228,10 @@ void PriceTrackingIconView::SetVisualState(bool enable) {
 
 void PriceTrackingIconView::OnPriceTrackingServerStateUpdated(bool success) {
   // TODO(crbug.com/1364739): Handles error if |success| is false.
+  if (commerce::kRevertIconOnFailure.Get() && !success) {
+    bubble_coordinator_.Hide();
+    UpdateImpl();
+  }
 }
 
 bool PriceTrackingIconView::IsPriceTracking() const {

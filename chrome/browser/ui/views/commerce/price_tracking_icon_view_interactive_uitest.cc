@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -273,6 +274,58 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "Commerce.PriceTracking.OmniboxChip.Tracked"),
             0);
+}
+
+class PriceTrackingIconViewErrorHandelingTest
+    : public PriceTrackingIconViewInteractiveTest {
+ public:
+  PriceTrackingIconViewErrorHandelingTest() {
+    test_features_.InitWithFeaturesAndParameters(
+        {{commerce::kShoppingList,
+          {{commerce::kRevertIconOnFailureParam, "true"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList test_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
+                       IconRevertedOnFailure) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/false);
+  ON_CALL(*mock_tab_helper_, ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(true));
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+  EXPECT_EQ(icon_view->GetIconLabelForTesting(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
+               omnibox::kPriceTrackingDisabledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+
+  // Simulate the failure.
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->profile(),
+          base::BindRepeating([](content::BrowserContext* context) {
+            return commerce::MockShoppingService::Build();
+          })));
+  mock_shopping_service->SetSubscribeCallbackValue(false);
+
+  ClickPriceTrackingIconView();
+
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_EQ(icon_view->GetIconLabelForTesting(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
+               omnibox::kPriceTrackingDisabledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+  EXPECT_FALSE(icon_view->GetBubble());
 }
 
 class PriceTrackingIconViewEngagementTest

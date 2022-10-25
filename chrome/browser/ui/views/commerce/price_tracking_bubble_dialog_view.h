@@ -69,10 +69,13 @@ class PriceTrackingBubbleCoordinator {
             ui::ImageModel image_model,
             PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
             PriceTrackingBubbleDialogView::Type type);
+  void Hide();
 
   PriceTrackingBubbleDialogView* GetBubble() const;
 
  private:
+  bool IsShowing();
+
   const raw_ptr<views::View> anchor_view_;
   views::ViewTracker tracker_;
 };
