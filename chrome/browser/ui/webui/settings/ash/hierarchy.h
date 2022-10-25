@@ -48,9 +48,6 @@ class Hierarchy {
                     const Hierarchy* hierarchy);
     ~SectionMetadata();
 
-    // Whether the only contents of the section is a link to a subpage.
-    bool only_contains_link_to_subpage;
-
     // Generates a search result for this section, using the canonical search
     // tag as the search result text. |relevance_score| must be passed by the
     // client, since this result is being created manually instead of via query

@@ -31,12 +31,8 @@ constexpr double kDummyRelevanceScore = 0;
 class Hierarchy::PerSectionHierarchyGenerator
     : public OsSettingsSection::HierarchyGenerator {
  public:
-  PerSectionHierarchyGenerator(mojom::Section section,
-                               bool* only_contains_link_to_subpage,
-                               Hierarchy* hierarchy)
-      : section_(section),
-        only_contains_link_to_subpage_(only_contains_link_to_subpage),
-        hierarchy_(hierarchy) {}
+  PerSectionHierarchyGenerator(mojom::Section section, Hierarchy* hierarchy)
+      : section_(section), hierarchy_(hierarchy) {}
 
   void RegisterTopLevelSubpage(
       int name_message_id,
@@ -48,13 +44,6 @@ class Hierarchy::PerSectionHierarchyGenerator
         name_message_id, subpage, icon, default_rank, url_path_with_parameters);
     CHECK_EQ(section_, metadata.section)
         << "Subpage registered in multiple sections: " << subpage;
-
-    ++num_top_level_subpages_so_far_;
-
-    // If there are multiple top-level subpages, the section contains more than
-    // just a link to a subpage.
-    if (num_top_level_subpages_so_far_ > 1u)
-      *only_contains_link_to_subpage_ = false;
   }
 
   void RegisterNestedSubpage(
@@ -79,10 +68,6 @@ class Hierarchy::PerSectionHierarchyGenerator
         << "Setting registered in multiple primary sections: " << setting;
     CHECK(!metadata.primary.second)
         << "Setting registered in multiple primary locations: " << setting;
-
-    // If a top-level setting exists, the section contains more than just a link
-    // to a subpage.
-    *only_contains_link_to_subpage_ = false;
   }
 
   void RegisterNestedSetting(mojom::Setting setting,
@@ -105,10 +90,6 @@ class Hierarchy::PerSectionHierarchyGenerator
           << "Setting has multiple identical alternate locations: " << setting;
     }
     metadata.alternates.emplace_back(section_, /*subpage=*/absl::nullopt);
-
-    // If a top-level setting exists, the section contains more than just a link
-    // to a subpage.
-    *only_contains_link_to_subpage_ = false;
   }
 
   void RegisterNestedAltSetting(mojom::Setting setting,
@@ -165,19 +146,13 @@ class Hierarchy::PerSectionHierarchyGenerator
     return pair.first->second;
   }
 
-  size_t num_top_level_subpages_so_far_ = 0u;
   mojom::Section section_;
-  bool* only_contains_link_to_subpage_;
   Hierarchy* hierarchy_;
 };
 
-// Note: |only_contains_link_to_subpage| starts out as true and is set to false
-// if other content is added.
 Hierarchy::SectionMetadata::SectionMetadata(mojom::Section section,
                                             const Hierarchy* hierarchy)
-    : only_contains_link_to_subpage(true),
-      section_(section),
-      hierarchy_(hierarchy) {}
+    : section_(section), hierarchy_(hierarchy) {}
 
 Hierarchy::SectionMetadata::~SectionMetadata() = default;
 
@@ -232,8 +207,7 @@ Hierarchy::Hierarchy(const OsSettingsSections* sections) : sections_(sections) {
                                      std::forward_as_tuple(section, this));
     CHECK(pair.second);
 
-    PerSectionHierarchyGenerator generator(
-        section, &pair.first->second.only_contains_link_to_subpage, this);
+    PerSectionHierarchyGenerator generator(section, this);
     sections->GetSection(section)->RegisterHierarchy(&generator);
   }
 }
