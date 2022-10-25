@@ -89,7 +89,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY,
                     Features.GET_COOKIE_INFO,
                     Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD + Features.DEV_SUFFIX,
-                    Features.REQUESTED_WITH_HEADER_ALLOW_LIST + Features.DEV_SUFFIX,
+                    Features.REQUESTED_WITH_HEADER_ALLOW_LIST,
                     Features.IMAGE_DRAG_DROP + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
