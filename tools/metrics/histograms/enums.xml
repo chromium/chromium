@@ -41890,6 +41890,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4375" label="DocumentOpenMutateSandbox"/>
   <int value="4376" label="EligibleForImageLoadingPrioritizationFix"/>
   <int value="4377" label="ExecutedNonTrivialJavaScriptURL"/>
+  <int value="4378" label="StorageBucketsOpen"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
