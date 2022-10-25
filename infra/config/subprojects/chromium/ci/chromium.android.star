@@ -5,7 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "goma", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -773,11 +773,6 @@ ci.builder(
         short_name = "M proguard",
     ),
     execution_timeout = 8 * time.hour,
-    # TODO(b/234140184) Once reproxy is fixed, remove the goma and reclient
-    # values
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
     sheriff_rotations = args.ignore_default(None),
 )
 
