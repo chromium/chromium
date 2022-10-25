@@ -777,4 +777,7 @@ void WebSettingsImpl::SetWebXRImmersiveArAllowed(
   settings_->SetWebXRImmersiveArAllowed(webxr_immersive_ar_allowed);
 }
 
+void WebSettingsImpl::SetModalContextMenu(bool is_available) {
+  settings_->SetModalContextMenu(is_available);
+}
 }  // namespace blink

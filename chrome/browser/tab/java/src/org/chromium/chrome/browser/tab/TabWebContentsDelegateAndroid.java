@@ -101,4 +101,12 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     protected boolean isInstalledWebappDelegateGeolocation() {
         return false;
     }
+
+    /**
+     * Checks if the associated tab uses modal context menu.
+     * @return true if the current tab uses modal context menu.
+     */
+    protected boolean isModalContextMenu() {
+        return true;
+    }
 }

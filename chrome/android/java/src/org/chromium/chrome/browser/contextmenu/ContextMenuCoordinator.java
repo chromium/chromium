@@ -106,12 +106,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Runnable onMenuClosed, @Nullable ChipDelegate chipDelegate) {
         mOnMenuClosed = onMenuClosed;
+        Activity activity = window.getActivity().get();
         final boolean isDragDropEnabled =
-                ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
-        final boolean isPopup = ContextMenuUtils.forcePopupStyleEnabled()
+                ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+                && ContextMenuUtils.usePopupContextMenuForContext(activity);
+        final boolean isPopup = isDragDropEnabled
                 || params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE
                 || params.getOpenedFromHighlight();
-        Activity activity = window.getActivity().get();
         final float density = activity.getResources().getDisplayMetrics().density;
         final float touchPointXPx = params.getTriggeringTouchXDp() * density;
         final float touchPointYPx = params.getTriggeringTouchYDp() * density;

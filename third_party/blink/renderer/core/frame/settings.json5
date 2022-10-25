@@ -1055,5 +1055,10 @@
       initial: true,
       type: "bool",
     },
+    {
+      name: "modalContextMenu",
+      initial: true,
+      type: "bool",
+    }
   ],
 }

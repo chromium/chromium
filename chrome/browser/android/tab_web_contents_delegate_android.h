@@ -138,6 +138,7 @@ class TabWebContentsDelegateAndroid
   bool IsCustomTab() const;
   const GURL GetManifestScope() const;
   bool IsInstalledWebappDelegateGeolocation() const;
+  bool IsModalContextMenu() const;
 
  private:
   std::unique_ptr<device::mojom::GeolocationContext>

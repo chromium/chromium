@@ -84,6 +84,13 @@ public class ContextMenuUtilsUnitTest {
                 ContextMenuUtils.usePopupContextMenuForContext(mActivity));
     }
 
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void nullInputs() {
+        assertFalse("Always return false for null input.",
+                ContextMenuUtils.usePopupContextMenuForContext(null));
+    }
+
     private void doTestUsePopupWhenEnabledByFlag() {
         assertTrue("Popup should be used when CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES enabled.",
                 ContextMenuUtils.usePopupContextMenuForContext(mActivity));

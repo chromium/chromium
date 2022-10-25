@@ -360,6 +360,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // (false). Used by StrictMimetypeCheckForWorkerScriptsEnabled policy.
   bool strict_mime_type_check_for_worker_scripts_enabled = true;
 
+  // Whether modal context menu is used. A modal context menu meaning it is
+  // blocking user's access to the background web content.
+  bool modal_context_menu = true;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

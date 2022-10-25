@@ -764,6 +764,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.strict_mime_type_check_for_worker_scripts_enabled;
   }
 
+  static bool modal_context_menu(const blink::web_pref::WebPreferences& r) {
+    return r.modal_context_menu;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

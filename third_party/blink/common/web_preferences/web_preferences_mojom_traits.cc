@@ -218,6 +218,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->webxr_immersive_ar_allowed = data.webxr_immersive_ar_allowed();
   out->renderer_wide_named_frame_lookup =
       data.renderer_wide_named_frame_lookup();
+  out->modal_context_menu = data.modal_context_menu();
   return true;
 }
 

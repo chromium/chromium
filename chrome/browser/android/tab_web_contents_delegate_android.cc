@@ -616,6 +616,14 @@ bool TabWebContentsDelegateAndroid::IsInstalledWebappDelegateGeolocation()
       env, obj);
 }
 
+bool TabWebContentsDelegateAndroid::IsModalContextMenu() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return true;
+  return Java_TabWebContentsDelegateAndroidImpl_isModalContextMenu(env, obj);
+}
+
 }  // namespace android
 
 void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(

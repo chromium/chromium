@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.contextmenu.ContextMenuUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -472,5 +473,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         .build();
 
         modalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.TAB, true);
+    }
+
+    @Override
+    protected boolean isModalContextMenu() {
+        return !ContextMenuUtils.usePopupContextMenuForContext(mActivity);
     }
 }

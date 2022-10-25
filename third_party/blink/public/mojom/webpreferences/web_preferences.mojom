@@ -441,4 +441,8 @@ struct WebPreferences {
   bool renderer_wide_named_frame_lookup;
 
   bool strict_mime_type_check_for_worker_scripts_enabled = true;
+
+  // Whether modal context menu is used. A modal context menu meaning it is
+  // blocking user's access to the background web content.
+  bool modal_context_menu = true;
 };

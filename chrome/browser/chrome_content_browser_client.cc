@@ -3786,6 +3786,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
       web_prefs->force_dark_mode_enabled =
           delegate->IsForceDarkWebContentEnabled();
+
+      web_prefs->modal_context_menu = delegate->IsModalContextMenu();
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 

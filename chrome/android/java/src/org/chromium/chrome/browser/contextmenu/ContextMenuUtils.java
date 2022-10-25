@@ -67,6 +67,8 @@ public final class ContextMenuUtils {
      * @see DeviceFormFactor#isNonMultiDisplayContextOnTablet(Context).
      */
     public static boolean usePopupContextMenuForContext(Context context) {
+        if (context == null) return false;
+
         return ChromeFeatureList.isEnabled(
                        ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES)
                 || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
