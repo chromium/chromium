@@ -506,6 +506,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   request.set_enable_consumer_auto_update_toggle(base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed));
+  if (base::FeatureList::IsEnabled(kVmMemoryPSIReports))
+    request.set_vm_memory_psi_period(kVmMemoryPSIReportsPeriod.Get());
+  else
+    request.set_vm_memory_psi_period(-1);
 
   auto orientation = display::Display::ROTATE_0;
   if (auto* screen = display::Screen::GetScreen())
