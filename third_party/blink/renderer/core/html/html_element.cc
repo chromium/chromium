@@ -1242,8 +1242,8 @@ bool HTMLElement::popupOpen() const {
 
 // Showing a pop-up happens in phases, to facilitate animations and
 // transitions:
-// 1. Move the pop-up to the top layer, and remove the UA display:none
-//     style.
+// 1. Move the pop-up to the top layer, stop matching `:closed`, and
+//     remove the UA `display:none` style.
 // 2. Update style. (Transition initial style can be specified in this
 //    state.)
 // 3. Set the `:open` pseudo class.
@@ -1302,9 +1302,9 @@ void HTMLElement::showPopUp(ExceptionState& exception_state) {
   GetPopupData()->setPreviouslyFocusedElement(nullptr);
   Element* originally_focused_element = document.FocusedElement();
   document.AddToTopLayer(this);
-  // Remove display:none styling:
+  // Stop matching `:closed`, and remove display:none styling:
   GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
-  PseudoStateChanged(CSSSelector::kPseudoPopupOpeningOrOpen);
+  PseudoStateChanged(CSSSelector::kPseudoClosed);
 
   // Force a style update. This ensures that base property values are set prior
   // to `:open` matching, so that transitions can start on the change to
@@ -1508,11 +1508,11 @@ void HTMLElement::PopupHideFinishIfNeeded() {
       GetDocument().GetExecutionContext()));
   GetDocument().PopupsWaitingToHide().erase(this);
   GetDocument().RemoveFromTopLayer(this);
-  // Re-apply display:none.
+  // Re-apply display:none, and start matching `:closed`.
   if (GetPopupData()) {
     GetPopupData()->setVisibilityState(PopupVisibilityState::kHidden);
     GetPopupData()->setAnimationFinishedListener(nullptr);
-    PseudoStateChanged(CSSSelector::kPseudoPopupOpeningOrOpen);
+    PseudoStateChanged(CSSSelector::kPseudoClosed);
   }
 }
 

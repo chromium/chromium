@@ -1506,17 +1506,17 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return html_element->popupOpen();
       }
       return false;
-    case CSSSelector::kPseudoPopupOpeningOrOpen:
+    case CSSSelector::kPseudoClosed:
       if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
               element.GetDocument().GetExecutionContext())) {
         // The html.css UA stylesheet contains a rule for <dialog> elements
-        // that uses this pseudo, with `dialog:not(this_pseudo)`, so it's
-        // important to *not* match when the feature is *disabled*.
-        return false;
+        // that uses :closed, with `dialog:not(:not(:closed))`, so it's
+        // important to *match* when the feature is *disabled*.
+        return true;
       }
       if (auto* html_element = DynamicTo<HTMLElement>(element);
           html_element && html_element->HasPopupAttribute()) {
-        return html_element->GetPopupData()->visibilityState() !=
+        return html_element->GetPopupData()->visibilityState() ==
                PopupVisibilityState::kHidden;
       }
       return false;

@@ -47,9 +47,11 @@
     if (isVisible) {
       assert_not_equals(window.getComputedStyle(popUp).display,'none');
       assert_equals(popUp.matches(':open'),isPopUp,`${message}: Visible pop-ups should match :open`);
+      assert_false(popUp.matches(':closed'),`${message}: Visible pop-ups and *all* non-pop-ups should *not* match :closed`);
     } else {
       assert_equals(window.getComputedStyle(popUp).display,'none',`${message}: Non-showing pop-ups should have display:none`);
       assert_false(popUp.matches(':open'),`${message}: Non-showing pop-ups should *not* match :open`);
+      assert_true(popUp.matches(':closed'),`${message}: Non-showing pop-ups should match :closed`);
     }
   }
   function assertIsFunctionalPopUp(popUp) {
@@ -89,7 +91,7 @@
   });
 
   // Then loop through all HTML5 elements that render a box by default:
-  let elementsThatDontRender = ['audio','base','br','datalist','dialog','embed','head','link','meta','noscript','param','rp','script','style','template','title','wbr'];
+  let elementsThatDontRender = ['audio','base','br','datalist','dialog','embed','head','link','meta','noscript','param','rp','script','slot','style','template','title','wbr'];
   const elements = HTML5_ELEMENTS.filter(el => !elementsThatDontRender.includes(el));
   elements.forEach(tag => {
     test((t) => {
@@ -98,7 +100,13 @@
       document.body.appendChild(element);
       t.add_cleanup(() => element.remove());
       assertIsFunctionalPopUp(element);
-    }, `A <${tag}> element should behave as a pop-up.`);
+    }, `A <${tag} popup> element should behave as a pop-up.`);
+    test((t) => {
+      const element = document.createElement(tag);
+      document.body.appendChild(element);
+      t.add_cleanup(() => element.remove());
+      assertNotAPopUp(element);
+    }, `A <${tag}> element should *not* behave as a pop-up.`);
   });
 
   function createPopUp(t) {
@@ -318,6 +326,7 @@
     assert_false(isElementVisible(popUp));
     popUp.showPopUp();
     assert_true(popUp.matches(':open'));
+    assert_false(popUp.matches(':closed'));
     assert_true(getComputedStyle(popUp).opacity < 0.1,'Animations should start on show');
     assert_throws_dom("InvalidStateError",() => popUp.showPopUp(),'Calling showPopUp on a popup that is in the process of animating show should throw InvalidStateError');
     await finishAnimations(popUp);
@@ -325,10 +334,12 @@
     assert_true(isElementVisible(popUp));
     popUp.hidePopUp();
     assert_false(popUp.matches(':open'));
+    assert_false(popUp.matches(':closed'),'Not :closed until animations finish');
     assert_true(getComputedStyle(popUp).opacity > 0.9,'Animations should start on hide');
     assert_throws_dom("InvalidStateError",() => popUp.hidePopUp(),'Calling hidePopUp on a popup that is in the process of animating hide should throw InvalidStateError');
     popUp.showPopUp(); // But showPopUp should still be ok.
     popUp.hidePopUp(); // Clean up
     await finishAnimations(popUp);
+    assert_true(popUp.matches(':closed'),':closed should match once animations finish');
   },'Exceptions are thrown even when show/hide are animated')
 </script>

@@ -45,7 +45,10 @@ promise_test(async (t) => {
   const {popUp, descendent} = createPopUp(t,'animation');
   assert_false(isElementVisible(popUp));
   assert_equals(descendent.parentElement.parentElement,popUp);
+  assert_true(popUp.matches(':closed'));
+  assert_false(popUp.matches(':open'));
   popUp.showPopUp();
+  assert_false(popUp.matches(':closed'));
   assert_true(popUp.matches(':open'));
   assert_true(isElementVisible(popUp));
   assert_equals(popUp.getAnimations({subtree: true}).length,0);
@@ -53,6 +56,7 @@ promise_test(async (t) => {
   const animations = popUp.getAnimations({subtree: true});
   assert_equals(animations.length,2,'There should be two animations running');
   assert_false(popUp.matches(':open'),'popUp should not match :open as soon as hidden');
+  assert_false(popUp.matches(':closed'),'popUp should not match :closed until animations complete');
   assert_true(isElementVisible(popUp),'but animations should keep the popUp visible');
   assert_true(isElementVisible(descendent),'The descendent should also be visible');
   await waitForRender();
@@ -61,6 +65,7 @@ promise_test(async (t) => {
   assert_true(isElementVisible(popUp),'PopUp should still be visible due to animation');
   animations.forEach(animation => animation.finish()); // Force the animations to finish
   await waitForRender(); // Wait one frame
+  assert_true(popUp.matches(':closed'),'The pop up should now match :closed');
   assert_false(popUp.matches(':open'),'The pop up still shouldn\'t match :open');
   assert_false(isElementVisible(popUp),'The pop up should now be invisible');
   assert_false(isElementVisible(descendent),'The descendent should also be invisible');
@@ -82,6 +87,7 @@ promise_test(async (t) => {
   // Then hide the popUp.
   popUp.hidePopUp();
   assert_false(popUp.matches(':open'),'pop up should not match :open as soon as hidden');
+  assert_true(popUp.matches(':closed'),'pop up should match :closed immediately');
   assert_equals(popUp.getAnimations({subtree: true}).length,2,'animations should still be running');
   await waitForRender();
   assert_equals(popUp.getAnimations({subtree: true}).length,2,'animations should still be running');
@@ -136,6 +142,27 @@ promise_test(async (t) => {
   await waitForRender();
   assert_false(isElementVisible(popUp),'Even if hide event is cancelled, the popup still closes');
 },'hide event cannot be cancelled');
+
+promise_test(async (t) => {
+  const {popUp, descendent} = createPopUp(t,'animation');
+  assert_false(isElementVisible(popUp));
+  popUp.showPopUp();
+  assert_false(popUp.matches(':closed'));
+  assert_true(popUp.matches(':open'));
+  assert_true(isElementVisible(popUp));
+  assert_equals(popUp.getAnimations({subtree: true}).length,0);
+  popUp.popUp = 'manual';
+  const animations = popUp.getAnimations({subtree: true});
+  assert_equals(animations.length,2,'There should be two animations running');
+  assert_false(popUp.matches(':open'),'popUp should not match :open as soon as hidden');
+  assert_false(popUp.matches(':closed'),'popUp should not match :closed until animations complete');
+  assert_true(isElementVisible(popUp),'but animations should keep the popUp visible');
+  animations.forEach(animation => animation.finish()); // Force the animations to finish
+  await waitForRender(); // Wait one frame
+  assert_true(popUp.matches(':closed'),'The pop up should now match :closed');
+  assert_false(popUp.matches(':open'),'The pop up still shouldn\'t match :open');
+  assert_false(isElementVisible(popUp),'The pop up should now be invisible');
+},'Closing animations are triggered by changing the pop-up type');
 
 promise_test(async (t) => {
   const {popUp, descendent} = createPopUp(t,'');

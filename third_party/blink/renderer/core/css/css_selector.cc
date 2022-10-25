@@ -282,6 +282,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoAutofillSelected:
     case kPseudoBlinkInternalElement:
     case kPseudoChecked:
+    case kPseudoClosed:
     case kPseudoCornerPresent:
     case kPseudoCue:
     case kPseudoDecrement:
@@ -346,7 +347,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
-    case kPseudoPopupOpeningOrOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRelativeAnchor:
@@ -400,7 +400,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-media-controls-overlay-cast-button",
      CSSSelector::kPseudoWebKitCustomElement},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
-    {"-internal-popup-opening-or-open", CSSSelector::kPseudoPopupOpeningOrOpen},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
@@ -433,6 +432,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"backdrop", CSSSelector::kPseudoBackdrop},
     {"before", CSSSelector::kPseudoBefore},
     {"checked", CSSSelector::kPseudoChecked},
+    {"closed", CSSSelector::kPseudoClosed},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
     {"cue", CSSSelector::kPseudoWebKitCustomElement},
     {"decrement", CSSSelector::kPseudoDecrement},
@@ -592,9 +592,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
                        document->GetExecutionContext());
   if (match->type == CSSSelector::kPseudoOpen && !popup_attribute_enabled)
     return CSSSelector::kPseudoUnknown;
-
-  if (match->type == CSSSelector::kPseudoPopupOpeningOrOpen &&
-      !popup_attribute_enabled)
+  if (match->type == CSSSelector::kPseudoClosed && !popup_attribute_enabled)
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoHighlight &&
@@ -744,6 +742,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
     case kPseudoChecked:
+    case kPseudoClosed:
     case kPseudoCornerPresent:
     case kPseudoDecrement:
     case kPseudoDefault:
@@ -797,7 +796,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
-    case kPseudoPopupOpeningOrOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRelativeAnchor:

@@ -1367,15 +1367,8 @@ textarea[dir=auto i] {
     unicode-bidi: plaintext;
 }
 
-/* The `,[popup]:-internal-popup-opening-or-open` is to support the pop-up API, and
-   has no effect if the HTMLPopupAttribute feature is disabled. */
-dialog:not([open],[popup]:-internal-popup-opening-or-open) {
-    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
-    display: none;
-}
-
 dialog {
-    display: block;
+    display: none;
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: absolute;
     inset-inline-start: 0;
@@ -1387,6 +1380,10 @@ dialog {
     padding: 1em;
     background-color: Canvas;
     color: CanvasText;
+}
+
+dialog[open] {
+    display: block;
 }
 
 dialog:modal {
