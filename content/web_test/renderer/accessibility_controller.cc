@@ -278,6 +278,7 @@ v8::Local<v8::Object> AccessibilityController::FocusedElement() {
 v8::Local<v8::Object> AccessibilityController::RootElement() {
   if (!IsInstalled())
     return v8::Local<v8::Object>();
+  ax_context_->UpdateAXForAllDocuments();
   return elements_->GetOrCreate(GetAccessibilityObjectForMainFrame());
 }
 
