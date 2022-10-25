@@ -148,9 +148,10 @@ struct SettingsItem {
   // Value indicating whether the specific resource could be found or not.
   PresenceValue presence = PresenceValue::kUnspecified;
 
-  // Value of the setting. Only set when the setting was found and `get_value`
-  // was true on the corresponding request options.
-  absl::optional<base::Value> setting_value = absl::nullopt;
+  // JSON string representing the value of the setting. Only set when the
+  // setting was found and `get_value` was true on the corresponding request
+  // options.
+  absl::optional<std::string> setting_json_value = absl::nullopt;
 
   bool operator==(const SettingsItem& other) const;
 };

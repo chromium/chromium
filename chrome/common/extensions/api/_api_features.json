@@ -411,6 +411,9 @@
   "enterprise.reportingPrivate.getFileSystemInfo": {
     "platforms": ["win", "mac", "linux"]
   },
+  "enterprise.reportingPrivate.getSettings": {
+    "platforms": ["win", "mac"]
+  },
   "enterprise.reportingPrivate.getAvInfo": {
     "platforms": ["win"]
   },

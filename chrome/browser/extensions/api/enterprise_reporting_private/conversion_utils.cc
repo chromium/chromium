@@ -24,10 +24,6 @@
 #include "components/device_signals/core/common/win/win_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "base/json/json_writer.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 using SignalCollectionError = device_signals::SignalCollectionError;
 using PresenceValue = device_signals::PresenceValue;
 
@@ -232,11 +228,8 @@ absl::optional<ParsedSignalsError> ConvertSettingsResponse(
     response.presence = ConvertPresenceValue(settings_item.presence);
     response.hive = ConvertHiveToApi(settings_item.hive);
 
-    std::string json_value;
-    if (settings_item.setting_value &&
-        base::JSONWriter::Write(settings_item.setting_value.value(),
-                                &json_value)) {
-      response.value = json_value;
+    if (settings_item.setting_json_value) {
+      response.value = settings_item.setting_json_value.value();
     }
 
     api_responses.push_back(std::move(response));

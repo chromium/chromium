@@ -69,8 +69,8 @@ SettingsItem::SettingsItem(const SettingsItem& other) {
   key = other.key;
   hive = other.hive;
   presence = other.presence;
-  if (other.setting_value) {
-    setting_value = other.setting_value->Clone();
+  if (other.setting_json_value) {
+    setting_json_value = other.setting_json_value;
   }
 }
 
@@ -79,8 +79,8 @@ SettingsItem& SettingsItem::operator=(const SettingsItem& other) {
   key = other.key;
   hive = other.hive;
   presence = other.presence;
-  if (other.setting_value) {
-    setting_value = other.setting_value->Clone();
+  if (other.setting_json_value) {
+    setting_json_value = other.setting_json_value;
   }
   return *this;
 }
@@ -89,7 +89,7 @@ SettingsItem::~SettingsItem() = default;
 
 bool SettingsItem::operator==(const SettingsItem& other) const {
   return path == other.path && presence == other.presence && key == other.key &&
-         hive == other.hive && setting_value == other.setting_value;
+         hive == other.hive && setting_json_value == other.setting_json_value;
 }
 
 SettingsResponse::SettingsResponse() = default;

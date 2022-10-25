@@ -127,7 +127,7 @@ TEST_F(SettingsSignalsCollectorTest, GetSignal_SettingsInfo) {
   retrieved_item.key = "test_key";
   retrieved_item.presence = PresenceValue::kFound;
   retrieved_item.hive = absl::nullopt;
-  retrieved_item.setting_value = absl::nullopt;
+  retrieved_item.setting_json_value = absl::nullopt;
 
   std::vector<SettingsItem> settings_items;
   settings_items.push_back(retrieved_item);

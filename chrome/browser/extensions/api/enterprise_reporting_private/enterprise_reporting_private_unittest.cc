@@ -1577,10 +1577,8 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, Success) {
   fake_settings_item.path = "fake path";
   fake_settings_item.key = "fake key";
   fake_settings_item.presence = device_signals::PresenceValue::kFound;
-  base::Value setting_value(123);
-  std::string expected_json_value;
-  ASSERT_TRUE(base::JSONWriter::Write(setting_value, &expected_json_value));
-  fake_settings_item.setting_value = std::move(setting_value);
+  std::string setting_json_value = "123";
+  fake_settings_item.setting_json_value = setting_json_value;
   fake_settings_item.hive = device_signals::RegistryHive::kHkeyCurrentUser;
 
   device_signals::SettingsResponse signal_response;
@@ -1610,7 +1608,7 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, Success) {
   EXPECT_EQ(parsed_settings_signal->presence,
             enterprise_reporting_private::PRESENCE_VALUE_FOUND);
   ASSERT_TRUE(parsed_settings_signal->value);
-  EXPECT_EQ(parsed_settings_signal->value.value(), expected_json_value);
+  EXPECT_EQ(parsed_settings_signal->value.value(), setting_json_value);
 
   ASSERT_TRUE(parsed_settings_signal->hive);
   EXPECT_EQ(parsed_settings_signal->hive,
