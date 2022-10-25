@@ -1544,19 +1544,6 @@ const char kCastStreamingVp9Description[] =
     "Enables the inclusion of VP9 codec video encoding in Cast mirroring "
     "session negotiations.";
 
-const char kCastUseBlocklistForRemotingQueryName[] =
-    "Use blocklist for controlling remoting capabilities queries";
-const char kCastUseBlocklistForRemotingQueryDescription[] =
-    "Enables the use of the hard-coded blocklist for controlling whether a "
-    "device should be queried for remoting capabilities when configuring a "
-    "mirroring session.";
-
-const char kCastForceEnableRemotingQueryName[] =
-    "Force enable remoting capabilities queries";
-const char kCastForceEnableRemotingQueryDescription[] =
-    "Enables querying for remoting capabilities for ALL devices, regardless of "
-    "the contents of the allowlist or blocklist.";
-
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 

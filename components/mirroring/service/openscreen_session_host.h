@@ -281,10 +281,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Captures audio samples from the resourceprovider-created audio stream.
   scoped_refptr<media::AudioInputDevice> audio_input_device_;
 
-  // Used as an interface for the media remoter to send RPC messages.
+  // Used as an interface for the media remoter to send RPC messages. Created
+  // when a successful capabilities response arrives.
   std::unique_ptr<OpenscreenRpcDispatcher> rpc_dispatcher_;
 
-  // Manages remoting content to the Cast Receiver.
+  // Manages remoting content to the Cast Receiver. Created when a successful
+  // capabilities response arrives.
   std::unique_ptr<MediaRemoter> media_remoter_;
 
   // GPU specific properties, used to indicate whether HW encoding should be

@@ -4757,18 +4757,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastStreamingVp9Description, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kCastStreamingVp9)},
 
-    {"enable-cast-remoting-query-blocklist",
-     flag_descriptions::kCastUseBlocklistForRemotingQueryName,
-     flag_descriptions::kCastUseBlocklistForRemotingQueryDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         mirroring::features::kCastUseBlocklistForRemotingQuery)},
-
-    {"force-enable-cast-remoting-query",
-     flag_descriptions::kCastForceEnableRemotingQueryName,
-     flag_descriptions::kCastForceEnableRemotingQueryDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(mirroring::features::kCastForceEnableRemotingQuery)},
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

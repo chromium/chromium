@@ -393,6 +393,19 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
+  void SendRemotingNotSupported() {
+    // Remoting not being supported should NOT surface an error.
+    EXPECT_CALL(*this, OnError(_)).Times(0);
+
+    session_host_->OnError(
+        session_host_->session_.get(),
+        openscreen::Error(openscreen::Error::Code::kRemotingNotSupported,
+                          "this receiver does not support remoting"));
+
+    task_environment_.RunUntilIdle();
+    Mock::VerifyAndClear(this);
+  }
+
   void StartRemoting() {
     base::RunLoop run_loop;
     ASSERT_TRUE(remoter_.is_bound());
@@ -535,6 +548,13 @@ TEST_F(OpenscreenSessionHostTest, SwitchToAndFromRemoting) {
   StartRemoting();
   RemotingStarted();
   StopRemoting();
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, RemotingNotSupported) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingNotSupported();
   StopSession();
 }
 

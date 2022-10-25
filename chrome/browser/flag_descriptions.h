@@ -855,12 +855,6 @@ extern const char kCastStreamingAv1Description[];
 extern const char kCastStreamingVp9Name[];
 extern const char kCastStreamingVp9Description[];
 
-extern const char kCastUseBlocklistForRemotingQueryName[];
-extern const char kCastUseBlocklistForRemotingQueryDescription[];
-
-extern const char kCastForceEnableRemotingQueryName[];
-extern const char kCastForceEnableRemotingQueryDescription[];
-
 extern const char kContextualPageActionsName[];
 extern const char kContextualPageActionsDescription[];
 

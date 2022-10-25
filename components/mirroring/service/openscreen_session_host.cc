@@ -83,9 +83,6 @@ int NumberOfEncodeThreads() {
 }
 
 // Convert the sink capabilities to media::mojom::RemotingSinkMetadata.
-// TODO(https://crbug.com/1316434): once `Session` is deleted,
-// `RemotingSinkMetadata` can be modified to use
-// `openscreen::cast::RemotingCapabilities`.
 media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
     const openscreen::cast::RemotingCapabilities& capabilities,
     const std::string& receiver_name,
@@ -118,13 +115,8 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
        capabilities.video) {
     switch (capability) {
       case openscreen::cast::VideoCapability::kSupports4k:
-        // TODO(crbug.com/1198616): receiver_model_name hacks should be
-        // removed.
-        if (base::StartsWith(params.receiver_model_name, "Chromecast Ultra",
-                             base::CompareCase::SENSITIVE)) {
-          sink_metadata.video_capabilities.push_back(
-              RemotingSinkVideoCapability::SUPPORT_4K);
-        }
+        sink_metadata.video_capabilities.push_back(
+            RemotingSinkVideoCapability::SUPPORT_4K);
         continue;
 
       case openscreen::cast::VideoCapability::kH264:
@@ -138,23 +130,13 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
         continue;
 
       case openscreen::cast::VideoCapability::kVp9:
-        // TODO(crbug.com/1198616): receiver_model_name hacks should be
-        // removed.
-        if (base::StartsWith(params.receiver_model_name, "Chromecast Ultra",
-                             base::CompareCase::SENSITIVE)) {
-          sink_metadata.video_capabilities.push_back(
-              RemotingSinkVideoCapability::CODEC_VP9);
-        }
+        sink_metadata.video_capabilities.push_back(
+            RemotingSinkVideoCapability::CODEC_VP9);
         continue;
 
       case openscreen::cast::VideoCapability::kHevc:
-        // TODO(crbug.com/1198616): receiver_model_name hacks should be
-        // removed.
-        if (base::StartsWith(params.receiver_model_name, "Chromecast Ultra",
-                             base::CompareCase::SENSITIVE)) {
-          sink_metadata.video_capabilities.push_back(
-              RemotingSinkVideoCapability::CODEC_HEVC);
-        }
+        sink_metadata.video_capabilities.push_back(
+            RemotingSinkVideoCapability::CODEC_HEVC);
         continue;
 
       // TODO(https://crbug.com/1363020): remoting should support AV1.
@@ -165,29 +147,6 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
   }
 
   return sink_metadata;
-}
-
-bool ShouldQueryForRemotingCapabilities(
-    const std::string& receiver_model_name) {
-  if (base::FeatureList::IsEnabled(features::kCastForceEnableRemotingQuery)) {
-    return true;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kCastUseBlocklistForRemotingQuery)) {
-    // The blocklist has not yet been fully determined.
-    // TODO(b/224993260): Implement this blocklist.
-    NOTREACHED();
-    return false;
-  }
-
-  // This is a workaround for Nest Hub devices, which do not support remoting.
-  // TODO(crbug.com/1198616): filtering hack should be removed. See
-  // issuetracker.google.com/135725157 for more information.
-  return base::StartsWith(receiver_model_name, "Chromecast",
-                          base::CompareCase::SENSITIVE) ||
-         base::StartsWith(receiver_model_name, "Eureka Dongle",
-                          base::CompareCase::SENSITIVE);
 }
 
 void UpdateConfigUsingSessionParameters(
@@ -507,10 +466,7 @@ void OpenscreenSessionHost::OnNegotiated(
     media_remoter_->OnMirroringResumed();
   }
 
-  if (initially_starting_session &&
-      ShouldQueryForRemotingCapabilities(session_params_.receiver_model_name)) {
-    session_->RequestCapabilities();
-  }
+  session_->RequestCapabilities();
 
   if (initially_starting_session && observer_) {
     observer_->DidStart();
@@ -559,22 +515,30 @@ void OpenscreenSessionHost::OnError(
   switch (error.code()) {
     case openscreen::Error::Code::kAnswerTimeout:
       ReportAndLogError(SessionError::ANSWER_TIME_OUT, error.ToString());
-      break;
+      return;
 
     case openscreen::Error::Code::kInvalidAnswer:
       ReportAndLogError(SessionError::ANSWER_NOT_OK, error.ToString());
-      break;
+      return;
 
     case openscreen::Error::Code::kNoStreamSelected:
       ReportAndLogError(SessionError::ANSWER_NO_AUDIO_OR_VIDEO,
                         error.ToString());
-      break;
+      return;
+
+    // If remoting is not supported, the session will continue but
+    // OnCapabilitiesDetermined() will never be called and the media remoter
+    // will not be set up.
+    case openscreen::Error::Code::kRemotingNotSupported:
+      LogInfoMessage(base::StrCat(
+          {"Remoting is disabled for this session. error=", error.ToString()}));
+      return;
 
     // Default behavior is to report a generic Open Screen session error.
     default:
       ReportAndLogError(SessionError::OPENSCREEN_SESSION_ERROR,
                         error.ToString());
-      break;
+      return;
   }
 }
 

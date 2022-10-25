@@ -22,20 +22,6 @@ BASE_FEATURE(kCastStreamingVp9,
              "CastStreamingVp9",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the allow list (legacy behavior) or blocklist is used to
-// determine whether remoting capabilities should be queried for as part of
-// configuring a mirroring session.
-BASE_FEATURE(kCastUseBlocklistForRemotingQuery,
-             "CastUseBlocklistForRemotingQuery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables querying for remoting capabilities against ALL devices, as opposed to
-// just those controlled by the allow or blocklist. When set, this flag takes
-// precedence over the above flag.
-BASE_FEATURE(kCastForceEnableRemotingQuery,
-             "CastForceEnableRemotingQuery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The mirroring sender has the ability to letterbox video frames to match the
 // aspect ratio of the reciever's display.  However, receivers can handle
 // variable aspect ratio video so this is not needed any more.
