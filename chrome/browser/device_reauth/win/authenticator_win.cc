@@ -48,34 +48,43 @@ bool ResolveCoreWinRT() {
          base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
 }
 
-void GetAvailabilityValue(AvailabilityCallback callback,
-                          UserConsentVerifierAvailability availability) {
+BiometricAuthenticationStatusWin ConvertUserConsentVerifierAvailability(
+    UserConsentVerifierAvailability availability) {
   switch (availability) {
     case UserConsentVerifierAvailability_Available:
-      std::move(callback).Run(true);
-      break;
+      return BiometricAuthenticationStatusWin::kAvailable;
     case UserConsentVerifierAvailability_DeviceBusy:
+      return BiometricAuthenticationStatusWin::kDeviceBusy;
     case UserConsentVerifierAvailability_DeviceNotPresent:
+      return BiometricAuthenticationStatusWin::kDeviceNotPresent;
     case UserConsentVerifierAvailability_DisabledByPolicy:
+      return BiometricAuthenticationStatusWin::kDisabledByPolicy;
     case UserConsentVerifierAvailability_NotConfiguredForUser:
-      std::move(callback).Run(false);
-      break;
+      return BiometricAuthenticationStatusWin::kNotConfiguredForUser;
+    default:
+      return BiometricAuthenticationStatusWin::kUnknown;
   }
+}
+
+void ReturnAvailabilityValue(AvailabilityCallback callback,
+                             UserConsentVerifierAvailability availability) {
+  std::move(callback).Run(ConvertUserConsentVerifierAvailability(availability));
 }
 
 void OnAvailabilityReceived(scoped_refptr<base::SequencedTaskRunner> thread,
                             AvailabilityCallback callback,
                             UserConsentVerifierAvailability availability) {
-  thread->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GetAvailabilityValue, std::move(callback), availability));
+  thread->PostTask(FROM_HERE,
+                   base::BindOnce(&ReturnAvailabilityValue, std::move(callback),
+                                  availability));
 }
 
-void SetAvailability(scoped_refptr<base::SequencedTaskRunner> thread,
-                     AvailabilityCallback callback,
-                     bool availability) {
+void ReportCantCheckAvailability(
+    scoped_refptr<base::SequencedTaskRunner> thread,
+    AvailabilityCallback callback) {
   thread->PostTask(FROM_HERE,
-                   base::BindOnce(std::move(callback), availability));
+                   base::BindOnce(std::move(callback),
+                                  BiometricAuthenticationStatusWin::kUnknown));
 }
 
 // Asks operating system if user has configured and enabled Windows Hello on
@@ -85,11 +94,11 @@ void GetBiometricAvailabilityFromWindows(
     scoped_refptr<base::SequencedTaskRunner> thread) {
   // UserConsentVerifier class is only available in Win 10 onwards.
   if (base::win::GetVersion() < base::win::Version::WIN10) {
-    SetAvailability(thread, std::move(callback), false);
+    ReportCantCheckAvailability(thread, std::move(callback));
     return;
   }
   if (!ResolveCoreWinRT()) {
-    SetAvailability(thread, std::move(callback), false);
+    ReportCantCheckAvailability(thread, std::move(callback));
     return;
   }
   ComPtr<IUserConsentVerifierStatics> factory;
@@ -98,13 +107,13 @@ void GetBiometricAvailabilityFromWindows(
       RuntimeClass_Windows_Security_Credentials_UI_UserConsentVerifier>(
       &factory);
   if (FAILED(hr)) {
-    SetAvailability(thread, std::move(callback), false);
+    ReportCantCheckAvailability(thread, std::move(callback));
     return;
   }
   ComPtr<IAsyncOperation<UserConsentVerifierAvailability>> async_op;
   hr = factory->CheckAvailabilityAsync(&async_op);
   if (FAILED(hr)) {
-    SetAvailability(thread, std::move(callback), false);
+    ReportCantCheckAvailability(thread, std::move(callback));
     return;
   }
 

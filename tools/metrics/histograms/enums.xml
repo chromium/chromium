@@ -11026,6 +11026,22 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Valid"/>
 </enum>
 
+<enum name="BiometricAuthenticationStatusWin">
+  <summary>Status of biometric authentication availability on Windows.</summary>
+  <int value="0"
+      label="For some reason availability can't be checked or has an unknown
+             status."/>
+  <int value="1" label="A biometric verifier device is available."/>
+  <int value="2"
+      label="The biometric verifier device is performing an operation and is
+             unavailable."/>
+  <int value="3"
+      label="Group policy has disabled the biometric verifier device."/>
+  <int value="4" label="There is no biometric verifier device available."/>
+  <int value="5"
+      label="A biometric verifier device is not configured for this user."/>
+</enum>
+
 <enum name="BiometricAuthRequester">
   <int value="0" label="Touch-to-Fill"/>
   <int value="1" label="Autofill suggestion(dropdown or accessory)"/>

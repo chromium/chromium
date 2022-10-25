@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -41,8 +42,6 @@ class MockSystemAuthenticator : public AuthenticatorWinInterface {
               (AvailabilityCallback callback),
               (override));
 };
-
-}  // namespace
 
 class BiometricAuthenticatorWinTest : public testing::Test {
  public:
@@ -169,18 +168,74 @@ TEST_F(BiometricAuthenticatorWinTest, CanAuthenticate) {
 }
 
 // Verifies that the caching mechanism for BiometricsAvailable works.
-TEST_F(BiometricAuthenticatorWinTest, SavingBiometricsAvailability) {
-  EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
-      .WillOnce(testing::WithArg<0>(
-          [](auto callback) { std::move(callback).Run(true); }));
-  authenticator()->CacheIfBiometricsAvailable();
-  EXPECT_TRUE(authenticator()->CanAuthenticate(
-      BiometricAuthRequester::kPasswordsInSettings));
+struct TestCase {
+  const char* description;
+  BiometricAuthenticationStatusWin availability;
+  bool expected_result;
+  int expected_bucket;
+};
 
+class BiometricAuthenticatorWinTestAvailability
+    : public BiometricAuthenticatorWinTest,
+      public testing::WithParamInterface<TestCase> {};
+
+TEST_P(BiometricAuthenticatorWinTestAvailability, AvailabilityCheck) {
+  base::HistogramTester histogram_tester;
+  TestCase test_case = GetParam();
+  SCOPED_TRACE(test_case.description);
   EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
-      .WillOnce(testing::WithArg<0>(
-          [](auto callback) { std::move(callback).Run(false); }));
+      .WillOnce(testing::WithArg<0>([&test_case](auto callback) {
+        std::move(callback).Run(test_case.availability);
+      }));
   authenticator()->CacheIfBiometricsAvailable();
-  EXPECT_FALSE(authenticator()->CanAuthenticate(
-      BiometricAuthRequester::kPasswordsInSettings));
+
+  EXPECT_EQ(test_case.expected_result,
+            authenticator()->CanAuthenticate(
+                BiometricAuthRequester::kPasswordsInSettings));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BiometricAvailabilityWin", test_case.expected_bucket, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BiometricAuthenticatorWinTestAvailability,
+    ::testing::Values(
+        TestCase{
+            .description = "kUnknown",
+            .availability = BiometricAuthenticationStatusWin::kUnknown,
+            .expected_result = false,
+            .expected_bucket = 0,
+        },
+        TestCase{
+            .description = "kAvailable",
+            .availability = BiometricAuthenticationStatusWin::kAvailable,
+            .expected_result = true,
+            .expected_bucket = 1,
+        },
+        TestCase{
+            .description = "kDeviceBusy",
+            .availability = BiometricAuthenticationStatusWin::kDeviceBusy,
+            .expected_result = false,
+            .expected_bucket = 2,
+        },
+        TestCase{
+            .description = "kDisabledByPolicy",
+            .availability = BiometricAuthenticationStatusWin::kDisabledByPolicy,
+            .expected_result = false,
+            .expected_bucket = 3,
+        },
+        TestCase{
+            .description = "kDeviceNotPresent",
+            .availability = BiometricAuthenticationStatusWin::kDeviceNotPresent,
+            .expected_result = false,
+            .expected_bucket = 4,
+        },
+        TestCase{
+            .description = "kNotConfiguredForUser",
+            .availability =
+                BiometricAuthenticationStatusWin::kNotConfiguredForUser,
+            .expected_result = false,
+            .expected_bucket = 5,
+        }));
+
+}  // namespace

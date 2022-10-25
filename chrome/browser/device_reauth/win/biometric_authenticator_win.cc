@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -15,9 +16,12 @@
 
 namespace {
 
-void SaveAvailability(bool availability) {
+void SaveAvailability(BiometricAuthenticationStatusWin availability) {
   g_browser_process->local_state()->SetBoolean(
-      password_manager::prefs::kIsBiometricAvailable, availability);
+      password_manager::prefs::kIsBiometricAvailable,
+      availability == BiometricAuthenticationStatusWin::kAvailable);
+  base::UmaHistogramEnumeration("PasswordManager.BiometricAvailabilityWin",
+                                availability);
 }
 
 }  // namespace

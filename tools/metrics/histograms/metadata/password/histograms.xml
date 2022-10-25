@@ -818,6 +818,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.BiometricAvailabilityWin"
+    enum="BiometricAuthenticationStatusWin" expires_after="2023-02-26">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Recorded any time a client of AuthenticatorWin requests to check biometric
+    availability. If availability can't be checked, it records that immediately.
+    If it can be checked, it records the status when the callback for
+    OnAvailabilityReceived is invoked.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BubbleSuppression.AccountsInStatisticsTable"
     units="accounts" expires_after="2023-02-12">
   <owner>kazinova@google.com</owner>
