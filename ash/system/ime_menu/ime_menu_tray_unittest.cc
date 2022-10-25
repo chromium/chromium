@@ -241,20 +241,18 @@ TEST_P(ImeMenuTrayTest, TrayLabelExludesDictation) {
   EXPECT_EQ(u"", GetTrayText());
 }
 
-// Tests that IME menu tray changes background color when tapped/clicked. And
+// Tests that the IME menu tray changes background color when tapped, and
 // tests that the background color becomes 'inactive' when disabling the IME
 // menu feature. Also makes sure that the shelf won't autohide as long as the
 // IME menu is open.
-TEST_P(ImeMenuTrayTest, PerformAction) {
+TEST_P(ImeMenuTrayTest, PerformActionGestureTap) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
   StatusAreaWidget* status = StatusAreaWidgetTestHelper::GetStatusAreaWidget();
   EXPECT_FALSE(status->ShouldShowShelf());
 
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 
@@ -262,13 +260,13 @@ TEST_P(ImeMenuTrayTest, PerformAction) {
   // open.
   EXPECT_TRUE(status->ShouldShowShelf());
 
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_FALSE(IsTrayBackgroundActive());
   EXPECT_FALSE(IsBubbleShown());
 
   // If disabling the IME menu feature when the menu tray is activated, the tray
   // element will be deactivated.
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_TRUE(IsTrayBackgroundActive());
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(false);
   EXPECT_FALSE(IsVisible());
@@ -277,13 +275,27 @@ TEST_P(ImeMenuTrayTest, PerformAction) {
   EXPECT_FALSE(status->ShouldShowShelf());
 }
 
+// Tests that the IME menu reacts to left click.
+TEST_P(ImeMenuTrayTest, PerformActionLeftClick) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  ASSERT_TRUE(IsVisible());
+  ASSERT_FALSE(IsTrayBackgroundActive());
+
+  LeftClickOn(GetTray());
+  EXPECT_TRUE(IsTrayBackgroundActive());
+  EXPECT_TRUE(IsBubbleShown());
+
+  LeftClickOn(GetTray());
+  EXPECT_FALSE(IsTrayBackgroundActive());
+  EXPECT_FALSE(IsBubbleShown());
+}
+
 // Tests that IME menu list updates when changing the current IME. This should
 // only happen by using shortcuts (Ctrl + Space / Ctrl + Shift + Space) to
 // switch IMEs.
 TEST_P(ImeMenuTrayTest, RefreshImeWithListViewCreated) {
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GetTray()->SetVisiblePreferred(true);
+  GestureTapOn(GetTray());
 
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
@@ -317,7 +329,7 @@ TEST_P(ImeMenuTrayTest, RefreshImeWithListViewCreated) {
   ExpectValidImeList(ime_info_list, info3);
 
   // Closes the menu before quitting.
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_FALSE(IsTrayBackgroundActive());
   EXPECT_FALSE(IsBubbleShown());
 }
@@ -328,9 +340,7 @@ TEST_P(ImeMenuTrayTest, QuitChromeWithMenuOpen) {
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
 
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 }
@@ -346,9 +356,7 @@ TEST_P(ImeMenuTrayTest, TestAccelerator) {
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_FALSE(IsTrayBackgroundActive());
   EXPECT_FALSE(IsBubbleShown());
 }
@@ -363,9 +371,7 @@ TEST_P(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
 
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 
@@ -396,9 +402,9 @@ TEST_P(ImeMenuTrayTest, ImeBubbleAccelerator) {
 
 // Tests that tapping the emoji button does not crash. http://crbug.com/739630
 TEST_P(ImeMenuTrayTest, TapEmojiButton) {
-  int callCount = 0;
+  int call_count = 0;
   ui::SetShowEmojiKeyboardCallback(
-      base::BindRepeating([](int* count) { (*count)++; }, (&callCount)));
+      base::BindRepeating([](int* count) { (*count)++; }, (&call_count)));
 
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
@@ -406,20 +412,18 @@ TEST_P(ImeMenuTrayTest, TapEmojiButton) {
       true /* hanwriting input enabled */, true /* voice input enabled */);
 
   // Open the menu.
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
 
   // Tap the emoji button.
   views::Button* emoji_button = GetEmojiButton();
   ASSERT_TRUE(emoji_button);
-  emoji_button->OnGestureEvent(&tap);
+  GestureTapOn(emoji_button);
 
   // The menu should be hidden.
   EXPECT_FALSE(IsBubbleShown());
 
   // The callback should have been called.
-  EXPECT_EQ(callCount, 1);
+  EXPECT_EQ(call_count, 1);
 }
 
 TEST_P(ImeMenuTrayTest, ShouldShowBottomButtons) {
@@ -470,9 +474,7 @@ TEST_P(ImeMenuTrayTest, KioskImeTraySettingsButton) {
   ASSERT_TRUE(IsVisible());
 
   // Open the menu.
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
 
   views::View* settings_button = GetSettingsButton();
   EXPECT_FALSE(settings_button);
@@ -483,9 +485,7 @@ TEST_P(ImeMenuTrayTest, UserSessionImeTraySettingsButton) {
   ASSERT_TRUE(IsVisible());
 
   // Open the menu.
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
 
   views::View* settings_button = GetSettingsButton();
   EXPECT_TRUE(settings_button);
@@ -496,9 +496,7 @@ TEST_P(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
 
-  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  GetTray()->PerformAction(tap);
+  GestureTapOn(GetTray());
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 
@@ -520,8 +518,7 @@ TEST_P(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
   // Bubble gets closed when the keyboard suppression state changes.
   EXPECT_FALSE(IsBubbleShown());
 
-  GetTray()->PerformAction(ui::GestureEvent(
-      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  GestureTapOn(GetTray());
   EXPECT_TRUE(IsBubbleShown());
 
   EXPECT_TRUE(MenuHasOnScreenKeyboardToggle());
@@ -546,8 +543,7 @@ TEST_P(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
   // Bubble gets closed when the keyboard suppression state changes.
   EXPECT_FALSE(IsBubbleShown());
 
-  GetTray()->PerformAction(ui::GestureEvent(
-      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  GestureTapOn(GetTray());
   EXPECT_TRUE(IsBubbleShown());
   EXPECT_FALSE(MenuHasOnScreenKeyboardToggle());
 }

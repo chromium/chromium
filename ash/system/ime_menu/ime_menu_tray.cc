@@ -514,12 +514,11 @@ void ImeMenuTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
-bool ImeMenuTray::PerformAction(const ui::Event& event) {
-  if (event.IsMouseEvent() || event.IsGestureEvent()) {
-    UserMetricsRecorder::RecordUserClickOnTray(
-        LoginMetricsRecorder::TrayClickTarget::kImeTray);
-  }
-  return TrayBackgroundView::PerformAction(event);
+void ImeMenuTray::OnTrayActivated(const ui::Event& event) {
+  if (!event.IsMouseEvent() && !event.IsGestureEvent())
+    return;
+  UserMetricsRecorder::RecordUserClickOnTray(
+      LoginMetricsRecorder::TrayClickTarget::kImeTray);
 }
 
 void ImeMenuTray::CloseBubble() {

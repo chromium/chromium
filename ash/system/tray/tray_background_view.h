@@ -116,6 +116,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Called when the anchor (tray or bubble) may have moved or changed.
   virtual void AnchorUpdated() {}
 
+  // Called after the tray has been activated, and `PerformAction()` has been
+  // called.
+  virtual void OnTrayActivated(const ui::Event& event);
+
   // Called from GetAccessibleNodeData, must return a valid accessible name.
   virtual std::u16string GetAccessibleNameForTray() = 0;
 
