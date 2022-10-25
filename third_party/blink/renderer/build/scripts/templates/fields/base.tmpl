@@ -1,4 +1,4 @@
-{% from 'templates/fields/field.tmpl' import encode, decode, const_ref, nonconst_ref, getter_expression, setter_expression, set_if_changed %}
+{% from 'templates/fields/field.tmpl' import encode, decode, const_ref, nonconst_ref, rvalue_ref, getter_expression, setter_expression, set_if_changed, move_if_changed %}
 
 {% macro decl_getter_method(field) -%}
 {% if 'getter' not in field.computed_style_custom_functions %}
@@ -12,6 +12,14 @@
 {% if 'setter' not in field.computed_style_custom_functions and not field.readonly %}
 void {{field.setter_method_name}}({{const_ref(field)}} v) {
   {{set_if_changed(field, encode(field, "v"))|indent(2)}}
+}
+{% endif %}
+{%- endmacro %}
+
+{% macro decl_move_method(field) -%}
+{% if 'setter' not in field.computed_style_custom_functions and not field.readonly %}
+void {{field.setter_method_name}}({{rvalue_ref(field)}} v) {
+  {{move_if_changed(field, encode(field, "v"))|indent(2)}}
 }
 {% endif %}
 {%- endmacro %}
@@ -44,6 +52,14 @@ inline void {{field.resetter_method_name}}() {
 {% if 'setter' in field.computed_style_custom_functions and not field.readonly %}
 void {{field.internal_setter_method_name}}({{const_ref(field)}} v) {
   {{set_if_changed(field, encode(field, "v"))|indent(2)}}
+}
+{% endif %}
+{%- endmacro %}
+
+{% macro decl_internal_move_method(field) -%}
+{% if 'setter' in field.computed_style_custom_functions and not field.readonly %}
+void {{field.internal_setter_method_name}}({{rvalue_ref(field)}} v) {
+  {{move_if_changed(field, encode(field, "v"))|indent(2)}}
 }
 {% endif %}
 {%- endmacro %}

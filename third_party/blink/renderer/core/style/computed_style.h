@@ -1855,22 +1855,22 @@ class ComputedStyle : public ComputedStyleBase,
   void ResetBorderTop() {
     SetBorderTopStyle(EBorderStyle::kNone);
     SetBorderTopWidth(LayoutUnit(3));
-    SetBorderTopColorInternal(StyleColor::CurrentColor());
+    SetBorderTopColor(StyleColor::CurrentColor());
   }
   void ResetBorderRight() {
     SetBorderRightStyle(EBorderStyle::kNone);
     SetBorderRightWidth(LayoutUnit(3));
-    SetBorderRightColorInternal(StyleColor::CurrentColor());
+    SetBorderRightColor(StyleColor::CurrentColor());
   }
   void ResetBorderBottom() {
     SetBorderBottomStyle(EBorderStyle::kNone);
     SetBorderBottomWidth(LayoutUnit(3));
-    SetBorderBottomColorInternal(StyleColor::CurrentColor());
+    SetBorderBottomColor(StyleColor::CurrentColor());
   }
   void ResetBorderLeft() {
     SetBorderLeftStyle(EBorderStyle::kNone);
     SetBorderLeftWidth(LayoutUnit(3));
-    SetBorderLeftColorInternal(StyleColor::CurrentColor());
+    SetBorderLeftColor(StyleColor::CurrentColor());
   }
 
   void SetBorderRadius(const LengthSize& s) {

@@ -1,19 +1,10 @@
 {% import 'templates/fields/base.tmpl' as base %}
-{% from 'templates/fields/field.tmpl' import getter_expression, setter_expression, accessor_expression_prefix %}
+{% from 'templates/fields/field.tmpl' import getter_expression, setter_expression %}
 
 {% macro decl_public_methods(field) %}
 {{base.decl_getter_method(field)}}
 {{base.decl_setter_method(field)}}
-{% if 'setter' not in field.computed_style_custom_functions and not field.readonly %}
-void {{field.setter_method_name}}({{field.type_name}}&& v) {
-  {% if field.group.parent %}
-  if (!({{getter_expression(field)}} == v))
-    {{setter_expression(field)}} = std::move(v);
-  {% else %}
-  {{accessor_expression_prefix(field)}}{{field.name}} = std::move(v);
-  {% endif %}
-}
-{% endif %}
+{{base.decl_move_method(field)}}
 {{base.decl_resetter_method(field)}}
 {% endmacro %}
 
@@ -22,15 +13,6 @@ void {{field.setter_method_name}}({{field.type_name}}&& v) {
 {% if not field.wrapper_pointer_name %}
 {{base.decl_internal_setter_method(field)}}
 {% endif %}
-{% if not field.is_bit_field and not field.readonly %}
-void {{field.internal_setter_method_name}}({{field.type_name}}&& v) {
-{% if field.group.parent %}
-  if (!({{getter_expression(field)}} == v))
-    {{setter_expression(field)}} = std::move(v);
-{% else %}
-  {{accessor_expression_prefix(field)}}{{field.name}} = std::move(v);
-{% endif %}
-}
-{% endif %}
+{{base.decl_internal_move_method(field)}}
 {{base.decl_mutable_method(field)}}
 {%- endmacro %}

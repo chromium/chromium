@@ -53,6 +53,15 @@ if (!({{getter_expression(field)}} == {{value}}))
 {%- endif %}
 {% endmacro %}
 
+{% macro move_if_changed(field, value) %}
+{% if field.group.name -%}
+if (!({{getter_expression(field)}} == {{value}}))
+  {{setter_expression(field)}} = std::move({{value}});
+{%- else -%}
+{{accessor_expression_prefix(field)}}{{field.name}} = std::move({{value}});
+{%- endif %}
+{% endmacro %}
+
 {% macro nonconst_ref(field) %}
 {% if field.is_bit_field or field.field_template == 'primitive' -%}
 {{field.type_name}}
@@ -68,6 +77,10 @@ if (!({{getter_expression(field)}} == {{value}}))
 const {{field.type_name}}&
 {%- endif %}
 {% endmacro %}
+
+{% macro rvalue_ref(field) -%}
+{{field.type_name}}&&
+{%- endmacro %}
 
 {% macro group_getter_expression(group) %}
 {% for group in group.path_without_root() -%}
