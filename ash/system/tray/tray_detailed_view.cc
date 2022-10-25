@@ -110,8 +110,7 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
 // row use SetID(VIEW_ID_STICKY_HEADER).
 class ScrollContentsView : public views::View {
  public:
-  explicit ScrollContentsView(DetailedViewDelegate* delegate)
-      : delegate_(delegate) {
+  ScrollContentsView() {
     box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
     // NOTE: Pre-QsRevamp, insets are added in ViewHierarchyChanged().
@@ -287,11 +286,29 @@ class ScrollContentsView : public views::View {
       }
       if (header.draw_separator_below != draw_separator_below) {
         header.draw_separator_below = draw_separator_below;
-        delegate_->ShowStickyHeaderSeparator(header_view, draw_separator_below);
+        ShowStickyHeaderSeparator(header_view, draw_separator_below);
       }
       if (header.natural_offset < scroll_offset)
         break;
     }
+  }
+
+  // Configures `view` to have a visible separator below.
+  void ShowStickyHeaderSeparator(views::View* view, bool show_separator) {
+    if (show_separator) {
+      view->SetBorder(views::CreatePaddedBorder(
+          views::CreateSolidSidedBorder(
+              gfx::Insets::TLBR(0, 0, kTraySeparatorWidth, 0),
+              AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kSeparatorColor)),
+          gfx::Insets::TLBR(kMenuSeparatorVerticalPadding, 0,
+                            kMenuSeparatorVerticalPadding - kTraySeparatorWidth,
+                            0)));
+    } else {
+      view->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
+    }
+    view->SchedulePaint();
   }
 
   // Paints a separator for a header view. The separator can be a horizontal
@@ -328,8 +345,6 @@ class ScrollContentsView : public views::View {
     canvas->ClipRect(shadowed_area, SkClipOp::kDifference);
     canvas->DrawRect(shadowed_area, flags);
   }
-
-  DetailedViewDelegate* const delegate_;
 
   views::BoxLayout* box_layout_ = nullptr;
 
@@ -411,7 +426,7 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
 
 void TrayDetailedView::CreateScrollableList() {
   DCHECK(!scroller_);
-  auto scroll_content = std::make_unique<ScrollContentsView>(delegate_);
+  auto scroll_content = std::make_unique<ScrollContentsView>();
   scroller_ = AddChildView(std::make_unique<views::ScrollView>());
   scroller_->SetDrawOverflowIndicator(false);
   scroll_content_ = scroller_->SetContents(std::move(scroll_content));
@@ -442,8 +457,16 @@ void TrayDetailedView::AddScrollListChild(std::unique_ptr<views::View> child) {
 HoverHighlightView* TrayDetailedView::AddScrollListItem(
     const gfx::VectorIcon& icon,
     const std::u16string& text) {
-  HoverHighlightView* item = delegate_->CreateScrollListItem(this, icon, text);
-  scroll_content_->AddChildView(item);
+  HoverHighlightView* item = scroll_content_->AddChildView(
+      std::make_unique<HoverHighlightView>(/*listener=*/this));
+  if (icon.is_empty())
+    item->AddLabelRow(text);
+  else
+    item->AddIconAndLabel(
+        gfx::CreateVectorIcon(
+            icon, AshColorProvider::Get()->GetContentLayerColor(
+                      AshColorProvider::ContentLayerType::kIconColorPrimary)),
+        text);
   return item;
 }
 

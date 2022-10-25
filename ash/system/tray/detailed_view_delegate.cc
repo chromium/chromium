@@ -7,20 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
-#include "ash/system/tray/hover_highlight_view.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/border.h"
 
 namespace ash {
-
-using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
@@ -43,42 +36,8 @@ void DetailedViewDelegate::CloseBubble() {
   tray_controller_->CloseBubble();
 }
 
-void DetailedViewDelegate::ShowStickyHeaderSeparator(views::View* view,
-                                                     bool show_separator) {
-  if (show_separator) {
-    view->SetBorder(views::CreatePaddedBorder(
-        views::CreateSolidSidedBorder(
-            gfx::Insets::TLBR(0, 0, kTraySeparatorWidth, 0),
-            AshColorProvider::Get()->GetContentLayerColor(
-                ContentLayerType::kSeparatorColor)),
-        gfx::Insets::TLBR(kMenuSeparatorVerticalPadding, 0,
-                          kMenuSeparatorVerticalPadding - kTraySeparatorWidth,
-                          0)));
-  } else {
-    view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
-  }
-  view->SchedulePaint();
-}
-
 gfx::Insets DetailedViewDelegate::GetScrollViewMargin() const {
   return kQsScrollViewMargin;
-}
-
-HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(
-    ViewClickListener* listener,
-    const gfx::VectorIcon& icon,
-    const std::u16string& text) {
-  HoverHighlightView* item = new HoverHighlightView(listener);
-  if (icon.is_empty())
-    item->AddLabelRow(text);
-  else
-    item->AddIconAndLabel(
-        gfx::CreateVectorIcon(icon,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)),
-        text);
-  return item;
 }
 
 // TODO(b/253091169): Refactor the following creating buttons methods to return

@@ -5,24 +5,12 @@
 #ifndef ASH_SYSTEM_TRAY_DETAILED_VIEW_DELEGATE_H_
 #define ASH_SYSTEM_TRAY_DETAILED_VIEW_DELEGATE_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ui/views/controls/button/button.h"
 
-namespace gfx {
-struct VectorIcon;
-}  // namespace gfx
-
-namespace views {
-class View;
-}  // namespace views
-
 namespace ash {
 
-class HoverHighlightView;
 class UnifiedSystemTrayController;
-class ViewClickListener;
 
 // A delegate of TrayDetailedView that handles bubble related actions e.g.
 // transition to the main view, closing the bubble, etc.
@@ -43,20 +31,10 @@ class ASH_EXPORT DetailedViewDelegate {
   // Close the bubble that contains the detailed view.
   virtual void CloseBubble();
 
-  // Configure a |view| to have a visible separator below.
-  virtual void ShowStickyHeaderSeparator(views::View* view,
-                                         bool show_separator);
-
   // Returns the margin around the scroll view. Most detailed views should use
   // the default implementation. Shelf pods that reuse detailed views may need
   // custom margins. Only used with feature QsRevamp.
   virtual gfx::Insets GetScrollViewMargin() const;
-
-  // Return a targetable row containing |icon| and |text|. Caller takes
-  // ownership of the returned view.
-  virtual HoverHighlightView* CreateScrollListItem(ViewClickListener* listener,
-                                                   const gfx::VectorIcon& icon,
-                                                   const std::u16string& text);
 
   // Return the back button used in the title row. Caller takes ownership of the
   // returned view.

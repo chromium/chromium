@@ -31,7 +31,6 @@ namespace ash {
 
 class DetailedViewDelegate;
 class HoverHighlightView;
-class ScrollBorder;
 class TriView;
 
 class ASH_EXPORT TrayDetailedView : public views::View,
@@ -159,8 +158,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::ScrollView* scroller_ = nullptr;
   views::View* scroll_content_ = nullptr;
   views::ProgressBar* progress_bar_ = nullptr;
-
-  ScrollBorder* scroll_border_ = nullptr;  // Weak reference
 
   // The container view for the top-most title row. Owned by views hierarchy.
   TriView* tri_view_ = nullptr;
