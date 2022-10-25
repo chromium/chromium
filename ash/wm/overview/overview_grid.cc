@@ -1732,12 +1732,6 @@ void OverviewGrid::CommitNameChanges() {
 }
 
 void OverviewGrid::ShowDesksTemplatesGrid() {
-  // TODO(crbug.com/1363382): This bool is defined here, way above where it is
-  // actually used, because `IsZeroState` will return false if the saved desk
-  // library is visible. See corresponding TODO in `DesksBarView`.
-  DCHECK(desks_bar_view_);
-  const bool was_zero_state = desks_bar_view_->IsZeroState();
-
   if (!saved_desk_library_widget_) {
     saved_desk_library_widget_ =
         SavedDeskLibraryView::CreateSavedDeskLibraryWidget(root_window_);
@@ -1770,7 +1764,7 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
 
   UpdateSaveDeskButtons();
 
-  if (was_zero_state) {
+  if (desks_bar_view_->IsZeroState()) {
     desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                         /*expanding_bar_view=*/true);
   }
