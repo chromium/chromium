@@ -505,7 +505,7 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 
   bool was_broken_by_child = builder->HasInflowChildBreakInside();
   if (!was_broken_by_child && space.IsNewFormattingContext())
-    was_broken_by_child = builder->HasFloatBreakInside();
+    was_broken_by_child = builder->ExclusionSpace().HasFragmentainerBreak();
 
   if (space_left == kIndefiniteSize) {
     // We don't know how space is available (initial column balancing pass), so

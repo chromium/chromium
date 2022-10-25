@@ -42,8 +42,6 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 
   if (!has_inflow_child_break_inside_)
     has_inflow_child_break_inside_ = !child.IsFloatingOrOutOfFlowPositioned();
-  if (!has_float_break_inside_)
-    has_float_break_inside_ = child.IsFloating();
 
   if (auto* child_inline_node = DynamicTo<NGInlineNode>(child)) {
     if (!last_inline_break_token_) {
@@ -411,12 +409,9 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     // Figure out if this child break is in the same flow as this parent. If
     // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
     // it's also not.
-    if (!token->IsAtBlockEnd()) {
-      if (child_box_fragment->IsFloating())
-        has_float_break_inside_ = true;
-      else if (!child_box_fragment->IsOutOfFlowPositioned())
-        has_inflow_child_break_inside_ = true;
-    }
+    if (!token->IsAtBlockEnd() &&
+        !child_box_fragment->IsFloatingOrOutOfFlowPositioned())
+      has_inflow_child_break_inside_ = true;
 
     if (child_layout_result.ShouldForceSameFragmentationFlow())
       has_inflow_child_break_inside_ = true;

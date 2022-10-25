@@ -151,7 +151,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     }
   }
 
-  bool NeedsClearancePastFragmentainer(EClear type) {
+  bool NeedsClearancePastFragmentainer(EClear type) const {
     bool needs_clearance = false;
     switch (type) {
       default:
@@ -180,6 +180,10 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     if (has_break_before_left_float_ || has_break_before_right_float_)
       return true;
     return NeedsClearancePastFragmentainer(type);
+  }
+
+  bool HasFragmentainerBreak() const {
+    return NeedsClearancePastFragmentainer(EClear::kBoth);
   }
 
   LayoutUnit LastFloatBlockStart() const { return last_float_block_start_; }
@@ -584,6 +588,10 @@ class CORE_EXPORT NGExclusionSpace {
   // already have floats that have been pushed.
   bool NeedsBreakBeforeFloat(EClear type) const {
     return exclusion_space_ && exclusion_space_->NeedsBreakBeforeFloat(type);
+  }
+
+  bool HasFragmentainerBreak() const {
+    return exclusion_space_ && exclusion_space_->HasFragmentainerBreak();
   }
 
   // Returns a layout opportunity, within the BFC.
