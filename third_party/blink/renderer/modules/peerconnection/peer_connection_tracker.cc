@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromecast_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
@@ -109,7 +110,8 @@ String SerializeServers(
 String SerializePeerConnectionMediaConstraints(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config) {
   StringBuilder builder;
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
+  // TODO(crbug.com/804275): Delete when Fuchsia no longer needs it.
   if (config.enable_dtls_srtp.has_value()) {
     if (builder.length())
       builder.Append(", ");

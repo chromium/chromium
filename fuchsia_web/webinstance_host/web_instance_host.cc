@@ -36,6 +36,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/feedback_registration.h"
 #include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/webengine/features.h"
@@ -62,12 +63,14 @@ const char kWebInstanceComponentUrl[] =
 const char kWebInstanceWithWebUiComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine_with_webui#meta/web_instance.cmx";
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
 // Use a constexpr instead of the existing base::Feature, because of the
 // additional dependencies required.
 constexpr char kMixedContentAutoupgradeFeatureName[] =
     "AutoupgradeMixedContent";
 constexpr char kDisableMixedContentAutoupgradeOrigin[] =
     "disable-mixed-content-autoupgrade";
+#endif
 
 // Use a constexpr instead of the existing switch, because of the additional
 // dependencies required.
@@ -217,16 +220,21 @@ void HandleUnsafelyTreatInsecureOriginsAsSecureParam(
   const std::vector<std::string>& insecure_origins =
       params->unsafely_treat_insecure_origins_as_secure();
   for (auto origin : insecure_origins) {
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
     if (origin == switches::kAllowRunningInsecureContent) {
       launch_args->AppendSwitch(switches::kAllowRunningInsecureContent);
-    } else if (origin == kDisableMixedContentAutoupgradeOrigin) {
+      continue;
+    }
+    if (origin == kDisableMixedContentAutoupgradeOrigin) {
       AppendToSwitch(switches::kDisableFeatures,
                      kMixedContentAutoupgradeFeatureName, launch_args);
-    } else {
-      // Pass the rest of the list to the Context process.
-      AppendToSwitch(network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-                     origin, launch_args);
+      continue;
     }
+#endif
+
+    // Pass the list to the Context process.
+    AppendToSwitch(network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+                   origin, launch_args);
   }
 }
 

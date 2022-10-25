@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
+#include "build/chromecast_buildflags.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"
@@ -115,9 +116,7 @@ static constexpr char const* kAllProcessSwitchesToCopy[] = {
 }  // namespace
 
 WebEngineContentBrowserClient::WebEngineContentBrowserClient()
-    : cors_exempt_headers_(GetCorsExemptHeaders()),
-      allow_insecure_content_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAllowRunningInsecureContent)) {
+    : cors_exempt_headers_(GetCorsExemptHeaders()) {
   // Logging in this class ensures this is logged once per web_instance.
   LogComponentStartWithVersion("WebEngine web_instance");
 }
@@ -163,8 +162,13 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
   // Disable WebSQL support since it's being removed from the web platform.
   web_prefs->databases_enabled = false;
 
-  if (allow_insecure_content_)
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+  static bool allow_insecure_content =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowRunningInsecureContent);
+  if (allow_insecure_content)
     web_prefs->allow_running_insecure_content = true;
+#endif
 
   FrameImpl* frame = FrameImpl::FromWebContents(web_contents);
   // This method may be called when a |web_contents| is instantiated but an

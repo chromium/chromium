@@ -29,6 +29,7 @@ source_set("webinstance_host") {
   deps = [
     "//base",
     "//base:base_static",
+    "//build:chromecast_buildflags",
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
     "//fuchsia_web/webengine:switches",

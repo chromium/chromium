@@ -81,7 +81,6 @@ class WebEngineContentBrowserClient final
 
  private:
   const std::vector<std::string> cors_exempt_headers_;
-  const bool allow_insecure_content_;
 
   // Owned by content::BrowserMainLoop.
   WebEngineBrowserMainParts* main_parts_;

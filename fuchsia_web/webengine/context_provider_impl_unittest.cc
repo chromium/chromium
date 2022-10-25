@@ -39,6 +39,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "fuchsia_web/webengine/fake_context.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -581,13 +582,31 @@ TEST_F(ContextProviderImplTest, WithInsecureOriginsAsSecure) {
   base::RunLoop loop;
   fake_environment_.fake_launcher().set_create_component_callback(
       base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
+        const char* kAllowRunningInsecureContent =
+            "allow-running-insecure-content";
         loop.Quit();
-        EXPECT_TRUE(command.HasSwitch(switches::kAllowRunningInsecureContent));
+        EXPECT_TRUE(command.HasSwitch(
+            network::switches::kUnsafelyTreatInsecureOriginAsSecure));
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+        ASSERT_STREQ(kAllowRunningInsecureContent,
+                     switches::kAllowRunningInsecureContent);
+        EXPECT_TRUE(command.HasSwitch(kAllowRunningInsecureContent));
         EXPECT_THAT(command.GetSwitchValueASCII(switches::kDisableFeatures),
                     testing::HasSubstr("AutoupgradeMixedContent"));
         EXPECT_EQ(command.GetSwitchValueASCII(
                       network::switches::kUnsafelyTreatInsecureOriginAsSecure),
-                  "http://example.com");
+                  "http://example.com,http://example.net");
+#else
+        EXPECT_FALSE(command.HasSwitch(kAllowRunningInsecureContent));
+        EXPECT_FALSE(command.HasSwitch(switches::kDisableFeatures));
+
+        // The unrecognized values are passed on as origins.
+        EXPECT_EQ(command.GetSwitchValueASCII(
+                      network::switches::kUnsafelyTreatInsecureOriginAsSecure),
+                  "allow-running-insecure-content,"
+                  "disable-mixed-content-autoupgrade,"
+                  "http://example.com,http://example.net");
+#endif
       }));
 
   fuchsia::web::ContextPtr context;
@@ -599,9 +618,10 @@ TEST_F(ContextProviderImplTest, WithInsecureOriginsAsSecure) {
 
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
   std::vector<std::string> insecure_origins;
-  insecure_origins.push_back(switches::kAllowRunningInsecureContent);
+  insecure_origins.push_back("allow-running-insecure-content");
   insecure_origins.push_back("disable-mixed-content-autoupgrade");
   insecure_origins.push_back("http://example.com");
+  insecure_origins.push_back("http://example.net");
   create_params.set_unsafely_treat_insecure_origins_as_secure(
       std::move(insecure_origins));
   provider_ptr_->Create(std::move(create_params), context.NewRequest());

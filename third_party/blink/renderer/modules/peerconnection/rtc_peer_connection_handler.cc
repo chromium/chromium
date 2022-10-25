@@ -25,6 +25,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromecast_buildflags.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -208,7 +209,8 @@ void CopyConstraintsIntoRtcConfiguration(
           context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
     }
   }
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
+  // TODO(crbug.com/804275): Delete when Fuchsia no longer needs it.
   configuration->enable_dtls_srtp = dtls_srtp_key_agreement;
 #endif
 }

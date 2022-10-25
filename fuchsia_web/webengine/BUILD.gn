@@ -236,6 +236,7 @@ component("web_engine_core") {
   }
 
   public_deps = [
+    "//build:chromecast_buildflags",
     "//content/public/browser",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
@@ -354,6 +355,7 @@ source_set("switches") {
     "//fuchsia_web/webinstance_host",
   ]
   deps = [ "//base" ]
+  public_deps = [ "//build:chromecast_buildflags" ]
   sources = [
     "features.h",
     "switches.cc",
@@ -635,6 +637,7 @@ test("web_engine_unittests") {
     ":web_engine_core",
     ":web_engine_unittests_fake_instance_manifest",
     "//base/test:test_support",
+    "//build:chromecast_buildflags",
     "//components/url_rewrite/browser",
     "//components/url_rewrite/common",
     "//components/url_rewrite/mojom",
