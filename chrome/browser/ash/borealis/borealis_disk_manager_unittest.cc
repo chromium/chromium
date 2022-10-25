@@ -38,10 +38,13 @@ using ::testing::Not;
 
 constexpr uint64_t kGiB = 1024 * 1024 * 1024;
 
+using BorealisGetDiskSpaceInfoCallback =
+    base::OnceCallback<void(absl::optional<int64_t>)>;
+
 class FreeSpaceProviderMock
     : public BorealisDiskManagerImpl::FreeSpaceProvider {
  public:
-  MOCK_METHOD(void, Get, (base::OnceCallback<void(int64_t)>), ());
+  MOCK_METHOD(void, Get, (BorealisGetDiskSpaceInfoCallback), ());
 };
 
 using DiskInfoCallbackFactory = StrictCallbackFactory<void(
@@ -172,7 +175,7 @@ class BorealisDiskManagerTest : public testing::Test,
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnFreeSpaceProviderError) {
   EXPECT_CALL(*free_space_provider_, Get(_))
-      .WillOnce(testing::Invoke([](base::OnceCallback<void(int64_t)> callback) {
+      .WillOnce(testing::Invoke([](BorealisGetDiskSpaceInfoCallback callback) {
         std::move(callback).Run(-1);
       }));
 
@@ -195,7 +198,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnFreeSpaceProviderError) {
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             // Concierge will return an empty ListVmDisksResponse.
             FakeConciergeClient()->set_list_vm_disks_response(
                 absl::optional<vm_tools::concierge::ListVmDisksResponse>());
@@ -222,7 +225,7 @@ TEST_F(BorealisDiskManagerTest,
        GetDiskInfoFailsOnUnsuccessfulResponseFromConcierge) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -247,7 +250,7 @@ TEST_F(BorealisDiskManagerTest,
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnVmMismatch) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -272,7 +275,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnVmMismatch) {
 TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -303,7 +306,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
 TEST_F(BorealisDiskManagerTest, GetDiskInfoReservesExpandableSpaceForBuffer) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -335,7 +338,7 @@ TEST_F(BorealisDiskManagerTest,
        GetDiskInfoReturns0AvailableSpaceForSparseDisks) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -363,7 +366,7 @@ TEST_F(BorealisDiskManagerTest,
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnConcurrentAttempt) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -402,12 +405,11 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
   testing::InSequence sequence;
 
   EXPECT_CALL(*free_space_provider_, Get(_))
-      .WillOnce(
-          testing::Invoke([this, response = response](
-                              base::OnceCallback<void(int64_t)> callback) {
-            FakeConciergeClient()->set_list_vm_disks_response(response);
-            std::move(callback).Run(2 * kGiB);
-          }));
+      .WillOnce(testing::Invoke([this, response = response](
+                                    BorealisGetDiskSpaceInfoCallback callback) {
+        FakeConciergeClient()->set_list_vm_disks_response(response);
+        std::move(callback).Run(2 * kGiB);
+      }));
 
   DiskInfoCallbackFactory first_callback_factory;
   EXPECT_CALL(first_callback_factory, Call(_))
@@ -420,12 +422,11 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
   run_loop()->RunUntilIdle();
 
   EXPECT_CALL(*free_space_provider_, Get(_))
-      .WillOnce(
-          testing::Invoke([this, response = response](
-                              base::OnceCallback<void(int64_t)> callback) {
-            FakeConciergeClient()->set_list_vm_disks_response(response);
-            std::move(callback).Run(2 * kGiB);
-          }));
+      .WillOnce(testing::Invoke([this, response = response](
+                                    BorealisGetDiskSpaceInfoCallback callback) {
+        FakeConciergeClient()->set_list_vm_disks_response(response);
+        std::move(callback).Run(2 * kGiB);
+      }));
 
   DiskInfoCallbackFactory second_callback_factory;
   EXPECT_CALL(second_callback_factory, Call(_))
@@ -496,7 +497,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfRequestExceedsInt64) {
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfBuildDiskInfoFails) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -527,7 +528,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfBuildDiskInfoFails) {
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskTypeNotRaw) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -556,7 +557,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskTypeNotRaw) {
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestTooHigh) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -588,7 +589,7 @@ TEST_F(BorealisDiskManagerTest,
        RequestDeltaFailsIfRequestWouldNotLeaveEnoughSpace) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -617,7 +618,7 @@ TEST_F(BorealisDiskManagerTest,
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskIsBelowMinimum) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/8 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/4 * kGiB);
@@ -651,7 +652,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaShrinksAsSmallAsPossible) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/4 * kGiB);
@@ -666,7 +667,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaShrinksAsSmallAsPossible) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/6 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -697,7 +698,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaShrinksAsSmallAsPossible) {
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -724,7 +725,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -753,7 +754,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnDelayedConciergeFailure) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -794,7 +795,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailureToGetUpdate) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -808,7 +809,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailureToGetUpdate) {
   FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
-      .WillOnce(testing::Invoke([](base::OnceCallback<void(int64_t)> callback) {
+      .WillOnce(testing::Invoke([](BorealisGetDiskSpaceInfoCallback callback) {
         std::move(callback).Run(-1 * kGiB);
       }));
 
@@ -834,8 +835,8 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
   testing::InSequence sequence;
 
   EXPECT_CALL(*free_space_provider_, Get(_))
-      .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+      .WillOnce(testing::Invoke(
+          [this](base::OnceCallback<void(absl::optional<int64_t>)> callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -850,7 +851,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
                 /*available_space=*/5 * kGiB);
@@ -881,7 +882,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/4 * kGiB);
@@ -896,7 +897,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
                 /*available_space=*/5 * kGiB);
@@ -927,7 +928,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -942,7 +943,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/4 * kGiB);
@@ -972,7 +973,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/4 * kGiB);
@@ -987,7 +988,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/19 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -1017,7 +1018,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceConvertsSparseDiskToFixed) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/100 * kGiB);
@@ -1033,7 +1034,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceConvertsSparseDiskToFixed) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             // Note: available_space goes from 100 GB to 3 GB, when requesting
             // for more space. In a sparse disk, the available space on the
             // disk is more like the expandable space on the disk, so it makes
@@ -1065,7 +1066,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceConvertsSparseDiskToFixed) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/100 * kGiB);
@@ -1081,7 +1082,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceConvertsSparseDiskToFixed) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             // Note: available_space goes from 100 GB to 2 GB, when releasing
             // space. In a sparse disk, the available space on the disk is more
             // like the expandable space on the disk, so it makes sense that
@@ -1113,7 +1114,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessfullyRegeneratesBuffer) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -1128,7 +1129,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessfullyRegeneratesBuffer) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/23 * kGiB,
                 /*available_space=*/4 * kGiB);
@@ -1161,7 +1162,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
   // fulfilled.
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/5 * kGiB);
@@ -1171,7 +1172,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -1207,7 +1208,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -1222,7 +1223,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/5 * kGiB);
@@ -1240,7 +1241,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/5 * kGiB);
@@ -1255,7 +1256,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
                 /*available_space=*/4 * kGiB);
@@ -1278,7 +1279,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
 TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfGetDiskInfoFails) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -1306,7 +1307,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfGetDiskInfoFails) {
 TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskNotFixedSize) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -1334,7 +1335,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskNotFixedSize) {
 TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskCantExpand) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -1367,7 +1368,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskCantExpand) {
 TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskDoesntNeedToExpand) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/2 * kGiB);
@@ -1399,7 +1400,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfResizeAttemptFails) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .Times(2)
       .WillRepeatedly(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/6 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -1432,7 +1433,7 @@ TEST_F(BorealisDiskManagerTest,
   EXPECT_CALL(*free_space_provider_, Get(_))
       .Times(2)
       .WillRepeatedly(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/5 * kGiB,
                 /*available_space=*/3 * kGiB);
@@ -1468,7 +1469,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizePartialResizeSucceeds) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .Times(2)
       .WillRepeatedly(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -1483,7 +1484,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizePartialResizeSucceeds) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7.5 * kGiB,
                 /*available_space=*/1.5 * kGiB);
@@ -1517,7 +1518,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeCompleteResizeSucceeds) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .Times(2)
       .WillRepeatedly(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -1532,7 +1533,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeCompleteResizeSucceeds) {
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/2 * kGiB);
@@ -1563,7 +1564,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
   // fulfilled.
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/2 * kGiB);
@@ -1574,7 +1575,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .Times(2)
       .WillRepeatedly(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+          testing::Invoke([this](BorealisGetDiskSpaceInfoCallback callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/1 * kGiB);
@@ -1616,7 +1617,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
 
 TEST_F(BorealisDiskManagerTest, RequestsRecordedOnDestruction) {
   EXPECT_CALL(*free_space_provider_, Get(_))
-      .WillOnce(testing::Invoke([](base::OnceCallback<void(int64_t)> callback) {
+      .WillOnce(testing::Invoke([](BorealisGetDiskSpaceInfoCallback callback) {
         std::move(callback).Run(-1);
       }));
   DiskInfoCallbackFactory callback_factory;

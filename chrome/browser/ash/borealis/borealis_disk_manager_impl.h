@@ -25,7 +25,8 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
    public:
     FreeSpaceProvider() = default;
     virtual ~FreeSpaceProvider() = default;
-    virtual void Get(base::OnceCallback<void(int64_t)> callback);
+    virtual void Get(
+        base::OnceCallback<void(absl::optional<int64_t>)> callback);
   };
 
   explicit BorealisDiskManagerImpl(const BorealisContext* context);

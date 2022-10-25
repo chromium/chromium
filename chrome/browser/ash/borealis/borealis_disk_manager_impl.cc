@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 
 namespace borealis {
 namespace {
@@ -69,12 +69,9 @@ constexpr int64_t kTargetBufferLowerBound = kTargetBufferBytes * 0.9;
 constexpr int64_t kTargetBufferUpperBound = kTargetBufferBytes * 1.1;
 
 void BorealisDiskManagerImpl::FreeSpaceProvider::Get(
-    base::OnceCallback<void(int64_t)> callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                     base::FilePath(crostini::kHomeDirectory)),
-      std::move(callback));
+    base::OnceCallback<void(absl::optional<int64_t>)> callback) {
+  ash::SpacedClient::Get()->GetFreeDiskSpace(crostini::kHomeDirectory,
+                                             std::move(callback));
 }
 
 struct BorealisDiskManagerImpl::BorealisDiskInfo {
@@ -141,15 +138,15 @@ class BorealisDiskManagerImpl::BuildDiskInfo
   }
 
  private:
-  void HandleFreeSpaceResult(int64_t free_space) {
-    if (free_space < 0) {
+  void HandleFreeSpaceResult(absl::optional<int64_t> free_space) {
+    if (!free_space.has_value() || free_space.value() < 0) {
       Fail(Described<BorealisGetDiskInfoResult>(
           BorealisGetDiskInfoResult::kFailedGettingExpandableSpace,
           "failed to get the amount of free disk space on the host"));
       return;
     }
     disk_info_->expandable_space =
-        std::max(int64_t(free_space - kDiskHeadroomBytes), int64_t(0));
+        std::max(int64_t(free_space.value() - kDiskHeadroomBytes), int64_t(0));
     vm_tools::concierge::ListVmDisksRequest request;
     request.set_cryptohome_id(
         ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
