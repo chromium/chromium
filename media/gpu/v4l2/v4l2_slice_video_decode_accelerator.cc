@@ -621,7 +621,7 @@ bool V4L2SliceVideoDecodeAccelerator::CreateInputBuffers() {
 
   CHECK(input_queue_->SupportsRequests());
   requests_queue_ = device_->GetRequestsQueue();
-  return !requests_queue_;
+  return !!requests_queue_;
 }
 
 bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {

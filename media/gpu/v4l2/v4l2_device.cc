@@ -2281,8 +2281,6 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
 }
 
 bool V4L2Device::IsCtrlExposed(uint32_t ctrl_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-
   struct v4l2_queryctrl query_ctrl;
   memset(&query_ctrl, 0, sizeof(query_ctrl));
   query_ctrl.id = ctrl_id;
