@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory_allocator.h"
@@ -40,6 +41,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_local.h"
@@ -245,6 +247,12 @@ static_assert(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) ==
         v8::MemoryPressureLevel::kCritical,
     "critical level not align");
+
+// Feature to migrate the Media thread to a SequencedTaskRunner backed from
+// the base::ThreadPool. Does not currently work on Fuchsia due to FIDL
+// requiring thread affinity.
+BASE_DECLARE_FEATURE(kUseThreadPoolForMediaTaskRunner){
+    "UseThreadPoolForMediaTaskRunner", base::FEATURE_DISABLED_BY_DEFAULT};
 
 void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
   using base::debug::AllocateCrashKeyString;
@@ -1585,6 +1593,13 @@ void RenderThreadImpl::OnMemoryPressure(
 scoped_refptr<base::SequencedTaskRunner>
 RenderThreadImpl::GetMediaSequencedTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
+  if (base::FeatureList::IsEnabled(kUseThreadPoolForMediaTaskRunner)) {
+    if (!media_task_runner_) {
+      media_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+          base::TaskTraits{base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+    }
+    return media_task_runner_;
+  }
   if (!media_thread_) {
     media_thread_ = std::make_unique<base::Thread>("Media");
 #if BUILDFLAG(IS_FUCHSIA)

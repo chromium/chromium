@@ -169,7 +169,8 @@ media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
     sink_cache_ = std::make_unique<AudioRendererSinkCache>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+             base::MayBlock()}),
         base::BindRepeating(&AudioDeviceFactory::NewAudioRendererSink,
                             base::Unretained(this),
                             blink::WebAudioDeviceSourceType::kNone),

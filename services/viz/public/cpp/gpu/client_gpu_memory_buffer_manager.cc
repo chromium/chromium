@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -135,6 +136,7 @@ ClientGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     base::WaitableEvent* shutdown_event) {
   // Note: this can be called from multiple threads at the same time. Some of
   // those threads may not have a TaskRunner set.
+  base::ScopedAllowBaseSyncPrimitives allow;
   DCHECK_EQ(gpu::kNullSurfaceHandle, surface_handle);
   CHECK(!thread_.task_runner()->BelongsToCurrentThread());
   gfx::GpuMemoryBufferHandle gmb_handle;
@@ -195,6 +197,7 @@ bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
     base::UnsafeSharedMemoryRegion memory_region) {
   base::WaitableEvent event;
   bool mapping_result = false;
+  base::ScopedAllowBaseSyncPrimitives allow;
   CopyGpuMemoryBufferAsync(
       std::move(buffer_handle), std::move(memory_region),
       base::BindOnce(

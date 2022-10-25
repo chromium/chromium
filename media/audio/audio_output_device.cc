@@ -112,6 +112,7 @@ void AudioOutputDevice::Start() {
 void AudioOutputDevice::Stop() {
   TRACE_EVENT0("audio", "AudioOutputDevice::Stop");
   {
+    base::ScopedAllowBaseSyncPrimitives allow;
     base::AutoLock auto_lock(audio_thread_lock_);
     audio_thread_.reset();
     stopping_hack_ = true;

@@ -498,8 +498,12 @@ class CONTENT_EXPORT RenderThreadImpl
   // NOTE(dcastagna): At worst this accumulates a few bytes per context lost.
   std::vector<std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>> gpu_factories_;
 
-  // Thread for running multimedia operations (e.g., video decoding).
+  // Thread or sequenced task runner (depending on
+  // kBlinkMediaIsPooledSequencedTaskRunner) for running multimedia operations
+  // (e.g., video decoding). Exactly one of these is in use after
+  // GetMediaSequencedTaskRunner has been called.
   std::unique_ptr<base::Thread> media_thread_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   // Will point to appropriate task runner after initialization,
   // regardless of whether |compositor_thread_| is overriden.

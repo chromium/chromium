@@ -338,6 +338,7 @@ class WindowResizeHelperMac;
 
 namespace viz {
 class HostGpuMemoryBufferManager;
+class ClientGpuMemoryBufferManager;
 }
 
 namespace vr {
@@ -592,6 +593,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class leveldb::port::ScopedAllowWait;
   friend class location::nearby::chrome::ScheduledExecutor;
   friend class location::nearby::chrome::SubmittableExecutor;
+  friend class media::AudioOutputDevice;
   friend class media::BlockingUrlProtocol;
   friend class mojo::core::ScopedIPCSupport;
   friend class net::MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
@@ -601,6 +603,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class storage::ObfuscatedFileUtil;
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
+  friend class viz::ClientGpuMemoryBufferManager;
   friend class webrtc::DesktopConfigurationMonitor;
   friend class ::tracing::FuchsiaPerfettoProducerConnector;
 
