@@ -70,6 +70,7 @@ def main():
     subprocess.check_call(['git',
                            'cl',
                            'upload',
+                           '--enable-auto-submit',
                            '--cq-dry-run',
                            '--bypass-hooks',
                            '-f'])
@@ -125,6 +126,7 @@ def main():
         subprocess.check_call(['git',
                                'cl',
                                'upload',
+                               '--enable-auto-submit',
                                '--cq-dry-run',
                                '--bypass-hooks',
                                '-f'])
