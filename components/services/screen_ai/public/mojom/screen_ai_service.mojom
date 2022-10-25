@@ -32,8 +32,7 @@ interface ScreenAIAnnotator {
 interface ScreenAIAnnotatorClient {
   // Sent to inform about the creation of a new accessibility tree or an update
   // to an existing one.
-  // TODO(https://crbug.com/1278249): Add
-  // HandleAXTreeUpdate(ax.mojom.AXTreeUpdate update);
+  HandleAXTreeUpdate(ax.mojom.AXTreeUpdate update);
 };
 
 // Main interface a client uses for Main Content Extraction function of Screen

@@ -197,10 +197,7 @@ void ScreenAIService::Annotate(const SkBitmap& image,
                                                   << update.ToString();
   std::move(callback).Run(child_tree_id);
 
-  // ScreenAI service is created per profile and all clients are in the same
-  // browser process. As the updates are passed to global AXTreeManager, it is
-  // enough to sent it to only one client.
-  // TODO(https://crbug.com/1278249): Call [client]::HandleAXTreeUpdate(update);
+  screen_ai_annotator_client_->HandleAXTreeUpdate(update);
 }
 
 NO_SANITIZE("cfi-icall")

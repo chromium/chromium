@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_
 #define CHROME_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -13,7 +15,9 @@
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/accessibility/ax_dummy_tree_manager.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 class Browser;
 
@@ -40,10 +44,6 @@ class AXScreenAIAnnotator : public KeyedService,
   // call.
   void AnnotateScreenshot(Browser* browser);
 
-  // TODO(https://crbug.com/1278249): Add
-  // mojom::ScreenAIServiceClient::HandleAXTreeUpdate after service side data is
-  // ready.
-
   // ScreenAIInstallState::Observer:
   void ComponentReady() override;
 
@@ -65,6 +65,9 @@ class AXScreenAIAnnotator : public KeyedService,
   void OnAnnotationPerformed(const ui::AXTreeID& parent_tree_id,
                              const ui::AXTreeID& screen_ai_tree_id);
 
+  // mojom::ScreenAIAnnotatorClient:
+  void HandleAXTreeUpdate(const ui::AXTreeUpdate& update) override;
+
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
       component_ready_observer_{this};
 
@@ -74,6 +77,11 @@ class AXScreenAIAnnotator : public KeyedService,
 
   mojo::Remote<mojom::ScreenAIAnnotator> screen_ai_annotator_;
   mojo::Receiver<mojom::ScreenAIAnnotatorClient> screen_ai_service_client_;
+
+  // A list of managers for accessibility trees that have been produced by the
+  // Screen AI Service after it has been requested to analyze an image, either
+  // by a browser or by a renderer process.
+  std::vector<ui::AXDummyTreeManager> tree_managers_;
 
   base::WeakPtrFactory<AXScreenAIAnnotator> weak_ptr_factory_{this};
 };

@@ -4,6 +4,10 @@
 
 #include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,7 +15,7 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 
@@ -91,6 +95,12 @@ void AXScreenAIAnnotator::OnAnnotationPerformed(
                            screen_ai_tree_id.ToString().c_str()});
   // TODO(https://crbug.com/1278249): Use!
   NOTIMPLEMENTED();
+}
+
+void AXScreenAIAnnotator::HandleAXTreeUpdate(const ui::AXTreeUpdate& update) {
+  VLOG(2) << "HandleAXTreeUpdate:\n" << update.ToString();
+  auto tree = std::make_unique<ui::AXTree>(update);
+  tree_managers_.emplace_back(std::move(tree));
 }
 
 }  // namespace screen_ai
