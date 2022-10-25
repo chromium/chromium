@@ -29,8 +29,9 @@ class LayoutNGButton final : public LayoutNGFlexibleBox {
   }
 
  private:
-  void UpdateAnonymousChildStyle(const LayoutObject* child,
-                                 ComputedStyle& child_style) const override;
+  void UpdateAnonymousChildStyle(
+      const LayoutObject* child,
+      ComputedStyleBuilder& child_style_builder) const override;
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();

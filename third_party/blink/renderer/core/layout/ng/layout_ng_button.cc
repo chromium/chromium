@@ -47,9 +47,9 @@ void LayoutNGButton::RemoveChild(LayoutObject* old_child) {
 
 void LayoutNGButton::UpdateAnonymousChildStyle(
     const LayoutObject* child,
-    ComputedStyle& child_style) const {
+    ComputedStyleBuilder& child_style_builder) const {
   DCHECK_EQ(inner_, child);
-  LayoutButton::UpdateAnonymousChildStyle(StyleRef(), child_style);
+  LayoutButton::UpdateAnonymousChildStyle(StyleRef(), child_style_builder);
 }
 
 }  // namespace blink

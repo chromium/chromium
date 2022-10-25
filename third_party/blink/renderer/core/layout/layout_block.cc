@@ -2279,8 +2279,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   LegacyLayout legacy =
       parent->ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
 
-  parent->UpdateAnonymousChildStyle(nullptr,
-                                    *new_style_builder.MutableInternalStyle());
+  parent->UpdateAnonymousChildStyle(nullptr, new_style_builder);
   scoped_refptr<const ComputedStyle> new_style = new_style_builder.TakeStyle();
 
   LayoutBlock* layout_block;

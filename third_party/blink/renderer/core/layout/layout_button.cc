@@ -63,29 +63,33 @@ void LayoutButton::RemoveChild(LayoutObject* old_child) {
   }
 }
 
-void LayoutButton::UpdateAnonymousChildStyle(const LayoutObject* child,
-                                             ComputedStyle& child_style) const {
+void LayoutButton::UpdateAnonymousChildStyle(
+    const LayoutObject* child,
+    ComputedStyleBuilder& child_style_builder) const {
   DCHECK_EQ(inner_, child);
-  UpdateAnonymousChildStyle(StyleRef(), child_style);
+  UpdateAnonymousChildStyle(StyleRef(), child_style_builder);
 }
 
 // This function is shared with LayoutNGButton.
-void LayoutButton::UpdateAnonymousChildStyle(const ComputedStyle& parent_style,
-                                             ComputedStyle& child_style) {
-  child_style.SetFlexGrow(1.0f);
+void LayoutButton::UpdateAnonymousChildStyle(
+    const ComputedStyle& parent_style,
+    ComputedStyleBuilder& child_style_builder) {
+  ComputedStyle* child_style = child_style_builder.MutableInternalStyle();
+
+  child_style_builder.SetFlexGrow(1.0f);
   // min-width: 0; is needed for correct shrinking.
-  child_style.SetMinWidth(Length::Fixed(0));
+  child_style_builder.SetMinWidth(Length::Fixed(0));
   // Use margin:auto instead of align-items:center to get safe centering, i.e.
   // when the content overflows, treat it the same as align-items: flex-start.
-  child_style.SetMarginTop(Length());
-  child_style.SetMarginBottom(Length());
-  child_style.SetFlexDirection(parent_style.FlexDirection());
-  child_style.SetJustifyContent(parent_style.JustifyContent());
-  child_style.SetFlexWrap(parent_style.FlexWrap());
+  child_style->SetMarginTop(Length());
+  child_style->SetMarginBottom(Length());
+  child_style_builder.SetFlexDirection(parent_style.FlexDirection());
+  child_style_builder.SetJustifyContent(parent_style.JustifyContent());
+  child_style_builder.SetFlexWrap(parent_style.FlexWrap());
   // TODO (lajava): An anonymous box must not be used to resolve children's auto
   // values.
-  child_style.SetAlignItems(parent_style.AlignItems());
-  child_style.SetAlignContent(parent_style.AlignContent());
+  child_style_builder.SetAlignItems(parent_style.AlignItems());
+  child_style_builder.SetAlignContent(parent_style.AlignContent());
 }
 
 LayoutUnit LayoutButton::BaselinePosition(

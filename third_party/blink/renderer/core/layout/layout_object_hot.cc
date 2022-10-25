@@ -173,7 +173,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
       }
     }
 
-    UpdateAnonymousChildStyle(child, *new_style_builder.MutableInternalStyle());
+    UpdateAnonymousChildStyle(child, new_style_builder);
 
     child->SetStyle(new_style_builder.TakeStyle());
   }

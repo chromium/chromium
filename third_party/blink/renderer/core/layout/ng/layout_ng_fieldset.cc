@@ -105,67 +105,72 @@ void LayoutNGFieldset::InsertedIntoTree() {
 
 void LayoutNGFieldset::UpdateAnonymousChildStyle(
     const LayoutObject*,
-    ComputedStyle& child_style) const {
+    ComputedStyleBuilder& child_style_builder) const {
   // Inherit all properties listed here:
   // https://html.spec.whatwg.org/C/#anonymous-fieldset-content-box
+  ComputedStyle* child_style = child_style_builder.MutableInternalStyle();
 
-  child_style.SetAlignContent(StyleRef().AlignContent());
-  child_style.SetAlignItems(StyleRef().AlignItems());
+  child_style_builder.SetAlignContent(StyleRef().AlignContent());
+  child_style_builder.SetAlignItems(StyleRef().AlignItems());
 
-  child_style.SetBorderBottomLeftRadius(StyleRef().BorderBottomLeftRadius());
-  child_style.SetBorderBottomRightRadius(StyleRef().BorderBottomRightRadius());
-  child_style.SetBorderTopLeftRadius(StyleRef().BorderTopLeftRadius());
-  child_style.SetBorderTopRightRadius(StyleRef().BorderTopRightRadius());
+  child_style_builder.SetBorderBottomLeftRadius(
+      StyleRef().BorderBottomLeftRadius());
+  child_style_builder.SetBorderBottomRightRadius(
+      StyleRef().BorderBottomRightRadius());
+  child_style_builder.SetBorderTopLeftRadius(StyleRef().BorderTopLeftRadius());
+  child_style_builder.SetBorderTopRightRadius(
+      StyleRef().BorderTopRightRadius());
 
-  child_style.SetPaddingTop(StyleRef().PaddingTop());
-  child_style.SetPaddingRight(StyleRef().PaddingRight());
-  child_style.SetPaddingBottom(StyleRef().PaddingBottom());
-  child_style.SetPaddingLeft(StyleRef().PaddingLeft());
+  child_style->SetPaddingTop(StyleRef().PaddingTop());
+  child_style->SetPaddingRight(StyleRef().PaddingRight());
+  child_style->SetPaddingBottom(StyleRef().PaddingBottom());
+  child_style->SetPaddingLeft(StyleRef().PaddingLeft());
 
   if (StyleRef().SpecifiesColumns() && AllowsColumns()) {
-    child_style.SetColumnCount(StyleRef().ColumnCount());
-    child_style.SetColumnWidth(StyleRef().ColumnWidth());
+    child_style->SetColumnCount(StyleRef().ColumnCount());
+    child_style->SetColumnWidth(StyleRef().ColumnWidth());
   } else {
-    child_style.SetHasAutoColumnCount();
-    child_style.SetHasAutoColumnWidth();
+    child_style->SetHasAutoColumnCount();
+    child_style->SetHasAutoColumnWidth();
   }
-  child_style.SetColumnGap(StyleRef().ColumnGap());
-  child_style.SetColumnFill(StyleRef().GetColumnFill());
-  child_style.SetColumnRuleColor(StyleColor(
+  child_style_builder.SetColumnGap(StyleRef().ColumnGap());
+  child_style_builder.SetColumnFill(StyleRef().GetColumnFill());
+  child_style_builder.SetColumnRuleColor(StyleColor(
       LayoutObject::ResolveColor(StyleRef(), GetCSSPropertyColumnRuleColor())));
-  child_style.SetColumnRuleStyle(StyleRef().ColumnRuleStyle());
-  child_style.SetColumnRuleWidth(StyleRef().ColumnRuleWidth());
+  child_style_builder.SetColumnRuleStyle(StyleRef().ColumnRuleStyle());
+  child_style->SetColumnRuleWidth(StyleRef().ColumnRuleWidth());
 
-  child_style.SetFlexDirection(StyleRef().FlexDirection());
-  child_style.SetFlexWrap(StyleRef().FlexWrap());
+  child_style_builder.SetFlexDirection(StyleRef().FlexDirection());
+  child_style_builder.SetFlexWrap(StyleRef().FlexWrap());
 
-  child_style.SetGridAutoColumns(StyleRef().GridAutoColumns());
-  child_style.SetGridAutoFlow(StyleRef().GetGridAutoFlow());
-  child_style.SetGridAutoRows(StyleRef().GridAutoRows());
-  child_style.SetGridColumnEnd(StyleRef().GridColumnEnd());
-  child_style.SetGridColumnStart(StyleRef().GridColumnStart());
-  child_style.SetGridRowEnd(StyleRef().GridRowEnd());
-  child_style.SetGridRowStart(StyleRef().GridRowStart());
+  child_style_builder.SetGridAutoColumns(StyleRef().GridAutoColumns());
+  child_style_builder.SetGridAutoFlow(StyleRef().GetGridAutoFlow());
+  child_style_builder.SetGridAutoRows(StyleRef().GridAutoRows());
+  child_style_builder.SetGridColumnEnd(StyleRef().GridColumnEnd());
+  child_style_builder.SetGridColumnStart(StyleRef().GridColumnStart());
+  child_style_builder.SetGridRowEnd(StyleRef().GridRowEnd());
+  child_style_builder.SetGridRowStart(StyleRef().GridRowStart());
 
   // grid-template-columns, grid-template-rows
-  child_style.SetGridTemplateColumns(StyleRef().GridTemplateColumns());
-  child_style.SetGridTemplateRows(StyleRef().GridTemplateRows());
-  child_style.SetNamedGridArea(StyleRef().NamedGridArea());
-  child_style.SetNamedGridAreaColumnCount(
+  child_style_builder.SetGridTemplateColumns(StyleRef().GridTemplateColumns());
+  child_style_builder.SetGridTemplateRows(StyleRef().GridTemplateRows());
+  child_style_builder.SetNamedGridArea(StyleRef().NamedGridArea());
+  child_style_builder.SetNamedGridAreaColumnCount(
       StyleRef().NamedGridAreaColumnCount());
-  child_style.SetNamedGridAreaRowCount(StyleRef().NamedGridAreaRowCount());
-  child_style.SetImplicitNamedGridColumnLines(
+  child_style_builder.SetNamedGridAreaRowCount(
+      StyleRef().NamedGridAreaRowCount());
+  child_style_builder.SetImplicitNamedGridColumnLines(
       StyleRef().ImplicitNamedGridColumnLines());
-  child_style.SetImplicitNamedGridRowLines(
+  child_style_builder.SetImplicitNamedGridRowLines(
       StyleRef().ImplicitNamedGridRowLines());
 
-  child_style.SetRowGap(StyleRef().RowGap());
+  child_style_builder.SetRowGap(StyleRef().RowGap());
 
-  child_style.SetJustifyContent(StyleRef().JustifyContent());
-  child_style.SetJustifyItems(StyleRef().JustifyItems());
-  child_style.SetOverflowX(StyleRef().OverflowX());
-  child_style.SetOverflowY(StyleRef().OverflowY());
-  child_style.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
+  child_style_builder.SetJustifyContent(StyleRef().JustifyContent());
+  child_style_builder.SetJustifyItems(StyleRef().JustifyItems());
+  child_style_builder.SetOverflowX(StyleRef().OverflowX());
+  child_style_builder.SetOverflowY(StyleRef().OverflowY());
+  child_style_builder.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
 }
 
 bool LayoutNGFieldset::IsOfType(LayoutObjectType type) const {

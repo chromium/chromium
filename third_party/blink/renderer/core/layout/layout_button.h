@@ -60,15 +60,17 @@ class LayoutButton final : public LayoutFlexibleBox {
                               LineDirectionMode,
                               LinePositionMode) const override;
 
-  static void UpdateAnonymousChildStyle(const ComputedStyle& parent_sytle,
-                                        ComputedStyle& child_style);
+  static void UpdateAnonymousChildStyle(
+      const ComputedStyle& parent_sytle,
+      ComputedStyleBuilder& child_style_builder);
   static bool ShouldCountWrongBaseline(const LayoutBox& button_box,
                                        const ComputedStyle& style,
                                        const ComputedStyle* parent_style);
 
  private:
-  void UpdateAnonymousChildStyle(const LayoutObject* child,
-                                 ComputedStyle& child_style) const override;
+  void UpdateAnonymousChildStyle(
+      const LayoutObject* child,
+      ComputedStyleBuilder& child_style_builder) const override;
 
   Member<LayoutBlock> inner_;
 };
