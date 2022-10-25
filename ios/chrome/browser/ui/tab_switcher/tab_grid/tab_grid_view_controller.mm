@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
@@ -122,12 +124,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 @interface TabGridViewController () <DisabledTabViewControllerDelegate,
                                      GridViewControllerDelegate,
-                                     SuggestedActionsDelegate,
+                                     KeyCommandActions,
                                      LayoutSwitcher,
+                                     SuggestedActionsDelegate,
+                                     UIGestureRecognizerDelegate,
                                      UIScrollViewAccessibilityDelegate,
                                      UISearchBarDelegate,
-                                     ViewRevealingAnimatee,
-                                     UIGestureRecognizerDelegate>
+                                     ViewRevealingAnimatee>
 // Whether the view is visible. Bookkeeping is based on `-viewWillAppear:` and
 // `-viewWillDisappear methods. Note that the `Did` methods are not reliably
 // called (e.g., edge case in multitasking).
@@ -2511,26 +2514,24 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - UIResponder
 
-- (NSArray*)keyCommands {
-  UIKeyCommand* newWindowShortcut = [UIKeyCommand
-      keyCommandWithInput:@"n"
-            modifierFlags:UIKeyModifierCommand
-                   action:@selector(openNewRegularTabForKeyboardCommand)];
-  newWindowShortcut.discoverabilityTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_TOOLS_MENU_NEW_TAB);
-  UIKeyCommand* newIncognitoWindowShortcut = [UIKeyCommand
-      keyCommandWithInput:@"n"
-            modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
-                   action:@selector(openNewIncognitoTabForKeyboardCommand)];
-  newIncognitoWindowShortcut.discoverabilityTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
-  UIKeyCommand* newTabShortcut = [UIKeyCommand
-      keyCommandWithInput:@"t"
-            modifierFlags:UIKeyModifierCommand
-                   action:@selector(openNewTabInCurrentPageForKeyboardCommand)];
-  newTabShortcut.discoverabilityTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_TOOLS_MENU_NEW_TAB);
-  return @[ newWindowShortcut, newIncognitoWindowShortcut, newTabShortcut ];
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  return @[
+    UIKeyCommand.cr_openNewTab,
+    UIKeyCommand.cr_openNewIncognitoTab,
+    UIKeyCommand.cr_openNewRegularTab,
+  ];
+}
+
+- (void)keyCommand_openNewTab {
+  [self openNewTabInCurrentPageForKeyboardCommand];
+}
+
+- (void)keyCommand_openNewRegularTab {
+  [self openNewRegularTabForKeyboardCommand];
+}
+
+- (void)keyCommand_openNewIncognitoTab {
+  [self openNewIncognitoTabForKeyboardCommand];
 }
 
 @end
