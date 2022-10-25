@@ -1669,7 +1669,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(TestCase("metricsRecordEnum"),
                       TestCase("metricsOpenSwa"),
+// TODO(https://crbug.com/1303472): Fix flakes and re-enable.
+#if !BUILDFLAG(IS_CHROMEOS)
                       TestCase("metricsRecordDirectoryListLoad"),
+#endif
                       TestCase("metricsRecordUpdateAvailableApps")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
