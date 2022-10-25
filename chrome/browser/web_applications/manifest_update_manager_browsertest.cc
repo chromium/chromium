@@ -4632,8 +4632,8 @@ std::string GenerateColoredIconList(int installability_icon,
   return "\n    [\n" + icon_list + "    ]\n  ";
 }
 
-// Disabled due to test flakiness: https://crbug.com/1341954
-#if BUILDFLAG(IS_WIN)
+// Disabled due to test flakiness: https://crbug.com/1341617
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CheckCombinations DISABLED_CheckCombinations
 #else
 #define MAYBE_CheckCombinations CheckCombinations
