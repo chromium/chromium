@@ -90,6 +90,13 @@ class InteractionTestUtil {
     // or menu item, prefer PressButton() or SelectMenuItem() instead.
     [[nodiscard]] virtual bool DoDefaultAction(TrackedElement* element,
                                                InputType input_type);
+
+    // Tries to select tab `index` in `tab_collection`. The collection could be
+    // a tabbed pane, browser/tabstrip, or similar. Note that `index` is
+    // zero-indexed.
+    [[nodiscard]] virtual bool SelectTab(TrackedElement* tab_collection,
+                                         size_t index,
+                                         InputType input_type);
   };
 
   InteractionTestUtil();
@@ -114,6 +121,13 @@ class InteractionTestUtil {
   // `element` is not a menu item or if `input_type` is not supported.
   void SelectMenuItem(TrackedElement* element,
                       InputType input_type = InputType::kDontCare);
+
+  // Simulate selecting the `index`-th tab (zero-indexed) of `tab_collection`.
+  // Will fail if the target object is not a supported type, if `index` is out
+  // of bounds, or if `input_type` is not supported.
+  void SelectTab(TrackedElement* tab_collection,
+                 size_t index,
+                 InputType input_type = InputType::kDontCare);
 
   // Simulate the default action for `element` - typically whatever happens when
   // the user clicks or taps on it. Will fail if `input_type` is not supported.

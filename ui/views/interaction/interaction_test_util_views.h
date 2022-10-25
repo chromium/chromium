@@ -33,6 +33,9 @@ class InteractionTestUtilSimulatorViews
                       InputType input_type) override;
   bool DoDefaultAction(ui::TrackedElement* element,
                        InputType input_type) override;
+  bool SelectTab(ui::TrackedElement* tab_collection,
+                 size_t index,
+                 InputType input_type) override;
 
   // Convenience method for tests that need to simulate a button press and have
   // direct access to the button.

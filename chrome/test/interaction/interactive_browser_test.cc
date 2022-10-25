@@ -153,6 +153,21 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::DoDefaultAction(
   return builder;
 }
 
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::SelectTab(
+    ElementSpecifier tab_collection,
+    size_t tab_index,
+    InputType input_type) {
+  StepBuilder builder;
+  SpecifyElement(builder, tab_collection);
+  builder.SetStartCallback(base::BindOnce(
+      [](size_t index, InputType input_type, InteractiveBrowserTest* test,
+         ui::InteractionSequence*, ui::TrackedElement* el) {
+        test->test_util().SelectTab(el, index, input_type);
+      },
+      tab_index, input_type, base::Unretained(this)));
+  return builder;
+}
+
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::Screenshot(
     ElementSpecifier element,
     const std::string& screenshot_name,

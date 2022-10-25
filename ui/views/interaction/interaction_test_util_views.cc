@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/interaction_test_util_views.h"
 
+#include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -20,6 +21,7 @@
 #include "ui/views/controls/menu/menu_host_root_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -174,6 +176,61 @@ bool InteractionTestUtilSimulatorViews::DoDefaultAction(
   if (!element->IsA<TrackedElementViews>())
     return false;
   DoDefaultAction(element->AsA<TrackedElementViews>()->view(), input_type);
+  return true;
+}
+
+bool InteractionTestUtilSimulatorViews::SelectTab(
+    ui::TrackedElement* tab_collection,
+    size_t index,
+    InputType input_type) {
+  // Currently, only TabbedPane is supported, but other types of tab
+  // collections (e.g. browsers and tabstrips) may be supported by a different
+  // kind of simulator specific to browser code, so if this is not a supported
+  // View type, just return false instead of sending an error.
+  if (!tab_collection->IsA<TrackedElementViews>())
+    return false;
+  auto* const pane = views::AsViewClass<TabbedPane>(
+      tab_collection->AsA<TrackedElementViews>()->view());
+  if (!pane)
+    return false;
+
+  // Unlike with the element type, an out-of-bounds tab is always an error.
+  auto* const tab = pane->GetTabAt(index);
+  CHECK(tab);
+  switch (input_type) {
+    case ui::test::InteractionTestUtil::InputType::kDontCare:
+      SendDefaultAction(tab);
+      break;
+    case ui::test::InteractionTestUtil::InputType::kMouse:
+      SendMouseClick(tab, GetCenter(tab));
+      break;
+    case ui::test::InteractionTestUtil::InputType::kTouch:
+      SendTapGesture(tab, GetCenter(tab));
+      break;
+    case ui::test::InteractionTestUtil::InputType::kKeyboard: {
+      // Keyboard navigation is done by sending arrow keys to the currently-
+      // selected tab. Scan through the tabs by using the right arrow until the
+      // correct tab is selected; limit the number of times this is tried to
+      // avoid in infinite loop if something goes wrong.
+      const auto current_index = pane->GetSelectedTabIndex();
+      if (current_index != index) {
+        const auto code = ((current_index > index) ^ base::i18n::IsRTL())
+                              ? ui::VKEY_LEFT
+                              : ui::VKEY_RIGHT;
+        const int count =
+            std::abs(static_cast<int>(index) - static_cast<int>(current_index));
+        LOG_IF(WARNING, count > 1)
+            << "SelectTab via keyboard from " << current_index << " to "
+            << index << " will pass through intermediate tabs.";
+        for (int i = 0; i < count; ++i) {
+          auto* const current_tab = pane->GetTabAt(pane->GetSelectedTabIndex());
+          SendKeyPress(current_tab, code);
+        }
+        CHECK_EQ(index, pane->GetSelectedTabIndex());
+      }
+      break;
+    }
+  }
   return true;
 }
 

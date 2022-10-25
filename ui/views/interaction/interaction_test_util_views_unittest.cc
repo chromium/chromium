@@ -5,6 +5,7 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/test/bind.h"
@@ -22,6 +23,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -42,6 +44,9 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMenuItemIdentifier);
 const char16_t kMenuItem1[] = u"Menu item";
 const char16_t kMenuItem2[] = u"Menu item 2";
+const char16_t kTab1Title[] = u"Tab1";
+const char16_t kTab2Title[] = u"Tab2";
+const char16_t kTab3Title[] = u"Tab3";
 constexpr int kMenuID1 = 1;
 constexpr int kMenuID2 = 2;
 
@@ -65,7 +70,10 @@ class DefaultActionTestView : public View {
 
 }  // namespace
 
-class InteractionTestUtilViewsTest : public ViewsTestBase {
+class InteractionTestUtilViewsTest
+    : public ViewsTestBase,
+      public testing::WithParamInterface<
+          ui::test::InteractionTestUtil::InputType> {
  public:
   InteractionTestUtilViewsTest() = default;
   ~InteractionTestUtilViewsTest() override = default;
@@ -157,32 +165,7 @@ class InteractionTestUtilViewsTest : public ViewsTestBase {
   raw_ptr<MenuItemView> menu_item_ = nullptr;
 };
 
-TEST_F(InteractionTestUtilViewsTest, PressButton_DontCare) {
-  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
-  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
-      Button::PressedCallback(pressed.Get()), u"Button"));
-  widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->PressButton(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
-                                                                       true)));
-}
-
-TEST_F(InteractionTestUtilViewsTest, PressButton_Keyboard) {
-  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
-  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
-      Button::PressedCallback(pressed.Get()), u"Button"));
-  widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->PressButton(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
-                                                                       true),
-          ui::test::InteractionTestUtil::InputType::kKeyboard));
-}
-
-TEST_F(InteractionTestUtilViewsTest, PressButton_Mouse) {
+TEST_P(InteractionTestUtilViewsTest, PressButton) {
   UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
   // Add a spacer view to make sure we're actually trying to send events in the
   // appropriate coordinate space.
@@ -196,38 +179,10 @@ TEST_F(InteractionTestUtilViewsTest, PressButton_Mouse) {
       test_util_->PressButton(
           views::ElementTrackerViews::GetInstance()->GetElementForView(button,
                                                                        true),
-          ui::test::InteractionTestUtil::InputType::kMouse));
+          GetParam()));
 }
 
-TEST_F(InteractionTestUtilViewsTest, PressButton_Touch) {
-  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
-  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
-      Button::PressedCallback(pressed.Get()), u"Button"));
-  widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->PressButton(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
-                                                                       true),
-          ui::test::InteractionTestUtil::InputType::kTouch));
-}
-
-TEST_F(InteractionTestUtilViewsTest, SelectMenuItem_DontCare) {
-  ShowMenu();
-  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, pressed);
-  auto subscription =
-      ui::ElementTracker::GetElementTracker()->AddElementActivatedCallback(
-          kMenuItemIdentifier,
-          ElementTrackerViews::GetContextForWidget(widget_.get()),
-          pressed.Get());
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->SelectMenuItem(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(
-              menu_item_)));
-}
-
-TEST_F(InteractionTestUtilViewsTest, SelectMenuItem_Keyboard) {
+TEST_P(InteractionTestUtilViewsTest, SelectMenuItem) {
   ShowMenu();
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, pressed);
   auto subscription =
@@ -240,97 +195,78 @@ TEST_F(InteractionTestUtilViewsTest, SelectMenuItem_Keyboard) {
       test_util_->SelectMenuItem(
           views::ElementTrackerViews::GetInstance()->GetElementForView(
               menu_item_),
-          ui::test::InteractionTestUtil::InputType::kKeyboard));
+          GetParam()));
 }
 
-TEST_F(InteractionTestUtilViewsTest, SelectMenuItem_Mouse) {
-  ShowMenu();
-  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, pressed);
-  auto subscription =
-      ui::ElementTracker::GetElementTracker()->AddElementActivatedCallback(
-          kMenuItemIdentifier,
-          ElementTrackerViews::GetContextForWidget(widget_.get()),
-          pressed.Get());
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->SelectMenuItem(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(
-              menu_item_),
-          ui::test::InteractionTestUtil::InputType::kMouse));
+TEST_P(InteractionTestUtilViewsTest, DoDefault) {
+  if (GetParam() == ui::test::InteractionTestUtil::InputType::kDontCare) {
+    // Unfortunately, buttons don't respond to AX events the same way, so use a
+    // custom view for this one case.
+    auto* const view =
+        contents_->AddChildView(std::make_unique<DefaultActionTestView>());
+    widget_->LayoutRootViewIfNecessary();
+    test_util_->DoDefaultAction(
+        views::ElementTrackerViews::GetInstance()->GetElementForView(view,
+                                                                     true));
+    EXPECT_TRUE(view->activated());
+
+  } else {
+    // A button can be used for this because we are simulating a usual event
+    // type, which buttons respond to.
+    UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
+    // Add a spacer view to make sure we're actually trying to send events in
+    // the appropriate coordinate space.
+    contents_->AddChildView(
+        std::make_unique<LabelButton>(Button::PressedCallback(), u"Spacer"));
+    auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
+        Button::PressedCallback(pressed.Get()), u"Button"));
+    widget_->LayoutRootViewIfNecessary();
+    EXPECT_CALL_IN_SCOPE(
+        pressed, Run,
+        test_util_->DoDefaultAction(
+            views::ElementTrackerViews::GetInstance()->GetElementForView(button,
+                                                                         true),
+            GetParam()));
+  }
 }
 
-TEST_F(InteractionTestUtilViewsTest, SelectMenuItem_Touch) {
-  ShowMenu();
-  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, pressed);
-  auto subscription =
-      ui::ElementTracker::GetElementTracker()->AddElementActivatedCallback(
-          kMenuItemIdentifier,
-          ElementTrackerViews::GetContextForWidget(widget_.get()),
-          pressed.Get());
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->SelectMenuItem(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(
-              menu_item_),
-          ui::test::InteractionTestUtil::InputType::kTouch));
+TEST_P(InteractionTestUtilViewsTest, SelectTab) {
+  auto* const pane = contents_->AddChildView(std::make_unique<TabbedPane>());
+  pane->AddTab(kTab1Title, std::make_unique<LabelButton>(
+                               Button::PressedCallback(), u"Button"));
+  pane->AddTab(kTab2Title, std::make_unique<LabelButton>(
+                               Button::PressedCallback(), u"Button"));
+  pane->AddTab(kTab3Title, std::make_unique<LabelButton>(
+                               Button::PressedCallback(), u"Button"));
+  auto* const pane_el =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(pane, true);
+  test_util_->SelectTab(pane_el, 2, GetParam());
+  EXPECT_EQ(2U, pane->GetSelectedTabIndex());
+  test_util_->SelectTab(pane_el, 0, GetParam());
+  EXPECT_EQ(0U, pane->GetSelectedTabIndex());
+  test_util_->SelectTab(pane_el, 1, GetParam());
+  EXPECT_EQ(1U, pane->GetSelectedTabIndex());
 }
 
-TEST_F(InteractionTestUtilViewsTest, DoDefault_DontCare) {
-  auto* const view =
-      contents_->AddChildView(std::make_unique<DefaultActionTestView>());
-  widget_->LayoutRootViewIfNecessary();
-  test_util_->DoDefaultAction(
-      views::ElementTrackerViews::GetInstance()->GetElementForView(view, true));
-  EXPECT_TRUE(view->activated());
-}
-
-TEST_F(InteractionTestUtilViewsTest, DoDefault_Keyboard) {
-  // A button can be used for this because we are simulating keyboard select,
-  // which buttons respond to.
-  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
-  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
-      Button::PressedCallback(pressed.Get()), u"Button"));
-  widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->DoDefaultAction(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
-                                                                       true),
-          ui::test::InteractionTestUtil::InputType::kKeyboard));
-}
-
-TEST_F(InteractionTestUtilViewsTest, DoDefault_Mouse) {
-  // A button can be used for this because we are simulating mouse select,
-  // which buttons respond to.
-  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
-  // Add a spacer view to make sure we're actually trying to send events in the
-  // appropriate coordinate space.
-  contents_->AddChildView(
-      std::make_unique<LabelButton>(Button::PressedCallback(), u"Spacer"));
-  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
-      Button::PressedCallback(pressed.Get()), u"Button"));
-  widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->DoDefaultAction(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
-                                                                       true),
-          ui::test::InteractionTestUtil::InputType::kMouse));
-}
-
-TEST_F(InteractionTestUtilViewsTest, DoDefault_Touch) {
-  // A button can be used for this because we are simulating touch select,
-  // which buttons respond to.
-  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
-  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
-      Button::PressedCallback(pressed.Get()), u"Button"));
-  widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL_IN_SCOPE(
-      pressed, Run,
-      test_util_->DoDefaultAction(
-          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
-                                                                       true),
-          ui::test::InteractionTestUtil::InputType::kTouch));
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    InteractionTestUtilViewsTest,
+    ::testing::Values(ui::test::InteractionTestUtil::InputType::kDontCare,
+                      ui::test::InteractionTestUtil::InputType::kMouse,
+                      ui::test::InteractionTestUtil::InputType::kKeyboard,
+                      ui::test::InteractionTestUtil::InputType::kTouch),
+    [](testing::TestParamInfo<ui::test::InteractionTestUtil::InputType>
+           input_type) -> std::string {
+      switch (input_type.param) {
+        case ui::test::InteractionTestUtil::InputType::kDontCare:
+          return "DontCare";
+        case ui::test::InteractionTestUtil::InputType::kMouse:
+          return "Mouse";
+        case ui::test::InteractionTestUtil::InputType::kKeyboard:
+          return "Keyboard";
+        case ui::test::InteractionTestUtil::InputType::kTouch:
+          return "Touch";
+      }
+    });
 
 }  // namespace views::test

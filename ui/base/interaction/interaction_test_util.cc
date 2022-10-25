@@ -20,6 +20,12 @@ bool InteractionTestUtil::Simulator::DoDefaultAction(TrackedElement*,
   return false;
 }
 
+bool InteractionTestUtil::Simulator::SelectTab(TrackedElement*,
+                                               size_t,
+                                               InputType) {
+  return false;
+}
+
 InteractionTestUtil::InteractionTestUtil() = default;
 InteractionTestUtil::~InteractionTestUtil() = default;
 
@@ -51,6 +57,19 @@ void InteractionTestUtil::DoDefaultAction(TrackedElement* element,
                                           InputType input_type) {
   for (const auto& simulator : simulators_) {
     if (simulator->DoDefaultAction(element, input_type))
+      return;
+  }
+
+  // If a test has requested an invalid operation on an element, then this is
+  // an error.
+  NOTREACHED();
+}
+
+void InteractionTestUtil::SelectTab(TrackedElement* tab_collection,
+                                    size_t index,
+                                    InputType input_type) {
+  for (const auto& simulator : simulators_) {
+    if (simulator->SelectTab(tab_collection, index, input_type))
       return;
   }
 

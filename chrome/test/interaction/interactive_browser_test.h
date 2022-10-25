@@ -148,6 +148,10 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   [[nodiscard]] StepBuilder DoDefaultAction(
       ElementSpecifier element,
       InputType input_type = InputType::kDontCare);
+  [[nodiscard]] StepBuilder SelectTab(
+      ElementSpecifier tab_collection,
+      size_t tab_index,
+      InputType input_type = InputType::kDontCare);
   [[nodiscard]] StepBuilder Screenshot(ElementSpecifier element,
                                        const std::string& screenshot_name,
                                        const std::string& baseline);

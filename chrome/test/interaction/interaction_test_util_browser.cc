@@ -11,12 +11,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/interaction/interaction_test_util_mac.h"
@@ -66,6 +70,46 @@ class PixelTestUi : public TestBrowserUi {
 
 #endif  // SUPPORTS_PIXEL_TESTS
 
+// Special handler for browsers and browser tab strips that enables SelectTab().
+class InteractionTestUtilSimulatorBrowser
+    : public ui::test::InteractionTestUtil::Simulator {
+ public:
+  InteractionTestUtilSimulatorBrowser() = default;
+  ~InteractionTestUtilSimulatorBrowser() override = default;
+
+  bool SelectTab(ui::TrackedElement* tab_collection,
+                 size_t index,
+                 InputType input_type) override {
+    // This handler *explicitly* only handles Browser and TabStrip; it will
+    // reject any other element or View type.
+    if (!tab_collection->IsA<views::TrackedElementViews>())
+      return false;
+    auto* const view =
+        tab_collection->AsA<views::TrackedElementViews>()->view();
+    TabStrip* tab_strip = nullptr;
+    if (auto* const browser_view = views::AsViewClass<BrowserView>(view)) {
+      tab_strip = browser_view->tabstrip();
+    } else {
+      tab_strip = views::AsViewClass<TabStrip>(view);
+    }
+    if (!tab_strip)
+      return false;
+
+    // Verify that the tab index is in range; at this point it's a fatal error
+    // if it's out of bounds.
+    CHECK_LT(static_cast<int>(index), tab_strip->GetTabCount())
+        << "Tab strip tab index " << index << " is out of bounds.";
+
+    // Tabs can be selected using a default action; no special input logic is
+    // needed.
+    Tab* const tab = tab_strip->tab_at(index);
+    views::test::InteractionTestUtilSimulatorViews::DoDefaultAction(tab,
+                                                                    input_type);
+    CHECK_EQ(static_cast<int>(index), tab_strip->GetActiveIndex());
+    return true;
+  }
+};
+
 }  // namespace
 
 InteractionTestUtilBrowser::InteractionTestUtilBrowser() {
@@ -74,6 +118,7 @@ InteractionTestUtilBrowser::InteractionTestUtilBrowser() {
 #if BUILDFLAG(IS_MAC)
   AddSimulator(std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
 #endif
+  AddSimulator(std::make_unique<InteractionTestUtilSimulatorBrowser>());
 }
 
 InteractionTestUtilBrowser::~InteractionTestUtilBrowser() = default;
