@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.CardifiedStateAnimation.AnimationSmoothness{EnterOrExitCardifiedState}"
-    units="%" expires_after="2022-12-02">
+    units="%" expires_after="2023-10-25">
   <owner>anasalazar@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>

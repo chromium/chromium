@@ -2385,7 +2385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.HotseatTransition.Drag.PresentationTime.MaxLatency"
-    units="ms" expires_after="2022-11-10">
+    units="ms" expires_after="2023-10-25">
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
