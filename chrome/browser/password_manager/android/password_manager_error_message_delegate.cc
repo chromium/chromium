@@ -25,6 +25,14 @@ PasswordManagerErrorMessageDelegate::PasswordManagerErrorMessageDelegate(
 PasswordManagerErrorMessageDelegate::~PasswordManagerErrorMessageDelegate() =
     default;
 
+void PasswordManagerErrorMessageDelegate::DismissPasswordManagerErrorMessage(
+    messages::DismissReason dismiss_reason) {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
+                                                             dismiss_reason);
+  }
+}
+
 void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     content::WebContents* web_contents,
     PrefService* pref_service,
@@ -50,15 +58,6 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
       messages::MessagePriority::kUrgent);
   helper_bridge_->SaveErrorUIShownTimestamp();
   dismissal_callback_ = std::move(dismissal_callback);
-}
-
-void PasswordManagerErrorMessageDelegate::DismissPasswordManagerErrorMessage(
-    messages::DismissReason dismiss_reason) {
-  if (message_ != nullptr) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
-                                                             dismiss_reason);
-    std::move(dismissal_callback_).Run();
-  }
 }
 
 void PasswordManagerErrorMessageDelegate::CreateMessage(
@@ -103,13 +102,13 @@ void PasswordManagerErrorMessageDelegate::CreateMessage(
 void PasswordManagerErrorMessageDelegate::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
   RecordDismissalReasonMetrics(dismiss_reason);
+  std::move(dismissal_callback_).Run();
   message_.reset();
 }
 
 void PasswordManagerErrorMessageDelegate::HandleSignInButtonClicked(
     content::WebContents* web_contents) {
   helper_bridge_->StartUpdateAccountCredentialsFlow(web_contents);
-  DismissPasswordManagerErrorMessage(messages::DismissReason::PRIMARY_ACTION);
 }
 
 void PasswordManagerErrorMessageDelegate::RecordDismissalReasonMetrics(
