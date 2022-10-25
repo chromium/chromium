@@ -401,7 +401,10 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
   // TODO(crbug.com/1310312): The public key will likely be hardcoded, although
   //  perhaps configurable via a command line switch for testing.
   cryptohome::AuthFactorInput input(
-      cryptohome::AuthFactorInput::RecoveryCreation{"STUB MEDIATOR PUB KEY"});
+      cryptohome::AuthFactorInput::RecoveryCreation{
+          .pub_key = "STUB MEDIATOR PUB KEY",
+          .user_gaia_id = context->GetGaiaID(),
+          .device_user_id = context->GetDeviceId()});
 
   cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());

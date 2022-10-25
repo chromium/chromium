@@ -29,6 +29,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
 
   struct RecoveryCreation {
     std::string pub_key;
+    std::string user_gaia_id;
+    std::string device_user_id;
   };
 
   struct RecoveryAuthentication {
