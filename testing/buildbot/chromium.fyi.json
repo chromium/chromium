@@ -17579,7 +17579,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "merge": {
           "args": [
@@ -17595,19 +17595,23 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "e2-standard-8",
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
             }
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },
@@ -17631,7 +17635,7 @@
           "--gtest_filter=ChromeTracingDelegateBrowserTest.*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "merge": {
           "args": [
@@ -17647,19 +17651,23 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "e2-standard-8",
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
             }
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },
@@ -17682,7 +17690,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "merge": {
           "args": [
@@ -17698,19 +17706,23 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "e2-standard-8",
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
             }
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },
@@ -17734,7 +17746,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "merge": {
           "args": [
@@ -17750,19 +17762,23 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "e2-standard-8",
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
             }
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },
@@ -17785,7 +17801,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "merge": {
           "args": [
@@ -17801,19 +17817,23 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "e2-standard-8",
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
             }
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },

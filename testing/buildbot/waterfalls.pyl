@@ -3029,7 +3029,8 @@
       'android-perfetto-rel': {
         'additional_compile_targets': [ 'chrome' ],
         'mixins': [
-          'pie-x86-emulator',
+          '12-x64-emulator',
+          'emulator-8-cores',
           'linux-bionic',
           'x86-64',
         ],
