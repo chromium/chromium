@@ -58403,8 +58403,6 @@ from previous Chrome versions.
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:disabled"/>
   <int value="-1328090640" label="DesktopPWAsAppHomePage:enabled"/>
   <int value="-1327676774" label="disable-accelerated-mjpeg-decode"/>
-  <int value="-1327420671"
-      label="AccessibilitySelectToSpeakPrefsMigration:disabled"/>
   <int value="-1326671705" label="TrustTokens:enabled"/>
   <int value="-1326463296" label="SSLCommittedInterstitials:disabled"/>
   <int value="-1325887476" label="NewPrintPreview:enabled"/>
@@ -61360,8 +61358,6 @@ from previous Chrome versions.
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>
-  <int value="445659087"
-      label="AccessibilitySelectToSpeakPrefsMigration:enabled"/>
   <int value="446316019" label="enable-threaded-compositing"/>
   <int value="448463569" label="NewShortcutMapping:disabled"/>
   <int value="451196246" label="disable-impl-side-painting"/>

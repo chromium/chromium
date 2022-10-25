@@ -208,15 +208,6 @@ bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
       ::features::kAccessibilitySelectToSpeakPageMigration);
 }
 
-BASE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration,
-             "AccessibilitySelectToSpeakPrefsMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilitySelectToSpeakPrefsMigration);
-}
-
 BASE_FEATURE(kAccessibilitySelectToSpeakHoverTextImprovements,
              "AccessibilitySelectToSpeakHoverTextImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);

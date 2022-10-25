@@ -1011,12 +1011,6 @@ const char kExperimentalAccessibilityColorEnhancementSettingsDescription[] =
     "This option enables the experimental Accessibility color enhancement "
     "settings found in the OS Accessibility settings.";
 
-const char kAccessibilitySelectToSpeakPrefsMigrationName[] =
-    "Select-to-Speak Prefs Migration";
-const char kAccessibilitySelectToSpeakPrefsMigrationDescription[] =
-    "This option enables Select-to-Speak prefs migration from extension local "
-    "storage to Chrome prefs.";
-
 const char kAccessibilitySelectToSpeakPageMigrationName[] =
     "Select-to-Speak Page Migration";
 const char kAccessibilitySelectToSpeakPageMigrationDescription[] =

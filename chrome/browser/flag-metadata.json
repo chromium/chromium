@@ -1675,11 +1675,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-accessibility-select-to-speak-prefs-migration",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-accessibility-service",
     "owners": [ "katie", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120
