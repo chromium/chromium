@@ -1662,9 +1662,11 @@ AX_TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+// TODO(accessibility): flaky; https://crbug.com/1342870.
+AX_TEST_F(
+    'ChromeVoxEditingTest', 'DISABLED_MoveByWordSuggestions', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <div contenteditable="true" role="textbox">
       <p>Start</p>
       <span>I </span>
@@ -1674,29 +1676,29 @@ AX_TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', async function() {
       <p>End</p>
     </div>
   `;
-  const root = await this.runWithLoadedTree(site);
-  await this.focusFirstTextField(root);
+      const root = await this.runWithLoadedTree(site);
+      await this.focusFirstTextField(root);
 
-  mockFeedback.call(this.press(KeyCode.DOWN))
-      .expectSpeech('I ')
-      // Move forward through line.
-      .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-      .expectSpeech('I')
-      .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-      .expectSpeech('Suggest', 'Username', 'Insert', 'was', 'Insert end')
-      .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-      .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end')
-      // Move backward through line.
-      .call(this.press(KeyCode.LEFT, {ctrl: true}))
-      .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end')
-      .call(this.press(KeyCode.LEFT, {ctrl: true}))
-      .expectSpeech('Suggest', 'Username', 'Insert', 'was')
-      .call(this.press(KeyCode.LEFT, {ctrl: true}))
-      .expectSpeech('I')
-      .call(this.press(KeyCode.DOWN))
-      .expectSpeech('End');
-  await mockFeedback.replay();
-});
+      mockFeedback.call(this.press(KeyCode.DOWN))
+          .expectSpeech('I ')
+          // Move forward through line.
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech('I')
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech('Suggest', 'Username', 'Insert', 'was', 'Insert end')
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end')
+          // Move backward through line.
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end')
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech('Suggest', 'Username', 'Insert', 'was')
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech('I')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('End');
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F(
     'ChromeVoxEditingTest', 'MoveByWordSuggestionsNoIntents', async function() {
