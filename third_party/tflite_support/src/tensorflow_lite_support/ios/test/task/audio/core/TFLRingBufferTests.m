@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
   float expectedData[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
 
   for (int i = 0; i < inDataLength; i++) {
-    XCTAssertEqual(outBuffer.data[i], inData[i]);
+    XCTAssertEqual(outBuffer.data[i], expectedData[i]);
   }
 }
 
@@ -250,7 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
                                      size:initialDataSize
                                     error:nil]);
 
-  NSInteger totalInSize = 4;
   float inArray[] = {6.0f, 7.0f, 8.0f, 9.0f};
 
   NSInteger offset = 2;

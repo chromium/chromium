@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
   float expectedData[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
 
   for (int i = 0; i < sampleCount; i++) {
-    XCTAssertEqual(outBuffer.data[i], inData[i]);
+    XCTAssertEqual(outBuffer.data[i], expectedData[i]);
   }
 }
 

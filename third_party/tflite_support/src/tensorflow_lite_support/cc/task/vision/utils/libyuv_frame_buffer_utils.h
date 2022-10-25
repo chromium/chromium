@@ -48,9 +48,15 @@ class LibyuvFrameBufferUtils : public FrameBufferUtilsInterface {
                     int y1,
                     FrameBuffer* output_buffer) override;
 
-  // Resizes `buffer` to the size of the given `output_buffer`.
+  // Resizes `buffer` to the size of the given `output_buffer` using bilinear
+  // interpolation.
   absl::Status Resize(const FrameBuffer& buffer,
                       FrameBuffer* output_buffer) override;
+
+  // Resizes `buffer` to the size of the given `output_buffer` using
+  // nearest-neighbor interpolation.
+  absl::Status ResizeNearestNeighbor(const FrameBuffer& buffer,
+                                     FrameBuffer* output_buffer) override;
 
   // Rotates `buffer` counter-clockwise by the given `angle_deg` (in degrees).
   //

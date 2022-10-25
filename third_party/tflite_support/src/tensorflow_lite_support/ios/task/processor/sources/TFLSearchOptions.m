@@ -22,6 +22,7 @@
     // maxResults will be 0 at the time of initialization. Setting it to 5 since
     // max_results defaults to 5 in search_options.proto.
     _maxResults = 5;
+    _indexFile = [[TFLExternalFile alloc] init];
   }
   return self;
 }

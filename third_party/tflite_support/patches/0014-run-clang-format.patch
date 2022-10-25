@@ -1,7 +1,7 @@
-From 64fda4f0a2700aeed5ef3b8e273f28c24f84b805 Mon Sep 17 00:00:00 2001
-From: Clark DuVall <cduvall@chromium.org>
-Date: Wed, 21 Sep 2022 10:44:20 -0700
-Subject: [PATCH 09/12] run clang format
+From 0ad1dc1dc8793745d9da9bb4a85d82da70305c4e Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 24 Oct 2022 14:20:17 -0700
+Subject: [PATCH 14/14] run clang-format
 
 ---
  .../configuration/edgetpu_coral_plugin.cc     |   20 +-
@@ -62,12 +62,14 @@ Subject: [PATCH 09/12] run clang format
  .../cc/task/processor/bert_preprocessor.cc    |    3 +-
  .../processor/classification_postprocessor.cc |    5 +-
  .../task/processor/embedding_postprocessor.h  |   10 +-
+ .../cc/task/processor/embedding_searcher.cc   |   33 +-
+ .../cc/task/processor/embedding_searcher.h    |   28 +-
  .../cc/task/processor/image_preprocessor.cc   |    6 +-
  .../cc/task/processor/processor.h             |    5 +-
  .../cc/task/processor/regex_preprocessor.cc   |    3 +-
  .../cc/task/processor/regex_preprocessor.h    |    3 +-
- .../cc/task/processor/search_postprocessor.cc |   40 +-
- .../cc/task/processor/search_postprocessor.h  |   37 +-
+ .../cc/task/processor/search_postprocessor.cc |    7 +-
+ .../cc/task/processor/search_postprocessor.h  |    3 +-
  .../cc/task/text/bert_clu_annotator.cc        |    4 +-
  .../cc/task/text/bert_nl_classifier.cc        |    3 +-
  .../cc/task/text/bert_nl_classifier.h         |    2 +-
@@ -113,16 +115,17 @@ Subject: [PATCH 09/12] run clang format
  .../vision/proto/image_searcher_options.proto |    2 -
  .../vision/utils/frame_buffer_common_utils.cc |   59 +-
  .../vision/utils/frame_buffer_common_utils.h  |   37 +-
- .../task/vision/utils/frame_buffer_utils.cc   |   50 +-
+ .../task/vision/utils/frame_buffer_utils.cc   |   53 +-
  .../cc/task/vision/utils/frame_buffer_utils.h |   40 +-
  .../utils/frame_buffer_utils_interface.h      |   11 +-
  .../cc/task/vision/utils/image_utils.cc       |   15 +-
  .../cc/task/vision/utils/image_utils.h        |    7 +-
- .../vision/utils/libyuv_frame_buffer_utils.cc |   81 +-
+ .../vision/utils/libyuv_frame_buffer_utils.cc |  101 +-
  .../vision/utils/libyuv_frame_buffer_utils.h  |    9 +-
  .../cc/task/vision/utils/score_calibration.cc |    8 +-
  .../cc/task/vision/utils/score_calibration.h  |   11 +-
  .../cc/test/common_test.cc                    |    2 +-
+ .../task/processor/embedding_searcher_test.cc |   46 +-
  .../task/processor/image_preprocessor_test.cc |   13 +-
  .../test/task/text/bert_clu_annotator_test.cc |   25 +-
  .../test/task/text/bert_nl_classifier_test.cc |   36 +-
@@ -180,8 +183,6 @@ Subject: [PATCH 09/12] run clang format
  .../sentencepiece_detokenizer_tflite.cc       |    3 +-
  .../sentencepiece_tokenizer_op.cc             |    6 +-
  .../sentencepiece_tokenizer_tflite.cc         |    7 +-
- .../custom_ops/kernel/whitespace_tokenizer.cc |   13 +-
- .../whitespace_tokenizer_op_resolver.cc       |    2 +-
  .../audio/desktop/audio_classifier_demo.cc    |   16 +-
  .../audio/desktop/audio_classifier_lib.cc     |   12 +-
  .../task/audio/desktop/audio_classifier_lib.h |    3 +-
@@ -246,6 +247,10 @@ Subject: [PATCH 09/12] run clang format
  .../sources/TFLSearchOptions+Helpers.mm       |    6 +-
  .../task/processor/sources/TFLSearchOptions.h |    8 +-
  .../task/processor/sources/TFLSearchOptions.m |    8 +-
+ .../sources/TFLSearchResult+Helpers.h         |   20 +-
+ .../sources/TFLSearchResult+Helpers.mm        |   23 +-
+ .../task/processor/sources/TFLSearchResult.h  |   25 +-
+ .../task/processor/sources/TFLSearchResult.m  |   16 +-
  .../sources/TFLSegmentationResult+Helpers.h   |    4 +-
  .../sources/TFLSegmentationResult+Helpers.m   |   44 +-
  .../processor/sources/TFLSegmentationResult.h |   65 +-
@@ -255,20 +260,25 @@ Subject: [PATCH 09/12] run clang format
  .../text/qa/Sources/TFLBertQuestionAnswerer.h |    4 +-
  .../task/vision/sources/TFLImageClassifier.h  |   90 +-
  .../task/vision/sources/TFLImageClassifier.m  |   58 +-
+ .../task/vision/sources/TFLImageSearcher.h    |  105 +-
+ .../task/vision/sources/TFLImageSearcher.mm   |   52 +-
  .../task/vision/sources/TFLImageSegmenter.h   |   62 +-
  .../task/vision/sources/TFLImageSegmenter.m   |   49 +-
  .../task/vision/sources/TFLObjectDetector.h   |   64 +-
  .../task/vision/sources/TFLObjectDetector.m   |   54 +-
- .../vision/utils/sources/GMLImage+Utils.h     |    8 +-
- .../vision/utils/sources/GMLImage+Utils.m     |  225 +-
+ .../vision/utils/sources/GMLImage+CppUtils.h  |    2 +-
+ .../vision/utils/sources/GMLImage+CppUtils.mm |   10 +-
+ .../vision/utils/sources/GMLImage+Utils.h     |   10 +-
+ .../vision/utils/sources/GMLImage+Utils.m     |  190 +-
  .../TFLAudioClassifierTests.m                 |  351 ++--
  .../test/task/audio/core/TFLRingBufferTests.m |   53 +-
- .../core/audio_record/TFLAudioRecordTests.m   |  297 +--
+ .../core/audio_record/TFLAudioRecordTests.m   |  295 +--
  .../utils/sources/AVAudioPCMBuffer+Utils.h    |   15 +-
  .../utils/sources/AVAudioPCMBuffer+Utils.m    |   82 +-
  .../core/audio_tensor/TFLAudioTensorTests.m   |  236 ++-
  .../TFLImageClassifierCoreMLDelegateTest.mm   |   31 +-
- .../TFLImageClassifierTests.m                 |   28 +-
+ .../TFLImageClassifierTests.m                 |   31 +-
+ .../image_searcher/TFLImageSearcherTests.m    |  185 +-
  .../image_segmenter/TFLImageSegmenterTests.m  |   64 +-
  .../object_detector/TFLObjectDetectorTests.m  |   36 +-
  .../tokenizers/Sources/TFLBertTokenizer.h     |    6 +-
@@ -462,7 +472,7 @@ Subject: [PATCH 09/12] run clang format
  .../leveldb_testing_utils_py_wrapper.cc       |   14 +-
  .../src/third_party/fft2d/fft.h               |   12 +-
  .../src/third_party/fft2d/fft2d.h             |   12 +-
- 458 files changed, 20455 insertions(+), 19519 deletions(-)
+ 468 files changed, 20717 insertions(+), 19711 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc
 index 9f27f3baae82f..6a16d12856258 100644
@@ -2142,7 +2152,7 @@ index 80dea95cce24b..a626ce6030b96 100644
  }  // namespace core
  }  // namespace task
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-index 04fbbd3d00bc0..7aed2f10ed87a 100644
+index de1b662910c01..d124e7301290f 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
 @@ -24,9 +24,9 @@ limitations under the License.
@@ -2170,8 +2180,8 @@ index 04fbbd3d00bc0..7aed2f10ed87a 100644
  
  namespace tflite {
  namespace task {
-@@ -85,10 +85,9 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
- absl::Status ExternalFileHandler::MapExternalFile() {
+@@ -86,10 +86,9 @@ absl::Status ExternalFileHandler::MapExternalFile() {
+   }
  // TODO(b/195588083): Add Windows support
  #ifdef _WIN32
 -  return CreateStatusWithPayload(
@@ -2182,10 +2192,10 @@ index 04fbbd3d00bc0..7aed2f10ed87a 100644
 +                                 "File loading is not yet supported on Windows",
 +                                 TfLiteSupportStatus::kFileReadError);
  #else
-   if (!external_file_.file_content().empty()) {
-     return absl::OkStatus();
+   if (external_file_.file_name().empty() &&
+       !external_file_.has_file_descriptor_meta()) {
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
-index e8b6831c6ad69..0b74e468d004f 100644
+index 2435ad3ac9e02..3dbb91909df4e 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
 @@ -18,7 +18,7 @@ limitations under the License.
@@ -2600,6 +2610,151 @@ index 7863e3aa82fb7..f04048d84b4ce 100644
    if (u.has_value_string() && v.has_value_string()) {
      if (u.value_string().size() != v.value_string().size()) {
        return CreateStatusWithPayload(
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.cc
+index 274d6ae8658b5..fc224d42c4d09 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.cc
+@@ -22,16 +22,11 @@ limitations under the License.
+ #include <memory>
+ #include <vector>
+ 
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
+-#include "absl/memory/memory.h"  // from @com_google_absl
+-#include "absl/status/status.h"  // from @com_google_absl
+-#include "absl/strings/str_format.h"  // from @com_google_absl
++#include "absl/memory/memory.h"        // from @com_google_absl
++#include "absl/status/status.h"        // from @com_google_absl
++#include "absl/strings/str_format.h"   // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "absl/types/span.h"  // from @com_google_absl
++#include "absl/types/span.h"           // from @com_google_absl
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+@@ -39,6 +34,11 @@ limitations under the License.
+ #include "tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
+ #include "tensorflow_lite_support/cc/task/processor/proto/search_options.pb.h"
+ #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
+ #include "tensorflow_lite_support/scann_ondevice/cc/index.h"
+ #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
+ 
+@@ -50,14 +50,14 @@ namespace {
+ 
+ constexpr int kNoNeighborId = -1;
+ 
++using ::tflite::scann_ondevice::Index;
++using ::tflite::scann_ondevice::IndexConfig;
+ using ::tflite::scann_ondevice::core::AsymmetricHashFindNeighbors;
+ using ::tflite::scann_ondevice::core::DistanceMeasure;
+ using ::tflite::scann_ondevice::core::FloatFindNeighbors;
+ using ::tflite::scann_ondevice::core::QueryInfo;
+ using ::tflite::scann_ondevice::core::ScannOnDeviceConfig;
+ using ::tflite::scann_ondevice::core::TopN;
+-using ::tflite::scann_ondevice::Index;
+-using ::tflite::scann_ondevice::IndexConfig;
+ using ::tflite::support::CreateStatusWithPayload;
+ using ::tflite::support::StatusOr;
+ using ::tflite::support::TfLiteSupportStatus;
+@@ -176,9 +176,8 @@ StatusOr<std::unique_ptr<EmbeddingSearcher>> EmbeddingSearcher::Create(
+     std::optional<absl::string_view> optional_index_file_content) {
+   auto embedding_searcher = std::make_unique<EmbeddingSearcher>();
+ 
+-  RETURN_IF_ERROR(
+-      embedding_searcher->Init(
+-          std::move(search_options), optional_index_file_content));
++  RETURN_IF_ERROR(embedding_searcher->Init(std::move(search_options),
++                                           optional_index_file_content));
+   return embedding_searcher;
+ }
+ 
+@@ -270,7 +269,8 @@ absl::Status EmbeddingSearcher::Init(
+             index_config_.scann_config().partitioner().search_fraction())),
+         partitioner_->NumPartitions());
+   } else {
+-    partitioner_ = absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
++    partitioner_ =
++        absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
+     num_leaves_to_search_ = partitioner_->NumPartitions();
+   }
+ 
+@@ -284,7 +284,8 @@ absl::Status EmbeddingSearcher::Init(
+ }
+ 
+ absl::Status EmbeddingSearcher::QuantizedSearch(
+-    Eigen::Ref<Eigen::MatrixXf> query, std::vector<int> leaves_to_search,
++    Eigen::Ref<Eigen::MatrixXf> query,
++    std::vector<int> leaves_to_search,
+     absl::Span<TopN> top_n) {
+   int dim = index_config_.embedding_dim();
+   // Prepare QueryInfo used for all leaves.
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.h
+index de81807ed2c10..7a2e89827311f 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/embedding_searcher.h
+@@ -22,16 +22,16 @@ limitations under the License.
+ #include <optional>
+ #include <vector>
+ 
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
+-#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "absl/types/span.h"  // from @com_google_absl
++#include "absl/types/span.h"           // from @com_google_absl
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+ #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
+ #include "tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
+ #include "tensorflow_lite_support/cc/task/processor/proto/search_options.pb.h"
+ #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
++#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
+ #include "tensorflow_lite_support/scann_ondevice/cc/index.h"
+ #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
+ 
+@@ -72,12 +72,14 @@ class EmbeddingSearcher {
+       std::unique_ptr<SearchOptions> options,
+       std::optional<absl::string_view> optional_index_file_content);
+ 
+-  absl::Status QuantizedSearch(Eigen::Ref<Eigen::MatrixXf> query,
+-                               std::vector<int> leaves_to_search,
+-                               absl::Span<tflite::scann_ondevice::core::TopN> top_n);
+-  absl::Status LinearSearch(Eigen::Ref<Eigen::MatrixXf> query,
+-                            std::vector<int> leaves_to_search,
+-                            absl::Span<tflite::scann_ondevice::core::TopN> top_n);
++  absl::Status QuantizedSearch(
++      Eigen::Ref<Eigen::MatrixXf> query,
++      std::vector<int> leaves_to_search,
++      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
++  absl::Status LinearSearch(
++      Eigen::Ref<Eigen::MatrixXf> query,
++      std::vector<int> leaves_to_search,
++      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
+ 
+   std::unique_ptr<SearchOptions> options_;
+ 
+@@ -89,8 +91,10 @@ class EmbeddingSearcher {
+   // ScaNN management.
+   int num_leaves_to_search_;
+   tflite::scann_ondevice::core::DistanceMeasure distance_measure_;
+-  std::unique_ptr<tflite::scann_ondevice::core::PartitionerInterface> partitioner_;
+-  std::shared_ptr<tflite::scann_ondevice::core::AsymmetricHashQuerier> quantizer_;
++  std::unique_ptr<tflite::scann_ondevice::core::PartitionerInterface>
++      partitioner_;
++  std::shared_ptr<tflite::scann_ondevice::core::AsymmetricHashQuerier>
++      quantizer_;
+ };
+ 
+ }  // namespace processor
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/image_preprocessor.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/image_preprocessor.cc
 index 7ad4ad4703789..310a1f5eba724 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/image_preprocessor.cc
@@ -2676,66 +2831,21 @@ index 1f92bcc18e524..bdd4e5e207a12 100644
    absl::Status Preprocess(const std::string& text);
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc
-index 730c9919cadee..a2fa1f8243199 100644
+index fb34eea170ad8..919165a1d525a 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc
-@@ -22,17 +22,12 @@ limitations under the License.
- #include <memory>
+@@ -23,8 +23,8 @@ limitations under the License.
+ #include <optional>
  #include <vector>
  
--#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
--#include "absl/memory/memory.h"  // from @com_google_absl
 -#include "absl/status/status.h"  // from @com_google_absl
 -#include "absl/strings/str_format.h"  // from @com_google_absl
-+#include "Eigen/Core"                  // from @eigen
-+#include "absl/memory/memory.h"        // from @com_google_absl
 +#include "absl/status/status.h"        // from @com_google_absl
 +#include "absl/strings/str_format.h"   // from @com_google_absl
  #include "absl/strings/string_view.h"  // from @com_google_absl
--#include "absl/types/span.h"  // from @com_google_absl
--#include "Eigen/Core"  // from @eigen
-+#include "absl/types/span.h"           // from @com_google_absl
  #include "tensorflow_lite_support/cc/common.h"
  #include "tensorflow_lite_support/cc/port/status_macros.h"
- #include "tensorflow_lite_support/cc/port/statusor.h"
-@@ -45,6 +40,11 @@ limitations under the License.
- #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
- #include "tensorflow_lite_support/metadata/cc/metadata_extractor.h"
- #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
- #include "tensorflow_lite_support/scann_ondevice/cc/index.h"
- #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
- 
-@@ -56,16 +56,16 @@ namespace {
- 
- constexpr int kNoNeighborId = -1;
- 
-+using ::tflite::TensorMetadata;
-+using ::tflite::metadata::ModelMetadataExtractor;
-+using ::tflite::scann_ondevice::Index;
-+using ::tflite::scann_ondevice::IndexConfig;
- using ::tflite::scann_ondevice::core::AsymmetricHashFindNeighbors;
- using ::tflite::scann_ondevice::core::DistanceMeasure;
- using ::tflite::scann_ondevice::core::FloatFindNeighbors;
- using ::tflite::scann_ondevice::core::QueryInfo;
- using ::tflite::scann_ondevice::core::ScannOnDeviceConfig;
- using ::tflite::scann_ondevice::core::TopN;
--using ::tflite::TensorMetadata;
--using ::tflite::metadata::ModelMetadataExtractor;
--using ::tflite::scann_ondevice::Index;
--using ::tflite::scann_ondevice::IndexConfig;
- using ::tflite::support::CreateStatusWithPayload;
- using ::tflite::support::StatusOr;
- using ::tflite::support::TfLiteSupportStatus;
-@@ -212,7 +212,8 @@ absl::Status ConvertEmbeddingToEigenMatrix(const Embedding& embedding,
+@@ -88,7 +88,8 @@ StatusOr<absl::string_view> GetIndexFileContentFromMetadata(
  
  /* static */
  StatusOr<std::unique_ptr<SearchPostprocessor>> SearchPostprocessor::Create(
@@ -2745,70 +2855,11 @@ index 730c9919cadee..a2fa1f8243199 100644
      std::unique_ptr<SearchOptions> search_options,
      std::unique_ptr<EmbeddingOptions> embedding_options) {
    ASSIGN_OR_RETURN(auto embedding_postprocessor,
-@@ -316,7 +317,8 @@ absl::Status SearchPostprocessor::Init(
-             index_config_.scann_config().partitioner().search_fraction())),
-         partitioner_->NumPartitions());
-   } else {
--    partitioner_ = absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
-+    partitioner_ =
-+        absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
-     num_leaves_to_search_ = partitioner_->NumPartitions();
-   }
- 
-@@ -330,7 +332,8 @@ absl::Status SearchPostprocessor::Init(
- }
- 
- absl::Status SearchPostprocessor::QuantizedSearch(
--    Eigen::Ref<Eigen::MatrixXf> query, std::vector<int> leaves_to_search,
-+    Eigen::Ref<Eigen::MatrixXf> query,
-+    std::vector<int> leaves_to_search,
-     absl::Span<TopN> top_n) {
-   int dim = index_config_.embedding_dim();
-   // Prepare QueryInfo used for all leaves.
-@@ -360,7 +363,8 @@ absl::Status SearchPostprocessor::QuantizedSearch(
- }
- 
- absl::Status SearchPostprocessor::LinearSearch(
--    Eigen::Ref<Eigen::MatrixXf> query, std::vector<int> leaves_to_search,
-+    Eigen::Ref<Eigen::MatrixXf> query,
-+    std::vector<int> leaves_to_search,
-     absl::Span<TopN> top_n) {
-   int dim = index_config_.embedding_dim();
-   for (int leaf_id : leaves_to_search) {
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.h
-index 47c78b64ba2ca..d79bc853148a9 100644
+index cdafcc996be4b..08dab6e6b510a 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.h
-@@ -21,14 +21,9 @@ limitations under the License.
- #include <memory>
- #include <vector>
- 
--#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
--#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
-+#include "Eigen/Core"                  // from @eigen
- #include "absl/strings/string_view.h"  // from @com_google_absl
--#include "absl/types/span.h"  // from @com_google_absl
--#include "Eigen/Core"  // from @eigen
-+#include "absl/types/span.h"           // from @com_google_absl
- #include "tensorflow_lite_support/cc/port/statusor.h"
- #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
- #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
-@@ -37,6 +32,11 @@ limitations under the License.
- #include "tensorflow_lite_support/cc/task/processor/proto/embedding_options.pb.h"
- #include "tensorflow_lite_support/cc/task/processor/proto/search_options.pb.h"
- #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
-+#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
- #include "tensorflow_lite_support/scann_ondevice/cc/index.h"
- #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
- 
-@@ -55,7 +55,8 @@ namespace processor {
+@@ -46,7 +46,8 @@ namespace processor {
  class SearchPostprocessor : public Postprocessor {
   public:
    static tflite::support::StatusOr<std::unique_ptr<SearchPostprocessor>> Create(
@@ -2818,40 +2869,6 @@ index 47c78b64ba2ca..d79bc853148a9 100644
        std::unique_ptr<SearchOptions> search_options,
        std::unique_ptr<EmbeddingOptions> embedding_options =
            std::make_unique<EmbeddingOptions>());
-@@ -76,12 +77,14 @@ class SearchPostprocessor : public Postprocessor {
-       std::unique_ptr<EmbeddingPostprocessor> embedding_postprocessor,
-       std::unique_ptr<SearchOptions> options);
- 
--  absl::Status QuantizedSearch(Eigen::Ref<Eigen::MatrixXf> query,
--                               std::vector<int> leaves_to_search,
--                               absl::Span<tflite::scann_ondevice::core::TopN> top_n);
--  absl::Status LinearSearch(Eigen::Ref<Eigen::MatrixXf> query,
--                            std::vector<int> leaves_to_search,
--                            absl::Span<tflite::scann_ondevice::core::TopN> top_n);
-+  absl::Status QuantizedSearch(
-+      Eigen::Ref<Eigen::MatrixXf> query,
-+      std::vector<int> leaves_to_search,
-+      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
-+  absl::Status LinearSearch(
-+      Eigen::Ref<Eigen::MatrixXf> query,
-+      std::vector<int> leaves_to_search,
-+      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
- 
-   std::unique_ptr<SearchOptions> options_;
- 
-@@ -96,8 +99,10 @@ class SearchPostprocessor : public Postprocessor {
-   // ScaNN management.
-   int num_leaves_to_search_;
-   tflite::scann_ondevice::core::DistanceMeasure distance_measure_;
--  std::unique_ptr<tflite::scann_ondevice::core::PartitionerInterface> partitioner_;
--  std::shared_ptr<tflite::scann_ondevice::core::AsymmetricHashQuerier> quantizer_;
-+  std::unique_ptr<tflite::scann_ondevice::core::PartitionerInterface>
-+      partitioner_;
-+  std::shared_ptr<tflite::scann_ondevice::core::AsymmetricHashQuerier>
-+      quantizer_;
- };
- 
- }  // namespace processor
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_clu_annotator.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_clu_annotator.cc
 index f60a556dbbe1b..802facec374f3 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_clu_annotator.cc
@@ -4590,7 +4607,7 @@ index 470e76b9037a1..7ebf69fadc3de 100644
      FrameBuffer::Orientation orientation = FrameBuffer::Orientation::kTopLeft,
      absl::Time timestamp = absl::Now());
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
-index 4d767fc3e48b2..4728c30cb60dc 100644
+index d1fa063b85696..ce88ceffc88f0 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
 @@ -22,8 +22,8 @@ limitations under the License.
@@ -4709,7 +4726,17 @@ index 4d767fc3e48b2..4728c30cb60dc 100644
    if (absl::holds_alternative<ConvertOperation>(operation)) {
      return absl::get<ConvertOperation>(operation).to_format;
    }
-@@ -578,8 +594,10 @@ absl::Status FrameBufferUtils::Execute(
+@@ -428,7 +444,8 @@ absl::Status FrameBufferUtils::Resize(const FrameBuffer& buffer,
+ }
+ 
+ absl::Status FrameBufferUtils::ResizeNearestNeighbor(
+-    const FrameBuffer& buffer, FrameBuffer* output_buffer) {
++    const FrameBuffer& buffer,
++    FrameBuffer* output_buffer) {
+   TFLITE_DCHECK(utils_ != nullptr);
+   return utils_->ResizeNearestNeighbor(buffer, output_buffer);
+ }
+@@ -584,8 +601,10 @@ absl::Status FrameBufferUtils::Execute(
  }
  
  absl::Status FrameBufferUtils::Preprocess(
@@ -4723,7 +4750,7 @@ index 4d767fc3e48b2..4728c30cb60dc 100644
    // Handle cropping and resizing.
    bool needs_dimension_swap =
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.h
-index 59e80e5765bb0..48549461159cb 100644
+index c7b91a2cd5e8b..f9a47a213e5d1 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.h
 @@ -19,9 +19,9 @@ limitations under the License.
@@ -4811,8 +4838,8 @@ index 59e80e5765bb0..48549461159cb 100644
 +                    int y1,
                      FrameBuffer* output_buffer);
  
-   // Performs resizing operation.
-@@ -229,7 +241,8 @@ class FrameBufferUtils {
+   // Performs resizing operation with bilinear interpolation.
+@@ -238,7 +250,8 @@ class FrameBufferUtils {
    //
    // The output_buffer should have metadata populated and its backing buffer
    // should be big enough to store the operation result.
@@ -4822,7 +4849,7 @@ index 59e80e5765bb0..48549461159cb 100644
                        FrameBuffer* output_buffer);
  
    // Performs horizontal flip operation.
-@@ -305,7 +318,8 @@ class FrameBufferUtils {
+@@ -314,7 +327,8 @@ class FrameBufferUtils {
  
    // Returns the new FrameBuffer orientation after command is processed.
    FrameBuffer::Orientation GetOrientation(
@@ -4833,7 +4860,7 @@ index 59e80e5765bb0..48549461159cb 100644
    // Returns the new FrameBuffer format after command is processed.
    FrameBuffer::Format GetFormat(const FrameBuffer& buffer,
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils_interface.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils_interface.h
-index ec0c3119ea4e8..59da2206bb06f 100644
+index fb86f392684f4..07b5b245a5374 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils_interface.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils_interface.h
 @@ -37,8 +37,12 @@ class FrameBufferUtilsInterface {
@@ -4849,9 +4876,9 @@ index ec0c3119ea4e8..59da2206bb06f 100644
 +                            int y1,
 +                            FrameBuffer* output_buffer) = 0;
  
-   // Resizes `buffer` to the size of the given `output_buffer`.
-   //
-@@ -57,7 +61,8 @@ class FrameBufferUtilsInterface {
+   // Resizes `buffer` to the size of the given `output_buffer` using bilinear
+   // interpolation.
+@@ -68,7 +72,8 @@ class FrameBufferUtilsInterface {
    //
    // The `output_buffer` should have metadata populated and its backing buffer
    // should be big enough to store the operation result.
@@ -4929,10 +4956,10 @@ index ab63153d0e728..63a2d98023613 100644
  // Encodes the image provided as an ImageData as lossless PNG to the provided
  // path.
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
-index e0dd8a99c64c0..a0ee2dab96b6a 100644
+index 623326d5cba49..b7e39752492af 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
-@@ -20,11 +20,11 @@ limitations under the License.
+@@ -20,12 +20,12 @@ limitations under the License.
  #include <memory>
  #include <string>
  
@@ -4943,12 +4970,34 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
  #include "absl/strings/str_format.h"  // from @com_google_absl
 -#include "libyuv.h"  // from @libyuv
 -#include "libyuv/convert_argb.h"  // from @libyuv
+-#include "libyuv/scale.h"  // from @libyuv
 +#include "libyuv.h"                   // from @libyuv
 +#include "libyuv/convert_argb.h"      // from @libyuv
++#include "libyuv/scale.h"             // from @libyuv
  #include "tensorflow_lite_support/cc/common.h"
  #include "tensorflow_lite_support/cc/port/integral_types.h"
  #include "tensorflow_lite_support/cc/port/status_macros.h"
-@@ -384,7 +384,8 @@ absl::Status ResizeNv(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
+@@ -331,7 +331,8 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
+ 
+ // Resizes YV12/YV21 `buffer` to the target `output_buffer`.
+ absl::Status ResizeYv(
+-    const FrameBuffer& buffer, FrameBuffer* output_buffer,
++    const FrameBuffer& buffer,
++    FrameBuffer* output_buffer,
+     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
+   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
+@@ -358,7 +359,8 @@ absl::Status ResizeYv(
+ 
+ // Resizes NV12/NV21 `buffer` to the target `output_buffer`.
+ absl::Status ResizeNv(
+-    const FrameBuffer& buffer, FrameBuffer* output_buffer,
++    const FrameBuffer& buffer,
++    FrameBuffer* output_buffer,
+     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
+   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
+@@ -389,7 +391,8 @@ absl::Status ResizeNv(
  
  // Converts `buffer` to libyuv ARGB format and stores the conversion result
  // in `dest_argb`.
@@ -4958,7 +5007,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                                int dest_stride_argb) {
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
    if (buffer.format() != FrameBuffer::Format::kRGB) {
-@@ -421,7 +422,8 @@ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
+@@ -426,7 +429,8 @@ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
  
  // Converts `src_argb` in libyuv ARGB format to FrameBuffer::kRGB format and
  // stores the conversion result in `output_buffer`.
@@ -4968,7 +5017,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                                FrameBuffer* output_buffer) {
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
    if (output_buffer->format() != FrameBuffer::Format::kRGB) {
-@@ -457,7 +459,8 @@ absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
+@@ -462,7 +466,8 @@ absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
  
  // Converts `buffer` in FrameBuffer::kRGBA format to libyuv ARGB (BGRA in
  // memory) format and stores the conversion result in `dest_argb`.
@@ -4978,7 +5027,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                                 int dest_stride_argb) {
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
    if (buffer.format() != FrameBuffer::Format::kRGBA) {
-@@ -689,7 +692,8 @@ libyuv::RotationMode GetLibyuvRotationMode(int angle_deg) {
+@@ -694,7 +699,8 @@ libyuv::RotationMode GetLibyuvRotationMode(int angle_deg) {
    }
  }
  
@@ -4988,7 +5037,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                          FrameBuffer* output_buffer) {
    if (buffer.plane_count() > 1) {
      return CreateStatusWithPayload(
-@@ -713,7 +717,8 @@ absl::Status RotateRgba(const FrameBuffer& buffer, int angle_deg,
+@@ -718,7 +724,8 @@ absl::Status RotateRgba(const FrameBuffer& buffer, int angle_deg,
    return absl::OkStatus();
  }
  
@@ -4998,7 +5047,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                         FrameBuffer* output_buffer) {
    // libyuv does not support rotate kRGB (RGB24) foramat. In this method, the
    // implementation converts kRGB format to ARGB and use ARGB buffer for
-@@ -746,7 +751,8 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
+@@ -751,7 +758,8 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
                            output_buffer);
  }
  
@@ -5008,7 +5057,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                          FrameBuffer* output_buffer) {
    if (buffer.plane_count() > 1) {
      return CreateStatusWithPayload(
-@@ -769,7 +775,8 @@ absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
+@@ -774,7 +782,8 @@ absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
  }
  
  // Rotates YV12/YV21 frame buffer.
@@ -5018,7 +5067,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                        FrameBuffer* output_buffer) {
    ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                     FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-@@ -794,7 +801,8 @@ absl::Status RotateYv(const FrameBuffer& buffer, int angle_deg,
+@@ -799,7 +808,8 @@ absl::Status RotateYv(const FrameBuffer& buffer, int angle_deg,
  // Rotates NV12/NV21 frame buffer.
  // TODO(b/152097364): Refactor NV12/NV21 rotation after libyuv explicitly
  // support that.
@@ -5028,7 +5077,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                        FrameBuffer* output_buffer) {
    if (buffer.format() != FrameBuffer::Format::kNV12 &&
        buffer.format() != FrameBuffer::Format::kNV21) {
-@@ -884,8 +892,12 @@ absl::Status FlipPlaneVertically(const FrameBuffer& buffer,
+@@ -889,8 +899,12 @@ absl::Status FlipPlaneVertically(const FrameBuffer& buffer,
  }
  
  // This method only supports kGRAY, kRGBA, and kRGB formats.
@@ -5043,7 +5092,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
    if (buffer.plane_count() > 1) {
      return CreateStatusWithPayload(
          StatusCode::kInternal,
-@@ -912,7 +924,11 @@ absl::Status CropPlane(const FrameBuffer& buffer, int x0, int y0, int x1,
+@@ -917,7 +931,11 @@ absl::Status CropPlane(const FrameBuffer& buffer, int x0, int y0, int x1,
  
  // Crops NV12/NV21 FrameBuffer to the subregion defined by the top left pixel
  // position (x0, y0) and the bottom right pixel position (x1, y1).
@@ -5056,7 +5105,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                      FrameBuffer* output_buffer) {
    ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                     FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-@@ -944,7 +960,11 @@ absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
+@@ -949,7 +967,11 @@ absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
  
  // Crops YV12/YV21 FrameBuffer to the subregion defined by the top left pixel
  // position (x0, y0) and the bottom right pixel position (x1, y1).
@@ -5069,7 +5118,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                      FrameBuffer* output_buffer) {
    ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                     FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-@@ -979,8 +999,12 @@ absl::Status CropYv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
+@@ -984,8 +1006,12 @@ absl::Status CropYv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
    return absl::OkStatus();
  }
  
@@ -5084,7 +5133,37 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
    FrameBuffer::Dimension crop_dimension = GetCropDimension(x0, x1, y0, y1);
    if (crop_dimension == output_buffer->dimension()) {
      switch (buffer.format()) {
-@@ -1308,8 +1332,12 @@ absl::Status ResizeGray(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
+@@ -1100,7 +1126,8 @@ absl::Status FlipHorizontallyPlane(const FrameBuffer& buffer,
+ }
+ 
+ absl::Status ResizeRgb(
+-    const FrameBuffer& buffer, FrameBuffer* output_buffer,
++    const FrameBuffer& buffer,
++    FrameBuffer* output_buffer,
+     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
+   if (buffer.plane_count() > 1) {
+     return CreateStatusWithPayload(
+@@ -1174,7 +1201,8 @@ absl::Status FlipHorizontallyRgb(const FrameBuffer& buffer,
+ }
+ 
+ absl::Status ResizeRgba(
+-    const FrameBuffer& buffer, FrameBuffer* output_buffer,
++    const FrameBuffer& buffer,
++    FrameBuffer* output_buffer,
+     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
+   if (buffer.plane_count() > 1) {
+     return CreateStatusWithPayload(
+@@ -1299,7 +1327,8 @@ absl::Status FlipVerticallyYv(const FrameBuffer& buffer,
+ // Resize `buffer` to metadata defined in `output_buffer`. This
+ // method assumes buffer has pixel stride equals to 1 (grayscale equivalent).
+ absl::Status ResizeGray(
+-    const FrameBuffer& buffer, FrameBuffer* output_buffer,
++    const FrameBuffer& buffer,
++    FrameBuffer* output_buffer,
+     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
+   if (buffer.plane_count() > 1) {
+     return CreateStatusWithPayload(
+@@ -1319,8 +1348,12 @@ absl::Status ResizeGray(
  }
  
  // This method only supports kGRAY, kRGBA, and kRGB formats.
@@ -5099,7 +5178,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
    FrameBuffer::Dimension crop_dimension = GetCropDimension(x0, x1, y0, y1);
    if (crop_dimension == output_buffer->dimension()) {
      return CropPlane(buffer, x0, y0, x1, y1, output_buffer);
-@@ -1343,8 +1371,11 @@ absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
+@@ -1354,8 +1387,11 @@ absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
  
  }  // namespace
  
@@ -5113,7 +5192,17 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
                                            FrameBuffer* output_buffer) {
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
-@@ -1425,7 +1456,8 @@ absl::Status LibyuvFrameBufferUtils::Rotate(const FrameBuffer& buffer,
+@@ -1406,7 +1442,8 @@ absl::Status LibyuvFrameBufferUtils::Resize(const FrameBuffer& buffer,
+ }
+ 
+ absl::Status LibyuvFrameBufferUtils::ResizeNearestNeighbor(
+-    const FrameBuffer& buffer, FrameBuffer* output_buffer) {
++    const FrameBuffer& buffer,
++    FrameBuffer* output_buffer) {
+   RETURN_IF_ERROR(ValidateResizeBufferInputs(buffer, *output_buffer));
+   switch (buffer.format()) {
+     case FrameBuffer::Format::kYV12:
+@@ -1460,7 +1497,8 @@ absl::Status LibyuvFrameBufferUtils::Rotate(const FrameBuffer& buffer,
  }
  
  absl::Status LibyuvFrameBufferUtils::FlipHorizontally(
@@ -5123,7 +5212,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
    RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));
-@@ -1453,7 +1485,8 @@ absl::Status LibyuvFrameBufferUtils::FlipHorizontally(
+@@ -1488,7 +1526,8 @@ absl::Status LibyuvFrameBufferUtils::FlipHorizontally(
  }
  
  absl::Status LibyuvFrameBufferUtils::FlipVertically(
@@ -5134,7 +5223,7 @@ index e0dd8a99c64c0..a0ee2dab96b6a 100644
    RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
    RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.h
-index 5da898bc058a4..6f83559139130 100644
+index 0e9a0209b53a7..654cc62490497 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.h
 @@ -41,7 +41,11 @@ class LibyuvFrameBufferUtils : public FrameBufferUtilsInterface {
@@ -5149,8 +5238,8 @@ index 5da898bc058a4..6f83559139130 100644
 +                    int y1,
                      FrameBuffer* output_buffer) override;
  
-   // Resizes `buffer` to the size of the given `output_buffer`.
-@@ -51,7 +55,8 @@ class LibyuvFrameBufferUtils : public FrameBufferUtilsInterface {
+   // Resizes `buffer` to the size of the given `output_buffer` using bilinear
+@@ -57,7 +61,8 @@ class LibyuvFrameBufferUtils : public FrameBufferUtilsInterface {
    // Rotates `buffer` counter-clockwise by the given `angle_deg` (in degrees).
    //
    // The given angle must be a multiple of 90 degrees.
@@ -5222,6 +5311,121 @@ index 311994c1abbf9..bc2f9dfd53a96 100644
  #include "tensorflow_lite_support/cc/port/gmock.h"
  #include "tensorflow_lite_support/cc/port/gtest.h"
  
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/processor/embedding_searcher_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/processor/embedding_searcher_test.cc
+index d350ecd928b37..918a03b29f134 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/processor/embedding_searcher_test.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/processor/embedding_searcher_test.cc
+@@ -18,8 +18,8 @@ limitations under the License.
+ #include <memory>
+ #include <string>
+ 
+-#include "absl/flags/flag.h"  // from @com_google_absl
+-#include "absl/status/status.h"  // from @com_google_absl
++#include "absl/flags/flag.h"           // from @com_google_absl
++#include "absl/status/status.h"        // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+ #include "tensorflow_lite_support/cc/common.h"
+@@ -136,13 +136,13 @@ TEST_F(CreateFromOptionsTest, SucceedsWithStandaloneIndex) {
+ }
+ 
+ TEST_F(CreateFromOptionsTest, SucceedsWithMetadataIndex) {
+-  StatusOr<std::string> index_file_content = GetIndexFileContentFromModelFile(
+-      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+-               kMobileNetV3Searcher));
++  StatusOr<std::string> index_file_content =
++      GetIndexFileContentFromModelFile(JoinPath(
++          "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Searcher));
+   SUPPORT_ASSERT_OK(index_file_content);
+ 
+   SUPPORT_ASSERT_OK(EmbeddingSearcher::Create(std::make_unique<SearchOptions>(),
+-                                      *index_file_content));
++                                              *index_file_content));
+ }
+ 
+ TEST_F(CreateFromOptionsTest, FailsWithMissingIndexAndMissingMetadataIndex) {
+@@ -181,19 +181,20 @@ TEST(SearchTest, SucceedsWithStandaloneIndex) {
+   auto options = std::make_unique<SearchOptions>();
+   options->mutable_index_file()->set_file_name(
+       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
+-  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<EmbeddingSearcher> embedding_searcher,
+-                       EmbeddingSearcher::Create(std::move(options)));
++  SUPPORT_ASSERT_OK_AND_ASSIGN(
++      std::unique_ptr<EmbeddingSearcher> embedding_searcher,
++      EmbeddingSearcher::Create(std::move(options)));
+ 
+   // Load the embedding proto associated with burger.jpg.
+   SUPPORT_ASSERT_OK_AND_ASSIGN(
+       std::string embedding_file_content,
+-      GetFileContent(JoinPath("./" /*test src dir*/,
+-                              kTestDataDirectory, kBurgerJpgEmbeddingProto)));
++      GetFileContent(JoinPath("./" /*test src dir*/, kTestDataDirectory,
++                              kBurgerJpgEmbeddingProto)));
+   Embedding embedding = ParseTextProtoOrDie<Embedding>(embedding_file_content);
+ 
+   // Perform search.
+   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
+-                       embedding_searcher->Search(embedding));
++                               embedding_searcher->Search(embedding));
+ 
+   // Check results.
+   ExpectApproximatelyEqual(
+@@ -207,9 +208,9 @@ TEST(SearchTest, SucceedsWithStandaloneIndex) {
+ }
+ 
+ TEST(SearchTest, SucceedsWithMetadataIndex) {
+-  StatusOr<std::string> index_file_content = GetIndexFileContentFromModelFile(
+-      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+-               kMobileNetV3Searcher));
++  StatusOr<std::string> index_file_content =
++      GetIndexFileContentFromModelFile(JoinPath(
++          "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Searcher));
+   SUPPORT_ASSERT_OK(index_file_content);
+ 
+   // Create Searcher.
+@@ -221,13 +222,13 @@ TEST(SearchTest, SucceedsWithMetadataIndex) {
+   // Load the embedding proto associated with burger.jpg.
+   SUPPORT_ASSERT_OK_AND_ASSIGN(
+       std::string embedding_file_content,
+-      GetFileContent(JoinPath("./" /*test src dir*/,
+-                              kTestDataDirectory, kBurgerJpgEmbeddingProto)));
++      GetFileContent(JoinPath("./" /*test src dir*/, kTestDataDirectory,
++                              kBurgerJpgEmbeddingProto)));
+   Embedding embedding = ParseTextProtoOrDie<Embedding>(embedding_file_content);
+ 
+   // Perform search.
+   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
+-                       embedding_searcher->Search(embedding));
++                               embedding_searcher->Search(embedding));
+ 
+   // Check results.
+   ExpectApproximatelyEqual(
+@@ -246,19 +247,20 @@ TEST(SearchTest, SucceedsWithMaxResults) {
+   options->mutable_index_file()->set_file_name(
+       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
+   options->set_max_results(2);
+-  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<EmbeddingSearcher> embedding_searcher,
+-                       EmbeddingSearcher::Create(std::move(options)));
++  SUPPORT_ASSERT_OK_AND_ASSIGN(
++      std::unique_ptr<EmbeddingSearcher> embedding_searcher,
++      EmbeddingSearcher::Create(std::move(options)));
+ 
+   // Load the embedding proto associated with burger.jpg.
+   SUPPORT_ASSERT_OK_AND_ASSIGN(
+       std::string embedding_file_content,
+-      GetFileContent(JoinPath("./" /*test src dir*/,
+-                              kTestDataDirectory, kBurgerJpgEmbeddingProto)));
++      GetFileContent(JoinPath("./" /*test src dir*/, kTestDataDirectory,
++                              kBurgerJpgEmbeddingProto)));
+   Embedding embedding = ParseTextProtoOrDie<Embedding>(embedding_file_content);
+ 
+   // Perform search.
+   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
+-                       embedding_searcher->Search(embedding));
++                               embedding_searcher->Search(embedding));
+   // Check results.
+   ExpectApproximatelyEqual(
+       result, ParseTextProtoOrDie<SearchResult>(R"pb(
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/processor/image_preprocessor_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/processor/image_preprocessor_test.cc
 index 9a00e2f9e89a1..ef0e783e97c3e 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/processor/image_preprocessor_test.cc
@@ -8533,75 +8737,6 @@ index 8309a6a2616fd..edb0160b508a3 100644
                   size_t /*length*/) {
    return nullptr;
  }
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc
-index dad2f0004be06..8096a5008bd12 100644
---- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc
-@@ -19,10 +19,10 @@ limitations under the License.
- #include <utility>
- #include <vector>
- 
-+#include "libutf/utf.h"
- #include "tensorflow/lite/context.h"
- #include "tensorflow/lite/kernels/kernel_util.h"
- #include "tensorflow/lite/string_util.h"
--#include "libutf/utf.h"
- 
- constexpr int kInput = 0;
- constexpr int kOutputValues = 0;
-@@ -49,7 +49,7 @@ inline bool OutputIsPaddedTensor(TfLiteNode* node) {
- }
- 
- inline int charntorune(Rune* r, const char* s, int n) {
--  const int bytes_read = chartorune(r, const_cast<char *>(s));
-+  const int bytes_read = chartorune(r, const_cast<char*>(s));
-   if (bytes_read > n) {
-     *r = Runeerror;
-     return 0;
-@@ -66,7 +66,8 @@ std::vector<std::pair<const char*, int>> Tokenize(StringRef str) {
-   while (n > 0) {
-     Rune r;
-     int c = charntorune(&r, p, n);
--    if (r == Runeerror) break;
-+    if (r == Runeerror)
-+      break;
- 
-     if (isspacerune(r)) {
-       if (start != nullptr) {
-@@ -91,7 +92,8 @@ std::vector<std::pair<const char*, int>> Tokenize(StringRef str) {
- 
- TfLiteStatus WritePaddedOutput(
-     const std::vector<std::vector<std::pair<const char*, int>>>& list_of_tokens,
--    const TfLiteTensor* input, TfLiteTensor* output_values) {
-+    const TfLiteTensor* input,
-+    TfLiteTensor* output_values) {
-   TfLiteIntArray* output_shape = TfLiteIntArrayCreate(NumDimensions(input) + 1);
-   for (int i = 0; i < NumDimensions(input); ++i) {
-     output_shape->data[i] = SizeOfDimension(input, i);
-@@ -118,7 +120,8 @@ TfLiteStatus WritePaddedOutput(
- 
- TfLiteStatus WriteRaggedOutput(
-     const std::vector<std::vector<std::pair<const char*, int>>>& list_of_tokens,
--    const TfLiteTensor* input, TfLiteTensor* output_values,
-+    const TfLiteTensor* input,
-+    TfLiteTensor* output_values,
-     std::vector<TfLiteTensor*> nested_row_splits) {
-   // The outer dimensions of the ragged tensor are all non-ragged.
-   for (int i = 0; i < nested_row_splits.size() - 1; ++i) {
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc
-index 534fbef4aff2d..6166bc149bc00 100644
---- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc
-@@ -15,8 +15,8 @@ limitations under the License.
- 
- #include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.h"
- 
--#include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h"
- #include "tensorflow/lite/mutable_op_resolver.h"
-+#include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h"
- 
- namespace tflite {
- namespace ops {
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_demo.cc b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_demo.cc
 index 7447870046f48..904673a95b799 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_demo.cc
@@ -9307,7 +9442,7 @@ index b5f3675875b63..69c19c40c9443 100644
  @end
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/sources/TFLCommonCppUtils.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/sources/TFLCommonCppUtils.mm
-index 4cf2de6b8f737..68e43bebfe434 100644
+index b95ab74893cd4..c1f8d5b0a29f4 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/sources/TFLCommonCppUtils.mm
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/sources/TFLCommonCppUtils.mm
 @@ -24,50 +24,59 @@
@@ -9332,7 +9467,7 @@ index 4cf2de6b8f737..68e43bebfe434 100644
 -+ (BOOL)checkCppError:(const absl::Status &)status toError:(NSError *_Nullable *)error {
 ++ (BOOL)checkCppError:(const absl::Status&)status
 +              toError:(NSError* _Nullable*)error {
-   if (!status.ok()) {
+   if (status.ok()) {
      return YES;
    }
 -  // Payload of absl::Status created by the tflite task library stores an appropriate value of the
@@ -11975,10 +12110,10 @@ index eaf72cf4972db..f891b43d27295 100644
  /**
   * Maximum number of nearest neighbor results to return. Defaults to 5.
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchOptions.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchOptions.m
-index 5c4671e17da46..0dabcf7742167 100644
+index 3cf43e75467fe..6e3f9a2b67076 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchOptions.m
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchOptions.m
-@@ -19,15 +19,15 @@
+@@ -19,16 +19,16 @@
  - (instancetype)init {
    self = [super init];
    if (self) {
@@ -11987,6 +12122,7 @@ index 5c4671e17da46..0dabcf7742167 100644
 +    // maxResults will be 0 at the time of initialization. Setting it to 5 since
 +    // max_results defaults to 5 in search_options.proto.
      _maxResults = 5;
+     _indexFile = [[TFLExternalFile alloc] init];
    }
    return self;
  }
@@ -11998,6 +12134,193 @@ index 5c4671e17da46..0dabcf7742167 100644
  
    searchOptions.indexFile = self.indexFile;
    searchOptions.maxResults = self.maxResults;
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.h
+index 55c146d7fd8cf..cf68c57007ca4 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.h
+@@ -21,18 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
+ 
+ @interface TFLSearchResult (Helpers)
+ /**
+- * Creates and retruns a TFLSearchResult from the result of search task returned by TFLite Task C++
+- * Library.
++ * Creates and retruns a TFLSearchResult from the result of search task returned
++ * by TFLite Task C++ Library.
+  *
+- * @param cppSearchResult search result returned by TFLite Task C++ Library Search task.
++ * @param cppSearchResult search result returned by TFLite Task C++ Library
++ * Search task.
+  *
+- * @return A new TFLSearchResult to be returned by inference methods of the iOS TF Lite Task Search
+- * task.
++ * @return A new TFLSearchResult to be returned by inference methods of the iOS
++ * TF Lite Task Search task.
+  */
+-+ (nullable TFLSearchResult *)
+-    searchResultWithCppResult:
+-        (const tflite::support::StatusOr<tflite::task::processor::SearchResult> &)cppSearchResult
+-                        error:(NSError **)error;
+++ (nullable TFLSearchResult*)searchResultWithCppResult:
++                                 (const tflite::support::StatusOr<
++                                     tflite::task::processor::SearchResult>&)
++                                     cppSearchResult
++                                                 error:(NSError**)error;
+ @end
+ 
+ NS_ASSUME_NONNULL_END
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.mm
+index 8587a1d39ab7a..0fadc79377ed0 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.mm
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult+Helpers.mm
+@@ -22,24 +22,27 @@ using SearchResultCpp = tflite::task::processor::SearchResult;
+ 
+ @implementation TFLSearchResult (Helpers)
+ 
+-+ (nullable TFLSearchResult *)searchResultWithCppResult:
+-                                  (const StatusOr<SearchResultCpp> &)cppSearchResult
+-                                                  error:(NSError **)error {
+-  if (![TFLCommonCppUtils checkCppError:cppSearchResult.status() toError:error]) {
+++ (nullable TFLSearchResult*)
++    searchResultWithCppResult:(const StatusOr<SearchResultCpp>&)cppSearchResult
++                        error:(NSError**)error {
++  if (![TFLCommonCppUtils checkCppError:cppSearchResult.status()
++                                toError:error]) {
+     return nil;
+   }
+ 
+-  NSMutableArray<TFLNearestNeighbor *> *nearestNeighbors = [[NSMutableArray alloc] init];
++  NSMutableArray<TFLNearestNeighbor*>* nearestNeighbors =
++      [[NSMutableArray alloc] init];
+ 
+   auto cppSearchResultValue = cppSearchResult.value();
+ 
+   for (int i = 0; i < cppSearchResultValue.nearest_neighbors_size(); i++) {
+     auto cppNearestNeighbor = cppSearchResultValue.nearest_neighbors(i);
+-    NSString *metadata = [NSString stringWithCString:cppNearestNeighbor.metadata().c_str()
+-                                            encoding:NSUTF8StringEncoding];
+-    TFLNearestNeighbor *nearestNeighbor =
+-        [[TFLNearestNeighbor alloc] initWithMetadata:metadata
+-                                            distance:(CGFloat)cppNearestNeighbor.distance()];
++    NSString* metadata =
++        [NSString stringWithCString:cppNearestNeighbor.metadata().c_str()
++                           encoding:NSUTF8StringEncoding];
++    TFLNearestNeighbor* nearestNeighbor = [[TFLNearestNeighbor alloc]
++        initWithMetadata:metadata
++                distance:(CGFloat)cppNearestNeighbor.distance()];
+     [nearestNeighbors addObject:nearestNeighbor];
+   }
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.h
+index 89e8ec2e3f806..efbc12b76190e 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.h
+@@ -22,10 +22,10 @@ NS_SWIFT_NAME(NearestNeighbor)
+ @interface TFLNearestNeighbor : NSObject
+ 
+ /**
+- * User-defined metadata about the result. This could be a label, a unique ID, a serialized proto of
+- * some sort, etc.
++ * User-defined metadata about the result. This could be a label, a unique ID, a
++ * serialized proto of some sort, etc.
+  */
+-@property(nonatomic, readonly) NSString *metadata;
++@property(nonatomic, readonly) NSString* metadata;
+ 
+ /**
+  * The distance score indicating how confident the result is. Lower is better.
+@@ -35,14 +35,15 @@ NS_SWIFT_NAME(NearestNeighbor)
+ /**
+  * Initializes a new `TFLNearestNeighbor`.
+  *
+- * @param metadata User-defined metadata about the result. This could be a label, a unique ID, a
+- * serialized proto of some sort, etc.User-defined metadata about the result. This could be a label,
+- * a unique ID, a serialized proto of some sort, etc.
++ * @param metadata User-defined metadata about the result. This could be a
++ * label, a unique ID, a serialized proto of some sort, etc.User-defined
++ * metadata about the result. This could be a label, a unique ID, a serialized
++ * proto of some sort, etc.
+  * @param distance The distance score indicating how confident the result is.
+  *
+  * @return An instance of `TFLNearestNeighbor` initialized to the given values.
+  */
+-- (instancetype)initWithMetadata:(NSString *)metadata
++- (instancetype)initWithMetadata:(NSString*)metadata
+                         distance:(CGFloat)distance NS_DESIGNATED_INITIALIZER;
+ 
+ - (instancetype)init NS_UNAVAILABLE;
+@@ -58,20 +59,20 @@ NS_SWIFT_NAME(SearchResult)
+ /**
+  * The nearest neighbors, sorted by increasing distance order.
+  */
+-@property(nonatomic, readonly) NSArray<TFLNearestNeighbor *> *nearestNeighbors;
++@property(nonatomic, readonly) NSArray<TFLNearestNeighbor*>* nearestNeighbors;
+ 
+ + (instancetype)new NS_UNAVAILABLE;
+ 
+ /**
+  * Initializes a new `TFLSearchResult`.
+  *
+- * @param nearestNeighbors An array of nearest neighbors detected in the search sorted by increasing
+- * disance order.
++ * @param nearestNeighbors An array of nearest neighbors detected in the search
++ * sorted by increasing disance order.
+  *
+  * @return An instance of TFLSearchResult initialized to the given values.
+  */
+-- (instancetype)initWithNearestNeighbors:(NSArray<TFLNearestNeighbor *> *)nearestNeighbors
+-    NS_DESIGNATED_INITIALIZER;
++- (instancetype)initWithNearestNeighbors:
++    (NSArray<TFLNearestNeighbor*>*)nearestNeighbors NS_DESIGNATED_INITIALIZER;
+ 
+ - (instancetype)init NS_UNAVAILABLE;
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.m
+index d9cb2ba1af2d5..c395dbba97170 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.m
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSearchResult.m
+@@ -16,7 +16,8 @@
+ 
+ @implementation TFLNearestNeighbor
+ 
+-- (instancetype)initWithMetadata:(NSString *)metadata distance:(CGFloat)distance {
++- (instancetype)initWithMetadata:(NSString*)metadata
++                        distance:(CGFloat)distance {
+   self = [super init];
+   if (self) {
+     _metadata = [metadata copy];
+@@ -25,15 +26,17 @@
+   return self;
+ }
+ 
+-- (id)copyWithZone:(NSZone *)zone {
+-  return [[TFLNearestNeighbor alloc] initWithMetadata:self.metadata distance:self.distance];
++- (id)copyWithZone:(NSZone*)zone {
++  return [[TFLNearestNeighbor alloc] initWithMetadata:self.metadata
++                                             distance:self.distance];
+ }
+ 
+ @end
+ 
+ @implementation TFLSearchResult
+ 
+-- (instancetype)initWithNearestNeighbors:(NSArray<TFLNearestNeighbor *> *)nearestNeighbors {
++- (instancetype)initWithNearestNeighbors:
++    (NSArray<TFLNearestNeighbor*>*)nearestNeighbors {
+   self = [super init];
+   if (self) {
+     _nearestNeighbors = [nearestNeighbors copy];
+@@ -41,8 +44,9 @@
+   return self;
+ }
+ 
+-- (id)copyWithZone:(NSZone *)zone {
+-  return [[TFLSearchResult alloc] initWithNearestNeighbors:self.nearestNeighbors];
++- (id)copyWithZone:(NSZone*)zone {
++  return
++      [[TFLSearchResult alloc] initWithNearestNeighbors:self.nearestNeighbors];
+ }
+ 
+ @end
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h
 index c979fda53c70b..0a85efe2877bb 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h
@@ -12834,6 +13157,295 @@ index f8c09527bd902..79ad474054525 100644
    if (!cClassificationResult) {
      return nil;
    }
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.h
+index 772c870427975..cc04977cf4a80 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.h
+@@ -33,33 +33,38 @@ NS_SWIFT_NAME(ImageSearcherOptions)
+  * model to use for embedding extraction, as well as hardware acceleration
+  * options to use as inference time.
+  */
+-@property(nonatomic, copy) TFLBaseOptions *baseOptions;
++@property(nonatomic, copy) TFLBaseOptions* baseOptions;
+ 
+ /**
+  * Options controlling the behavior of the embedding model specified in the
+  * base options.
+  */
+-@property(nonatomic, copy) TFLEmbeddingOptions *embeddingOptions;
++@property(nonatomic, copy) TFLEmbeddingOptions* embeddingOptions;
+ 
+ /**
+- * Options specifying the index to search into and controlling the search behavior.
++ * Options specifying the index to search into and controlling the search
++ * behavior.
+  */
+-@property(nonatomic, copy) TFLSearchOptions *searchOptions;
++@property(nonatomic, copy) TFLSearchOptions* searchOptions;
+ 
+ /**
+- * Initializes a new `TFLImageSearcherOptions` with the absolute path to the model file
+- * stored locally on the device, set to the given the model path.
++ * Initializes a new `TFLImageSearcherOptions` with the absolute path to the
++ * model file stored locally on the device, set to the given the model path.
+  *
+- * @discussion The external model file must be a single standalone TFLite file. It could be packed
+- * with TFLite Model Metadata[1] and associated files if they exist. Failure to provide the
+- * necessary metadata and associated files might result in errors. Check the [documentation]
+- * (https://www.tensorflow.org/lite/convert/metadata) for each task about the specific requirement.
++ * @discussion The external model file must be a single standalone TFLite file.
++ * It could be packed with TFLite Model Metadata[1] and associated files if they
++ * exist. Failure to provide the necessary metadata and associated files might
++ * result in errors. Check the [documentation]
++ * (https://www.tensorflow.org/lite/convert/metadata) for each task about the
++ * specific requirement.
+  *
+- * @param modelPath An absolute path to a TensorFlow Lite model file stored locally on the device.
++ * @param modelPath An absolute path to a TensorFlow Lite model file stored
++ * locally on the device.
+  *
+- * @return An instance of `TFLImageSearcherOptions` initialized to the given model path.
++ * @return An instance of `TFLImageSearcherOptions` initialized to the given
++ * model path.
+  */
+-- (instancetype)initWithModelPath:(NSString *)modelPath;
++- (instancetype)initWithModelPath:(NSString*)modelPath;
+ 
+ @end
+ 
+@@ -70,65 +75,77 @@ NS_SWIFT_NAME(ImageSearcher)
+ @interface TFLImageSearcher : NSObject
+ 
+ /**
+- * Creates a new instance of `TFLImageSearcher` from the given `TFLImageSearcherOptions`.
++ * Creates a new instance of `TFLImageSearcher` from the given
++ * `TFLImageSearcherOptions`.
+  *
+  * @param options The options to use for configuring the `TFLImageSearcher`.
+- * @param error An optional error parameter populated when there is an error in initializing
+- * the image searcher.
++ * @param error An optional error parameter populated when there is an error in
++ * initializing the image searcher.
+  *
+- * @return A new instance of `ImageSearcher` with the given options. `nil` if there is an error
+- * in initializing the image searcher.
++ * @return A new instance of `ImageSearcher` with the given options. `nil` if
++ * there is an error in initializing the image searcher.
+  */
+-+ (nullable instancetype)imageSearcherWithOptions:(TFLImageSearcherOptions *)options
+-                                            error:(NSError **)error
+++ (nullable instancetype)imageSearcherWithOptions:
++                             (TFLImageSearcherOptions*)options
++                                            error:(NSError**)error
+     NS_SWIFT_NAME(searcher(options:));
+ 
+ + (instancetype)new NS_UNAVAILABLE;
+ 
+ /**
+- * Performs embedding extraction on the given GMLImage, followed by nearest-neighbor search in the
++ * Performs embedding extraction on the given GMLImage, followed by
++ nearest-neighbor search in the
+  * index.
+  *
+- * @discussion This method currently supports searching on only the following types of images:
++ * @discussion This method currently supports searching on only the following
++ types of images:
+  * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
+  * 2. kCVPixelFormatType_32BGRA for `GMLImageSourceTypePixelBuffer` and
+- *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to setup
++ *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to
++ setup
+  *    camera and get the frames for inference, you must request for this format
+- *    from AVCaptureVideoDataOutput. Otherwise your inference results will be wrong.
++ *    from AVCaptureVideoDataOutput. Otherwise your inference results will be
++ wrong.
+  *
+- * @param image An image on which to perform embedding extraction, followed by a nearest-neighbor
++ * @param image An image on which to perform embedding extraction, followed by a
++ nearest-neighbor
+  * search in the index, represented as a `GMLImage`.
+ 
+- * @return A `TFLSearchResult`. `nil` if there is an error encountered during embedding extraction
++ * @return A `TFLSearchResult`. `nil` if there is an error encountered during
++ embedding extraction
+  * and nearest neighbor search. Please see `TFLSearchResult` for more details.
+  */
+-- (nullable TFLSearchResult *)searchWithGMLImage:(GMLImage *)image
+-                                           error:(NSError **)error NS_SWIFT_NAME(search(mlImage:));
++- (nullable TFLSearchResult*)searchWithGMLImage:(GMLImage*)image
++                                          error:(NSError**)error
++    NS_SWIFT_NAME(search(mlImage:));
+ 
+ /**
+- * Performs embedding extraction on the given GMLImage, followed by nearest-neighbor search in the
+- * index on the pixels within the specified region of interest of the given
+- * `GMLImage`.
++ * Performs embedding extraction on the given GMLImage, followed by
++ * nearest-neighbor search in the index on the pixels within the specified
++ * region of interest of the given `GMLImage`.
+  *
+- * @discussion This method currently supports inference on only following type of images:
++ * @discussion This method currently supports inference on only following type
++ * of images:
+  * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
+  * 2. kCVPixelFormatType_32BGRA for `GMLImageSourceTypePixelBuffer` and
+- *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to setup
+- *    camera and get the frames for inference, you must request for this format
+- *    from AVCaptureVideoDataOutput. Otherwise your classification
+- *    results will be wrong.
++ *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to
++ * setup camera and get the frames for inference, you must request for this
++ * format from AVCaptureVideoDataOutput. Otherwise your classification results
++ * will be wrong.
+  *
+- * @param image An image on which to perform embedding extraction, followed by a nearest-neighbor
+- * search in the index, represented as a `GMLImage`.
++ * @param image An image on which to perform embedding extraction, followed by a
++ * nearest-neighbor search in the index, represented as a `GMLImage`.
+  *
+- * @param roi A CGRect specifying the region of interest within the given `GMLImage`.
++ * @param roi A CGRect specifying the region of interest within the given
++ * `GMLImage`.
+  *
+- * @return A TFLClassificationResult with one set of results per image classifier head. `nil` if
+- * there is an error encountered during classification.
++ * @return A TFLClassificationResult with one set of results per image
++ * classifier head. `nil` if there is an error encountered during
++ * classification.
+  */
+-- (nullable TFLSearchResult *)searchWithGMLImage:(GMLImage *)image
+-                                regionOfInterest:(CGRect)roi
+-                                           error:(NSError **)error
++- (nullable TFLSearchResult*)searchWithGMLImage:(GMLImage*)image
++                               regionOfInterest:(CGRect)roi
++                                          error:(NSError**)error
+     NS_SWIFT_NAME(search(mlImage:regionOfInterest:));
+ 
+ - (instancetype)init NS_UNAVAILABLE;
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm
+index f367fb32efdbe..d0a9e88d8a6f2 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm
+@@ -50,7 +50,7 @@ using ::tflite::support::StatusOr;
+   return self;
+ }
+ 
+-- (instancetype)initWithModelPath:(NSString *)modelPath {
++- (instancetype)initWithModelPath:(NSString*)modelPath {
+   self = [self init];
+   if (self) {
+     _baseOptions.modelFile.filePath = modelPath;
+@@ -61,7 +61,8 @@ using ::tflite::support::StatusOr;
+ - (ImageSearcherOptionsCpp)cppOptions {
+   ImageSearcherOptionsCpp cppOptions = {};
+   [self.baseOptions copyToCppOptions:cppOptions.mutable_base_options()];
+-  [self.embeddingOptions copyToCppOptions:cppOptions.mutable_embedding_options()];
++  [self.embeddingOptions
++      copyToCppOptions:cppOptions.mutable_embedding_options()];
+   [self.searchOptions copyToCppOptions:cppOptions.mutable_search_options()];
+ 
+   return cppOptions;
+@@ -71,13 +72,15 @@ using ::tflite::support::StatusOr;
+ 
+ @implementation TFLImageSearcher
+ 
+-- (nullable instancetype)initWithCppImageSearcherOptions:(ImageSearcherOptionsCpp)cppOptions
+-                                                   error:(NSError **)error {
++- (nullable instancetype)initWithCppImageSearcherOptions:
++                             (ImageSearcherOptionsCpp)cppOptions
++                                                   error:(NSError**)error {
+   self = [super init];
+   if (self) {
+     StatusOr<std::unique_ptr<ImageSearcherCpp>> cppImageSearcher =
+         ImageSearcherCpp::CreateFromOptions(cppOptions);
+-    if (![TFLCommonCppUtils checkCppError:cppImageSearcher.status() toError:error]) {
++    if (![TFLCommonCppUtils checkCppError:cppImageSearcher.status()
++                                  toError:error]) {
+       return nil;
+     }
+ 
+@@ -86,21 +89,25 @@ using ::tflite::support::StatusOr;
+   return self;
+ }
+ 
+-+ (nullable instancetype)imageSearcherWithOptions:(TFLImageSearcherOptions *)options
+-                                            error:(NSError **)error {
+++ (nullable instancetype)imageSearcherWithOptions:
++                             (TFLImageSearcherOptions*)options
++                                            error:(NSError**)error {
+   if (!options) {
+-    [TFLCommonUtils createCustomError:error
+-                             withCode:TFLSupportErrorCodeInvalidArgumentError
+-                          description:@"TFLImageSearcherOptions argument cannot be nil."];
++    [TFLCommonUtils
++        createCustomError:error
++                 withCode:TFLSupportErrorCodeInvalidArgumentError
++              description:@"TFLImageSearcherOptions argument cannot be nil."];
+     return nil;
+   }
+ 
+   ImageSearcherOptionsCpp cppOptions = [options cppOptions];
+ 
+-  return [[TFLImageSearcher alloc] initWithCppImageSearcherOptions:cppOptions error:error];
++  return [[TFLImageSearcher alloc] initWithCppImageSearcherOptions:cppOptions
++                                                             error:error];
+ }
+ 
+-- (nullable TFLSearchResult *)searchWithGMLImage:(GMLImage *)image error:(NSError **)error {
++- (nullable TFLSearchResult*)searchWithGMLImage:(GMLImage*)image
++                                          error:(NSError**)error {
+   if (!image) {
+     [TFLCommonUtils createCustomError:error
+                              withCode:TFLSupportErrorCodeInvalidArgumentError
+@@ -108,20 +115,23 @@ using ::tflite::support::StatusOr;
+     return nil;
+   }
+ 
+-  std::unique_ptr<FrameBufferCpp> cppFrameBuffer = [image cppFrameBufferWithError:error];
++  std::unique_ptr<FrameBufferCpp> cppFrameBuffer =
++      [image cppFrameBufferWithError:error];
+ 
+   if (!cppFrameBuffer) {
+     return nil;
+   }
+ 
+-  StatusOr<SearchResultCpp> cppSearchResultStatus = _cppImageSearcher->Search(*cppFrameBuffer);
++  StatusOr<SearchResultCpp> cppSearchResultStatus =
++      _cppImageSearcher->Search(*cppFrameBuffer);
+ 
+-  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus error:error];
++  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus
++                                              error:error];
+ }
+ 
+-- (nullable TFLSearchResult *)searchWithGMLImage:(GMLImage *)image
+-                                regionOfInterest:(CGRect)roi
+-                                           error:(NSError **)error {
++- (nullable TFLSearchResult*)searchWithGMLImage:(GMLImage*)image
++                               regionOfInterest:(CGRect)roi
++                                          error:(NSError**)error {
+   if (!image) {
+     [TFLCommonUtils createCustomError:error
+                              withCode:TFLSupportErrorCodeInvalidArgumentError
+@@ -129,7 +139,8 @@ using ::tflite::support::StatusOr;
+     return nil;
+   }
+ 
+-  std::unique_ptr<FrameBufferCpp> cppFrameBuffer = [image cppFrameBufferWithError:error];
++  std::unique_ptr<FrameBufferCpp> cppFrameBuffer =
++      [image cppFrameBufferWithError:error];
+ 
+   if (!cppFrameBuffer) {
+     return nil;
+@@ -144,6 +155,7 @@ using ::tflite::support::StatusOr;
+   StatusOr<SearchResultCpp> cppSearchResultStatus =
+       _cppImageSearcher->Search(*cppFrameBuffer, regionOfInterest);
+ 
+-  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus error:error];
++  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus
++                                              error:error];
+ }
+ @end
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h
 index 7b556dcd312e2..234e10d68b319 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h
@@ -13312,11 +13924,61 @@ index 31cb241a2a448..def2e5b0b4877 100644
    if (!cDetectionResult) {
      return nil;
    }
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h
+index f5b38903a88ee..77db225f7f34a 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h
+@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
+  * TF Lite Task Vision C++ library. @c NULL in case of an error.
+  */
+ - (std::unique_ptr<tflite::task::vision::FrameBuffer>)cppFrameBufferWithError:
+-    (NSError *_Nullable *)error;
++    (NSError* _Nullable*)error;
+ 
+ @end
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm
+index 123e8d3893e0b..72a82922e5878 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm
+@@ -26,8 +26,8 @@ using ::tflite::support::StatusOr;
+ 
+ @implementation GMLImage (CppUtils)
+ 
+-- (std::unique_ptr<FrameBufferCpp>)cppFrameBufferWithError:(NSError **)error {
+-  uint8_t *buffer = [self bufferWithError:error];
++- (std::unique_ptr<FrameBufferCpp>)cppFrameBufferWithError:(NSError**)error {
++  uint8_t* buffer = [self bufferWithError:error];
+ 
+   if (!buffer) {
+     return NULL;
+@@ -36,9 +36,9 @@ using ::tflite::support::StatusOr;
+   CGSize bitmapSize = self.bitmapSize;
+   FrameBufferCpp::Format frame_buffer_format = FrameBufferCpp::Format::kRGB;
+ 
+-  StatusOr<std::unique_ptr<FrameBufferCpp>> frameBuffer =
+-      CreateFromRawBuffer(buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
+-                          frame_buffer_format, FrameBufferCpp::Orientation::kTopLeft);
++  StatusOr<std::unique_ptr<FrameBufferCpp>> frameBuffer = CreateFromRawBuffer(
++      buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
++      frame_buffer_format, FrameBufferCpp::Orientation::kTopLeft);
+ 
+   if (![TFLCommonCppUtils checkCppError:frameBuffer.status() toError:error]) {
+     return NULL;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h
-index 77c3e33185b9f..8524903b36602 100644
+index b7687091440f6..4d5f022ae213d 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h
 @@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
+  *
+  * @return The underlying pixel buffer of gmlImage or nil in case of errors.
+  */
+-- (nullable uint8_t *)bufferWithError:(NSError *_Nullable *)error;
++- (nullable uint8_t*)bufferWithError:(NSError* _Nullable*)error;
+ 
+ /**
+  * Creates and returns a TfLiteFrameBuffer from a GMLImage. TfLiteFrameBuffer is
+@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
   * @return The TfLiteFrameBuffer created from the gmlImage which can be used
   * with the TF Lite Task Vision C library.
   */
@@ -13325,7 +13987,7 @@ index 77c3e33185b9f..8524903b36602 100644
  
  /**
   * Gets grayscale pixel buffer from GMLImage if source type is
-@@ -61,9 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -75,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
   * @return The GMLImage object contains the loaded image. This method returns
   * nil if it cannot load the image.
   */
@@ -13339,66 +14001,28 @@ index 77c3e33185b9f..8524903b36602 100644
  
  @end
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.m
-index d1ab5105448fe..532f75ef25a6c 100644
+index 1699ecbb08084..6f795f4f1dc96 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.m
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.m
-@@ -25,35 +25,38 @@
+@@ -23,30 +23,32 @@
  
  @interface TFLCVPixelBufferUtils : NSObject
  
--+ (TfLiteFrameBuffer *)cFrameBufferWithWidth:(int)width
--                                      height:(int)height
--                           frameBufferFormat:(enum TfLiteFrameBufferFormat)frameBufferFormat
--                                      buffer:(uint8_t *)buffer
--                                       error:(NSError **)error;
-++ (TfLiteFrameBuffer*)cFrameBufferWithWidth:(int)width
-+                                     height:(int)height
-+                          frameBufferFormat:
-+                              (enum TfLiteFrameBufferFormat)frameBufferFormat
-+                                     buffer:(uint8_t*)buffer
-+                                      error:(NSError**)error;
- 
--+ (TfLiteFrameBuffer *)cFramebufferFromCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
--                                               error:(NSError **)error;
-++ (TfLiteFrameBuffer*)cFramebufferFromCVPixelBuffer:
-+                          (CVPixelBufferRef)pixelBuffer
-+                                              error:(NSError**)error;
+-+ (uint8_t *)bufferFromCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
+++ (uint8_t*)bufferFromCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
++                              error:(NSError**)error;
  
  @end
  
  @interface UIImage (RawPixelDataUtils)
--- (TfLiteFrameBuffer *)frameBufferWithError:(NSError **)error;
-+- (TfLiteFrameBuffer*)frameBufferWithError:(NSError**)error;
+ @property(nonatomic, readonly) CGSize bitmapSize;
+ 
+-- (uint8_t *)bufferWithError:(NSError **)error;
++- (uint8_t*)bufferWithError:(NSError**)error;
  - (CVPixelBufferRef)grayScalePixelBuffer;
  @end
  
  @implementation TFLCVPixelBufferUtils
- 
--+ (TfLiteFrameBuffer *)cFrameBufferWithWidth:(int)width
--                                      height:(int)height
--                           frameBufferFormat:(enum TfLiteFrameBufferFormat)frameBufferFormat
--                                      buffer:(uint8_t *)buffer
--                                       error:(NSError **)error {
-++ (TfLiteFrameBuffer*)cFrameBufferWithWidth:(int)width
-+                                     height:(int)height
-+                          frameBufferFormat:
-+                              (enum TfLiteFrameBufferFormat)frameBufferFormat
-+                                     buffer:(uint8_t*)buffer
-+                                      error:(NSError**)error {
-   if (!buffer) {
-     return NULL;
-   }
- 
--  TfLiteFrameBuffer *cFrameBuffer = [TFLCommonUtils mallocWithSize:sizeof(TfLiteFrameBuffer)
--                                                             error:error];
-+  TfLiteFrameBuffer* cFrameBuffer =
-+      [TFLCommonUtils mallocWithSize:sizeof(TfLiteFrameBuffer) error:error];
- 
-   if (cFrameBuffer) {
-     cFrameBuffer->dimension.width = width;
-@@ -65,17 +68,18 @@
-   return cFrameBuffer;
- }
  
 -+ (uint8_t *)createRGBImageDatafromImageData:(uint8_t *)data
 -                                   withWidth:(size_t)width
@@ -13423,7 +14047,7 @@ index d1ab5105448fe..532f75ef25a6c 100644
  
    if (!destPixelBufferAddress) {
      return NULL;
-@@ -95,19 +99,23 @@
+@@ -66,19 +68,23 @@
  
    switch (pixelBufferFormatType) {
      case kCVPixelFormatType_32RGBA: {
@@ -13454,7 +14078,7 @@ index d1ab5105448fe..532f75ef25a6c 100644
  
        free(destPixelBufferAddress);
        return NULL;
-@@ -126,16 +134,17 @@
+@@ -97,16 +103,17 @@
    return destPixelBufferAddress;
  }
  
@@ -13476,24 +14100,21 @@ index d1ab5105448fe..532f75ef25a6c 100644
                                  error:error];
  
    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-@@ -143,9 +152,10 @@
+@@ -114,22 +121,26 @@
    return rgbData;
  }
  
--+ (TfLiteFrameBuffer *)cFramebufferFromCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
--                                               error:(NSError **)error {
+-+ (nullable uint8_t *)bufferFromCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
+-                                        error:(NSError **)error {
 -  uint8_t *buffer = NULL;
-++ (TfLiteFrameBuffer*)cFramebufferFromCVPixelBuffer:
-+                          (CVPixelBufferRef)pixelBuffer
-+                                              error:(NSError**)error {
+++ (nullable uint8_t*)bufferFromCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
++                                       error:(NSError**)error {
 +  uint8_t* buffer = NULL;
-   enum TfLiteFrameBufferFormat cPixelFormat = kRGB;
  
    OSType pixelBufferFormat = CVPixelBufferGetPixelFormatType(pixelBuffer);
-@@ -154,14 +164,18 @@
-     case kCVPixelFormatType_32BGRA: {
-       cPixelFormat = kRGB;
  
+   switch (pixelBufferFormat) {
+     case kCVPixelFormatType_32BGRA: {
 -      buffer = [TFLCVPixelBufferUtils createRGBImageDatafromCVPixelBuffer:pixelBuffer error:error];
 +      buffer =
 +          [TFLCVPixelBufferUtils createRGBImageDatafromCVPixelBuffer:pixelBuffer
@@ -13514,18 +14135,18 @@ index d1ab5105448fe..532f75ef25a6c 100644
      }
    }
  
-@@ -176,8 +190,8 @@
+@@ -140,8 +151,8 @@
  
  @implementation UIImage (RawPixelDataUtils)
  
--- (TfLiteFrameBuffer *)frameBufferWithError:(NSError **)error {
--  TfLiteFrameBuffer *frameBuffer = nil;
-+- (TfLiteFrameBuffer*)frameBufferWithError:(NSError**)error {
-+  TfLiteFrameBuffer* frameBuffer = nil;
+-- (uint8_t *)bufferWithError:(NSError **)error {
+-  uint8_t *frameBuffer = nil;
++- (uint8_t*)bufferWithError:(NSError**)error {
++  uint8_t* frameBuffer = nil;
  
    if (self.CGImage) {
      frameBuffer = [self frameBufferFromCGImage:self.CGImage error:error];
-@@ -202,59 +216,65 @@
+@@ -183,59 +194,65 @@
    }
  
    CGDataProviderRef imageDataProvider = CGImageGetDataProvider(cgImage);
@@ -13615,41 +14236,24 @@ index d1ab5105448fe..532f75ef25a6c 100644
      }
  
      CGContextRelease(context);
-@@ -265,18 +285,21 @@
+@@ -246,25 +263,28 @@
    return buffer_to_return;
  }
  
--- (TfLiteFrameBuffer *)frameBufferFromCGImage:(CGImageRef)cgImage error:(NSError **)error {
--  UInt8 *buffer = [UIImage pixelDataFromCGImage:cgImage error:error];
-+- (TfLiteFrameBuffer*)frameBufferFromCGImage:(CGImageRef)cgImage
-+                                       error:(NSError**)error {
-+  UInt8* buffer = [UIImage pixelDataFromCGImage:cgImage error:error];
+-- (uint8_t *)frameBufferFromCGImage:(CGImageRef)cgImage error:(NSError **)error {
+-  uint8_t *buffer = [UIImage pixelDataFromCGImage:cgImage error:error];
++- (uint8_t*)frameBufferFromCGImage:(CGImageRef)cgImage error:(NSError**)error {
++  uint8_t* buffer = [UIImage pixelDataFromCGImage:cgImage error:error];
  
--  return [TFLCVPixelBufferUtils cFrameBufferWithWidth:(int)CGImageGetWidth(cgImage)
--                                               height:(int)CGImageGetHeight(cgImage)
--                                    frameBufferFormat:kRGB
--                                               buffer:buffer
--                                                error:error];
-+  return [TFLCVPixelBufferUtils
-+      cFrameBufferWithWidth:(int)CGImageGetWidth(cgImage)
-+                     height:(int)CGImageGetHeight(cgImage)
-+          frameBufferFormat:kRGB
-+                     buffer:buffer
-+                      error:error];
+   return buffer;
  }
  
--- (TfLiteFrameBuffer *)frameBufferFromCIImage:(CIImage *)ciImage error:(NSError **)error {
+-- (uint8_t *)frameBufferFromCIImage:(CIImage *)ciImage error:(NSError **)error {
 -  uint8_t *buffer = NULL;
-+- (TfLiteFrameBuffer*)frameBufferFromCIImage:(CIImage*)ciImage
-+                                       error:(NSError**)error {
++- (uint8_t*)frameBufferFromCIImage:(CIImage*)ciImage error:(NSError**)error {
 +  uint8_t* buffer = NULL;
  
-   int width = 0;
-   int height = 0;
-@@ -285,17 +308,20 @@
-     width = (int)CVPixelBufferGetWidth(ciImage.pixelBuffer);
-     height = (int)CVPixelBufferGetHeight(ciImage.pixelBuffer);
- 
+   if (ciImage.pixelBuffer) {
 -    buffer = [TFLCVPixelBufferUtils createRGBImageDatafromCVPixelBuffer:ciImage.pixelBuffer
 -                                                                  error:error];
 +    buffer = [TFLCVPixelBufferUtils
@@ -13658,8 +14262,6 @@ index d1ab5105448fe..532f75ef25a6c 100644
  
    } else if (ciImage.CGImage) {
      buffer = [UIImage pixelDataFromCGImage:ciImage.CGImage error:error];
-     width = (int)CGImageGetWidth(ciImage.CGImage);
-     height = (int)CGImageGetWidth(ciImage.CGImage);
    } else {
 -    [TFLCommonUtils createCustomError:error
 -                             withCode:TFLSupportErrorCodeInvalidArgumentError
@@ -13671,40 +14273,68 @@ index d1ab5105448fe..532f75ef25a6c 100644
 +                  @"CIImage should have CGImage or CVPixelBuffer info."];
    }
  
-   return [TFLCVPixelBufferUtils cFrameBufferWithWidth:width
-@@ -309,19 +335,23 @@
+   return buffer;
+@@ -274,17 +294,21 @@
  
  @implementation GMLImage (Utils)
  
--- (nullable TfLiteFrameBuffer *)cFrameBufferWithError:(NSError *_Nullable *)error {
--  TfLiteFrameBuffer *cFrameBuffer = NULL;
-+- (nullable TfLiteFrameBuffer*)cFrameBufferWithError:
-+    (NSError* _Nullable*)error {
-+  TfLiteFrameBuffer* cFrameBuffer = NULL;
+-- (nullable uint8_t *)bufferWithError:(NSError **)error {
+-  uint8_t *buffer = NULL;
++- (nullable uint8_t*)bufferWithError:(NSError**)error {
++  uint8_t* buffer = NULL;
  
    switch (self.imageSourceType) {
      case GMLImageSourceTypeSampleBuffer: {
 -      CVPixelBufferRef sampleImagePixelBuffer = CMSampleBufferGetImageBuffer(self.sampleBuffer);
--      cFrameBuffer = [TFLCVPixelBufferUtils cFramebufferFromCVPixelBuffer:sampleImagePixelBuffer
--                                                                    error:error];
+-      buffer = [TFLCVPixelBufferUtils bufferFromCVPixelBuffer:sampleImagePixelBuffer error:error];
 +      CVPixelBufferRef sampleImagePixelBuffer =
 +          CMSampleBufferGetImageBuffer(self.sampleBuffer);
-+      cFrameBuffer = [TFLCVPixelBufferUtils
-+          cFramebufferFromCVPixelBuffer:sampleImagePixelBuffer
-+                                  error:error];
++      buffer =
++          [TFLCVPixelBufferUtils bufferFromCVPixelBuffer:sampleImagePixelBuffer
++                                                   error:error];
        break;
      }
      case GMLImageSourceTypePixelBuffer: {
--      cFrameBuffer = [TFLCVPixelBufferUtils cFramebufferFromCVPixelBuffer:self.pixelBuffer
--                                                                    error:error];
-+      cFrameBuffer =
-+          [TFLCVPixelBufferUtils cFramebufferFromCVPixelBuffer:self.pixelBuffer
-+                                                         error:error];
+-      buffer = [TFLCVPixelBufferUtils bufferFromCVPixelBuffer:self.pixelBuffer error:error];
++      buffer = [TFLCVPixelBufferUtils bufferFromCVPixelBuffer:self.pixelBuffer
++                                                        error:error];
        break;
      }
      case GMLImageSourceTypeImage: {
-@@ -352,14 +382,17 @@
+@@ -306,7 +330,8 @@
+ 
+   switch (self.imageSourceType) {
+     case GMLImageSourceTypeSampleBuffer: {
+-      CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(self.sampleBuffer);
++      CVPixelBufferRef pixelBuffer =
++          CMSampleBufferGetImageBuffer(self.sampleBuffer);
+       width = CVPixelBufferGetWidth(pixelBuffer);
+       height = CVPixelBufferGetHeight(pixelBuffer);
+       break;
+@@ -343,8 +368,8 @@
    return nil;
+ }
+ 
+-- (nullable TfLiteFrameBuffer *)cFrameBufferWithError:(NSError **)error {
+-  uint8_t *buffer = [self bufferWithError:error];
++- (nullable TfLiteFrameBuffer*)cFrameBufferWithError:(NSError**)error {
++  uint8_t* buffer = [self bufferWithError:error];
+ 
+   if (!buffer) {
+     return NULL;
+@@ -353,8 +378,8 @@
+   CGSize bitmapSize = self.bitmapSize;
+   enum TfLiteFrameBufferFormat cFrameBufferFormat = kRGB;
+ 
+-  TfLiteFrameBuffer *cFrameBuffer = [TFLCommonUtils mallocWithSize:sizeof(TfLiteFrameBuffer)
+-                                                             error:error];
++  TfLiteFrameBuffer* cFrameBuffer =
++      [TFLCommonUtils mallocWithSize:sizeof(TfLiteFrameBuffer) error:error];
+ 
+   if (cFrameBuffer) {
+     cFrameBuffer->dimension.width = bitmapSize.width;
+@@ -366,14 +391,17 @@
+   return cFrameBuffer;
  }
  
 -+ (GMLImage *)imageFromBundleWithClass:(Class)classObject
@@ -14284,7 +14914,7 @@ index 1f5660efd7a3f..256c4a021b8a5 100644
    XCTAssertNil(classificationResult);
    VerifyError(error,
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/TFLRingBufferTests.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/TFLRingBufferTests.m
-index 2a014fc054020..546dd7541d92e 100644
+index cf7b75c37b9e9..c3d24ffa1f441 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/TFLRingBufferTests.m
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/TFLRingBufferTests.m
 @@ -17,10 +17,12 @@
@@ -14428,7 +15058,7 @@ index 2a014fc054020..546dd7541d92e 100644
  
    XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
                                   dataSize:initialDataSize
-@@ -247,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -246,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
    NSInteger offset = 2;
    NSInteger inDataSize = 3;
  
@@ -14437,7 +15067,7 @@ index 2a014fc054020..546dd7541d92e 100644
    XCTAssertFalse([ringBuffer loadFloatData:&(inArray[0])
                                    dataSize:initialDataSize
                                      offset:offset
-@@ -255,7 +264,8 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -254,7 +263,8 @@ NS_ASSUME_NONNULL_BEGIN
                                       error:&error]);
  
    XCTAssertNotNil(error);
@@ -14447,7 +15077,7 @@ index 2a014fc054020..546dd7541d92e 100644
                @"offset + size exceeds the maximum size of the source buffer.");
  }
  
-@@ -264,7 +274,8 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -263,7 +273,8 @@ NS_ASSUME_NONNULL_BEGIN
    float initialArray[] = {1.0f, 2.0f};
  
    NSInteger bufferSize = 5;
@@ -14457,7 +15087,7 @@ index 2a014fc054020..546dd7541d92e 100644
  
    XCTAssertTrue([ringBuffer loadFloatData:&(initialArray[0])
                                   dataSize:initialDataSize
-@@ -276,7 +287,7 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -275,7 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
  
    float expectedData[] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
  
@@ -14467,7 +15097,7 @@ index 2a014fc054020..546dd7541d92e 100644
    XCTAssertEqual(outBuffer.size, bufferSize);
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_record/TFLAudioRecordTests.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_record/TFLAudioRecordTests.m
-index 88e66b86359b6..47bebba3fc323 100644
+index 08431e4a01b01..f79ef961b9a7f 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_record/TFLAudioRecordTests.m
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_record/TFLAudioRecordTests.m
 @@ -20,70 +20,83 @@
@@ -14666,7 +15296,7 @@ index 88e66b86359b6..47bebba3fc323 100644
                                                   withSize:audioRecord.bufferSize
                                                      error:&error];
  
-@@ -134,62 +154,71 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -134,61 +154,70 @@ NS_ASSUME_NONNULL_BEGIN
    XCTAssertEqual(floatBuffer.size, audioRecord.bufferSize);
    for (int i = 0; i < floatBuffer.size; i++) {
      NSInteger startIndex = bufferToCompare.frameLength - floatBuffer.size;
@@ -14760,13 +15390,11 @@ index 88e66b86359b6..47bebba3fc323 100644
    XCTAssertNotNil(audioRecord);
  
 -  NSError *error = nil;
--  TFLFloatBuffer *floatBuffer = [audioRecord readAtOffset:0
 +  NSError* error = nil;
-+  TFLFloatBuffer* floatBuffer = [audioRecord readAtOffset:0
-                                                  withSize:audioRecord.bufferSize
-                                                     error:&error];
+   [audioRecord readAtOffset:0 withSize:audioRecord.bufferSize error:&error];
  
-@@ -200,76 +229,90 @@ NS_ASSUME_NONNULL_BEGIN
+   VerifyError(error, @"org.tensorflow.lite.audio.record",
+@@ -198,76 +227,90 @@ NS_ASSUME_NONNULL_BEGIN
  }
  
  - (void)testReadSucceedsWithOffset {
@@ -15060,7 +15688,7 @@ index 7d2347a76d5b7..bcb4c3c66933d 100644
  
  @end
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_tensor/TFLAudioTensorTests.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_tensor/TFLAudioTensorTests.m
-index 9e7cb0c3cd7f5..ad6e0f61a0cde 100644
+index 970828e22f4dd..af66ec14500e0 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_tensor/TFLAudioTensorTests.m
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/audio/core/audio_tensor/TFLAudioTensorTests.m
 @@ -19,190 +19,221 @@
@@ -15479,7 +16107,7 @@ index 23837be922d7e..9b8504a492f53 100644
    // Comment from TFLImageClassifierTests.m:
    // "TODO: match the score as image_classifier_test.cc"
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/TFLImageClassifierTests.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/TFLImageClassifierTests.m
-index d03b6044bdd68..b1ed8cf1e2f6d 100644
+index 4059c9da1c967..4eabed7abfebd 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/TFLImageClassifierTests.m
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/TFLImageClassifierTests.m
 @@ -29,8 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
@@ -15538,7 +16166,17 @@ index d03b6044bdd68..b1ed8cf1e2f6d 100644
    XCTAssertNotNil(gmlImage);
  
    CGRect roi = CGRectMake(406, 110, 148, 153);
-@@ -117,8 +122,9 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -104,7 +109,8 @@ NS_ASSUME_NONNULL_BEGIN
+   XCTAssertTrue(classificationResults.classifications[0].categories.count > 0);
+ 
+   // TODO: match the label and score as image_classifier_test.cc
+-  // TFLCategory *__unused category = classificationResults.classifications[0].categories[0];
++  // TFLCategory *__unused category =
++  // classificationResults.classifications[0].categories[0];
+   // XCTAssertTrue([category.label isEqual:@"soccer ball"]);
+   // XCTAssertEqualWithAccuracy(category.score, 0.256512, 0.001);
+ }
+@@ -117,8 +123,9 @@ NS_ASSUME_NONNULL_BEGIN
        [TFLImageClassifier imageClassifierWithOptions:imageClassifierOptions error:nil];
    XCTAssertNotNil(imageClassifier);
  
@@ -15550,6 +16188,328 @@ index d03b6044bdd68..b1ed8cf1e2f6d 100644
    XCTAssertNotNil(gmlImage);
  
    TFLClassificationResult *classificationResults = [imageClassifier classifyWithGMLImage:gmlImage
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_searcher/TFLImageSearcherTests.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_searcher/TFLImageSearcherTests.m
+index ff2818faa4161..912104ef4933c 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_searcher/TFLImageSearcherTests.m
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_searcher/TFLImageSearcherTests.m
+@@ -20,26 +20,32 @@
+ 
+ NS_ASSUME_NONNULL_BEGIN
+ 
+-static NSString *const kExpectedTaskErrorDomain = @"org.tensorflow.lite.tasks";
+-
+-static NSString *const kSearcherModelName = @"mobilenet_v3_small_100_224_searcher";
+-static NSString *const kEmbedderModelName = @"mobilenet_v3_small_100_224_embedder";
+-static NSString *const kMobileNetIndexName = @"searcher_index";
+-
+-#define ValidateError(error, expectedDomain, expectedCode, expectedLocalizedDescription) \
+-  XCTAssertNotNil(error);                                                                \
+-  XCTAssertEqualObjects(error.domain, expectedDomain);                                   \
+-  XCTAssertEqual(error.code, expectedCode);                                              \
+-  XCTAssertNotEqual(                                                                     \
+-      [error.localizedDescription rangeOfString:expectedLocalizedDescription].location,  \
++static NSString* const kExpectedTaskErrorDomain = @"org.tensorflow.lite.tasks";
++
++static NSString* const kSearcherModelName =
++    @"mobilenet_v3_small_100_224_searcher";
++static NSString* const kEmbedderModelName =
++    @"mobilenet_v3_small_100_224_embedder";
++static NSString* const kMobileNetIndexName = @"searcher_index";
++
++#define ValidateError(error, expectedDomain, expectedCode,                    \
++                      expectedLocalizedDescription)                           \
++  XCTAssertNotNil(error);                                                     \
++  XCTAssertEqualObjects(error.domain, expectedDomain);                        \
++  XCTAssertEqual(error.code, expectedCode);                                   \
++  XCTAssertNotEqual(                                                          \
++      [error.localizedDescription rangeOfString:expectedLocalizedDescription] \
++          .location,                                                          \
+       NSNotFound)
+ 
+ #define ValidateSearchResultCount(searchResult, expectedNearestNeighborsCount) \
+   XCTAssertNotNil(searchResult);                                               \
+-  XCTAssertEqual(searchResult.nearestNeighbors.count, expectedNearestNeighborsCount);
++  XCTAssertEqual(searchResult.nearestNeighbors.count,                          \
++                 expectedNearestNeighborsCount);
+ 
+-#define ValidateNearestNeighbor(nearestNeighbor, expectedMetadata, expectedDistance) \
+-  XCTAssertEqualObjects(nearestNeighbor.metadata, expectedMetadata);                 \
++#define ValidateNearestNeighbor(nearestNeighbor, expectedMetadata,   \
++                                expectedDistance)                    \
++  XCTAssertEqualObjects(nearestNeighbor.metadata, expectedMetadata); \
+   XCTAssertEqualWithAccuracy(nearestNeighbor.distance, expectedDistance, 1e-6);
+ 
+ @interface TFLImageSearcherTests : XCTestCase
+@@ -51,40 +57,46 @@ static NSString *const kMobileNetIndexName = @"searcher_index";
+   [super setUp];
+ }
+ 
+-- (NSString *)filePathWithName:(NSString *)fileName extension:(NSString *)extension {
+-  NSString *filePath = [[NSBundle bundleForClass:self.class] pathForResource:fileName
+-                                                                      ofType:extension];
++- (NSString*)filePathWithName:(NSString*)fileName
++                    extension:(NSString*)extension {
++  NSString* filePath =
++      [[NSBundle bundleForClass:self.class] pathForResource:fileName
++                                                     ofType:extension];
+   XCTAssertNotNil(filePath);
+ 
+   return filePath;
+ }
+ 
+-- (TFLImageSearcherOptions *)imageSearcherOptionsWithModelName:(NSString *)modelName {
+-  NSString *modelPath = [self filePathWithName:modelName extension:@"tflite"];
+-  TFLImageSearcherOptions *imageSearcherOptions =
++- (TFLImageSearcherOptions*)imageSearcherOptionsWithModelName:
++    (NSString*)modelName {
++  NSString* modelPath = [self filePathWithName:modelName extension:@"tflite"];
++  TFLImageSearcherOptions* imageSearcherOptions =
+       [[TFLImageSearcherOptions alloc] initWithModelPath:modelPath];
+ 
+   return imageSearcherOptions;
+ }
+ 
+-- (TFLImageSearcher *)defaultImageSearcherWithModelName:(NSString *)modelName
+-                                          indexFileName:(nullable NSString *)indexFileName {
+-  TFLImageSearcherOptions *imageSearcherOptions =
++- (TFLImageSearcher*)defaultImageSearcherWithModelName:(NSString*)modelName
++                                         indexFileName:
++                                             (nullable NSString*)indexFileName {
++  TFLImageSearcherOptions* imageSearcherOptions =
+       [self imageSearcherOptionsWithModelName:modelName];
+ 
+   if ([indexFileName length] > 0) {
+-    NSString *indexFilePath = [self filePathWithName:indexFileName extension:@"ldb"];
++    NSString* indexFilePath = [self filePathWithName:indexFileName
++                                           extension:@"ldb"];
+     imageSearcherOptions.searchOptions.indexFile.filePath = indexFilePath;
+   }
+ 
+-  TFLImageSearcher *imageSearcher = [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
+-                                                                         error:nil];
++  TFLImageSearcher* imageSearcher =
++      [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
++                                           error:nil];
+   XCTAssertNotNil(imageSearcher);
+ 
+   return imageSearcher;
+ }
+ 
+-- (void)validateSearchResult:(TFLSearchResult *)searchResult {
++- (void)validateSearchResult:(TFLSearchResult*)searchResult {
+   ValidateSearchResultCount(searchResult,
+                             5  // expectedNearestNeighborsCount
+   );
+@@ -111,7 +123,7 @@ static NSString *const kMobileNetIndexName = @"searcher_index";
+   );
+ }
+ 
+-- (void)validateSearchResultForRegionOfInterest:(TFLSearchResult *)searchResult {
++- (void)validateSearchResultForRegionOfInterest:(TFLSearchResult*)searchResult {
+   ValidateSearchResultCount(searchResult,
+                             5  // expectedNearestNeighborsCount
+   );
+@@ -138,7 +150,7 @@ static NSString *const kMobileNetIndexName = @"searcher_index";
+   );
+ }
+ 
+-- (void)validateSearchResultsWithNormalization:(TFLSearchResult *)searchResult {
++- (void)validateSearchResultsWithNormalization:(TFLSearchResult*)searchResult {
+   ValidateSearchResultCount(searchResult,
+                             5  // expectedNearestNeighborsCount
+   );
+@@ -166,68 +178,82 @@ static NSString *const kMobileNetIndexName = @"searcher_index";
+ }
+ 
+ - (void)testInferenceWithSearchModelOnMLImageWithUIImage {
+-  TFLImageSearcher *imageSearcher = [self defaultImageSearcherWithModelName:kSearcherModelName
+-                                                              indexFileName:nil];
+-  GMLImage *gmlImage =
+-      [GMLImage imageFromBundleWithClass:self.class fileName:@"burger" ofType:@"jpg"];
++  TFLImageSearcher* imageSearcher =
++      [self defaultImageSearcherWithModelName:kSearcherModelName
++                                indexFileName:nil];
++  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
++                                                 fileName:@"burger"
++                                                   ofType:@"jpg"];
+   XCTAssertNotNil(gmlImage);
+ 
+-  TFLSearchResult *searchResult = [imageSearcher searchWithGMLImage:gmlImage error:nil];
++  TFLSearchResult* searchResult = [imageSearcher searchWithGMLImage:gmlImage
++                                                              error:nil];
+   [self validateSearchResult:searchResult];
+ }
+ 
+ - (void)testInferenceWithEmbedderModelAndIndexFileOnMLImageWithUIImage {
+-  TFLImageSearcher *imageSearcher = [self defaultImageSearcherWithModelName:kEmbedderModelName
+-                                                              indexFileName:kMobileNetIndexName];
+-  GMLImage *gmlImage =
+-      [GMLImage imageFromBundleWithClass:self.class fileName:@"burger" ofType:@"jpg"];
++  TFLImageSearcher* imageSearcher =
++      [self defaultImageSearcherWithModelName:kEmbedderModelName
++                                indexFileName:kMobileNetIndexName];
++  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
++                                                 fileName:@"burger"
++                                                   ofType:@"jpg"];
+   XCTAssertNotNil(gmlImage);
+ 
+-  TFLSearchResult *searchResult = [imageSearcher searchWithGMLImage:gmlImage error:nil];
++  TFLSearchResult* searchResult = [imageSearcher searchWithGMLImage:gmlImage
++                                                              error:nil];
+   [self validateSearchResult:searchResult];
+ }
+ 
+ - (void)testSearchWithNormalizationSucceeds {
+-  TFLImageSearcherOptions *imageSearcherOptions =
++  TFLImageSearcherOptions* imageSearcherOptions =
+       [self imageSearcherOptionsWithModelName:kSearcherModelName];
+   imageSearcherOptions.embeddingOptions.l2Normalize = YES;
+ 
+-  TFLImageSearcher *imageSearcher = [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
+-                                                                         error:nil];
++  TFLImageSearcher* imageSearcher =
++      [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
++                                           error:nil];
+ 
+-  GMLImage *gmlImage =
+-      [GMLImage imageFromBundleWithClass:self.class fileName:@"burger" ofType:@"jpg"];
++  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
++                                                 fileName:@"burger"
++                                                   ofType:@"jpg"];
+   XCTAssertNotNil(gmlImage);
+ 
+-  TFLSearchResult *searchResult = [imageSearcher searchWithGMLImage:gmlImage error:nil];
++  TFLSearchResult* searchResult = [imageSearcher searchWithGMLImage:gmlImage
++                                                              error:nil];
+   [self validateSearchResultsWithNormalization:searchResult];
+ }
+ 
+ - (void)testSearchWithMaxResultsSucceeds {
+   const NSInteger searchResultCount = 2;
+ 
+-  TFLImageSearcherOptions *imageSearcherOptions =
++  TFLImageSearcherOptions* imageSearcherOptions =
+       [self imageSearcherOptionsWithModelName:kSearcherModelName];
+   imageSearcherOptions.searchOptions.maxResults = searchResultCount;
+ 
+-  TFLImageSearcher *imageSearcher = [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
+-                                                                         error:nil];
++  TFLImageSearcher* imageSearcher =
++      [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
++                                           error:nil];
+ 
+-  GMLImage *gmlImage =
+-      [GMLImage imageFromBundleWithClass:self.class fileName:@"burger" ofType:@"jpg"];
++  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
++                                                 fileName:@"burger"
++                                                   ofType:@"jpg"];
+   XCTAssertNotNil(gmlImage);
+ 
+-  TFLSearchResult *searchResult = [imageSearcher searchWithGMLImage:gmlImage error:nil];
++  TFLSearchResult* searchResult = [imageSearcher searchWithGMLImage:gmlImage
++                                                              error:nil];
+   ValidateSearchResultCount(searchResult,
+                             searchResultCount  // expectedNearestNeighborsCount
+   );
+ }
+ 
+ - (void)testSearchWithRegionOfInterestSucceeds {
+-  TFLImageSearcher *imageSearcher = [self defaultImageSearcherWithModelName:kEmbedderModelName
+-                                                              indexFileName:kMobileNetIndexName];
+-  GMLImage *gmlImage =
+-      [GMLImage imageFromBundleWithClass:self.class fileName:@"burger" ofType:@"jpg"];
++  TFLImageSearcher* imageSearcher =
++      [self defaultImageSearcherWithModelName:kEmbedderModelName
++                                indexFileName:kMobileNetIndexName];
++  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
++                                                 fileName:@"burger"
++                                                   ofType:@"jpg"];
+   XCTAssertNotNil(gmlImage);
+ 
+   CGRect roi = CGRectMake(0,    // x
+@@ -235,20 +261,21 @@ static NSString *const kMobileNetIndexName = @"searcher_index";
+                           400,  // width
+                           325   // height
+   );
+-  TFLSearchResult *searchResult = [imageSearcher searchWithGMLImage:gmlImage
++  TFLSearchResult* searchResult = [imageSearcher searchWithGMLImage:gmlImage
+                                                    regionOfInterest:roi
+                                                               error:nil];
+   [self validateSearchResultForRegionOfInterest:searchResult];
+ }
+ 
+ - (void)testCreateImageSearcherWithQuantizeOptionFails {
+-  TFLImageSearcherOptions *imageSearcherOptions =
++  TFLImageSearcherOptions* imageSearcherOptions =
+       [self imageSearcherOptionsWithModelName:kSearcherModelName];
+   imageSearcherOptions.embeddingOptions.quantize = YES;
+ 
+-  NSError *error = nil;
+-  TFLImageSearcher *imageSearcher = [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
+-                                                                         error:&error];
++  NSError* error = nil;
++  TFLImageSearcher* imageSearcher =
++      [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
++                                           error:&error];
+ 
+   XCTAssertNil(imageSearcher);
+   ValidateError(error,
+@@ -260,35 +287,39 @@ static NSString *const kMobileNetIndexName = @"searcher_index";
+ }
+ 
+ - (void)testCreateImageSearcherWithInvalidMaxResultsFails {
+-  TFLImageSearcherOptions *imageSearcherOptions =
++  TFLImageSearcherOptions* imageSearcherOptions =
+       [self imageSearcherOptionsWithModelName:kSearcherModelName];
+   imageSearcherOptions.searchOptions.maxResults = -1;
+ 
+-  NSError *error = nil;
+-  TFLImageSearcher *imageSearcher = [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
+-                                                                         error:&error];
++  NSError* error = nil;
++  TFLImageSearcher* imageSearcher =
++      [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
++                                           error:&error];
+ 
+   XCTAssertNil(imageSearcher);
+-  ValidateError(error,
+-                kExpectedTaskErrorDomain,                           // expectedErrorDomain
+-                TFLSupportErrorCodeInvalidArgumentError,            // expectedErrorCode
+-                @"SearchOptions.max_results must be > 0, found -1"  // expectedErrorMessage
++  ValidateError(
++      error,
++      kExpectedTaskErrorDomain,                           // expectedErrorDomain
++      TFLSupportErrorCodeInvalidArgumentError,            // expectedErrorCode
++      @"SearchOptions.max_results must be > 0, found -1"  // expectedErrorMessage
+   );
+ }
+ 
+ - (void)testImageSearcherWithEmbedderModelAndInvalidIndexFileFails {
+-  TFLImageSearcherOptions *imageSearcherOptions =
++  TFLImageSearcherOptions* imageSearcherOptions =
+       [self imageSearcherOptionsWithModelName:kEmbedderModelName];
+ 
+-  NSError *error = nil;
+-  TFLImageSearcher *imageSearcher = [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
+-                                                                         error:&error];
++  NSError* error = nil;
++  TFLImageSearcher* imageSearcher =
++      [TFLImageSearcher imageSearcherWithOptions:imageSearcherOptions
++                                           error:&error];
+ 
+   XCTAssertNil(imageSearcher);
+-  ValidateError(error,
+-                kExpectedTaskErrorDomain,                                // expectedErrorDomain
+-                TFLSupportErrorCodeMetadataAssociatedFileNotFoundError,  // expectedErrorCode
+-                @"SearchOptions.index_file is not set"                   // expectedErrorMessage
++  ValidateError(
++      error,
++      kExpectedTaskErrorDomain,  // expectedErrorDomain
++      TFLSupportErrorCodeMetadataAssociatedFileNotFoundError,  // expectedErrorCode
++      @"SearchOptions.index_file is not set"  // expectedErrorMessage
+   );
+ }
+ 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_segmenter/TFLImageSegmenterTests.m b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_segmenter/TFLImageSegmenterTests.m
 index c2977475f6d4f..f483a516b9bc6 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_segmenter/TFLImageSegmenterTests.m
@@ -15833,16 +16793,16 @@ index 574b555301616..14e2906675b71 100644
 +NSArray<NSNumber*>* ConvertTokensToIds(Tokenizer* tokenizer,
 +                                       NSArray<NSString*>* tokens);
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
-index 39c7b655ff3f2..0361d7fce863b 100644
+index 830eab4359067..eec1423caeece 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
 @@ -14,10 +14,13 @@ limitations under the License.
  ==============================================================================*/
  #import "tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"
  
--std::string MakeString(NSString* str) { return std::string([str UTF8String]); }
+-std::string MakeString(NSString* str) { return base::SysNSStringToUTF8(str); }
 +std::string MakeString(NSString* str) {
-+  return std::string([str UTF8String]);
++  return base::SysNSStringToUTF8(str);
 +}
  
  NSString* MakeNSString(const std::string& str) {
@@ -53919,5 +54879,5 @@ index d587b3b441ce2..d79441827d54c 100644
  #ifdef __cplusplus
  }
 -- 
-2.37.3.998.g577e59143f-goog
+2.38.0.135.g90850a2211-goog
 

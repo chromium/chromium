@@ -22,7 +22,7 @@ import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
 import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
 
 // Options for setting up an ImageSegmenter.
-// Next Id: 9
+// Next Id: 10
 message ImageSegmenterOptions {
   // Base options for configuring MediaPipe Tasks, such as specifying the TfLite
   // model file with metadata, accelerator options, etc.
@@ -89,5 +89,5 @@ message ImageSegmenterOptions {
   optional tflite.proto.ComputeSettings compute_settings = 4;
 
   // Reserved tags.
-  reserved 1, 2;
+  reserved 1, 2, 9;
 }

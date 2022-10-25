@@ -218,9 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
   XCTAssertNotNil(audioRecord);
 
   NSError* error = nil;
-  TFLFloatBuffer* floatBuffer = [audioRecord readAtOffset:0
-                                                 withSize:audioRecord.bufferSize
-                                                    error:&error];
+  [audioRecord readAtOffset:0 withSize:audioRecord.bufferSize error:&error];
 
   VerifyError(error, @"org.tensorflow.lite.audio.record",
               TFLAudioRecordErrorCodeWaitingForNewMicInputError,

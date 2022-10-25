@@ -1,8 +1,6 @@
 # Description:
 #  Tools for building the TensorFlow pip package.
 
-load("@local_config_syslibs//:build_defs.bzl", "if_not_system_lib")
-
 package(default_visibility = ["//visibility:private"])
 
 COMMON_PIP_DEPS = [
@@ -47,16 +45,7 @@ filegroup(
     data = [
         "//:LICENSE",
         "@org_tensorflow//:LICENSE",
-    ] + if_not_system_lib(
-        "absl_py",
-        [
-            "@absl_py//absl:LICENSE",
-            "@absl_py//absl/logging:LICENSE",
-            "@absl_py//absl/flags:LICENSE",
-            "@absl_py//absl/testing:LICENSE",
-            "@absl_py//absl/third_party/unittest3_backport:LICENSE",
-        ],
-    ),
+    ],
 )
 
 sh_binary(

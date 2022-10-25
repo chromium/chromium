@@ -1,7 +1,7 @@
-From be0c241f6a8e3ee5330795ce1c5bc23b9da936b6 Mon Sep 17 00:00:00 2001
-From: Jun Zou <junzou@chromium.org>
-Date: Tue, 30 Aug 2022 17:58:53 +0000
-Subject: [PATCH 02/12] sentencepiece tokenization not supported
+From a7fe189f4eb9c1cf1065ac1a82ae3b1032b9885b Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 24 Oct 2022 14:05:58 -0700
+Subject: [PATCH 02/14] sentencepiece tokenization not supported
 
 ---
  .../cc/text/tokenizers/tokenizer_utils.cc          | 14 ++++----------
@@ -47,5 +47,5 @@ index 9abca9691f058..28f0137f54278 100644
      case ProcessUnitOptions_RegexTokenizerOptions: {
        const tflite::RegexTokenizerOptions* options =
 -- 
-2.37.3.998.g577e59143f-goog
+2.38.0.135.g90850a2211-goog
 

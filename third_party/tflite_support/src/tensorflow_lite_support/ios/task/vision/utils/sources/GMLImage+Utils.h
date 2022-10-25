@@ -15,6 +15,7 @@
 #import <Foundation/Foundation.h>
 
 #include "tensorflow_lite_support/c/task/vision/core/frame_buffer.h"
+
 #import "tensorflow_lite_support/odml/ios/image/apis/GMLImage.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,10 +25,23 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface GMLImage (Utils)
 
+/** Bitmap size of the image. */
+@property(nonatomic, readonly) CGSize bitmapSize;
+
 /**
- * Creates and returns a TfLiteFrameBuffer from a GMLImage. TfLiteFrameBuffer
- * is used by the TFLite Task Vision C library to hold the backing buffer of
- * any image. Image inputs to the TFLite Task Vision C library is of type
+ * Returns the underlying uint8 pixel buffer of a GMLImage.
+ *
+ * @param error Pointer to the memory location where errors if any should be
+ * saved. If @c NULL, no error will be saved.
+ *
+ * @return The underlying pixel buffer of gmlImage or nil in case of errors.
+ */
+- (nullable uint8_t*)bufferWithError:(NSError* _Nullable*)error;
+
+/**
+ * Creates and returns a TfLiteFrameBuffer from a GMLImage. TfLiteFrameBuffer is
+ * used by the TFLite Task Vision C library to hold the backing buffer of any
+ * image. Image inputs to the TFLite Task Vision C library is of type
  * TfLiteFrameBuffer.
  *
  * @param error Pointer to the memory location where errors if any should be

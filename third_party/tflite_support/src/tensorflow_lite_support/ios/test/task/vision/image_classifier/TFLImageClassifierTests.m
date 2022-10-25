@@ -108,8 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
   XCTAssertTrue(classificationResults.classifications.count > 0);
   XCTAssertTrue(classificationResults.classifications[0].categories.count > 0);
 
-  TFLCategory *category = classificationResults.classifications[0].categories[0];
   // TODO: match the label and score as image_classifier_test.cc
+  // TFLCategory *__unused category =
+  // classificationResults.classifications[0].categories[0];
   // XCTAssertTrue([category.label isEqual:@"soccer ball"]);
   // XCTAssertEqualWithAccuracy(category.score, 0.256512, 0.001);
 }

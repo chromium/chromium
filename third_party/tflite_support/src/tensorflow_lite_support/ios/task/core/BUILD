@@ -51,7 +51,7 @@ objc_library(
     hdrs = [
         "sources/TFLBaseOptions+CppHelpers.h",
     ],
-    module_name = "TFLBaseOptionsHelpers",
+    module_name = "TFLBaseOptionsCppHelpers",
     deps = [
         "//tensorflow_lite_support/cc/task/core/proto:base_options_proto_inc",
         "//tensorflow_lite_support/ios/task/core:TFLBaseOptions",

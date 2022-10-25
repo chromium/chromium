@@ -19,7 +19,6 @@ objc_library(
         "//tensorflow_lite_support/ios:TFLCommon",
         "//tensorflow_lite_support/ios/task/audio/core/audio_record:TFLAudioRecord",
         "//tensorflow_lite_support/ios/test/task/audio/core/audio_record/utils:AVAudioPCMBufferUtils",
-        "//third_party/apple_frameworks:XCTest",
     ],
 )
 

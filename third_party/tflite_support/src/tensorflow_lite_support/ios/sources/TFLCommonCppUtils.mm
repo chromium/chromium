@@ -38,7 +38,7 @@
 
 + (BOOL)checkCppError:(const absl::Status&)status
               toError:(NSError* _Nullable*)error {
-  if (!status.ok()) {
+  if (status.ok()) {
     return YES;
   }
   // Payload of absl::Status created by the tflite task library stores an

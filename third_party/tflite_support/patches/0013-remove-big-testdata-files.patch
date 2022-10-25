@@ -1,0 +1,66 @@
+From c220e0898822a58672b678efcad473e53692cb1c Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 24 Oct 2022 14:23:09 -0700
+Subject: [PATCH 13/14] remove big testdata files
+
+---
+ .../bert_clu_annotator_with_metadata.tflite   | Bin 21179580 -> 0 bytes
+ .../task/text/mobilebert_searcher.tflite      | Bin 26199109 -> 0 bytes
+ .../regex_one_embedding_with_metadata.tflite  | Bin 774307 -> 0 bytes
+ .../testdata/task/text/regex_searcher.tflite  | Bin 775210 -> 0 bytes
+ .../regex_two_embeddings_with_metadata.tflite | Bin 774307 -> 0 bytes
+ .../task/text/test_model_nl_classifier.tflite | Bin 800 -> 0 bytes
+ ...est_model_nl_classifier_bool_output.tflite | Bin 304 -> 0 bytes
+ ...nl_classifier_with_associated_label.tflite | Bin 1773 -> 0 bytes
+ ...r_with_associated_label_builtin_ops.tflite | Bin 775456 -> 0 bytes
+ ..._nl_classifier_with_regex_tokenizer.tflite | Bin 769815 -> 0 bytes
+ ...universal_sentence_encoder_searcher.tflite | Bin 6129737 -> 0 bytes
+ 11 files changed, 0 insertions(+), 0 deletions(-)
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/bert_clu_annotator_with_metadata.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/mobilebert_searcher.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_one_embedding_with_metadata.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_searcher.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_two_embeddings_with_metadata.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_bool_output.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_associated_label.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_associated_label_builtin_ops.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_regex_tokenizer.tflite
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/universal_sentence_encoder_searcher.tflite
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/bert_clu_annotator_with_metadata.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/bert_clu_annotator_with_metadata.tflite
+deleted file mode 100644
+index f344f214158a3e67724a5279efbcd27022f3a4ea..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/mobilebert_searcher.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/mobilebert_searcher.tflite
+deleted file mode 100644
+index 43624e79655bccc9ea126f291c26fa633aa2cc79..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_one_embedding_with_metadata.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_one_embedding_with_metadata.tflite
+deleted file mode 100644
+index e77cbea50ea5d4a1b2814274e8c90cdf0b1f572d..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_searcher.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_searcher.tflite
+deleted file mode 100644
+index b82e6d8f2cf3b480d9bee782f8c166bf1450e100..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_two_embeddings_with_metadata.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/regex_two_embeddings_with_metadata.tflite
+deleted file mode 100644
+index ade8dd7f58099d4b72e64bb0d226bf8d20952011..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier.tflite
+deleted file mode 100644
+index 52e614caf08fa23f073d8a9491c8965b505cebec..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_bool_output.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_bool_output.tflite
+deleted file mode 100644
+index 20c6db1308dd8220b2b48f15db81f3dd169bc6f4..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_associated_label.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_associated_label.tflite
+deleted file mode 100644
+index 4d040152cb8eb7a861944dd7423c3d235c81de6f..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_associated_label_builtin_ops.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_associated_label_builtin_ops.tflite
+deleted file mode 100644
+index 7bcfa882003d445d61d42733adea57ab50edaa71..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_regex_tokenizer.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/test_model_nl_classifier_with_regex_tokenizer.tflite
+deleted file mode 100644
+index f73e77cc4db994d1195bffea1f41c74e9ad49a7e..0000000000000000000000000000000000000000
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/universal_sentence_encoder_searcher.tflite b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata/task/text/universal_sentence_encoder_searcher.tflite
+deleted file mode 100644
+index 877434a0af94fe548b0ca7804e30f3fe82fd937e..0000000000000000000000000000000000000000
+-- 
+2.38.0.135.g90850a2211-goog
+

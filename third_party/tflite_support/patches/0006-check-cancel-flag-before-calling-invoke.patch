@@ -1,7 +1,7 @@
-From ea6b08771f2c34fa9d57e7ad5520cccfaa4eb194 Mon Sep 17 00:00:00 2001
-From: Jun Zou <junzou@chromium.org>
-Date: Tue, 30 Aug 2022 18:03:52 +0000
-Subject: [PATCH 06/12] check cancel flag before calling invoke
+From b214e0ba87c17440d711aa05bbab57bb4b19b1b5 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 24 Oct 2022 14:07:23 -0700
+Subject: [PATCH 06/14] check cancel flag before calling invoke
 
 ---
  .../cc/port/default/tflite_wrapper.cc              | 14 ++++++++++----
@@ -53,5 +53,5 @@ index d47c1ce7e5179..11f9d584cfdd0 100644
      }
      return absl::InternalError("Invoke() failed.");
 -- 
-2.37.3.998.g577e59143f-goog
+2.38.0.135.g90850a2211-goog
 

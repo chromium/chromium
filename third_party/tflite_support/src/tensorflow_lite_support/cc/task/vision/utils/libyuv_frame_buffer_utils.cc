@@ -25,6 +25,7 @@ limitations under the License.
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "libyuv.h"                   // from @libyuv
 #include "libyuv/convert_argb.h"      // from @libyuv
+#include "libyuv/scale.h"             // from @libyuv
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -329,7 +330,10 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
 }
 
 // Resizes YV12/YV21 `buffer` to the target `output_buffer`.
-absl::Status ResizeYv(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
+absl::Status ResizeYv(
+    const FrameBuffer& buffer,
+    FrameBuffer* output_buffer,
+    libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
@@ -344,7 +348,7 @@ absl::Status ResizeYv(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
       const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
       const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
       output_buffer->dimension().width, output_buffer->dimension().height,
-      libyuv::FilterMode::kFilterBilinear);
+      interpolation);
   if (ret != 0) {
     return CreateStatusWithPayload(
         StatusCode::kUnknown, "Libyuv I420Scale operation failed.",
@@ -354,7 +358,10 @@ absl::Status ResizeYv(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
 }
 
 // Resizes NV12/NV21 `buffer` to the target `output_buffer`.
-absl::Status ResizeNv(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
+absl::Status ResizeNv(
+    const FrameBuffer& buffer,
+    FrameBuffer* output_buffer,
+    libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
   ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
@@ -372,7 +379,7 @@ absl::Status ResizeNv(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
       buffer.dimension().height, const_cast<uint8_t*>(output_data.y_buffer),
       output_data.y_row_stride, const_cast<uint8_t*>(dst_uv),
       output_data.uv_row_stride, output_buffer->dimension().width,
-      output_buffer->dimension().height, libyuv::FilterMode::kFilterBilinear);
+      output_buffer->dimension().height, interpolation);
 
   if (ret != 0) {
     return CreateStatusWithPayload(
@@ -1118,7 +1125,10 @@ absl::Status FlipHorizontallyPlane(const FrameBuffer& buffer,
   return absl::OkStatus();
 }
 
-absl::Status ResizeRgb(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
+absl::Status ResizeRgb(
+    const FrameBuffer& buffer,
+    FrameBuffer* output_buffer,
+    libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
         StatusCode::kInternal,
@@ -1149,7 +1159,7 @@ absl::Status ResizeRgb(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
       argb_buffer.get(), argb_row_bytes, buffer.dimension().width,
       buffer.dimension().height, resized_argb_buffer.get(),
       resized_argb_row_bytes, output_buffer->dimension().width,
-      output_buffer->dimension().height, libyuv::FilterMode::kFilterBilinear);
+      output_buffer->dimension().height, interpolation);
   if (ret != 0) {
     return CreateStatusWithPayload(
         StatusCode::kUnknown, "Libyuv ARGBScale operation failed.",
@@ -1190,7 +1200,10 @@ absl::Status FlipHorizontallyRgb(const FrameBuffer& buffer,
 #endif  // LIBYUV_VERSION >= 1747
 }
 
-absl::Status ResizeRgba(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
+absl::Status ResizeRgba(
+    const FrameBuffer& buffer,
+    FrameBuffer* output_buffer,
+    libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
         StatusCode::kInternal,
@@ -1204,7 +1217,7 @@ absl::Status ResizeRgba(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
       const_cast<uint8*>(output_buffer->plane(0).buffer),
       output_buffer->plane(0).stride.row_stride_bytes,
       output_buffer->dimension().width, output_buffer->dimension().height,
-      libyuv::FilterMode::kFilterBilinear);
+      interpolation);
   if (ret != 0) {
     return CreateStatusWithPayload(
         StatusCode::kUnknown, "Libyuv ARGBScale operation failed.",
@@ -1313,7 +1326,10 @@ absl::Status FlipVerticallyYv(const FrameBuffer& buffer,
 
 // Resize `buffer` to metadata defined in `output_buffer`. This
 // method assumes buffer has pixel stride equals to 1 (grayscale equivalent).
-absl::Status ResizeGray(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
+absl::Status ResizeGray(
+    const FrameBuffer& buffer,
+    FrameBuffer* output_buffer,
+    libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
         StatusCode::kInternal,
@@ -1321,13 +1337,13 @@ absl::Status ResizeGray(const FrameBuffer& buffer, FrameBuffer* output_buffer) {
                         buffer.format()),
         TfLiteSupportStatus::kImageProcessingError);
   }
-  libyuv::ScalePlane(
-      buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-      buffer.dimension().width, buffer.dimension().height,
-      const_cast<uint8*>(output_buffer->plane(0).buffer),
-      output_buffer->plane(0).stride.row_stride_bytes,
-      output_buffer->dimension().width, output_buffer->dimension().height,
-      libyuv::FilterMode::kFilterBilinear);
+  libyuv::ScalePlane(buffer.plane(0).buffer,
+                     buffer.plane(0).stride.row_stride_bytes,
+                     buffer.dimension().width, buffer.dimension().height,
+                     const_cast<uint8*>(output_buffer->plane(0).buffer),
+                     output_buffer->plane(0).stride.row_stride_bytes,
+                     output_buffer->dimension().width,
+                     output_buffer->dimension().height, interpolation);
   return absl::OkStatus();
 }
 
@@ -1417,6 +1433,31 @@ absl::Status LibyuvFrameBufferUtils::Resize(const FrameBuffer& buffer,
       return ResizeRgba(buffer, output_buffer);
     case FrameBuffer::Format::kGRAY:
       return ResizeGray(buffer, output_buffer);
+    default:
+      return CreateStatusWithPayload(
+          StatusCode::kInternal,
+          absl::StrFormat("Format %i is not supported.", buffer.format()),
+          TfLiteSupportStatus::kImageProcessingError);
+  }
+}
+
+absl::Status LibyuvFrameBufferUtils::ResizeNearestNeighbor(
+    const FrameBuffer& buffer,
+    FrameBuffer* output_buffer) {
+  RETURN_IF_ERROR(ValidateResizeBufferInputs(buffer, *output_buffer));
+  switch (buffer.format()) {
+    case FrameBuffer::Format::kYV12:
+    case FrameBuffer::Format::kYV21:
+      return ResizeYv(buffer, output_buffer, libyuv::FilterMode::kFilterNone);
+    case FrameBuffer::Format::kNV12:
+    case FrameBuffer::Format::kNV21:
+      return ResizeNv(buffer, output_buffer, libyuv::FilterMode::kFilterNone);
+    case FrameBuffer::Format::kRGB:
+      return ResizeRgb(buffer, output_buffer, libyuv::FilterMode::kFilterNone);
+    case FrameBuffer::Format::kRGBA:
+      return ResizeRgba(buffer, output_buffer, libyuv::FilterMode::kFilterNone);
+    case FrameBuffer::Format::kGRAY:
+      return ResizeGray(buffer, output_buffer, libyuv::FilterMode::kFilterNone);
     default:
       return CreateStatusWithPayload(
           StatusCode::kInternal,

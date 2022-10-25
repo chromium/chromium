@@ -21,24 +21,15 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "Eigen/Core"                  // from @eigen
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
-#include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
 #include "tensorflow_lite_support/cc/task/processor/embedding_postprocessor.h"
+#include "tensorflow_lite_support/cc/task/processor/embedding_searcher.h"
 #include "tensorflow_lite_support/cc/task/processor/processor.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/embedding_options.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_options.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/index.h"
-#include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
 
 namespace tflite {
 namespace task {
@@ -77,32 +68,11 @@ class SearchPostprocessor : public Postprocessor {
       std::unique_ptr<EmbeddingPostprocessor> embedding_postprocessor,
       std::unique_ptr<SearchOptions> options);
 
-  absl::Status QuantizedSearch(
-      Eigen::Ref<Eigen::MatrixXf> query,
-      std::vector<int> leaves_to_search,
-      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
-  absl::Status LinearSearch(
-      Eigen::Ref<Eigen::MatrixXf> query,
-      std::vector<int> leaves_to_search,
-      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
-
-  std::unique_ptr<SearchOptions> options_;
-
   // Encapsulated EmbeddingPostprocessor converting raw tensors to embeddings.
   std::unique_ptr<EmbeddingPostprocessor> embedding_postprocessor_;
 
-  // Index management.
-  std::unique_ptr<tflite::task::core::ExternalFileHandler> index_file_handler_;
-  std::unique_ptr<tflite::scann_ondevice::Index> index_;
-  tflite::scann_ondevice::IndexConfig index_config_;
-
-  // ScaNN management.
-  int num_leaves_to_search_;
-  tflite::scann_ondevice::core::DistanceMeasure distance_measure_;
-  std::unique_ptr<tflite::scann_ondevice::core::PartitionerInterface>
-      partitioner_;
-  std::shared_ptr<tflite::scann_ondevice::core::AsymmetricHashQuerier>
-      quantizer_;
+  // The nearest-neighbor searcher for embedding.
+  std::unique_ptr<EmbeddingSearcher> embedding_searcher_;
 };
 
 }  // namespace processor

@@ -4,7 +4,7 @@ load("@build_bazel_rules_apple//apple:ios.bzl", "ios_unit_test")
 load("@org_tensorflow//tensorflow/lite:special_rules.bzl", "tflite_ios_lab_runner")
 
 package(
-    default_visibility = ["//tensorflow_lite_support:users"],
+    default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -48,9 +48,7 @@ swift_library(
         "//tensorflow_lite_support/cc/test/testdata/task/text:mobile_bert_model",
     ],
     tags = TFL_DEFAULT_TAGS,
-    deps = [
-        ":TFLBertTokenizer",
-    ],
+    deps = [":TFLBertTokenizer"],
 )
 
 ios_unit_test(
@@ -89,9 +87,7 @@ swift_library(
         "//tensorflow_lite_support/cc/test/testdata/task/text:albert_model",
     ],
     tags = TFL_DEFAULT_TAGS,
-    deps = [
-        ":TFLSentencepieceTokenizer",
-    ],
+    deps = [":TFLSentencepieceTokenizer"],
 )
 
 ios_unit_test(

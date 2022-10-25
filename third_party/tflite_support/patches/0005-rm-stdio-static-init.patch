@@ -1,7 +1,7 @@
-From 3da4e72ce30417d9c86f4b24907c7dfc1bce3801 Mon Sep 17 00:00:00 2001
-From: Jun Zou <junzou@chromium.org>
-Date: Tue, 30 Aug 2022 18:03:01 +0000
-Subject: [PATCH 05/12] rm stdio static init
+From 98b4665a7fcd012ede2fcc562c1595f44c4ad5d0 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 24 Oct 2022 14:06:59 -0700
+Subject: [PATCH 05/14] rm stdio static init
 
 ---
  .../cc/task/core/tflite_engine.cc                 | 15 ---------------
@@ -34,5 +34,5 @@ index dfdbddaf4b92f..0ec88d5bd1846 100644
  using ::tflite::proto::ComputeSettings;
  using ::tflite::support::CreateStatusWithPayload;
 -- 
-2.37.3.998.g577e59143f-goog
+2.38.0.135.g90850a2211-goog
 

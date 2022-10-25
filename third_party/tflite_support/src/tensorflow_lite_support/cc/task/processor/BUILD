@@ -1,7 +1,9 @@
 load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
 
+default_visibility = ["//tensorflow_lite_support:internal"]
+
 package(
-    default_visibility = ["//tensorflow_lite_support:internal"],
+    default_visibility = default_visibility,
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -178,16 +180,35 @@ cc_library_with_tflite(
         "//tensorflow_lite_support/cc/task/core:tflite_engine",
     ],
     deps = [
+        ":embedding_searcher",
         "//tensorflow_lite_support/cc:common",
         "//tensorflow_lite_support/cc/port:status_macros",
         "//tensorflow_lite_support/cc/port:statusor",
-        "//tensorflow_lite_support/cc/task/core:external_file_handler",
         "//tensorflow_lite_support/cc/task/processor/proto:embedding_cc_proto",
         "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_cc_proto",
         "//tensorflow_lite_support/cc/task/processor/proto:search_options_cc_proto",
         "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
         "//tensorflow_lite_support/metadata:metadata_schema_cc",
         "//tensorflow_lite_support/metadata/cc:metadata_extractor",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_library(
+    name = "embedding_searcher",
+    srcs = ["embedding_searcher.cc"],
+    hdrs = ["embedding_searcher.h"],
+    deps = [
+        "//tensorflow_lite_support/cc:common",
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/core:external_file_handler",
+        "//tensorflow_lite_support/cc/task/processor/proto:embedding_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
         "//tensorflow_lite_support/scann_ondevice/cc:index",
         "//tensorflow_lite_support/scann_ondevice/cc/core:partitioner",
         "//tensorflow_lite_support/scann_ondevice/cc/core:processor",

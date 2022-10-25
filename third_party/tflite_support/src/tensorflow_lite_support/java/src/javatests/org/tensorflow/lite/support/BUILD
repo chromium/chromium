@@ -439,6 +439,7 @@ android_library_instrumentation_tests(
     binary_args = {
         "multidex": "legacy",
     },
+    device_list = DEFAULT_INSTRUMENTED_DEVICES,
     tags = [
         "no_oss",
         "noasan",  # Avoid build breakage
@@ -447,7 +448,6 @@ android_library_instrumentation_tests(
         "nozapfhahn",  # Avoid coverage test breakage
         "tflite_emulator_test_android",
     ],
-    target_devices = DEFAULT_INSTRUMENTED_DEVICES,
     test_java_package = "org.tensorflow.lite.support",
     deps = [
         ":test_image_creator",
@@ -461,6 +461,7 @@ android_library_instrumentation_tests(
         "@maven//:junit_junit",  # android
         "@maven//:org_mockito_mockito_core",
         "@maven//:org_mockito_mockito_inline",
+        "@org_tensorflow//tensorflow/lite/java:tensorflowlite_api",
         "@org_tensorflow//tensorflow/lite/java:tensorflowlite_gpu",
         "@org_tensorflow//tensorflow/lite/java:tensorflowlite_stable",
     ],

@@ -13,7 +13,7 @@ def android_library_instrumentation_tests(
         name,
         srcs,
         deps,
-        target_devices,
+        device_list,
         test_java_package = None,
         library_args = {},
         binary_args = {},
@@ -38,7 +38,7 @@ def android_library_instrumentation_tests(
         manage dependencies
       srcs: the test sources to generate rules for
       deps: the build dependencies to use for the generated test binary
-      target_devices: array of device targets to execute on
+      device_list: array of device targets to execute on
       test_java_package: Optional. A custom root package name to use for the tests. If unset
           will be derived based on current path to a java source root
       library_args: additional arguments to pass to generated android_library
@@ -68,7 +68,7 @@ def android_library_instrumentation_tests(
         name = name,
         srcs = srcs,
         deps = [library_name],
-        target_devices = target_devices,
+        target_devices = device_list,
         test_java_package_name = test_java_package_name,
         test_android_package_name = test_java_package_name,
         instrumentation_target_package = test_java_package_name,

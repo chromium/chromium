@@ -443,6 +443,13 @@ absl::Status FrameBufferUtils::Resize(const FrameBuffer& buffer,
   return utils_->Resize(buffer, output_buffer);
 }
 
+absl::Status FrameBufferUtils::ResizeNearestNeighbor(
+    const FrameBuffer& buffer,
+    FrameBuffer* output_buffer) {
+  TFLITE_DCHECK(utils_ != nullptr);
+  return utils_->ResizeNearestNeighbor(buffer, output_buffer);
+}
+
 absl::Status FrameBufferUtils::Rotate(const FrameBuffer& buffer,
                                       RotationDegree rotation,
                                       FrameBuffer* output_buffer) {

@@ -97,19 +97,22 @@ def tflite_support_workspace9():
     # https://github.com/bazelbuild/rules_apple/releases
     http_archive(
         name = "build_bazel_rules_apple",
-        sha256 = "a5f00fd89eff67291f6cd3efdc8fad30f4727e6ebb90718f3f05bbf3c3dd5ed7",
-        urls = [
-            "https://github.com/bazelbuild/rules_apple/releases/download/0.33.0/rules_apple.0.33.0.tar.gz",
-        ],
+        sha256 = "36072d4f3614d309d6a703da0dfe48684ec4c65a89611aeb9590b45af7a3e592",
+        urls = ["https://github.com/bazelbuild/rules_apple/releases/download/1.0.1/rules_apple.1.0.1.tar.gz"],
     )
 
     # https://github.com/bazelbuild/rules_swift/releases
     http_archive(
         name = "build_bazel_rules_swift",
-        sha256 = "8a49da750560b185804a4bc95c82d3f9cc4c2caf788960b0e21945759155fdd9",
-        urls = [
-            "https://github.com/bazelbuild/rules_swift/releases/download/0.25.0/rules_swift.0.25.0.tar.gz",
-        ],
+        sha256 = "12057b7aa904467284eee640de5e33853e51d8e31aae50b3fb25d2823d51c6b8",
+        urls = ["https://github.com/bazelbuild/rules_swift/releases/download/1.0.0/rules_swift.1.0.0.tar.gz"],
+    )
+
+    # https://github.com/bazelbuild/apple_support/releases
+    http_archive(
+        name = "build_bazel_apple_support",
+        sha256 = "ce1042cf936540eaa7b49c4549d7cd9b6b1492acbb6e765840a67a34b8e17a97",
+        urls = ["https://github.com/bazelbuild/apple_support/releases/download/1.1.0/apple_support.1.1.0.tar.gz"],
     )
 
     http_archive(
@@ -130,11 +133,11 @@ def tflite_support_workspace9():
     third_party_http_archive(
         name = "pybind11",
         urls = [
-            "https://storage.googleapis.com/mirror.tensorflow.org/github.com/pybind/pybind11/archive/v2.7.1.tar.gz",
-            "https://github.com/pybind/pybind11/archive/v2.7.1.tar.gz",
+            "https://storage.googleapis.com/mirror.tensorflow.org/github.com/pybind/pybind11/archive/v2.10.0.tar.gz",
+            "https://github.com/pybind/pybind11/archive/v2.10.0.tar.gz",
         ],
-        sha256 = "616d1c42e4cf14fa27b2a4ff759d7d7b33006fdc5ad8fd603bb2c22622f27020",
-        strip_prefix = "pybind11-2.7.1",
+        sha256 = "eacf582fa8f696227988d08cfc46121770823839fe9e301a20fbce67e7cd70ec",
+        strip_prefix = "pybind11-2.10.0",
         build_file = "@pybind11_bazel//:pybind11.BUILD",
     )
 
@@ -163,22 +166,21 @@ def tflite_support_workspace9():
 
     http_archive(
         name = "absl_py",
-        sha256 = "603febc9b95a8f2979a7bdb77d2f5e4d9b30d4e0d59579f88eba67d4e4cc5462",
-        strip_prefix = "abseil-py-pypi-v0.9.0",
+        sha256 = "a7c51b2a0aa6357a9cbb2d9437e8cd787200531867dc02565218930b6a32166e",
+        strip_prefix = "abseil-py-1.0.0",
         urls = [
-            "https://storage.googleapis.com/mirror.tensorflow.org/github.com/abseil/abseil-py/archive/pypi-v0.9.0.tar.gz",
-            "https://github.com/abseil/abseil-py/archive/pypi-v0.9.0.tar.gz",
+            "https://github.com/abseil/abseil-py/archive/refs/tags/v1.0.0.tar.gz",
         ],
     )
 
     http_archive(
         name = "six_archive",
         build_file = Label("//third_party:six.BUILD"),
-        sha256 = "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73",
-        strip_prefix = "six-1.12.0",
+        sha256 = "1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
+        strip_prefix = "six-1.16.0",
         urls = [
-            "https://storage.googleapis.com/mirror.tensorflow.org/pypi.python.org/packages/source/s/six/six-1.12.0.tar.gz",
-            "https://pypi.python.org/packages/source/s/six/six-1.12.0.tar.gz",
+            "https://storage.googleapis.com/mirror.tensorflow.org/pypi.python.org/packages/source/s/six/six-1.16.0.tar.gz",
+            "https://pypi.python.org/packages/source/s/six/six-1.16.0.tar.gz",
         ],
     )
 

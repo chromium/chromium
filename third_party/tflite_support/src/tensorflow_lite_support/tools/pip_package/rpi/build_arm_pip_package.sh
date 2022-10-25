@@ -18,7 +18,17 @@ set -ex
 
 NIGHTLY_FLAG=$1
 
-bazel build -c opt --config=elinux_armhf --define darwinn_portable=1 --linkopt=-L/usr/lib/arm-linux-gnueabihf tensorflow_lite_support/tools/pip_package:build_pip_package
+bazel build -c opt --config=elinux_armhf --define=tflite_with_ruy=true \
+    --copt=-march=armv7-a --copt=-mfpu=neon-vfpv4 --copt=-fno-tree-pre \
+    --cxxopt=-fpermissive --define tensorflow_mkldnn_contraction_kernel=0 \
+    --define=raspberry_pi_with_neon=true --define=tflite_with_xnnpack=false \
+    --define darwinn_portable=1 --linkopt=-L/usr/lib/arm-linux-gnueabihf \
+    tensorflow_lite_support/tools/pip_package:build_pip_package
 EXTRA_PKG_NAME_FLAG="--plat-name=manylinux2014-armv7l" ./bazel-bin/tensorflow_lite_support/tools/pip_package/build_pip_package --dst wheels ${NIGHTLY_FLAG}
-bazel build -c opt --config=elinux_aarch64 --define darwinn_portable=1 --linkopt=-L/usr/lib/aarch64-linux-gnu tensorflow_lite_support/tools/pip_package:build_pip_package
+
+bazel build -c opt --define=tflite_with_ruy=true --config=elinux_aarch64 \
+    --define tensorflow_mkldnn_contraction_kernel=0 \
+    --define darwinn_portable=1 \
+    --linkopt=-L/usr/lib/aarch64-linux-gnu \
+    tensorflow_lite_support/tools/pip_package:build_pip_package
 EXTRA_PKG_NAME_FLAG="--plat-name=manylinux2014-aarch64" ./bazel-bin/tensorflow_lite_support/tools/pip_package/build_pip_package --dst wheels ${NIGHTLY_FLAG}

@@ -53,7 +53,7 @@ using ::tflite::support::TfLiteSupportStatus;
 // Gets the offset aligned to page size for mapping given files into memory by
 // file descriptor correctly, as according to mmap(2), the offset used in mmap
 // must be a multiple of sysconf(_SC_PAGE_SIZE).
-// mmap is not used on Windows
+// mmap is ont used on Windows
 #ifndef _WIN32
 int64 GetPageSizeAlignedOffset(int64 offset) {
   int64 aligned_offset = offset;

@@ -1,7 +1,7 @@
-From e070133fa532c05ca05a63ac870582397e3d1525 Mon Sep 17 00:00:00 2001
-From: Jun Zou <junzou@chromium.org>
-Date: Tue, 30 Aug 2022 17:59:47 +0000
-Subject: [PATCH 03/12] rm noop deprecated attribute
+From fb42ddcbbeb55603354ca7b67578a86a38ea8ec7 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 24 Oct 2022 14:06:21 -0700
+Subject: [PATCH 03/14] rm noop deprecated attribute
 
 ---
  .../cc/task/text/nlclassifier/nl_classifier.h                  | 3 ---
@@ -22,5 +22,5 @@ index 7c2143201daa9..b7af66044b129 100644
    int input_tensor_index = 0;
    int output_score_tensor_index = 0;
 -- 
-2.37.3.998.g577e59143f-goog
+2.38.0.135.g90850a2211-goog
 

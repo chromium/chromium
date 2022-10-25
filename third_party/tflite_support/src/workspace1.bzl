@@ -40,10 +40,10 @@ def tflite_support_workspace1():
 
     http_archive(
         name = "tf_toolchains",
-        sha256 = "d72b2e52baf0592f5b94347b128ef75422fc22f63dfcf2d5fd46bc732cab052b",
-        strip_prefix = "toolchains-1.3.0",
+        sha256 = "d550e6260b7bd8a7f2c2e3a20ba3c4b6c519985f5a164a1bf3601dd96852a05b",
+        strip_prefix = "toolchains-1.4.6",
         urls = [
-            "http://mirror.tensorflow.org/github.com/tensorflow/toolchains/archive/v1.3.0.tar.gz",
-            "https://github.com/tensorflow/toolchains/archive/v1.3.0.tar.gz",
+            "http://mirror.tensorflow.org/github.com/tensorflow/toolchains/archive/v1.4.6.tar.gz",
+            "https://github.com/tensorflow/toolchains/archive/v1.4.6.tar.gz",
         ],
     )

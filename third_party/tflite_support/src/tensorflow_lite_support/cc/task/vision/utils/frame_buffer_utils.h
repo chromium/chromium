@@ -227,13 +227,22 @@ class FrameBufferUtils {
                     int y1,
                     FrameBuffer* output_buffer);
 
-  // Performs resizing operation.
+  // Performs resizing operation with bilinear interpolation.
   //
   // The resize dimension is determined based on output_buffer's size metadata.
   //
   // The output_buffer should have metadata populated and its backing buffer
   // should be big enough to store the operation result.
   absl::Status Resize(const FrameBuffer& buffer, FrameBuffer* output_buffer);
+
+  // Performs resizing operation with nearest-neighbor interpolation.
+  //
+  // The resize dimension is determined based on output_buffer's size metadata.
+  //
+  // The output_buffer should have metadata populated and its backing buffer
+  // should be big enough to store the operation result.
+  absl::Status ResizeNearestNeighbor(const FrameBuffer& buffer,
+                                     FrameBuffer* output_buffer);
 
   // Performs rotation operation.
   //
