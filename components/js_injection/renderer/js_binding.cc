@@ -90,7 +90,6 @@ JsBinding::JsBinding(content::RenderFrame* render_frame,
 JsBinding::~JsBinding() = default;
 
 void JsBinding::OnPostMessage(mojom::JsWebMessagePtr message) {
-  LOG(ERROR) << __PRETTY_FUNCTION__;
   // If `js_communication_` is null, this object will soon be destroyed.
   if (!js_communication_)
     return;
@@ -158,7 +157,6 @@ gin::ObjectTemplateBuilder JsBinding::GetObjectTemplateBuilder(
 }
 
 void JsBinding::PostMessage(gin::Arguments* args) {
-  LOG(ERROR) << __PRETTY_FUNCTION__;
   std::u16string message;
   if (!args->GetNext(&message)) {
     args->ThrowError();

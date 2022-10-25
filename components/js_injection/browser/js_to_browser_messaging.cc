@@ -51,7 +51,6 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
 
   // WebMessageReplyProxy:
   void PostWebMessage(mojom::JsWebMessagePtr message) override {
-    LOG(ERROR) << __PRETTY_FUNCTION__;
     java_to_js_messaging_->OnPostMessage(std::move(message));
   }
   bool IsInBackForwardCache() override {
