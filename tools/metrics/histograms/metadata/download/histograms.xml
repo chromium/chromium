@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DuplicateDialogEvent.{Type}"
-    enum="DuplicateDownloadEvent" expires_after="2022-10-03">
+    enum="DuplicateDownloadEvent" expires_after="2022-12-03">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@chromium.org</owner>
   <summary>
