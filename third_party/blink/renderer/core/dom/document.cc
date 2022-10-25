@@ -8964,6 +8964,10 @@ const EventPath::NodePath& Document::GetOrCalculateEventNodePath(Node& node) {
   return *event_node_path;
 }
 
+void Document::ResetAgent(Agent& agent) {
+  agent_ = agent;
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
 
 }  // namespace blink

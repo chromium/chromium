@@ -1935,6 +1935,8 @@ class CORE_EXPORT Document : public ContainerNode,
     return ignore_destructive_write_module_script_count_;
   }
 
+  void ResetAgent(Agent& agent);
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 

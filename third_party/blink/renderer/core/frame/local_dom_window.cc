@@ -246,6 +246,8 @@ void LocalDOMWindow::Initialize() {
 void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
   GetAgent()->DetachContext(this);
   ResetAgent(agent);
+  if (document_)
+    document_->ResetAgent(*agent);
   GetAgent()->AttachContext(this);
 }
 
