@@ -3658,6 +3658,12 @@ const char kGridTabSwitcherForTabletsName[] = "Grid tab switcher for tablets";
 const char kGridTabSwitcherForTabletsDescription[] =
     "Enable grid tab switcher for tablets, replacing the tab strip.";
 
+const char kHighlightManagedPrefDisclaimerAndroidName[] =
+    "Highlight managed disclaimer for preferences";
+const char kHighlightManagedPrefDisclaimerAndroidDescription[] =
+    "Enables new Settings UI on Android that makes it more prominent that a "
+    "preference is managed by the administrator or a custodian.";
+
 const char kInfoCardAcknowledgementTrackingName[] =
     "Info card acknowledgement tracking";
 const char kInfoCardAcknowledgementTrackingDescription[] =

@@ -2070,6 +2070,9 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kGridTabSwitcherForTabletsName[];
 extern const char kGridTabSwitcherForTabletsDescription[];
 
+extern const char kHighlightManagedPrefDisclaimerAndroidName[];
+extern const char kHighlightManagedPrefDisclaimerAndroidDescription[];
+
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];
 

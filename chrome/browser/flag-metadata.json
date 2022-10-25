@@ -3992,6 +3992,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "highlight-managed-pref-disclaimer-android",
+    "owners": [ "ftirelo" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "history-journeys",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 110
