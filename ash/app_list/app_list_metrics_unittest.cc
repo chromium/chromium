@@ -140,30 +140,22 @@ class AppListMetricsTest : public AshTestBase {
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 
-// Suite for tests that run in tablet mode, parameterized by feature
-// ProductivityLauncher.
-class AppListMetricsTabletTest : public AppListMetricsTest,
-                                 public testing::WithParamInterface<bool> {
+// Suite for tests that run in tablet mode.
+class AppListMetricsTabletTest : public AppListMetricsTest {
  public:
-  AppListMetricsTabletTest() {
-    const bool enable = GetParam();
-    feature_list_.InitWithFeatureState(features::kProductivityLauncher, enable);
-  }
+  AppListMetricsTabletTest() = default;
   ~AppListMetricsTabletTest() override = default;
-
-  base::test::ScopedFeatureList feature_list_;
+  void SetUp() override {
+    AppListMetricsTest::SetUp();
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+  }
 };
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         AppListMetricsTabletTest,
-                         testing::Bool());
 
 // Test that the histogram records an app launch from the shelf while the
 // homecher all apps state is showing.
-TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromShelf) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+TEST_F(AppListMetricsTabletTest, HomecherAllAppsLaunchFromShelf) {
   base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
   CreateAndClickShelfItem();
 
@@ -175,13 +167,8 @@ TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the app grid while the
 // homecher all apps state is showing.
-TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromGrid) {
+TEST_F(AppListMetricsTabletTest, HomecherAllAppsLaunchFromGrid) {
   base::HistogramTester histogram_tester;
-
-  // Enable tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
   PopulateAndLaunchAppInGrid();
 
   histogram_tester.ExpectBucketCount(
@@ -192,12 +179,8 @@ TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromGrid) {
 
 // Test that the histogram records an app launch from the shelf while the
 // homecher search state is showing.
-TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromShelf) {
+TEST_F(AppListMetricsTabletTest, HomecherSearchLaunchFromShelf) {
   base::HistogramTester histogram_tester;
-
-  // Enable tablet mode.
-  GetAppListTestHelper()->WaitUntilIdle();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Press a letter key, the AppListView should transition to kFullscreenSearch.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
