@@ -10,6 +10,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace aura {
+class Window;
+}
+
 namespace base {
 class FilePath;
 class TimeDelta;
@@ -42,6 +46,9 @@ bool IsSystemTrayForRootWindowVisible(size_t root_window_index);
 // Creates a pure color image of the specified size.
 gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
                                          SkColor color);
+
+// Returns true if `win1` is stacked (not directly) below `win2`.
+bool IsStackedBelow(aura::Window* win1, aura::Window* win2);
 
 }  // namespace ash
 

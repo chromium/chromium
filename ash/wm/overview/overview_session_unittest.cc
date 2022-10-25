@@ -32,6 +32,7 @@
 #include "ash/style/close_button.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -118,16 +119,6 @@ using ::chromeos::WindowStateType;
 
 constexpr const char kActiveWindowChangedFromOverview[] =
     "WindowSelector_ActiveWindowChanged";
-
-// Helper function to get the index of |child|, given its parent window
-// |parent|.
-int IndexOf(aura::Window* child, aura::Window* parent) {
-  aura::Window::Windows children = parent->children();
-  auto it = base::ranges::find(children, child);
-  DCHECK(it != children.end());
-
-  return static_cast<int>(std::distance(children.begin(), it));
-}
 
 class TweenTester : public ui::LayerAnimationObserver {
  public:
@@ -2423,18 +2414,15 @@ TEST_P(OverviewSessionTest, OverviewWidgetStackingOrder) {
 
   // The original order of stacking is determined by the order the associated
   // window was activated.
-  EXPECT_GT(IndexOf(widget3->GetNativeWindow(), parent),
-            IndexOf(widget2->GetNativeWindow(), parent));
-  EXPECT_GT(IndexOf(widget2->GetNativeWindow(), parent),
-            IndexOf(widget1->GetNativeWindow(), parent));
+  EXPECT_TRUE(
+      IsStackedBelow(widget2->GetNativeWindow(), widget3->GetNativeWindow()));
+  EXPECT_TRUE(
+      IsStackedBelow(widget1->GetNativeWindow(), widget2->GetNativeWindow()));
 
   // Verify that the item widget is stacked below the window.
-  EXPECT_LT(IndexOf(widget1->GetNativeWindow(), parent),
-            IndexOf(minimized.get(), parent));
-  EXPECT_LT(IndexOf(widget2->GetNativeWindow(), parent),
-            IndexOf(window.get(), parent));
-  EXPECT_LT(IndexOf(widget3->GetNativeWindow(), parent),
-            IndexOf(window3.get(), parent));
+  EXPECT_TRUE(IsStackedBelow(widget1->GetNativeWindow(), minimized.get()));
+  EXPECT_TRUE(IsStackedBelow(widget2->GetNativeWindow(), window.get()));
+  EXPECT_TRUE(IsStackedBelow(widget3->GetNativeWindow(), window3.get()));
 
   // Drag the first window. Verify that it's item widget is not stacked above
   // the other two.
@@ -2443,10 +2431,11 @@ TEST_P(OverviewSessionTest, OverviewWidgetStackingOrder) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(start_drag);
   generator->PressLeftButton();
-  EXPECT_GT(IndexOf(widget1->GetNativeWindow(), parent),
-            IndexOf(widget2->GetNativeWindow(), parent));
-  EXPECT_GT(IndexOf(widget1->GetNativeWindow(), parent),
-            IndexOf(widget3->GetNativeWindow(), parent));
+  EXPECT_TRUE(
+      IsStackedBelow(widget2->GetNativeWindow(), widget1->GetNativeWindow()));
+  EXPECT_TRUE(
+      IsStackedBelow(widget3->GetNativeWindow(), widget1->GetNativeWindow()));
+
   histogram_tester.ExpectTotalCount(
       "Ash.Overview.WindowDrag.PresentationTime.TabletMode", 0);
 
@@ -2465,10 +2454,10 @@ TEST_P(OverviewSessionTest, OverviewWidgetStackingOrder) {
   generator->ReleaseLeftButton();
 
   // Verify the stacking order is same as before dragging started.
-  EXPECT_GT(IndexOf(widget3->GetNativeWindow(), parent),
-            IndexOf(widget2->GetNativeWindow(), parent));
-  EXPECT_GT(IndexOf(widget2->GetNativeWindow(), parent),
-            IndexOf(widget1->GetNativeWindow(), parent));
+  EXPECT_TRUE(
+      IsStackedBelow(widget2->GetNativeWindow(), widget3->GetNativeWindow()));
+  EXPECT_TRUE(
+      IsStackedBelow(widget1->GetNativeWindow(), widget2->GetNativeWindow()));
 
   histogram_tester.ExpectTotalCount(
       "Ash.Overview.WindowDrag.PresentationTime.TabletMode", 2);
@@ -2493,8 +2482,7 @@ TEST_P(OverviewSessionTest, DropTargetStackedAtBottomForWindowDraggedFromTop) {
       CreateWindowResizer(window1.get(), gfx::PointF(400, 0), HTCAPTION,
                           ::wm::WINDOW_MOVE_SOURCE_TOUCH);
   ASSERT_TRUE(GetDropTarget(0));
-  EXPECT_LT(IndexOf(GetDropTarget(0)->GetWindow(), parent),
-            IndexOf(window2.get(), parent));
+  EXPECT_TRUE(IsStackedBelow(GetDropTarget(0)->GetWindow(), window2.get()));
   resizer->Drag(gfx::PointF(400, 500), ui::EF_NONE);
   resizer->CompleteDrag();
   EXPECT_FALSE(GetDropTarget(0));
@@ -2517,8 +2505,7 @@ TEST_P(OverviewSessionTest, DropTargetStackedAtBottomForOverviewItem) {
   generator->PressLeftButton();
   generator->MoveMouseBy(5, 0);
   ASSERT_TRUE(GetDropTarget(0));
-  EXPECT_LT(IndexOf(GetDropTarget(0)->GetWindow(), parent),
-            IndexOf(window2.get(), parent));
+  EXPECT_TRUE(IsStackedBelow(GetDropTarget(0)->GetWindow(), window2.get()));
   generator->ReleaseLeftButton();
   EXPECT_FALSE(GetDropTarget(0));
 }
@@ -3685,14 +3672,12 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderSplitviewWindow) {
   ToggleOverview();
   ASSERT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller()->state());
-  ASSERT_GT(IndexOf(window3.get(), window3->parent()),
-            IndexOf(window1.get(), window1->parent()));
+  ASSERT_TRUE(IsStackedBelow(window1.get(), window3.get()));
 
   // Test that on entering overview, |window3| is of a lower z-order, so that
   // when we scroll the grid, it will be seen under |window1|.
   ToggleOverview();
-  EXPECT_LT(IndexOf(window3.get(), window3->parent()),
-            IndexOf(window1.get(), window1->parent()));
+  EXPECT_TRUE(IsStackedBelow(window3.get(), window1.get()));
 
   // Test that |window2| has a cannot snap widget indicating that it cannot be
   // snapped, and that both |window2| and the widget are lower z-order than
@@ -3703,16 +3688,13 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderSplitviewWindow) {
   ASSERT_TRUE(cannot_snap_widget);
   aura::Window* cannot_snap_window = cannot_snap_widget->GetNativeWindow();
   ASSERT_EQ(window1->parent(), cannot_snap_window->parent());
-  EXPECT_LT(IndexOf(window2.get(), window2->parent()),
-            IndexOf(window1.get(), window1->parent()));
-  EXPECT_LT(IndexOf(cannot_snap_window, cannot_snap_window->parent()),
-            IndexOf(window1.get(), window1->parent()));
+  EXPECT_TRUE(IsStackedBelow(window2.get(), window1.get()));
+  EXPECT_TRUE(IsStackedBelow(cannot_snap_window, window1.get()));
 
   // Test that on exiting overview, |window3| becomes activated, so it returns
   // to being higher on the z-order than |window1|.
   ToggleOverview();
-  EXPECT_GT(IndexOf(window3.get(), window3->parent()),
-            IndexOf(window1.get(), window1->parent()));
+  EXPECT_TRUE(IsStackedBelow(window1.get(), window3.get()));
 }
 
 // Tests the windows are remain stacked underneath the split view window after
@@ -3735,8 +3717,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderAfterGestureEvent) {
                                ui::EventTimeForNow(),
                                ui::GestureEventDetails(ui::ET_GESTURE_END));
   item->HandleGestureEvent(&gesture_end);
-  EXPECT_GT(IndexOf(window1.get(), window1->parent()),
-            IndexOf(window2.get(), window2->parent()));
+  EXPECT_TRUE(IsStackedBelow(window2.get(), window1.get()));
 
   // Tests that if we drag the window around, then release, the window also
   // stays stacked under the snapped window.
@@ -3745,8 +3726,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderAfterGestureEvent) {
   DispatchLongPress(item);
   GetOverviewSession()->Drag(item, item_center + delta);
   GetOverviewSession()->CompleteDrag(item, item_center + delta);
-  EXPECT_GT(IndexOf(window1.get(), window1->parent()),
-            IndexOf(window2.get(), window2->parent()));
+  EXPECT_TRUE(IsStackedBelow(window2.get(), window1.get()));
 }
 
 // Test that scrolling occurs if started on top of a window using the window's
@@ -5909,22 +5889,16 @@ TEST_F(
   aura::Window* parent = window1->parent();
   ASSERT_EQ(parent, window2->parent());
   ASSERT_EQ(parent, window3->parent());
-  EXPECT_GT(IndexOf(GetOverviewItemForWindow(window2.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent),
-            IndexOf(GetOverviewItemForWindow(window1.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent));
-  EXPECT_GT(IndexOf(GetOverviewItemForWindow(window1.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent),
-            IndexOf(GetOverviewItemForWindow(window3.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent));
+  EXPECT_TRUE(IsStackedBelow(
+      GetOverviewItemForWindow(window1.get())->item_widget()->GetNativeWindow(),
+      GetOverviewItemForWindow(window2.get())
+          ->item_widget()
+          ->GetNativeWindow()));
+  EXPECT_TRUE(IsStackedBelow(
+      GetOverviewItemForWindow(window3.get())->item_widget()->GetNativeWindow(),
+      GetOverviewItemForWindow(window1.get())
+          ->item_widget()
+          ->GetNativeWindow()));
 }
 
 // Verify that if a window is dragged from overview and snapped in place of
@@ -5965,22 +5939,16 @@ TEST_F(
   aura::Window* parent = window1->parent();
   ASSERT_EQ(parent, window2->parent());
   ASSERT_EQ(parent, window4->parent());
-  EXPECT_GT(IndexOf(GetOverviewItemForWindow(window2.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent),
-            IndexOf(GetOverviewItemForWindow(window1.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent));
-  EXPECT_GT(IndexOf(GetOverviewItemForWindow(window1.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent),
-            IndexOf(GetOverviewItemForWindow(window4.get())
-                        ->item_widget()
-                        ->GetNativeWindow(),
-                    parent));
+  EXPECT_TRUE(IsStackedBelow(
+      GetOverviewItemForWindow(window1.get())->item_widget()->GetNativeWindow(),
+      GetOverviewItemForWindow(window2.get())
+          ->item_widget()
+          ->GetNativeWindow()));
+  EXPECT_TRUE(IsStackedBelow(
+      GetOverviewItemForWindow(window4.get())->item_widget()->GetNativeWindow(),
+      GetOverviewItemForWindow(window1.get())
+          ->item_widget()
+          ->GetNativeWindow()));
 }
 
 // Verify that if the split view divider is dragged close to the edge, the grid
@@ -7778,15 +7746,16 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   ASSERT_EQ(root_windows[0], item2->root_window());
   // Verify that |item1| is stacked above |item3| (because we created |window1|
   // after |window3|).
-  EXPECT_GT(IndexOf(item1->item_widget()->GetNativeWindow(), parent_on_root2),
-            IndexOf(item3->item_widget()->GetNativeWindow(), parent_on_root2));
+  EXPECT_TRUE(IsStackedBelow(item3->item_widget()->GetNativeWindow(),
+                             item1->item_widget()->GetNativeWindow()));
+
   // Verify that the item widget for each window is stacked below that window.
-  EXPECT_LT(IndexOf(item1->item_widget()->GetNativeWindow(), parent_on_root2),
-            IndexOf(window1.get(), parent_on_root2));
-  EXPECT_LT(IndexOf(item2->item_widget()->GetNativeWindow(), parent_on_root1),
-            IndexOf(window2.get(), parent_on_root1));
-  EXPECT_LT(IndexOf(item3->item_widget()->GetNativeWindow(), parent_on_root2),
-            IndexOf(window3.get(), parent_on_root2));
+  EXPECT_TRUE(
+      IsStackedBelow(item1->item_widget()->GetNativeWindow(), window1.get()));
+  EXPECT_TRUE(
+      IsStackedBelow(item2->item_widget()->GetNativeWindow(), window2.get()));
+  EXPECT_TRUE(
+      IsStackedBelow(item3->item_widget()->GetNativeWindow(), window3.get()));
 
   // Drag |item2| from the left display and drop into the right display.
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -7807,13 +7776,13 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // With all three items on one grid, verify that their stacking order
   // corresponds to the MRU order of the windows. The new |item2| is sandwiched
   // between |item1| and |item3|.
-  EXPECT_GT(IndexOf(item1->item_widget()->GetNativeWindow(), parent_on_root2),
-            IndexOf(item2->item_widget()->GetNativeWindow(), parent_on_root2));
-  EXPECT_GT(IndexOf(item2->item_widget()->GetNativeWindow(), parent_on_root2),
-            IndexOf(item3->item_widget()->GetNativeWindow(), parent_on_root2));
+  EXPECT_TRUE(IsStackedBelow(item2->item_widget()->GetNativeWindow(),
+                             item1->item_widget()->GetNativeWindow()));
+  EXPECT_TRUE(IsStackedBelow(item3->item_widget()->GetNativeWindow(),
+                             item2->item_widget()->GetNativeWindow()));
   // Verify that the item widget for the new |item2| is stacked below |window2|.
-  EXPECT_LT(IndexOf(item2->item_widget()->GetNativeWindow(), parent_on_root2),
-            IndexOf(window2.get(), parent_on_root2));
+  EXPECT_TRUE(
+      IsStackedBelow(item2->item_widget()->GetNativeWindow(), window2.get()));
 
   // Verify that the right grid is in MRU order.
   const std::vector<aura::Window*> expected_order = {

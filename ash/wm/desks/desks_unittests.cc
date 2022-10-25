@@ -38,6 +38,7 @@
 #include "ash/style/close_button.h"
 #include "ash/style/color_util.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -233,19 +234,6 @@ BackdropController* GetDeskBackdropController(const Desk* desk,
   WorkspaceLayoutManager* layout_manager =
       workspace_controller->layout_manager();
   return layout_manager->backdrop_controller();
-}
-
-// Returns true if |win1| is stacked (not directly) below |win2|.
-bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
-  DCHECK_NE(win1, win2);
-  DCHECK_EQ(win1->parent(), win2->parent());
-
-  const auto& children = win1->parent()->children();
-  auto win1_iter = base::ranges::find(children, win1);
-  auto win2_iter = base::ranges::find(children, win2);
-  DCHECK(win1_iter != children.end());
-  DCHECK(win2_iter != children.end());
-  return win1_iter < win2_iter;
 }
 
 // Simulate pressing on a desk preview.
