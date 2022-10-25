@@ -1166,9 +1166,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, FetchEvent_Response) {
             storage::BlobToString(blob.get()));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FetchEvent_ResponseNetwork DISABLED_FetchEvent_ResponseNetwork
+#else
+#define MAYBE_FetchEvent_ResponseNetwork FetchEvent_ResponseNetwork
+#endif
 // Tests for response type when a service worker does respondWith(fetch()).
 IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
-                       FetchEvent_ResponseNetwork) {
+                       MAYBE_FetchEvent_ResponseNetwork) {
   const char* kPath = "/service_worker/http_cache.html";
 
   StartServerAndNavigateToSetup();
