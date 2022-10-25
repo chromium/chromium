@@ -11,10 +11,16 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'getDeviceHasBattery',
       'openBatterySaverFeedbackDialog',
       'openHighEfficiencyFeedbackDialog',
       'validateTabDiscardExceptionRule',
     ]);
+  }
+
+  getDeviceHasBattery() {
+    this.methodCalled('getDeviceHasBattery');
+    return Promise.resolve(false);
   }
 
   openBatterySaverFeedbackDialog() {

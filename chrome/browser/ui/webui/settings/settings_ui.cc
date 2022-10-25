@@ -452,10 +452,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "batterySaverModeAvailable",
       base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable) &&
-          performance_manager::user_tuning::UserPerformanceTuningManager::
-              GetInstance()
-                  ->DeviceHasBattery());
+          performance_manager::features::kBatterySaverModeAvailable));
 
   TryShowHatsSurveyWithTimeout();
 }
