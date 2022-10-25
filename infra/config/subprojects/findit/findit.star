@@ -53,9 +53,6 @@ defaults.caches.set([
     ),
 ])
 
-# TODO(crbug.com/1362440): remove this.
-defaults.omit_python2.set(False)
-
 # Builders are defined in lexicographic order by name
 
 # Same as findit_variable, except now with a specified recipe, as this is no
