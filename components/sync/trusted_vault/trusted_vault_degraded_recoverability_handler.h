@@ -50,12 +50,14 @@ class TrustedVaultDegradedRecoverabilityHandler {
   ~TrustedVaultDegradedRecoverabilityHandler();
 
   void HintDegradedRecoverabilityChanged();
+  // TODO(crbug.com/1247990): The accessibility of the following three functions
+  // should be changed to be private.
   void StartLongIntervalRefreshing();
   void StartShortIntervalRefreshing();
   void RefreshImmediately();
+  void Start();
 
  private:
-  void Start();
   void Refresh();
   void OnRecoverabilityIsDegradedDownloaded(
       TrustedVaultRecoverabilityStatus status);

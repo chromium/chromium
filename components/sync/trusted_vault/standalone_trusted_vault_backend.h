@@ -272,6 +272,24 @@ class StandaloneTrustedVaultBackend
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 
   bool device_registration_state_recorded_to_uma_ = false;
+
+  // This is the account passed on the last call to
+  // `GetIsRecoverabilityDegraded()`. `degraded_recoverability_handler_`
+  // should start sending the requests iff it's created for the actual trusted
+  // vault account, `GetIsRecoverabilityDegraded()` being called for the
+  // a certain account indicates that this is an actual trusted vault account
+  // and used as a heuristic to start `degraded_recoverability_handler_`. The
+  // `degraded_recoverability_handler_` should be started for some account x
+  // if x was the current primary account when
+  // `GetIsRecoverabilityDegraded(x)` is called, unfortunately sometimes
+  // `GetIsRecoverabilityDegraded(x)` is called before `SetPrimaryAccount(x)`
+  // is called, in this case the `degraded_recoverability_handler_` should be
+  // started on `setPrimaryAccount()`. Finally, If the primary account is an
+  // actual trusted vault account, `GetIsRecoverabilityDegraded()` will be
+  // called for this account either before or after `SetPrimaryAccount()`
+  // without `GetIsRecoverabilityDegraded()` calls for some other account in
+  // between.
+  absl::optional<CoreAccountInfo> last_recoverability_degraded_queried_account_;
 };
 
 }  // namespace syncer

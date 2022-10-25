@@ -107,6 +107,7 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
     scheduler_ = std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
         &connection_, &delegate_, MakeAccountInfoWithGaiaId("user"),
         sync_pb::LocalTrustedVaultDegradedRecoverabilityState());
+    scheduler_->Start();
     // Moving the time forward by one millisecond to make sure that the first
     // refresh had called.
     task_environment().FastForwardBy(base::Milliseconds(1));
@@ -139,6 +140,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
       std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
           &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
           sync_pb::LocalTrustedVaultDegradedRecoverabilityState());
+  scheduler->Start();
   task_environment().FastForwardBy(base::Milliseconds(1));
 }
 
@@ -264,6 +266,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
       std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
           &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
           degraded_recoverability_state);
+  scheduler->Start();
   task_environment().FastForwardBy(base::Days(3) + base::Milliseconds(1));
 }
 

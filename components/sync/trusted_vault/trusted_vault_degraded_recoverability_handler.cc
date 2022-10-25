@@ -69,7 +69,6 @@ TrustedVaultDegradedRecoverabilityHandler::
     last_refresh_time_ =
         base::TimeTicks::Now() - (base::Time::Now() - last_refresh_time);
   }
-  Start();
 }
 
 TrustedVaultDegradedRecoverabilityHandler::

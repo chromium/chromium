@@ -513,6 +513,11 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
         std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
             connection_.get(), /*delegate=*/this, primary_account_.value(),
             per_user_vault->degraded_recoverability_state());
+    // The `degraded_recoverability_handler_` should start if
+    // `GetIsRecoverabilityDegraded(primary_account_)` is already called.
+    if (primary_account_ == last_recoverability_degraded_queried_account_) {
+      degraded_recoverability_handler_->Start();
+    }
   }
 
   const absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
@@ -602,6 +607,10 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     base::OnceCallback<void(bool)> cb) {
   if (base::FeatureList::IsEnabled(
           kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+    last_recoverability_degraded_queried_account_ = account_info;
+    if (account_info == primary_account_) {
+      degraded_recoverability_handler_->Start();
+    }
     sync_pb::LocalTrustedVaultPerUser* per_user_vault =
         FindUserVault(account_info.gaia);
     if (!per_user_vault) {
