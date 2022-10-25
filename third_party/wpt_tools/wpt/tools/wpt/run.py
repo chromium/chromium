@@ -412,7 +412,17 @@ class ContentShell(BrowserSetup):
             else:
                 raise WptrunError(f"Unable to locate {self.name.capitalize()} binary")
 
+        if kwargs["mojojs_path"]:
+            kwargs["enable_mojojs"] = True
+            logger.info("--mojojs-path is provided, enabling MojoJS")
+        elif kwargs["enable_mojojs"]:
+            logger.warning(f"Cannot install MojoJS for {self.name}, "
+                           "which does not return version information. "
+                           "Provide '--mojojs-path' explicitly instead.")
+            logger.warning("MojoJS is disabled for this run.")
+
         kwargs["enable_webtransport_h3"] = True
+
 
 class Chromium(Chrome):
     name = "chromium"
