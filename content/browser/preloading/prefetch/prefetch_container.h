@@ -111,6 +111,7 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnIsolatedCookieCopyStart();
   void OnIsolatedCookiesReadCompleteAndWriteStart();
   void OnIsolatedCookieCopyComplete();
+  void OnInterceptorCheckCookieCopy();
   void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
   // The network context used to make network requests for this prefetch.

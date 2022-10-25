@@ -199,6 +199,12 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
   prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
+  // The URL interceptor checks on the cookie copy status when trying to serve a
+  // prefetch. If its still in progress, it registers a callback to be called
+  // once the copy is complete.
+  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.OnInterceptorCheckCookieCopy();
+  task_environment()->FastForwardBy(base::Milliseconds(40));
   bool callback_called = false;
   prefetch_container.SetOnCookieCopyCompleteCallback(
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
@@ -214,10 +220,13 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
       base::Milliseconds(10), 1);
   histogram_tester.ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieWriteTime",
-      base::Milliseconds(20), 1);
+      base::Milliseconds(60), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
+      base::Milliseconds(30), 1);
   histogram_tester.ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
-      base::Milliseconds(30), 1);
+      base::Milliseconds(70), 1);
 }
 
 TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {

@@ -190,6 +190,10 @@ void PrefetchURLLoaderInterceptor::
     EnsureCookiesCopiedAndInterceptPrefetchedNavigation(
         const network::ResourceRequest& tenative_resource_request,
         base::WeakPtr<PrefetchContainer> prefetch_container) {
+  if (prefetch_container) {
+    prefetch_container->OnInterceptorCheckCookieCopy();
+  }
+
   if (prefetch_container &&
       prefetch_container->IsIsolatedCookieCopyInProgress()) {
     cookie_copy_start_time_ = base::TimeTicks::Now();

@@ -208,6 +208,9 @@ void PrefetchProxyURLLoaderInterceptor::
   // they need before being put on the wire.
   PrefetchProxyTabHelper* tab_helper = PrefetchProxyTabHelper::FromWebContents(
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_));
+  if (tab_helper) {
+    tab_helper->OnInterceptorCheckCookieCopy();
+  }
   if (tab_helper && tab_helper->IsWaitingForAfterSRPCookiesCopy()) {
     cookie_copy_start_time_ = base::TimeTicks::Now();
     tab_helper->SetOnAfterSRPCookieCopyCompleteCallback(base::BindOnce(

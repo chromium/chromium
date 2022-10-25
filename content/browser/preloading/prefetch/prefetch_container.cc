@@ -185,6 +185,16 @@ void PrefetchContainer::OnIsolatedCookieCopyComplete() {
     std::move(on_cookie_copy_complete_callback_).Run();
 }
 
+void PrefetchContainer::OnInterceptorCheckCookieCopy() {
+  if (!cookie_copy_start_time_)
+    return;
+
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
+      base::TimeTicks::Now() - cookie_copy_start_time_.value(),
+      base::TimeDelta(), base::Seconds(5), 50);
+}
+
 void PrefetchContainer::SetOnCookieCopyCompleteCallback(
     base::OnceClosure callback) {
   DCHECK(IsIsolatedCookieCopyInProgress());

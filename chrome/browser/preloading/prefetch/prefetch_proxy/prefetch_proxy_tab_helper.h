@@ -216,6 +216,10 @@ class PrefetchProxyTabHelper
   bool IsWaitingForAfterSRPCookiesCopy() const;
   void SetOnAfterSRPCookieCopyCompleteCallback(base::OnceClosure callback);
 
+  // Called when the |PrefetchProxyURLLoaderInterceptor| checks the status of
+  // the cookie copy.
+  void OnInterceptorCheckCookieCopy();
+
   // Returns whether or not the cookies for the given URL have changed since the
   // initial eligibiilty check.
   bool HaveCookiesChanged(const GURL& url) const;
@@ -334,6 +338,9 @@ class PrefetchProxyTabHelper
     // The current status of copying cookies for the next page load when the
     // user navigates to a prefetched link.
     CookieCopyStatus cookie_copy_status_ = CookieCopyStatus::kNoNavigation;
+
+    // The time at which copying cookies for the next page load started.
+    absl::optional<base::TimeTicks> cookie_copy_start_time_;
 
     // A callback that runs once |cookie_copy_status_| is set to copy complete.
     base::OnceClosure on_after_srp_cookie_copy_complete_;

@@ -1526,6 +1526,12 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(security_state_tab_helper->GetSecurityLevel(),
             security_state::SECURE);
 
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime", 1);
+
   using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
   auto expected_entries = std::vector<UkmEntry>{
       // eligible_link_1

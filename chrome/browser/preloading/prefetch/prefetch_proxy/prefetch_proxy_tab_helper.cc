@@ -1721,6 +1721,7 @@ void PrefetchProxyTabHelper::CopyIsolatedCookiesOnAfterSRPClick(
   prefetch_container->StopCookieListener();
 
   page_->cookie_copy_status_ = CookieCopyStatus::kWaitingForCopy;
+  page_->cookie_copy_start_time_ = base::TimeTicks::Now();
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   page_->GetNetworkContextForUrl(prefetch_container->GetUrl())
@@ -1770,10 +1771,27 @@ void PrefetchProxyTabHelper::OnGotIsolatedCookiesToCopyAfterSRPClick(
 void PrefetchProxyTabHelper::OnCopiedIsolatedCookiesAfterSRPClick() {
   DCHECK(IsWaitingForAfterSRPCookiesCopy());
 
+  if (page_->cookie_copy_start_time_) {
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
+        base::TimeTicks::Now() - page_->cookie_copy_start_time_.value(),
+        base::TimeDelta(), base::Seconds(5), 50);
+  }
+
   page_->cookie_copy_status_ = CookieCopyStatus::kCopyComplete;
   if (page_->on_after_srp_cookie_copy_complete_) {
     std::move(page_->on_after_srp_cookie_copy_complete_).Run();
   }
+}
+
+void PrefetchProxyTabHelper::OnInterceptorCheckCookieCopy() {
+  if (!page_->cookie_copy_start_time_)
+    return;
+
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
+      base::TimeTicks::Now() - page_->cookie_copy_start_time_.value(),
+      base::TimeDelta(), base::Seconds(5), 50);
 }
 
 network::mojom::URLLoaderFactory* PrefetchProxyTabHelper::GetURLLoaderFactory(
