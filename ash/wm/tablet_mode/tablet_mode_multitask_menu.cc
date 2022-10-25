@@ -119,6 +119,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   params.shadow_elevation = kShadowElevation;
 
   multitask_menu_widget_->Init(std::move(params));
+  multitask_menu_widget_->SetVisibilityChangedAnimationsEnabled(false);
   multitask_menu_widget_->SetContentsView(
       std::make_unique<TabletModeMultitaskMenuView>(window_, callback));
   AnimateShow();
@@ -134,57 +135,61 @@ void TabletModeMultitaskMenu::AnimateShow() {
   // TODO(sophiewen): Consider adding transient child instead.
   multitask_menu_window->parent()->StackChildAbove(multitask_menu_window,
                                                    window_);
+  multitask_menu_widget_->Show();
 
-  // Start with the widget offscreen.
+  // Show the multitask menu on the top center of the window.
   const gfx::Size widget_size =
       multitask_menu_widget_->GetContentsView()->GetPreferredSize();
-  const gfx::Rect start_bounds(
-      window_->bounds().CenterPoint().x() - widget_size.width() / 2,
-      window_->bounds().y() - widget_size.height(), widget_size.width(),
-      widget_size.height());
-  multitask_menu_widget_->SetBounds(start_bounds);
-  multitask_menu_widget_->Show();
-  multitask_menu_widget_->SetOpacity(0.f);
-
-  auto* widget_layer = multitask_menu_widget_->GetLayer();
-  const gfx::Rect end_bounds(
-      gfx::Point(start_bounds.x(),
+  multitask_menu_window->SetBounds(gfx::Rect(
+      gfx::Point(window_->bounds().CenterPoint().x() - widget_size.width() / 2,
                  window_->bounds().y() + kMultitaskMenuVerticalPadding),
-      widget_size);
+      widget_size));
+  const gfx::Transform transform = gfx::Transform::MakeTranslation(
+      0, -widget_size.height() - kMultitaskMenuVerticalPadding);
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
+      .SetDuration(base::TimeDelta())
+      .SetTransform(multitask_menu_window, transform)
+      .SetOpacity(multitask_menu_window, 0.f)
+      .Then()
       .SetDuration(kPositionAnimationDurationMs)
-      .SetBounds(widget_layer, end_bounds, gfx::Tween::ACCEL_20_DECEL_100)
-      .At(base::Seconds(0))
-      .SetDuration(kOpacityAnimationDurationMs)
-      .SetOpacity(widget_layer, 1.f, gfx::Tween::LINEAR);
+      .SetTransform(multitask_menu_window, gfx::Transform(),
+                    gfx::Tween::ACCEL_20_DECEL_100)
+      .SetOpacity(multitask_menu_window, 1.f, gfx::Tween::LINEAR);
 }
 
 void TabletModeMultitaskMenu::AnimateClose() {
-  // TODO(crbug.com/1370728): Test animation in portrait mode on secondary
-  // window.
   DCHECK(multitask_menu_widget_);
+  auto* multitask_menu_window = multitask_menu_widget_->GetNativeWindow();
+
+  // The final menu bounds are offscreen.
   const gfx::Size widget_size =
       multitask_menu_widget_->GetContentsView()->GetPreferredSize();
-  const gfx::Rect end_bounds(
-      multitask_menu_widget_->GetWindowBoundsInScreen().x(),
-      window_->bounds().y() - widget_size.height() -
-          kMultitaskMenuVerticalPadding,
-      widget_size.width(), widget_size.height());
-  auto* widget_layer = multitask_menu_widget_->GetLayer();
+  multitask_menu_window->SetBounds(
+      gfx::Rect(multitask_menu_widget_->GetWindowBoundsInScreen().x(),
+                window_->bounds().y() - widget_size.height() -
+                    kMultitaskMenuVerticalPadding,
+                widget_size.width(), widget_size.height()));
+  const gfx::Transform transform = gfx::Transform::MakeTranslation(
+      0, widget_size.height() + kMultitaskMenuVerticalPadding);
+
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(&TabletModeMultitaskMenu::Reset,
                               weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
-      .SetDuration(kPositionAnimationDurationMs)
-      .SetBounds(widget_layer, end_bounds, gfx::Tween::ACCEL_20_DECEL_100)
-      .At(base::Seconds(0))
+      .SetDuration(base::TimeDelta())
+      .SetTransform(multitask_menu_window, transform)
+      .SetOpacity(multitask_menu_window, 1.f)
+      .Then()
       .SetDuration(kOpacityAnimationDurationMs)
-      .SetOpacity(widget_layer, 0.f, gfx::Tween::LINEAR);
+      .SetTransform(multitask_menu_window, gfx::Transform(),
+                    gfx::Tween::ACCEL_20_DECEL_100)
+      .SetOpacity(multitask_menu_window, 0.f, gfx::Tween::LINEAR);
 }
 
 void TabletModeMultitaskMenu::Reset() {
