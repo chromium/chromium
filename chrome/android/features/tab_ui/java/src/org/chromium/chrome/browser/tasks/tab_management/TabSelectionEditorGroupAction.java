@@ -64,20 +64,16 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
                                                           .getTabModelFilterProvider()
                                                           .getCurrentTabModelFilter();
 
-        // Remove the related tabs to prevent "re-grouping".
         HashSet<Tab> selectedTabs = new HashSet<>(tabs);
         Tab destinationTab = getDestinationTab(tabs, getTabModelSelector().getCurrentModel(),
                 tabGroupModelFilter, editorSupportsActionOnRelatedTabs());
         List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabList(destinationTab.getId());
-        for (Tab tab : relatedTabs) {
-            selectedTabs.remove(tab);
-        }
-        // Ensure tab count is as expected.
-        selectedTabs.add(destinationTab);
+        selectedTabs.removeAll(relatedTabs);
 
         // Sort tabs by index prevent visual bugs when undoing.
-        // TODO(crbug/1374935): See if this can be removed.
         List<Tab> sortedTabs = new ArrayList<>(selectedTabs.size());
+        // Ensure tab count is as expected and the group doesn't get shuffled.
+        sortedTabs.addAll(relatedTabs);
         TabModel model = getTabModelSelector().getCurrentModel();
         for (int i = 0; i < model.getCount(); i++) {
             Tab tab = model.getTabAt(i);
