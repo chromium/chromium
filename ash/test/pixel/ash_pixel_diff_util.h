@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_TEST_ASH_PIXEL_DIFF_UTIL_H_
-#define ASH_TEST_ASH_PIXEL_DIFF_UTIL_H_
+#ifndef ASH_TEST_PIXEL_ASH_PIXEL_DIFF_UTIL_H_
+#define ASH_TEST_PIXEL_ASH_PIXEL_DIFF_UTIL_H_
 
 #include <vector>
 
@@ -40,4 +40,4 @@ void PopulateUiComponentScreenBounds(std::vector<gfx::Rect>* rects,
 
 }  // namespace ash
 
-#endif  // ASH_TEST_ASH_PIXEL_DIFF_UTIL_H_
+#endif  // ASH_TEST_PIXEL_ASH_PIXEL_DIFF_UTIL_H_

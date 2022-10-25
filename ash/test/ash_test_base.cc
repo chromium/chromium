@@ -27,8 +27,8 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/test/ash_pixel_diff_test_helper.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/test_shell_delegate.h"
@@ -338,14 +338,13 @@ void AshTestBase::PrepareForPixelDiffTest(
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kStabilizeTimeDependentViewForTests);
 
-  DCHECK(!pixel_test_helper_);
-  pixel_test_helper_ =
-      std::make_unique<AshPixelDiffTestHelper>(screenshot_prefix, corpus);
+  DCHECK(!pixel_differ_);
+  pixel_differ_ = std::make_unique<AshPixelDiffer>(screenshot_prefix, corpus);
 }
 
-AshPixelDiffTestHelper* AshTestBase::GetPixelDiffer() {
-  DCHECK(pixel_test_helper_);
-  return pixel_test_helper_.get();
+AshPixelDiffer* AshTestBase::GetPixelDiffer() {
+  DCHECK(pixel_differ_);
+  return pixel_differ_.get();
 }
 
 void AshTestBase::StabilizeUIForPixelTest() {

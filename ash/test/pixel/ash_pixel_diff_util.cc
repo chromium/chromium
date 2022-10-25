@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/ash_pixel_diff_util.h"
+#include "ash/test/pixel/ash_pixel_diff_util.h"
 
 #include "ui/aura/window.h"
 #include "ui/views/view.h"

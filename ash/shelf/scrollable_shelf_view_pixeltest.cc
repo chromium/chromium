@@ -6,8 +6,8 @@
 #include "ash/shelf/shelf_menu_model_adapter.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shelf/test/scrollable_shelf_test_base.h"
-#include "ash/test/ash_pixel_diff_test_helper.h"
-#include "ash/test/ash_pixel_test_init_params.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 

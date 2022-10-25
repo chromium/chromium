@@ -10,9 +10,9 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
-#include "ash/test/ash_pixel_diff_test_helper.h"
-#include "ash/test/ash_pixel_test_init_params.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
@@ -41,8 +41,8 @@ class AppListViewPixelRTLTest
     test_helper->GetSearchBoxView()->UseFixedPlaceholderTextForTest();
   }
 
-    // Hide the search box cursor to avoid the flakiness due to the
-    // blinking.
+  // Hide the search box cursor to avoid the flakiness due to the
+  // blinking.
   void HideCursor() {
     views::TextfieldTestApi(
         GetAppListTestHelper()->GetBubbleSearchBoxView()->search_box())

@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/ash_pixel_diff_test_helper.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 
 namespace ash {
 
-AshPixelDiffTestHelper::AshPixelDiffTestHelper(
-    const std::string& screenshot_prefix,
-    const std::string& corpus) {
+AshPixelDiffer::AshPixelDiffer(const std::string& screenshot_prefix,
+                               const std::string& corpus) {
   pixel_diff_.Init(screenshot_prefix, corpus);
 }
 
-AshPixelDiffTestHelper::~AshPixelDiffTestHelper() = default;
+AshPixelDiffer::~AshPixelDiffer() = default;
 
-bool AshPixelDiffTestHelper::ComparePrimaryScreenshotInRects(
+bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
     const std::string& screenshot_name,
     const std::vector<gfx::Rect>& rects_in_screen) {
   aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
@@ -49,7 +48,7 @@ bool AshPixelDiffTestHelper::ComparePrimaryScreenshotInRects(
       /*algorithm=*/nullptr, rects_in_pixel);
 }
 
-bool AshPixelDiffTestHelper::ComparePrimaryFullScreen(
+bool AshPixelDiffer::ComparePrimaryFullScreen(
     const std::string& screenshot_name) {
   aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
   return pixel_diff_.CompareNativeWindowScreenshot(

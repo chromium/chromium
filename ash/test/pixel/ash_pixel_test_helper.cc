@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/ash_test_ui_stabilizer.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -37,7 +37,7 @@ gfx::ImageSkia CreateImage(const gfx::Size& image_size, SkColor color) {
 
 }  // namespace
 
-AshTestUiStabilizer::AshTestUiStabilizer(const pixel_test::InitParams& params)
+AshPixelTestHelper::AshPixelTestHelper(const pixel_test::InitParams& params)
     : params_(params),
       scoped_locale_(base::test::ScopedRestoreICUDefaultLocale(kLocale)),
       time_zone_(base::test::ScopedRestoreDefaultTimezone(kTimeZone)) {
@@ -47,15 +47,15 @@ AshTestUiStabilizer::AshTestUiStabilizer(const pixel_test::InitParams& params)
   }
 }
 
-AshTestUiStabilizer::~AshTestUiStabilizer() = default;
+AshPixelTestHelper::~AshPixelTestHelper() = default;
 
-void AshTestUiStabilizer::StabilizeUi(const gfx::Size& wallpaper_size) {
+void AshPixelTestHelper::StabilizeUi(const gfx::Size& wallpaper_size) {
   MaybeSetDarkMode();
   SetWallPaper(wallpaper_size);
   SetBatteryState();
 }
 
-void AshTestUiStabilizer::MaybeSetDarkMode() {
+void AshPixelTestHelper::MaybeSetDarkMode() {
   // If the dark/light mode feature is not enabled, the dark mode is used as
   // default so return early.
   if (!features::IsDarkLightModeEnabled())
@@ -66,7 +66,7 @@ void AshTestUiStabilizer::MaybeSetDarkMode() {
     dark_light_mode_controller->ToggleColorMode();
 }
 
-void AshTestUiStabilizer::SetWallPaper(const gfx::Size& wallpaper_size) {
+void AshPixelTestHelper::SetWallPaper(const gfx::Size& wallpaper_size) {
   auto* controller = Shell::Get()->wallpaper_controller();
   controller->set_wallpaper_reload_no_delay_for_test();
 
@@ -93,7 +93,7 @@ void AshTestUiStabilizer::SetWallPaper(const gfx::Size& wallpaper_size) {
   }
 }
 
-void AshTestUiStabilizer::SetBatteryState() {
+void AshPixelTestHelper::SetBatteryState() {
   power_manager::PowerSupplyProperties proto;
   proto.set_external_power(
       power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);

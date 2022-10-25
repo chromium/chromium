@@ -27,8 +27,8 @@
 #include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
-#include "ash/test/ash_test_ui_stabilizer.h"
 #include "ash/test/ash_test_views_delegate.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/toplevel_window.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
@@ -241,11 +241,11 @@ aura::client::CaptureClient* AshTestHelper::GetCaptureClient() {
 }
 
 void AshTestHelper::SetUp(InitParams init_params) {
-  // Build `ui_stabilizer_` only for a pixel diff test.
+  // Build `pixel_test_helper_` only for a pixel diff test.
   if (init_params.pixel_test_init_params) {
-    // Constructing `ui_stabilizer_` sets the locale. Therefore, building
-    // `ui_stabilizer_` before the code that establishes the Ash UI.
-    ui_stabilizer_ = std::make_unique<AshTestUiStabilizer>(
+    // Constructing `pixel_test_helper_` sets the locale. Therefore, building
+    // `pixel_test_helper_` before the code that establishes the Ash UI.
+    pixel_test_helper_ = std::make_unique<AshPixelTestHelper>(
         *init_params.pixel_test_init_params);
   }
 
@@ -380,7 +380,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
 
   // Call `StabilizeUIForPixelTest()` after the user session is activated (if
   // any) in the test setup.
-  if (ui_stabilizer_) {
+  if (pixel_test_helper_) {
     DCHECK(init_params.pixel_test_init_params);
     StabilizeUIForPixelTest();
   }
@@ -407,7 +407,7 @@ void AshTestHelper::StabilizeUIForPixelTest() {
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
           .size();
-  ui_stabilizer_->StabilizeUi(primary_display_size);
+  pixel_test_helper_->StabilizeUi(primary_display_size);
 }
 
 }  // namespace ash

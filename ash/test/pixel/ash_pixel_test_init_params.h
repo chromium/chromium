@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_TEST_ASH_PIXEL_TEST_INIT_PARAMS_H_
-#define ASH_TEST_ASH_PIXEL_TEST_INIT_PARAMS_H_
+#ifndef ASH_TEST_PIXEL_ASH_PIXEL_TEST_INIT_PARAMS_H_
+#define ASH_TEST_PIXEL_ASH_PIXEL_TEST_INIT_PARAMS_H_
 
 namespace ash::pixel_test {
 
@@ -26,4 +26,4 @@ struct InitParams {
 
 }  // namespace ash::pixel_test
 
-#endif  // ASH_TEST_ASH_PIXEL_TEST_INIT_PARAMS_H_
+#endif  // ASH_TEST_PIXEL_ASH_PIXEL_TEST_INIT_PARAMS_H_

@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "ash/shell.h"
-#include "ash/test/ash_pixel_diff_test_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"

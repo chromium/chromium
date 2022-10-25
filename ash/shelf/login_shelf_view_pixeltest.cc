@@ -10,7 +10,7 @@
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
-#include "ash/test/ash_pixel_diff_test_helper.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
 
 namespace ash {
 

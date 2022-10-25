@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/ash_pixel_diff_test_helper.h"
-#include "ash/test/ash_pixel_test_init_params.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 
 namespace ash {
 

@@ -47,7 +47,7 @@ namespace ash {
 
 class AppListTestHelper;
 class AmbientAshTestHelper;
-class AshTestUiStabilizer;
+class AshPixelTestHelper;
 class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
@@ -201,7 +201,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<SavedDeskTestHelper> saved_desk_test_helper_;
 
   // Used only for pixel tests.
-  std::unique_ptr<AshTestUiStabilizer> ui_stabilizer_;
+  std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;
 
   bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;

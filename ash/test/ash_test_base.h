@@ -14,7 +14,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
-#include "ash/test/ash_pixel_test_init_params.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
@@ -69,7 +69,7 @@ namespace ash {
 
 class AmbientAshTestHelper;
 class AppListTestHelper;
-class AshPixelDiffTestHelper;
+class AshPixelDiffer;
 class AshTestHelper;
 class Shelf;
 class TestAppListClient;
@@ -195,8 +195,8 @@ class AshTestBase : public testing::Test {
                                const pixel_test::InitParams& init_params,
                                const std::string& corpus = std::string());
 
-  // Returns the raw pointer carried by `pixel_test_helper_`.
-  AshPixelDiffTestHelper* GetPixelDiffer();
+  // Returns the raw pointer carried by `pixel_differ_`.
+  AshPixelDiffer* GetPixelDiffer();
 
   // Stabilizes the variable UI components (such as the battery view). It should
   // be called after the active user changes since some UI components are
@@ -371,7 +371,7 @@ class AshTestBase : public testing::Test {
 
   // A helper class to take screen shots then compare with benchmarks. Set by
   // `PrepareForPixelDiffTest()`.
-  std::unique_ptr<AshPixelDiffTestHelper> pixel_test_helper_;
+  std::unique_ptr<AshPixelDiffer> pixel_differ_;
 
   // Must be constructed after |task_environment_|.
   std::unique_ptr<AshTestHelper> ash_test_helper_;

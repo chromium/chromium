@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_TEST_ASH_TEST_UI_STABILIZER_H_
-#define ASH_TEST_ASH_TEST_UI_STABILIZER_H_
+#ifndef ASH_TEST_PIXEL_ASH_PIXEL_TEST_HELPER_H_
+#define ASH_TEST_PIXEL_ASH_PIXEL_TEST_HELPER_H_
 
-#include "ash/test/ash_pixel_test_init_params.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/icu_test_util.h"
@@ -17,12 +17,12 @@ class Size;
 namespace ash {
 
 // A test helper class that sets up the system UI for pixel tests.
-class AshTestUiStabilizer {
+class AshPixelTestHelper {
  public:
-  explicit AshTestUiStabilizer(const pixel_test::InitParams& params);
-  AshTestUiStabilizer(const AshTestUiStabilizer&) = delete;
-  AshTestUiStabilizer& operator=(const AshTestUiStabilizer&) = delete;
-  ~AshTestUiStabilizer();
+  explicit AshPixelTestHelper(const pixel_test::InitParams& params);
+  AshPixelTestHelper(const AshPixelTestHelper&) = delete;
+  AshPixelTestHelper& operator=(const AshPixelTestHelper&) = delete;
+  ~AshPixelTestHelper();
 
   // Makes the variable UI components (such as the battery view and wallpaper)
   // constant to avoid flakiness in pixel tests.
@@ -49,4 +49,4 @@ class AshTestUiStabilizer {
 
 }  // namespace ash
 
-#endif  // ASH_TEST_ASH_TEST_UI_STABILIZER_H_
+#endif  // ASH_TEST_PIXEL_ASH_PIXEL_TEST_HELPER_H_

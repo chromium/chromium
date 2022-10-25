@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_TEST_ASH_PIXEL_DIFF_TEST_HELPER_H_
-#define ASH_TEST_ASH_PIXEL_DIFF_TEST_HELPER_H_
+#ifndef ASH_TEST_PIXEL_ASH_PIXEL_DIFFER_H_
+#define ASH_TEST_PIXEL_ASH_PIXEL_DIFFER_H_
 
-#include "ash/test/ash_pixel_diff_util.h"
+#include "ash/test/pixel/ash_pixel_diff_util.h"
 #include "base/check_op.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 
@@ -13,16 +13,16 @@ namespace ash {
 
 // A helper class that provides utility functions for performing pixel diff
 // tests via the Skia Gold.
-class AshPixelDiffTestHelper {
+class AshPixelDiffer {
  public:
   // `screenshot_prefix` is the prefix of the screenshot names; `corpus`
   // specifies the result group that will be used to store screenshots in Skia
   // Gold. Read the comment of `SKiaGoldPixelDiff::Init()` for more details.
-  AshPixelDiffTestHelper(const std::string& screenshot_prefix,
-                         const std::string& corpus);
-  AshPixelDiffTestHelper(const AshPixelDiffTestHelper&) = delete;
-  AshPixelDiffTestHelper& operator=(const AshPixelDiffTestHelper&) = delete;
-  ~AshPixelDiffTestHelper();
+  AshPixelDiffer(const std::string& screenshot_prefix,
+                 const std::string& corpus);
+  AshPixelDiffer(const AshPixelDiffer&) = delete;
+  AshPixelDiffer& operator=(const AshPixelDiffer&) = delete;
+  ~AshPixelDiffer();
 
   // Takes a full primary screenshot then compares it with the benchmark image
   // specified by `screenshot_name`. Only the pixels within the screen bounds of
@@ -77,4 +77,4 @@ class AshPixelDiffTestHelper {
 
 }  // namespace ash
 
-#endif  // ASH_TEST_ASH_PIXEL_DIFF_TEST_HELPER_H_
+#endif  // ASH_TEST_PIXEL_ASH_PIXEL_DIFFER_H_
