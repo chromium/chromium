@@ -593,7 +593,7 @@ void AppServiceAppWindowShelfController::RegisterWindow(
     window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
     window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
   } else if (crostini::IsCrostiniWindow(window)) {
-    // Permit pointer lock in Crostini (and Bruschetta).
+    window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
     window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
   }
 
