@@ -33,14 +33,28 @@ struct AutofillMetadata;
 // to the requested form group type.
 class AutofillProfile : public AutofillDataModel {
  public:
+  // `RecordType` is deprecated and `SERVER_PROFILE` essentially unused.
+  // TODO(crbug.com/1177366): Remove
   enum RecordType {
     // A profile stored and editable locally.
     LOCAL_PROFILE,
     // A profile synced down from the server. These are read-only locally.
     SERVER_PROFILE,
   };
+  // Describes where the profile is stored and how it is synced.
+  enum class Source {
+    // Not synced at all or synced through the `AutofillProfileSyncBridge`. This
+    // corresponds to profiles that local to Autofill only.
+    kLocal = 0,
+    // Synced through the `ContactInfoSyncBridge`. This corresponds to profiles
+    // that are shared beyond Autofill across different services.
+    kAccount = 1,
+    kMaxValue = kAccount,
+  };
 
-  AutofillProfile(const std::string& guid, const std::string& origin);
+  AutofillProfile(const std::string& guid,
+                  const std::string& origin,
+                  Source source = Source::kLocal);
 
   // Server profile constructor. The type must be SERVER_PROFILE (this serves
   // to differentiate this constructor). |server_id| can be empty. If empty,
@@ -250,6 +264,8 @@ class AutofillProfile : public AutofillDataModel {
     disallow_settings_visible_updates_ = disallow;
   }
 
+  Source source() const { return source_; }
+
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.
   ServerFieldTypeSet FindInaccessibleProfileValues() const;
@@ -332,6 +348,8 @@ class AutofillProfile : public AutofillDataModel {
   // Only useful for SERVER_PROFILEs. Whether this server profile has been
   // converted to a local profile.
   bool has_converted_;
+
+  Source source_;
 };
 
 // So we can compare AutofillProfiles with EXPECT_EQ().

@@ -211,29 +211,29 @@ void GetFieldsForDistinguishingProfiles(
 }  // namespace
 
 AutofillProfile::AutofillProfile(const std::string& guid,
-                                 const std::string& origin)
+                                 const std::string& origin,
+                                 Source source)
     : AutofillDataModel(guid, origin),
       company_(this),
       phone_number_(this),
       record_type_(LOCAL_PROFILE),
-      has_converted_(false) {}
+      has_converted_(false),
+      source_(source) {}
 
+// TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
     : AutofillDataModel(base::GenerateGUID(), std::string()),
       company_(this),
       phone_number_(this),
       server_id_(server_id),
       record_type_(type),
-      has_converted_(false) {
+      has_converted_(false),
+      source_(Source::kLocal) {
   DCHECK(type == SERVER_PROFILE);
 }
 
 AutofillProfile::AutofillProfile()
-    : AutofillDataModel(base::GenerateGUID(), std::string()),
-      company_(this),
-      phone_number_(this),
-      record_type_(LOCAL_PROFILE),
-      has_converted_(false) {}
+    : AutofillProfile(base::GenerateGUID(), std::string()) {}
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
     : AutofillDataModel(std::string(), std::string()),
@@ -275,6 +275,8 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   server_id_ = profile.server_id();
   has_converted_ = profile.has_converted();
+
+  source_ = profile.source_;
 
   return *this;
 }
@@ -1069,7 +1071,8 @@ bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
          disallow_settings_visible_updates() ==
              profile.disallow_settings_visible_updates() &&
          language_code() == profile.language_code() &&
-         profile_label() == profile.profile_label() && Compare(profile) == 0;
+         profile_label() == profile.profile_label() &&
+         source() == profile.source() && Compare(profile) == 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
