@@ -120,7 +120,7 @@ void SmbFsMounter::OnMountDone(
     return;
   }
 
-  if (error_code != ash::MountError::kNone) {
+  if (error_code != ash::MountError::kSuccess) {
     LOG(WARNING) << "smbfs mount error: " << error_code;
     ProcessMountError(mojom::MountError::kUnknown);
     return;

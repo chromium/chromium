@@ -56,7 +56,7 @@ TEST_F(SmbFsHostTest, DisconnectDelegate) {
   EXPECT_CALL(mock_delegate_, OnDisconnected())
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
-      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kNone));
+      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kSuccess));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
       std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
@@ -73,7 +73,7 @@ TEST_F(SmbFsHostTest, DisconnectSmbFs) {
   EXPECT_CALL(mock_delegate_, OnDisconnected())
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
-      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kNone));
+      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kSuccess));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
       std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
@@ -88,7 +88,7 @@ TEST_F(SmbFsHostTest, DisconnectSmbFs) {
 TEST_F(SmbFsHostTest, UnmountOnDestruction) {
   EXPECT_CALL(mock_delegate_, OnDisconnected()).Times(0);
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
-      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kNone));
+      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kSuccess));
 
   base::RunLoop run_loop;
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
@@ -102,7 +102,7 @@ TEST_F(SmbFsHostTest, UnmountOnDestruction) {
 
 TEST_F(SmbFsHostTest, RequestCredentials_ProvideCredentials) {
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
-      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kNone));
+      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kSuccess));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
       std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
@@ -136,7 +136,7 @@ TEST_F(SmbFsHostTest, RequestCredentials_ProvideCredentials) {
 
 TEST_F(SmbFsHostTest, RequestCredentials_Cancel) {
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
-      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kNone));
+      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kSuccess));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
       std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),

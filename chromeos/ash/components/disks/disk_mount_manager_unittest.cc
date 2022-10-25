@@ -586,10 +586,10 @@ TEST_F(DiskMountManagerTest, Format_NotMounted) {
   DiskMountManager::GetInstance()->FormatMountedDevice(
       "/mount/non_existent", kFormatFileSystemType1, kFormatLabel1);
   ASSERT_EQ(1U, observer_->GetEventCount());
-  EXPECT_EQ(
-      FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kUnknown,
-                  "/mount/non_existent", kFormatLabel1),
-      observer_->GetFormatEvent(0));
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_COMPLETED,
+                        FormatError::kUnknownError, "/mount/non_existent",
+                        kFormatLabel1),
+            observer_->GetFormatEvent(0));
 }
 
 // Tests that the observer gets notified on attempt to format read-only mount
@@ -609,10 +609,10 @@ TEST_F(DiskMountManagerTest, Format_Archive) {
   DiskMountManager::GetInstance()->FormatMountedDevice(
       "/archive/mount_path", kFormatFileSystemType1, kFormatLabel1);
   ASSERT_EQ(1U, observer_->GetEventCount());
-  EXPECT_EQ(
-      FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kUnknown,
-                  "/archive/source_path", kFormatLabel1),
-      observer_->GetFormatEvent(0));
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_COMPLETED,
+                        FormatError::kUnknownError, "/archive/source_path",
+                        kFormatLabel1),
+            observer_->GetFormatEvent(0));
 }
 
 // Tests that format fails if the device cannot be unmounted.
@@ -638,10 +638,10 @@ TEST_F(DiskMountManagerTest, Format_FailToUnmount) {
   EXPECT_EQ(MountError::kInsufficientPermissions, mount_event.error_code);
   EXPECT_EQ(kDevice1MountPath, mount_event.mount_point.mount_path);
 
-  EXPECT_EQ(
-      FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kUnknown,
-                  kDevice1SourcePath, kFormatLabel1),
-      observer_->GetFormatEvent(1));
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_COMPLETED,
+                        FormatError::kUnknownError, kDevice1SourcePath,
+                        kFormatLabel1),
+            observer_->GetFormatEvent(1));
   EXPECT_EQ(1, fake_cros_disks_client_->unmount_call_count());
   EXPECT_EQ(kDevice1MountPath,
             fake_cros_disks_client_->last_unmount_device_path());
@@ -671,13 +671,13 @@ TEST_F(DiskMountManagerTest, Format_FormatFailsToStart) {
   ASSERT_EQ(2U, observer_->GetEventCount());
   const MountEvent& mount_event = observer_->GetMountEvent(0);
   EXPECT_EQ(DiskMountManager::UNMOUNTING, mount_event.event);
-  EXPECT_EQ(MountError::kNone, mount_event.error_code);
+  EXPECT_EQ(MountError::kSuccess, mount_event.error_code);
   EXPECT_EQ(kDevice1MountPath, mount_event.mount_point.mount_path);
 
-  EXPECT_EQ(
-      FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kUnknown,
-                  kDevice1SourcePath, kFormatLabel1),
-      observer_->GetFormatEvent(1));
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_COMPLETED,
+                        FormatError::kUnknownError, kDevice1SourcePath,
+                        kFormatLabel1),
+            observer_->GetFormatEvent(1));
 
   EXPECT_EQ(1, fake_cros_disks_client_->unmount_call_count());
   EXPECT_EQ(kDevice1MountPath,
@@ -726,13 +726,13 @@ TEST_F(DiskMountManagerTest, Format_ConcurrentFormatCalls) {
   ASSERT_EQ(3U, observer_->GetEventCount());
   const MountEvent& mount_event = observer_->GetMountEvent(0);
   EXPECT_EQ(DiskMountManager::UNMOUNTING, mount_event.event);
-  EXPECT_EQ(MountError::kNone, mount_event.error_code);
+  EXPECT_EQ(MountError::kSuccess, mount_event.error_code);
   EXPECT_EQ(kDevice1MountPath, mount_event.mount_point.mount_path);
-  EXPECT_EQ(
-      FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kUnknown,
-                  kDevice1SourcePath, kFormatLabel2),
-      observer_->GetFormatEvent(1));
-  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_STARTED, FormatError::kNone,
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_COMPLETED,
+                        FormatError::kUnknownError, kDevice1SourcePath,
+                        kFormatLabel2),
+            observer_->GetFormatEvent(1));
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_STARTED, FormatError::kSuccess,
                         kDevice1SourcePath, kFormatLabel1),
             observer_->GetFormatEvent(2));
 
@@ -789,7 +789,7 @@ TEST_F(DiskMountManagerTest, Format_FormatFails) {
   // Send failing FORMAT_COMPLETED signal.
   // The failure is marked by ! in fromt of the path (but this should change
   // soon).
-  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kUnknown,
+  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kUnknownError,
                                                  kDevice1SourcePath);
 
   // The observer should get notified that the device was unmounted and that
@@ -799,14 +799,14 @@ TEST_F(DiskMountManagerTest, Format_FormatFails) {
   // formatting has failed (FORMAT_COMPLETED event).
   ASSERT_EQ(3U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::UNMOUNTING,
-                   MountError::kNone, kDevice1MountPath);
-  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_STARTED, FormatError::kNone,
+                   MountError::kSuccess, kDevice1MountPath);
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_STARTED, FormatError::kSuccess,
                         kDevice1SourcePath, kFormatLabel1),
             observer_->GetFormatEvent(1));
-  EXPECT_EQ(
-      FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kUnknown,
-                  kDevice1SourcePath, kFormatLabel1),
-      observer_->GetFormatEvent(2));
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_COMPLETED,
+                        FormatError::kUnknownError, kDevice1SourcePath,
+                        kFormatLabel1),
+            observer_->GetFormatEvent(2));
 }
 
 // Tests the case when formatting completes successfully.
@@ -838,20 +838,21 @@ TEST_F(DiskMountManagerTest, Format_FormatSuccess) {
   EXPECT_FALSE(HasMountPoint(kDevice1MountPath));
 
   // Simulate cros_disks reporting success.
-  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kNone,
+  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kSuccess,
                                                  kDevice1SourcePath);
 
   // The observer should receive UNMOUNTING, FORMAT_STARTED and FORMAT_COMPLETED
   // events (all of them without an error set).
   ASSERT_EQ(3U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::UNMOUNTING,
-                   MountError::kNone, kDevice1MountPath);
-  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_STARTED, FormatError::kNone,
+                   MountError::kSuccess, kDevice1MountPath);
+  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_STARTED, FormatError::kSuccess,
                         kDevice1SourcePath, kFormatLabel1),
             observer_->GetFormatEvent(1));
-  EXPECT_EQ(FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kNone,
-                        kDevice1SourcePath, kFormatLabel1),
-            observer_->GetFormatEvent(2));
+  EXPECT_EQ(
+      FormatEvent(DiskMountManager::FORMAT_COMPLETED, FormatError::kSuccess,
+                  kDevice1SourcePath, kFormatLabel1),
+      observer_->GetFormatEvent(2));
 
   // Disk should have new values for file system type and device label name
   EXPECT_EQ(kFormatFileSystemType1String,
@@ -887,12 +888,12 @@ TEST_F(DiskMountManagerTest, Format_ConsecutiveFormatCalls) {
   EXPECT_FALSE(HasMountPoint(kDevice1MountPath));
 
   // Simulate cros_disks reporting success.
-  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kNone,
+  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kSuccess,
                                                  kDevice1SourcePath);
 
   // Simulate the device remounting.
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice,
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
       kDevice1MountPath);
 
   EXPECT_TRUE(HasMountPoint(kDevice1MountPath));
@@ -915,7 +916,7 @@ TEST_F(DiskMountManagerTest, Format_ConsecutiveFormatCalls) {
   EXPECT_EQ(kFormatLabel2, fake_cros_disks_client_->last_format_label());
 
   // Simulate cros_disks reporting success.
-  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kNone,
+  fake_cros_disks_client_->NotifyFormatCompleted(FormatError::kSuccess,
                                                  kDevice1SourcePath);
 
   // The observer should receive UNMOUNTING, FORMAT_STARTED and FORMAT_COMPLETED
@@ -926,28 +927,28 @@ TEST_F(DiskMountManagerTest, Format_ConsecutiveFormatCalls) {
   EXPECT_EQ(7U, observer_->GetEventCount());
 
   EXPECT_EQ(1U, observer_->CountFormatEvents(FormatEvent(
-                    DiskMountManager::FORMAT_COMPLETED, FormatError::kNone,
+                    DiskMountManager::FORMAT_COMPLETED, FormatError::kSuccess,
                     kDevice1SourcePath, kFormatLabel1)));
 
   EXPECT_EQ(1U, observer_->CountFormatEvents(FormatEvent(
-                    DiskMountManager::FORMAT_COMPLETED, FormatError::kNone,
+                    DiskMountManager::FORMAT_COMPLETED, FormatError::kSuccess,
                     kDevice1SourcePath, kFormatLabel2)));
 
   EXPECT_EQ(1U, observer_->CountFormatEvents(FormatEvent(
-                    DiskMountManager::FORMAT_STARTED, FormatError::kNone,
+                    DiskMountManager::FORMAT_STARTED, FormatError::kSuccess,
                     kDevice1SourcePath, kFormatLabel1)));
 
   EXPECT_EQ(1U, observer_->CountFormatEvents(FormatEvent(
-                    DiskMountManager::FORMAT_STARTED, FormatError::kNone,
+                    DiskMountManager::FORMAT_STARTED, FormatError::kSuccess,
                     kDevice1SourcePath, kFormatLabel2)));
 
-  EXPECT_EQ(2U,
-            observer_->CountMountEvents(DiskMountManager::UNMOUNTING,
-                                        MountError::kNone, kDevice1MountPath));
+  EXPECT_EQ(
+      2U, observer_->CountMountEvents(DiskMountManager::UNMOUNTING,
+                                      MountError::kSuccess, kDevice1MountPath));
 
-  EXPECT_EQ(1U,
-            observer_->CountMountEvents(DiskMountManager::MOUNTING,
-                                        MountError::kNone, kDevice1MountPath));
+  EXPECT_EQ(
+      1U, observer_->CountMountEvents(DiskMountManager::MOUNTING,
+                                      MountError::kSuccess, kDevice1MountPath));
 }
 
 TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
@@ -964,13 +965,13 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback1;
   EXPECT_CALL(
       mock_callback1,
-      Run(MountError::kNone,
+      Run(MountError::kSuccess,
           Field(&DiskMountManager::MountPoint::mount_path, kMountPath1)));
 
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback2;
   EXPECT_CALL(
       mock_callback2,
-      Run(MountError::kNone,
+      Run(MountError::kSuccess,
           Field(&DiskMountManager::MountPoint::mount_path, kMountPath2)))
       .WillOnce(
           [&](MountError, const DiskMountManager::MountPoint& mount_point) {
@@ -990,14 +991,15 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
                      mock_callback2.Get());
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kSourcePath1, MountType::kDevice, kMountPath1);
+      MountError::kSuccess, kSourcePath1, MountType::kDevice, kMountPath1);
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kSourcePath2, MountType::kDevice, kMountPath2, true);
+      MountError::kSuccess, kSourcePath2, MountType::kDevice, kMountPath2,
+      true);
 
   // Event handlers of observers should be called.
   ASSERT_EQ(2U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::MOUNTING,
-                   MountError::kNone, kMountPath1);
+                   MountError::kSuccess, kMountPath1);
   // For the 2nd source, the disk (block device) is not read-only but the
   // test will mount it in read-only mode.
   // Observers query |disks_| from |DiskMountManager| in its event handler for
@@ -1005,7 +1007,7 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   // |read_only| value before notifying to observers.
   const MountEvent& secondMountEvent = observer_->GetMountEvent(1);
   EXPECT_EQ(DiskMountManager::MOUNTING, secondMountEvent.event);
-  EXPECT_EQ(MountError::kNone, secondMountEvent.error_code);
+  EXPECT_EQ(MountError::kSuccess, secondMountEvent.error_code);
   EXPECT_EQ(kMountPath2, secondMountEvent.mount_point.mount_path);
   // Verify if the disk appears read-only at the time of notification to
   // observers.
@@ -1026,8 +1028,8 @@ TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback;
   EXPECT_CALL(
       mock_callback,
-      Run(MountError::kNone, Field(&DiskMountManager::MountPoint::mount_path,
-                                   kReadOnlyDeviceMountPath)));
+      Run(MountError::kSuccess, Field(&DiskMountManager::MountPoint::mount_path,
+                                      kReadOnlyDeviceMountPath)));
 
   // Attempt to mount a read-only device in read-write mode.
   manager->MountPath(kReadOnlyDeviceSourcePath, kSourceFormat, std::string(),
@@ -1035,13 +1037,13 @@ TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
                      mock_callback.Get());
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kReadOnlyDeviceSourcePath, MountType::kDevice,
+      MountError::kSuccess, kReadOnlyDeviceSourcePath, MountType::kDevice,
       kReadOnlyDeviceMountPath);
 
   // Event handlers of observers should be called.
   ASSERT_EQ(1U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::MOUNTING,
-                   MountError::kNone, kReadOnlyDeviceMountPath);
+                   MountError::kSuccess, kReadOnlyDeviceMountPath);
   const DiskMountManager::Disks& disks = manager->disks();
   ASSERT_GT(disks.count(kReadOnlyDeviceSourcePath), 0U);
   // The mounted disk should preserve the read-only flag of the block device.
@@ -1070,10 +1072,11 @@ TEST_F(DiskMountManagerTest, MountPath_DoubleCall) {
   // Verify the first mount can complete as expected.
   EXPECT_CALL(
       mock_callback1,
-      Run(MountError::kNone,
+      Run(MountError::kSuccess,
           Field(&DiskMountManager::MountPoint::mount_path, kMountPath1)));
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice, kMountPath1);
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
+      kMountPath1);
 }
 
 TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
@@ -1086,7 +1089,7 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
   // Try call MountPath() again in the complete callback of a MountPath() call.
   EXPECT_CALL(
       mock_callback1,
-      Run(MountError::kNone,
+      Run(MountError::kSuccess,
           Field(&DiskMountManager::MountPoint::mount_path, kMountPath1)))
       .WillOnce([=](MountError error,
                     const DiskMountManager::MountPoint& mount_info) {
@@ -1100,19 +1103,20 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
         base::MockCallback<DiskMountManager::MountPathCallback> mock_callback3;
         EXPECT_CALL(
             mock_callback3,
-            Run(MountError::kNone,
+            Run(MountError::kSuccess,
                 Field(&DiskMountManager::MountPoint::mount_path, kMountPath2)));
         manager->MountPath(kDevice2SourcePath, "", "", {}, MountType::kDevice,
                            MountAccessMode::kReadWrite, mock_callback3.Get());
         fake_cros_disks_client_->NotifyMountCompleted(
-            MountError::kNone, kDevice2SourcePath, MountType::kDevice,
+            MountError::kSuccess, kDevice2SourcePath, MountType::kDevice,
             kMountPath2);
       });
 
   manager->MountPath(kDevice1SourcePath, "", "", {}, MountType::kDevice,
                      MountAccessMode::kReadWrite, mock_callback1.Get());
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice, kMountPath1);
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
+      kMountPath1);
 }
 
 TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
@@ -1125,13 +1129,13 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice,
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
       kDevice1MountPath, true);
 
   // Should remount disks that are not read-only by its hardware device.
   ASSERT_EQ(1U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::MOUNTING,
-                   MountError::kNone, kDevice1MountPath);
+                   MountError::kSuccess, kDevice1MountPath);
   // The disk is remounted in read-only mode.
   EXPECT_TRUE(
       manager->FindDiskBySourcePath(kDevice1SourcePath)->is_read_only());
@@ -1143,12 +1147,12 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice,
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
       kDevice1MountPath, false);
   // Event handlers of observers should be called.
   ASSERT_EQ(2U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(1), DiskMountManager::MOUNTING,
-                   MountError::kNone, kDevice1MountPath);
+                   MountError::kSuccess, kDevice1MountPath);
   // The read-write device should be remounted in read-write mode.
   EXPECT_FALSE(
       manager->FindDiskBySourcePath(kDevice1SourcePath)->is_read_only());
@@ -1162,9 +1166,10 @@ TEST_F(DiskMountManagerTest, Rename_NotMounted) {
   DiskMountManager::GetInstance()->RenameMountedDevice("/mount/non_existent",
                                                        "MYUSB");
   ASSERT_EQ(1U, observer_->GetEventCount());
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED,
-                        RenameError::kUnknown, "/mount/non_existent", "MYUSB"),
-            observer_->GetRenameEvent(0));
+  EXPECT_EQ(
+      RenameEvent(DiskMountManager::RENAME_COMPLETED,
+                  RenameError::kUnknownError, "/mount/non_existent", "MYUSB"),
+      observer_->GetRenameEvent(0));
 }
 
 // Tests that the observer gets notified on attempt to rename read-only mount
@@ -1184,9 +1189,10 @@ TEST_F(DiskMountManagerTest, Rename_Archive) {
   DiskMountManager::GetInstance()->RenameMountedDevice("/archive/mount_path",
                                                        "MYUSB");
   ASSERT_EQ(1U, observer_->GetEventCount());
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED,
-                        RenameError::kUnknown, "/archive/source_path", "MYUSB"),
-            observer_->GetRenameEvent(0));
+  EXPECT_EQ(
+      RenameEvent(DiskMountManager::RENAME_COMPLETED,
+                  RenameError::kUnknownError, "/archive/source_path", "MYUSB"),
+      observer_->GetRenameEvent(0));
 }
 
 // Tests that rename fails if the device cannot be unmounted.
@@ -1195,7 +1201,7 @@ TEST_F(DiskMountManagerTest, Rename_FailToUnmount) {
   // In this test unmount will fail, and there should be no attempt to
   // rename the device.
 
-  fake_cros_disks_client_->MakeUnmountFail(MountError::kUnknown);
+  fake_cros_disks_client_->MakeUnmountFail(MountError::kUnknownError);
   // Start test.
   DiskMountManager::GetInstance()->RenameMountedDevice(kDevice1MountPath,
                                                        "MYUSB");
@@ -1208,12 +1214,13 @@ TEST_F(DiskMountManagerTest, Rename_FailToUnmount) {
   ASSERT_EQ(2U, observer_->GetEventCount());
   const MountEvent& mount_event = observer_->GetMountEvent(0);
   EXPECT_EQ(DiskMountManager::UNMOUNTING, mount_event.event);
-  EXPECT_EQ(MountError::kUnknown, mount_event.error_code);
+  EXPECT_EQ(MountError::kUnknownError, mount_event.error_code);
   EXPECT_EQ(kDevice1MountPath, mount_event.mount_point.mount_path);
 
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED,
-                        RenameError::kUnknown, kDevice1SourcePath, "MYUSB"),
-            observer_->GetRenameEvent(1));
+  EXPECT_EQ(
+      RenameEvent(DiskMountManager::RENAME_COMPLETED,
+                  RenameError::kUnknownError, kDevice1SourcePath, "MYUSB"),
+      observer_->GetRenameEvent(1));
   EXPECT_EQ(1, fake_cros_disks_client_->unmount_call_count());
   EXPECT_EQ(kDevice1MountPath,
             fake_cros_disks_client_->last_unmount_device_path());
@@ -1243,12 +1250,13 @@ TEST_F(DiskMountManagerTest, Rename_RenameFailsToStart) {
   ASSERT_EQ(2U, observer_->GetEventCount());
   const MountEvent& mount_event = observer_->GetMountEvent(0);
   EXPECT_EQ(DiskMountManager::UNMOUNTING, mount_event.event);
-  EXPECT_EQ(MountError::kNone, mount_event.error_code);
+  EXPECT_EQ(MountError::kSuccess, mount_event.error_code);
   EXPECT_EQ(kDevice1MountPath, mount_event.mount_point.mount_path);
 
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED,
-                        RenameError::kUnknown, kDevice1SourcePath, "MYUSB"),
-            observer_->GetRenameEvent(1));
+  EXPECT_EQ(
+      RenameEvent(DiskMountManager::RENAME_COMPLETED,
+                  RenameError::kUnknownError, kDevice1SourcePath, "MYUSB"),
+      observer_->GetRenameEvent(1));
 
   EXPECT_EQ(1, fake_cros_disks_client_->unmount_call_count());
   EXPECT_EQ(kDevice1MountPath,
@@ -1271,7 +1279,7 @@ TEST_F(DiskMountManagerTest, Rename_ConcurrentRenameCalls) {
 
   fake_cros_disks_client_->set_unmount_listener(base::BindRepeating(
       &FakeCrosDisksClient::MakeUnmountFail,
-      base::Unretained(fake_cros_disks_client_), MountError::kInternal));
+      base::Unretained(fake_cros_disks_client_), MountError::kInternalError));
   // Start the test.
   DiskMountManager::GetInstance()->RenameMountedDevice(kDevice1MountPath,
                                                        "MYUSB1");
@@ -1294,12 +1302,13 @@ TEST_F(DiskMountManagerTest, Rename_ConcurrentRenameCalls) {
   ASSERT_EQ(3U, observer_->GetEventCount());
   const MountEvent& mount_event = observer_->GetMountEvent(0);
   EXPECT_EQ(DiskMountManager::UNMOUNTING, mount_event.event);
-  EXPECT_EQ(MountError::kNone, mount_event.error_code);
+  EXPECT_EQ(MountError::kSuccess, mount_event.error_code);
   EXPECT_EQ(kDevice1MountPath, mount_event.mount_point.mount_path);
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED,
-                        RenameError::kUnknown, kDevice1SourcePath, "MYUSB2"),
-            observer_->GetRenameEvent(1));
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_STARTED, RenameError::kNone,
+  EXPECT_EQ(
+      RenameEvent(DiskMountManager::RENAME_COMPLETED,
+                  RenameError::kUnknownError, kDevice1SourcePath, "MYUSB2"),
+      observer_->GetRenameEvent(1));
+  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_STARTED, RenameError::kSuccess,
                         kDevice1SourcePath, "MYUSB1"),
             observer_->GetRenameEvent(2));
 
@@ -1340,7 +1349,7 @@ TEST_F(DiskMountManagerTest, Rename_RenameFails) {
   // Send failing RENAME_COMPLETED signal.
   // The failure is marked by ! in fromt of the path (but this should change
   // soon).
-  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kUnknown,
+  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kUnknownError,
                                                  kDevice1SourcePath);
 
   // The observer should get notified that the device was unmounted and that
@@ -1350,13 +1359,14 @@ TEST_F(DiskMountManagerTest, Rename_RenameFails) {
   // renaming has failed (RENAME_COMPLETED event).
   ASSERT_EQ(3U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::UNMOUNTING,
-                   MountError::kNone, kDevice1MountPath);
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_STARTED, RenameError::kNone,
+                   MountError::kSuccess, kDevice1MountPath);
+  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_STARTED, RenameError::kSuccess,
                         kDevice1SourcePath, "MYUSB"),
             observer_->GetRenameEvent(1));
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED,
-                        RenameError::kUnknown, kDevice1SourcePath, "MYUSB"),
-            observer_->GetRenameEvent(2));
+  EXPECT_EQ(
+      RenameEvent(DiskMountManager::RENAME_COMPLETED,
+                  RenameError::kUnknownError, kDevice1SourcePath, "MYUSB"),
+      observer_->GetRenameEvent(2));
 }
 
 // Tests the case when renaming completes successfully.
@@ -1385,19 +1395,19 @@ TEST_F(DiskMountManagerTest, Rename_RenameSuccess) {
   EXPECT_FALSE(HasMountPoint(kDevice1MountPath));
 
   // Simulate cros_disks reporting success.
-  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kNone,
+  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kSuccess,
                                                  kDevice1SourcePath);
 
   // The observer should receive UNMOUNTING, RENAME_STARTED and RENAME_COMPLETED
   // events (all of them without an error set).
   ASSERT_EQ(3U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::UNMOUNTING,
-                   MountError::kNone, kDevice1MountPath);
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_STARTED, RenameError::kNone,
+                   MountError::kSuccess, kDevice1MountPath);
+  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_STARTED, RenameError::kSuccess,
                         kDevice1SourcePath, "MYUSB1"),
             observer_->GetRenameEvent(1));
-  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED, RenameError::kNone,
-                        kDevice1SourcePath, "MYUSB1"),
+  EXPECT_EQ(RenameEvent(DiskMountManager::RENAME_COMPLETED,
+                        RenameError::kSuccess, kDevice1SourcePath, "MYUSB1"),
             observer_->GetRenameEvent(2));
 
   // Disk should have new value for device label name
@@ -1432,12 +1442,12 @@ TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
   EXPECT_FALSE(HasMountPoint(kDevice1MountPath));
 
   // Simulate cros_disks reporting success.
-  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kNone,
+  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kSuccess,
                                                  kDevice1SourcePath);
 
   // Simulate the device remounting.
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice,
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
       kDevice1MountPath);
 
   EXPECT_TRUE(HasMountPoint(kDevice1MountPath));
@@ -1462,7 +1472,7 @@ TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
             disks.find(kDevice1SourcePath)->get()->base_mount_path());
 
   // Simulate cros_disks reporting success.
-  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kNone,
+  fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kSuccess,
                                                  kDevice1SourcePath);
 
   // The observer should receive UNMOUNTING, RENAME_STARTED and RENAME_COMPLETED
@@ -1473,28 +1483,28 @@ TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
   EXPECT_EQ(7U, observer_->GetEventCount());
 
   EXPECT_EQ(1U, observer_->CountRenameEvents(RenameEvent(
-                    DiskMountManager::RENAME_COMPLETED, RenameError::kNone,
+                    DiskMountManager::RENAME_COMPLETED, RenameError::kSuccess,
                     kDevice1SourcePath, "MYUSB2")));
 
   EXPECT_EQ(1U, observer_->CountRenameEvents(RenameEvent(
-                    DiskMountManager::RENAME_COMPLETED, RenameError::kNone,
+                    DiskMountManager::RENAME_COMPLETED, RenameError::kSuccess,
                     kDevice1SourcePath, "MYUSB")));
 
   EXPECT_EQ(1U, observer_->CountRenameEvents(RenameEvent(
-                    DiskMountManager::RENAME_STARTED, RenameError::kNone,
+                    DiskMountManager::RENAME_STARTED, RenameError::kSuccess,
                     kDevice1SourcePath, "MYUSB")));
 
   EXPECT_EQ(1U, observer_->CountRenameEvents(RenameEvent(
-                    DiskMountManager::RENAME_STARTED, RenameError::kNone,
+                    DiskMountManager::RENAME_STARTED, RenameError::kSuccess,
                     kDevice1SourcePath, "MYUSB2")));
 
-  EXPECT_EQ(2U,
-            observer_->CountMountEvents(DiskMountManager::UNMOUNTING,
-                                        MountError::kNone, kDevice1MountPath));
+  EXPECT_EQ(
+      2U, observer_->CountMountEvents(DiskMountManager::UNMOUNTING,
+                                      MountError::kSuccess, kDevice1MountPath));
 
-  EXPECT_EQ(1U,
-            observer_->CountMountEvents(DiskMountManager::MOUNTING,
-                                        MountError::kNone, kDevice1MountPath));
+  EXPECT_EQ(
+      1U, observer_->CountMountEvents(DiskMountManager::MOUNTING,
+                                      MountError::kSuccess, kDevice1MountPath));
 }
 
 void SaveUnmountResult(MountError* save_error,
@@ -1526,7 +1536,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively) {
   EXPECT_TRUE(
       DiskMountManager::GetInstance()->AddDiskForTest(std::move(disk_sda2)));
 
-  MountError error_code = MountError::kUnknown;
+  MountError error_code = MountError::kUnknownError;
   DiskMountManager::GetInstance()->UnmountDeviceRecursively(
       "/dev/sda",
       base::BindOnce(&SaveUnmountResult, base::Unretained(&error_code),
@@ -1534,7 +1544,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively) {
   run_loop.Run();
 
   EXPECT_EQ(2, fake_cros_disks_client_->unmount_call_count());
-  EXPECT_EQ(MountError::kNone, error_code);
+  EXPECT_EQ(MountError::kSuccess, error_code);
 }
 
 TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_NoMounted) {
@@ -1549,7 +1559,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_NoMounted) {
   EXPECT_TRUE(
       DiskMountManager::GetInstance()->AddDiskForTest(std::move(disk_sda1)));
 
-  MountError error_code = MountError::kUnknown;
+  MountError error_code = MountError::kUnknownError;
   DiskMountManager::GetInstance()->UnmountDeviceRecursively(
       "/dev/sda",
       base::BindOnce(&SaveUnmountResult, base::Unretained(&error_code),
@@ -1557,7 +1567,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_NoMounted) {
   run_loop.Run();
 
   EXPECT_EQ(0, fake_cros_disks_client_->unmount_call_count());
-  EXPECT_EQ(MountError::kNone, error_code);
+  EXPECT_EQ(MountError::kSuccess, error_code);
 }
 
 TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_NoDisk) {
@@ -1572,7 +1582,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_NoDisk) {
   EXPECT_TRUE(
       DiskMountManager::GetInstance()->AddDiskForTest(std::move(disk_sda1)));
 
-  MountError error_code = MountError::kUnknown;
+  MountError error_code = MountError::kUnknownError;
   // Unmount sdB instead of sdA.
   DiskMountManager::GetInstance()->UnmountDeviceRecursively(
       "/dev/sdb",
@@ -1614,9 +1624,9 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_FailFirst) {
   fake_cros_disks_client_->MakeUnmountFail(MountError::kInvalidUnmountOptions);
   fake_cros_disks_client_->set_unmount_listener(base::BindRepeating(
       &SetUnmountError, base::Unretained(fake_cros_disks_client_),
-      MountError::kNone));
+      MountError::kSuccess));
 
-  MountError error_code = MountError::kUnknown;
+  MountError error_code = MountError::kUnknownError;
   DiskMountManager::GetInstance()->UnmountDeviceRecursively(
       "/dev/sda",
       base::BindOnce(&SaveUnmountResult, base::Unretained(&error_code),
@@ -1645,7 +1655,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_AlreadyUnmounted) {
   // Fail the unmount with "not mounted".
   fake_cros_disks_client_->MakeUnmountFail(MountError::kPathNotMounted);
 
-  MountError error_code = MountError::kUnknown;
+  MountError error_code = MountError::kUnknownError;
   DiskMountManager::GetInstance()->UnmountDeviceRecursively(
       "/dev/sda",
       base::BindOnce(&SaveUnmountResult, base::Unretained(&error_code),
@@ -1653,7 +1663,7 @@ TEST_F(DiskMountManagerTest, UnmountDeviceRecursively_AlreadyUnmounted) {
   run_loop.Run();
 
   EXPECT_EQ(1, fake_cros_disks_client_->unmount_call_count());
-  EXPECT_EQ(MountError::kNone, error_code);
+  EXPECT_EQ(MountError::kSuccess, error_code);
 }
 
 TEST_F(DiskMountManagerTest, Mount_MountUnsetsFirstMount) {
@@ -1662,7 +1672,7 @@ TEST_F(DiskMountManagerTest, Mount_MountUnsetsFirstMount) {
   EXPECT_TRUE(device1->is_first_mount());
 
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice,
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
       kDevice1MountPath);
 
   EXPECT_FALSE(device1->is_first_mount());
@@ -1688,7 +1698,7 @@ TEST_F(DiskMountManagerTest, Mount_RemountPreservesFirstMount) {
       manager->FindDiskBySourcePath(kDevice1SourcePath)->is_first_mount());
 
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice,
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
       kDevice1MountPath);
   EXPECT_FALSE(
       manager->FindDiskBySourcePath(kDevice1SourcePath)->is_first_mount());
@@ -1723,14 +1733,14 @@ TEST_F(DiskMountManagerTest, Mount_DefersDuringGetDeviceProperties) {
   fake_cros_disks_client_->NotifyMountEvent(MountEventType::kDiskAdded,
                                             kDevice1SourcePath);
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kDevice1SourcePath, MountType::kDevice,
+      MountError::kSuccess, kDevice1SourcePath, MountType::kDevice,
       kDevice1MountPath);
 
   // The mount event will not have fired yet as we are still waiting for
   // GetDeviceProperties() to return.
-  EXPECT_EQ(0u,
-            observer_->CountMountEvents(DiskMountManager::MOUNTING,
-                                        MountError::kNone, kDevice1MountPath));
+  EXPECT_EQ(
+      0u, observer_->CountMountEvents(DiskMountManager::MOUNTING,
+                                      MountError::kSuccess, kDevice1MountPath));
   base::RunLoop().RunUntilIdle();
 
   // We have fired 3 events: disk removed -> disk added -> mounting

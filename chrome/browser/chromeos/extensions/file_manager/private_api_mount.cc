@@ -169,7 +169,7 @@ FileManagerPrivateCancelMountingFunction::Run() {
 
 void FileManagerPrivateCancelMountingFunction::OnCancelled(
     ash::MountError error) {
-  if (error == ash::MountError::kNone) {
+  if (error == ash::MountError::kSuccess) {
     Respond(WithArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
@@ -270,7 +270,7 @@ void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
 
 void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
     ash::MountError error) {
-  if (error == ash::MountError::kNone) {
+  if (error == ash::MountError::kSuccess) {
     Respond(WithArguments());
   } else {
     Respond(Error(file_manager_private::ToString(

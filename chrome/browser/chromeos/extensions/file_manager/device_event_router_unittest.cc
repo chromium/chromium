@@ -102,8 +102,10 @@ TEST_F(DeviceEventRouterTest, AddAndRemoveDevice) {
       base::FilePath(FILE_PATH_LITERAL("/mount/path1"))));
   device_event_router->OnDeviceAdded("/device/test");
   device_event_router->OnDiskAdded(disk1, true);
-  device_event_router->OnVolumeMounted(ash::MountError::kNone, *volume.get());
-  device_event_router->OnVolumeUnmounted(ash::MountError::kNone, *volume.get());
+  device_event_router->OnVolumeMounted(ash::MountError::kSuccess,
+                                       *volume.get());
+  device_event_router->OnVolumeUnmounted(ash::MountError::kSuccess,
+                                         *volume.get());
   device_event_router->OnDiskRemoved(disk1_unmounted);
   device_event_router->OnDeviceRemoved("/device/test");
   ASSERT_EQ(1u, device_event_router->events.size());

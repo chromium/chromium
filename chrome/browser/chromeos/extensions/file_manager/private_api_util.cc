@@ -565,7 +565,7 @@ void VolumeToVolumeMetadata(
     default:
       NOTREACHED() << "Unexpected mount condition " << volume.mount_condition();
       [[fallthrough]];
-    case ash::MountError::kNone:
+    case ash::MountError::kSuccess:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_NONE;
       break;

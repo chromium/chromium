@@ -241,17 +241,17 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path1")
              .AsUTF8Unsafe(),
-         ash::MountType::kDevice, ash::MountError::kNone, 0},
+         ash::MountType::kDevice, ash::MountError::kSuccess, 0},
         {"device_path2",
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path2")
              .AsUTF8Unsafe(),
-         ash::MountType::kDevice, ash::MountError::kNone, 1},
+         ash::MountType::kDevice, ash::MountError::kSuccess, 1},
         {"device_path3",
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path3")
              .AsUTF8Unsafe(),
-         ash::MountType::kDevice, ash::MountError::kNone, 2},
+         ash::MountType::kDevice, ash::MountError::kSuccess, 2},
         {// Set source path inside another mounted volume.
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path3/archive.zip")
@@ -259,7 +259,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
          ash::CrosDisksClient::GetArchiveMountPoint()
              .AppendASCII("archive_mount_path")
              .AsUTF8Unsafe(),
-         ash::MountType::kArchive, ash::MountError::kNone, -1}};
+         ash::MountType::kArchive, ash::MountError::kSuccess, -1}};
 
     for (const auto& mp : kTestMountPoints) {
       mount_points_.insert(
@@ -322,9 +322,9 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         source_path, "/media/fuse/" + mount_label,
         ash::MountType::kNetworkStorage};
     disk_mount_manager_mock_->NotifyMountEvent(
-        DiskMountManager::MountEvent::MOUNTING, ash::MountError::kNone,
+        DiskMountManager::MountEvent::MOUNTING, ash::MountError::kSuccess,
         mount_point_info);
-    std::move(callback).Run(ash::MountError::kNone, mount_point_info);
+    std::move(callback).Run(ash::MountError::kSuccess, mount_point_info);
   }
 
   void ExpectCrostiniMount() {
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("mount_path1", name.value());
             ++events[0];
             EXPECT_EQ(1, events[0]);
-            std::move(callback).Run(ash::MountError::kNone);
+            std::move(callback).Run(ash::MountError::kSuccess);
           }))
       .WillOnce(testing::Invoke(
           [&events](const std::string& path,
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("archive_mount_path", name.value());
             ++events[2];
             EXPECT_EQ(1, events[2]);
-            std::move(callback).Run(ash::MountError::kNone);
+            std::move(callback).Run(ash::MountError::kSuccess);
           }))
       .WillOnce(testing::Invoke(
           [&events](const std::string& path,

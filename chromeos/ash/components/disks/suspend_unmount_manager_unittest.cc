@@ -101,7 +101,7 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
                                    kDummyMountPathSd));
   EXPECT_EQ(0, base::ranges::count(disk_mount_manager_.unmounting_mount_paths(),
                                    kDummyMountPathUnknown));
-  disk_mount_manager_.NotifyUnmountDeviceComplete(MountError::kNone);
+  disk_mount_manager_.NotifyUnmountDeviceComplete(MountError::kSuccess);
   EXPECT_EQ(0, chromeos::FakePowerManagerClient::Get()
                    ->num_pending_suspend_readiness_callbacks());
 }

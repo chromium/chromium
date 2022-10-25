@@ -40,7 +40,7 @@ struct UnmountDeviceRecursivelyCallbackData {
       : callback(std::move(in_callback)) {}
 
   DiskMountManager::UnmountDeviceRecursivelyCallbackType callback;
-  MountError error_code = MountError::kNone;
+  MountError error_code = MountError::kSuccess;
 };
 
 void OnAllUnmountDeviceRecursively(
@@ -114,7 +114,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (type == MountType::kDevice &&
         (it == disks_.end() || (*it)->is_hidden())) {
       VLOG(1) << "Disk '" << source_path << "' should not be mounted";
-      OnMountCompleted({source_path, {}, type, MountError::kInternal});
+      OnMountCompleted({source_path, {}, type, MountError::kInternalError});
       return;
     }
 
@@ -161,7 +161,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
       // We can't call OnFormatCompleted until |pending_format_changes_| has
       // been populated.
-      NotifyFormatStatusUpdate(FORMAT_COMPLETED, FormatError::kUnknown,
+      NotifyFormatStatusUpdate(FORMAT_COMPLETED, FormatError::kUnknownError,
                                mount_path, label);
       return;
     }
@@ -173,7 +173,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     Disks::const_iterator disk = disks_.find(device_path);
     if (disk == disks_.end()) {
       LOG(ERROR) << "Cannot find device '" << device_path << "'";
-      OnFormatCompleted(FormatError::kUnknown, device_path);
+      OnFormatCompleted(FormatError::kUnknownError, device_path);
       return;
     }
     if (disk->get()->is_read_only()) {
@@ -220,7 +220,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
       // We can't call OnRenameCompleted until |pending_rename_changes_| has
       // been populated.
-      NotifyRenameStatusUpdate(RENAME_COMPLETED, RenameError::kUnknown,
+      NotifyRenameStatusUpdate(RENAME_COMPLETED, RenameError::kUnknownError,
                                mount_path, volume_name);
       return;
     }
@@ -231,7 +231,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     Disks::const_iterator iter = disks_.find(device_path);
     if (iter == disks_.end()) {
       LOG(ERROR) << "Cannot find device '" << device_path << "'";
-      OnRenameCompleted(RenameError::kUnknown, device_path);
+      OnRenameCompleted(RenameError::kUnknownError, device_path);
       return;
     }
 
@@ -276,7 +276,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       DCHECK_EQ((*it)->device_path(), device_path);
       DCHECK_EQ((*it)->mount_path(), "");
       LOG(WARNING) << "Disk '" << device_path << "' is already unmounted";
-      std::move(callback).Run(MountError::kNone);
+      std::move(callback).Run(MountError::kSuccess);
       return;
     }
 
@@ -386,7 +386,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (result)
       return;
 
-    OnMountCompleted({source_path, {}, type, MountError::kInternal});
+    OnMountCompleted({source_path, {}, type, MountError::kInternalError});
   }
 
   void RemountRemovableDrive(const Disk& disk, MountAccessMode access_mode) {
@@ -444,7 +444,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                                   base::OnceClosure done_callback,
                                   const MountError error) {
     if (error == MountError::kPathNotMounted ||
-        error == MountError::kInvalidPath || error == MountError::kNone) {
+        error == MountError::kInvalidPath || error == MountError::kSuccess) {
       // Do standard processing for Unmount event.
       OnUnmountPath(UnmountPathCallback(), mount_path, error);
     } else {
@@ -466,8 +466,8 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    bool want_to_keep = entry.mount_error == MountError::kNone;
-    MountError mount_error = MountError::kNone;
+    bool want_to_keep = entry.mount_error == MountError::kSuccess;
+    MountError mount_error = MountError::kSuccess;
     if (entry.mount_type == MountType::kDevice) {
       if (entry.mount_error == MountError::kUnknownFilesystem) {
         mount_error = MountError::kUnknownFilesystem;
@@ -522,7 +522,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       // mount path being set even if the disk isn't mounted. cros-disks also
       // does some tracking of non-mounted mount paths.
       disk->SetMountPath(mount_info.mount_path);
-      disk->set_mounted(entry.mount_error == MountError::kNone);
+      disk->set_mounted(entry.mount_error == MountError::kSuccess);
     }
 
     // Observers may read the values of disks_. So notify them after tweaking
@@ -581,14 +581,14 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnUnmountPath(UnmountPathCallback callback,
                      const std::string& mount_path,
                      MountError error) {
-    if (error == MountError::kNone) {
+    if (error == MountError::kSuccess) {
       VLOG(1) << "Unmounted '" << mount_path << "'";
     } else {
       LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
       if (error == MountError::kPathNotMounted ||
           error == MountError::kInvalidPath) {
         // The path was already unmounted by something else.
-        error = MountError::kNone;
+        error = MountError::kSuccess;
       }
     }
 
@@ -597,7 +597,7 @@ class DiskMountManagerImpl : public DiskMountManager,
         mount_point != mount_points_.end()) {
       NotifyMountStatusUpdate(UNMOUNTING, error, *mount_point);
 
-      if (error == MountError::kNone) {
+      if (error == MountError::kSuccess) {
         if (const Disks::const_iterator disk =
                 disks_.find(mount_point->source_path);
             disk != disks_.end()) {
@@ -618,10 +618,10 @@ class DiskMountManagerImpl : public DiskMountManager,
                               FormatFileSystemType filesystem,
                               const std::string& label,
                               MountError error_code) {
-    if (error_code == MountError::kNone && disks_.count(device_path) != 0) {
+    if (error_code == MountError::kSuccess && disks_.count(device_path) != 0) {
       FormatUnmountedDevice(device_path, filesystem, label);
     } else {
-      OnFormatCompleted(FormatError::kUnknown, device_path);
+      OnFormatCompleted(FormatError::kUnknownError, device_path);
     }
   }
 
@@ -629,9 +629,9 @@ class DiskMountManagerImpl : public DiskMountManager,
                                                FormatFileSystemType filesystem,
                                                const std::string& label,
                                                MountError error_code) {
-    if (error_code != MountError::kNone || disks_.count(device_path) == 0) {
+    if (error_code != MountError::kSuccess || disks_.count(device_path) == 0) {
       OnPartitionCompleted(device_path, filesystem, label,
-                           PartitionError::kUnknown);
+                           PartitionError::kUnknownError);
       return;
     }
 
@@ -659,11 +659,11 @@ class DiskMountManagerImpl : public DiskMountManager,
                        const std::string& device_label,
                        bool success) {
     if (!success) {
-      OnFormatCompleted(FormatError::kUnknown, device_path);
+      OnFormatCompleted(FormatError::kUnknownError, device_path);
       return;
     }
 
-    NotifyFormatStatusUpdate(FORMAT_STARTED, FormatError::kNone, device_path,
+    NotifyFormatStatusUpdate(FORMAT_STARTED, FormatError::kSuccess, device_path,
                              device_label);
   }
 
@@ -684,7 +684,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       DCHECK(disk);
 
       if (pending_change != pending_format_changes_.end() &&
-          error_code == FormatError::kNone) {
+          error_code == FormatError::kSuccess) {
         disk->set_device_label(pending_change->second.volume_name);
         disk->set_file_system_type(pending_change->second.file_system_type);
       }
@@ -706,7 +706,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     pending_partitioning_disks_.insert(disk->get()->device_path());
 
-    NotifyPartitionStatusUpdate(PARTITION_STARTED, PartitionError::kNone,
+    NotifyPartitionStatusUpdate(PARTITION_STARTED, PartitionError::kSuccess,
                                 device_path, label);
 
     cros_disks_client_->SinglePartitionFormat(
@@ -727,7 +727,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       Disk* const disk = iter->get();
       DCHECK(disk);
 
-      if (error_code == PartitionError::kNone) {
+      if (error_code == PartitionError::kSuccess) {
         EnsureMountInfoRefreshed(
             BindOnce(&DiskMountManagerImpl::OnRefreshAfterPartition,
                      weak_ptr_factory_.GetWeakPtr(), device_path, filesystem,
@@ -797,8 +797,8 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnUnmountPathForRename(const std::string& device_path,
                               const std::string& volume_name,
                               MountError error_code) {
-    if (error_code != MountError::kNone || disks_.count(device_path) == 0) {
-      OnRenameCompleted(RenameError::kUnknown, device_path);
+    if (error_code != MountError::kSuccess || disks_.count(device_path) == 0) {
+      OnRenameCompleted(RenameError::kUnknownError, device_path);
       return;
     }
 
@@ -822,11 +822,11 @@ class DiskMountManagerImpl : public DiskMountManager,
                        const std::string& volume_name,
                        bool success) {
     if (!success) {
-      OnRenameCompleted(RenameError::kUnknown, device_path);
+      OnRenameCompleted(RenameError::kUnknownError, device_path);
       return;
     }
 
-    NotifyRenameStatusUpdate(RENAME_STARTED, RenameError::kNone, device_path,
+    NotifyRenameStatusUpdate(RENAME_STARTED, RenameError::kSuccess, device_path,
                              volume_name);
   }
 
@@ -847,7 +847,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       DCHECK(disk);
 
       if (pending_change != pending_rename_changes_.end() &&
-          error_code == RenameError::kNone)
+          error_code == RenameError::kSuccess)
         disk->set_device_label(pending_change->second);
     }
 

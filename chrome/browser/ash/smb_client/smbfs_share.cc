@@ -146,7 +146,7 @@ void SmbFsShare::OnDeleteRecursivelyDone(base::File::Error error) {
 void SmbFsShare::Unmount(SmbFsShare::UnmountCallback callback) {
   if (unmount_pending_) {
     LOG(WARNING) << "Cannot unmount a shared that is being unmounted";
-    std::move(callback).Run(MountError::kInternal);
+    std::move(callback).Run(MountError::kInternalError);
     return;
   }
 

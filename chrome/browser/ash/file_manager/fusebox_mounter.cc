@@ -104,7 +104,7 @@ base::WeakPtr<FuseBoxMounter> FuseBoxMounter::GetWeakPtr() {
 
 void FuseBoxMounter::MountResponse(ash::MountError error,
                                    const FuseBoxMountInfo& info) {
-  if (error != ash::MountError::kNone) {
+  if (error != ash::MountError::kSuccess) {
     LOG(ERROR) << uri_ << " mount error " << error;
   } else {
     mounted_ = true;
@@ -112,7 +112,7 @@ void FuseBoxMounter::MountResponse(ash::MountError error,
 }
 
 void FuseBoxMounter::UnmountResponse(ash::MountError error) {
-  if (error != ash::MountError::kNone) {
+  if (error != ash::MountError::kSuccess) {
     LOG(ERROR) << uri_ << " unmount error " << error;
   } else {
     mounted_ = false;

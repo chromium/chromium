@@ -270,7 +270,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   base::FilePath remote_mount_path_;
 
   // The mounting condition. See the enum for the details.
-  ash::MountError mount_condition_ = ash::MountError::kNone;
+  ash::MountError mount_condition_ = ash::MountError::kSuccess;
 
   // The context of the mount. Whether mounting was performed due to a user
   // interaction or not.
@@ -601,20 +601,20 @@ class VolumeManager : public KeyedService,
   // Returns true if the volume was actually added, ie if |error| is
   // |kNone| and there was no previous volume with the same ID.
   bool DoMountEvent(std::unique_ptr<Volume> volume,
-                    ash::MountError error = ash::MountError::kNone);
+                    ash::MountError error = ash::MountError::kSuccess);
 
   // Removes the Volume at position |it| if |error| is |kNone|.
   // Precondition: it != mounted_volumes_.end()
   void DoUnmountEvent(Volumes::const_iterator it,
-                      ash::MountError error = ash::MountError::kNone);
+                      ash::MountError error = ash::MountError::kSuccess);
 
   // Removes the Volume with the given ID if |error| is |kNone|.
   void DoUnmountEvent(base::StringPiece volume_id,
-                      ash::MountError error = ash::MountError::kNone);
+                      ash::MountError error = ash::MountError::kSuccess);
 
   // Removes the Volume with the same ID as |volume| if |error| is |kNone|.
   void DoUnmountEvent(const Volume& volume,
-                      ash::MountError error = ash::MountError::kNone) {
+                      ash::MountError error = ash::MountError::kSuccess) {
     DoUnmountEvent(volume.volume_id(), error);
   }
 

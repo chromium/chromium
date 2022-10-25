@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   base::ObserverList<Observer> observer_list_;
   int unmount_call_count_ = 0;
   std::string last_unmount_device_path_;
-  MountError unmount_error_ = MountError::kNone;
+  MountError unmount_error_ = MountError::kSuccess;
   base::RepeatingClosure unmount_listener_;
   int format_call_count_ = 0;
   std::string last_format_device_path_;
@@ -187,7 +187,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   bool format_success_ = true;
   int partition_call_count_ = 0;
   std::string last_partition_device_path_;
-  PartitionError partition_error_ = PartitionError::kNone;
+  PartitionError partition_error_ = PartitionError::kSuccess;
   int rename_call_count_ = 0;
   std::string last_rename_device_path_;
   std::string last_rename_volume_name_;

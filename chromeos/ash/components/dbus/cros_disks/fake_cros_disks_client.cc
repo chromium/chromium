@@ -35,7 +35,7 @@ MountError PerformFakeMount(const std::string& source_path,
   // Fake network mounts are responsible for populating their mount paths so
   // don't need a dummy file.
   if (type == MountType::kNetworkStorage)
-    return MountError::kNone;
+    return MountError::kSuccess;
 
   // Put a dummy file.
   const base::FilePath dummy_file_path =
@@ -48,7 +48,7 @@ MountError PerformFakeMount(const std::string& source_path,
     return MountError::kMountProgramFailed;
   }
 
-  return MountError::kNone;
+  return MountError::kSuccess;
 }
 
 }  // namespace

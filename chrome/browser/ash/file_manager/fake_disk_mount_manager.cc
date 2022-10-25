@@ -82,9 +82,9 @@ void FakeDiskMountManager::MountPath(
 
   const MountPoint mount_point{source_path, source_path, type};
   mount_points_.insert(mount_point);
-  std::move(callback).Run(ash::MountError::kNone, mount_point);
+  std::move(callback).Run(ash::MountError::kSuccess, mount_point);
   for (auto& observer : observers_) {
-    observer.OnMountEvent(DiskMountManager::MOUNTING, ash::MountError::kNone,
+    observer.OnMountEvent(DiskMountManager::MOUNTING, ash::MountError::kSuccess,
                           mount_point);
   }
 }
@@ -93,7 +93,7 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
                                        UnmountPathCallback callback) {
   unmount_requests_.emplace_back(mount_path);
 
-  ash::MountError error = ash::MountError::kNone;
+  ash::MountError error = ash::MountError::kSuccess;
   auto unmount_iter = unmount_errors_.find(mount_path);
   if (unmount_iter != unmount_errors_.end()) {
     error = unmount_iter->second;
@@ -107,7 +107,7 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
     mount_points_.erase(iter);
     for (auto& observer : observers_) {
       observer.OnMountEvent(DiskMountManager::UNMOUNTING,
-                            ash::MountError::kNone, mount_point);
+                            ash::MountError::kSuccess, mount_point);
     }
   }
 
