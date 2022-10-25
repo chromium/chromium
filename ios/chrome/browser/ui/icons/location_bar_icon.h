@@ -9,5 +9,7 @@
 
 // Default symbol names.
 extern NSString* const kSecureLocationBarSymbol;
+extern NSString* const kNavigateToTabSymbol;
+extern NSString* const kRefineQuerySymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_LOCATION_BAR_ICON_H_

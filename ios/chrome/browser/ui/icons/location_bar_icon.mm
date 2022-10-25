@@ -10,3 +10,5 @@
 
 // Default symbol names.
 NSString* const kSecureLocationBarSymbol = @"lock.fill";
+NSString* const kNavigateToTabSymbol = @"arrow.right.circle";
+NSString* const kRefineQuerySymbol = @"arrow.up.backward";
