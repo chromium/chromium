@@ -665,6 +665,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Report UMAs when this object instance is destroyed.
   void ReportSessionUMAs() const;
 
+#if BUILDFLAG(ENABLE_FFMPEG)
+  // Helper methods for creating demuxers to encapsulate build flags.
+  std::unique_ptr<media::Demuxer> CreateFFmpegDemuxer();
+#endif
+
   WebLocalFrame* const frame_;
 
   WebMediaPlayer::NetworkState network_state_ =

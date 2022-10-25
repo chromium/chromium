@@ -2912,12 +2912,20 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
       client_->TargetColorSpace());
 }
 
+#if BUILDFLAG(ENABLE_FFMPEG)
+std::unique_ptr<Demuxer> WebMediaPlayerImpl::CreateFFmpegDemuxer() {
+  return std::make_unique<media::FFmpegDemuxer>(
+      media_task_runner_, data_source_.get(),
+      media::BindToCurrentLoop(base::BindRepeating(
+          &WebMediaPlayerImpl::OnEncryptedMediaInitData, weak_this_)),
+      media::BindToCurrentLoop(base::BindRepeating(
+          &WebMediaPlayerImpl::OnFFmpegMediaTracksUpdated, weak_this_)),
+      media_log_.get(), IsLocalFile(loaded_url_));
+}
+#endif
+
 void WebMediaPlayerImpl::StartPipeline() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb =
-      media::BindToCurrentLoop(base::BindRepeating(
-          &WebMediaPlayerImpl::OnEncryptedMediaInitData, weak_this_));
 
   vfc_task_runner_->PostTask(
       FROM_HERE,
@@ -2958,15 +2966,8 @@ void WebMediaPlayerImpl::StartPipeline() {
   } else if (load_type_ != kLoadTypeMediaSource) {
     DCHECK(!chunk_demuxer_);
     DCHECK(data_source_);
-
 #if BUILDFLAG(ENABLE_FFMPEG)
-    Demuxer::MediaTracksUpdatedCB media_tracks_updated_cb =
-        media::BindToCurrentLoop(base::BindRepeating(
-            &WebMediaPlayerImpl::OnFFmpegMediaTracksUpdated, weak_this_));
-
-    SetDemuxer(std::make_unique<media::FFmpegDemuxer>(
-        media_task_runner_, data_source_.get(), encrypted_media_init_data_cb,
-        media_tracks_updated_cb, media_log_.get(), IsLocalFile(loaded_url_)));
+    SetDemuxer(CreateFFmpegDemuxer());
 #else
     OnError(media::DEMUXER_ERROR_COULD_NOT_OPEN);
     return;
@@ -2974,6 +2975,10 @@ void WebMediaPlayerImpl::StartPipeline() {
   } else {
     DCHECK(!chunk_demuxer_);
     DCHECK(!data_source_);
+
+    Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb =
+        media::BindToCurrentLoop(base::BindRepeating(
+            &WebMediaPlayerImpl::OnEncryptedMediaInitData, weak_this_));
 
     chunk_demuxer_ = new media::ChunkDemuxer(
         media::BindToCurrentLoop(
