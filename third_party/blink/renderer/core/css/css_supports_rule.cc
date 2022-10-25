@@ -44,9 +44,7 @@ String CSSSupportsRule::cssText() const {
 
   result.Append("@supports ");
   result.Append(ConditionTextInternal());
-  result.Append(" {\n");
   AppendCSSTextForItems(result);
-  result.Append('}');
 
   return result.ReleaseString();
 }

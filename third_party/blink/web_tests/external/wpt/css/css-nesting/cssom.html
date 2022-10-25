@@ -95,13 +95,13 @@
   test(() => {
     document.getElementById('ss').innerHTML = sampleSheetText;
     let [ss] = document.styleSheets;
-    ss.cssRules[0].insertRule('@supports selector(&) { & { font-size: 10px; }}', 1);
+    ss.cssRules[0].insertRule('@supports selector(&) { & div { font-size: 10px; }}', 1);
     assert_equals(ss.cssRules[0].cssText,
 `.a {
   color: red;
   & .b { color: green; }
   @supports selector(&) {
-  & { font-size: 10px; }
+  & div { font-size: 10px; }
 }
   & .c { color: blue; }
 }`, '@supports is added');

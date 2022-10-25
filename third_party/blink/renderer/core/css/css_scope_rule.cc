@@ -38,11 +38,7 @@ String CSSScopeRule::cssText() const {
   StringBuilder result;
   result.Append("@scope ");
   result.Append(PreludeText());
-  result.Append(' ');
-  result.Append("{\n");
   AppendCSSTextForItems(result);
-  result.Append('}');
-
   return result.ReleaseString();
 }
 

@@ -29,14 +29,14 @@ PASS .foo, .bar {
 PASS .foo {
   & .bar & .baz & .qux { color: green; }
 }
-PASS .foo {
+FAIL .foo {
   @media (min-width: 50px) {
   & { color: green; }
 }
-}
-FAIL .foo {
+} assert_equals: expected ".foo {\n  @media (min-width: 50px) {\n  & { color: green; }\n}\n}" but got ".foo {\n  @media (min-width: 50px) { color: green; }\n}"
+PASS .foo {
   @media (min-width: 50px) { color: green; }
-} assert_equals: expected ".foo {\n  @media (min-width: 50px) { color: green; }\n}" but got ".foo {\n  @media (min-width: 50px) {\n  & { color: green; }\n}\n}"
+}
 PASS main {
   & > section, & > article {
   & > header { color: green; }

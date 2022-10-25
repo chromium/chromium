@@ -19,18 +19,16 @@ CSSContainerRule::~CSSContainerRule() = default;
 
 String CSSContainerRule::cssText() const {
   StringBuilder result;
-  result.Append("@container ");
+  result.Append("@container");
 
   String name = ContainerQuery().Selector().Name();
   if (!name.empty()) {
-    SerializeIdentifier(name, result);
     result.Append(' ');
+    SerializeIdentifier(name, result);
   }
-  result.Append(ContainerQuery().ToString());
   result.Append(' ');
-  result.Append("{\n");
+  result.Append(ContainerQuery().ToString());
   AppendCSSTextForItems(result);
-  result.Append('}');
   return result.ReleaseString();
 }
 
