@@ -99,7 +99,8 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     : container_builder_(container_builder),
       is_absolute_container_(is_absolute_container),
       is_fixed_container_(is_fixed_container),
-      has_block_fragmentation_(container_space.HasBlockFragmentation()) {
+      has_block_fragmentation_(
+          InvolvedInBlockFragmentation(*container_builder)) {
   // TODO(almaher): Should we early return here in the case of block
   // fragmentation? If not, what should |allow_first_tier_oof_cache_| be set to
   // in this case?
