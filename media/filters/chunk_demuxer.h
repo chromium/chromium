@@ -507,10 +507,10 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   void RunSeekCB_Locked(PipelineStatus status);
 
   mutable base::Lock lock_;
-  State state_;
-  bool cancel_next_seek_;
+  State state_ = WAITING_FOR_INIT;
+  bool cancel_next_seek_ = false;
 
-  raw_ptr<DemuxerHost> host_;
+  raw_ptr<DemuxerHost> host_ = nullptr;
   base::OnceClosure open_cb_;
   const base::RepeatingClosure progress_cb_;
   EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
@@ -535,14 +535,14 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // into the INITIALIZED only after all ids/SourceBuffers got init segment.
   std::set<std::string> pending_source_init_ids_;
 
-  base::TimeDelta duration_;
+  base::TimeDelta duration_ = kNoTimestamp;
 
   // The duration passed to the last SetDuration(). If
   // SetDuration() is never called or an AppendData/Chunks() call or
   // a EndOfStream() call changes |duration_|, then this
   // variable is set to < 0 to indicate that the |duration_| represents
   // the actual duration instead of a user specified value.
-  double user_specified_duration_;
+  double user_specified_duration_ = -1;
 
   base::Time timeline_offset_;
   StreamLiveness liveness_ = StreamLiveness::kUnknown;

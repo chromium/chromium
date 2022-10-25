@@ -441,15 +441,10 @@ ChunkDemuxer::ChunkDemuxer(
     base::RepeatingClosure progress_cb,
     EncryptedMediaInitDataCB encrypted_media_init_data_cb,
     MediaLog* media_log)
-    : state_(WAITING_FOR_INIT),
-      cancel_next_seek_(false),
-      host_(nullptr),
-      open_cb_(std::move(open_cb)),
+    : open_cb_(std::move(open_cb)),
       progress_cb_(std::move(progress_cb)),
       encrypted_media_init_data_cb_(std::move(encrypted_media_init_data_cb)),
-      media_log_(media_log),
-      duration_(kNoTimestamp),
-      user_specified_duration_(-1) {
+      media_log_(media_log) {
   DCHECK(open_cb_);
   DCHECK(encrypted_media_init_data_cb_);
   MEDIA_LOG(INFO, media_log_) << GetDisplayName();
