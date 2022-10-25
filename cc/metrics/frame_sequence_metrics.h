@@ -234,7 +234,8 @@ class CC_EXPORT FrameSequenceMetrics {
   } trace_data_{this};
 
   // Pointer to the reporter owned by the FrameSequenceTrackerCollection.
-  const raw_ptr<ThroughputUkmReporter> throughput_ukm_reporter_;
+  const raw_ptr<ThroughputUkmReporter, DanglingUntriaged>
+      throughput_ukm_reporter_;
 
   // Track state for measuring the PercentDroppedFrames v2 metrics.
   struct {

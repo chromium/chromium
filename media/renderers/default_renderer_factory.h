@@ -82,7 +82,7 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
 
   // Factory to create extra audio and video decoders.
   // Could be nullptr if not extra decoders are available.
-  raw_ptr<DecoderFactory> decoder_factory_;
+  raw_ptr<DecoderFactory, DanglingUntriaged> decoder_factory_;
 
   // Creates factories for supporting video accelerators. May be null.
   GetGpuFactoriesCB get_gpu_factories_cb_;

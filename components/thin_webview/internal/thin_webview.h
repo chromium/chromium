@@ -58,7 +58,7 @@ class ThinWebView : public content::WebContentsObserver {
   void ResizeWebContents(const gfx::Size& size);
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
-  raw_ptr<CompositorView> compositor_view_;
+  raw_ptr<CompositorView, DanglingUntriaged> compositor_view_;
   raw_ptr<ui::WindowAndroid> window_android_;
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid>

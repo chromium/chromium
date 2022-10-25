@@ -206,7 +206,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
     }
 
    private:
-    raw_ptr<AutofillPopupView> ptr_ = nullptr;
+    raw_ptr<AutofillPopupView, DanglingUntriaged> ptr_ = nullptr;
   };
 
   // The user has accepted the currently selected line. Returns whether there

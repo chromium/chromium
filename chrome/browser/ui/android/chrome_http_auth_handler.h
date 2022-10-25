@@ -72,7 +72,7 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
       const base::android::JavaParamRef<jobject>&);
 
  private:
-  raw_ptr<LoginHandler> observer_;
+  raw_ptr<LoginHandler, DanglingUntriaged> observer_;
   base::android::ScopedJavaGlobalRef<jobject> java_chrome_http_auth_handler_;
   std::u16string authority_;
   std::u16string explanation_;

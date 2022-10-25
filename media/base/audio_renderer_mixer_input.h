@@ -120,10 +120,11 @@ class MEDIA_EXPORT AudioRendererMixerInput
 
   // AudioRendererMixer obtained from mixer pool during Initialize(),
   // guaranteed to live (at least) until it is returned to the pool.
-  raw_ptr<AudioRendererMixer> mixer_ = nullptr;
+  raw_ptr<AudioRendererMixer, DanglingUntriaged> mixer_ = nullptr;
 
   // Source of audio data which is provided to the mixer.
-  raw_ptr<AudioRendererSink::RenderCallback> callback_ = nullptr;
+  raw_ptr<AudioRendererSink::RenderCallback, DanglingUntriaged> callback_ =
+      nullptr;
 
   // SwitchOutputDevice() and GetOutputDeviceInfoAsync() must be mutually
   // exclusive when executing; these flags indicate whether one or the other is

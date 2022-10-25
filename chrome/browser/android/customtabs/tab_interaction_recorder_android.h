@@ -40,7 +40,7 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
   void OnFormInteraction();
   void Invalidate();
 
-  raw_ptr<autofill::AutofillManager> autofill_manager_;
+  raw_ptr<autofill::AutofillManager, DanglingUntriaged> autofill_manager_;
   OnFormInteractionCallback form_interaction_callback_;
 };
 

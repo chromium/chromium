@@ -240,7 +240,7 @@ class SkiaOutputDevice {
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 
-  const raw_ptr<GrDirectContext> gr_context_;
+  const raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_;
 
   OutputSurface::Capabilities capabilities_;
 

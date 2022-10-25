@@ -60,7 +60,7 @@ class ToolbarLayer : public Layer {
  private:
   int GetIndexOfLayer(scoped_refptr<cc::Layer> layer);
 
-  raw_ptr<ui::ResourceManager> resource_manager_;
+  raw_ptr<ui::ResourceManager, DanglingUntriaged> resource_manager_;
 
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<cc::SolidColorLayer> toolbar_background_layer_;

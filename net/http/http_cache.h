@@ -122,8 +122,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     int max_bytes_;
     bool hard_reset_;
 #if BUILDFLAG(IS_ANDROID)
-    raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
-        nullptr;
+    raw_ptr<base::android::ApplicationStatusListener, DanglingUntriaged>
+        app_status_listener_ = nullptr;
 #endif
   };
 

@@ -65,7 +65,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
          size_t length,
          DiscardableSharedMemoryHeap::ScopedMemorySegment* memory_segment);
 
-    const raw_ptr<DiscardableSharedMemoryHeap::ScopedMemorySegment>
+    const raw_ptr<DiscardableSharedMemoryHeap::ScopedMemorySegment,
+                  DanglingUntriaged>
         memory_segment_;
     raw_ptr<base::DiscardableSharedMemory> shared_memory_;
     size_t start_;

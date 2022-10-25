@@ -55,7 +55,7 @@ class WebFeedSubscriptionModel {
   // of WebFeedSubscriptionModel.
   raw_ptr<FeedStore> store_;
   raw_ptr<WebFeedIndex> index_;
-  raw_ptr<WebFeedMetadataModel> metadata_model_;
+  raw_ptr<WebFeedMetadataModel, DanglingUntriaged> metadata_model_;
   // Owned by WebFeedSubscriptionCoordinator so that memory of recent
   // subscriptions is retained when the model is deleted.
   raw_ptr<std::vector<feedstore::WebFeedInfo>> recent_unsubscribed_;

@@ -153,7 +153,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   // Associated AutocompleteProviderClient.
   // Guaranteed to be non-null.
-  const raw_ptr<ChromeAutocompleteProviderClient> provider_client_;
+  const raw_ptr<ChromeAutocompleteProviderClient, DanglingUntriaged>
+      provider_client_;
 
   // AutocompleteController associated with this client. As this is directly
   // associated with the |provider_client_| and indirectly with |profile_|

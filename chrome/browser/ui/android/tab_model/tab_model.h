@@ -205,7 +205,7 @@ class TabModel {
   LocationBarModel* GetLocationBarModel();
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   chrome::android::ActivityType activity_type_;
 

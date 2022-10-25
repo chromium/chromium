@@ -184,7 +184,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
 
   AudioParameters audio_parameters_;
 
-  raw_ptr<RenderCallback> callback_;
+  raw_ptr<RenderCallback, DanglingUntriaged> callback_;
 
   // A pointer to the IPC layer that takes care of sending requests over to
   // the implementation. May be set to nullptr after errors.

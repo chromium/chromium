@@ -228,7 +228,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   raw_ptr<DemuxerStream> current_video_stream_;
 
   // Renderer-provided time source used to control playback.
-  raw_ptr<TimeSource> time_source_;
+  raw_ptr<TimeSource, DanglingUntriaged> time_source_;
   std::unique_ptr<WallClockTimeSource> wall_clock_time_source_;
   bool time_ticking_;
   double playback_rate_;

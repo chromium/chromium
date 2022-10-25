@@ -30,7 +30,7 @@ class LocalStateHelperImpl : public LocalStateHelper {
   LocalStateHelperImpl();
   ~LocalStateHelperImpl() override;
 
-  raw_ptr<PrefService> local_state_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
 };
 
 }  // namespace segmentation_platform

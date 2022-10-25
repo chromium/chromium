@@ -87,7 +87,7 @@ class Thumbnail : public cc::UIResourceClient {
 
   bool retrieved_;
 
-  raw_ptr<ui::UIResourceProvider> ui_resource_provider_;
+  raw_ptr<ui::UIResourceProvider, DanglingUntriaged> ui_resource_provider_;
   raw_ptr<ThumbnailDelegate> thumbnail_delegate_;
 
   base::WeakPtrFactory<Thumbnail> weak_factory_{this};

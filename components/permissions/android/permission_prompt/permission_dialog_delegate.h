@@ -38,7 +38,7 @@ class PermissionDialogJavaDelegate {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_delegate_;
-  raw_ptr<PermissionPromptAndroid> permission_prompt_;
+  raw_ptr<PermissionPromptAndroid, DanglingUntriaged> permission_prompt_;
 };
 
 // Delegate class for displaying a permission prompt as a modal dialog. Used as
@@ -85,7 +85,7 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // The PermissionPromptAndroid is deleted when either the dialog is resolved
   // or the tab is navigated/closed. We close the prompt on DidFinishNavigation
   // and WebContentsDestroyed, so it should always be safe to use this pointer.
-  raw_ptr<PermissionPromptAndroid> permission_prompt_;
+  raw_ptr<PermissionPromptAndroid, DanglingUntriaged> permission_prompt_;
 
   // The PermissionDialogJavaDelegate abstracts away JNI connectivity from
   // native to Java in order to facilicate unit testing.

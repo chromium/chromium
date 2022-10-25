@@ -317,7 +317,7 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
   std::unique_ptr<ResourceRequest> owned_resource_request_;
 
   // Should never be null.
-  raw_ptr<ResourceRequest> resource_request_;
+  raw_ptr<ResourceRequest, DanglingUntriaged> resource_request_;
 };
 
 }  // namespace blink

@@ -194,7 +194,7 @@ class ThumbnailCache : ThumbnailDelegate {
   TabIdList visible_ids_;
   TabId primary_tab_id_ = -1;
 
-  raw_ptr<ui::UIResourceProvider> ui_resource_provider_;
+  raw_ptr<ui::UIResourceProvider, DanglingUntriaged> ui_resource_provider_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_;

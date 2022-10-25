@@ -126,7 +126,7 @@ class AccountReconcilorDelegate {
       bool first_execution,
       bool primary_has_error) const;
 
-  raw_ptr<AccountReconcilor> reconcilor_;
+  raw_ptr<AccountReconcilor, DanglingUntriaged> reconcilor_;
 };
 
 }  // namespace signin

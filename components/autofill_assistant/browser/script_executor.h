@@ -405,7 +405,7 @@ class ScriptExecutor : public ActionDelegate,
   std::string last_script_payload_;
   const raw_ptr<ScriptExecutor::Listener> listener_;
   const raw_ptr<ScriptExecutorDelegate> delegate_;
-  const raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
+  const raw_ptr<ScriptExecutorUiDelegate, DanglingUntriaged> ui_delegate_;
   // Set of interrupts that might run during wait for dom or prompt action with
   // allow_interrupt. Sorted by priority; an interrupt that appears on the
   // vector first should run first. Note that the content of this vector can

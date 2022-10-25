@@ -105,7 +105,7 @@ class AddToHomescreenDataFetcher {
 
   base::WeakPtr<content::WebContents> web_contents_;
 
-  raw_ptr<InstallableManager> installable_manager_;
+  raw_ptr<InstallableManager, DanglingUntriaged> installable_manager_;
   raw_ptr<Observer> observer_;
 
   InstallableStatusCode installable_status_code_ =

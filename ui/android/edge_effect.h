@@ -60,7 +60,7 @@ class UI_ANDROID_EXPORT EdgeEffect {
   void SetParent(cc::Layer* parent);
 
  private:
-  const raw_ptr<ui::ResourceManager> resource_manager_;
+  const raw_ptr<ui::ResourceManager, DanglingUntriaged> resource_manager_;
 
   scoped_refptr<cc::UIResourceLayer> glow_;
 
