@@ -7,6 +7,15 @@
  */
 
 /**
+ * @typedef {{
+ *   event: string,
+ *   role: string,
+ *   navigation: (string|undefined),
+ *   output: (string|undefined)}}
+ */
+export let OutputRuleSpecifier;
+
+/**
  * Rules specifying format of AutomationNodes for output.
  * @type {!Object<Object<Object<string>>>}
  * Please see below for more information on properties.

@@ -8,6 +8,8 @@
 import {LogType} from '../../common/log_types.js';
 import {LogStore} from '../logging/log_store.js';
 
+import {OutputRuleSpecifier} from './output_rules.js';
+
 export class OutputFormatLogger {
   /**
    * @param {string} enableKey The key to enable logging in localStorage
@@ -69,7 +71,7 @@ export class OutputFormatLogger {
   }
 
   /**
-   * @param {OutputFormatLogger.Rule} rule
+   * @param {OutputRuleSpecifier} rule
    */
   writeRule(rule) {
     if (this.loggingDisabled) {
@@ -103,12 +105,3 @@ export class OutputFormatLogger {
     this.str_ += '\n';
   }
 }
-
-/**
- * @typedef {
- * {event: string,
- *  role: string,
-    navigation: (string|undefined),
- *  output: (string|undefined)}}
- */
-OutputFormatLogger.Rule;

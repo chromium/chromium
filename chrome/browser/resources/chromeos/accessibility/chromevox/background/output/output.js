@@ -29,7 +29,7 @@ import {OutputFormatParser, OutputFormatParserObserver} from './output_format_pa
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputFormatLogger} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
-import {OUTPUT_RULES} from './output_rules.js';
+import {OUTPUT_RULES, OutputRuleSpecifier} from './output_rules.js';
 import * as outputTypes from './output_types.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
@@ -1963,7 +1963,7 @@ export class Output {
         }
 
         excludeRoles.add(formatNode.role);
-        formatLog.writeRule /** @type {OutputFormatLogger.Rule} */ ((rule));
+        formatLog.writeRule /** @type {OutputRuleSpecifier} */ ((rule));
         const enterFormat = rule.output ?
             eventBlock[rule.role][formatName][rule.output] :
             eventBlock[rule.role][formatName];
