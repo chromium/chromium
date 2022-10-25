@@ -7742,11 +7742,3 @@ crbug.com/1377082 [ Linux ] http/tests/lazyload/attribute.html [ Skip ]
 # Sheriff 2022-10-24
 crbug.com/1377751 [ Win11 ] fast/forms/accent-color/checkbox-accent-color-appearance-dark.html [ Failure ]
 crbug.com/1377751 [ Win11 ] fast/forms/accent-color/checkbox-accent-color-contrast-appearance.html [ Failure ]
-
-# Sheriff 2022-10-25
-crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html [ Pass Timeout ]
-crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Pass Timeout ]
-crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Pass Timeout ]
-crbug.com/1378044 [ Linux ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html [ Pass Timeout ]
-crbug.com/1378044 [ Linux ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Pass Timeout ]
-crbug.com/1378044 [ Linux ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Pass Timeout ]
