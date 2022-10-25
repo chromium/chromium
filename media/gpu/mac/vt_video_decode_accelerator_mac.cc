@@ -2188,7 +2188,11 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   for (size_t plane = 0; plane < planes.size(); ++plane) {
     if (picture_info->uses_shared_images) {
       gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();
-      DCHECK(shared_image_stub);
+      if (!shared_image_stub) {
+        DLOG(ERROR) << "Failed to get SharedImageStub";
+        NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
+        return false;
+      }
 
       const gfx::Size frame_size(CVPixelBufferGetWidth(frame.image.get()),
                                  CVPixelBufferGetHeight(frame.image.get()));
