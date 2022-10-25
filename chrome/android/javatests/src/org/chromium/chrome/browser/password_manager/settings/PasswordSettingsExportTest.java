@@ -182,6 +182,7 @@ public class PasswordSettingsExportTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "crbug.com/1376453")
     public void testExportMenuItem() {
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
