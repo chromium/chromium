@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
@@ -213,17 +214,16 @@ bool WmiLaunchProcess(const std::wstring& command_line, int* process_id) {
 
 // static
 WmiComputerSystemInfo WmiComputerSystemInfo::Get() {
-  WmiComputerSystemInfo info;
-
-  ComPtr<IEnumWbemClassObject> enumerator_bios;
-  auto error =
-      RunWmiQuery(kCimV2ServerName, kSerialNumberQuery, &enumerator_bios);
-  if (error.has_value())
+  static const base::NoDestructor<WmiComputerSystemInfo> static_info([] {
+    WmiComputerSystemInfo info;
+    ComPtr<IEnumWbemClassObject> enumerator_bios;
+    auto error =
+        RunWmiQuery(kCimV2ServerName, kSerialNumberQuery, &enumerator_bios);
+    if (!error.has_value())
+      info.PopulateSerialNumber(enumerator_bios);
     return info;
-
-  info.PopulateSerialNumber(enumerator_bios);
-
-  return info;
+  }());
+  return *static_info;
 }
 
 void WmiComputerSystemInfo::PopulateSerialNumber(
