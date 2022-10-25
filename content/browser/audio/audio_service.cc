@@ -30,8 +30,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-#include "media/audio/win/audio_edid_scan_win.h"
 #include "media/audio/win/audio_manager_win.h"
+#include "ui/display/util/edid_parser.h"
+#include "ui/display/win/audio_edid_scan.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 namespace content {
@@ -165,6 +166,21 @@ void LaunchAudioService(
   }
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+// Convert the EDID supported audio bitstream formats into media codec bitmasks.
+uint32_t ScanEdidBitstreams() {
+  uint32_t codec_bitmask = 0;
+  uint32_t formats = display::win::ScanEdidBitstreams();
+  if (formats & display::EdidParser::kAudioBitstreamPcmLinear)
+    codec_bitmask |= media::AudioParameters::AUDIO_PCM_LINEAR;
+  if (formats & display::EdidParser::kAudioBitstreamDts)
+    codec_bitmask |= media::AudioParameters::AUDIO_BITSTREAM_DTS;
+  if (formats & display::EdidParser::kAudioBitstreamDtsHd)
+    codec_bitmask |= media::AudioParameters::AUDIO_BITSTREAM_DTS_HD;
+  return codec_bitmask;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 audio::mojom::AudioService& GetAudioService() {
@@ -187,7 +203,7 @@ audio::mojom::AudioService& GetAudioService() {
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
         ->PostTaskAndReplyWithResult(
-            FROM_HERE, base::BindOnce(&media::ScanEdidBitstreams),
+            FROM_HERE, base::BindOnce(&ScanEdidBitstreams),
             base::BindOnce(&LaunchAudioService, std::move(receiver)));
 #else
     LaunchAudioService(std::move(receiver), 0);

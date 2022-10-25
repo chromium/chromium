@@ -60,6 +60,8 @@ component("display") {
 
   if (is_win) {
     sources += [
+      "win/audio_edid_scan.cc",
+      "win/audio_edid_scan.h",
       "win/base_window_finder_win.cc",
       "win/base_window_finder_win.h",
       "win/color_profile_reader.cc",

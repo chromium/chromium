@@ -34,10 +34,6 @@
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-#include "media/audio/win/audio_edid_scan_win.h"
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-
 // The following are defined in various DDK headers, and we (re)define them here
 // to avoid adding the DDK as a chrome dependency.
 #define DRV_QUERYDEVICEINTERFACE 0x80c
@@ -74,18 +70,6 @@ namespace {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 // Passthrough flags as defined in audio_edid_scan_win.h
 uint32_t bitstream_passthrough_bitmask_;
-
-// Convert result from ScanEdidBitstreams to AudioParameters::Format values
-uint32_t ConvertEdidScanToAudioBitstreamFlags(uint32_t edid_scan) {
-  uint32_t bitstream_codecs = 0;
-  if (edid_scan & kAudioBitstreamPcmLinear)
-    bitstream_codecs |= AudioParameters::AUDIO_PCM_LINEAR;
-  if (edid_scan & kAudioBitstreamDts)
-    bitstream_codecs |= AudioParameters::AUDIO_BITSTREAM_DTS;
-  if (edid_scan & kAudioBitstreamDtsHd)
-    bitstream_codecs |= AudioParameters::AUDIO_BITSTREAM_DTS_HD;
-  return bitstream_codecs;
-}
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 int NumberOfWaveOutBuffers() {
@@ -430,8 +414,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
   hardware_capabilities.bitstream_formats = 0;
   hardware_capabilities.require_encapsulation = false;
   if (WASAPIAudioOutputStream::GetShareMode() == AUDCLNT_SHAREMODE_EXCLUSIVE) {
-    hardware_capabilities.bitstream_formats =
-        ConvertEdidScanToAudioBitstreamFlags(bitstream_passthrough_bitmask_);
+    hardware_capabilities.bitstream_formats = bitstream_passthrough_bitmask_;
     hardware_capabilities.require_encapsulation = true;
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
