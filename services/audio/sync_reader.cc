@@ -108,11 +108,10 @@ SyncReader::SyncReader(
 
 SyncReader::~SyncReader() {
   OutputGlitchCounter::LogStats log_stats = glitch_counter_->GetLogStats();
-  int percentage_missed =
-      100.0 * log_stats.miss_count_ / log_stats.callback_count_;
 
-  TRACE_EVENT_INSTANT1("audio", "~SyncReader", TRACE_EVENT_SCOPE_THREAD,
-                       "Missed callback percentage", percentage_missed);
+  TRACE_EVENT_INSTANT2("audio", "~SyncReader", TRACE_EVENT_SCOPE_THREAD,
+                       "Missed callbacks", log_stats.miss_count_,
+                       "Total callbacks", log_stats.callback_count_);
 
   log_callback_.Run(base::StringPrintf(
       "ASR: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
