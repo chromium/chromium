@@ -491,7 +491,7 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
        OnFirstPartySetsEnabledChanged_Default_WithConfig) {
   service()->InitForTesting();
 
-  EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(0);
+  EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
 
   env().RunUntilIdle();
@@ -499,7 +499,7 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
 
 TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
        OnFirstPartySetsEnabledChanged_Default_WithoutConfig) {
-  EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(0);
+  EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
 
   env().RunUntilIdle();
@@ -508,6 +508,8 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
 TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
        OnFirstPartySetsEnabledChanged_Disables_WithConfig) {
   service()->InitForTesting();
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+
   service()->OnFirstPartySetsEnabledChanged(false);
 
   EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
@@ -518,6 +520,8 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
 
 TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
        OnFirstPartySetsEnabledChanged_Disables_WithoutConfig) {
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+
   service()->OnFirstPartySetsEnabledChanged(false);
 
   EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
@@ -539,7 +543,7 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
 
   // Ensure access delegate is called with SetEnabled(true) and NotifyReady is
   // called with the config (during initialization -- not due to SetEnabled).
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(2);
 
   EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(test_config))))
       .Times(1);
@@ -552,7 +556,7 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
   service()->OnFirstPartySetsEnabledChanged(true);
 
   // NotifyReady isn't called since the config isn't ready to be sent.
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(2);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
 
   env().RunUntilIdle();

@@ -149,6 +149,7 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
     mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
         access_delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  access_delegate->SetEnabled(pref_enabled_);
   if (config_.has_value() && cache_filter_.has_value()) {
     // Since the list of First-Party Sets is static after initialization and
     // the FirstPartySetsOverrides policy doesn't support dynamic refresh, a

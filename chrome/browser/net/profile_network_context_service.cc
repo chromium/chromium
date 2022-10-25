@@ -1023,17 +1023,11 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->first_party_sets_access_delegate_receiver =
       fps_access_delegate_remote.BindNewPipeAndPassReceiver();
 
-  if (first_party_sets::FirstPartySetsPolicyService* fps_service =
-          first_party_sets::FirstPartySetsPolicyServiceFactory::
-              GetForBrowserContext(profile_);
-      fps_service) {
-    fps_service->AddRemoteAccessDelegate(std::move(fps_access_delegate_remote));
-  } else {
-    // Immediately notify ready if First-Party Sets is disabled globally or
-    // disabled locally by this `profile_`.
-    fps_access_delegate_remote->NotifyReady(
-        network::mojom::FirstPartySetsReadyEvent::New());
-  }
+  first_party_sets::FirstPartySetsPolicyService* fps_service =
+      first_party_sets::FirstPartySetsPolicyServiceFactory::
+          GetForBrowserContext(profile_);
+  DCHECK(fps_service);
+  fps_service->AddRemoteAccessDelegate(std::move(fps_access_delegate_remote));
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

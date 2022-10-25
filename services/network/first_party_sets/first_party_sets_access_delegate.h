@@ -38,7 +38,7 @@ class FirstPartySetsAccessDelegate
   // Construct a FirstPartySetsAccessDelegate that provides customizations
   // and serves mojo requests for the underlying First-Party Sets info.
   // `*manager` outlives this object.
-  explicit FirstPartySetsAccessDelegate(
+  FirstPartySetsAccessDelegate(
       mojo::PendingReceiver<mojom::FirstPartySetsAccessDelegate> receiver,
       mojom::FirstPartySetsAccessDelegateParamsPtr params,
       FirstPartySetsManager* const manager);
@@ -134,7 +134,7 @@ class FirstPartySetsAccessDelegate
   // Whether First-Party Sets is enabled for this context in particular. Note
   // that this is unrelated to `manager_.is_enabled`. This may be reassigned via
   // `SetEnabled`.
-  bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The first ReadyEvent received. This is set at most once, and is immutable
   // thereafter.
