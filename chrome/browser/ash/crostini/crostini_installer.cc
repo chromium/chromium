@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -227,12 +228,14 @@ void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,
   container_download_percent_ = 0;
   UpdateState(State::INSTALLING);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                     base::FilePath(crostini::kHomeDirectory)),
-      base::BindOnce(&CrostiniInstaller::OnAvailableDiskSpace,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // The spaced D-Bus client needs to be called from the ui thread
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ash::SpacedClient::GetFreeDiskSpace,
+                     base::Unretained(ash::SpacedClient::Get()),
+                     crostini::kHomeDirectory,
+                     base::BindOnce(&CrostiniInstaller::OnAvailableDiskSpace,
+                                    weak_ptr_factory_.GetWeakPtr())));
 
   // Reset mic permissions, we don't want it to persist across
   // re-installation.
@@ -595,7 +598,7 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
   }
 }
 
-void CrostiniInstaller::OnAvailableDiskSpace(int64_t bytes) {
+void CrostiniInstaller::OnAvailableDiskSpace(absl::optional<int64_t> bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // |Cancel()| might be called immediately after |Install()|.
@@ -608,7 +611,8 @@ void CrostiniInstaller::OnAvailableDiskSpace(int64_t bytes) {
 
   DCHECK_EQ(installing_state_, InstallerState::kStart);
 
-  free_disk_space_ = bytes;
+  if (bytes.has_value())
+    free_disk_space_ = bytes.value();
   // Don't enforce minimum disk size on dev box or trybots because
   // base::SysInfo::AmountOfFreeDiskSpace returns zero in testing.
   if (base::SysInfo::IsRunningOnChromeOS() &&

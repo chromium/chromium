@@ -66,7 +66,7 @@ void GetDiskInfo(OnceDiskInfoCallback callback,
 void OnAmountOfFreeDiskSpace(OnceDiskInfoCallback callback,
                              Profile* profile,
                              std::string vm_name,
-                             int64_t free_space);
+                             absl::optional<int64_t> free_space);
 
 // Combined callback for EnsureConciergeRunning or EnsureVmRunning which passes
 // off to the next step in the chain. For getting full disk info, the VM must be

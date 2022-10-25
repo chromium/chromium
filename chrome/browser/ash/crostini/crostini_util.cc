@@ -63,7 +63,8 @@ const char kCrostiniDefaultImageServerUrl[] =
     "https://storage.googleapis.com/cros-containers/%d";
 const char kCrostiniDlcName[] = "termina-dlc";
 
-const base::FilePath::CharType kHomeDirectory[] = FILE_PATH_LITERAL("/home");
+const base::FilePath::CharType kHomeDirectory[] =
+    FILE_PATH_LITERAL("/home/chronos/user");
 
 namespace {
 

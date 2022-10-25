@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -119,6 +120,8 @@ class CrostiniInstallerTest : public testing::Test {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::DebugDaemonClient::InitializeFake();
+    ash::FakeSpacedClient::InitializeFake();
+
     SetOSRelease();
     waiting_fake_concierge_client_ =
         new WaitingFakeConciergeClient(ash::FakeCiceroneClient::Get());
@@ -158,6 +161,7 @@ class CrostiniInstallerTest : public testing::Test {
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
+    ash::FakeSpacedClient::Shutdown();
 
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();

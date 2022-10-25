@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "ui/base/text/bytes_formatting.h"
 
 using DiskImageStatus = vm_tools::concierge::DiskImageStatus;
@@ -66,10 +66,8 @@ void GetDiskInfo(OnceDiskInfoCallback callback,
     return;
   }
   if (full_info) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                       base::FilePath(crostini::kHomeDirectory)),
+    ash::SpacedClient::Get()->GetFreeDiskSpace(
+        crostini::kHomeDirectory,
         base::BindOnce(&OnAmountOfFreeDiskSpace, std::move(callback), profile,
                        std::move(vm_name)));
   } else {
@@ -88,8 +86,8 @@ void GetDiskInfo(OnceDiskInfoCallback callback,
 void OnAmountOfFreeDiskSpace(OnceDiskInfoCallback callback,
                              Profile* profile,
                              std::string vm_name,
-                             int64_t free_space) {
-  if (free_space == 0) {
+                             absl::optional<int64_t> free_space) {
+  if (!free_space.has_value() || free_space.value() <= 0) {
     LOG(ERROR) << "Failed to get amount of free disk space";
     std::move(callback).Run(nullptr);
   } else {
@@ -101,7 +99,7 @@ void OnAmountOfFreeDiskSpace(OnceDiskInfoCallback callback,
     CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
         std::move(container_id), std::move(options),
         base::BindOnce(&OnCrostiniSufficientlyRunning, std::move(callback),
-                       profile, std::move(vm_name), free_space));
+                       profile, std::move(vm_name), free_space.value()));
   }
 }
 
