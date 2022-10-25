@@ -1187,7 +1187,7 @@ public class AwContents implements SmartClipProvider {
                 || "com.samsung.android.email.composer".equals(currentPackageName);
     }
 
-    boolean isFullScreen() {
+    public boolean isFullScreen() {
         return mFullScreenTransitionsState.isFullScreen();
     }
 
@@ -1228,7 +1228,7 @@ public class AwContents implements SmartClipProvider {
     /**
      * Called when the app has requested to exit fullscreen.
      */
-    void requestExitFullscreen() {
+    public void requestExitFullscreen() {
         if (!isDestroyed(NO_WARN)) mWebContents.exitFullscreen();
     }
 

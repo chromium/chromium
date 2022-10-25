@@ -25,6 +25,8 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
@@ -41,6 +43,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.net.MalformedURLException;
@@ -64,6 +67,10 @@ public class AwShellActivity extends Activity {
     private EditText mUrlTextView;
     private ImageButton mPrevButton;
     private ImageButton mNextButton;
+    private final OnBackInvokedCallback mOnBackInvokedCallback =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? ()
+            -> mNavigationController.goBack()
+            : null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,6 +110,23 @@ public class AwShellActivity extends Activity {
         mAwTestContainerView.getAwContents().loadUrl(startupUrl);
         AwContents.setShouldDownloadFavicons();
         mUrlTextView.setText(startupUrl);
+
+        mWebContents.addObserver(new WebContentsObserver() {
+            @Override
+            public void navigationEntriesChanged() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (mNavigationController.canGoBack()) {
+                        AwShellActivity.this.getOnBackInvokedDispatcher()
+                                .registerOnBackInvokedCallback(
+                                        OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                                        mOnBackInvokedCallback);
+                    } else if (!mNavigationController.canGoBack()) {
+                        AwShellActivity.this.getOnBackInvokedDispatcher()
+                                .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
+                    }
+                }
+            }
+        });
     }
 
     @Override

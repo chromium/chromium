@@ -4,12 +4,14 @@
 
 package org.chromium.android_webview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -18,6 +20,10 @@ import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
+
+import org.chromium.base.ContextUtils;
 
 /**
  * A view that is used to render the web contents in fullscreen mode, ie.
@@ -28,12 +34,18 @@ public class FullScreenView extends FrameLayout {
     private AwViewMethods mAwViewMethods;
     private final AwContents mAwContents;
     private InternalAccessAdapter mInternalAccessAdapter;
+    private OnBackInvokedCallback mOnBackInvokedCallback;
 
     public FullScreenView(Context context, AwViewMethods awViewMethods, AwContents awContents) {
         super(context);
         setAwViewMethods(awViewMethods);
         mAwContents = awContents;
         mInternalAccessAdapter = new InternalAccessAdapter();
+        mOnBackInvokedCallback = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? () -> {
+            if (mAwContents.isFullScreen()) {
+                mAwContents.requestExitFullscreen();
+            }
+        } : null;
     }
 
     public InternalAccessAdapter getInternalAccessAdapter() {
@@ -78,6 +90,9 @@ public class FullScreenView extends FrameLayout {
 
     @Override
     public boolean dispatchKeyEvent(final KeyEvent event) {
+        // We didn't add the sdk check here as as the developer may not add the flag so we fallback
+        // to the old way it's confirmed that only one back mechanism will be triggered here or the
+        // dispatchCallback
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK
                 && event.getAction() == KeyEvent.ACTION_UP
                 && mAwContents.isFullScreen()) {
@@ -110,12 +125,23 @@ public class FullScreenView extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        Activity hostActivity = ContextUtils.activityFromContext(getContext());
+        if (hostActivity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            hostActivity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, mOnBackInvokedCallback);
+        }
         mAwViewMethods.onAttachedToWindow();
     }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        Activity hostActivity = ContextUtils.activityFromContext(getContext());
+        if (hostActivity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            hostActivity.getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(
+                    mOnBackInvokedCallback);
+        }
+        mOnBackInvokedCallback = null;
         mAwViewMethods.onDetachedFromWindow();
     }
 
@@ -126,11 +152,10 @@ public class FullScreenView extends FrameLayout {
     }
 
     @Override
-    public void onFocusChanged(final boolean focused, final int direction,
-            final Rect previouslyFocusedRect) {
+    public void onFocusChanged(
+            final boolean focused, final int direction, final Rect previouslyFocusedRect) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
-        mAwViewMethods.onFocusChanged(
-                focused, direction, previouslyFocusedRect);
+        mAwViewMethods.onFocusChanged(focused, direction, previouslyFocusedRect);
     }
 
     @Override
@@ -243,9 +268,8 @@ public class FullScreenView extends FrameLayout {
         }
 
         @Override
-        public void overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY,
-                int scrollRangeX, int scrollRangeY, int maxOverScrollX,
-                int maxOverScrollY, boolean isTouchEvent) {
+        public void overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX,
+                int scrollRangeY, int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
             FullScreenView.this.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX,
                     scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent);
         }
