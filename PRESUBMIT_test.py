@@ -2066,6 +2066,35 @@ class GnGlobForwardTest(unittest.TestCase):
     self.assertEqual([], warnings)
 
 
+class GnRebasePathTest(unittest.TestCase):
+  def testAddAbsolutePath(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('base/BUILD.gn', ['rebase_path("$target_gen_dir", "//")']),
+        MockAffectedFile('base/root/BUILD.gn', ['rebase_path("$target_gen_dir", "/")']),
+        MockAffectedFile('base/variable/BUILD.gn', ['rebase_path(target_gen_dir, "/")']),
+    ]
+    warnings = PRESUBMIT.CheckGnRebasePath(mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    msg = '\n'.join(warnings[0].items)
+    self.assertIn('base/BUILD.gn', msg)
+    self.assertIn('base/root/BUILD.gn', msg)
+    self.assertIn('base/variable/BUILD.gn', msg)
+    self.assertEqual(3, len(warnings[0].items))
+
+  def testValidUses(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('base/foo/BUILD.gn', ['rebase_path("$target_gen_dir", root_build_dir)']),
+        MockAffectedFile('base/bar/BUILD.gn', ['rebase_path("$target_gen_dir", root_build_dir, "/")']),
+        MockAffectedFile('base/baz/BUILD.gn', ['rebase_path(target_gen_dir, root_build_dir)']),
+        MockAffectedFile('base/baz/BUILD.gn', ['rebase_path(target_gen_dir, "//some/arbitrary/path")']),
+        MockAffectedFile('base/okay_slash/BUILD.gn', ['rebase_path(".", "//")']),
+    ]
+    warnings = PRESUBMIT.CheckGnRebasePath(mock_input_api, MockOutputApi())
+    self.assertEqual([], warnings)
+
+
 class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeaderWithoutGn(self):
     mock_input_api = MockInputApi()

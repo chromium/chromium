@@ -4484,6 +4484,36 @@ def CheckWATCHLISTS(input_api, output_api):
 
     return []
 
+def CheckGnRebasePath(input_api, output_api):
+    """Checks that target_gen_dir is not used wtih "//" in rebase_path().
+
+    Developers should use root_build_dir instead of "//" when using target_gen_dir because
+    Chromium is sometimes built outside of the source tree.
+    """
+
+    def gn_files(f):
+        return input_api.FilterSourceFile(f, files_to_check=(r'.+\.gn', ))
+
+    rebase_path_regex = input_api.re.compile(r'rebase_path\(("\$target_gen_dir"|target_gen_dir), ("/"|"//")\)')
+    problems = []
+    for f in input_api.AffectedSourceFiles(gn_files):
+        for line_num, line in f.ChangedContents():
+            if rebase_path_regex.search(line):
+                problems.append(
+                    'Absolute path in rebase_path() in %s:%d' %
+                    (f.LocalPath(), line_num))
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                'Using an absolute path in rebase_path()',
+                items=sorted(problems),
+                long_text=(
+                    'rebase_path() should use root_build_dir instead of "/" ',
+                    'since builds can be initiated from outside of the source ',
+                    'root.'))
+        ]
+    return []
 
 def CheckGnGlobForward(input_api, output_api):
     """Checks that forward_variables_from(invoker, "*") follows best practices.
@@ -4516,7 +4546,6 @@ def CheckGnGlobForward(input_api, output_api):
                     '#Using-forward_variables_from'))
         ]
     return []
-
 
 def CheckNewHeaderWithoutGnChangeOnUpload(input_api, output_api):
     """Checks that newly added header files have corresponding GN changes.
