@@ -6636,6 +6636,21 @@
             ]
         }
     ],
+    "MediaFoundationAV1Encoding": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaFoundationAV1Encoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaFoundationD3D11VideoCapture": [
         {
             "platforms": [
