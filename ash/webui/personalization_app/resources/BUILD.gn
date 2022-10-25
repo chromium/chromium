@@ -93,7 +93,6 @@ web_component_files = [
   "js/user/avatar_list_element.ts",
   "js/user/user_preview_element.ts",
   "js/user/user_subpage_element.ts",
-  "js/wallpaper/collections_grid_element.ts",
   "js/wallpaper/google_photos_albums_element.ts",
   "js/wallpaper/google_photos_collection_element.ts",
   "js/wallpaper/google_photos_photos_by_album_id_element.ts",

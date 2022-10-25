@@ -230,18 +230,13 @@ TEST_F('WallpaperSubpageBrowserTest', 'LoadsCollectionsGrid', () => {
       !!collections,
       'wallpaper-collections should be found under wallpaper-subpage');
 
-
-  const collectionsGrid =
-      collections.shadowRoot.getElementById('collectionsGrid');
-  assertTrue(!!collectionsGrid, 'collections-grid should be visible');
-
   assertFalse(
-      collectionsGrid.parentElement.hidden, 'parent element should be visible');
+      collections.parentElement.hidden, 'parent element should be visible');
   assertGT(
-      collectionsGrid.offsetWidth, 0,
-      'collections grid should have visible width');
+      collections.offsetWidth, 0,
+      'wallpaper-collections should have visible width');
   assertGT(
-      collectionsGrid.offsetHeight, 0,
-      'collections grid should have visible height');
+      collections.offsetHeight, 0,
+      'wallpaper-collections grid should have visible height');
   testDone();
 });

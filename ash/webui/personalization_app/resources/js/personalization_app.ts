@@ -90,7 +90,6 @@ export {UserPreview} from './user/user_preview_element.js';
 export {UserSubpage} from './user/user_subpage_element.js';
 export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './user/webcam_utils_proxy.js';
 export {getCountText, getNumberOfGridItemsPerRow} from './utils.js';
-export {CollectionsGrid} from './wallpaper/collections_grid_element.js';
 export {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './wallpaper/constants.js';
 export {GooglePhotosAlbums} from './wallpaper/google_photos_albums_element.js';
 export {GooglePhotosCollection} from './wallpaper/google_photos_collection_element.js';
