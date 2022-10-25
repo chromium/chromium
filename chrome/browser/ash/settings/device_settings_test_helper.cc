@@ -97,7 +97,6 @@ void DeviceSettingsTestBase::TearDown() {
   device_policy_.reset();
   base::RunLoop().RunUntilIdle();
   profile_.reset();
-  task_environment_.RunUntilIdle();
 }
 
 void DeviceSettingsTestBase::ReloadDevicePolicy() {
