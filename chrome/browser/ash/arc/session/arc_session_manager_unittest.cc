@@ -39,10 +39,12 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/arc/fake_android_management_client.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
+#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -263,16 +265,22 @@ class ArcSessionManagerTestBase : public testing::Test {
  public:
   ArcSessionManagerTestBase()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
-        test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
-    arc::prefs::RegisterLocalStatePrefs(test_local_state_->registry());
+        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&test_local_state_);
+    arc::prefs::RegisterLocalStatePrefs(test_local_state_.registry());
+    ash::DemoSetupController::RegisterLocalStatePrefs(
+        test_local_state_.registry());
+    ash::device_settings_cache::RegisterPrefs(test_local_state_.registry());
+    user_manager::KnownUser::RegisterPrefs(test_local_state_.registry());
   }
 
   ArcSessionManagerTestBase(const ArcSessionManagerTestBase&) = delete;
   ArcSessionManagerTestBase& operator=(const ArcSessionManagerTestBase&) =
       delete;
 
-  ~ArcSessionManagerTestBase() override = default;
+  ~ArcSessionManagerTestBase() override {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+  }
 
   void SetUp() override {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
@@ -352,7 +360,7 @@ class ArcSessionManagerTestBase : public testing::Test {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
+  TestingPrefServiceSimple test_local_state_;
 };
 
 class ArcSessionManagerTest : public ArcSessionManagerTestBase {
@@ -429,6 +437,31 @@ TEST_F(ArcSessionManagerTest, BaseWorkflow) {
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  // By default ARC is not enabled.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+
+  // When signed-in, enabling ARC results in the ACTIVE state.
+  arc_session_manager()->RequestEnable();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+}
+
+TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
+  // Enable ARC on Demand feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kArcOnDemandFeature);
+  // ARC on Demand is enabled only for managed users.
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  // ARC on Demand is enabled only on ARCVM.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
   prefs->SetBoolean(prefs::kArcSignedIn, true);
@@ -1315,8 +1348,6 @@ class ArcSessionManagerPolicyTest
     // Mocks OOBE environment so that IsArcOobeOptInActive() returns true.
     if (is_oobe_optin()) {
       CreateLoginDisplayHost();
-      TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
-      user_manager::KnownUser::RegisterPrefs(pref_service_.registry());
     }
   }
 
@@ -1366,7 +1397,6 @@ class ArcSessionManagerPolicyTest
   }
 
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
-  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_P(ArcSessionManagerPolicyTest, SkippingTerms) {
@@ -1602,9 +1632,6 @@ class ArcSessionOobeOptInNegotiatorTest
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
 
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
-    user_manager::KnownUser::RegisterPrefs(pref_service_.registry());
-
     if (IsArcPlayStoreEnabledForProfile(profile()))
       arc_session_manager()->RequestEnable();
   }
@@ -1676,7 +1703,6 @@ class ArcSessionOobeOptInNegotiatorTest
   base::ObserverList<chromeos::ArcTermsOfServiceScreenViewObserver>::Unchecked
       observer_list_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
-  TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
 };
 

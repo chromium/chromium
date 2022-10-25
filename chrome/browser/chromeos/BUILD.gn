@@ -1252,6 +1252,7 @@ source_set("unit_tests") {
     "../ash/arc/policy/managed_configuration_variables_unittest.cc",
     "../ash/arc/privacy_items/arc_privacy_items_bridge_unittest.cc",
     "../ash/arc/process/arc_process_unittest.cc",
+    "../ash/arc/session/arc_activation_necessity_checker_unittest.cc",
     "../ash/arc/session/arc_demo_mode_preference_handler_unittest.cc",
     "../ash/arc/session/arc_disk_space_monitor_unittest.cc",
     "../ash/arc/session/arc_play_store_enabled_preference_handler_unittest.cc",

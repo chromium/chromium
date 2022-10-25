@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
+#include "chrome/browser/ash/arc/session/arc_activation_necessity_checker.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -353,6 +354,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Returns true if ARC is started directly.
   bool RequestEnableImpl();
 
+  // Called when activation necessity check is done.
+  void OnActivationNecessityChecked(bool result);
+
   // Negotiates the terms of service to user, if necessary.
   // Otherwise, move to StartAndroidManagementCheck().
   void MaybeStartTermsOfServiceNegotiation();
@@ -463,6 +467,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcRequirementChecker::AndroidManagementCheckerFactory
       android_management_checker_factory_;
   std::unique_ptr<ArcRequirementChecker> requirement_checker_;
+
+  std::unique_ptr<ArcActivationNecessityChecker> activation_necessity_checker_;
 
   std::unique_ptr<ScopedOptInFlowTracker> scoped_opt_in_tracker_;
   std::unique_ptr<ArcPaiStarter> pai_starter_;

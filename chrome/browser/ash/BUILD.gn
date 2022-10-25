@@ -497,6 +497,8 @@ source_set("ash") {
     "arc/screen_capture/arc_screen_capture_session.h",
     "arc/session/adb_sideloading_availability_delegate_impl.cc",
     "arc/session/adb_sideloading_availability_delegate_impl.h",
+    "arc/session/arc_activation_necessity_checker.cc",
+    "arc/session/arc_activation_necessity_checker.h",
     "arc/session/arc_app_id_provider_impl.cc",
     "arc/session/arc_app_id_provider_impl.h",
     "arc/session/arc_demo_mode_preference_handler.cc",

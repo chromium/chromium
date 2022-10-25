@@ -1056,15 +1056,34 @@ bool ArcSessionManager::RequestEnableImpl() {
 
   if (skip_terms_of_service_negotiation) {
     state_ = State::READY;
-    if (activation_is_allowed_)
+    if (activation_is_allowed_) {
       StartArcForRegularBoot();
-    else
-      VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
+    } else {
+      DCHECK(!activation_necessity_checker_);
+      activation_necessity_checker_ =
+          std::make_unique<ArcActivationNecessityChecker>(
+              profile_, adb_sideloading_availability_delegate_.get());
+      activation_necessity_checker_->Check(
+          base::BindOnce(&ArcSessionManager::OnActivationNecessityChecked,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
     return true;
   }
 
   MaybeStartTermsOfServiceNegotiation();
   return false;
+}
+
+void ArcSessionManager::OnActivationNecessityChecked(bool result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(activation_necessity_checker_);
+
+  activation_necessity_checker_.reset();
+  if (result) {
+    AllowActivation();
+  } else {
+    VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
+  }
 }
 
 void ArcSessionManager::RequestDisable(bool remove_arc_data) {

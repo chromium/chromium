@@ -13,6 +13,7 @@
 namespace arc {
 
 // Please keep alphabetized.
+BASE_DECLARE_FEATURE(kArcOnDemandFeature);
 BASE_DECLARE_FEATURE(kBootCompletedBroadcastFeature);
 BASE_DECLARE_FEATURE(kCustomTabsExperimentFeature);
 BASE_DECLARE_FEATURE(kDocumentsProviderUnknownSizeFeature);
