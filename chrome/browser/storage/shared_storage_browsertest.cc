@@ -16,11 +16,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -42,6 +38,15 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#endif
 
 namespace storage {
 
@@ -181,7 +186,7 @@ content::RenderFrameHost* CreateIframe(content::RenderFrameHost* parent_rfh,
 
 }  // namespace
 
-class SharedStorageChromeBrowserTest : public InProcessBrowserTest {
+class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
  public:
   SharedStorageChromeBrowserTest() {
     base::test::TaskEnvironment task_environment;
@@ -209,12 +214,12 @@ class SharedStorageChromeBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   void SetPrefs(bool enable_privacy_sandbox, bool allow_third_party_cookies) {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxApisEnabledV2, enable_privacy_sandbox);
-    browser()->profile()->GetPrefs()->SetBoolean(
+    GetProfile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
+                                         enable_privacy_sandbox);
+    GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxManuallyControlledV2, enable_privacy_sandbox);
 
-    browser()->profile()->GetPrefs()->SetInteger(
+    GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             allow_third_party_cookies
@@ -230,7 +235,15 @@ class SharedStorageChromeBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  Profile* GetProfile() {
+#if BUILDFLAG(IS_ANDROID)
+    return TabModelList::models()[0]->GetProfile();
+#else
+    return browser()->profile();
+#endif
   }
 
   void AddSimpleModule(const content::ToRenderFrameHost& execution_target) {
@@ -505,10 +518,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::PrintToStringParamName());
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
   console_observer.SetFilter(MakeFilter({"Finish executing simple_module.js"}));
@@ -549,10 +561,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   AddSimpleModuleWithPermissionBypassed(GetActiveWebContents());
   content::WebContentsConsoleObserver run_op_console_observer(
@@ -603,10 +614,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   AddSimpleModuleWithPermissionBypassed(GetActiveWebContents());
   content::WebContentsConsoleObserver run_url_op_console_observer(
@@ -667,10 +677,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   content::EvalJsResult set_result = content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.set('customKey', 'customValue');
@@ -691,10 +700,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Append) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   content::EvalJsResult append_result =
       content::EvalJs(GetActiveWebContents(), R"(
@@ -716,10 +724,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Append) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Delete) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   content::EvalJsResult delete_result =
       content::EvalJs(GetActiveWebContents(), R"(
@@ -741,10 +748,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Delete) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   content::EvalJsResult clear_result =
       content::EvalJs(GetActiveWebContents(), R"(
@@ -766,10 +772,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletSet) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // If `set()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -795,10 +800,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletSet) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletAppend) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // If `append()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -824,10 +828,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletAppend) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletDelete) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // If `delete()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -853,10 +856,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletDelete) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletClear) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // If `clear()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -882,10 +884,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletClear) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // To prevent failure in the case where Shared Storage is enabled, we set a
   // key before retrieving it; but in the case here we expect failure, we test
@@ -922,10 +923,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // If `keys()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -953,10 +953,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletEntries) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // If `entries()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -984,10 +983,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletEntries) {
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletLength) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   // If `length()` fails due to Shared Storage being disabled, there will be a
   // console message verified in the helper
@@ -1042,10 +1040,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletRemainingBudget) {
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIterated) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 150; ++i) {
@@ -1126,10 +1123,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_PartiallyIterated) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 300; ++i) {
@@ -1224,10 +1220,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedLessThanTenKeys) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 5; ++i) {
@@ -1308,10 +1303,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_PartiallyIteratedLessThanTenKeys) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       for (let i = 0; i < 5; ++i) {
@@ -1404,10 +1398,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        WorkletKeysEntries_AllIteratedNoKeys) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
       sharedStorage.set('key', 'value');
@@ -1468,10 +1461,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        AddModule_InvalidScriptUrlError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   std::string invalid_url = "http://#";
   content::EvalJsResult result = content::EvalJs(
@@ -1494,10 +1486,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        AddModule_CrossOriginScriptError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(kCrossOriginHost,
                                            "/shared_storage/simple_module.js");
@@ -1522,10 +1513,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        AddModule_LoadFailureError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/nonexistent_module.js");
@@ -1546,10 +1536,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        AddModule_UnexpectedRedirectError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/server-redirect?shared_storage/simple_module.js");
@@ -1570,10 +1559,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        AddModule_EmptyResultError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module.js");
@@ -1594,10 +1582,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        AddModule_MultipleAddModuleError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(kSimpleTestHost,
                                            "/shared_storage/simple_module.js");
@@ -1627,10 +1614,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
                               R"(
@@ -1645,10 +1631,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(kSimpleTestHost,
                                            "/shared_storage/simple_module.js");
@@ -1675,10 +1660,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_FunctionError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module2.js");
@@ -1705,10 +1689,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_FunctionError) {
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotAPromiseError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module3.js");
@@ -1735,10 +1718,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotAPromiseError) {
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_ScriptError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module4.js");
@@ -1766,10 +1748,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_ScriptError) {
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        Run_UnexpectedCustomDataError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module5.js");
@@ -1797,10 +1778,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        SelectUrl_NotLoadedError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   content::EvalJsResult result = content::EvalJs(GetActiveWebContents(),
                                                  R"(
@@ -1823,10 +1803,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        SelectUrl_NotRegisteredError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(kSimpleTestHost,
                                            "/shared_storage/simple_module.js");
@@ -1855,10 +1834,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        SelectUrl_FunctionError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module2.js");
@@ -1887,10 +1865,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        SelectUrl_NotAPromiseError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module3.js");
@@ -1918,10 +1895,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module4.js");
@@ -1950,10 +1926,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        SelectUrl_UnexpectedCustomDataError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module5.js");
@@ -1983,10 +1958,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        SelectUrl_OutOfRangeError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module6.js");
@@ -2015,10 +1989,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
                        SelectUrl_ReturnValueToIntError) {
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   GURL script_url = https_server()->GetURL(
       kSimpleTestHost, "/shared_storage/erroneous_module6.js");
@@ -2048,10 +2021,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, DocumentTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
                               R"(
@@ -2086,10 +2058,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, DocumentTiming) {
 IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, WorkletTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
-  NavigateParams params(
-      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
-      ui::PageTransition::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kSimpleTestHost, kSimplePagePath)));
 
   EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(),
                                      R"(
