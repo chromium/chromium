@@ -12,7 +12,6 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":device_page_browser_proxy",
-    ":drag_behavior",
     ":layout_behavior",
   ]
 }
@@ -22,13 +21,6 @@ js_library("device_page_browser_proxy") {
   externs_list = [
     "$externs_path/chrome_send.js",
     "$externs_path/system_display.js",
-  ]
-}
-
-js_library("drag_behavior") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 

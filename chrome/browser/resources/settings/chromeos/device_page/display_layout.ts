@@ -19,7 +19,7 @@ import {castExists} from '../assert_extras.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {getTemplate} from './display_layout.html.js';
-import {DragBehavior, DragBehaviorInterface, DragPosition} from './drag_behavior.js';
+import {DragMixin, DragMixinInterface, DragPosition} from './drag_mixin.js';
 import {LayoutBehavior, LayoutBehaviorInterface} from './layout_behavior.js';
 
 type DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
@@ -52,9 +52,8 @@ interface DisplayLayoutElement {
 
 const DisplayLayoutElementBase =
     mixinBehaviors(
-        [IronResizableBehavior, DragBehavior, LayoutBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & DragBehaviorInterface & LayoutBehaviorInterface,
+        [IronResizableBehavior, LayoutBehavior], DragMixin(PolymerElement)) as {
+      new (): PolymerElement & DragMixinInterface & LayoutBehaviorInterface,
     };
 
 class DisplayLayoutElement extends DisplayLayoutElementBase {
