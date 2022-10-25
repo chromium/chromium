@@ -738,7 +738,7 @@ const base::FeatureParam<int> kAutocompleteStabilityUpdateResultDebounceDelay(
 const base::FeatureParam<int> kZeroSuggestCacheMaxSize(
     &omnibox::kZeroSuggestInMemoryCaching,
     "ZeroSuggestCacheMaxSize",
-    10);
+    5);
 
 // The relevance score for remote zero-suggest ranges from 550-1400. A default
 // value of 500 places local history zero-suggest below the remote zero-suggest.
