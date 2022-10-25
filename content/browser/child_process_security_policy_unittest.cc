@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -3191,9 +3192,6 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
 }
 
 // Regression test for https://crbug.com/1324407.
-// This does not pass on Android due to a difference with threads in the
-// EXPECT_DEATH_IF_SUPPORTED block.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -3216,17 +3214,13 @@ TEST_F(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 
   // If the process is then considered used (e.g., by loading content), it
   // should not be possible to lock it to another site.
-  EXPECT_DEATH_IF_SUPPORTED(
+  EXPECT_CHECK_DEATH_WITH(
       {
         p->LockProcess(bar_instance->GetIsolationContext(), kRendererID,
                        /*is_process_used=*/true,
                        ProcessLock::FromSiteInfo(bar_instance->GetSiteInfo()));
       },
-      // We expect the message to include 'Cannot lock an already used process
-      // to { https://bar.com }', but we don't search for that in the output
-      // because some bots are inconsistent in how much of the logging occurs.
-      "");
+      "Cannot lock an already used process to .*bar\\.com");
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
