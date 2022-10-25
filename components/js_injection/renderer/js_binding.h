@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
-#include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "gin/arguments.h"
 #include "gin/wrappable.h"

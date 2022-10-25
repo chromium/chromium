@@ -35,9 +35,9 @@ base::android::ScopedJavaLocalRef<jobject> JsReplyProxy::GetJavaPeer() {
 void JsReplyProxy::PostMessage(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& message) {
-  auto string = base::android::ConvertJavaStringToUTF16(env, message);
   reply_proxy_->PostWebMessage(
-      js_injection::mojom::JsWebMessage::NewStringValue(std::move(string)));
+      js_injection::mojom::JsWebMessage::NewStringValue(
+          base::android::ConvertJavaStringToUTF16(env, message)));
 }
 
 }  // namespace android_webview

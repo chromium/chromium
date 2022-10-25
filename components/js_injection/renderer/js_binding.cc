@@ -117,7 +117,9 @@ void JsBinding::OnPostMessage(mojom::JsWebMessagePtr message) {
   // Simulate MessageEvent's data property. See
   // https://html.spec.whatwg.org/multipage/comms.html#messageevent
   v8::Local<v8::Object> event =
-      gin::DataObjectBuilder(isolate).Set("data", message_payload).Build();
+      gin::DataObjectBuilder(isolate)
+          .Set("data", std::move(message->get_string_value()))
+          .Build();
   v8::Local<v8::Value> argv[] = {event};
 
   v8::Local<v8::Object> self = GetWrapper(isolate).ToLocalChecked();
