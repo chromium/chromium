@@ -17,8 +17,23 @@
     }
   }
 
+  cr-icon-button {
+    --cr-icon-button-size: 20px;
+    margin-inline-start: 0;
+  }
+
+  iron-icon {
+    --icon-size: 16px;
+    height: var(--icon-size);
+    width: var(--icon-size);
+  }
+
+  iron-icon[invisible] {
+    visibility: hidden;
+  }
+
   .back-button {
-    align-items: flex-end;
+    align-items: center;
     background-color: transparent;
     border: none;
     color: var(--cr-secondary-text-color);
@@ -27,7 +42,6 @@
     font-weight: 700;
     gap: 4px;
     height: var(--back-button-size);
-    margin: 14px;
     padding: 0;
     text-transform: uppercase;
   }
@@ -39,6 +53,18 @@
   .column {
     display: flex;
     flex-direction: column;
+  }
+
+  .dropdown-item {
+    gap: 4px;
+  }
+
+  .folder-sort-row {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin: 14px;
   }
 
   .icon-arrow-back {
@@ -78,10 +104,7 @@
   }
 
   .label-icon {
-    --label-icon-size: 16px;
     color: var(--cr-link-color);
-    height: var(--label-icon-size);
-    width: var(--label-icon-size);
   }
 
   .label-row {
@@ -113,14 +136,18 @@
       </button>
     </template>
   </div>
-  <button class="back-button" on-click="onBackClicked_"
-      disabled="[[!activeFolderPath_.length]]">
-    <div class="icon-arrow-back" hidden="[[!activeFolderPath_.length]]"></div>
-    [[getFolderSortLabel_(activeFolderPath_.*, activeSortIndex_)]]
-  </button>
-  <template is="dom-repeat"
-      items="[[getShownBookmarks_(topLevelBookmarks_, activeFolderPath_.*,
-          labels_.*, activeSortIndex_)]]">
+  <div class="folder-sort-row">
+    <button class="back-button" on-click="onBackClicked_"
+        disabled="[[!activeFolderPath_.length]]">
+      <div class="icon-arrow-back" hidden="[[!activeFolderPath_.length]]">
+      </div>
+      [[getFolderSortLabel_(activeFolderPath_.*, activeSortIndex_)]]
+    </button>
+    <cr-icon-button iron-icon="cr:expand-more"
+        aria-label="$i18n{sortMenuA11yLabel}"
+        on-click="onShowSortMenuClicked_"></cr-icon-button>
+  </div>
+  <template is="dom-repeat" items="[[shownBookmarks_]]">
     <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
         description="[[getBookmarkDescription_(item, descriptions_.*)]]"
         compact="[[compact_]]"
@@ -147,3 +174,14 @@
     </power-bookmark-row>
   </template>
 </div>
+
+<cr-action-menu id="sortMenu">
+  <template is="dom-repeat" items="[[sortTypes_]]">
+    <button class="dropdown-item" on-click="onSortTypeClicked_">
+      <iron-icon icon="cr:check"
+          invisible$="[[!sortMenuItemIsSelected_(item, activeSortIndex_)]]">
+      </iron-icon>
+      [[getSortMenuItemLabel_(item)]]
+    </button>
+  </template>
+</cr-action-menu>

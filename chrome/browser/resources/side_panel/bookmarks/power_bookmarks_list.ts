@@ -7,8 +7,11 @@ import './commerce/shopping_list.js';
 import './icons.html.js';
 import './power_bookmark_chip.js';
 import './power_bookmark_row.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
@@ -29,6 +32,7 @@ interface Label {
 export interface PowerBookmarksListElement {
   $: {
     powerBookmarksContainer: HTMLElement,
+    sortMenu: CrActionMenuElement,
   };
 }
 
@@ -44,6 +48,11 @@ export class PowerBookmarksListElement extends PolymerElement {
   static get properties() {
     return {
       topLevelBookmarks_: {
+        type: Array,
+        value: () => [],
+      },
+
+      shownBookmarks_: {
         type: Array,
         value: () => [],
       },
@@ -81,12 +90,22 @@ export class PowerBookmarksListElement extends PolymerElement {
         type: Array,
         value: () =>
             [loadTimeData.getString('sortNewest'),
-             loadTimeData.getString('sortOldest')],
+             loadTimeData.getString('sortOldest'),
+             loadTimeData.getString('sortAlphabetically'),
+             loadTimeData.getString('sortReverseAlphabetically')],
       },
     };
   }
 
+  static get observers() {
+    return [
+      'updateShownBookmarks_(topLevelBookmarks_, ' +
+          'activeFolderPath_.*, labels_.*, activeSortIndex_)',
+    ];
+  }
+
   private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  private shownBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
   private shoppingListApi_: ShoppingListApiProxy =
@@ -189,9 +208,9 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   /**
-   * Returns a list of bookmarks and folders to display to the user.
+   * Update the list of bookmarks and folders displayed to the user.
    */
-  private getShownBookmarks_(): chrome.bookmarks.BookmarkTreeNode[] {
+  private updateShownBookmarks_() {
     let shownBookmarks;
     const activeFolder =
         this.activeFolderPath_[this.activeFolderPath_.length - 1];
@@ -205,12 +224,22 @@ export class PowerBookmarksListElement extends PolymerElement {
       shownBookmarks = shownBookmarks.filter(
           (bookmark, _) => this.isPriceTracked_(bookmark));
     }
-    this.sortBookmarks_(shownBookmarks);
-    return shownBookmarks;
+    const sortChangedPosition = this.sortBookmarks_(shownBookmarks);
+    if (sortChangedPosition) {
+      this.shownBookmarks_ = shownBookmarks.slice();
+    } else {
+      this.shownBookmarks_ = shownBookmarks;
+    }
   }
 
-  private sortBookmarks_(bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+  /**
+   * Apply the current active sort type to the given bookmarks list. Returns
+   * true if any elements in the list changed position.
+   */
+  private sortBookmarks_(bookmarks: chrome.bookmarks.BookmarkTreeNode[]):
+      boolean {
     const activeSortIndex = this.activeSortIndex_;
+    let changedPosition = false;
     bookmarks.sort(function(
         a: chrome.bookmarks.BookmarkTreeNode,
         b: chrome.bookmarks.BookmarkTreeNode) {
@@ -218,17 +247,38 @@ export class PowerBookmarksListElement extends PolymerElement {
       if (a.children && !b.children) {
         return -1;
       } else if (!a.children && b.children) {
+        changedPosition = true;
         return 1;
       } else {
+        let toReturn;
         if (activeSortIndex === 0) {
           // Newest first
-          return b.dateAdded! - a.dateAdded!;
-        } else {
+          toReturn = b.dateAdded! - a.dateAdded!;
+        } else if (activeSortIndex === 1) {
           // Oldest first
-          return a.dateAdded! - b.dateAdded!;
+          toReturn = a.dateAdded! - b.dateAdded!;
+        } else if (activeSortIndex === 2) {
+          // Alphabetical
+          toReturn = a.title!.localeCompare(b.title);
+        } else {
+          // Reverse alphabetical
+          toReturn = b.title!.localeCompare(a.title);
         }
+        if (toReturn > 0) {
+          changedPosition = true;
+        }
+        return toReturn;
       }
     });
+    return changedPosition;
+  }
+
+  private getSortMenuItemLabel_(sortType: string): string {
+    return loadTimeData.getStringF('sortByType', sortType);
+  }
+
+  private sortMenuItemIsSelected_(sortType: string): boolean {
+    return this.sortTypes_[this.activeSortIndex_] === sortType;
   }
 
   /**
@@ -272,6 +322,8 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Toggles the given label between active and inactive.
    */
   private onLabelClicked_(event: DomRepeatEvent<Label>) {
+    event.preventDefault();
+    event.stopPropagation();
     const label = event.model.item;
     this.set(`labels_.${event.model.index}.active`, !label.active);
   }
@@ -281,6 +333,19 @@ export class PowerBookmarksListElement extends PolymerElement {
    */
   private onBackClicked_() {
     this.pop('activeFolderPath_');
+  }
+
+  private onShowSortMenuClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.sortMenu.showAt(event.target as HTMLElement);
+  }
+
+  private onSortTypeClicked_(event: DomRepeatEvent<string>) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.sortMenu.close();
+    this.activeSortIndex_ = event.model.index;
   }
 
   /**
