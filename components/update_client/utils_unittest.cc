@@ -7,9 +7,14 @@
 #include <iterator>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+#endif  // BUILDFLAG(IS_WIN)
 
 using std::string;
 
@@ -203,6 +208,22 @@ TEST(UpdateClientUtils, ToInstallerResult) {
   const auto result4 = ToInstallerResult(EnumB::ENTRY1, 20000);
   EXPECT_EQ(101, result4.error);
   EXPECT_EQ(20000, result4.extended_error);
+}
+
+TEST(UpdateClientUtils, CreateSecureTempDirectory) {
+  base::FilePath temp_dir;
+  EXPECT_TRUE(
+      CreateSecureTempDirectory(FILE_PATH_LITERAL("update_client"), &temp_dir));
+
+  base::ScopedTempDir temp_dir_owner;
+  EXPECT_TRUE(temp_dir_owner.Set(temp_dir));
+
+#if BUILDFLAG(IS_WIN)
+  base::FilePath program_files_dir;
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files_dir));
+  EXPECT_EQ(program_files_dir.IsParent(temp_dir), !!::IsUserAnAdmin());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace update_client

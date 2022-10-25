@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -32,6 +33,10 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace update_client {
 
@@ -156,6 +161,23 @@ base::Value ReadManifest(const base::FilePath& unpack_path) {
   if (!root)
     return base::Value();
   return base::Value::FromUniquePtrValue(std::move(root));
+}
+
+bool CreateSecureTempDirectory(const base::FilePath::StringType& prefix,
+                               base::FilePath* temp_dir) {
+  DCHECK(temp_dir);
+
+#if BUILDFLAG(IS_WIN)
+  const int path_key =
+      ::IsUserAnAdmin() ? int{base::DIR_PROGRAM_FILES} : int{base::DIR_TEMP};
+#else   // BUILDFLAG(IS_WIN)
+  const int path_key = base::DIR_TEMP;
+#endif  // BUILDFLAG(IS_WIN)
+
+  base::FilePath parent_dir;
+  return base::PathService::Get(path_key, &parent_dir)
+             ? base::CreateTemporaryDirInDir(parent_dir, prefix, temp_dir)
+             : false;
 }
 
 }  // namespace update_client

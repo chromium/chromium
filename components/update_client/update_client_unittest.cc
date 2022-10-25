@@ -39,6 +39,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_client_internal.h"
 #include "components/update_client/update_engine.h"
+#include "components/update_client/utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,7 +57,7 @@ using base::FilePath;
 bool MakeTestFile(const FilePath& from_path, FilePath* to_path) {
   FilePath temp_dir;
   bool result =
-      CreateNewTempDirectory(FILE_PATH_LITERAL("update_client"), &temp_dir);
+      CreateSecureTempDirectory(FILE_PATH_LITERAL("update_client"), &temp_dir);
   if (!result)
     return false;
 

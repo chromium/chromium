@@ -24,6 +24,7 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/utils.h"
 
 namespace update_client {
 
@@ -79,8 +80,9 @@ bool ComponentUnpacker::Verify() {
 bool ComponentUnpacker::BeginUnzipping() {
   // Mind the reference to non-const type, passed as an argument below.
   base::FilePath& destination = is_delta_ ? unpack_diff_path_ : unpack_path_;
-  if (!base::CreateNewTempDirectory(base::FilePath::StringType(),
-                                    &destination)) {
+  if (!CreateSecureTempDirectory(
+          FILE_PATH_LITERAL("chrome_ComponentUnpacker_BeginUnzipping"),
+          &destination)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
     error_ = UnpackerError::kUnzipPathError;
     return false;
@@ -105,8 +107,9 @@ void ComponentUnpacker::EndUnzipping(bool result) {
 void ComponentUnpacker::BeginPatching() {
   if (is_delta_) {  // Package is a diff package.
     // Use a different temp directory for the patch output files.
-    if (!base::CreateNewTempDirectory(base::FilePath::StringType(),
-                                      &unpack_path_)) {
+    if (!CreateSecureTempDirectory(
+            FILE_PATH_LITERAL("chrome_ComponentUnpacker_BeginPatching"),
+            &unpack_path_)) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&ComponentUnpacker::EndPatching, this,
                                     UnpackerError::kUnzipPathError, 0));
