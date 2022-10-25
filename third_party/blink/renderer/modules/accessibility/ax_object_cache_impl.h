@@ -670,6 +670,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   std::unique_ptr<AXRelationCache> relation_cache_;
 
   bool processing_deferred_events_ = false;
+#if DCHECK_IS_ON()
+  bool updating_layout_and_ax_ = false;
+#endif
 
   // Verified when finalizing.
   bool has_been_disposed_ = false;

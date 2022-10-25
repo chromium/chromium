@@ -719,9 +719,13 @@ void AXObjectCacheImpl::UpdateLifecycleIfNeeded(Document& document) {
 }
 
 void AXObjectCacheImpl::UpdateAXForAllDocuments() {
+#if DCHECK_IS_ON()
   DCHECK(!IsFrozen())
       << "Don't call UpdateAXForAllDocuments() here; layout and a11y are "
          "already clean at the start of serialization.";
+  DCHECK(!updating_layout_and_ax_) << "Undesirable recursion.";
+  base::AutoReset<bool> updating(&updating_layout_and_ax_, true);
+#endif
 
   // First update the layout for the main and popup document.
   UpdateLifecycleIfNeeded(GetDocument());
@@ -2466,11 +2470,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
   DCHECK_EQ(document, GetDocument());
 
-  if (processing_deferred_events_) {
-    // TODO(aleventhal) Perhaps the caller should be responsible for this:
-    // consider changing to a DCHECK.
-    return;
-  }
+  DCHECK(!processing_deferred_events_);
 
   if (IsDirty()) {
     if (GetPopupDocumentIfShowing()) {
@@ -2915,7 +2915,6 @@ void AXObjectCacheImpl::FireAXEventImmediately(
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents) {
 #if DCHECK_IS_ON()
-  DCHECK(processing_deferred_events_);
   // Make sure none of the layout views are in the process of being laid out.
   // Notifications should only be sent after the layoutObject has finished
   auto* ax_layout_object = DynamicTo<AXLayoutObject>(obj);
