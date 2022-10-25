@@ -75,8 +75,10 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemProperties) {
   // Check that the banner image is at the top of the stack view.
   UIStackView* stack_view = base::mac::ObjCCastStrict<UIStackView>(
       banner_cell.contentView.subviews[0]);
+  UIView* banner_view =
+      base::mac::ObjCCastStrict<UIView>(stack_view.arrangedSubviews[0]);
   UIImageView* banner_image_view =
-      base::mac::ObjCCastStrict<UIImageView>(stack_view.arrangedSubviews[0]);
+      base::mac::ObjCCastStrict<UIImageView>(banner_view.subviews[0]);
   EXPECT_NSEQ([ChromeIcon searchIcon], banner_image_view.image);
 }
 
@@ -137,7 +139,9 @@ TEST_F(WhatsNewTableViewBannerItemTest, ItemPropertiesBannerAtBottom) {
   UIStackView* stack_view = base::mac::ObjCCastStrict<UIStackView>(
       banner_cell.contentView.subviews[0]);
   int stack_view_size = [stack_view.arrangedSubviews count];
-  UIImageView* banner_image_view = base::mac::ObjCCastStrict<UIImageView>(
+  UIView* banner_view = base::mac::ObjCCastStrict<UIView>(
       stack_view.arrangedSubviews[stack_view_size - 1]);
+  UIImageView* banner_image_view =
+      base::mac::ObjCCastStrict<UIImageView>(banner_view.subviews[0]);
   EXPECT_NSEQ([ChromeIcon searchIcon], banner_image_view.image);
 }
