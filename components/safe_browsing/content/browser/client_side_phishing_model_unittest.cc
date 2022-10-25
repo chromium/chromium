@@ -132,8 +132,10 @@ TEST(ClientSidePhishingModelTest, NotifiesForFile) {
   const std::string file_contents = "visual model file";
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
 
+  ClientSideModel model;
+  model.set_max_words_per_term(0);  // Required field.
   ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-      "", std::move(file));
+      model.SerializeAsString(), std::move(file));
 
   run_loop.Run();
 
@@ -182,8 +184,10 @@ TEST(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
   const std::string file_contents = "visual model file";
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
 
+  ClientSideModel model;
+  model.set_max_words_per_term(0);  // Required field.
   ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-      "", std::move(file));
+      model.SerializeAsString(), std::move(file));
 
   run_loop.RunUntilIdle();
 
