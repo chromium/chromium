@@ -8470,8 +8470,6 @@ domain Page
       Activated
       Destroyed
       LowEndDevice
-      CrossOriginRedirect
-      CrossOriginNavigation
       InvalidSchemeRedirect
       InvalidSchemeNavigation
       InProgressNavigation
@@ -8508,6 +8506,12 @@ domain Page
       InactivePageRestriction
       StartFailed
       TimeoutBackgrounded
+      CrossSiteRedirect
+      CrossSiteNavigation
+      SameSiteCrossOriginRedirect
+      SameSiteCrossOriginNavigation
+      SameSiteCrossOriginRedirectNotOptIn
+      SameSiteCrossOriginNavigationNotOptIn
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

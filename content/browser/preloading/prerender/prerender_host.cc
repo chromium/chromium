@@ -904,8 +904,6 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
       return;
     case PrerenderFinalStatus::kDestroyed:
     case PrerenderFinalStatus::kLowEndDevice:
-    case PrerenderFinalStatus::kCrossOriginRedirect:
-    case PrerenderFinalStatus::kCrossOriginNavigation:
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
     case PrerenderFinalStatus::kInProgressNavigation:
@@ -938,6 +936,12 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kInactivePageRestriction:
     case PrerenderFinalStatus::kStartFailed:
     case PrerenderFinalStatus::kTimeoutBackgrounded:
+    case PrerenderFinalStatus::kCrossSiteNavigation:
+    case PrerenderFinalStatus::kCrossSiteRedirect:
+    case PrerenderFinalStatus::kSameSiteCrossOriginRedirect:
+    case PrerenderFinalStatus::kSameSiteCrossOriginNavigation:
+    case PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn:
+    case PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       // We reset the attempt to ensure we don't update once we have reported it
       // as failure or accidentally use it for any other prerender attempts as

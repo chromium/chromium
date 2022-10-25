@@ -81092,6 +81092,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="41" label="kInactivePageRestriction"/>
   <int value="42" label="kStartFailed"/>
   <int value="43" label="kTimeoutBackgrounded"/>
+  <int value="44" label="kCrossSiteRedirect"/>
+  <int value="45" label="kCrossSiteNavigation"/>
+  <int value="46" label="kSameSiteCrossOriginRedirect"/>
+  <int value="47" label="kSameSiteCrossOriginNavigation"/>
+  <int value="48" label="kSameSiteCrossOriginRedirectNotOptIn"/>
+  <int value="49" label="kSameSiteCrossOriginNavigationNotOptIn"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

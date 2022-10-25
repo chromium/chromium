@@ -212,33 +212,28 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     // Skip the same-origin check for non-redirected cases as the initiator
     // origin is nullopt for browser-initiated prerendering.
     DCHECK(!prerender_host->initiator_origin().has_value());
+  } else if (!prerender_navigation_utils::IsSameSite(
+                 prerendering_url,
+                 prerender_host->initiator_origin().value())) {
+    // Cancel prerendering if this is cross-site prerendering, cross-site
+    // redirection during prerendering, or cross-site navigation from a
+    // prerendered page.
+    prerender_host_registry->CancelHost(
+        frame_tree_node->frame_tree_node_id(),
+        is_redirection ? PrerenderFinalStatus::kCrossSiteRedirect
+                       : PrerenderFinalStatus::kCrossSiteNavigation);
+    return CANCEL;
   } else if (prerendering_origin != prerender_host->initiator_origin()) {
     if (blink::features::
             IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled()) {
-      // Cancel prerendering if this is cross-site prerendering, cross-site
-      // redirection during prerendering, or cross-site navigation from a
-      // prerendered page.
-      if (!prerender_navigation_utils::IsSameSite(
-              prerendering_url, prerender_host->initiator_origin().value())) {
-        // TODO(crbug.com/1176054): Add status for cross site navigations and
-        // redirections.
-        prerender_host_registry->CancelHost(
-            frame_tree_node->frame_tree_node_id(),
-            is_redirection ? PrerenderFinalStatus::kCrossOriginRedirect
-                           : PrerenderFinalStatus::kCrossOriginNavigation);
-        return CANCEL;
-      }
-
       is_same_site_cross_origin_prerender_ = true;
       same_site_cross_origin_prerender_did_redirect_ = is_redirection;
     } else {
-      // Cancel prerendering if this is cross-origin prerendering, cross-origin
-      // redirection during prerendering, or cross-origin navigation from a
-      // prerendered page.
       prerender_host_registry->CancelHost(
           frame_tree_node->frame_tree_node_id(),
-          is_redirection ? PrerenderFinalStatus::kCrossOriginRedirect
-                         : PrerenderFinalStatus::kCrossOriginNavigation);
+          is_redirection
+              ? PrerenderFinalStatus::kSameSiteCrossOriginRedirect
+              : PrerenderFinalStatus::kSameSiteCrossOriginNavigation);
       return CANCEL;
     }
   }
@@ -276,8 +271,8 @@ PrerenderNavigationThrottle::WillProcessResponse() {
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
         same_site_cross_origin_prerender_did_redirect_
-            ? PrerenderFinalStatus::kCrossOriginRedirect
-            : PrerenderFinalStatus::kCrossOriginNavigation);
+            ? PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn
+            : PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn);
     return CANCEL;
   }
 

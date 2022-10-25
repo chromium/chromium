@@ -11,8 +11,9 @@ enum class PrerenderFinalStatus {
   kActivated = 0,
   kDestroyed = 1,
   kLowEndDevice = 2,
-  kCrossOriginRedirect = 3,
-  kCrossOriginNavigation = 4,
+  // These have been broken down into SameSiteCrossOrigin and CrossSite for
+  // better understanding of the metrics. kCrossOriginRedirect = 3,
+  // kCrossOriginNavigation = 4,
   kInvalidSchemeRedirect = 5,
   kInvalidSchemeNavigation = 6,
   kInProgressNavigation = 7,
@@ -58,7 +59,13 @@ enum class PrerenderFinalStatus {
   kInactivePageRestriction = 41,
   kStartFailed = 42,
   kTimeoutBackgrounded = 43,
-  kMaxValue = kTimeoutBackgrounded,
+  kCrossSiteRedirect = 44,
+  kCrossSiteNavigation = 45,
+  kSameSiteCrossOriginRedirect = 46,
+  kSameSiteCrossOriginNavigation = 47,
+  kSameSiteCrossOriginRedirectNotOptIn = 48,
+  kSameSiteCrossOriginNavigationNotOptIn = 49,
+  kMaxValue = kSameSiteCrossOriginNavigationNotOptIn,
 };
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_

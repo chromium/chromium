@@ -19,10 +19,6 @@ const char* FinalStatusToString(PrerenderFinalStatus final_status) {
       return "Destroyed";
     case PrerenderFinalStatus::kLowEndDevice:
       return "LowEndDevice";
-    case PrerenderFinalStatus::kCrossOriginRedirect:
-      return "CrossOriginRedirect";
-    case PrerenderFinalStatus::kCrossOriginNavigation:
-      return "CrossOriginNavigation";
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
       return "InvalidSchemeRedirect";
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
@@ -91,6 +87,18 @@ const char* FinalStatusToString(PrerenderFinalStatus final_status) {
       return "StartFailed";
     case PrerenderFinalStatus::kTimeoutBackgrounded:
       return "TimeoutBackgrounded";
+    case PrerenderFinalStatus::kCrossSiteRedirect:
+      return "CrossSiteRedirect";
+    case PrerenderFinalStatus::kCrossSiteNavigation:
+      return "CrossSiteNavigation";
+    case PrerenderFinalStatus::kSameSiteCrossOriginRedirect:
+      return "SameSiteCrossOriginRedirect";
+    case PrerenderFinalStatus::kSameSiteCrossOriginNavigation:
+      return "SameSiteCrossOriginNavigation";
+    case PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn:
+      return "SameSiteCrossOriginRedirectNotOptIn";
+    case PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn:
+      return "SameSiteCrossOriginNavigationNotOptIn";
   }
   NOTREACHED();
   return "";

@@ -155,28 +155,27 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // browser (not by a renderer using Speculation Rules API). In that case,
     // skip the  same-site and same-origin check.
     if (!attributes.IsBrowserInitiated()) {
-      if (blink::features::
-              IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled()) {
-        if (!prerender_navigation_utils::IsSameSite(
-                attributes.prerendering_url,
-                attributes.initiator_origin.value())) {
-          RecordPrerenderFinalStatus(
-              PrerenderFinalStatus::kCrossOriginNavigation, attributes,
-              ukm::kInvalidSourceId);
-          if (attempt)
-            attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
-          return RenderFrameHost::kNoFrameTreeNodeId;
-        }
-      } else {
-        if (!attributes.initiator_origin.value().IsSameOriginWith(
-                attributes.prerendering_url)) {
-          RecordPrerenderFinalStatus(
-              PrerenderFinalStatus::kCrossOriginNavigation, attributes,
-              ukm::kInvalidSourceId);
-          if (attempt)
-            attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
-          return RenderFrameHost::kNoFrameTreeNodeId;
-        }
+      if (!prerender_navigation_utils::IsSameSite(
+              attributes.prerendering_url,
+              attributes.initiator_origin.value())) {
+        RecordPrerenderFinalStatus(PrerenderFinalStatus::kCrossSiteNavigation,
+                                   attributes, ukm::kInvalidSourceId);
+
+        if (attempt)
+          attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
+        return RenderFrameHost::kNoFrameTreeNodeId;
+      } else if (
+          !blink::features::
+              IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled() &&
+          !attributes.initiator_origin.value().IsSameOriginWith(
+              attributes.prerendering_url)) {
+        RecordPrerenderFinalStatus(
+            PrerenderFinalStatus::kSameSiteCrossOriginNavigation, attributes,
+            ukm::kInvalidSourceId);
+
+        if (attempt)
+          attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
+        return RenderFrameHost::kNoFrameTreeNodeId;
       }
     }
 
