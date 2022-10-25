@@ -9,27 +9,38 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
+#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/api_bindings/manager.h"
+#include "components/cast_receiver/browser/bindings_message_port_connector.h"
 #include "components/cast_receiver/common/public/status.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
-#include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 
 namespace chromecast {
 
 class MessagePortService;
 
-// This class will be initialized with a set of bindings received over gRPC and
-// will inject them into the app's CastWebContents when the page loads.  It then
-// handles connecting PortConnector requests from those bindings by making gRPC
-// ApiBindings requests to Cast Core.  There should be one instance of this
-// class for a single CastWebContents.
-class BindingsManagerWebRuntime final : public cast_api_bindings::Manager,
-                                        public chromecast::mojom::ApiBindings {
+// This class will be initialized with a set of bindings received during
+// application launch and injects them into the app's WebContents when the page
+// loads. It then handles connecting PortConnector requests from those bindings
+// by making requests to a MessagePort instance. There should be one instance of
+// this class for a single WebContents.
+class BindingsManagerWebRuntime final
+    : public cast_api_bindings::Manager,
+      public cast_receiver::BindingsMessagePortConnector::Client {
  public:
-  explicit BindingsManagerWebRuntime(
+  // Handles callbacks for state changes in this object.
+  class Client {
+   public:
+    virtual ~Client();
+
+    // Called when a non-recoverable error occurs.
+    virtual void OnError() = 0;
+  };
+
+  BindingsManagerWebRuntime(
+      Client& client,
       std::unique_ptr<MessagePortService> message_port_service);
   ~BindingsManagerWebRuntime() override;
 
@@ -42,30 +53,34 @@ class BindingsManagerWebRuntime final : public cast_api_bindings::Manager,
   void AddBinding(base::StringPiece binding_script);
   cast_receiver::Status HandleMessage(cast::web::Message message);
 
-  // Returns a mojo::PendingRemote bound to |this|.
-  // At most one bound remote can exist at the same time.
-  mojo::PendingRemote<mojom::ApiBindings> CreateRemote();
+  // Configures the |message_port_connector_| for use with this |web_contents|
+  // and connects it to the bindings service.
+  void ConfigureWebContents(content::WebContents* web_contents);
 
  private:
-  // Callback invoked when client of mojom::ApiBindings disconnects.
-  void OnMojoClientDisconnected();
+  // BindingsMessagePortConnector::Client overrides.
+  std::vector<ApiBinding> GetAllBindings() override;
+  void Connect(const std::string& port_name,
+               blink::MessagePortDescriptor port) override;
+  void OnError() override;
 
   // cast_api_bindings::Manager overrides.
   void AddBinding(base::StringPiece binding_name,
                   base::StringPiece binding_script) override;
 
-  // chromecast::mojom::ApiBindings implementation.
-  void GetAll(GetAllCallback callback) override;
-  void Connect(const std::string& port_name,
-               blink::MessagePortDescriptor port) override;
-
   int next_script_id_{0};
+
   // Stores all bindings, keyed on the string-based IDs provided by the
   // ApiBindings interface.
   std::map<std::string, std::string> bindings_;
-  mojo::Receiver<mojom::ApiBindings> receiver_{this};
+
+  // Used to open a MessageChannel for connecting API bindings.
+  std::unique_ptr<cast_receiver::BindingsMessagePortConnector>
+      message_port_connector_;
 
   std::unique_ptr<MessagePortService> message_port_service_;
+
+  base::raw_ref<Client> client_;
 };
 
 }  // namespace chromecast

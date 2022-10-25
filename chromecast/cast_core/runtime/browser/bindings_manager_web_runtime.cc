@@ -13,13 +13,15 @@
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/blink_message_port_adapter.h"
 #include "components/cast/message_port/platform_message_port.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromecast {
 
+BindingsManagerWebRuntime::Client::~Client() = default;
+
 BindingsManagerWebRuntime::BindingsManagerWebRuntime(
+    Client& client,
     std::unique_ptr<MessagePortService> message_port_service)
-    : message_port_service_(std::move(message_port_service)) {}
+    : message_port_service_(std::move(message_port_service)), client_(client) {}
 
 BindingsManagerWebRuntime::~BindingsManagerWebRuntime() = default;
 
@@ -33,21 +35,19 @@ cast_receiver::Status BindingsManagerWebRuntime::HandleMessage(
   return message_port_service_->HandleMessage(std::move(message));
 }
 
-mojo::PendingRemote<mojom::ApiBindings>
-BindingsManagerWebRuntime::CreateRemote() {
-  DCHECK(!receiver_.is_bound());
+void BindingsManagerWebRuntime::ConfigureWebContents(
+    content::WebContents* web_contents) {
+  DCHECK(!message_port_connector_);
 
-  mojo::PendingRemote<mojom::ApiBindings> pending_remote =
-      receiver_.BindNewPipeAndPassRemote();
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&BindingsManagerWebRuntime::OnMojoClientDisconnected,
-                     base::Unretained(this)));
-
-  return pending_remote;
+  message_port_connector_ =
+      std::make_unique<cast_receiver::BindingsMessagePortConnector>(
+          web_contents, *this);
+  message_port_connector_->ConnectToBindingsService();
 }
 
-void BindingsManagerWebRuntime::OnMojoClientDisconnected() {
-  receiver_.reset();
+void BindingsManagerWebRuntime::OnError() {
+  message_port_connector_.reset();
+  client_->OnError();
 }
 
 void BindingsManagerWebRuntime::AddBinding(base::StringPiece binding_name,
@@ -55,14 +55,14 @@ void BindingsManagerWebRuntime::AddBinding(base::StringPiece binding_name,
   bindings_[std::string(binding_name)] = std::string(binding_script);
 }
 
-void BindingsManagerWebRuntime::GetAll(GetAllCallback callback) {
-  std::vector<chromecast::mojom::ApiBindingPtr> bindings_vector;
-  for (auto& bindings_name_and_script : bindings_) {
-    auto api_binding =
-        chromecast::mojom::ApiBinding::New(bindings_name_and_script.second);
-    bindings_vector.emplace_back(std::move(api_binding));
+std::vector<cast_receiver::BindingsMessagePortConnector::Client::ApiBinding>
+BindingsManagerWebRuntime::GetAllBindings() {
+  std::vector<ApiBinding> bindings_vector;
+  for (auto& [name, script] : bindings_) {
+    ApiBinding api_binding{script};
+    bindings_vector.push_back(std::move(api_binding));
   }
-  std::move(callback).Run(std::move(bindings_vector));
+  return bindings_vector;
 }
 
 void BindingsManagerWebRuntime::Connect(const std::string& port_name,

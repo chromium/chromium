@@ -19,6 +19,7 @@ class CastWebService;
 
 class WebRuntimeApplication final : public RuntimeApplicationBase,
                                     public content::WebContentsObserver,
+                                    public BindingsManagerWebRuntime::Client,
                                     public cast_receiver::PageStateObserver {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
@@ -48,6 +49,9 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
       const MediaPlayerInfo& video_type,
       const content::MediaPlayerId& id,
       content::WebContentsObserver::MediaStoppedReason reason) override;
+
+  // BindingsManagerWebRuntime::Client implementation:
+  void OnError() override;
 
   const GURL app_url_;
   std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;

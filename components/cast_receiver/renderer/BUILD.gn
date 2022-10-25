@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_win) {
+  source_set("renderer") {
+    deps = [ "//components/on_load_script_injector/renderer" ]
+    public = [ "public/content_renderer_client_mixins.h" ]
+    sources = [ "content_renderer_client_mixins.cc" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = []
+  sources = []
+
+  if (!is_win) {
+    deps += [ ":renderer" ]
+  }
+}

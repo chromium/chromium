@@ -1,0 +1,3 @@
+include_rules = [
+  "+components/on_load_script_injector/renderer",
+]

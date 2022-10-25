@@ -15,6 +15,8 @@ class ResourceProvider;
 
 namespace chromecast {
 
+// TODO(crbug.com/1359580): Use code from //components/cast_receiver/renderer
+// instead of relying on CastContentRendererClient.
 class CastRuntimeContentRendererClient
     : public shell::CastContentRendererClient {
  public:

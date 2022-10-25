@@ -6,5 +6,8 @@ import("//build/buildflag_header.gni")
 
 source_set("unit_tests") {
   testonly = true
-  deps = [ "//components/cast_receiver/browser:unit_tests" ]
+  deps = [
+    "//components/cast_receiver/browser:unit_tests",
+    "//components/cast_receiver/renderer:unit_tests",
+  ]
 }

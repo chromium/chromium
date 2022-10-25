@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
+
 source_set("browser") {
   deps = [ "//base" ]
   public = [
@@ -26,6 +28,26 @@ source_set("page_state_observer") {
   ]
 }
 
+# TODO(crbug.com/1359579): Limit visibility to just this component.
+if (enable_cast_receiver || is_fuchsia) {
+  source_set("runtime") {
+    public_deps = [ "//third_party/blink/public/common" ]
+    deps = [
+      ":page_state_observer",
+      "//base",
+      "//components/cast/message_port:message_port_cast",
+      "//components/cast/named_message_port_connector",
+      "//components/on_load_script_injector/browser",
+      "//content",
+      "//ui/base",
+    ]
+    sources = [
+      "bindings_message_port_connector.cc",
+      "bindings_message_port_connector.h",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
@@ -37,4 +59,8 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
   ]
   sources = [ "application_client_unittest.cc" ]
+
+  if (enable_cast_receiver || is_fuchsia) {
+    deps += [ ":runtime" ]
+  }
 }
