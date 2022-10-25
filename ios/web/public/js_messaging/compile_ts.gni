@@ -16,6 +16,10 @@ import("//tools/typescript/ts_library.gni")
 #   allow_js (optional):
 #     Whether or not JavaScript files are allowed. Defaults to false.
 #
+#   deps (optional):
+#     The dependent targets which produce typescript compiler manifest files.
+#     These manifest files will be used to resolve script imports.
+#
 template("compile_ts") {
   assert(defined(invoker.sources), "sources must be set")
 

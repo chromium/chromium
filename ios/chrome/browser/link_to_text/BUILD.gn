@@ -71,11 +71,11 @@ source_set("unit_tests") {
 compile_ts("compile_link_to_text_js") {
   allow_js = true
   sources = [
-    "//ios/web/public/js_messaging/resources/gcrweb.ts",
     "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "resources/link_to_text.ts",
   ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 optimize_js("link_to_text_js") {
@@ -86,5 +86,8 @@ optimize_js("link_to_text_js") {
 
   sources = _script
 
-  deps = [ ":compile_link_to_text_js" ]
+  deps = [
+    ":compile_link_to_text_js",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
