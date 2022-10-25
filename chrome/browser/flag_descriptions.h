@@ -2111,9 +2111,6 @@ extern const char kMessagesForAndroidChromeSurveyDescription[];
 extern const char kMessagesForAndroidInfrastructureName[];
 extern const char kMessagesForAndroidInfrastructureDescription[];
 
-extern const char kMessagesForAndroidInstantAppsName[];
-extern const char kMessagesForAndroidInstantAppsDescription[];
-
 extern const char kMessagesForAndroidNearOomReductionName[];
 extern const char kMessagesForAndroidNearOomReductionDescription[];
 

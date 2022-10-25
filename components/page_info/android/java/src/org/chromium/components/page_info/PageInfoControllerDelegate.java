@@ -4,7 +4,6 @@
 
 package org.chromium.components.page_info;
 
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
@@ -80,24 +79,10 @@ public abstract class PageInfoControllerDelegate {
     public abstract ModalDialogManager getModalDialogManager();
 
     /**
-     * Returns whether or not an instant app is available for |url|.
-     */
-    public boolean isInstantAppAvailable(String url) {
-        return false;
-    }
-
-    /**
      * Returns whether LiteMode https image compression was applied on this page
      */
     public boolean isHttpsImageCompressionApplied() {
         return mIsHttpsImageCompressionApplied;
-    }
-
-    /**
-     * Gets the instant app intent for the given URL if one exists.
-     */
-    public Intent getInstantAppIntentForUrl(String url) {
-        return null;
     }
 
     /**

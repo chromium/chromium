@@ -787,8 +787,6 @@ static_library("ui") {
       "android/infobars/generated_password_saved_infobar.h",
       "android/infobars/infobar_container_android.cc",
       "android/infobars/infobar_container_android.h",
-      "android/infobars/instant_apps_infobar.cc",
-      "android/infobars/instant_apps_infobar.h",
       "android/infobars/near_oom_infobar.cc",
       "android/infobars/near_oom_infobar.h",
       "android/infobars/near_oom_reduction_infobar.cc",

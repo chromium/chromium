@@ -135,8 +135,6 @@ public class MessagesMetrics {
                 return "VrServicesUpgrade";
             case MessageIdentifier.AR_CORE_UPGRADE:
                 return "ArCoreUpgrade";
-            case MessageIdentifier.INSTANT_APPS:
-                return "InstantApps";
             case MessageIdentifier.ABOUT_THIS_SITE:
                 return "AboutThisSite";
             case MessageIdentifier.TRANSLATE:

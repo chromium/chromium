@@ -60,17 +60,6 @@
         android:visibility="gone" />
 
     <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/page_info_instant_app_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
-        android:paddingHorizontal="@dimen/page_info_popup_button_padding_sides"
-        android:text="@string/page_info_instant_app_button"
-        app:buttonColor="@color/app_banner_install_button_bg"
-        style="@style/FilledButton" />
-
-    <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/page_info_open_online_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

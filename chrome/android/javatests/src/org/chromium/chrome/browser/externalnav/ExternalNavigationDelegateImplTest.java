@@ -25,7 +25,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
@@ -64,9 +63,6 @@ public class ExternalNavigationDelegateImplTest {
             + Uri.encode("https://www.example.com") + ";"
             + "S." + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL + "="
             + Uri.encode("https://www.example.com") + ";end";
-    private static final String[] SUPERVISOR_START_ACTIONS = {
-            "com.google.android.instantapps.START", "com.google.android.instantapps.nmr1.INSTALL",
-            "com.google.android.instantapps.nmr1.VIEW"};
     private static final boolean IS_GOOGLE_REFERRER = true;
 
     @Rule
@@ -164,22 +160,6 @@ public class ExternalNavigationDelegateImplTest {
         Assert.assertTrue(
                 intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
         Assert.assertEquals(url, IntentHandler.getPendingIncognitoUrl());
-    }
-
-    @Test
-    @SmallTest
-    public void testMaybeAdjustInstantAppExtras() {
-        String url = "http://www.example.com";
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
-
-        mExternalNavigationDelegateImpl.maybeAdjustInstantAppExtras(
-                intent, /*isIntentToInstantApp=*/true);
-        Assert.assertTrue(intent.hasExtra(InstantAppsHandler.IS_GOOGLE_SEARCH_REFERRER));
-
-        mExternalNavigationDelegateImpl.maybeAdjustInstantAppExtras(
-                intent, /*isIntentToInstantApp=*/false);
-        Assert.assertFalse(intent.hasExtra(InstantAppsHandler.IS_GOOGLE_SEARCH_REFERRER));
     }
 
     @Test

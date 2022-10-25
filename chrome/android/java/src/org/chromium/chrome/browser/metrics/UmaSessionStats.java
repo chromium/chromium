@@ -14,17 +14,13 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
@@ -63,17 +59,6 @@ public class UmaSessionStats {
         UmaSessionStatsJni.get().recordPageLoaded(isDesktopUserAgent);
         if (mKeyboardConnected) {
             UmaSessionStatsJni.get().recordPageLoadedWithKeyboard();
-        }
-
-        GURL url = tab.getUrl();
-        if (UrlUtilities.isHttpOrHttps(url)) {
-            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-                boolean isEligible =
-                        InstantAppsHandler.getInstance().getInstantAppIntentForUrl(url.getSpec())
-                        != null;
-                RecordHistogram.recordBooleanHistogram(
-                        "Android.InstantApps.EligiblePageLoaded", isEligible);
-            });
         }
 
         // If the session has ended (i.e. chrome is in the background), escape early. Ideally we

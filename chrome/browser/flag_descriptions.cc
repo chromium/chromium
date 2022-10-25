@@ -3718,10 +3718,6 @@ const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
 const char kMessagesForAndroidInfrastructureDescription[] =
     "When enabled, will initialize Messages UI infrastructure";
 
-const char kMessagesForAndroidInstantAppsName[] = "Instant Apps Messages UI";
-const char kMessagesForAndroidInstantAppsDescription[] =
-    "When enabled, instant apps prompt will use the new Messages UI.";
-
 const char kMessagesForAndroidNearOomReductionName[] =
     "Near OOM Reduction Messages UI";
 const char kMessagesForAndroidNearOomReductionDescription[] =

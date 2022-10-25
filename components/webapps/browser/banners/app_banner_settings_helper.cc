@@ -420,6 +420,7 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
     if (path_dicts.second.is_dict()) {
       base::Value* value = &path_dicts.second;
 
+      // TODO(https://crbug.com/1338016): Delete stored Instant App data.
       if (path_dicts.first == kInstantAppsKey)
         continue;
 

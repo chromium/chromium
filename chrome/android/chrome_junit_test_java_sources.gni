@@ -154,7 +154,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/incognito/IncognitoTabbedSnapshotControllerTest.java",
   "junit/src/org/chromium/chrome/browser/infobar/IPHInfoBarSupportTest.java",
   "junit/src/org/chromium/chrome/browser/init/AsyncInitTaskRunnerTest.java",
-  "junit/src/org/chromium/chrome/browser/instantapps/InstantAppsMessageDelegateTest.java",
   "junit/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunnerTest.java",
   "junit/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManagerTest.java",
   "junit/src/org/chromium/chrome/browser/javascript/WebContextFetcherTest.java",

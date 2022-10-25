@@ -25,7 +25,6 @@ import android.support.test.InstrumentationRegistry;
 import android.test.mock.MockPackageManager;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -44,7 +43,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -89,11 +87,9 @@ public class ExternalNavigationHandlerTest {
     private static final int START_FILE = 0x4;
     private static final int START_OTHER_ACTIVITY = 0x10;
     private static final int INTENT_SANITIZATION_EXCEPTION = 0x20;
-    private static final int PROXY_FOR_INSTANT_APPS = 0x40;
 
     private static final boolean IS_CUSTOM_TAB_INTENT = true;
     private static final boolean SEND_TO_EXTERNAL_APPS = true;
-    private static final boolean HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY = true;
     private static final boolean INTENT_STARTED_TASK = true;
 
     private static final String SELF_PACKAGE_NAME = "test.app.name";
@@ -179,8 +175,6 @@ public class ExternalNavigationHandlerTest {
             + "S.org.chromium.chrome.browser.autofill_assistant.ALLOW_APP=true;"
             + "S." + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL + "="
             + Uri.encode("https://someapp.com") + ";end";
-
-    private static final String IS_INSTANT_APP_EXTRA = "IS_INSTANT_APP";
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -885,33 +879,6 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testInstantAppsIntent_customTabRedirect() throws Exception {
-        RedirectHandler redirectHandler = RedirectHandler.create();
-        int transTypeLinkFromIntent = PageTransition.LINK | PageTransition.FROM_API;
-
-        // In Custom Tabs, if the first url is a redirect, don't allow it to intent out, unless
-        // the redirect is going to Instant Apps.
-        Intent fooIntent = Intent.parseUri("http://foo.com/", Intent.URI_INTENT_SCHEME);
-        fooIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_INSTANT_APPS, true);
-        fooIntent.setPackage(mContext.getPackageName());
-        redirectHandler.updateIntent(
-                fooIntent, IS_CUSTOM_TAB_INTENT, SEND_TO_EXTERNAL_APPS, !INTENT_STARTED_TASK);
-        redirectHandler.updateNewUrlLoading(
-                transTypeLinkFromIntent, false, false, 0, 0, false, false);
-        redirectHandler.updateNewUrlLoading(
-                transTypeLinkFromIntent, true, false, 0, 0, false, false);
-
-        mDelegate.setCanHandleWithInstantApp(true);
-        checkUrl("http://instantappenabled.com")
-                .withPageTransition(transTypeLinkFromIntent)
-                .withIsRendererInitiated(false)
-                .withIsRedirect(true)
-                .withRedirectHandler(redirectHandler)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, IGNORE);
-    }
-
-    @Test
-    @SmallTest
     public void testCCTIntentUriDoesNotFireCCTAndLoadInChrome_InIncognito() throws Exception {
         mUrlHandler.mResolveInfoContainsSelf = true;
         mDelegate.setCanLoadUrlInTab(false);
@@ -953,100 +920,19 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testInstantAppsIntent_incomingIntentRedirect() throws Exception {
-        int transTypeLinkFromIntent = PageTransition.LINK | PageTransition.FROM_API;
-        RedirectHandler redirectHandler = RedirectHandler.create();
-        Intent fooIntent =
-                Intent.parseUri("http://instantappenabled.com", Intent.URI_INTENT_SCHEME);
-        redirectHandler.updateIntent(
-                fooIntent, !IS_CUSTOM_TAB_INTENT, !SEND_TO_EXTERNAL_APPS, !INTENT_STARTED_TASK);
-        redirectHandler.updateNewUrlLoading(
-                transTypeLinkFromIntent, false, false, 0, 0, false, false);
-        redirectHandler.updateNewUrlLoading(
-                transTypeLinkFromIntent, true, false, 0, 0, false, false);
-
-        mDelegate.setCanHandleWithInstantApp(true);
-        checkUrl("http://goo.gl/1234")
-                .withPageTransition(transTypeLinkFromIntent)
-                .withIsRendererInitiated(false)
-                .withIsRedirect(true)
-                .withRedirectHandler(redirectHandler)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, IGNORE);
-
-        // URL that cannot be handled with instant apps should stay in Chrome.
-        mDelegate.setCanHandleWithInstantApp(false);
-        checkUrl("http://goo.gl/1234")
-                .withPageTransition(transTypeLinkFromIntent)
-                .withIsRendererInitiated(false)
-                .withIsRedirect(true)
-                .withRedirectHandler(redirectHandler)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-    }
-
-    @Test
-    @SmallTest
-    public void testInstantAppsIntent_handleNavigation() {
-        mDelegate.setCanHandleWithInstantApp(false);
-        checkUrl("http://maybeinstantapp.com")
-                .withPageTransition(PageTransition.LINK)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-
-        mDelegate.setCanHandleWithInstantApp(true);
-        checkUrl("http://maybeinstantapp.com")
-                .withPageTransition(PageTransition.LINK)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, IGNORE);
-    }
-
-    @Test
-    @SmallTest
-    public void testHandlingOfInstantApps() {
-        String intentUrl = "intent://buzzfeed.com/tasty#Intent;scheme=http;"
-                + "package=com.google.android.instantapps.supervisor;"
-                + "action=com.google.android.instantapps.START;"
-                + "S.com.google.android.instantapps.FALLBACK_PACKAGE="
-                + "com.android.chrome;S.com.google.android.instantapps.INSTANT_APP_PACKAGE="
-                + "com.yelp.android;S.android.intent.extra.REFERRER_NAME="
-                + "https%3A%2F%2Fwww.google.com;end";
-
-        mUrlHandler.mIsSerpReferrer = true;
-        mDelegate.setHandlesInstantAppLaunchingInternally(true);
-        checkUrl(intentUrl).expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                START_OTHER_ACTIVITY | PROXY_FOR_INSTANT_APPS);
-        Assert.assertTrue(
-                mUrlHandler.mStartActivityIntent.getBooleanExtra(IS_INSTANT_APP_EXTRA, false));
-
-        // Check that we block all instant app intent:// URLs not from SERP.
-        mUrlHandler.mIsSerpReferrer = false;
-        checkUrl(intentUrl).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-
-        // Check that that just having the SERP referrer alone doesn't cause instant app intents to
-        // launched through the proxy.
-        mUrlHandler.mIsSerpReferrer = true;
-        mDelegate.setHandlesInstantAppLaunchingInternally(false);
-        checkUrl(intentUrl).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-    }
-
-    @Test
-    @SmallTest
     public void testIsIntentToInstantApp() {
         // Check that the delegate correctly distinguishes instant app intents from others.
         String instantAppIntentUrlPrefix = "intent://buzzfeed.com/tasty#Intent;scheme=http;";
 
-        mUrlHandler.mIsSerpReferrer = true;
-        mDelegate.setHandlesInstantAppLaunchingInternally(true);
-
         // Check that Supervisor is detected by action even without package.
         for (String action : ExternalNavigationHandler.INSTANT_APP_START_ACTIONS) {
             String intentUrl = instantAppIntentUrlPrefix + "action=" + action + ";end";
-            checkUrl(intentUrl).expecting(
-                    OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                    START_OTHER_ACTIVITY | PROXY_FOR_INSTANT_APPS);
+            checkUrl(intentUrl).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
         }
 
         String intentUrl = instantAppIntentUrlPrefix
                 + "package=" + ExternalNavigationHandler.INSTANT_APP_SUPERVISOR_PKG + ";end";
-        checkUrl(intentUrl).expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                START_OTHER_ACTIVITY | PROXY_FOR_INSTANT_APPS);
+        checkUrl(intentUrl).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
     }
 
     @Test
@@ -2384,8 +2270,7 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfos = new ArrayList<ResolveInfo>();
         Assert.assertEquals(0,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(resolveInfos, packageName)
                         .size());
     }
 
@@ -2398,8 +2283,7 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfos = makeResolveInfos(info);
         Assert.assertEquals(0,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(resolveInfos, packageName)
                         .size());
     }
 
@@ -2413,8 +2297,7 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfos = makeResolveInfos(info);
         Assert.assertEquals(1,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(resolveInfos, packageName)
                         .size());
     }
 
@@ -2428,8 +2311,7 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfos = makeResolveInfos(info);
         Assert.assertEquals(1,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(resolveInfos, packageName)
                         .size());
     }
 
@@ -2443,8 +2325,7 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfos = makeResolveInfos(info);
         Assert.assertEquals(0,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(resolveInfos, packageName)
                         .size());
 
         ResolveInfo infoWildcardSubDomain = new ResolveInfo();
@@ -2453,8 +2334,8 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfosWildcardSubDomain = makeResolveInfos(infoWildcardSubDomain);
         Assert.assertEquals(1,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(resolveInfosWildcardSubDomain,
-                                packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(
+                                resolveInfosWildcardSubDomain, packageName)
                         .size());
     }
 
@@ -2470,8 +2351,7 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfos = makeResolveInfos(info);
         Assert.assertEquals(1,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(resolveInfos, packageName)
                         .size());
     }
 
@@ -2487,39 +2367,7 @@ public class ExternalNavigationHandlerTest {
         List<ResolveInfo> resolveInfos = makeResolveInfos(info);
         Assert.assertEquals(0,
                 ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
-                        .size());
-    }
-
-    @Test
-    @SmallTest
-    public void testIsPackageSpecializeHandler_withEphemeralResolver() {
-        String packageName = "";
-        ResolveInfo info = new ResolveInfo();
-        info.filter = new IntentFilter();
-        info.filter.addDataPath("somepath", 2);
-        info.activityInfo = new ActivityInfo();
-
-        // See IntentUtils.isInstantAppResolveInfo
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            info.isInstantAppAvailable = true;
-        } else {
-            info.activityInfo.name = IntentUtils.EPHEMERAL_INSTALLER_CLASS;
-        }
-        info.activityInfo.packageName = "com.google.android.gms";
-        List<ResolveInfo> resolveInfos = makeResolveInfos(info);
-        // Whether ephemeral resolver is counted as a specialized handler should be dependent on the
-        // value passed for |handlesInstantAppLaunchingInternally|.
-        Assert.assertEquals(0,
-                ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(
-                                resolveInfos, packageName, HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
-                        .size());
-        Assert.assertEquals(1,
-                ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(resolveInfos, packageName,
-                                !HANDLES_INSTANT_APP_LAUNCHING_INTERNALLY)
+                        .getSpecializedHandlersWithFilter(resolveInfos, packageName)
                         .size());
     }
 
@@ -2876,7 +2724,6 @@ public class ExternalNavigationHandlerTest {
         public AlertDialog mShownIncognitoAlertDialog;
         public boolean mResolveInfoContainsSelf;
         public Intent mStartActivityIntent;
-        public boolean mCalledWithProxy;
         public boolean mRequiresIntentChooser;
         private boolean mSendIntentsForReal;
         public boolean mExpectingMessage;
@@ -2899,11 +2746,11 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        protected AlertDialog showLeavingIncognitoAlert(Context context,
-                ExternalNavigationParams params, Intent intent, GURL fallbackUrl, boolean proxy) {
+        protected AlertDialog showLeavingIncognitoAlert(
+                Context context, ExternalNavigationParams params, Intent intent, GURL fallbackUrl) {
             if (context instanceof TestContext) return mAlertDialog;
             mShownIncognitoAlertDialog =
-                    super.showLeavingIncognitoAlert(context, params, intent, fallbackUrl, proxy);
+                    super.showLeavingIncognitoAlert(context, params, intent, fallbackUrl);
             return mShownIncognitoAlertDialog;
         }
 
@@ -2957,16 +2804,15 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        protected OverrideUrlLoadingResult startActivity(Intent intent, boolean proxy,
+        protected OverrideUrlLoadingResult startActivity(Intent intent,
                 boolean requiresIntentChooser, QueryIntentActivitiesSupplier resolvingInfos,
                 ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl,
                 GURL intentDataUrl, GURL referrerUrl, Origin initiatorOrigin,
                 boolean isRendererInitiated) {
             mStartActivityIntent = intent;
-            mCalledWithProxy = proxy;
             mRequiresIntentChooser = requiresIntentChooser;
             if (mSendIntentsForReal) {
-                return super.startActivity(intent, proxy, requiresIntentChooser, resolvingInfos,
+                return super.startActivity(intent, requiresIntentChooser, resolvingInfos,
                         resolveActivity, browserFallbackUrl, intentDataUrl, referrerUrl,
                         initiatorOrigin, isRendererInitiated);
             }
@@ -2978,7 +2824,6 @@ public class ExternalNavigationHandlerTest {
         }
 
         public void reset() {
-            mCalledWithProxy = false;
             mStartActivityIntent = null;
         }
 
@@ -3068,14 +2913,6 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean handlesInstantAppLaunchingInternally() {
-            return mHandlesInstantAppLaunchingInternally;
-        }
-
-        @Override
-        public void dispatchAuthenticatedIntent(Intent intent) {}
-
-        @Override
         public boolean canLoadUrlInCurrentTab() {
             return mCanLoadUrlInTab;
         }
@@ -3112,15 +2949,6 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public void maybeAdjustInstantAppExtras(Intent intent, boolean isIntentToInstantApp) {
-            if (isIntentToInstantApp) {
-                intent.putExtra(IS_INSTANT_APP_EXTRA, true);
-            } else {
-                intent.putExtra(IS_INSTANT_APP_EXTRA, false);
-            }
-        }
-
-        @Override
         public void maybeSetRequestMetadata(Intent intent, boolean hasUserGesture,
                 boolean isRendererInitiated, Origin initiatorOrigin) {
             maybeSetRequestMetadataCalled = true;
@@ -3132,12 +2960,6 @@ public class ExternalNavigationHandlerTest {
         @Override
         public boolean isApplicationInForeground() {
             return mIsChromeAppInForeground;
-        }
-
-        @Override
-        public boolean maybeLaunchInstantApp(GURL url, GURL referrerUrl, boolean isIncomingRedirect,
-                boolean isSerpReferrer, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
-            return mCanHandleWithInstantApp;
         }
 
         @Override
@@ -3243,10 +3065,6 @@ public class ExternalNavigationHandlerTest {
             return mReferrerWebappPackageName;
         }
 
-        public void setCanHandleWithInstantApp(boolean value) {
-            mCanHandleWithInstantApp = value;
-        }
-
         public void setHandleIntentWithAutofillAssistant(boolean value) {
             mHandleWithAutofillAssistant = value;
         }
@@ -3296,10 +3114,6 @@ public class ExternalNavigationHandlerTest {
             mShouldEmbedderInitiatedNavigationsStayInBrowser = value;
         }
 
-        public void setHandlesInstantAppLaunchingInternally(boolean value) {
-            mHandlesInstantAppLaunchingInternally = value;
-        }
-
         public void setResolvesToOtherBrowser(boolean value) {
             mResolvesToOtherBrowser = value;
         }
@@ -3313,7 +3127,6 @@ public class ExternalNavigationHandlerTest {
         private ArrayList<IntentActivity> mIntentActivities = new ArrayList<IntentActivity>();
         private boolean mCanResolveActivityForExternalSchemes = true;
         private boolean mCanResolveActivityForMarket = true;
-        private boolean mCanHandleWithInstantApp;
         private boolean mHandleWithAutofillAssistant;
         public boolean mIsChromeAppInForeground = true;
         private boolean mIsCallingAppTrusted;
@@ -3328,7 +3141,6 @@ public class ExternalNavigationHandlerTest {
         private boolean mWillResolveToDisambiguationDialog;
         private Context mContext;
         private boolean mShouldEmbedderInitiatedNavigationsStayInBrowser = true;
-        private boolean mHandlesInstantAppLaunchingInternally = true;
         private boolean mResolvesToOtherBrowser;
     }
 
@@ -3437,7 +3249,6 @@ public class ExternalNavigationHandlerTest {
             boolean expectStartFile = (otherExpectation & START_FILE) != 0;
             boolean expectSaneIntent = expectStartOtherActivity
                     && (otherExpectation & INTENT_SANITIZATION_EXCEPTION) == 0;
-            boolean expectProxyForIA = (otherExpectation & PROXY_FOR_INSTANT_APPS) != 0;
 
             mDelegate.reset();
             mUrlHandler.reset();
@@ -3476,7 +3287,6 @@ public class ExternalNavigationHandlerTest {
             Assert.assertEquals(expectStartActivity, startActivityCalled);
             Assert.assertEquals(expectStartWebApk, startWebApkCalled);
             Assert.assertEquals(expectStartFile, mUrlHandler.mRequestFilePermissionsCalled);
-            Assert.assertEquals(expectProxyForIA, mUrlHandler.mCalledWithProxy);
 
             if (startActivityCalled && expectSaneIntent) {
                 checkIntentSanity(startActivityIntent, "Intent");

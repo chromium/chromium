@@ -4435,14 +4435,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Unable to install <ph name="module">%1$s<ex>augmented reality</ex></ph> for Chrome
       </message>
 
-      <!-- Instant Apps -->
-      <message name="IDS_INSTANT_APPS_MESSAGE_TITLE" desc="Title of the message shown to prompt the user to open an Instant App.">
-        Open app for <ph name="appname">%1$s</ph>?
-      </message>
-      <message name="IDS_ACCESSIBILITY_INSTANT_APPS_MESSAGE_TITLE_CONTENT_DESCRIPTION" desc="Accessibility text for the title of the Instant Apps message.">
-        Open app for <ph name="appname">%1$s</ph> with Google Play?
-      </message>
-
       <!-- Custom Context Menu Informations -->
       <message name="IDS_CONTEXTMENU_IMAGE_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to the image.">
         IMAGE

@@ -788,15 +788,6 @@ by a child template that "extends" this file.
             android:process=":browser_restart_process">
         </activity>
 
-        <!-- Activity for dispatching intents to Instant Apps. -->
-        <activity
-            android:name="org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity"
-            android:exported="false"
-            android:theme="@style/Theme.BrowserUI.NoDisplay"
-            android:noHistory="true"
-            android:excludeFromRecents="true">
-        </activity>
-
         <activity
             android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"
             android:exported="false"

@@ -22,10 +22,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidChromeSurvey);
 // implementations also fallback to Infobar implementations.
 BASE_DECLARE_FEATURE(kMessagesForAndroidInfrastructure);
 
-// Feature that controls whether "instant apps" messages use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidInstantApps);
-
 // Feature that controls whether "near OOM reduction" messages use Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidNearOomReduction);
@@ -75,8 +71,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidUpdatePassword);
 BASE_DECLARE_FEATURE(kMessagesForAndroidReduceLayoutChanges);
 
 bool IsAdsBlockedMessagesUiEnabled();
-
-bool IsInstantAppsMessagesUiEnabled();
 
 bool IsNearOomReductionMessagesUiEnabled();
 

@@ -105,7 +105,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".FramebustBlocked"/>
   <variant name=".GeneratedPasswordSaved"/>
   <variant name=".InstallableAmbientBadge"/>
-  <variant name=".InstantApps"/>
   <variant name=".MerchantTrust"/>
   <variant name=".NearOomReduction"/>
   <variant name=".NotificationBlocked"/>
@@ -1902,96 +1901,6 @@ chromium-metrics-reviews@google.com.
     clicks on &quot;Turn on Incognito lock&quot; (gated on successful
     re-authentication) and a &quot;No thanks&quot; value is emitted when the
     user clicks on &quot;No thanks&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.ApiCallDurationWithApp" units="ms"
-    expires_after="M81">
-  <owner>sbirch@google.com</owner>
-  <summary>
-    Measures the amount of time spent in the getInstantAppIntent() API call when
-    the API was able to find an Instant App for the URL. This is recorded for
-    external intents coming into Chrome only and measures the delay before we
-    dispatch the intent to Instant Apps.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.ApiCallDurationWithoutApp" units="ms"
-    expires_after="2023-04-02">
-  <owner>sbirch@google.com</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Measures the amount of time spent in the getInstantAppIntent() API call when
-    the API was not able to find an Instant App for the URL. This is recorded
-    for external intents coming into Chrome that get checked for their Instant
-    Apps eligibility, but end up being loaded in Chrome. It's critical to keep
-    this latency low for our startup performance.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.CallSource" enum="InstantAppsCallSource"
-    expires_after="2023-01-31">
-  <owner>sbirch@google.com</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    For intents to load a web page in browser from Instant Apps, records where
-    the request to load came from.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.DirectInstantAppsIntent"
-    enum="DirectIntentType" expires_after="M81">
-  <owner>sbirch@google.com</owner>
-  <summary>
-    Records events that occur when a user clicks on an intent:// URL that is
-    dispatched to instant apps. The intent:// URLs to the Instant Apps are
-    explicitly disabled unless they are launched from Google SERP, but we record
-    other attempts as well.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.EligiblePageLoaded" enum="Boolean"
-    expires_after="2023-01-31">
-  <owner>sbirch@google.com</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Records whether any given successful page load (for http and https schemes
-    only) could have been handled by an Instant App.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.FallbackDuration" units="ms"
-    expires_after="2023-01-31">
-  <owner>sbirch@google.com</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Measures the time from when we first received an eligible intent for Instant
-    Apps to the time we processed it in the case where the Instant Apps activity
-    had to invoke a fallback intent. This happens only on Android N and older.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.HandleIntentDuration" units="ms"
-    expires_after="M81">
-  <owner>sbirch@google.com</owner>
-  <summary>
-    Measures the amount of time spent triaging an incoming event to decide
-    whether it needs to be routed to Instant Apps. This is time from
-    ChromeLauncherActivity.onCreate() call to the time either startActivity() is
-    called or the request proceeds. This is a superset of
-    Android.InstantApps.ApiCallDurationWith[out]App.
-  </summary>
-</histogram>
-
-<histogram name="Android.InstantApps.ShouldShowBanner" enum="InstantAppsBanner"
-    expires_after="2023-01-31">
-  <owner>sbirch@google.com</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Logs the reasons the banner is shown or hidden on an instant apps eligible
-    pages. Triggered every time asynchronous Instant Apps API indicates the
-    currently loaded page is instant apps eligible. Does not include Instant
-    Apps eligible pages loaded directly through the omnibox.
   </summary>
 </histogram>
 

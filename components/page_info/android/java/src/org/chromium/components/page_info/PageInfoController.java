@@ -6,7 +6,6 @@ package org.chromium.components.page_info;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -219,21 +218,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             if (mCookiesController != null) mCookiesController.onUiClosing();
         };
         mDelegate.initOfflinePageUiParams(viewParams, this::runAfterDismiss);
-        if (!mIsInternalPage && !mDelegate.isShowingOfflinePage()
-                && mDelegate.isInstantAppAvailable(mFullUrl.getSpec())) {
-            final Intent instantAppIntent = mDelegate.getInstantAppIntentForUrl(mFullUrl.getSpec());
-            viewParams.instantAppButtonClickCallback = () -> {
-                try {
-                    getActivity().startActivity(instantAppIntent);
-                    RecordUserAction.record("Android.InstantApps.LaunchedFromWebsiteSettingsPopup");
-                } catch (ActivityNotFoundException e) {
-                    mView.disableInstantAppButton();
-                }
-            };
-            RecordUserAction.record("Android.InstantApps.OpenInstantAppButtonShown");
-        } else {
-            viewParams.instantAppButtonShown = false;
-        }
         viewParams.httpsImageCompressionMessageShown = mDelegate.isHttpsImageCompressionApplied();
         mView = new PageInfoView(mContext, viewParams);
         if (isSheet(mContext)) mView.setBackgroundColor(Color.WHITE);

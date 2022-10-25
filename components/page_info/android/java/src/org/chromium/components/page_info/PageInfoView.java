@@ -24,16 +24,13 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private PageInfoRowView mCookiesRow;
     private Button mForgetSiteButton;
     private TextView mHttpsImageCompressionMessage;
-    private Button mInstantAppButton;
     private Button mOpenOnlineButton;
     private Runnable mOnUiClosingCallback;
 
     /**  Parameters to configure the view of the page info popup. */
     public static class Params {
-        public boolean instantAppButtonShown = true;
         public boolean openOnlineButtonShown = true;
         public boolean httpsImageCompressionMessageShown;
-        public Runnable instantAppButtonClickCallback;
         public Runnable openOnlineButtonClickCallback;
         public Runnable onUiClosingCallback;
     }
@@ -51,7 +48,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         initCookies(params);
         initForgetSiteButton();
         initHttpsImageCompression(params);
-        initInstantApp(params);
         initOpenOnline(params);
     }
 
@@ -85,12 +81,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
                 mHttpsImageCompressionMessage, params.httpsImageCompressionMessageShown, null);
     }
 
-    private void initInstantApp(Params params) {
-        mInstantAppButton = findViewById(R.id.page_info_instant_app_button);
-        initializePageInfoViewChild(mInstantAppButton, params.instantAppButtonShown,
-                params.instantAppButtonClickCallback);
-    }
-
     private void initOpenOnline(Params params) {
         mOpenOnlineButton = findViewById(R.id.page_info_open_online_button);
         // The open online button should not fade in.
@@ -116,10 +106,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
 
     public Button getForgetSiteButton() {
         return mForgetSiteButton;
-    }
-
-    public void disableInstantAppButton() {
-        mInstantAppButton.setEnabled(false);
     }
 
     private void initializePageInfoViewChild(View child, boolean shown, Runnable clickCallback) {

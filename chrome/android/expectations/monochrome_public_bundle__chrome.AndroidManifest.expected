@@ -255,13 +255,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>  # DIFF-ANCHOR: 8f811d02
     </activity>  # DIFF-ANCHOR: b98302dc
-    <activity  # DIFF-ANCHOR: 349d8ca5
-        android:name="org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:noHistory="true"
-        android:theme="@style/Theme.BrowserUI.NoDisplay">
-    </activity>  # DIFF-ANCHOR: 349d8ca5
     <activity  # DIFF-ANCHOR: ecd48344
         android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
         android:enabled="false"

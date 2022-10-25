@@ -44,10 +44,6 @@ BASE_FEATURE(kMessagesForAndroidInfrastructure,
              "MessagesForAndroidInfrastructure",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidInstantApps,
-             "MessagesForAndroidInstantApps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidNearOomReduction,
              "MessagesForAndroidNearOomReduction",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -119,11 +115,6 @@ BASE_FEATURE(kMessagesForAndroidReduceLayoutChanges,
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
-}
-
-bool IsInstantAppsMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidInstantApps);
 }
 
 bool IsNearOomReductionMessagesUiEnabled() {
