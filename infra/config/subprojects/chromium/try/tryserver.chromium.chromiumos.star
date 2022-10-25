@@ -248,6 +248,7 @@ try_.builder(
             ".+/[+]/chromeos/CHROMEOS_LKGM",
         ],
     ),
+    execution_timeout = 6 * time.hour,
 )
 
 try_.builder(
