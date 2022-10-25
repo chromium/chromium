@@ -192,6 +192,7 @@ TEST(BackspaceStateMachineTest, EmojiModifier) {
   const UChar kNotEmojiModifierBaseLead = 0xD83C;
   const UChar kNotEmojiModifierBaseTrail = 0xDCCF;
   const UChar kVs16 = 0xFE0F;
+  const UChar kOther = 'a';
 
   // EMOJI_MODIFIER_BASE + EMOJI_MODIFIER
   machine.Reset();
@@ -199,7 +200,9 @@ TEST(BackspaceStateMachineTest, EmojiModifier) {
             machine.FeedPrecedingCodeUnit(kEmojiModifierTrail));
   EXPECT_EQ(kNeedMoreCodeUnit,
             machine.FeedPrecedingCodeUnit(kEmojiModifierLead));
-  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kEmojiModifierBase));
+  EXPECT_EQ(kNeedMoreCodeUnit,
+            machine.FeedPrecedingCodeUnit(kEmojiModifierBase));
+  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kOther));
   EXPECT_EQ(-3, machine.FinalizeAndGetBoundaryOffset());
   EXPECT_EQ(-3, machine.FinalizeAndGetBoundaryOffset());
 
@@ -211,7 +214,9 @@ TEST(BackspaceStateMachineTest, EmojiModifier) {
             machine.FeedPrecedingCodeUnit(kEmojiModifierLead));
   EXPECT_EQ(kNeedMoreCodeUnit,
             machine.FeedPrecedingCodeUnit(kEmojiModifierBaseTrail));
-  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kEmojiModifierBaseLead));
+  EXPECT_EQ(kNeedMoreCodeUnit,
+          machine.FeedPrecedingCodeUnit(kEmojiModifierBaseLead));
+  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kOther));
   EXPECT_EQ(-4, machine.FinalizeAndGetBoundaryOffset());
   EXPECT_EQ(-4, machine.FinalizeAndGetBoundaryOffset());
 
@@ -235,7 +240,8 @@ TEST(BackspaceStateMachineTest, EmojiModifier) {
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kVs16));
   EXPECT_EQ(kNeedMoreCodeUnit,
             machine.FeedPrecedingCodeUnit(kEmojiModifierBaseTrail));
-  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kEmojiModifierBaseLead));
+  EXPECT_EQ(kFinished,
+            machine.FeedPrecedingCodeUnit(kEmojiModifierBaseLead));
   EXPECT_EQ(-5, machine.FinalizeAndGetBoundaryOffset());
   EXPECT_EQ(-5, machine.FinalizeAndGetBoundaryOffset());
 
@@ -662,8 +668,12 @@ TEST(BackspaceStateMachineTest, ZWJSequence) {
   const UChar kBoyTrail = 0xDC66;
   const UChar kHeart = 0x2764;
   const UChar kKissLead = 0xD83D;
-  const UChar kKillTrail = 0xDC8B;
+  const UChar kKissTrail = 0xDC8B;
   const UChar kVs16 = 0xFE0F;
+  const UChar kLightSkinToneLead = 0xD83C;
+  const UChar kLightSkinToneTrail = 0xDFFB;
+  const UChar kDarkSkinToneLead = 0xD83C;
+  const UChar kDarkSkinToneTrail = 0xDFFF;
   const UChar kOther = 'a';
   const UChar kOtherLead = 0xD83C;
   const UChar kOtherTrail = 0xDCCF;
@@ -726,6 +736,34 @@ TEST(BackspaceStateMachineTest, ZWJSequence) {
   EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kOther));
   EXPECT_EQ(-7, machine.FinalizeAndGetBoundaryOffset());
   EXPECT_EQ(-7, machine.FinalizeAndGetBoundaryOffset());
+
+  // others + EMOJI_MODIFIER_BASE + EMOJI_MODIFIER + ZWJ
+  // + EMOJI_MODIFIER_BASE + EMOJI_MODIFIER + ZWJ + ...
+  // As an example, use MAN + LIGHT_SKIN_TONE + ZWJ + heart + vs16
+  // + ZWJ + kiss + ZWJ + MAN + DARK_SKIN_TONE
+  machine.Reset();
+  EXPECT_EQ(kNeedMoreCodeUnit,
+            machine.FeedPrecedingCodeUnit(kDarkSkinToneTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit,
+            machine.FeedPrecedingCodeUnit(kDarkSkinToneLead));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManLead));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissLead));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kVs16));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kHeart));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
+  EXPECT_EQ(kNeedMoreCodeUnit,
+            machine.FeedPrecedingCodeUnit(kLightSkinToneTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit,
+            machine.FeedPrecedingCodeUnit(kLightSkinToneLead));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManLead));
+  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kOther));
+  EXPECT_EQ(-15, machine.FinalizeAndGetBoundaryOffset());
+  EXPECT_EQ(-15, machine.FinalizeAndGetBoundaryOffset());
 
   // others(surrogate pairs) + ZWJ_EMOJI + ZWJ + ZWJ_EMOJI + ZWJ + ZWJ_EMOJI
   // As an example, use MAN + ZWJ + heart + ZWJ + MAN
@@ -863,7 +901,7 @@ TEST(BackspaceStateMachineTest, ZWJSequence) {
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManTrail));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManLead));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
-  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKillTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissTrail));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissLead));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kVs16));
@@ -882,7 +920,7 @@ TEST(BackspaceStateMachineTest, ZWJSequence) {
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManTrail));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManLead));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
-  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKillTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissTrail));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissLead));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kVs16));
@@ -901,7 +939,7 @@ TEST(BackspaceStateMachineTest, ZWJSequence) {
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManTrail));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kManLead));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
-  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKillTrail));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissTrail));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kKissLead));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kZwj));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kVs16));
@@ -929,7 +967,8 @@ TEST(BackspaceStateMachineTest, ZWJSequence) {
   EXPECT_EQ(kNeedMoreCodeUnit,
             machine.FeedPrecedingCodeUnit(kEmojiModifierLead));
   EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kWomanTrail));
-  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kWomanLead));
+  EXPECT_EQ(kNeedMoreCodeUnit, machine.FeedPrecedingCodeUnit(kWomanLead));
+  EXPECT_EQ(kFinished, machine.FeedPrecedingCodeUnit(kOther));
   EXPECT_EQ(-7, machine.FinalizeAndGetBoundaryOffset());
   EXPECT_EQ(-7, machine.FinalizeAndGetBoundaryOffset());
 

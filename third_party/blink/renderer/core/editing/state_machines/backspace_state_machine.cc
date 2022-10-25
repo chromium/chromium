@@ -133,8 +133,10 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         last_seen_vs_code_units_ = U16_LENGTH(code_point);
         return MoveToNextState(BackspaceState::kBeforeVSAndEmojiModifier);
       }
-      if (Character::IsEmojiModifierBase(code_point))
+      if (Character::IsEmojiModifierBase(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
+        return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
+      }
       return Finish();
     case BackspaceState::kBeforeVSAndEmojiModifier:
       if (Character::IsEmojiModifierBase(code_point)) {
