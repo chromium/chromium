@@ -127,7 +127,7 @@ BASE_FEATURE(kAutofillAssistantRemoteAssistantUi,
              "AutofillAssistantRemoteAssistantUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Send the Moonracer model version in the client context.
+// Send the Semantic model version in the client context.
 BASE_FEATURE(kAutofillAssistantSendModelVersionInClientContext,
              "AutofillAssistantSendModelVersionInClientContext",
              base::FEATURE_DISABLED_BY_DEFAULT);

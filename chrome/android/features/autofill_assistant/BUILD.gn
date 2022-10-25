@@ -109,6 +109,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantProgressBarIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantPromptNavigationIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantQrCodeIntegrationTest.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantSemanticPredictionIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTabHelperCustomTabTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTabHelperRegularTabTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestRule.java",
