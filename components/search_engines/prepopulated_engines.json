@@ -28,7 +28,7 @@
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 132
+    "kCurrentDataVersion": 133
   },
 
   // The following engines are included in country lists and are added to the
@@ -108,6 +108,7 @@
       "favicon_url": "https://cdn.ecosia.org/assets/images/ico/favicon.ico",
       "search_url": "https://www.ecosia.org/search?q={searchTerms}&addon=opensearch",
       "suggest_url": "https://ac.ecosia.org/autocomplete?q={searchTerms}&type=list",
+      "new_tab_url": "https://www.ecosia.org/newtab/",
       "type": "SEARCH_ENGINE_ECOSIA",
       "id": 101
     },
