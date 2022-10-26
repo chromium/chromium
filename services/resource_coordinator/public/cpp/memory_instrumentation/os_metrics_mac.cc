@@ -251,6 +251,8 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
 
   dump->platform_private_footprint->internal_bytes = info.internal;
   dump->platform_private_footprint->compressed_bytes = info.compressed;
+  dump->resident_set_kb = info.resident_size / 1024;
+  dump->peak_resident_set_kb = info.resident_size_peak / 1024;
 
   // The |phys_footprint| field was introduced in 10.11.
   if (count == ChromeTaskVMInfoCount) {
