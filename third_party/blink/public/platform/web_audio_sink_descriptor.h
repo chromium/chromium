@@ -39,6 +39,10 @@ class WebAudioSinkDescriptor {
     return sink_id_;
   }
 
+  bool operator==(const WebAudioSinkDescriptor& rhs) const {
+    return this->Type() == rhs.Type() && this->SinkId() == rhs.SinkId();
+  }
+
  private:
   AudioSinkType type_;
   WebString sink_id_;
