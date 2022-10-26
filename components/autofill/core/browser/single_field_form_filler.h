@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILLER_H_
 
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace autofill {
@@ -29,7 +30,7 @@ class SingleFieldFormFiller {
     // |suggestions| is the list of fetched suggestions.
     virtual void OnSuggestionsReturned(
         int query_id,
-        bool autoselect_first_suggestion,
+        AutoselectFirstSuggestion autoselect_first_suggestion,
         const std::vector<Suggestion>& suggestions) = 0;
   };
 
@@ -57,7 +58,7 @@ class SingleFieldFormFiller {
   // synchronously even before OnGetSingleFieldSuggestions returns true.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
       int query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       const FormFieldData& field,
       const AutofillClient& client,
       base::WeakPtr<SuggestionsHandler> handler,
@@ -95,7 +96,7 @@ class SingleFieldFormFiller {
   // with the appropriate response.
   struct QueryHandler {
     QueryHandler(int client_query_id,
-                 bool autoselect_first_suggestion,
+                 AutoselectFirstSuggestion autoselect_first_suggestion,
                  std::u16string prefix,
                  base::WeakPtr<SuggestionsHandler> handler);
     QueryHandler(const QueryHandler& original);
@@ -108,7 +109,7 @@ class SingleFieldFormFiller {
     // Determines whether we should auto-select the first suggestion when
     // returning. This value was given by the handler when requesting
     // suggestions.
-    bool autoselect_first_suggestion_;
+    AutoselectFirstSuggestion autoselect_first_suggestion_;
 
     // Prefix used to search suggestions, submitted by the handler.
     std::u16string prefix_;

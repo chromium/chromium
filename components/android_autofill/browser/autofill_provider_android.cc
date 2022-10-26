@@ -106,7 +106,7 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
     int32_t query_id,
-    bool /*unused_autoselect_first_suggestion*/,
+    AutoselectFirstSuggestion /*unused_autoselect_first_suggestion*/,
     FormElementWasClicked /*unused_form_element_was_clicked*/) {
   // The id isn't passed to Java side because Android API guarantees the
   // response is always for current session, so we just use the current id

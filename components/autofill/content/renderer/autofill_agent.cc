@@ -179,7 +179,7 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       int32_t query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field,
              bounding_box, query_id, autoselect_first_suggestion,
@@ -468,8 +468,8 @@ void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
     ShowSuggestions(element,
                     {.autofill_on_empty_values = true,
                      .requires_caret_at_end = true,
-                     .autoselect_first_suggestion =
-                         ShouldAutoselectFirstSuggestionOnArrowDown()});
+                     .autoselect_first_suggestion = AutoselectFirstSuggestion(
+                         ShouldAutoselectFirstSuggestionOnArrowDown())});
   }
 }
 
@@ -883,7 +883,7 @@ void AutofillAgent::SetFieldsEligibleForManualFilling(
 
 void AutofillAgent::QueryAutofillSuggestions(
     const WebFormControlElement& element,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   blink::WebLocalFrame* frame = element.GetDocument().GetFrame();
   if (!frame)

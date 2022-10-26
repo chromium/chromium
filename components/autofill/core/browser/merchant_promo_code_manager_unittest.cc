@@ -40,7 +40,7 @@ class MockSuggestionsHandler
   MOCK_METHOD(void,
               OnSuggestionsReturned,
               (int query_id,
-               bool autoselect_first_suggestion,
+               AutoselectFirstSuggestion autoselect_first_suggestion,
                const std::vector<Suggestion>& suggestions),
               (override));
 
@@ -103,7 +103,7 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   base::HistogramTester histogram_tester;
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  bool autoselect_first_suggestion = false;
+  AutoselectFirstSuggestion autoselect_first_suggestion(false);
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
   form_data.main_frame_origin =
@@ -185,9 +185,8 @@ TEST_F(MerchantPromoCodeManagerTest,
 
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(),
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/SuggestionsContext()));
 
   // Ensure that no metrics were logged.
@@ -231,9 +230,8 @@ TEST_F(MerchantPromoCodeManagerTest,
 
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(),
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/context));
 
   // Ensure that no metrics were logged.
@@ -275,9 +273,8 @@ TEST_F(MerchantPromoCodeManagerTest,
 
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(),
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/context));
 
   // Ensure that no metrics were logged.
@@ -319,9 +316,8 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
 
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(),
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/context));
 
   // Ensure that no metrics were logged.
@@ -367,9 +363,8 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillWalletImportDisabled) {
 
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(),
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/context));
 
   // Ensure that no metrics were logged.
@@ -415,9 +410,8 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillCreditCardDisabled) {
 
   // Simulate request for suggestions.
   EXPECT_FALSE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(),
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/context));
 
   // Ensure that no metrics were logged.
@@ -456,8 +450,8 @@ TEST_F(MerchantPromoCodeManagerTest, NoQueryHandler) {
 
   // Simulate request for suggestions, but with an empty handler.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_,
       /*handler=*/nullptr,
       /*context=*/context));
 
@@ -508,9 +502,8 @@ TEST_F(MerchantPromoCodeManagerTest, PrefixMatched) {
 
   // Simulate request for suggestions.
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(),
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/context));
 
   // No metrics should be logged because no suggestions were shown.
@@ -539,7 +532,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
   std::u16string test_promo_code = u"test_promo_code";
-  bool autoselect_first_suggestion = false;
+  AutoselectFirstSuggestion autoselect_first_suggestion(false);
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
   form_data.main_frame_origin =
@@ -605,7 +598,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
   std::u16string test_promo_code = u"test_promo_code";
-  bool autoselect_first_suggestion = false;
+  AutoselectFirstSuggestion autoselect_first_suggestion(false);
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
   form_data.main_frame_origin =

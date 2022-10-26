@@ -214,8 +214,8 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
     std::vector<Suggestion> suggestions;
     suggestions.emplace_back();
     suggestions[0].frontend_id = kAutofillProfileId;
-    external_delegate_->OnSuggestionsReturned(
-        query_id, suggestions, /*autoselect_first_suggestion=*/false);
+    external_delegate_->OnSuggestionsReturned(query_id, suggestions,
+                                              AutoselectFirstSuggestion(false));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -260,8 +260,8 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   std::vector<Suggestion> autofill_item;
   autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
@@ -303,8 +303,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   std::vector<Suggestion> autofill_item;
   autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "Signin_Impression_FromAutofillDropdown"));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
@@ -343,8 +343,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   // This should call ShowAutofillPopup.
   std::vector<Suggestion> items;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, items, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, items,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Signin_Impression_FromAutofillDropdown"));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
@@ -394,8 +394,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
   std::vector<Suggestion> autofill_item;
   autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
@@ -408,8 +408,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   autofill_item.clear();
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(testing::ElementsAre(
                   static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY))));
@@ -453,8 +453,8 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   std::vector<Suggestion> autofill_item;
   autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
@@ -511,8 +511,8 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
       Suggestion::Text(u"Rick", Suggestion::Text::IsPrimary(true));
   autofill_item[0].labels = {{Suggestion::Text(u"Deckard")}};
   autofill_item[0].frontend_id = kAutofillProfileId;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
@@ -556,9 +556,8 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
   autocomplete_items[1].main_text =
       Suggestion::Text(u"Cain", Suggestion::Text::IsPrimary(true));
   autocomplete_items[1].frontend_id = POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autocomplete_items,
-      /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autocomplete_items,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
@@ -579,8 +578,8 @@ TEST_F(AutofillExternalDelegateUnitTest, AutofillWarnings) {
   autofill_item.emplace_back();
   autofill_item[0].frontend_id =
       POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
@@ -611,8 +610,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   suggestions[1].main_text =
       Suggestion::Text(u"Rick", Suggestion::Text::IsPrimary(true));
   suggestions[1].frontend_id = POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, suggestions, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, suggestions,
+                                            AutoselectFirstSuggestion(false));
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
@@ -657,8 +656,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   suggestions[0].main_text.value = iban_value;
   suggestions[0].labels = {{Suggestion::Text(u"My doctor's IBAN")}};
   suggestions[0].frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, suggestions, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, suggestions,
+                                            AutoselectFirstSuggestion(false));
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
@@ -694,8 +693,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   suggestions[0].main_text.value = promo_code_value;
   suggestions[0].labels = {{Suggestion::Text(u"12.34% off your purchase!")}};
   suggestions[0].frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, suggestions, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, suggestions,
+                                            AutoselectFirstSuggestion(false));
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   EXPECT_THAT(open_args.suggestions,
@@ -939,8 +938,8 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
   EXPECT_CALL(autofill_client_, ShowAutofillPopup);
   EXPECT_CALL(autofill_client_, HideAutofillPopup(_)).Times(0);
 
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_items, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_items,
+                                            AutoselectFirstSuggestion(false));
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
@@ -1007,8 +1006,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
 
   // This should call ShowAutofillPopup.
   external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false,
-      true);
+      kRecentQueryId, autofill_item, AutoselectFirstSuggestion(false), true);
 
   // On Desktop, the GPay icon should be stored in the store indicator icon.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1040,8 +1038,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   // This should call ShowAutofillPopup.
   external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false,
-      false);
+      kRecentQueryId, autofill_item, AutoselectFirstSuggestion(false), false);
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIconsAre(element_icons));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
@@ -1067,8 +1064,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
   autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
 
   // This should call ShowAutofillPopup.
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(element_main_texts));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
@@ -1122,8 +1119,8 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   autofill_item[0].frontend_id = kAutofillProfileId;
   autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
 
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId, autofill_item,
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(element_main_texts));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
@@ -1144,9 +1141,9 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
 
-  external_delegate_->OnSuggestionsReturned(
-      kRecentQueryId, std::vector<Suggestion>(),
-      /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(kRecentQueryId,
+                                            std::vector<Suggestion>(),
+                                            AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(element_main_texts));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
@@ -1161,9 +1158,9 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   IssueOnQuery(older_query_id);
 
   EXPECT_CALL(autofill_client_, ShowAutofillPopup).Times(0);
-  external_delegate_->OnSuggestionsReturned(
-      older_query_id, std::vector<Suggestion>(),
-      /*autoselect_first_suggestion=*/false);
+  external_delegate_->OnSuggestionsReturned(older_query_id,
+                                            std::vector<Suggestion>(),
+                                            AutoselectFirstSuggestion(false));
 }
 #endif
 

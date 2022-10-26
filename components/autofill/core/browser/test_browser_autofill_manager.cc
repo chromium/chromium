@@ -83,7 +83,7 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
     int query_id,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   TestAutofillManagerWaiter waiter(*this,
                                    {&Observer::OnAfterAskForValuesToFill});
@@ -233,7 +233,7 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormFieldData& field,
     int query_id,
     const gfx::RectF& bounding_box,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   TestAutofillManagerWaiter waiter(
       *this, {&AutofillManager::Observer::OnAfterAskForValuesToFill});

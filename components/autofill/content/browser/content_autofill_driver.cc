@@ -408,7 +408,7 @@ void ContentAutofillDriver::AskForValuesToFill(
     const FormFieldData& raw_field,
     const gfx::RectF& bounding_box,
     int32_t query_id,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
     return;
@@ -421,7 +421,8 @@ void ContentAutofillDriver::AskForValuesToFill(
       autoselect_first_suggestion, form_element_was_clicked,
       [](ContentAutofillDriver* target, const FormData& form,
          const FormFieldData& field, const gfx::RectF& bounding_box,
-         int32_t query_id, bool autoselect_first_suggestion,
+         int32_t query_id,
+         AutoselectFirstSuggestion autoselect_first_suggestion,
          FormElementWasClicked form_element_was_clicked) {
         target->autofill_manager_->OnAskForValuesToFill(
             form, field, bounding_box, query_id, autoselect_first_suggestion,

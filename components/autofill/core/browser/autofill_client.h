@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -22,6 +21,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
@@ -263,9 +263,6 @@ class AutofillClient : public RiskDataLoader {
 
   // Required arguments to create a dropdown showing autofill suggestions.
   struct PopupOpenArgs {
-    using AutoselectFirstSuggestion =
-        ::base::StrongAlias<class AutoSelectFirstSuggestionTag, bool>;
-
     PopupOpenArgs();
     PopupOpenArgs(const gfx::RectF& element_bounds,
                   base::i18n::TextDirection text_direction,

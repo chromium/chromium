@@ -53,9 +53,6 @@ namespace password_manager {
 namespace {
 
 using autofill::password_generation::PasswordGenerationType;
-
-using AutoselectFirstSuggestion =
-    autofill::AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
 using IsLoading = autofill::Suggestion::IsLoading;
 
 constexpr char16_t kPasswordReplacementChar = 0x2022;
@@ -832,7 +829,8 @@ bool PasswordAutofillManager::ShowPopup(
   }
   LogMetricsForSuggestions(suggestions);
   autofill::AutofillClient::PopupOpenArgs open_args(
-      bounds, text_direction, suggestions, AutoselectFirstSuggestion(false),
+      bounds, text_direction, suggestions,
+      autofill::AutoselectFirstSuggestion(false),
       autofill::PopupType::kPasswords);
   autofill_client_->ShowAutofillPopup(open_args,
                                       weak_ptr_factory_.GetWeakPtr());

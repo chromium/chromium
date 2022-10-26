@@ -653,6 +653,18 @@ struct StructTraits<autofill::mojom::ParsingResultDataView,
 };
 
 template <>
+struct StructTraits<autofill::mojom::AutoselectFirstSuggestionDataView,
+                    autofill::AutoselectFirstSuggestion> {
+  static bool autoselect_first_suggestion(
+      autofill::AutoselectFirstSuggestion r) {
+    return r.value();
+  }
+
+  static bool Read(autofill::mojom::AutoselectFirstSuggestionDataView data,
+                   autofill::AutoselectFirstSuggestion* out);
+};
+
+template <>
 struct StructTraits<autofill::mojom::FormElementWasClickedDataView,
                     autofill::FormElementWasClicked> {
   static bool form_element_was_clicked(autofill::FormElementWasClicked r) {

@@ -551,8 +551,8 @@ class BrowserAutofillManagerTest : public testing::Test {
                               const FormData& form,
                               const FormFieldData& field) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, gfx::RectF(), query_id,
-        /*autoselect_first_suggestion=*/false, FormElementWasClicked(false));
+        form, field, gfx::RectF(), query_id, AutoselectFirstSuggestion(false),
+        FormElementWasClicked(false));
   }
 
   void GetAutofillSuggestions(const FormData& form,
@@ -565,8 +565,8 @@ class BrowserAutofillManagerTest : public testing::Test {
                             const FormFieldData& field,
                             FormElementWasClicked form_element_was_clicked) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, gfx::RectF(), query_id,
-        /*autoselect_first_suggestion=*/false, form_element_was_clicked);
+        form, field, gfx::RectF(), query_id, AutoselectFirstSuggestion(false),
+        form_element_was_clicked);
   }
 
   void AutocompleteSuggestionsReturned(
@@ -578,7 +578,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                    [](auto result) { return Suggestion(result); });
 
     browser_autofill_manager_->OnSuggestionsReturned(
-        query_id, /*autoselect_first_suggestion=*/false, suggestions);
+        query_id, AutoselectFirstSuggestion(false), suggestions);
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
@@ -596,7 +596,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             const FormFieldData& field,
                             int unique_id) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, {}, query_id, /*autoselect_first_suggestion=*/true,
+        form, field, {}, query_id, AutoselectFirstSuggestion(true),
         FormElementWasClicked(false));
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, query_id, form, field, unique_id);
@@ -1521,14 +1521,14 @@ TEST_F(BrowserAutofillManagerTest,
 
   {
     browser_autofill_manager_->OnSuggestionsReturned(
-        kDefaultPageID, /*autoselect_first_suggestion=*/false, suggestions);
+        kDefaultPageID, AutoselectFirstSuggestion(false), suggestions);
 
     EXPECT_FALSE(external_delegate_->autoselect_first_suggestion());
     CheckSuggestions(kDefaultPageID, suggestions[0], suggestions[1]);
   }
   {
     browser_autofill_manager_->OnSuggestionsReturned(
-        kDefaultPageID, /*autoselect_first_suggestion=*/true, suggestions);
+        kDefaultPageID, AutoselectFirstSuggestion(true), suggestions);
 
     EXPECT_TRUE(external_delegate_->autoselect_first_suggestion());
     CheckSuggestions(kDefaultPageID, suggestions[0], suggestions[1]);

@@ -41,7 +41,7 @@ class MockSuggestionsHandler
   MOCK_METHOD(void,
               OnSuggestionsReturned,
               (int query_id,
-               bool autoselect_first_suggestion,
+               AutoselectFirstSuggestion autoselect_first_suggestion,
                const std::vector<Suggestion>& suggestions),
               (override));
 
@@ -124,12 +124,11 @@ TEST_F(SingleFieldFormFillRouterTest,
         .Times(1)
         .WillOnce(testing::Return(test_field_.should_autocomplete));
 
-    EXPECT_EQ(
-        test_field_.should_autocomplete,
-        single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-            /*query_id=*/2, /*autoselect_first_suggestion=*/false, test_field_,
-            autofill_client_, suggestions_handler->GetWeakPtr(),
-            /*context=*/SuggestionsContext()));
+    EXPECT_EQ(test_field_.should_autocomplete,
+              single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+                  /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+                  autofill_client_, suggestions_handler->GetWeakPtr(),
+                  /*context=*/SuggestionsContext()));
   }
 }
 
@@ -259,9 +258,9 @@ TEST_F(SingleFieldFormFillRouterTest,
         .WillOnce(testing::Return(true));
 
     EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-        /*query_id=*/2,
-        /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-        suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+        /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+        autofill_client_, suggestions_handler->GetWeakPtr(),
+        SuggestionsContext()));
   }
 }
 
@@ -287,9 +286,9 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerNotPresent) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -318,9 +317,9 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerReturnedFalse) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext()));
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
@@ -366,9 +365,9 @@ TEST_F(
   // All SingleFieldFormFillers returned false, so we should return false as we
   // did not attempt to display any single field form fill suggestions.
   EXPECT_FALSE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -392,9 +391,9 @@ TEST_F(SingleFieldFormFillRouterTest, IBANManagerNotPresent) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -422,9 +421,9 @@ TEST_F(SingleFieldFormFillRouterTest, IBANManagerReturnedFalse) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field_, autofill_client_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+      autofill_client_, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext()));
 }
 
 // Ensure that the router does not route to AutocompleteHistoryManager for
@@ -451,7 +450,7 @@ TEST_F(SingleFieldFormFillRouterTest, IBANManagerURLOriginNotBlocklisted) {
   // IBAN autofill. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, /*autoselect_first_suggestion=*/false, test_field_,
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
       autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/SuggestionsContext()));
 }
@@ -477,7 +476,7 @@ TEST_F(SingleFieldFormFillRouterTest, IBANManagerURLOriginBlocklisted) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, /*autoselect_first_suggestion=*/false, test_field_,
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
       autofill_client_, suggestions_handler->GetWeakPtr(),
       /*context=*/SuggestionsContext()));
 }

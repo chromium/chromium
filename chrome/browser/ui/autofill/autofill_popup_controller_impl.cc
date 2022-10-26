@@ -97,7 +97,7 @@ AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
 
 void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     PopupType popup_type) {
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);

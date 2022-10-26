@@ -313,7 +313,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       int32_t query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override;
   void HidePopup() override;
   void FocusNoLongerOnForm(bool had_interacted_form) override;

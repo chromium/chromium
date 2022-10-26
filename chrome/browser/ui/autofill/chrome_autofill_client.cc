@@ -147,9 +147,6 @@
 
 namespace autofill {
 
-using AutoselectFirstSuggestion =
-    AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
-
 ChromeAutofillClient::~ChromeAutofillClient() {
   // NOTE: It is too late to clean up the autofill popup; that cleanup process
   // requires that the WebContents instance still be valid and it is not at
@@ -960,7 +957,7 @@ void ChromeAutofillClient::ShowAutofillPopup(
       open_args.text_direction);
 
   popup_controller_->Show(open_args.suggestions,
-                          open_args.autoselect_first_suggestion.value(),
+                          open_args.autoselect_first_suggestion,
                           open_args.popup_type);
 
   // When testing, try to keep popup open when the reason to hide is from an
@@ -1025,7 +1022,7 @@ void ChromeAutofillClient::UpdatePopup(
   }
 
   // Calling show will reuse the existing view automatically
-  popup_controller_->Show(suggestions, /*autoselect_first_suggestion=*/false,
+  popup_controller_->Show(suggestions, AutoselectFirstSuggestion(false),
                           popup_type);
 }
 

@@ -283,12 +283,11 @@ autofill::AutofillClient::PopupOpenArgs CreateReopenArgsWithTestSuggestions(
     bool has_opt_in_and_fill,
     bool has_opt_in_and_generate,
     bool has_re_signin) {
-  return {
-      gfx::RectF(), base::i18n::LEFT_TO_RIGHT,
-      CreateTestSuggestions(has_opt_in_and_fill, has_opt_in_and_generate,
-                            has_re_signin),
-      autofill::AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion(false),
-      autofill::PopupType::kPasswords};
+  return {gfx::RectF(), base::i18n::LEFT_TO_RIGHT,
+          CreateTestSuggestions(has_opt_in_and_fill, has_opt_in_and_generate,
+                                has_re_signin),
+          autofill::AutoselectFirstSuggestion(false),
+          autofill::PopupType::kPasswords};
 }
 
 }  // namespace

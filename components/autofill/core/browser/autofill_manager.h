@@ -176,7 +176,7 @@ class AutofillManager
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       int query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked);
 
   // Invoked when |form|'s |field| has focus.
@@ -392,7 +392,7 @@ class AutofillManager
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       int query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) = 0;
 
   virtual void OnFocusOnFormFieldImpl(const FormData& form,

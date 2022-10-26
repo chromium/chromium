@@ -60,7 +60,7 @@ class MockSuggestionsHandler
 
   void OnSuggestionsReturned(
       int query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       const std::vector<Suggestion>& suggestions) override {
     last_suggestions_ = suggestions;
   }
@@ -215,8 +215,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     test::CreateTestFormField(/*label=*/"", input_name.c_str(), prefix.c_str(),
                               "input", &field);
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        1, false, field, *autofill_client, handler.GetWeakPtr(),
-        SuggestionsContext()));
+        1, AutoselectFirstSuggestion(false), field, *autofill_client,
+        handler.GetWeakPtr(), SuggestionsContext()));
 
     // Make sure the DB task gets executed.
     WaitForDBTasks();

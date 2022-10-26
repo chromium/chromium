@@ -357,9 +357,8 @@ TEST_F(AutofillPopupControllerUnitTest, ChangeSelectedLine) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion("", "", "", 0));
   suggestions.push_back(Suggestion("", "", "", 0));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   EXPECT_FALSE(autofill_popup_controller_->selected_line());
   // Check that there are at least 2 values so that the first and last selection
@@ -381,9 +380,8 @@ TEST_F(AutofillPopupControllerUnitTest, RedrawSelectedLine) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion("", "", "", 0));
   suggestions.push_back(Suggestion("", "", "", 0));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   // Make sure that when a new line is selected, it is invalidated so it can
   // be updated to show it is selected.
@@ -410,9 +408,8 @@ TEST_F(AutofillPopupControllerUnitTest, RemoveLine) {
   suggestions.push_back(Suggestion("", "", "", 1));
   suggestions.push_back(Suggestion("", "", "", 1));
   suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   // Generate a popup, so it can be hidden later. It doesn't matter what the
   // external_delegate thinks is being shown in the process, since we are just
@@ -454,9 +451,8 @@ TEST_F(AutofillPopupControllerUnitTest, RemoveOnlyLine) {
   // Set up the popup.
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion("", "", "", 1));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   // Generate a popup.
   test::GenerateTestAutofillPopup(external_delegate_.get());
@@ -485,9 +481,8 @@ TEST_F(AutofillPopupControllerUnitTest, SkipSeparator) {
   suggestions.push_back(Suggestion("", "", "", 1));
   suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR));
   suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   autofill_popup_controller_->SetSelectedLine(0);
 
@@ -506,9 +501,8 @@ TEST_F(AutofillPopupControllerUnitTest, SkipInsecureFormWarning) {
   suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR));
   suggestions.push_back(Suggestion(
       "", "", "", POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   // Make sure previous skips the unselectable form warning when there is no
   // selection.
@@ -527,9 +521,8 @@ TEST_F(AutofillPopupControllerUnitTest, SkipInsecureFormWarning) {
 TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion("", "", "", 1));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   // Add one data list entry.
   std::u16string value1 = u"data list value 1";
@@ -612,9 +605,8 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   // Create the popup with a single datalist element.
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion("", "", "", POPUP_ITEM_ID_DATALIST_ENTRY));
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   // Replace the datalist element with a new one.
   std::u16string value1 = u"data list value 1";
@@ -709,7 +701,8 @@ TEST_F(AutofillPopupControllerUnitTest, ProperlyResetController) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion("", "", "", 0));
   suggestions.push_back(Suggestion("", "", "", 0));
-  popup_controller()->Show(suggestions, false, PopupType::kUnspecified);
+  popup_controller()->Show(suggestions, AutoselectFirstSuggestion(false),
+                           PopupType::kUnspecified);
   popup_controller()->SetSelectedLine(0);
 
   // Now show a new popup with the same controller, but with fewer items.
@@ -885,9 +878,8 @@ TEST_F(AutofillPopupControllerUnitTest, FillOnTabPressed) {
       Suggestion("value", "", "", 1),
       Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
       Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
   // Select the autofill suggestion.
   autofill_popup_controller_->SetSelectedLine(0);
 
@@ -909,9 +901,8 @@ TEST_F(AutofillPopupControllerUnitTest,
       Suggestion("value", "", "", 1),
       Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
       Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
   // Select the POPUP_ITEM_ID_AUTOFILL_OPTIONS line.
   autofill_popup_controller_->SetSelectedLine(2);
 
@@ -931,9 +922,8 @@ TEST_F(AutofillPopupControllerUnitTest, TabBeforeSelectingALine) {
       Suggestion("value", "", "", 1),
       Suggestion("", "", "", POPUP_ITEM_ID_SEPARATOR),
       Suggestion("", "", "", POPUP_ITEM_ID_AUTOFILL_OPTIONS)};
-  autofill_popup_controller_->Show(suggestions,
-                                   /*autoselect_first_suggestion=*/false,
-                                   PopupType::kUnspecified);
+  autofill_popup_controller_->Show(
+      suggestions, AutoselectFirstSuggestion(false), PopupType::kUnspecified);
 
   // autofill_popup_controller_->SetSelectedLine(...); is not called here to
   // produce the edge case.

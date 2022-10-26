@@ -105,7 +105,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       int32_t query_id,
-      bool autoselect_first_field,
+      AutoselectFirstSuggestion autoselect_first_field,
       FormElementWasClicked form_element_was_clicked) override {}
 
   void HidePopup() override {}

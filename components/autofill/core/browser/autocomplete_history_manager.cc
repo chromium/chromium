@@ -81,7 +81,7 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     int query_id,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     const FormFieldData& field,
     const AutofillClient& client,
     base::WeakPtr<SuggestionsHandler> handler,

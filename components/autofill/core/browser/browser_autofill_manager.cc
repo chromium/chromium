@@ -663,9 +663,9 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
 
   DCHECK(!cards.empty());
 
-  external_delegate_->OnSuggestionsReturned(
-      query_id, cards,
-      /*autoselect_first_suggestion=*/false, should_display_gpay_logo);
+  external_delegate_->OnSuggestionsReturned(query_id, cards,
+                                            AutoselectFirstSuggestion(false),
+                                            should_display_gpay_logo);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1033,7 +1033,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormFieldData& field,
     const gfx::RectF& transformed_box,
     int query_id,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
@@ -1822,7 +1822,7 @@ bool BrowserAutofillManager::ShouldUploadForm(const FormStructure& form) {
 // AutocompleteHistoryManager::SuggestionsHandler implementation
 void BrowserAutofillManager::OnSuggestionsReturned(
     int query_id,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     const std::vector<Suggestion>& suggestions) {
   external_delegate_->OnSuggestionsReturned(query_id, suggestions,
                                             autoselect_first_suggestion);

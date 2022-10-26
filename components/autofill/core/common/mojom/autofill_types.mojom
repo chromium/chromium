@@ -457,6 +457,12 @@ enum RendererFormDataAction {
   kPreview,  // The renderer should preview the form data.
 };
 
+// autofill::AutoselectFirstSuggestion
+// (components/autofill/core/common/aliases.h)
+struct AutoselectFirstSuggestion {
+  bool autoselect_first_suggestion;
+};
+
 // autofill::FormElementWasClicked (components/autofill/core/common/aliases.h)
 struct FormElementWasClicked {
   bool form_element_was_clicked;

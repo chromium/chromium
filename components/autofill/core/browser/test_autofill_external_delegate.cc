@@ -48,7 +48,7 @@ void TestAutofillExternalDelegate::OnQuery(int query_id,
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
     int query_id,
     const std::vector<Suggestion>& suggestions,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     bool is_all_server_suggestions) {
   on_suggestions_returned_seen_ = true;
   query_id_ = query_id;
@@ -60,6 +60,7 @@ void TestAutofillExternalDelegate::OnSuggestionsReturned(
   // execute logic relating to showing the popup or not.
   if (call_parent_methods_)
     AutofillExternalDelegate::OnSuggestionsReturned(query_id, suggestions,
+                                                    autoselect_first_suggestion,
                                                     is_all_server_suggestions);
 }
 
@@ -126,7 +127,8 @@ bool TestAutofillExternalDelegate::on_suggestions_returned_seen() const {
   return on_suggestions_returned_seen_;
 }
 
-bool TestAutofillExternalDelegate::autoselect_first_suggestion() const {
+AutoselectFirstSuggestion
+TestAutofillExternalDelegate::autoselect_first_suggestion() const {
   return autoselect_first_suggestion_;
 }
 

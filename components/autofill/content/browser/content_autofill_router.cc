@@ -401,14 +401,14 @@ void ContentAutofillRouter::AskForValuesToFill(
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
     int32_t query_id,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked,
     void (*callback)(ContentAutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box,
                      int32_t query_id,
-                     bool autoselect_first_suggestion,
+                     AutoselectFirstSuggestion autoselect_first_suggestion,
                      FormElementWasClicked form_element_was_clicked)) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
     callback(source, form, field, bounding_box, query_id,

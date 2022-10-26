@@ -144,13 +144,13 @@ void GenerateTestAutofillPopup(
       *driver->autofill_manager(),
       {&AutofillManager::Observer::OnAfterAskForValuesToFill});
   mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds, query_id,
-                                  /*autoselect_first_suggestion=*/false,
+                                  AutoselectFirstSuggestion(false),
                                   FormElementWasClicked(false));
   ASSERT_TRUE(waiter.Wait());
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   autofill_external_delegate->OnSuggestionsReturned(
-      query_id, suggestions, /*autoselect_first_suggestion=*/false);
+      query_id, suggestions, AutoselectFirstSuggestion(false));
 }
 
 }  // namespace autofill

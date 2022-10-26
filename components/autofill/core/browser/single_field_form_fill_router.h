@@ -47,7 +47,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
       int query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       const FormFieldData& field,
       const AutofillClient& client,
       base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,

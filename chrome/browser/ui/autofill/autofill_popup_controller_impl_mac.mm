@@ -54,7 +54,7 @@ AutofillPopupControllerImplMac::~AutofillPopupControllerImplMac() {}
 
 void AutofillPopupControllerImplMac::Show(
     const std::vector<autofill::Suggestion>& suggestions,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     PopupType popup_type) {
   if (!suggestions.empty() && is_credit_card_popup_) {
     touch_bar_controller_ = [WebTextfieldTouchBarController

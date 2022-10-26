@@ -41,9 +41,6 @@ namespace autofill {
 
 namespace {
 
-using AutoselectFirstSuggestion =
-    AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
-
 // Returns true if the suggestion entry is an Autofill warning message.
 // Warning messages should display on top of suggestion list.
 bool IsAutofillWarningEntry(int frontend_id) {
@@ -86,7 +83,7 @@ void AutofillExternalDelegate::OnQuery(int query_id,
 void AutofillExternalDelegate::OnSuggestionsReturned(
     int query_id,
     const std::vector<Suggestion>& input_suggestions,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     bool is_all_server_suggestions) {
   if (query_id != query_id_)
     return;

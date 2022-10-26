@@ -31,7 +31,7 @@ class MockSuggestionsHandler : public IBANManager::SuggestionsHandler {
   MOCK_METHOD(void,
               OnSuggestionsReturned,
               (int query_id,
-               bool autoselect_first_suggestion,
+               AutoselectFirstSuggestion autoselect_first_suggestion,
                const std::vector<Suggestion>& suggestions),
               (override));
 
@@ -92,7 +92,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
   EXPECT_CALL(
       suggestions_handler_,
       OnSuggestionsReturned(
-          test_query_id, /*autoselect_first_suggestion=*/false,
+          test_query_id, AutoselectFirstSuggestion(false),
           UnorderedElementsAre(
               Field(&Suggestion::main_text, iban_suggestion_0.main_text),
               Field(&Suggestion::main_text, iban_suggestion_1.main_text))))
@@ -102,9 +102,8 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
   // Because all criteria are met to trigger returning to the handler,
   // the handler should be triggered and this should return true.
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
-      test_query_id,
-      /*autoselect_first_suggestion=*/false, test_field, autofill_client_,
-      suggestions_handler_.GetWeakPtr(),
+      test_query_id, AutoselectFirstSuggestion(false), test_field,
+      autofill_client_, suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
 }
 
@@ -133,9 +132,8 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
   // Because all criteria are met to trigger returning to the handler,
   // the handler should be triggered and this should return true.
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
-      test_query_id,
-      /*autoselect_first_suggestion=*/false, test_field, autofill_client_,
-      suggestions_handler_.GetWeakPtr(),
+      test_query_id, AutoselectFirstSuggestion(false), test_field,
+      autofill_client_, suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
 }
 
@@ -151,9 +149,9 @@ TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
 
   // Simulate request for suggestions.
   EXPECT_FALSE(iban_manager_.OnGetSingleFieldSuggestions(
-      /*query_id=*/2,
-      /*autoselect_first_suggestion=*/false, test_field, autofill_client_,
-      suggestions_handler_.GetWeakPtr(), /*context=*/context));
+      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field,
+      autofill_client_, suggestions_handler_.GetWeakPtr(),
+      /*context=*/context));
 }
 
 }  // namespace autofill

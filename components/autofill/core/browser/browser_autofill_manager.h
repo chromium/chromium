@@ -263,7 +263,7 @@ class BrowserAutofillManager : public AutofillManager,
   // SingleFieldFormFiller::SuggestionsHandler:
   void OnSuggestionsReturned(
       int query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       const std::vector<Suggestion>& suggestions) override;
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
@@ -442,7 +442,7 @@ class BrowserAutofillManager : public AutofillManager,
       const FormFieldData& field,
       const gfx::RectF& transformed_box,
       int query_id,
-      bool autoselect_first_suggestion,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,

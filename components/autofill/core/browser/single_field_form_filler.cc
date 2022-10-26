@@ -12,7 +12,7 @@ SingleFieldFormFiller::~SingleFieldFormFiller() = default;
 
 SingleFieldFormFiller::QueryHandler::QueryHandler(
     int client_query_id,
-    bool autoselect_first_suggestion,
+    AutoselectFirstSuggestion autoselect_first_suggestion,
     std::u16string prefix,
     base::WeakPtr<SuggestionsHandler> handler)
     : client_query_id_(client_query_id),

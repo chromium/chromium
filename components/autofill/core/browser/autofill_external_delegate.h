@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -82,10 +83,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
 
   // Records query results and correctly formats them before sending them off
   // to be displayed.  Called when an Autofill query result is available.
-  virtual void OnSuggestionsReturned(int query_id,
-                                     const std::vector<Suggestion>& suggestions,
-                                     bool autoselect_first_suggestion,
-                                     bool is_all_server_suggestions = false);
+  virtual void OnSuggestionsReturned(
+      int query_id,
+      const std::vector<Suggestion>& suggestions,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
+      bool is_all_server_suggestions = false);
 
   // Returns true if there is a screen reader installed on the machine.
   virtual bool HasActiveScreenReader() const;

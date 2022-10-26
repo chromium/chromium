@@ -12,6 +12,10 @@ namespace autofill {
 // TODO(crbug.com/1326518): Use strong aliases for other primitives in mojom
 // files.
 
+// Specifies whether a first suggestion gets auto selected.
+using AutoselectFirstSuggestion =
+    base::StrongAlias<struct AutoselectFirstSuggestionTag, bool>;
+
 // Specifies whether a form input element was clicked.
 using FormElementWasClicked =
     base::StrongAlias<struct FormElementWasClickedTag, bool>;
