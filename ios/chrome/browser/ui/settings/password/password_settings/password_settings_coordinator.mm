@@ -380,7 +380,7 @@
                                IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)
                 preferredStyle:UIAlertControllerStyleAlert];
 
-  ProceduralBlockWithURL blockOpenURL =
+  void (^blockOpenURL)(const GURL&) =
       BlockToOpenURL(self.passwordSettingsViewController, self.dispatcher);
   UIAlertAction* learnAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(

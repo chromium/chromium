@@ -18,7 +18,7 @@ DOMAlteringLock::~DOMAlteringLock() {
 }
 
 void DOMAlteringLock::Acquire(id<DOMAltering> feature,
-                              ProceduralBlockWithBool lockAction) {
+                              void (^lockAction)(BOOL)) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (current_dom_altering_feature_ == feature) {
     lockAction(YES);

@@ -44,7 +44,6 @@ source_set("form_input_accessory") {
     "//components/strings",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser:utils",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autofill:autofill",
     "//ios/chrome/browser/autofill:autofill_shared",

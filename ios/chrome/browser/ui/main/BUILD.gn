@@ -6,7 +6,6 @@ import("//ios/build/chrome_build.gni")
 
 source_set("scene_testing") {
   sources = [ "scene_controller_testing.h" ]
-  deps = [ "//ios/chrome/browser:utils" ]
   frameworks = [ "UIKit.framework" ]
 }
 

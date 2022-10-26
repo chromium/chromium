@@ -34,7 +34,7 @@ class ChromiumDiscoverFeedService final : public DiscoverFeedService {
   void RefreshFeedIfNeeded() final {}
   void RefreshFeed() final {}
 
-  void PerformBackgroundRefreshes(ProceduralBlockWithBool completion) final {}
+  void PerformBackgroundRefreshes(void (^completion)(BOOL)) final {}
   void HandleBackgroundRefreshTaskExpiration() final {}
   NSDate* GetEarliestBackgroundRefreshBeginDate() final { return nil; }
 

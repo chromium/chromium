@@ -7,11 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/procedural_block_types.h"
-
 namespace web {
 class WebState;
 }
+
+class GURL;
 
 namespace activity_services {
 
@@ -36,7 +36,7 @@ extern const char16_t kCanonicalURLScript[];
 // `completion`. This prevents the canonical URL from being downgraded to HTTP
 // from the HTTPS visible URL.
 void RetrieveCanonicalUrl(web::WebState* web_state,
-                          ProceduralBlockWithURL completion);
+                          void (^completion)(const GURL&));
 
 }  // namespace activity_services
 

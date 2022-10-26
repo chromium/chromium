@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_MAIN_SCENE_CONTROLLER_TESTING_H_
 #define IOS_CHROME_BROWSER_UI_MAIN_SCENE_CONTROLLER_TESTING_H_
 
-#import "ios/chrome/browser/procedural_block_types.h"
-
 class Browser;
 struct UrlLoadParams;
 @class TabGridCoordinator;

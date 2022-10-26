@@ -19,7 +19,6 @@ source_set("discover_feed") {
   ]
   deps = [
     "//components/keyed_service/core",
-    "//ios/chrome/browser:utils",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   public_deps = [

@@ -14,7 +14,6 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
-#import "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -173,7 +172,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
 // Animates `highlight` property from current state to `highlighted`.
 - (void)animateWithHighlight:(BOOL)highlighted
-                  completion:(ProceduralBlockWithBool)completion {
+                  completion:(void (^)(BOOL))completion {
   if (self.highlighted == highlighted) {
     return;
   }

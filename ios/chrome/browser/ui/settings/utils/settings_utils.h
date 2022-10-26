@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/procedural_block_types.h"
-
 @protocol ApplicationCommands;
+class GURL;
+
+typedef void (^ProceduralBlockWithURL)(const GURL&);
 
 // Returns a ProceduralBlockWithURL that uses the dispatcher and opens url
 // (parameter to the block) in a new tab.

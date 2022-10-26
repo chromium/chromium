@@ -15,7 +15,7 @@ ProceduralBlockWithURL BlockToOpenURL(UIResponder* responder,
                                       id<ApplicationCommands> handler) {
   __weak UIResponder* weakResponder = responder;
   __weak id<ApplicationCommands> weakHandler = handler;
-  ProceduralBlockWithURL blockToOpenURL = ^(const GURL& url) {
+  auto blockToOpenURL = ^(const GURL& url) {
     UIResponder* strongResponder = weakResponder;
     if (!strongResponder)
       return;
@@ -23,5 +23,5 @@ ProceduralBlockWithURL BlockToOpenURL(UIResponder* responder,
         [OpenNewTabCommand commandWithURLFromChrome:url];
     [weakHandler closeSettingsUIAndOpenURL:command];
   };
-  return [blockToOpenURL copy];
+  return blockToOpenURL;
 }

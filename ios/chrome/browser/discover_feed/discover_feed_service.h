@@ -12,7 +12,6 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 #include "ios/chrome/browser/discover_feed/feed_constants.h"
 #include "ios/chrome/browser/discover_feed/feed_model_configuration.h"
-#import "ios/chrome/browser/procedural_block_types.h"
 
 @class FeedMetricsRecorder;
 
@@ -73,8 +72,7 @@ class DiscoverFeedService : public KeyedService {
   // Performs a background refresh for the feed. `completion` is called
   // after success, failure, or timeout. The BOOL argument indicates whether the
   // refresh was successful or a failure.
-  virtual void PerformBackgroundRefreshes(
-      ProceduralBlockWithBool completion) = 0;
+  virtual void PerformBackgroundRefreshes(void (^completion)(BOOL)) = 0;
 
   // Stops the background refresh task and cleans up any temporary objects. This
   // is called by the OS when the task is taking too long.

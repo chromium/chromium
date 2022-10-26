@@ -128,7 +128,6 @@ source_set("browser_agent") {
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/prefs",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser:utils",
     "//ios/chrome/browser/browser_state:browser_state",
     "//ios/chrome/browser/discover_feed:discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",

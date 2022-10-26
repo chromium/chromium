@@ -14,7 +14,6 @@
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
@@ -1328,7 +1327,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
               collectionViewUpdates:(ProceduralBlock)collectionViewUpdates
                  useSpringAnimation:(BOOL)useSpringAnimation
     collectionViewUpdatesCompletion:
-        (ProceduralBlockWithBool)collectionViewUpdatesCompletion {
+        (void (^)(BOOL))collectionViewUpdatesCompletion {
   auto batchUpdates = ^(void) {
     [self.collectionView
         performBatchUpdates:^{

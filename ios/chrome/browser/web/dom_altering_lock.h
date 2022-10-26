@@ -12,8 +12,6 @@ namespace web {
 class WebState;
 }
 
-typedef void (^ProceduralBlockWithBool)(BOOL);
-
 // This protocol must be implemented by all classes which may alter the DOM tree
 // of a web page. Before altering the DOM, the class must call
 // DOMAlteringLock::Acquire() and can only proceed if the lock is really
@@ -47,7 +45,7 @@ class DOMAlteringLock : public web::WebStateUserData<DOMAlteringLock> {
   // The completion handler is called with YES if the lock was acquired, or NO
   // if it could not.
   // This method must be called on the UI thread.
-  void Acquire(id<DOMAltering> feature, ProceduralBlockWithBool lockAction);
+  void Acquire(id<DOMAltering> feature, void (^lockAction)(BOOL));
 
   // Releases the lock on the DOM tree.
   // The lock is always released, even if it was acquired multiple times.

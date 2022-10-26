@@ -9,7 +9,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/ui_metrics/canonical_url_share_metrics_types.h"
-#import "ios/chrome/browser/procedural_block_types.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
@@ -66,7 +65,7 @@ const char16_t kCanonicalURLScript[] =
     u"})()";
 
 void RetrieveCanonicalUrl(web::WebState* web_state,
-                          ProceduralBlockWithURL completion) {
+                          void (^completion)(const GURL&)) {
   // Do not use the canonical URL if the page is not secured with HTTPS.
   const GURL visible_url = web_state->GetVisibleURL();
   if (!visible_url.SchemeIsCryptographic()) {
