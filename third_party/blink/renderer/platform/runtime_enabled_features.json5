@@ -2275,7 +2275,7 @@
     },
     {
       name: "ResourceTimingResponseStatus",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RestrictGamepadAccess",
