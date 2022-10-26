@@ -5006,10 +5006,6 @@ const char kCrostiniVirtualKeyboardSupportName[] =
 const char kCrostiniVirtualKeyboardSupportDescription[] =
     "Experimental support for the Virtual Keyboard on Crostini.";
 
-const char kGuestOSGenericInstallerName[] = "Generic GuestOS Installer";
-const char kGuestOSGenericInstallerDescription[] =
-    "Experimental generic installer for virtual machines";
-
 const char kBruschettaName[] = "Enable the third party VMs feature";
 const char kBruschettaDescription[] =
     "Enables UI support for third party/generic VMs";

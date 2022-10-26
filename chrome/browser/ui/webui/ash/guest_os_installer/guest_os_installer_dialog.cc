@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/guest_os_installer/guest_os_installer_dialog.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 // The dialog content area size. Note that the height is less than the design
@@ -21,10 +19,6 @@ constexpr int kDialogHeight = 608;
 namespace ash {
 
 void GuestOSInstallerDialog::Show(const GURL& page_url) {
-  if (!base::FeatureList::IsEnabled(ash::features::kGuestOSGenericInstaller)) {
-    return;
-  }
-
   auto* instance = SystemWebDialogDelegate::FindInstance(page_url.spec());
   if (instance) {
     instance->Focus();

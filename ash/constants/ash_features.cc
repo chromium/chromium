@@ -480,11 +480,6 @@ BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
              "CrostiniVirtualKeyboardSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables generic guest OS installer infrastructure.
-BASE_FEATURE(kGuestOSGenericInstaller,
-             "GuestOSGenericInstaller",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables support for third party VMs.
 BASE_FEATURE(kBruschetta, "Bruschetta", base::FEATURE_DISABLED_BY_DEFAULT);
 

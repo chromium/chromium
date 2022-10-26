@@ -2864,9 +2864,6 @@ extern const char kCrostiniImeSupportDescription[];
 extern const char kCrostiniVirtualKeyboardSupportName[];
 extern const char kCrostiniVirtualKeyboardSupportDescription[];
 
-extern const char kGuestOSGenericInstallerName[];
-extern const char kGuestOSGenericInstallerDescription[];
-
 extern const char kBruschettaName[];
 extern const char kBruschettaDescription[];
 
