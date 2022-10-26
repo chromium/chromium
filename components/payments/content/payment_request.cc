@@ -575,7 +575,7 @@ bool PaymentRequest::ChangeShippingOption(
   DCHECK(!shipping_option_id.empty());
 
   bool is_valid_id = false;
-  if (spec_->details().shipping_options) {
+  if (spec_ && spec_->details().shipping_options) {
     for (const auto& option : spec_->GetShippingOptions()) {
       if (option->id == shipping_option_id) {
         is_valid_id = true;
