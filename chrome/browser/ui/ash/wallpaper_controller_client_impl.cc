@@ -541,7 +541,7 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
 void WallpaperControllerClientImpl::OnVolumeMounted(
     ash::MountError error_code,
     const file_manager::Volume& volume) {
-  if (error_code != ash::MountError::kNone) {
+  if (error_code != ash::MountError::kSuccess) {
     return;
   }
   if (volume.type() != file_manager::VolumeType::VOLUME_TYPE_GOOGLE_DRIVE) {
