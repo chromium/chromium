@@ -127,7 +127,6 @@ bool VideoEncoder::Initialize(const Video* video) {
 
 void VideoEncoder::Encode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(video_encoder_state_.load(), EncoderState::kIdle);
   DVLOGF(4);
 
   // Encode until the end of the video.
@@ -136,7 +135,11 @@ void VideoEncoder::Encode() {
 
 void VideoEncoder::EncodeUntil(EncoderEvent event, size_t event_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(video_encoder_state_.load(), EncoderState::kIdle);
+  if (video_encoder_state_.load() != EncoderState::kIdle) {
+    LOG(ERROR) << "VideoEncoder state is not idle: "
+               << static_cast<int>(video_encoder_state_.load());
+    return;
+  }
   DCHECK(encode_until_ == kInvalidEncodeUntil);
   DCHECK(video_);
   DVLOGF(4);
@@ -188,9 +191,13 @@ bool VideoEncoder::WaitForEvent(EncoderEvent event, size_t times) {
     // Go through the list of events since last wait, looking for the event
     // we're interested in.
     while (next_unprocessed_event_ < video_encoder_events_.size()) {
-      if (video_encoder_events_[next_unprocessed_event_++] == event) {
+      EncoderEvent cur_event = video_encoder_events_[next_unprocessed_event_++];
+      if (cur_event == event) {
         if (--times == 0)
           return true;
+      } else if (cur_event == EncoderEvent::kError) {
+        LOG(ERROR) << "Got error event";
+        return false;
       }
     }
 
@@ -213,6 +220,10 @@ bool VideoEncoder::WaitUntilIdle() {
   while (true) {
     if (video_encoder_state_.load() == EncoderState::kIdle)
       return true;
+    if (video_encoder_state_.load() == EncoderState::kError) {
+      LOG(ERROR) << "Encoder in error state";
+      return false;
+    }
 
     // Check whether we've exceeded the maximum time we're allowed to wait.
     if (time_waiting >= event_timeout_) {
@@ -264,9 +275,10 @@ size_t VideoEncoder::GetFrameReleasedCount() const {
 
 bool VideoEncoder::NotifyEvent(EncoderEvent event) {
   base::AutoLock auto_lock(event_lock_);
-  if (event == EncoderEvent::kFlushDone) {
+  if (event == EncoderEvent::kFlushDone)
     video_encoder_state_ = EncoderState::kIdle;
-  }
+  else if (event == EncoderEvent::kError)
+    video_encoder_state_ = EncoderState::kError;
 
   video_encoder_events_.push_back(event);
   video_encoder_event_counts_[event]++;

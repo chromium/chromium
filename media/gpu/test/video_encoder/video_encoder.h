@@ -36,7 +36,7 @@ class VideoEncoderStats;
 class VideoEncoder {
  public:
   // Different video encoder states.
-  enum class EncoderState { kUninitialized = 0, kIdle, kEncoding };
+  enum class EncoderState { kUninitialized = 0, kIdle, kEncoding, kError };
 
   // The list of events that can be thrown by the video encoder.
   enum EncoderEvent {
@@ -46,6 +46,7 @@ class VideoEncoder {
     kFlushing,
     kFlushDone,
     kKeyFrame,
+    kError,
     kNumEvents,
   };
 

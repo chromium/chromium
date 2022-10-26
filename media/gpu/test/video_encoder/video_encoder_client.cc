@@ -457,7 +457,10 @@ void VideoEncoderClient::BitstreamBufferProcessed(int32_t bitstream_buffer_id) {
   encoder_->UseOutputBitstreamBuffer(std::move(bitstream_buffer));
 }
 
-void VideoEncoderClient::NotifyError(VideoEncodeAccelerator::Error error) {}
+void VideoEncoderClient::NotifyError(VideoEncodeAccelerator::Error error) {
+  LOG(ERROR) << "NotifyError() is called: " << static_cast<int>(error);
+  FireEvent(VideoEncoder::EncoderEvent::kError);
+}
 
 void VideoEncoderClient::NotifyEncoderInfoChange(const VideoEncoderInfo& info) {
 }
