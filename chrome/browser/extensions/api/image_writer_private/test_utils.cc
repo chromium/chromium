@@ -77,7 +77,8 @@ void FakeDiskMountManager::UnmountDeviceRecursively(
     const std::string& device_path,
     UnmountDeviceRecursivelyCallbackType callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), ash::MountError::kNone));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ash::MountError::kSuccess));
 }
 #endif
 

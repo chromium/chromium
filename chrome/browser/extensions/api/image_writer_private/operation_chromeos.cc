@@ -65,7 +65,7 @@ void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
                                        ash::MountError error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (error_code != ash::MountError::kNone) {
+  if (error_code != ash::MountError::kSuccess) {
     LOG(ERROR) << "Volume unmounting failed with error code " << error_code;
     PostTask(
         base::BindOnce(&Operation::Error, this, error::kUnmountVolumesError));
