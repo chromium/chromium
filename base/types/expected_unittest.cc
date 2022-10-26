@@ -61,6 +61,26 @@ enum class Error {
   kFail,
 };
 
+enum class CvRef {
+  kNone,
+  kRef,
+  kConstRef,
+  kRRef,
+  kConstRRef,
+};
+
+struct SaveCvRef {
+  constexpr SaveCvRef() = default;
+  constexpr SaveCvRef(SaveCvRef&) : cvref(CvRef::kRef) {}
+  constexpr SaveCvRef(const SaveCvRef&) : cvref(CvRef::kConstRef) {}
+  constexpr SaveCvRef(SaveCvRef&&) : cvref(CvRef::kRRef) {}
+  constexpr SaveCvRef(const SaveCvRef&&) : cvref(CvRef::kConstRRef) {}
+
+  constexpr explicit SaveCvRef(CvRef cvref) : cvref(cvref) {}
+
+  CvRef cvref = CvRef::kNone;
+};
+
 TEST(Ok, ValueConstructor) {
   constexpr ok<int> o(42);
   static_assert(o.value() == 42);
@@ -598,9 +618,231 @@ TEST(Expected, ValueOr) {
     expected<WeakMoveOnly<int>, int> ex(0);
     EXPECT_EQ(std::move(ex).value_or(123).value, 0);
 
-    expected<int, WeakMoveOnly<int>> unex = unexpected(WeakMoveOnly(0));
-    EXPECT_EQ(std::move(unex).value_or(123), 123);
+    expected<WeakMoveOnly<int>, int> unex = unexpected(0);
+    EXPECT_EQ(std::move(unex).value_or(123).value, 123);
   }
+}
+
+TEST(Expected, ErrorOr) {
+  {
+    expected<int, int> ex;
+    EXPECT_EQ(ex.error_or(123), 123);
+
+    expected<int, int> unex = unexpected(0);
+    EXPECT_EQ(unex.error_or(123), 0);
+  }
+
+  {
+    expected<int, WeakMoveOnly<int>> ex(0);
+    EXPECT_EQ(std::move(ex).error_or(123).value, 123);
+
+    expected<int, WeakMoveOnly<int>> unex = unexpected(0);
+    EXPECT_EQ(std::move(unex).error_or(123).value, 0);
+  }
+}
+
+TEST(Expected, AndThen) {
+  using ExIn = expected<SaveCvRef, SaveCvRef>;
+  using ExOut = expected<CvRef, SaveCvRef>;
+
+  auto get_ex_cvref = [](auto&& x) -> ExOut {
+    return SaveCvRef(std::forward<decltype(x)>(x)).cvref;
+  };
+
+  ExIn ex;
+  EXPECT_EQ(ex.and_then(get_ex_cvref), CvRef::kRef);
+  EXPECT_EQ(std::as_const(ex).and_then(get_ex_cvref), CvRef::kConstRef);
+  EXPECT_EQ(std::move(ex).and_then(get_ex_cvref), CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(ex)).and_then(get_ex_cvref),
+            CvRef::kConstRRef);
+
+  ExIn unex(unexpect);
+  EXPECT_EQ(unex.and_then(get_ex_cvref).error().cvref, CvRef::kRef);
+  EXPECT_EQ(std::as_const(unex).and_then(get_ex_cvref).error().cvref,
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(unex).and_then(get_ex_cvref).error().cvref, CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(unex)).and_then(get_ex_cvref).error().cvref,
+            CvRef::kConstRRef);
+
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&>().and_then(get_ex_cvref)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<
+          decltype(std::declval<const ExIn&>().and_then(get_ex_cvref)), ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&&>().and_then(get_ex_cvref)),
+                     ExOut>);
+  static_assert(std::is_same_v<decltype(std::declval<const ExIn&&>().and_then(
+                                   get_ex_cvref)),
+                               ExOut>);
+}
+
+TEST(Expected, OrElse) {
+  using ExIn = expected<SaveCvRef, SaveCvRef>;
+  using ExOut = expected<SaveCvRef, CvRef>;
+
+  auto get_unex_cvref = [](auto&& x) -> ExOut {
+    return unexpected(SaveCvRef(std::forward<decltype(x)>(x)).cvref);
+  };
+
+  ExIn ex;
+  EXPECT_EQ(ex.or_else(get_unex_cvref).value().cvref, CvRef::kRef);
+  EXPECT_EQ(std::as_const(ex).or_else(get_unex_cvref).value().cvref,
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(ex).or_else(get_unex_cvref).value().cvref, CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(ex)).or_else(get_unex_cvref).value().cvref,
+            CvRef::kConstRRef);
+
+  ExIn unex(unexpect);
+  EXPECT_EQ(unex.or_else(get_unex_cvref).error(), CvRef::kRef);
+  EXPECT_EQ(std::as_const(unex).or_else(get_unex_cvref).error(),
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(unex).or_else(get_unex_cvref).error(), CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(unex)).or_else(get_unex_cvref).error(),
+            CvRef::kConstRRef);
+
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&>().or_else(get_unex_cvref)),
+                     ExOut>);
+  static_assert(std::is_same_v<decltype(std::declval<const ExIn&>().or_else(
+                                   get_unex_cvref)),
+                               ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&&>().or_else(get_unex_cvref)),
+                     ExOut>);
+  static_assert(std::is_same_v<decltype(std::declval<const ExIn&&>().or_else(
+                                   get_unex_cvref)),
+                               ExOut>);
+}
+
+TEST(Expected, Transform) {
+  using ExIn = expected<SaveCvRef, SaveCvRef>;
+  using ExOut = expected<CvRef, SaveCvRef>;
+
+  auto get_cvref = [](auto&& x) {
+    return SaveCvRef(std::forward<decltype(x)>(x)).cvref;
+  };
+
+  {
+    ExIn ex;
+    EXPECT_EQ(ex.transform(get_cvref), CvRef::kRef);
+    EXPECT_EQ(std::as_const(ex).transform(get_cvref), CvRef::kConstRef);
+    EXPECT_EQ(std::move(ex).transform(get_cvref), CvRef::kRRef);
+    EXPECT_EQ(std::move(std::as_const(ex)).transform(get_cvref),
+              CvRef::kConstRRef);
+
+    ExIn unex(unexpect);
+    EXPECT_EQ(unex.transform(get_cvref).error().cvref, CvRef::kRef);
+    EXPECT_EQ(std::as_const(unex).transform(get_cvref).error().cvref,
+              CvRef::kConstRef);
+    EXPECT_EQ(std::move(unex).transform(get_cvref).error().cvref, CvRef::kRRef);
+    EXPECT_EQ(std::move(std::as_const(unex)).transform(get_cvref).error().cvref,
+              CvRef::kConstRRef);
+
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&>().transform(get_cvref)),
+                       ExOut>);
+    static_assert(
+        std::is_same_v<
+            decltype(std::declval<const ExIn&>().transform(get_cvref)), ExOut>);
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&&>().transform(get_cvref)),
+                       ExOut>);
+    static_assert(std::is_same_v<
+                  decltype(std::declval<const ExIn&&>().transform(get_cvref)),
+                  ExOut>);
+  }
+
+  // Test void transform.
+  {
+    using ExOutVoid = expected<void, SaveCvRef>;
+    CvRef cvref = CvRef::kNone;
+    auto write_cvref = [&cvref](auto&& x) {
+      cvref = SaveCvRef(std::forward<decltype(x)>(x)).cvref;
+    };
+
+    ExIn ex;
+    EXPECT_TRUE(ex.transform(write_cvref).has_value());
+    EXPECT_EQ(cvref, CvRef::kRef);
+    EXPECT_TRUE(std::as_const(ex).transform(write_cvref).has_value());
+    EXPECT_EQ(cvref, CvRef::kConstRef);
+    EXPECT_TRUE(std::move(ex).transform(write_cvref).has_value());
+    EXPECT_EQ(cvref, CvRef::kRRef);
+    EXPECT_TRUE(
+        std::move(std::as_const(ex)).transform(write_cvref).has_value());
+    EXPECT_EQ(cvref, CvRef::kConstRRef);
+
+    cvref = CvRef::kNone;
+    ExIn unex(unexpect);
+    EXPECT_EQ(unex.transform(write_cvref).error().cvref, CvRef::kRef);
+    EXPECT_EQ(cvref, CvRef::kNone);
+    EXPECT_EQ(std::as_const(unex).transform(write_cvref).error().cvref,
+              CvRef::kConstRef);
+    EXPECT_EQ(cvref, CvRef::kNone);
+    EXPECT_EQ(std::move(unex).transform(write_cvref).error().cvref,
+              CvRef::kRRef);
+    EXPECT_EQ(cvref, CvRef::kNone);
+    EXPECT_EQ(
+        std::move(std::as_const(unex)).transform(write_cvref).error().cvref,
+        CvRef::kConstRRef);
+    EXPECT_EQ(cvref, CvRef::kNone);
+
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&>().transform(write_cvref)),
+                       ExOutVoid>);
+    static_assert(std::is_same_v<decltype(std::declval<const ExIn&>().transform(
+                                     write_cvref)),
+                                 ExOutVoid>);
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&&>().transform(write_cvref)),
+                       ExOutVoid>);
+    static_assert(std::is_same_v<
+                  decltype(std::declval<const ExIn&&>().transform(write_cvref)),
+                  ExOutVoid>);
+  }
+}
+
+TEST(Expected, TransformError) {
+  using ExIn = expected<SaveCvRef, SaveCvRef>;
+  using ExOut = expected<SaveCvRef, CvRef>;
+
+  auto get_cvref = [](auto&& x) {
+    return SaveCvRef(std::forward<decltype(x)>(x)).cvref;
+  };
+
+  ExIn ex;
+  EXPECT_EQ(ex.transform_error(get_cvref).value().cvref, CvRef::kRef);
+  EXPECT_EQ(std::as_const(ex).transform_error(get_cvref).value().cvref,
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(ex).transform_error(get_cvref).value().cvref,
+            CvRef::kRRef);
+  EXPECT_EQ(
+      std::move(std::as_const(ex)).transform_error(get_cvref).value().cvref,
+      CvRef::kConstRRef);
+
+  ExIn unex(unexpect);
+  EXPECT_EQ(unex.transform_error(get_cvref).error(), CvRef::kRef);
+  EXPECT_EQ(std::as_const(unex).transform_error(get_cvref).error(),
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(unex).transform_error(get_cvref).error(), CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(unex)).transform_error(get_cvref).error(),
+            CvRef::kConstRRef);
+
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&>().transform_error(get_cvref)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<const ExIn&>().transform_error(
+                         get_cvref)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<
+          decltype(std::declval<ExIn&&>().transform_error(get_cvref)), ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<const ExIn&&>().transform_error(
+                         get_cvref)),
+                     ExOut>);
 }
 
 TEST(Expected, EqualityOperators) {
@@ -858,6 +1100,202 @@ TEST(ExpectedVoid, Error) {
   static_assert(std::is_same_v<decltype(std::declval<Ex&&>().error()), int&&>);
   static_assert(std::is_same_v<decltype(std::declval<const Ex&&>().error()),
                                const int&&>);
+}
+
+TEST(ExpectedVoid, ErrorOr) {
+  {
+    expected<void, int> ex;
+    EXPECT_EQ(ex.error_or(123), 123);
+
+    expected<void, int> unex = unexpected(0);
+    EXPECT_EQ(unex.error_or(123), 0);
+  }
+
+  {
+    expected<void, WeakMoveOnly<int>> ex;
+    EXPECT_EQ(std::move(ex).error_or(123).value, 123);
+
+    expected<void, WeakMoveOnly<int>> unex = unexpected(0);
+    EXPECT_EQ(std::move(unex).error_or(123).value, 0);
+  }
+}
+
+TEST(ExpectedVoid, AndThen) {
+  using ExIn = expected<void, SaveCvRef>;
+  using ExOut = expected<bool, SaveCvRef>;
+
+  auto get_true = []() -> ExOut { return ok(true); };
+
+  ExIn ex;
+  EXPECT_TRUE(ex.and_then(get_true).value());
+  EXPECT_TRUE(std::as_const(ex).and_then(get_true).value());
+  EXPECT_TRUE(std::move(ex).and_then(get_true).value());
+  EXPECT_TRUE(std::move(std::as_const(ex)).and_then(get_true).value());
+
+  ExIn unex = unexpected(SaveCvRef());
+  EXPECT_EQ(unex.and_then(get_true).error().cvref, CvRef::kRef);
+  EXPECT_EQ(std::as_const(unex).and_then(get_true).error().cvref,
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(unex).and_then(get_true).error().cvref, CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(unex)).and_then(get_true).error().cvref,
+            CvRef::kConstRRef);
+
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&>().and_then(get_true)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<const ExIn&>().and_then(get_true)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&&>().and_then(get_true)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<const ExIn&&>().and_then(get_true)),
+                     ExOut>);
+}
+
+TEST(ExpectedVoid, OrElse) {
+  using ExIn = expected<void, SaveCvRef>;
+  using ExOut = expected<void, CvRef>;
+
+  auto get_unex_cvref = [](auto&& x) -> ExOut {
+    return unexpected(SaveCvRef(std::forward<decltype(x)>(x)).cvref);
+  };
+
+  ExIn ex;
+  EXPECT_TRUE(ex.or_else(get_unex_cvref).has_value());
+  EXPECT_TRUE(std::as_const(ex).or_else(get_unex_cvref).has_value());
+  EXPECT_TRUE(std::move(ex).or_else(get_unex_cvref).has_value());
+  EXPECT_TRUE(std::move(std::as_const(ex)).or_else(get_unex_cvref).has_value());
+
+  ExIn unex(unexpect);
+  EXPECT_EQ(unex.or_else(get_unex_cvref).error(), CvRef::kRef);
+  EXPECT_EQ(std::as_const(unex).or_else(get_unex_cvref).error(),
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(unex).or_else(get_unex_cvref).error(), CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(unex)).or_else(get_unex_cvref).error(),
+            CvRef::kConstRRef);
+
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&>().or_else(get_unex_cvref)),
+                     ExOut>);
+  static_assert(std::is_same_v<decltype(std::declval<const ExIn&>().or_else(
+                                   get_unex_cvref)),
+                               ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&&>().or_else(get_unex_cvref)),
+                     ExOut>);
+  static_assert(std::is_same_v<decltype(std::declval<const ExIn&&>().or_else(
+                                   get_unex_cvref)),
+                               ExOut>);
+}
+
+TEST(ExpectedVoid, Transform) {
+  using ExIn = expected<void, SaveCvRef>;
+  using ExOut = expected<bool, SaveCvRef>;
+  auto get_true = [] { return true; };
+
+  {
+    ExIn ex;
+    EXPECT_TRUE(ex.transform(get_true).value());
+    EXPECT_TRUE(std::as_const(ex).transform(get_true).value());
+    EXPECT_TRUE(std::move(ex).transform(get_true).value());
+    EXPECT_TRUE(std::move(std::as_const(ex)).transform(get_true).value());
+
+    ExIn unex(unexpect);
+    EXPECT_EQ(unex.transform(get_true).error().cvref, CvRef::kRef);
+    EXPECT_EQ(std::as_const(unex).transform(get_true).error().cvref,
+              CvRef::kConstRef);
+    EXPECT_EQ(std::move(unex).transform(get_true).error().cvref, CvRef::kRRef);
+    EXPECT_EQ(std::move(std::as_const(unex)).transform(get_true).error().cvref,
+              CvRef::kConstRRef);
+
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&>().transform(get_true)),
+                       ExOut>);
+    static_assert(
+        std::is_same_v<
+            decltype(std::declval<const ExIn&>().transform(get_true)), ExOut>);
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&&>().transform(get_true)),
+                       ExOut>);
+    static_assert(
+        std::is_same_v<
+            decltype(std::declval<const ExIn&&>().transform(get_true)), ExOut>);
+  }
+
+  // Test void transform.
+  {
+    auto do_nothing = [] {};
+
+    ExIn ex;
+    EXPECT_TRUE(ex.transform(do_nothing).has_value());
+    EXPECT_TRUE(std::as_const(ex).transform(do_nothing).has_value());
+    EXPECT_TRUE(std::move(ex).transform(do_nothing).has_value());
+    EXPECT_TRUE(std::move(std::as_const(ex)).transform(do_nothing).has_value());
+
+    ExIn unex(unexpect);
+    EXPECT_EQ(unex.transform(do_nothing).error().cvref, CvRef::kRef);
+    EXPECT_EQ(std::as_const(unex).transform(do_nothing).error().cvref,
+              CvRef::kConstRef);
+    EXPECT_EQ(std::move(unex).transform(do_nothing).error().cvref,
+              CvRef::kRRef);
+    EXPECT_EQ(
+        std::move(std::as_const(unex)).transform(do_nothing).error().cvref,
+        CvRef::kConstRRef);
+
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&>().transform(do_nothing)),
+                       ExIn>);
+    static_assert(
+        std::is_same_v<
+            decltype(std::declval<const ExIn&>().transform(do_nothing)), ExIn>);
+    static_assert(
+        std::is_same_v<decltype(std::declval<ExIn&&>().transform(do_nothing)),
+                       ExIn>);
+    static_assert(std::is_same_v<
+                  decltype(std::declval<const ExIn&&>().transform(do_nothing)),
+                  ExIn>);
+  }
+}
+
+TEST(ExpectedVoid, TransformError) {
+  using ExIn = expected<void, SaveCvRef>;
+  using ExOut = expected<void, CvRef>;
+
+  auto get_cvref = [](auto&& x) {
+    return SaveCvRef(std::forward<decltype(x)>(x)).cvref;
+  };
+
+  ExIn ex;
+  EXPECT_TRUE(ex.transform_error(get_cvref).has_value());
+  EXPECT_TRUE(std::as_const(ex).transform_error(get_cvref).has_value());
+  EXPECT_TRUE(std::move(ex).transform_error(get_cvref).has_value());
+  EXPECT_TRUE(
+      std::move(std::as_const(ex)).transform_error(get_cvref).has_value());
+
+  ExIn unex(unexpect);
+  EXPECT_EQ(unex.transform_error(get_cvref).error(), CvRef::kRef);
+  EXPECT_EQ(std::as_const(unex).transform_error(get_cvref).error(),
+            CvRef::kConstRef);
+  EXPECT_EQ(std::move(unex).transform_error(get_cvref).error(), CvRef::kRRef);
+  EXPECT_EQ(std::move(std::as_const(unex)).transform_error(get_cvref).error(),
+            CvRef::kConstRRef);
+
+  static_assert(
+      std::is_same_v<decltype(std::declval<ExIn&>().transform_error(get_cvref)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<const ExIn&>().transform_error(
+                         get_cvref)),
+                     ExOut>);
+  static_assert(
+      std::is_same_v<
+          decltype(std::declval<ExIn&&>().transform_error(get_cvref)), ExOut>);
+  static_assert(
+      std::is_same_v<decltype(std::declval<const ExIn&&>().transform_error(
+                         get_cvref)),
+                     ExOut>);
 }
 
 TEST(ExpectedVoid, EqualityOperators) {

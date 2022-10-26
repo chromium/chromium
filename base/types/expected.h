@@ -92,6 +92,8 @@ namespace base {
 //   parameter, due to the lack of requires clauses in C++17.
 // * Since equality operators can not be defaulted in C++17, equality and
 //   inequality operators are specified explicitly.
+// * base::expected implements the monadic interface proposal
+//   (https://wg21.link/P2505), which is currently only on track for C++26.
 
 // Class template used as a type hint for constructing a `base::expected`
 // containing a value (i.e. success). Useful when implicit conversion
@@ -214,12 +216,6 @@ constexpr bool operator!=(const unexpected<E>& lhs,
 
 template <typename E>
 unexpected(E) -> unexpected<E>;
-
-// in-place construction of unexpected values
-struct unexpect_t {
-  explicit unexpect_t() = default;
-};
-inline constexpr unexpect_t unexpect{};
 
 // [expected.expected], class template expected
 // https://eel.is/c++draft/expected#expected
@@ -435,6 +431,194 @@ class expected<T, E, /* is_void_v<T> = */ false> {
                        : static_cast<T>(std::forward<U>(v));
   }
 
+  template <typename G>
+  constexpr E error_or(G&& e) const& noexcept {
+    static_assert(std::is_copy_constructible_v<E>,
+                  "expected<T, E>::error_or: E must be copy constructible");
+    static_assert(std::is_convertible_v<G&&, E>,
+                  "expected<T, E>::error_or: G must be convertible to E");
+    return has_value() ? static_cast<E>(std::forward<G>(e)) : error();
+  }
+
+  template <typename G>
+  constexpr E error_or(G&& e) && noexcept {
+    static_assert(std::is_move_constructible_v<E>,
+                  "expected<T, E>::error_or: E must be move constructible");
+    static_assert(std::is_convertible_v<G&&, E>,
+                  "expected<T, E>::error_or: G must be convertible to E");
+    return has_value() ? static_cast<E>(std::forward<G>(e))
+                       : std::move(error());
+  }
+
+  // [expected.object.monadic], monadic operations
+  //
+  // This section implements the monadic interface consisting of `and_then`,
+  // `or_else`, `transform` and `transform_error`.
+
+  // `and_then`: This methods accepts a callable `f` that is invoked with
+  // `value()` in case `has_value()` is true.
+  //
+  // `f`'s return type is required to be a (cvref-qualified) specialization of
+  // base::expected with a matching error_type, i.e. it needs to be of the form
+  // base::expected<U, E> cv ref for some U.
+  //
+  // If `has_value()` is false, this is effectively a no-op, and the function
+  // returns base::expected<U, E>(unexpect, std::forward<E>(error()));
+  //
+  // `and_then` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) & noexcept {
+    return internal::AndThen(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) const& noexcept {
+    return internal::AndThen(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) && noexcept {
+    return internal::AndThen(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) const&& noexcept {
+    return internal::AndThen(std::move(*this), std::forward<F>(f));
+  }
+
+  // `or_else`: This methods accepts a callable `f` that is invoked with
+  // `error()` in case `has_value()` is false.
+  //
+  // `f`'s return type is required to be a (cvref-qualified) specialization of
+  // base::expected with a matching value_type, i.e. it needs to be of the form
+  // base::expected<T, G> cv ref for some G.
+  //
+  // If `has_value()` is true, this is effectively a no-op, and the function
+  // returns base::expected<T, G>(std::forward<T>(value()));
+  //
+  // `or_else` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfCopyConstructible<LazyT> = 0>
+  constexpr auto or_else(F&& f) & noexcept {
+    return internal::OrElse(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfCopyConstructible<LazyT> = 0>
+  constexpr auto or_else(F&& f) const& noexcept {
+    return internal::OrElse(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfMoveConstructible<LazyT> = 0>
+  constexpr auto or_else(F&& f) && noexcept {
+    return internal::OrElse(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfMoveConstructible<LazyT> = 0>
+  constexpr auto or_else(F&& f) const&& noexcept {
+    return internal::OrElse(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) & noexcept {
+    return internal::Transform(*this, std::forward<F>(f));
+  }
+
+  // `transform`: This methods accepts a callable `f` that is invoked with
+  // `value()` in case `has_value()` is true.
+  //
+  // `f`'s return type U needs to be a valid value_type for expected, i.e. any
+  // type for which `remove_cv_t` is either void, or a complete non-array object
+  // type that is not `absl::in_place_t`, `base::unexpect_t`, or a
+  // specialization of `base::ok` or `base::unexpected`.
+  //
+  // Returns an instance of base::expected<remove_cv_t<U>, E> that is
+  // constructed with f(value()) if there is a value, or unexpected(error())
+  // otherwise.
+  //
+  // `transform` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) const& noexcept {
+    return internal::Transform(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) && noexcept {
+    return internal::Transform(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) const&& noexcept {
+    return internal::Transform(std::move(*this), std::forward<F>(f));
+  }
+
+  // `transform_error`: This methods accepts a callable `f` that is invoked with
+  // `error()` in case `has_value()` is false.
+  //
+  // `f`'s return type G needs to be a valid error_type for expected, i.e. any
+  // type for which `remove_cv_t` is a complete non-array object type that is
+  // not `absl::in_place_t`, `base::unexpect_t`, or a specialization of
+  // `base::ok` or `base::unexpected`.
+  //
+  // Returns an instance of base::expected<T, remove_cv_t<G>> that is
+  // constructed with unexpected(f(error())) if there is no value, or value()
+  // otherwise.
+  //
+  // `transform_error` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfCopyConstructible<LazyT> = 0>
+  constexpr auto transform_error(F&& f) & noexcept {
+    return internal::TransformError(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfCopyConstructible<LazyT> = 0>
+  constexpr auto transform_error(F&& f) const& noexcept {
+    return internal::TransformError(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfMoveConstructible<LazyT> = 0>
+  constexpr auto transform_error(F&& f) && noexcept {
+    return internal::TransformError(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyT = T,
+            internal::EnableIfMoveConstructible<LazyT> = 0>
+  constexpr auto transform_error(F&& f) const&& noexcept {
+    return internal::TransformError(std::move(*this), std::forward<F>(f));
+  }
+
  private:
   using Impl = internal::ExpectedImpl<T, E>;
   static constexpr auto kValTag = Impl::kValTag;
@@ -554,6 +738,179 @@ class expected<T, E, /* is_void_v<T> = */ true> {
   constexpr const E& error() const& { return impl_.error(); }
   constexpr E&& error() && { return std::move(error()); }
   constexpr const E&& error() const&& { return std::move(error()); }
+
+  template <typename G>
+  constexpr E error_or(G&& e) const& noexcept {
+    static_assert(std::is_copy_constructible_v<E>,
+                  "expected<T, E>::error_or: E must be copy constructible");
+    static_assert(std::is_convertible_v<G&&, E>,
+                  "expected<T, E>::error_or: G must be convertible to E");
+    return has_value() ? static_cast<E>(std::forward<G>(e)) : error();
+  }
+
+  template <typename G>
+  constexpr E error_or(G&& e) && noexcept {
+    static_assert(std::is_move_constructible_v<E>,
+                  "expected<T, E>::error_or: E must be move constructible");
+    static_assert(std::is_convertible_v<G&&, E>,
+                  "expected<T, E>::error_or: G must be convertible to E");
+    return has_value() ? static_cast<E>(std::forward<G>(e))
+                       : std::move(error());
+  }
+
+  // [expected.void.monadic], monadic operations
+  //
+  // This section implements the monadic interface consisting of `and_then`,
+  // `or_else`, `transform` and `transform_error`. In contrast to the non void
+  // specialization it is mandated that the callables for `and_then` and
+  // `transform`don't take any arguments.
+
+  // `and_then`: This methods accepts a callable `f` that is invoked with
+  // no arguments in case `has_value()` is true.
+  //
+  // `f`'s return type is required to be a (cvref-qualified) specialization of
+  // base::expected with a matching error_type, i.e. it needs to be of the form
+  // base::expected<U, E> cv ref for some U.
+  //
+  // If `has_value()` is false, this is effectively a no-op, and the function
+  // returns base::expected<U, E>(unexpect, std::forward<E>(error()));
+  //
+  // `and_then` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) & noexcept {
+    return internal::AndThen(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) const& noexcept {
+    return internal::AndThen(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) && noexcept {
+    return internal::AndThen(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto and_then(F&& f) const&& noexcept {
+    return internal::AndThen(std::move(*this), std::forward<F>(f));
+  }
+
+  // `or_else`: This methods accepts a callable `f` that is invoked with
+  // `error()` in case `has_value()` is false.
+  //
+  // `f`'s return type is required to be a (cvref-qualified) specialization of
+  // base::expected with a matching value_type, i.e. it needs to be cv void.
+  //
+  // If `has_value()` is true, this is effectively a no-op, and the function
+  // returns base::expected<cv void, G>().
+  //
+  // `or_else` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F>
+  constexpr auto or_else(F&& f) & noexcept {
+    return internal::OrElse(*this, std::forward<F>(f));
+  }
+
+  template <typename F>
+  constexpr auto or_else(F&& f) const& noexcept {
+    return internal::OrElse(*this, std::forward<F>(f));
+  }
+
+  template <typename F>
+  constexpr auto or_else(F&& f) && noexcept {
+    return internal::OrElse(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F>
+  constexpr auto or_else(F&& f) const&& noexcept {
+    return internal::OrElse(std::move(*this), std::forward<F>(f));
+  }
+
+  // `transform`: This methods accepts a callable `f` that is invoked with no
+  // arguments in case `has_value()` is true.
+  //
+  // `f`'s return type U needs to be a valid value_type for expected, i.e. any
+  // type for which `remove_cv_t` is either void, or a complete non-array object
+  // type that is not `absl::in_place_t`, `base::unexpect_t`, or a
+  // specialization of `base::ok` or `base::unexpected`.
+  //
+  // Returns an instance of base::expected<remove_cv_t<U>, E> that is
+  // constructed with f() if has_value() is true, or unexpected(error())
+  // otherwise.
+  //
+  // `transform` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) & noexcept {
+    return internal::Transform(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfCopyConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) const& noexcept {
+    return internal::Transform(*this, std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) && noexcept {
+    return internal::Transform(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F,
+            typename LazyE = E,
+            internal::EnableIfMoveConstructible<LazyE> = 0>
+  constexpr auto transform(F&& f) const&& noexcept {
+    return internal::Transform(std::move(*this), std::forward<F>(f));
+  }
+
+  // `transform_error`: This methods accepts a callable `f` that is invoked with
+  // `error()` in case `has_value()` is false.
+  //
+  // `f`'s return type G needs to be a valid error_type for expected, i.e. any
+  // type for which `remove_cv_t` is a complete non-array object type that is
+  // not `absl::in_place_t`, `base::unexpect_t`, or a specialization of
+  // `base::ok` or `base::unexpected`.
+  //
+  // Returns an instance of base::expected<cv void, remove_cv_t<G>> that is
+  // constructed with unexpected(f(error())) if there is no value, or default
+  // constructed otherwise.
+  //
+  // `transform_error` is overloaded for all possible forms of const and ref
+  // qualifiers.
+  template <typename F>
+  constexpr auto transform_error(F&& f) & noexcept {
+    return internal::TransformError(*this, std::forward<F>(f));
+  }
+
+  template <typename F>
+  constexpr auto transform_error(F&& f) const& noexcept {
+    return internal::TransformError(*this, std::forward<F>(f));
+  }
+
+  template <typename F>
+  constexpr auto transform_error(F&& f) && noexcept {
+    return internal::TransformError(std::move(*this), std::forward<F>(f));
+  }
+
+  template <typename F>
+  constexpr auto transform_error(F&& f) const&& noexcept {
+    return internal::TransformError(std::move(*this), std::forward<F>(f));
+  }
 
  private:
   // Note: Since we can't store void types we use absl::monostate instead.

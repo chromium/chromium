@@ -24,6 +24,13 @@ class ok;
 template <typename E>
 class unexpected;
 
+struct unexpect_t {
+  explicit unexpect_t() = default;
+};
+
+// in-place construction of unexpected values
+inline constexpr unexpect_t unexpect{};
+
 template <typename T, typename E, bool = std::is_void_v<T>>
 class expected;
 
@@ -40,6 +47,12 @@ struct IsUnexpected : std::false_type {};
 
 template <typename E>
 struct IsUnexpected<unexpected<E>> : std::true_type {};
+
+template <typename T>
+struct IsExpected : std::false_type {};
+
+template <typename T, typename E>
+struct IsExpected<expected<T, E>> : std::true_type {};
 
 template <typename T, typename U>
 struct IsConstructibleOrConvertible
@@ -187,6 +200,14 @@ using EnableIfValueAssignment = std::enable_if_t<
     int>;
 
 template <typename T>
+using EnableIfCopyConstructible =
+    std::enable_if_t<std::is_copy_constructible_v<T>, int>;
+
+template <typename T>
+using EnableIfMoveConstructible =
+    std::enable_if_t<std::is_move_constructible_v<T>, int>;
+
+template <typename T>
 using EnableIfNotVoid = std::enable_if_t<std::negation_v<std::is_void<T>>, int>;
 
 template <typename T, typename E>
@@ -323,6 +344,140 @@ class ExpectedImpl {
 
   absl::variant<absl::monostate, T, E> data_;
 };
+
+template <typename Exp, typename F>
+constexpr auto AndThen(Exp&& exp, F&& f) noexcept {
+  using T = remove_cvref_t<decltype(exp.value())>;
+  using E = remove_cvref_t<decltype(exp.error())>;
+
+  auto invoke_f = [&]() -> decltype(auto) {
+    if constexpr (!std::is_void_v<T>) {
+      return std::invoke(std::forward<F>(f), std::forward<Exp>(exp).value());
+    } else {
+      return std::invoke(std::forward<F>(f));
+    }
+  };
+
+  using U = remove_cvref_t<decltype(invoke_f())>;
+  static_assert(internal::IsExpected<U>::value,
+                "expected<T, E>::and_then: Result of f() must be a "
+                "specialization of expected");
+  static_assert(
+      std::is_same_v<typename U::error_type, E>,
+      "expected<T, E>::and_then: Result of f() must have E as error_type");
+
+  return exp.has_value() ? invoke_f()
+                         : U(unexpect, std::forward<Exp>(exp).error());
+}
+
+template <typename Exp, typename F>
+constexpr auto OrElse(Exp&& exp, F&& f) noexcept {
+  using T = remove_cvref_t<decltype(exp.value())>;
+  using G = remove_cvref_t<
+      std::invoke_result_t<F, decltype(std::forward<Exp>(exp).error())>>;
+
+  static_assert(internal::IsExpected<G>::value,
+                "expected<T, E>::or_else: Result of f() must be a "
+                "specialization of expected");
+  static_assert(
+      std::is_same_v<typename G::value_type, T>,
+      "expected<T, E>::or_else: Result of f() must have T as value_type");
+
+  if (!exp.has_value()) {
+    return std::invoke(std::forward<F>(f), std::forward<Exp>(exp).error());
+  }
+
+  if constexpr (!std::is_void_v<T>) {
+    return G(absl::in_place, std::forward<Exp>(exp).value());
+  } else {
+    return G();
+  }
+}
+
+template <typename Exp, typename F>
+constexpr auto Transform(Exp&& exp, F&& f) noexcept {
+  using T = remove_cvref_t<decltype(exp.value())>;
+  using E = remove_cvref_t<decltype(exp.error())>;
+
+  auto invoke_f = [&]() -> decltype(auto) {
+    if constexpr (!std::is_void_v<T>) {
+      return std::invoke(std::forward<F>(f), std::forward<Exp>(exp).value());
+    } else {
+      return std::invoke(std::forward<F>(f));
+    }
+  };
+
+  using U = std::remove_cv_t<decltype(invoke_f())>;
+  if constexpr (!std::is_void_v<U>) {
+    static_assert(!std::is_array_v<U>,
+                  "expected<T, E>::transform: Result of f() should "
+                  "not be an Array");
+    static_assert(!std::is_same_v<U, absl::in_place_t>,
+                  "expected<T, E>::transform: Result of f() should "
+                  "not be absl::in_place_t");
+    static_assert(!std::is_same_v<U, unexpect_t>,
+                  "expected<T, E>::transform: Result of f() should "
+                  "not be unexpect_t");
+    static_assert(!internal::IsOk<U>::value,
+                  "expected<T, E>::transform: Result of f() should "
+                  "not be a specialization of ok");
+    static_assert(!internal::IsUnexpected<U>::value,
+                  "expected<T, E>::transform: Result of f() should "
+                  "not be a specialization of unexpected");
+    static_assert(std::is_object_v<U>,
+                  "expected<T, E>::transform: Result of f() should be "
+                  "an object type");
+  }
+
+  if (!exp.has_value()) {
+    return expected<U, E>(unexpect, std::forward<Exp>(exp).error());
+  }
+
+  if constexpr (!std::is_void_v<U>) {
+    return expected<U, E>(absl::in_place, invoke_f());
+  } else {
+    invoke_f();
+    return expected<U, E>();
+  }
+}
+
+template <typename Exp, typename F>
+constexpr auto TransformError(Exp&& exp, F&& f) noexcept {
+  using T = remove_cvref_t<decltype(exp.value())>;
+  using G = std::remove_cv_t<
+      std::invoke_result_t<F, decltype(std::forward<Exp>(exp).error())>>;
+
+  static_assert(
+      !std::is_array_v<G>,
+      "expected<T, E>::transform_error: Result of f() should not be an Array");
+  static_assert(!std::is_same_v<G, absl::in_place_t>,
+                "expected<T, E>::transform_error: Result of f() should not be "
+                "absl::in_place_t");
+  static_assert(!std::is_same_v<G, unexpect_t>,
+                "expected<T, E>::transform_error: Result of f() should not be "
+                "unexpect_t");
+  static_assert(!internal::IsOk<G>::value,
+                "expected<T, E>::transform_error: Result of f() should not be "
+                "a specialization of ok");
+  static_assert(!internal::IsUnexpected<G>::value,
+                "expected<T, E>::transform_error: Result of f() should not be "
+                "a specialization of unexpected");
+  static_assert(std::is_object_v<G>,
+                "expected<T, E>::transform_error: Result of f() should be an "
+                "object type");
+
+  if (!exp.has_value()) {
+    return expected<T, G>(
+        unexpect,
+        std::invoke(std::forward<F>(f), std::forward<Exp>(exp).error()));
+  }
+
+  if constexpr (std::is_void_v<T>) {
+    return expected<T, G>();
+  } else {
+    return expected<T, G>(absl::in_place, std::forward<Exp>(exp).value());
+  }
+}
 
 }  // namespace internal
 
