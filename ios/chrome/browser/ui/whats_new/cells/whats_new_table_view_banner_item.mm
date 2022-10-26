@@ -21,6 +21,8 @@ const CGFloat kStackViewMargin = 16.0;
 const CGFloat kItemLeadingMargin = 16.0;
 // The height of the image.
 const CGFloat kImageViewHeight = 220.0;
+// The width of the image.
+const CGFloat kImageViewWidth = 340.0;
 // The size of the space between each items in the stack view.
 const CGFloat kStackViewVerticalSpacings = 10.0;
 
@@ -73,6 +75,7 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
 @property(nonatomic, strong)
     NSLayoutConstraint* stackViewBottomAnchorConstraint;
 @property(nonatomic, strong) UIStackView* stackView;
+@property(nonatomic, strong) UIView* bannerView;
 @property(nonatomic, assign) BOOL isBannerAtBottom;
 
 @end
@@ -90,10 +93,16 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
   if (self) {
     self.isAccessibilityElement = YES;
 
+    // Banner View.
+    self.bannerView = [[UIView alloc] init];
+
     // Banner image.
     _bannerImageView = [[UIImageView alloc] init];
     _bannerImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _isBannerAtBottom = NO;
+    [self.bannerView addSubview:_bannerImageView];
+    self.bannerView.backgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
 
     // Text label.
     _textLabel = [[UILabel alloc] init];
@@ -123,7 +132,7 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
 
     // Stack view.
     _stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      _bannerImageView, _sectionTextLabel, _textLabel, _detailTextLabel
+      self.bannerView, _sectionTextLabel, _textLabel, _detailTextLabel
     ]];
     _stackView.axis = UILayoutConstraintAxisVertical;
     _stackView.alignment = UIStackViewAlignmentLeading;
@@ -141,15 +150,23 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
                        constant:-kStackViewMargin];
 
     [NSLayoutConstraint activateConstraints:@[
+      // Banner view constraints.
+      [self.bannerView.heightAnchor constraintEqualToConstant:kImageViewHeight],
+      [self.bannerView.widthAnchor
+          constraintEqualToAnchor:_stackView.widthAnchor],
+      [self.bannerView.leadingAnchor
+          constraintEqualToAnchor:_stackView.leadingAnchor],
+      [self.bannerView.trailingAnchor
+          constraintEqualToAnchor:_stackView.trailingAnchor],
+
       // Banner image constraints.
+      [_bannerImageView.centerYAnchor
+          constraintEqualToAnchor:self.bannerView.centerYAnchor],
+      [_bannerImageView.centerXAnchor
+          constraintEqualToAnchor:self.bannerView.centerXAnchor],
       [_bannerImageView.heightAnchor
           constraintEqualToConstant:kImageViewHeight],
-      [_bannerImageView.widthAnchor
-          constraintEqualToAnchor:_stackView.widthAnchor],
-      [_bannerImageView.leadingAnchor
-          constraintEqualToAnchor:_stackView.leadingAnchor],
-      [_bannerImageView.trailingAnchor
-          constraintEqualToAnchor:_stackView.trailingAnchor],
+      [_bannerImageView.widthAnchor constraintEqualToConstant:kImageViewWidth],
 
       // Section text label constraints.
       [_sectionTextLabel.leadingAnchor
@@ -187,7 +204,7 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
 }
 
 - (void)setBannerImageAtBottom {
-  [self.stackView addArrangedSubview:_bannerImageView];
+  [self.stackView addArrangedSubview:self.bannerView];
 
   // Update stack view constraints to remove margin at the bottom and add margin
   // at the top of the content view.
@@ -197,7 +214,7 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
 }
 
 - (void)setBannerImageAtTop {
-  [self.stackView insertArrangedSubview:_bannerImageView atIndex:0];
+  [self.stackView insertArrangedSubview:self.bannerView atIndex:0];
 
   // Update stack view constraints to add margin at the bottom and remove margin
   // at the top of the content view.
