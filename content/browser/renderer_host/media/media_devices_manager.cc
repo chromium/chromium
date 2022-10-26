@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <functional>
 #include <map>
 #include <string>
@@ -1006,9 +1005,8 @@ void MediaDevicesManager::UpdateSnapshot(
 
   // Update the cached snapshot and send notifications only if the device list
   // has changed.
-  if (old_snapshot.size() != new_snapshot.size() ||
-      !std::equal(
-          new_snapshot.begin(), new_snapshot.end(), old_snapshot.begin(),
+  if (!base::ranges::equal(
+          new_snapshot, old_snapshot,
           ignore_group_id
               ? [](const blink::WebMediaDeviceInfo& lhs,
                    const blink::WebMediaDeviceInfo& rhs) { return lhs == rhs; }

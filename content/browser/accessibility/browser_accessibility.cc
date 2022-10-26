@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2439,9 +2440,7 @@ ui::TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
           attributes_map.rbegin()->second;
       // Must check the size, otherwise if attributes is a subset of
       // prev_attributes, they would appear to be equal.
-      if (attributes.size() != previous_attributes.size() ||
-          !std::equal(attributes.begin(), attributes.end(),
-                      previous_attributes.begin())) {
+      if (!base::ranges::equal(attributes, previous_attributes)) {
         attributes_map[start_offset] = attributes;
       }
     }

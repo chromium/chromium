@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -45,10 +46,8 @@ bool operator==(const PolicyContainerPolicies& lhs,
   return lhs.referrer_policy == rhs.referrer_policy &&
          lhs.ip_address_space == rhs.ip_address_space &&
          lhs.is_web_secure_context == rhs.is_web_secure_context &&
-         std::equal(lhs.content_security_policies.begin(),
-                    lhs.content_security_policies.end(),
-                    rhs.content_security_policies.begin(),
-                    rhs.content_security_policies.end()) &&
+         base::ranges::equal(lhs.content_security_policies,
+                             rhs.content_security_policies) &&
          lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
          lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
          lhs.sandbox_flags == rhs.sandbox_flags &&
