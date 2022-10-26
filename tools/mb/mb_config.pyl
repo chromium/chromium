@@ -260,7 +260,7 @@
     },
 
     'chromium.fuchsia': {
-      'Deterministic Fuchsia (dbg)': 'debug_bot_fuchsia',
+      'Deterministic Fuchsia (dbg)': 'debug_bot_fuchsia_reclient',
       'fuchsia-arm64-cast-receiver-rel': 'release_bot_fuchsia_arm64_cast_receiver_reclient',
       'fuchsia-arm64-rel': 'release_bot_fuchsia_arm64_reclient',
       'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver_reclient',

@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -53,9 +53,6 @@ ci.builder(
     ],
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    reclient_instance = None,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = None,
 )
 
 ci.builder(

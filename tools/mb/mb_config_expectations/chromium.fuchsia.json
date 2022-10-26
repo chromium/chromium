@@ -5,7 +5,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-arm64-cast-receiver-rel": {
