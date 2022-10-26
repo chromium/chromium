@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
@@ -22,9 +23,8 @@ FontServiceThread::FontServiceThread()
 
 FontServiceThread::~FontServiceThread() {
   // Ensure the remote is unbound on the appropriate sequence.
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce([](mojo::Remote<mojom::FontService>) {},
-                                        std::move(font_service_)));
+  task_runner_->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(font_service_)));
 }
 
 void FontServiceThread::Init(

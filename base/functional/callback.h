@@ -136,6 +136,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
   constexpr OnceCallback& operator=(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
     *this = internal::ToDoNothingCallback<true, R, Args...>(std::move(tag));
+    return *this;
   }
 
   explicit OnceCallback(internal::BindStateBase* bind_state)
@@ -278,6 +279,7 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
   constexpr RepeatingCallback& operator=(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
     *this = internal::ToDoNothingCallback<false, R, Args...>(std::move(tag));
+    return this;
   }
 
   explicit RepeatingCallback(internal::BindStateBase* bind_state)
