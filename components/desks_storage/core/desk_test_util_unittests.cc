@@ -13,9 +13,9 @@ namespace desks_storage {
 using DeskTestUtilTest = testing::Test;
 
 TEST_F(DeskTestUtilTest, PopulateRegistryCacheHasAppInfo) {
-  AccountId account_id = AccountId::FromUserEmail("test@gmail.com");
   auto cache = std::make_unique<apps::AppRegistryCache>();
-  desk_test_util::PopulateAppRegistryCache(account_id, cache.get());
+  desk_test_util::PopulateAppRegistryCache(
+      AccountId::FromUserEmail("test@gmail.com"), cache.get());
   EXPECT_EQ(10ul, cache->GetAllApps().size());
 }
 

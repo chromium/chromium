@@ -4,6 +4,7 @@
 
 #include "components/desks_storage/core/desk_sync_bridge.h"
 
+#include <stddef.h>
 #include <map>
 #include <set>
 #include <utility>
@@ -1638,7 +1639,7 @@ TEST_F(DeskSyncBridgeTest, GetMaxEntryCountShouldIncreaseWithAdminTemplates) {
 
   AddTwoTemplates();
 
-  std::size_t max_entry_count = bridge()->GetMaxEntryCount();
+  size_t max_entry_count = bridge()->GetMaxEntryCount();
 
   SetOneAdminTemplate();
 

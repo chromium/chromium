@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "components/desks_storage/core/desk_model_wrapper.h"
+
+#include <stddef.h>
+#include <memory>
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/files/file_path.h"
@@ -345,7 +346,7 @@ TEST_F(DeskModelWrapperTest, CanAddSaveAndRecallDeskEntry) {
 TEST_F(DeskModelWrapperTest,
        ReturnsErrorWhenAddingTooManySaveAndRecallDeskEntry) {
   InitializeBridge();
-  for (std::size_t index = 0;
+  for (size_t index = 0;
        index < model_wrapper_->GetMaxSaveAndRecallDeskEntryCount(); ++index) {
     AddSavedDeskToDeskModel(
         MakeTestDeskTemplate(index, ash::DeskTemplateType::kSaveAndRecall));
@@ -657,7 +658,7 @@ TEST_F(DeskModelWrapperTest, GetMaxEntryCountShouldIncreaseWithAdminTemplates) {
   // Add two user templates.
   AddTwoTemplates();
 
-  std::size_t max_entry_count = model_wrapper_->GetMaxDeskTemplateEntryCount();
+  size_t max_entry_count = model_wrapper_->GetMaxDeskTemplateEntryCount();
 
   // Set one admin template.
   model_wrapper_->SetPolicyDeskTemplates(GetPolicyStringWithOneTemplate());
@@ -714,13 +715,13 @@ TEST_F(DeskModelWrapperTest, AddSaveAndRecallDeskEntry) {
 TEST_F(DeskModelWrapperTest, CanAddMaxEntriesForBothTypes) {
   InitializeBridge();
 
-  for (std::size_t index = 0u;
+  for (size_t index = 0u;
        index < model_wrapper_->GetMaxSaveAndRecallDeskEntryCount(); ++index) {
     model_wrapper_->AddOrUpdateEntry(
         MakeTestDeskTemplate(index, ash::DeskTemplateType::kSaveAndRecall),
         base::BindOnce(&VerifyEntryAddedCorrectly));
   }
-  for (std::size_t index = 0u;
+  for (size_t index = 0u;
        index < model_wrapper_->GetMaxDeskTemplateEntryCount(); ++index) {
     model_wrapper_->AddOrUpdateEntry(
         MakeTestDeskTemplate(index, ash::DeskTemplateType::kTemplate),
@@ -737,7 +738,7 @@ TEST_F(DeskModelWrapperTest,
        CanAddMaxEntriesDeskTemplatesAndStillAddEntryForSaveAndRecallDesks) {
   InitializeBridge();
 
-  for (std::size_t index = 0u;
+  for (size_t index = 0u;
        index < model_wrapper_->GetMaxDeskTemplateEntryCount(); ++index) {
     model_wrapper_->AddOrUpdateEntry(
         MakeTestDeskTemplate(index, ash::DeskTemplateType::kTemplate),
@@ -759,7 +760,7 @@ TEST_F(DeskModelWrapperTest,
        CanAddMaxEntriesForSaveAndRecallDeskAndStillAddEntryForDeskTemplate) {
   InitializeBridge();
 
-  for (std::size_t index = 0u;
+  for (size_t index = 0u;
        index < model_wrapper_->GetMaxSaveAndRecallDeskEntryCount(); ++index) {
     model_wrapper_->AddOrUpdateEntry(
         MakeTestDeskTemplate(index, ash::DeskTemplateType::kSaveAndRecall),

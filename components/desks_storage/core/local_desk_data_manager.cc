@@ -73,9 +73,9 @@ std::unique_ptr<ash::DeskTemplate> ReadFileToTemplate(
 
   std::string error_message;
   int error_code;
-  JSONStringValueDeserializer deserializer(value_string);
   std::unique_ptr<base::Value> desk_template_value =
-      deserializer.Deserialize(&error_code, &error_message);
+      JSONStringValueDeserializer(value_string)
+          .Deserialize(&error_code, &error_message);
 
   if (!desk_template_value) {
     DVLOG(1) << "Fail to deserialize json value from string with error code: "
@@ -111,9 +111,7 @@ bool IsValidTemplateFileName(const char* name) {
 bool WriteTemplateFile(const base::FilePath& path_to_template,
                        base::Value json_value) {
   std::string json_string;
-  JSONStringValueSerializer serializer(&json_string);
-
-  serializer.Serialize(json_value);
+  JSONStringValueSerializer(&json_string).Serialize(json_value);
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -428,8 +426,6 @@ LocalDeskDataManager::LoadCacheResult
 LocalDeskDataManager::LoadCacheOnBackgroundSequence(
     const base::FilePath& user_data_dir_path) {
   std::vector<std::unique_ptr<ash::DeskTemplate>> entries;
-  base::DirReaderPosix user_data_dir_reader(
-      user_data_dir_path.AsUTF8Unsafe().c_str());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   if (!base::DirectoryExists(user_data_dir_path)) {
@@ -486,9 +482,8 @@ DeskModel::AddOrUpdateEntryStatus LocalDeskDataManager::AddOrUpdateEntryTask(
     const base::FilePath& local_saved_desk_path,
     const base::GUID uuid,
     base::Value entry_base_value) {
-  const base::FilePath fully_qualified_path =
-      GetFullyQualifiedPath(local_saved_desk_path, uuid);
-  return WriteTemplateFile(fully_qualified_path, std::move(entry_base_value))
+  return WriteTemplateFile(GetFullyQualifiedPath(local_saved_desk_path, uuid),
+                           std::move(entry_base_value))
              ? AddOrUpdateEntryStatus::kOk
              : AddOrUpdateEntryStatus::kFailure;
 }
@@ -530,17 +525,16 @@ LocalDeskDataManager::DeleteTaskResult
 LocalDeskDataManager::DeleteAllEntriesTask(
     const base::FilePath& local_saved_desk_path,
     std::vector<std::unique_ptr<ash::DeskTemplate>> entries) {
-  base::DirReaderPosix dir_reader(local_saved_desk_path.AsUTF8Unsafe().c_str());
-  if (!dir_reader.IsValid()) {
+  if (!base::DirReaderPosix(local_saved_desk_path.AsUTF8Unsafe().c_str())
+           .IsValid()) {
     return {DeleteEntryStatus::kFailure, std::move(entries)};
   }
   DeleteEntryStatus overall_delete_successes = DeleteEntryStatus::kOk;
   for (auto it = entries.begin(); it != entries.end();) {
-    const base::FilePath fully_qualified_path =
-        GetFullyQualifiedPath(local_saved_desk_path, (*it)->uuid());
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    bool delete_success = base::DeleteFile(fully_qualified_path);
+    bool delete_success = base::DeleteFile(
+        GetFullyQualifiedPath(local_saved_desk_path, (*it)->uuid()));
     // On a successful file delete, we perform a move and delete on the vector
     // by moving the last entry in the vector to the beginning and delete the
     // last entry. On a failed file delete, we increment the iterator up by one

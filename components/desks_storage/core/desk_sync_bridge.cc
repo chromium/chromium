@@ -75,14 +75,14 @@ namespace {
 using syncer::ModelTypeStore;
 
 // The maximum number of templates the local storage can hold.
-constexpr std::size_t kMaxTemplateCount = 6u;
+constexpr size_t kMaxTemplateCount = 6u;
 
 // The maximum number of bytes a template can be.
 // Sync server silently ignores large items. The client-side
 // needs to check item size to avoid sending large items.
 // This limit follows precedent set by the chrome extension API:
 // chrome.storage.sync.QUOTA_BYTES_PER_ITEM.
-constexpr std::size_t kMaxTemplateSize = 8192u;
+constexpr size_t kMaxTemplateSize = 8192u;
 
 // Allocate a EntityData and copies `specifics` into it.
 std::unique_ptr<syncer::EntityData> CopyToEntityData(
