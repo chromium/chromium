@@ -40,9 +40,8 @@ AttestationCertificatesSyncerImpl::Factory::Create(
     PrefService* pref_service,
     AttestationCertificatesSyncer::GetAttestationCertificatesFunction
         get_attestation_certificates_function) {
-  if (!features::IsCrossDeviceAttestationCertificateGenerationEnabled()) {
-    PA_LOG(WARNING)
-        << "Attestation certificate generation not enabled, returning null";
+  if (!features::IsEcheSWAEnabled()) {
+    PA_LOG(ERROR) << "Eche feature not enabled, returning null";
     return nullptr;
   }
   if (test_factory_) {
@@ -89,7 +88,7 @@ AttestationCertificatesSyncerImpl::~AttestationCertificatesSyncerImpl() =
 void AttestationCertificatesSyncerImpl::UpdateCerts(
     NotifyCallback callback,
     const std::string& user_key) {
-  DCHECK(features::IsCrossDeviceAttestationCertificateGenerationEnabled());
+  DCHECK(features::IsEcheSWAEnabled());
 
   PA_LOG(INFO) << __func__;
 
@@ -127,7 +126,7 @@ AttestationCertificatesSyncerImpl::CalculateTimeToRegeneration() {
 }
 
 void AttestationCertificatesSyncerImpl::ScheduleSync() {
-  DCHECK(features::IsCrossDeviceAttestationCertificateGenerationEnabled());
+  DCHECK(features::IsEcheSWAEnabled());
 
   PA_LOG(INFO) << "Checking attestation certificates status...";
   base::TimeDelta time_to_regeneration_threshold =
