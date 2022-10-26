@@ -10,7 +10,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*unittest\.cc": [
-    "+ash/services/secure_channel",
+    "+chromeos/ash/services/secure_channel",
     "+components/sync_preferences/testing_pref_service_syncable.h",
   ]
 }

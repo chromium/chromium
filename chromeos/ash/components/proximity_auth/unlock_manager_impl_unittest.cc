@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/services/secure_channel/connection.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_simple_task_runner.h"
@@ -23,6 +22,7 @@
 #include "chromeos/ash/components/proximity_auth/proximity_monitor.h"
 #include "chromeos/ash/components/proximity_auth/remote_device_life_cycle.h"
 #include "chromeos/ash/components/proximity_auth/remote_status_update.h"
+#include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"

@@ -15,8 +15,5 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 # easy way to test your services.
 source_set("unit_tests") {
   testonly = true
-  deps = [
-    "//ash/services/device_sync:unit_tests",
-    "//ash/services/secure_channel:unit_tests",
-  ]
+  deps = [ "//ash/services/device_sync:unit_tests" ]
 }

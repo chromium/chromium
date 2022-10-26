@@ -82,11 +82,11 @@ static_library("test_support") {
 
   deps = [
     "//ash/services/device_sync/proto",
-    "//ash/services/secure_channel:test_support",
     "//base",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/secure_channel:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/client",
     "//testing/gmock",
   ]
@@ -110,7 +110,6 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/constants",
     "//ash/public/cpp",
-    "//ash/services/secure_channel:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/multidevice",
@@ -118,6 +117,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
+    "//chromeos/ash/services/secure_channel:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
