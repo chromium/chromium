@@ -286,7 +286,6 @@ struct SameSizeAsDocumentLoader
   const KURL web_bundle_claimed_url;
   ukm::SourceId ukm_source_id;
   UseCounterImpl use_counter;
-  Dactyloscoper dactyloscoper;
   const base::TickClock* clock;
   const Vector<OriginTrialFeature> initiator_origin_trial_features;
   const Vector<String> force_enabled_origin_trials;

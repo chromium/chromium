@@ -39,10 +39,6 @@ class CORE_EXPORT Dactyloscoper {
   Dactyloscoper(const Dactyloscoper&) = delete;
   Dactyloscoper& operator=(const Dactyloscoper&) = delete;
 
-  void Record(WebFeature);
-
-  static void Record(ExecutionContext*, WebFeature);
-
   // These are helpers used by the generated bindings code when invoking IDL
   // methods with HighEntropy=Direct.
   static void RecordDirectSurface(ExecutionContext*,

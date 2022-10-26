@@ -1460,24 +1460,21 @@ def make_report_high_entropy(cg_context):
     if ext_attrs is None:
         return None
 
+    if not ext_attrs.value_of("HighEntropy") == "Direct":
+        return None
+
     assert "Measure" in ext_attrs or "MeasureAs" in ext_attrs, "{}: {}".format(
         cg_context.idl_location_and_name,
-        "[HighEntropy] must be specified with either [Measure] or "
+        "[HighEntropy=Direct] must be specified with either [Measure] or "
         "[MeasureAs].")
 
-    if ext_attrs.value_of("HighEntropy") == "Direct":
-        text = _format(
-            "// [HighEntropy=Direct]\n"
-            "Dactyloscoper::RecordDirectSurface("
-            "${current_execution_context}, {measure_constant}, "
-            "${return_value});",
-            measure_constant=_make_measure_web_feature_constant(cg_context))
-    else:
-        text = _format(
-            "// [HighEntropy]\n"
-            "Dactyloscoper::Record("
-            "${current_execution_context}, {measure_constant});",
-            measure_constant=_make_measure_web_feature_constant(cg_context))
+    text = _format(
+        "// [HighEntropy=Direct]\n"
+        "Dactyloscoper::RecordDirectSurface("
+        "${current_execution_context}, {measure_constant}, "
+        "${return_value});",
+        measure_constant=_make_measure_web_feature_constant(cg_context))
+
     node = TextNode(text)
     node.accumulate(
         CodeGenAccumulator.require_include_headers(

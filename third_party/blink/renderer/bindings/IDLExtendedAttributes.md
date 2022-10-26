@@ -948,17 +948,14 @@ Summary: Denotes an API that exposes data that folks on the internet find useful
 Attributes and methods marked as `[HighEntropy]` are known to be practically useful for [identifying particular clients](https://dev.chromium.org/Home/chromium-security/client-identification-mechanisms) on the web today.
 Both methods and attribute/constant getters annotated with this attribute are wired up to [`Dactyloscoper::Record`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/dactyloscoper.h) for additional processing.
 
-This attribute must be accompanied by either `[Measure]` or `[MeasureAs]`.
-
 ```webidl
-[HighEntropy, Measure] attribute Node interestingAttribute;
-[HighEntropy, MeasureAs=InterestingNamedAttribute] attribute Node interestingNamedAttribute;
-[HighEntropy, Measure] Node getInterestingNode();
-[HighEntropy, Measure] const INTERESTING_CONSTANT = 1;
+[HighEntropy] attribute Node interestingAttribute;
+[HighEntropy] Node getInterestingNode();
+[HighEntropy] const INTERESTING_CONSTANT = 1;
 ```
 
 Attributes and methods labeled with `[HighEntropy=Direct]` are simple surfaces which can be expressed as a sequence of bytes without any need for additional parsing logic.
-For now, this label is only supported for attribute getters, although the `[HighEntropy]` label is supported more broadly.
+For now, this label is only supported for attribute getters, although the `[HighEntropy]` label is supported more broadly. Note that `[HighEntropy=Direct]` must be accompanied by either `[Measure]` or `[MeasureAs]`.
 
 ```webidl
 [HighEntropy=Direct, MeasureAs=SimpleNamedAttribute] attribute unsigned long simpleNamedAttribute;

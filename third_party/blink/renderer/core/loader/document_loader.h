@@ -325,7 +325,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   }
 
   UseCounterImpl& GetUseCounter() { return use_counter_; }
-  Dactyloscoper& GetDactyloscoper() { return dactyloscoper_; }
 
   PrefetchedSignedExchangeManager* GetPrefetchedSignedExchangeManager() const;
 
@@ -728,8 +727,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // page load metrics that aggregates usage from frames to one page load and
   // report feature usage to UMA histograms per page load.
   UseCounterImpl use_counter_;
-
-  Dactyloscoper dactyloscoper_;
 
   const base::TickClock* clock_;
 

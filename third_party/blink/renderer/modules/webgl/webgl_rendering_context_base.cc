@@ -3268,7 +3268,6 @@ ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
   if (name == WebGLDebugRendererInfo::ExtensionName()) {
     ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kWebGLDebugRendererInfo);
-    Dactyloscoper::Record(context, WebFeature::kWebGLDebugRendererInfo);
   }
 
   WebGLExtension* extension = EnableExtensionIfSupported(name);

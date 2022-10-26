@@ -24,11 +24,6 @@ namespace blink {
 
 Dactyloscoper::Dactyloscoper() = default;
 
-void Dactyloscoper::Record(WebFeature feature) {
-  // TODO(mkwst): This is a stub. We'll pull in more interesting functionality
-  // here over time.
-}
-
 namespace {
 
 bool ShouldSample(WebFeature feature) {
@@ -86,17 +81,6 @@ String V8ValueToString(v8::Local<v8::Context> current_context,
 }
 
 }  // namespace
-
-// static
-void Dactyloscoper::Record(ExecutionContext* context, WebFeature feature) {
-  // TODO: Workers.
-  if (!context)
-    return;
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    if (auto* frame = window->GetFrame())
-      frame->Loader().GetDocumentLoader()->GetDactyloscoper().Record(feature);
-  }
-}
 
 // static
 void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
