@@ -422,8 +422,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         function copyCameraTexture(view) {
             const cameraTexture = glBinding.getCameraImage(view.camera);
 
-            scaledWidth = view.camera.width / imgScale;
-            scaledHeight = view.camera.height / imgScale;
+            scaledWidth = Math.floor(view.camera.width / imgScale);
+            scaledHeight = Math.floor(view.camera.height / imgScale);
             const texture_bytes = scaledWidth * scaledHeight * 4;
             if (!readback_pixels || readback_pixels.length != texture_bytes) {
                 readback_pixels = new Uint8Array(texture_bytes);
