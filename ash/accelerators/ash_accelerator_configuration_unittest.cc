@@ -105,13 +105,13 @@ class AshAcceleratorConfigurationTest : public testing::Test {
 
 TEST_F(AshAcceleratorConfigurationTest, VerifyAcceleratorMappingPopulated) {
   const AcceleratorData test_data[] = {
-      {/**trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        SWITCH_TO_LAST_USED_IME},
-      {/**trigger_on_press=*/true, ui::VKEY_SPACE,
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
-      {/**trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
        CYCLE_FORWARD_MRU},
-      {/**trigger_on_press=*/true, ui::VKEY_TAB,
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
   };
 
@@ -126,33 +126,33 @@ TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
   // associated accelerators: (deprecated) ESCAPE + SHIFT and
   // (active) ESCAPE + COMMAND.
   const AcceleratorData initial_test_data[] = {
-      {/**trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
        CYCLE_FORWARD_MRU},
-      {/**trigger_on_press=*/true, ui::VKEY_TAB,
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
-      {/**trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
        SHOW_TASK_MANAGER},
   };
 
   const AcceleratorData expected_test_data[] = {
-      {/**trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
        CYCLE_FORWARD_MRU},
-      {/**trigger_on_press=*/true, ui::VKEY_TAB,
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
-      {/**trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
        SHOW_TASK_MANAGER},
-      {/**trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
        SHOW_TASK_MANAGER},
   };
 
   const DeprecatedAcceleratorData deprecated_data[] = {
-      {SHOW_TASK_MANAGER, /**uma_histogram_name=*/"deprecated.showTaskManager",
-       /**notification_message_id=*/1, /*old_shortcut_id=*/1,
-       /**new_shortcut_id=*/2, /**deprecated_enabled=*/true},
+      {SHOW_TASK_MANAGER, /*uma_histogram_name=*/"deprecated.showTaskManager",
+       /*notification_message_id=*/1, /*old_shortcut_id=*/1,
+       /*new_shortcut_id=*/2, /*deprecated_enabled=*/true},
   };
 
   const AcceleratorData test_deprecated_accelerators[] = {
-      {/**trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
        SHOW_TASK_MANAGER},
   };
 
