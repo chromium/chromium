@@ -327,6 +327,7 @@ is running within. It has the following members:
      *   "arm64": 64-bit ARM
      *   "x86": x86
      *   "x86_64": x86-64
+     *   "x64": x64
 
 #### `app` Objects (Update Check Request)
 Each managed application is represented by exactly one `app` object. It has the
@@ -524,6 +525,8 @@ object in the update check request.
  *   `app`: A list of `app` objects. There is one object for each `app` in the
      request body.
  *   `daystart`: A `daystart` object.
+ *   `systemrequirements`: A `systemrequirements` object. The server will not
+     send this element, but it may be present in offline installer manifests.
  *   `protocol`: The version of the Omaha protocol. Servers responding with this
      protocol must send a value of "3.1".
  *   `server`: A string identifying the server or server family for diagnostic
@@ -537,6 +540,22 @@ server's locale. It has the following members:
      received. The client should generally save this value for use in future
      update checks (for examples, see `request.app.ping.rd` and
      `request.app.installdate`).
+
+#### `systemrequirements` Objects (Update Check Response)
+A `systemrequirements` object contains information about the operating system
+that the application requires to install. It has the following members:
+ *   `platform`: The operating system family that the application requires
+     (e.g. "win", "mac", "linux", "ios", "android"), or "" if not applicable.
+ *   `arch`: Expected host processor architecture that the app is compatible
+     with. `arch` can be a single entry, or multiple entries separated with `,`.
+     Entries prefixed with a `-` (negative entries) indicate non-compatible
+     hosts. Examples:
+     * `arch` == "x86".
+     * `arch` == "x64".
+     * `arch` == "x86,x64,-arm64": installation will fail if the underlying host
+       is arm64.
+ *   `min_os_version`: The minimum required version of the operating system, or
+     "" if not applicable.
 
 #### `app` Objects (Update Check Response)
 An app object represents a per-application acknowledgement of the request. If an

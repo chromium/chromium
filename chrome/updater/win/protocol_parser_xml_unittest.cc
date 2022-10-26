@@ -63,6 +63,10 @@ TEST(ProtocolParserXML, Success) {
             update_client::ProtocolParser::kNoDaystart);
   EXPECT_EQ(results.list.size(), size_t{1});
 
+  EXPECT_EQ(results.system_requirements.platform, "win");
+  EXPECT_EQ(results.system_requirements.arch, "x64");
+  EXPECT_EQ(results.system_requirements.min_os_version, "6.1");
+
   const update_client::ProtocolParser::Result& result = results.list[0];
   EXPECT_TRUE(result.action_run.empty());
   EXPECT_EQ(result.cohort_attrs.size(), size_t{0});

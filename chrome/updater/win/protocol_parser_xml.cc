@@ -238,6 +238,18 @@ bool ProtocolParserXML::ParseResponse(IXMLDOMNode* node, Results* results) {
 
 bool ProtocolParserXML::ParseSystemRequirements(IXMLDOMNode* node,
                                                 Results* results) {
+  std::string platform;
+  if (ReadStringAttribute(node, L"platform", &platform))
+    results->system_requirements.platform = platform;
+
+  std::string arch;
+  if (ReadStringAttribute(node, L"arch", &arch))
+    results->system_requirements.arch = arch;
+
+  std::string min_os_version;
+  if (ReadStringAttribute(node, L"min_os_version", &min_os_version))
+    results->system_requirements.min_os_version = min_os_version;
+
   return true;
 }
 

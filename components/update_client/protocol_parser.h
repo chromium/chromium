@@ -122,6 +122,24 @@ class ProtocolParser {
     std::vector<Data> data;
   };
 
+  struct SystemRequirements {
+    std::string platform;  // For example, "win".
+
+    // Expected host processor architecture that the app is compatible with.
+    // `arch` can be a single entry, or multiple entries separated with `,`.
+    // Entries prefixed with a `-` (negative entries) indicate non-compatible
+    // hosts.
+    //
+    // Examples:
+    // * `arch` == "x86".
+    // * `arch` == "x64".
+    // * `arch` == "x86,x64,-arm64": the app will fail installation if the
+    // underlying host is arm64.
+    std::string arch;
+
+    std::string min_os_version;  // major.minor.
+  };
+
   static const int kNoDaystart = -1;
   struct Results {
     Results();
@@ -133,6 +151,8 @@ class ProtocolParser {
 
     // This will be >= 0, or kNoDaystart if the <daystart> tag was not present.
     int daystart_elapsed_days = kNoDaystart;
+
+    SystemRequirements system_requirements;
     std::vector<Result> list;
   };
 

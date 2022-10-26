@@ -340,6 +340,21 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
       results->daystart_elapsed_days = elapsed_days->GetInt();
   }
 
+  const auto* systemrequirements_node =
+      response_node->FindKey("systemrequirements");
+  if (systemrequirements_node && systemrequirements_node->is_dict()) {
+    const auto* platform = systemrequirements_node->FindKey("platform");
+    if (platform && platform->is_string())
+      results->system_requirements.platform = platform->GetString();
+    const auto* arch = systemrequirements_node->FindKey("arch");
+    if (arch && arch->is_string())
+      results->system_requirements.arch = arch->GetString();
+    const auto* min_os_version =
+        systemrequirements_node->FindKey("min_os_version");
+    if (min_os_version && min_os_version->is_string())
+      results->system_requirements.min_os_version = min_os_version->GetString();
+  }
+
   const auto* app_node = response_node->FindKey("app");
   if (app_node && app_node->is_list()) {
     for (const auto& app : app_node->GetList()) {

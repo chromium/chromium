@@ -13,6 +13,9 @@ namespace update_client {
 const char* kJSONValid = R"()]}'
   {"response":{
    "protocol":"3.1",
+   "systemrequirements":{"platform":"win",
+                         "arch":"x64",
+                         "min_os_version":"6.1"},
    "app":[
     {"appid":"12345",
      "status":"ok",
@@ -408,6 +411,9 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     // Parse some valid XML, and check that all params came out as expected.
     EXPECT_TRUE(parser->Parse(kJSONValid));
     EXPECT_TRUE(parser->errors().empty());
+    EXPECT_EQ(parser->results().system_requirements.platform, "win");
+    EXPECT_EQ(parser->results().system_requirements.arch, "x64");
+    EXPECT_EQ(parser->results().system_requirements.min_os_version, "6.1");
     EXPECT_EQ(1u, parser->results().list.size());
     const auto* first_result = &parser->results().list[0];
     EXPECT_STREQ("ok", first_result->status.c_str());
