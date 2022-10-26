@@ -23373,16 +23373,259 @@ metrics consent we also won't be able to send UMA metrics. -->
 
 <enum name="CryptohomeErrorLocationWithTPMError">
 <!--
-  This enum is intended to be populated automatically by platform2/src/cryptohome/error/tool/location_db.py. It populates values that indeed occurs in the wild, and the set of such values is gathered through actual UMA data.
+  This enum is intended to be populated automatically by
+  platform2/cryptohome/error/tool/location_db.py. It populates all values
+  found in the cryptohome code base.
 
-  The labels are of the format: <Error Location>-<TPM Error Code>
-  Whereby Error Location are defined in platform2/cryptohome/error/locations.h
+  It is allowed to manually add <int> error location to this file, and the
+  added error location will continue to be updated when the script runs the
+  next time. However, the label, and all changes to the label field may be
+  overwritten by the tool. Furthermore, removal of <int> may be added back
+  if that bucket is still observed in the field.
+
+  The labels are the Cryptohome Error Location enum defined in
+  platform2/cryptohome/error/locations.h
   -->
 
+  <int value="8159075"
+      label="kLocChalCredDecryptCreateUnsealingSessionFailed - Hashed Error
+             0x0363"/>
+  <int value="9240832"
+      label="kLocTpmNotBoundToPcrAuthBlockEncryptFailedInCreate -
+             TPM_RC_INITIALIZE"/>
+  <int value="9437193"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - TPM_E_FAIL"/>
+  <int value="9437217"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_E_DECRYPT_ERROR"/>
+  <int value="9437316"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_VALUE"/>
+  <int value="9437343"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_INTEGRITY"/>
+  <int value="9437440"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_INITIALIZE"/>
+  <int value="9437441"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_FAILURE"/>
+  <int value="9437506"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="9445578"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - TCS:
+             TCS_E_KM_LOADFAILED"/>
+  <int value="9465860"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
   <int value="12845195"
-      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash-TPM_RC_HANDLE"/>
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash - TPM_RC_HANDLE"/>
   <int value="12845218"
-      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash-TPM_RC_BAD_AUTH"/>
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash -
+             TPM_RC_BAD_AUTH"/>
+  <int value="13631511"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate - TPM_E_SIZE"/>
+  <int value="13631522"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="13631526"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_INVALID_POSTINIT"/>
+  <int value="13633539"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="13635719"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate - TDDL:
+             TDDL_E_IOERROR"/>
+  <int value="13697047"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate -
+             TPM_E_SIZE"/>
+  <int value="13697058"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate -
+             TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="14483594"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt - TPM_RC_TYPE"/>
+  <int value="14483615"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_INTEGRITY"/>
+  <int value="14483712"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_INITIALIZE"/>
+  <int value="14483797"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_SENSITIVE"/>
+  <int value="14485762"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TPM_RC_OBJECT_MEMORY"/>
+  <int value="14512132"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="14520328"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="14520336"
+      label="kLocTpmBoundToPcrAuthBlockPreloadFailedInDecrypt -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="14548993"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_E_AUTHFAIL"/>
+  <int value="14549015"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_E_SIZE"/>
+  <int value="14549021"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_AUTH2FAIL"/>
+  <int value="14549025"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_DECRYPT_ERROR"/>
+  <int value="14549030"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_INVALID_POSTINIT"/>
+  <int value="14549123"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_RC_HASH"/>
+  <int value="14551043"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="14551299"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_RC_SESSION_MEMORY"/>
+  <int value="14551453"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Session 1:
+             TPM_RC_POLICY_FAIL"/>
+  <int value="14551458"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="14553223"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TDDL:
+             TDDL_E_IOERROR"/>
+  <int value="14577668"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="15466655"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_INTEGRITY"/>
+  <int value="15466663"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_ECC_POINT"/>
+  <int value="15466752"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_INITIALIZE"/>
+  <int value="15466753"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_FAILURE"/>
+  <int value="15468816"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="15495172"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="15728772"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_VALUE"/>
+  <int value="15728789"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_SIZE"/>
+  <int value="15730947"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
+             TPM_RC_SESSION_MEMORY"/>
+  <int value="15731106"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="15757316"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="15794325"
+      label="kLocTpmEccAuthBlockHVKKMExtendedSealFailedInCreate - TPM_RC_SIZE"/>
+  <int value="16187541"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_SIZE"/>
+  <int value="16187546"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="16187551"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_INTEGRITY"/>
+  <int value="16187648"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_INITIALIZE"/>
+  <int value="16187649"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_FAILURE"/>
+  <int value="16187714"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="16187733"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_SENSITIVE"/>
+  <int value="16187871"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Parameter 1:
+             TPM_RC_INTEGRITY"/>
+  <int value="16189698"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TPM_RC_OBJECT_MEMORY"/>
+  <int value="16216068"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16580767"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_INTEGRITY"/>
+  <int value="16580775"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_ECC_POINT"/>
+  <int value="16580911"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="16580930"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="16580948"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_NO_RESULT"/>
+  <int value="16582928"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="16609284"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16625803"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="16625813"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Resource
+             Manager: Handle 0: TPM_RC_SIZE"/>
+  <int value="16777538"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="16779523"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_SESSION_MEMORY"/>
+  <int value="16779544"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TPM_RC_REFERENCE_S0"/>
+  <int value="16779677"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Session 1:
+             TPM_RC_POLICY_FAIL"/>
+  <int value="16779682"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Session 1:
+             TPM_RC_BAD_AUTH"/>
+  <int value="16805892"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16822411"
+      label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM - Resource Manager:
+             Handle 0: TPM_RC_HANDLE"/>
+  <int value="35913860"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_VALUE"/>
+  <int value="35913887"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_INTEGRITY"/>
+  <int value="35914050"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_COMMAND_SIZE"/>
+  <int value="35916048"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_REFERENCE_H0"/>
+  <int value="35916194"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt - Session
+             1: TPM_RC_BAD_AUTH"/>
+  <int value="35942404"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TRUNKS_RC_WRITE_ERROR"/>
+  <int value="35958923"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt - Resource
+             Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="36241562"
+      label="kLocLECredManPinWeaverFailedInCheckSecret - TPM_RC_INSUFFICIENT"/>
 </enum>
 
 <enum name="CryptohomeFetchUssExperimentConfigStatus">
