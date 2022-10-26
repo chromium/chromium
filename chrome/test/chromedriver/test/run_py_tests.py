@@ -96,6 +96,8 @@ _NEGATIVE_FILTER = [
     'ChromeSwitchesCapabilityTest.*',
     'ChromeExtensionsCapabilityTest.*',
     'MobileEmulationCapabilityTest.*',
+    # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1378464
+    'BidiTest.*',
 ]
 
 
