@@ -17,6 +17,7 @@
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme_features.h"
 
 namespace ui {
 
@@ -123,10 +124,32 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
 void AddNativeUiColorMixer(ColorProvider* provider,
                            const ColorProviderManager::Key& key) {
-  if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)
+  if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal &&
+      !IsFluentScrollbarEnabled())
     return;
 
   ColorMixer& mixer = provider->AddMixer();
+
+  // Override scrollbar colors for the Fluent scrollbar.
+  // TODO(crbug.com/1378337): Implement high contrast mode for the Fluent
+  // scrollbar. Currently, normal and high contrast modes are the same.
+  if (IsFluentScrollbarEnabled()) {
+    const bool dark_mode =
+        key.color_mode == ColorProviderManager::ColorMode::kDark;
+
+    mixer[kColorScrollbarArrowForeground] = {
+        dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
+                  : SkColorSetA(SK_ColorBLACK, 0x72)};
+    mixer[kColorScrollbarArrowForegroundPressed] = {
+        dark_mode ? SkColorSetA(SK_ColorWHITE, 0xC8)
+                  : SkColorSetA(SK_ColorBLACK, 0x9B)};
+    mixer[kColorScrollbarThumb] = {mixer[kColorScrollbarArrowForeground]};
+    mixer[kColorScrollbarTrack] = {dark_mode ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
+                                             : SkColorSetRGB(0xFC, 0xFC, 0xFC)};
+  }
+
+  if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)
+    return;
 
   mixer[kColorButtonForegroundChecked] = {
       key.color_mode == ColorProviderManager::ColorMode::kDark

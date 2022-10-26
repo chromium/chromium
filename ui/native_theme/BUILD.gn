@@ -5,6 +5,23 @@
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
+component("features") {
+  output_name = "native_theme_features"
+
+  defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
+
+  sources = [
+    "native_theme_export.h",
+    "native_theme_features.cc",
+    "native_theme_features.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
+}
+
 component("native_theme") {
   sources = [
     "caption_style.cc",
@@ -15,9 +32,6 @@ component("native_theme") {
     "native_theme.h",
     "native_theme_base.cc",
     "native_theme_base.h",
-    "native_theme_export.h",
-    "native_theme_features.cc",
-    "native_theme_features.h",
     "native_theme_observer.cc",
     "native_theme_observer.h",
     "native_theme_utils.cc",
@@ -63,7 +77,10 @@ component("native_theme") {
 
   defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
 
-  public_deps = [ "//skia" ]
+  public_deps = [
+    ":features",
+    "//skia",
+  ]
 
   deps = [
     "//base",

@@ -173,6 +173,7 @@ component("mixers") {
     deps += [
       ":accent_color_observer",
       ":color_switches",
+      "//ui/native_theme:features",
     ]
   }
 }

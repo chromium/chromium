@@ -655,6 +655,13 @@
              "--force-device-scale-factor=2"]
   },
   {
+    "prefix": "fluent-non-overlay-scrollbar-dark-mode",
+    "platforms": ["Win"],
+    "bases": ["fast/forms/color-scheme/scrollbar"],
+    "args": ["--enable-features=FluentScrollbar",
+             "--blink-settings=preferredColorScheme=0"]
+  },
+  {
     "prefix": "text-antialias",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],

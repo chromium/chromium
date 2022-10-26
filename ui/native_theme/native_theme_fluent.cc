@@ -48,9 +48,7 @@ void NativeThemeFluent::PaintScrollbarTrack(
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
     ColorScheme color_scheme) const {
-  // TODO(crbug.com/1353574): Implement correct color.
-  const SkColor track_color =
-      GetControlColor(kScrollbarTrack, color_scheme, color_provider);
+  const SkColor track_color = color_provider->GetColor(kColorScrollbarTrack);
   cc::PaintFlags flags;
   flags.setColor(track_color);
   canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
@@ -75,9 +73,7 @@ void NativeThemeFluent::PaintScrollbarThumb(cc::PaintCanvas* canvas,
   path.addRRect(rrect);
   canvas->clipPath(path, true);
 
-  // TODO(crbug.com/1353574): Implement correct color.
-  const SkColor thumb_color =
-      GetControlColor(kScrollbarThumb, color_scheme, color_provider);
+  const SkColor thumb_color = color_provider->GetColor(kColorScrollbarThumb);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(thumb_color);
@@ -90,9 +86,7 @@ void NativeThemeFluent::PaintScrollbarCorner(
     State state,
     const gfx::Rect& rect,
     ColorScheme color_scheme) const {
-  // TODO(crbug.com/1353574): Implement correct color.
-  const SkColor corner_color =
-      GetControlColor(kScrollbarTrack, color_scheme, color_provider);
+  const SkColor corner_color = color_provider->GetColor(kColorScrollbarTrack);
 
   cc::PaintFlags flags;
   flags.setColor(corner_color);
@@ -130,10 +124,7 @@ void NativeThemeFluent::PaintButton(cc::PaintCanvas* canvas,
                                     const ColorProvider* color_provider,
                                     const gfx::Rect& rect,
                                     ColorScheme color_scheme) const {
-  // TODO(crbug.com/1353574): Implement correct color.
-  // A button color should be always the same as track.
-  const SkColor button_color =
-      GetControlColor(kScrollbarTrack, color_scheme, color_provider);
+  const SkColor button_color = color_provider->GetColor(kColorScrollbarTrack);
   cc::PaintFlags flags;
   flags.setColor(button_color);
   canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
@@ -145,9 +136,11 @@ void NativeThemeFluent::PaintArrow(cc::PaintCanvas* canvas,
                                    Part part,
                                    State state,
                                    ColorScheme color_scheme) const {
-  // TODO(crbug.com/1353574): Implement correct colors based on the state.
-  const SkColor arrow_color =
-      GetControlColor(kScrollbarThumb, color_scheme, color_provider);
+  const ColorId arrow_color_id =
+      state == NativeTheme::kPressed || state == NativeTheme::kHovered
+          ? kColorScrollbarArrowForegroundPressed
+          : kColorScrollbarArrowForeground;
+  const SkColor arrow_color = color_provider->GetColor(arrow_color_id);
   cc::PaintFlags flags;
   flags.setColor(arrow_color);
 
