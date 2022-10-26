@@ -14,6 +14,8 @@ static_library("backend") {
     "cros_healthd_helpers.h",
     "diagnostics_manager.cc",
     "diagnostics_manager.h",
+    "event_watcher_factory.cc",
+    "event_watcher_factory.h",
     "histogram_util.cc",
     "histogram_util.h",
     "input_data_event_watcher.cc",

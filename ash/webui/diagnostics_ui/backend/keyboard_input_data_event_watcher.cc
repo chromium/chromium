@@ -26,7 +26,7 @@ const int kKeyReleaseValue = 0;
 
 KeyboardInputDataEventWatcher::KeyboardInputDataEventWatcher(
     uint32_t id,
-    base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher)
+    base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher)
     : id_(id),
       path_(base::FilePath(base::StringPrintf("/dev/input/event%d", id_))),
       fd_(open(path_.value().c_str(), O_RDWR | O_NONBLOCK)),

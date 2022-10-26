@@ -20,15 +20,31 @@ namespace ash::diagnostics {
 class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
                                       base::MessagePumpForUI::FdWatcher {
  public:
+  // `KeyboardInputDataEventWatcher` calls dispatcher when a key event is ready.
+  class Dispatcher {
+   public:
+    virtual ~Dispatcher() = default;
+
+    // Emits the components of a key event.
+    //  `id` maps to the evdev id.
+    //  `key_code` defined in <linux/input-event-codes.h>.`
+    //  `scan_code` additional key idetification data.
+    //  `down` whether key is identified is currently pressed.
+    virtual void SendInputKeyEvent(uint32_t id,
+                                   uint32_t key_code,
+                                   uint32_t scan_code,
+                                   bool down) = 0;
+  };
+
   KeyboardInputDataEventWatcher(
       uint32_t id,
-      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher);
+      base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher);
   ~KeyboardInputDataEventWatcher() override;
 
   void ConvertKeyEvent(uint32_t key_code,
                        uint32_t key_state,
                        uint32_t scan_code);
-  void ProcessEvent(const input_event& input);
+  void ProcessEvent(const input_event& input) override;
   void Start();
   void Stop();
 
@@ -57,7 +73,7 @@ class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
   uint32_t pending_key_code_;
   uint32_t pending_key_state_;
 
-  base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher_;
+  base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher_;
 
   // Controller for watching the input fd.
   base::MessagePumpForUI::FdWatchController controller_;

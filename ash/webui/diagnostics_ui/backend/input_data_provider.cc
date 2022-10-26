@@ -12,8 +12,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/webui/diagnostics_ui/backend/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input_device_information.h"
+#include "ash/webui/diagnostics_ui/backend/keyboard_input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -46,15 +48,14 @@ bool IsTouchInputDevice(InputDeviceInformation* device_info) {
 
 InputDataProvider::InputDataProvider(aura::Window* window)
     : device_manager_(ui::CreateDeviceManager()),
-      watcher_factory_(std::make_unique<
-                       ash::diagnostics::InputDataEventWatcherFactoryImpl>()) {
+      watcher_factory_(std::make_unique<EventWatcherFactoryImpl>()) {
   Initialize(window);
 }
 
 InputDataProvider::InputDataProvider(
     aura::Window* window,
     std::unique_ptr<ui::DeviceManager> device_manager_for_test,
-    std::unique_ptr<InputDataEventWatcher::Factory> watcher_factory)
+    std::unique_ptr<EventWatcherFactory> watcher_factory)
     : device_manager_(std::move(device_manager_for_test)),
       watcher_factory_(std::move(watcher_factory)) {
   Initialize(window);
@@ -199,8 +200,8 @@ void InputDataProvider::ForwardKeyboardInput(uint32_t id) {
 
   // If we are going to send keyboard events, we need to block shortcuts
   BlockShortcuts(may_send_events_);
-  keyboard_watchers_[id] =
-      watcher_factory_->MakeWatcher(id, weak_factory_.GetWeakPtr());
+  keyboard_watchers_[id] = watcher_factory_->MakeKeyboardEventWatcher(
+      id, weak_factory_.GetWeakPtr());
 }
 
 void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {

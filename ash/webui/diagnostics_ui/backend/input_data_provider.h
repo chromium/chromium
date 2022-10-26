@@ -7,10 +7,12 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/webui/diagnostics_ui/backend/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_touch.h"
 #include "ash/webui/diagnostics_ui/backend/input_device_information.h"
+#include "ash/webui/diagnostics_ui/backend/keyboard_input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -37,7 +39,7 @@ namespace ash::diagnostics {
 // process, and eventually called by the Diagnostics SWA (a renderer process).
 class InputDataProvider : public mojom::InputDataProvider,
                           public ui::DeviceEventObserver,
-                          public InputDataEventWatcher::Dispatcher,
+                          public KeyboardInputDataEventWatcher::Dispatcher,
                           public views::WidgetObserver,
                           public TabletModeObserver {
  public:
@@ -45,7 +47,7 @@ class InputDataProvider : public mojom::InputDataProvider,
   explicit InputDataProvider(
       aura::Window* window,
       std::unique_ptr<ui::DeviceManager> device_manager,
-      std::unique_ptr<InputDataEventWatcher::Factory> watcher_factory);
+      std::unique_ptr<EventWatcherFactory> watcher_factory);
   InputDataProvider(const InputDataProvider&) = delete;
   InputDataProvider& operator=(const InputDataProvider&) = delete;
   ~InputDataProvider() override;
@@ -56,7 +58,7 @@ class InputDataProvider : public mojom::InputDataProvider,
   static mojom::ConnectionType ConnectionTypeFromInputDeviceType(
       ui::InputDeviceType type);
 
-  // InputDataEventWatcher::Dispatcher:
+  // KeyboardInputDataEventWatcher::Dispatcher:
   void SendInputKeyEvent(uint32_t id,
                          uint32_t key_code,
                          uint32_t scan_code,
@@ -148,7 +150,7 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   std::unique_ptr<ui::DeviceManager> device_manager_;
 
-  std::unique_ptr<InputDataEventWatcher::Factory> watcher_factory_;
+  std::unique_ptr<EventWatcherFactory> watcher_factory_;
 
   base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };

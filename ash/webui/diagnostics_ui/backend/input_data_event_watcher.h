@@ -7,9 +7,6 @@
 
 #include <linux/input.h>
 #include <cstdint>
-#include <memory>
-
-#include "base/memory/weak_ptr.h"
 
 namespace ash::diagnostics {
 
@@ -17,38 +14,13 @@ namespace ash::diagnostics {
 // input_data_provider.
 class InputDataEventWatcher {
  public:
-  class Dispatcher {
-   public:
-    virtual void SendInputKeyEvent(uint32_t id,
-                                   uint32_t key_code,
-                                   uint32_t scan_code,
-                                   bool down) = 0;
-  };
-
-  class Factory {
-   public:
-    virtual ~Factory() = 0;
-
-    virtual std::unique_ptr<InputDataEventWatcher> MakeWatcher(
-        uint32_t evdev_id,
-        base::WeakPtr<Dispatcher> dispatcher) = 0;
-  };
-
   virtual ~InputDataEventWatcher() = 0;
-};
 
-class InputDataEventWatcherFactoryImpl : public InputDataEventWatcher::Factory {
- public:
-  InputDataEventWatcherFactoryImpl() = default;
-  InputDataEventWatcherFactoryImpl(const InputDataEventWatcherFactoryImpl&) =
-      delete;
-  InputDataEventWatcherFactoryImpl& operator=(
-      const InputDataEventWatcherFactoryImpl&) = delete;
-  ~InputDataEventWatcherFactoryImpl() override = default;
-
-  std::unique_ptr<InputDataEventWatcher> MakeWatcher(
-      uint32_t id,
-      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher) override;
+  // Interpret raw `input_event` components into logical events based on the
+  // event protocols and connected device. Described by kernel input event-codes
+  // api. See: https://www.kernel.org/doc/Documentation/input/event-codes.txt
+  // for a list of valid codes.
+  virtual void ProcessEvent(const input_event& event) = 0;
 };
 
 }  // namespace ash::diagnostics

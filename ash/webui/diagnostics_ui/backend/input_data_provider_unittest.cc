@@ -12,6 +12,9 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/diagnostics_ui/backend/event_watcher_factory.h"
+#include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
+#include "ash/webui/diagnostics_ui/backend/keyboard_input_data_event_watcher.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -231,7 +234,7 @@ class FakeInputDataEventWatcher : public InputDataEventWatcher {
  public:
   FakeInputDataEventWatcher(
       uint32_t id,
-      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher,
+      base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher,
       watchers_t& watchers)
       : id_(id), dispatcher_(dispatcher), watchers_(watchers) {
     EXPECT_EQ(0u, watchers_.count(id_));
@@ -247,14 +250,17 @@ class FakeInputDataEventWatcher : public InputDataEventWatcher {
       dispatcher_->SendInputKeyEvent(id_, evdev_code, scan_code, down);
   }
 
+  // ProcessEvent will not be triggered by test code.
+  void ProcessEvent(const input_event& event) override {}
+
  private:
   uint32_t id_;
-  base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher_;
+  base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher_;
   watchers_t& watchers_;
 };
 
 // Utility to construct FakeInputDataEventWatcher for InputDataProvider.
-class FakeInputDataEventWatcherFactory : public InputDataEventWatcher::Factory {
+class FakeInputDataEventWatcherFactory : public EventWatcherFactory {
  public:
   FakeInputDataEventWatcherFactory(watchers_t& watchers)
       : watchers_(watchers) {}
@@ -264,9 +270,10 @@ class FakeInputDataEventWatcherFactory : public InputDataEventWatcher::Factory {
       const FakeInputDataEventWatcherFactory&) = delete;
   ~FakeInputDataEventWatcherFactory() override = default;
 
-  std::unique_ptr<InputDataEventWatcher> MakeWatcher(
+  std::unique_ptr<InputDataEventWatcher> MakeKeyboardEventWatcher(
       uint32_t id,
-      base::WeakPtr<InputDataEventWatcher::Dispatcher> dispatcher) override {
+      base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher)
+      override {
     return std::make_unique<FakeInputDataEventWatcher>(
         id, std::move(dispatcher), watchers_);
   }
