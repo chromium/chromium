@@ -11,9 +11,9 @@
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_operations.h"
-#include "ui/gfx/geometry/transform_util.h"
 
 namespace ui {
 

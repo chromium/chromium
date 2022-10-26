@@ -1463,7 +1463,7 @@ bool OpenXrApiWrapper::GetStageParameters(XrExtent2Df& stage_bounds,
   local_from_stage_decomp.translate[2] =
       local_from_stage_location.pose.position.z;
 
-  local_from_stage = gfx::ComposeTransform(local_from_stage_decomp);
+  local_from_stage = gfx::Transform::Compose(local_from_stage_decomp);
   return true;
 }
 

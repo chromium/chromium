@@ -1036,19 +1036,18 @@ void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
   }
 
   if (transform) {
-    gfx::DecomposedTransform decomposed_transform;
-    bool decomposable =
-        gfx::DecomposeTransform(&decomposed_transform, transform.value());
-    DCHECK(decomposable);
+    absl::optional<gfx::DecomposedTransform> decomposed_transform =
+        transform->Decompose();
+    DCHECK(decomposed_transform);
 
-    pose->orientation.x = decomposed_transform.quaternion.x();
-    pose->orientation.y = decomposed_transform.quaternion.y();
-    pose->orientation.z = decomposed_transform.quaternion.z();
-    pose->orientation.w = decomposed_transform.quaternion.w();
+    pose->orientation.x = decomposed_transform->quaternion.x();
+    pose->orientation.y = decomposed_transform->quaternion.y();
+    pose->orientation.z = decomposed_transform->quaternion.z();
+    pose->orientation.w = decomposed_transform->quaternion.w();
 
-    pose->position.x = decomposed_transform.translate[0];
-    pose->position.y = decomposed_transform.translate[1];
-    pose->position.z = decomposed_transform.translate[2];
+    pose->position.x = decomposed_transform->translate[0];
+    pose->position.y = decomposed_transform->translate[1];
+    pose->position.z = decomposed_transform->translate[2];
   }
 }
 

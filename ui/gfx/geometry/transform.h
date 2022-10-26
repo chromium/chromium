@@ -26,6 +26,7 @@ class Point3F;
 class Quaternion;
 class Vector2dF;
 class Vector3dF;
+struct DecomposedTransform;
 
 // 4x4 Transformation matrix. Depending on the complexity of the matrix, it may
 // be internally stored as an AxisTransform2d or a full 4x4 matrix.
@@ -42,6 +43,8 @@ class GEOMETRY_SKIA_EXPORT Transform {
   Transform& operator=(const Transform& rhs);
   Transform(Transform&&);
   Transform& operator=(Transform&&);
+
+  explicit Transform(const AxisTransform2d& axis_2d);
 
   // Creates a transform from explicit 16 matrix elements in row-major order.
   static Transform RowMajor(double r0c0,
@@ -93,7 +96,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // remain the same as the corresponding elements of an identity matrix.
   static Transform Affine(double a,    // a.k.a. r0c0 or scale_x
                           double b,    // a.k.a. r1c0 or tan(skew_y)
-                          double c,    // a.k.a. r0c1 or tan(skew_x) 
+                          double c,    // a.k.a. r0c1 or tan(skew_x)
                           double d,    // a.k.a  r1c1 or scale_y
                           double e,    // a.k.a  r0c3 or translation_x
                           double f) {  // a.k.a  r1c3 or translaiton_y
@@ -339,6 +342,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if the 3rd row and 3rd column are both (0, 0, 1, 0).
   bool IsFlat() const;
 
+  // Returns true if the transform is flat and doesn't have perspective.
+  bool Is2dTransform() const;
+
   // Returns the x and y translation components of the matrix, clamped with
   // ClampFloatGeometry().
   Vector2dF To2dTranslation() const;
@@ -361,7 +367,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Applies the transformation to the vector. The results are clamped with
   // ClampFloatGeometry().
   void TransformVector4(float vector[4]) const;
-  void TransformVector4(double vector[4]) const;
 
   // Returns the point with reverse transformation applied to `point`, clamped
   // with ClampFloatGeometry(), or `absl::nullopt` if the transformation cannot
@@ -393,15 +398,36 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // transformed box, clamped with ClampFloatGeometry().
   [[nodiscard]] BoxF MapBox(const BoxF& box) const;
 
+  // Decomposes |this| into |decomp|. Returns nullopt if |this| can't be
+  // decomposed. |decomp| must be identity on input.
+  //
+  // Uses routines described in the following specs:
+  // 2d: https://www.w3.org/TR/css-transforms-1/#decomposing-a-2d-matrix
+  // 3d: https://www.w3.org/TR/css-transforms-2/#decomposing-a-3d-matrix
+  //
+  // Note: when the determinant is negative, the 2d spec calls for flipping one
+  // of the axis, while the general 3d spec calls for flipping all of the
+  // scales. The latter not only introduces rotation in the case of a trivial
+  // scale inversion, but causes transformed objects to needlessly shrink and
+  // grow as they transform through scale = 0 along multiple axes. Thus 2d
+  // transforms should follow the 2d spec regarding matrix decomposition.
+  absl::optional<DecomposedTransform> Decompose() const;
+
+  // Composes a transform from the given |decomp|, following the routines
+  // detailed in this specs:
+  // https://www.w3.org/TR/css-transforms-2/#recomposing-to-a-3d-matrix
+  static Transform Compose(const DecomposedTransform& decomp);
+
   // Decomposes |this| and |from|, interpolates the decomposed values, and
   // sets |this| to the reconstituted result. Returns false if either matrix
   // can't be decomposed. Uses routines described in this spec:
-  // http://www.w3.org/TR/css3-3d-transforms/.
+  // https://www.w3.org/TR/css-transforms-2/#matrix-interpolation
   //
-  // Note: this call is expensive since we need to decompose the transform. If
-  // you're going to be calling this rapidly (e.g., in an animation) you should
-  // decompose once using gfx::DecomposeTransforms and reuse your
-  // DecomposedTransform.
+  // Note: this call is expensive for complex transforms since we need to
+  // decompose the transforms. If you're going to be calling this rapidly
+  // (e.g., in an animation) for complex transforms, you should decompose once
+  // using Decompose() and reuse your DecomposedTransform with
+  // BlendDecomposedTransforms() (see transform_util.h).
   bool Blend(const Transform& from, double progress);
 
   double Determinant() const;

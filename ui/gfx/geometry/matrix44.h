@@ -6,10 +6,13 @@
 #define UI_GFX_GEOMETRY_MATRIX44_H_
 
 #include "base/check_op.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/double4.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 
 namespace gfx {
+
+struct DecomposedTransform;
 
 // This is the underlying data structure of Transform. Don't use this type
 // directly.
@@ -103,6 +106,8 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
                             matrix_[3][3]} == Double4{0, 0, 0, 1});
   }
 
+  bool Is2dTransform() const { return IsFlat() && !HasPerspective(); }
+
   // Gets a value at |row|, |col| from the matrix.
   double rc(int row, int col) const {
     DCHECK_LE(static_cast<unsigned>(row), 3u);
@@ -148,6 +153,12 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   // this = this * skew.
   void Skew(double tan_skew_x, double tan_skew_y);
 
+  //               |1 skew[0] skew[1] 0|
+  // this = this * |0    1    skew[2] 0|
+  //               |0    0      1     0|
+  //               |0    0      0     1|
+  void ApplyDecomposedSkews(const double skews[3]);
+
   // this = this * perspective.
   void ApplyPerspectiveDepth(double perspective);
 
@@ -172,8 +183,11 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
 
   void FlattenTo2d();
 
+  absl::optional<DecomposedTransform> Decompose() const;
+
  private:
   void SetConcat(const Matrix44& a, const Matrix44& b);
+  absl::optional<DecomposedTransform> Decompose2d() const;
 
   ALWAYS_INLINE Double4 Col(int i) const { return LoadDouble4(matrix_[i]); }
   ALWAYS_INLINE void SetCol(int i, Double4 v) { StoreDouble4(v, matrix_[i]); }

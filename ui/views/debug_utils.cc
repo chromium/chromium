@@ -13,7 +13,8 @@
 
 #if !defined(NDEBUG)
 #include "ui/gfx/geometry/angle_conversions.h"
-#include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
+#include "ui/gfx/geometry/transform.h"
 #endif
 
 namespace views {
@@ -91,22 +92,23 @@ std::string PrintViewGraphImpl(const View* view) {
                  view->bounds().height());
   result.append(bounds_buffer);
 
-  gfx::DecomposedTransform decomp;
-  if (!view->GetTransform().IsIdentity() &&
-      gfx::DecomposeTransform(&decomp, view->GetTransform())) {
-    base::snprintf(bounds_buffer, kBoundsBufferSize,
-                   "\\n translation: (%f, %f)", decomp.translate[0],
-                   decomp.translate[1]);
-    result.append(bounds_buffer);
+  if (!view->GetTransform().IsIdentity()) {
+    if (absl::optional<gfx::DecomposedTransform> decomp =
+            view->GetTransform().Decompose()) {
+      base::snprintf(bounds_buffer, kBoundsBufferSize,
+                     "\\n translation: (%f, %f)", decomp->translate[0],
+                     decomp->translate[1]);
+      result.append(bounds_buffer);
 
-    base::snprintf(bounds_buffer, kBoundsBufferSize, "\\n rotation: %3.2f",
-                   gfx::RadToDeg(std::acos(decomp.quaternion.w()) * 2));
-    result.append(bounds_buffer);
+      base::snprintf(bounds_buffer, kBoundsBufferSize, "\\n rotation: %3.2f",
+                     gfx::RadToDeg(std::acos(decomp->quaternion.w()) * 2));
+      result.append(bounds_buffer);
 
-    base::snprintf(bounds_buffer, kBoundsBufferSize,
-                   "\\n scale: (%2.4f, %2.4f)", decomp.scale[0],
-                   decomp.scale[1]);
-    result.append(bounds_buffer);
+      base::snprintf(bounds_buffer, kBoundsBufferSize,
+                     "\\n scale: (%2.4f, %2.4f)", decomp->scale[0],
+                     decomp->scale[1]);
+      result.append(bounds_buffer);
+    }
   }
 
   result.append("\"");

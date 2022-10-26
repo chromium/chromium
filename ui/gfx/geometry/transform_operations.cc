@@ -367,7 +367,7 @@ bool TransformOperations::BlendInternal(const TransformOperations& from,
     DecomposedTransform matrix_transform = BlendDecomposedTransforms(
         *decomposed_transforms_[matching_prefix_length].get(),
         *from.decomposed_transforms_[matching_prefix_length].get(), progress);
-    result->AppendMatrix(ComposeTransform(matrix_transform));
+    result->AppendMatrix(Transform::Compose(matrix_transform));
   }
   return true;
 }
@@ -376,12 +376,13 @@ bool TransformOperations::ComputeDecomposedTransform(
     size_t start_offset) const {
   auto it = decomposed_transforms_.find(start_offset);
   if (it == decomposed_transforms_.end()) {
-    std::unique_ptr<DecomposedTransform> decomposed_transform =
-        std::make_unique<DecomposedTransform>();
     Transform transform = ApplyRemaining(start_offset);
-    if (!DecomposeTransform(decomposed_transform.get(), transform))
+    if (absl::optional<DecomposedTransform> decomp = transform.Decompose()) {
+      decomposed_transforms_[start_offset] =
+          std::make_unique<DecomposedTransform>(*decomp);
+    } else {
       return false;
-    decomposed_transforms_[start_offset] = std::move(decomposed_transform);
+    }
   }
   return true;
 }

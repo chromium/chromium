@@ -4,7 +4,8 @@
 
 #include "device/vr/android/arcore/type_converters.h"
 
-#include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace mojo {
 
@@ -33,7 +34,7 @@ gfx::Transform TypeConverter<gfx::Transform, device::mojom::VRPosePtr>::Convert(
     decomposed.translate[2] = pose->position->z();
   }
 
-  return gfx::ComposeTransform(decomposed);
+  return gfx::Transform::Compose(decomposed);
 }
 
 gfx::Transform TypeConverter<gfx::Transform, device::mojom::Pose>::Convert(
@@ -45,7 +46,7 @@ gfx::Transform TypeConverter<gfx::Transform, device::mojom::Pose>::Convert(
   decomposed.translate[1] = pose.position.y();
   decomposed.translate[2] = pose.position.z();
 
-  return gfx::ComposeTransform(decomposed);
+  return gfx::Transform::Compose(decomposed);
 }
 
 }  // namespace mojo

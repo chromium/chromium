@@ -32,22 +32,22 @@ gfx::Transform XrPoseToGfxTransform(const XrPosef& pose) {
   decomp.translate[1] = pose.position.y;
   decomp.translate[2] = pose.position.z;
 
-  return gfx::ComposeTransform(decomp);
+  return gfx::Transform::Compose(decomp);
 }
 
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
-  gfx::DecomposedTransform decomposed_transform;
-  bool decomposition_result =
-      gfx::DecomposeTransform(&decomposed_transform, transform);
+  absl::optional<gfx::DecomposedTransform> decomposed_transform =
+      transform.Decompose();
   // This pose should always be a simple translation and rotation so this should
   // always be true
-  DCHECK(decomposition_result);
-  return {{static_cast<float>(decomposed_transform.quaternion.x()),
-           static_cast<float>(decomposed_transform.quaternion.y()),
-           static_cast<float>(decomposed_transform.quaternion.z()),
-           static_cast<float>(decomposed_transform.quaternion.w())},
-          {decomposed_transform.translate[0], decomposed_transform.translate[1],
-           decomposed_transform.translate[2]}};
+  DCHECK(decomposed_transform);
+  return {{static_cast<float>(decomposed_transform->quaternion.x()),
+           static_cast<float>(decomposed_transform->quaternion.y()),
+           static_cast<float>(decomposed_transform->quaternion.z()),
+           static_cast<float>(decomposed_transform->quaternion.w())},
+          {static_cast<float>(decomposed_transform->translate[0]),
+           static_cast<float>(decomposed_transform->translate[1]),
+           static_cast<float>(decomposed_transform->translate[2])}};
 }
 
 bool IsPoseValid(XrSpaceLocationFlags locationFlags) {

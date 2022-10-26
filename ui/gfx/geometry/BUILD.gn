@@ -13,6 +13,8 @@ component("geometry") {
     "clamp_float_geometry.h",
     "cubic_bezier.cc",
     "cubic_bezier.h",
+    "decomposed_transform.cc",
+    "decomposed_transform.h",
     "dip_util.cc",
     "dip_util.h",
     "double4.h",

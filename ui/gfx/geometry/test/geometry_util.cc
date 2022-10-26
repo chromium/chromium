@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -91,6 +93,89 @@ struct SkRectToString {
     return ::testing::AssertionSuccess();
   }
   return EqFailure(lhs_expr, rhs_expr, lhs, rhs);
+}
+
+::testing::AssertionResult AssertQuaternionFloatEqual(const char* lhs_expr,
+                                                      const char* rhs_expr,
+                                                      const Quaternion& lhs,
+                                                      const Quaternion& rhs) {
+  if (FloatAlmostEqual(lhs.x(), rhs.x()) &&
+      FloatAlmostEqual(lhs.y(), rhs.y()) &&
+      FloatAlmostEqual(lhs.z(), rhs.z()) &&
+      FloatAlmostEqual(lhs.w(), rhs.w())) {
+    return ::testing::AssertionSuccess();
+  }
+  return EqFailure(lhs_expr, rhs_expr, lhs, rhs);
+}
+
+::testing::AssertionResult AssertQuaternionFloatNear(const char* lhs_expr,
+                                                     const char* rhs_expr,
+                                                     const char* abs_error_expr,
+                                                     const Quaternion& lhs,
+                                                     const Quaternion& rhs,
+                                                     float abs_error) {
+  if (FloatNear(lhs.x(), rhs.x(), abs_error) &&
+      FloatNear(lhs.y(), rhs.y(), abs_error) &&
+      FloatNear(lhs.z(), rhs.z(), abs_error) &&
+      FloatNear(lhs.w(), rhs.w(), abs_error)) {
+    return ::testing::AssertionSuccess();
+  }
+  return NearFailure(lhs_expr, rhs_expr, abs_error_expr, lhs, rhs, abs_error);
+}
+
+::testing::AssertionResult AssertDecomposedTransformFloatEqual(
+    const char* lhs_expr,
+    const char* rhs_expr,
+    const DecomposedTransform& lhs,
+    const DecomposedTransform& rhs) {
+#define CHECK_ARRAY(array)                                                 \
+  do {                                                                     \
+    for (size_t i = 0; i < std::size(lhs.array); i++) {                    \
+      if (!FloatAlmostEqual(lhs.array[i], rhs.array[i])) {                 \
+        return EqFailure(lhs_expr, rhs_expr, lhs, rhs)                     \
+               << "First difference is at: " << #array << "[" << i << "]"; \
+      }                                                                    \
+    }                                                                      \
+  } while (false)
+
+  CHECK_ARRAY(translate);
+  CHECK_ARRAY(scale);
+  CHECK_ARRAY(skew);
+  CHECK_ARRAY(perspective);
+#undef CHECK_ARRAY
+
+  return AssertQuaternionFloatEqual(lhs_expr, rhs_expr, lhs.quaternion,
+                                    rhs.quaternion)
+         << " In quaternion";
+}
+
+::testing::AssertionResult AssertDecomposedTransformFloatNear(
+    const char* lhs_expr,
+    const char* rhs_expr,
+    const char* abs_error_expr,
+    const DecomposedTransform& lhs,
+    const DecomposedTransform& rhs,
+    float abs_error) {
+#define CHECK_ARRAY(array)                                                 \
+  do {                                                                     \
+    for (size_t i = 0; i < std::size(lhs.array); i++) {                    \
+      if (!FloatNear(lhs.array[i], rhs.array[i], abs_error)) {             \
+        return NearFailure(lhs_expr, rhs_expr, abs_error_expr, lhs, rhs,   \
+                           abs_error)                                      \
+               << "First difference is at: " << #array << "[" << i << "]"; \
+      }                                                                    \
+    }                                                                      \
+  } while (false)
+
+  CHECK_ARRAY(translate);
+  CHECK_ARRAY(scale);
+  CHECK_ARRAY(skew);
+  CHECK_ARRAY(perspective);
+#undef CHECK_ARRAY
+
+  return AssertQuaternionFloatNear(lhs_expr, rhs_expr, abs_error_expr,
+                                   lhs.quaternion, rhs.quaternion, abs_error)
+         << " In quaternion";
 }
 
 ::testing::AssertionResult AssertTransformFloatEqual(const char* lhs_expr,
@@ -421,6 +506,14 @@ void PrintTo(const SelectionBound& bound, ::std::ostream* os) {
 
 void PrintTo(const SkRect& rect, ::std::ostream* os) {
   *os << SkRectToString{rect}.ToString();
+}
+
+void PrintTo(const DecomposedTransform& transform, ::std::ostream* os) {
+  *os << transform.ToString();
+}
+
+void PrintTo(const Quaternion& quaternion, ::std::ostream* os) {
+  *os << quaternion.ToString();
 }
 
 }  // namespace gfx

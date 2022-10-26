@@ -23,8 +23,8 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/transform_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -40,12 +40,12 @@ bool IsValidTransform(const gfx::Transform& transform) {
   if (!transform.IsInvertible() || transform.HasPerspective())
     return false;
 
-  gfx::DecomposedTransform decomp;
-  if (!DecomposeTransform(&decomp, transform))
+  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  if (!decomp)
     return false;
 
   float kEpsilon = 0.1f;
-  if (abs(decomp.perspective[3] - 1) > kEpsilon) {
+  if (abs(decomp->perspective[3] - 1) > kEpsilon) {
     // If testing with unexpectedly high values, catch on debug builds rather
     // than silently change data.  On release builds its better to be safe and
     // validate.
@@ -53,11 +53,11 @@ bool IsValidTransform(const gfx::Transform& transform) {
     return false;
   }
   for (int i = 0; i < 3; ++i) {
-    if (abs(decomp.scale[i] - 1) > kEpsilon)
+    if (abs(decomp->scale[i] - 1) > kEpsilon)
       return false;
-    if (abs(decomp.skew[i]) > kEpsilon)
+    if (abs(decomp->skew[i]) > kEpsilon)
       return false;
-    if (abs(decomp.perspective[i]) > kEpsilon)
+    if (abs(decomp->perspective[i]) > kEpsilon)
       return false;
   }
 

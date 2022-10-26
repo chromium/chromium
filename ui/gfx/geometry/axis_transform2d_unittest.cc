@@ -5,7 +5,9 @@
 #include "ui/gfx/geometry/axis_transform2d.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 namespace {
@@ -87,7 +89,7 @@ TEST(AxisTransform2dTest, Inverse) {
                              ConcatAxisTransform2d(inv_inplace, t));
 }
 
-TEST(TransformationMatrixTest, ClampOutput) {
+TEST(AxisTransform2dTest, ClampOutput) {
   double entries[][2] = {
       // The first entry is used to initialize the transform.
       // The second entry is used to initialize the object to be mapped.
@@ -137,6 +139,43 @@ TEST(TransformationMatrixTest, ClampOutput) {
                                                   Vector2dF(0, 0)));
     test(AxisTransform2d::FromScaleAndTranslation(Vector2dF(1, 1),
                                                   Vector2dF(mv, mv)));
+  }
+}
+
+TEST(AxisTransform2dTest, Decompose) {
+  {
+    auto transform = AxisTransform2d::FromScaleAndTranslation(
+        Vector2dF(2.5, -3.75), Vector2dF(4.25, -5.5));
+    DecomposedTransform decomp = transform.Decompose();
+    EXPECT_DECOMPOSED_TRANSFORM_EQ((DecomposedTransform{{4.25, -5.5, 0},
+                                                        {2.5, -3.75, 1},
+                                                        {0, 0, 0},
+                                                        {0, 0, 0, 1},
+                                                        {0, 0, 0, 1}}),
+                                   decomp);
+    EXPECT_EQ(Transform(transform), Transform::Compose(decomp));
+  }
+  {
+    auto transform = AxisTransform2d::FromScaleAndTranslation(
+        Vector2dF(-2.5, -3.75), Vector2dF(4.25, -5.5));
+    DecomposedTransform decomp = transform.Decompose();
+    EXPECT_DECOMPOSED_TRANSFORM_EQ((DecomposedTransform{{4.25, -5.5, 0},
+                                                        {2.5, 3.75, 1},
+                                                        {0, 0, 0},
+                                                        {0, 0, 0, 1},
+                                                        {0, 0, 1, 0}}),
+                                   decomp);
+    EXPECT_EQ(Transform(transform), Transform::Compose(decomp));
+  }
+  {
+    auto transform =
+        AxisTransform2d::FromScaleAndTranslation(Vector2dF(), Vector2dF());
+    DecomposedTransform decomp = transform.Decompose();
+    EXPECT_DECOMPOSED_TRANSFORM_EQ(
+        (DecomposedTransform{
+            {0, 0, 0}, {0, 0, 1}, {0, 0, 0}, {0, 0, 0, 1}, {0, 0, 0, 1}}),
+        decomp);
+    EXPECT_EQ(Transform(transform), Transform::Compose(decomp));
   }
 }
 

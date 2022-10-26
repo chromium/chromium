@@ -101,20 +101,21 @@ void PrintLayerHierarchyImp(const Layer* layer,
     *out << "opacity: " << std::setprecision(2) << layer->opacity();
   }
 
-  gfx::DecomposedTransform decomp;
-  if (!layer->transform().IsIdentity() &&
-      gfx::DecomposeTransform(&decomp, layer->transform())) {
-    *out << '\n' << property_indent_str;
-    *out << "translation: " << std::fixed << decomp.translate[0];
-    *out << ", " << decomp.translate[1];
+  if (!layer->transform().IsIdentity()) {
+    if (absl::optional<gfx::DecomposedTransform> decomp =
+            layer->transform().Decompose()) {
+      *out << '\n' << property_indent_str;
+      *out << "translation: " << std::fixed << decomp->translate[0];
+      *out << ", " << decomp->translate[1];
 
-    *out << '\n' << property_indent_str;
-    *out << "rotation: ";
-    *out << std::acos(decomp.quaternion.w()) * 360.0 / base::kPiDouble;
+      *out << '\n' << property_indent_str;
+      *out << "rotation: ";
+      *out << std::acos(decomp->quaternion.w()) * 360.0 / base::kPiDouble;
 
-    *out << '\n' << property_indent_str;
-    *out << "scale: " << decomp.scale[0];
-    *out << ", " << decomp.scale[1];
+      *out << '\n' << property_indent_str;
+      *out << "scale: " << decomp->scale[0];
+      *out << ", " << decomp->scale[1];
+    }
   }
 
   *out << '\n';

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace {
 
@@ -351,15 +352,14 @@ gfx::Transform
 InterpolatedMatrixTransform::InterpolateButDoNotCompose(float t) const {
   gfx::DecomposedTransform blended =
       gfx::BlendDecomposedTransforms(end_decomp_, start_decomp_, t);
-  return gfx::ComposeTransform(blended);
+  return gfx::Transform::Compose(blended);
 }
 
 void InterpolatedMatrixTransform::Init(const gfx::Transform& start_transform,
                                        const gfx::Transform& end_transform) {
-  bool success = gfx::DecomposeTransform(&start_decomp_, start_transform);
-  DCHECK(success);
-  success = gfx::DecomposeTransform(&end_decomp_, end_transform);
-  DCHECK(success);
+  // Both transforms should be decomposible.
+  start_decomp_ = *start_transform.Decompose();
+  end_decomp_ = *end_transform.Decompose();
 }
 
 } // namespace ui

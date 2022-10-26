@@ -4,8 +4,8 @@
 
 #include "device/vr/util/transform_utils.h"
 
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 namespace vr_utils {
@@ -23,7 +23,7 @@ gfx::Transform VrPoseToTransform(const device::mojom::VRPose* pose) {
     decomp.translate[2] = pose->position->z();
   }
 
-  return gfx::ComposeTransform(decomp);
+  return gfx::Transform::Compose(decomp);
 }
 
 }  // namespace vr_utils

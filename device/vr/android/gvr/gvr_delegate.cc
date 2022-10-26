@@ -31,14 +31,15 @@ mojom::VRPosePtr GvrDelegate::VRPosePtrFromGvrPose(
 
   gfx::Transform transform;
   if (inv_transform.GetInverse(&transform)) {
-    gfx::DecomposedTransform decomposed_transform;
-    gfx::DecomposeTransform(&decomposed_transform, transform);
+    absl::optional<gfx::DecomposedTransform> decomposed_transform =
+        transform.Decompose();
+    DCHECK(decomposed_transform);
 
-    pose->orientation = decomposed_transform.quaternion;
+    pose->orientation = decomposed_transform->quaternion;
 
-    pose->position = gfx::Point3F(decomposed_transform.translate[0],
-                                  decomposed_transform.translate[1],
-                                  decomposed_transform.translate[2]);
+    pose->position = gfx::Point3F(decomposed_transform->translate[0],
+                                  decomposed_transform->translate[1],
+                                  decomposed_transform->translate[2]);
   }
 
   return pose;

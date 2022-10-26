@@ -5,6 +5,8 @@
 #include "ui/compositor/transform_animation_curve_adapter.h"
 
 #include "base/memory/ptr_util.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace ui {
 
@@ -28,10 +30,11 @@ TransformAnimationCurveAdapter::TransformAnimationCurveAdapter(
       initial_wrapped_value_(WrapTransform(initial_value)),
       target_value_(target_value),
       target_wrapped_value_(WrapTransform(target_value)),
-      duration_(duration) {
-  gfx::DecomposeTransform(&decomposed_initial_value_, initial_value);
-  gfx::DecomposeTransform(&decomposed_target_value_, target_value);
-}
+      decomposed_initial_value_(
+          initial_value.Decompose().value_or(gfx::DecomposedTransform())),
+      decomposed_target_value_(
+          target_value.Decompose().value_or(gfx::DecomposedTransform())),
+      duration_(duration) {}
 
 TransformAnimationCurveAdapter::TransformAnimationCurveAdapter(
     const TransformAnimationCurveAdapter& other) = default;
@@ -59,7 +62,7 @@ gfx::TransformOperations TransformAnimationCurveAdapter::GetValue(
   gfx::DecomposedTransform to_return = gfx::BlendDecomposedTransforms(
       decomposed_target_value_, decomposed_initial_value_,
       gfx::Tween::CalculateValue(tween_type_, t / duration_));
-  return WrapTransform(gfx::ComposeTransform(to_return));
+  return WrapTransform(gfx::Transform::Compose(to_return));
 }
 
 bool TransformAnimationCurveAdapter::PreservesAxisAlignment() const {

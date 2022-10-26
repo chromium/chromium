@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/double4.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -67,6 +68,8 @@ Transform::~Transform() = default;
 Transform::Transform(SkipInitialization) {}
 Transform::Transform(Transform&&) = default;
 Transform& Transform::operator=(Transform&&) = default;
+
+Transform::Transform(const AxisTransform2d& axis_2d) : axis_2d_(axis_2d) {}
 
 // clang-format off
 Transform::Transform(double r0c0, double r1c0, double r2c0, double r3c0,
@@ -577,6 +580,10 @@ bool Transform::IsFlat() const {
   return LIKELY(!matrix_) || matrix_->IsFlat();
 }
 
+bool Transform::Is2dTransform() const {
+  return LIKELY(!matrix_) || matrix_->Is2dTransform();
+}
+
 Vector2dF Transform::To2dTranslation() const {
   if (LIKELY(!matrix_)) {
     return Vector2dF(ClampFloatGeometry(axis_2d_.translation().x()),
@@ -639,20 +646,6 @@ void Transform::TransformVector4(float vector[4]) const {
     matrix_->MapScalars(v);
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(v[i]);
-  }
-}
-
-void Transform::TransformVector4(double vector[4]) const {
-  DCHECK(vector);
-  // For now the only caller doesn't need clamping.
-  // TODO(crbug.com/1359528): Revisit the clamping requirement.
-  if (LIKELY(!matrix_)) {
-    vector[0] = vector[0] * axis_2d_.scale().x() +
-                vector[3] * axis_2d_.translation().x();
-    vector[1] = vector[1] * axis_2d_.scale().y() +
-                vector[3] * axis_2d_.translation().y();
-  } else {
-    matrix_->MapScalars(vector);
   }
 }
 
@@ -762,16 +755,51 @@ BoxF Transform::MapBox(const BoxF& box) const {
   return bounds;
 }
 
+absl::optional<DecomposedTransform> Transform::Decompose() const {
+  if (LIKELY(!matrix_)) {
+    // Consider letting 2d decomposition always succeed.
+    if (!axis_2d_.IsInvertible())
+      return absl::nullopt;
+    return axis_2d_.Decompose();
+  }
+  return matrix_->Decompose();
+}
+
+// static
+Transform Transform::Compose(const DecomposedTransform& decomp) {
+  Transform result;
+
+  for (int i = 0; i < 3; i++) {
+    if (decomp.perspective[i] != 0)
+      result.set_rc(3, i, decomp.perspective[i]);
+  }
+  if (decomp.perspective[3] != 1)
+    result.set_rc(3, 3, decomp.perspective[3]);
+
+  result.Translate3d(decomp.translate[0], decomp.translate[1],
+                     decomp.translate[2]);
+
+  result.PreConcat(Transform(decomp.quaternion));
+
+  if (decomp.skew[0] || decomp.skew[1] || decomp.skew[2])
+    result.EnsureFullMatrix().ApplyDecomposedSkews(decomp.skew);
+
+  result.Scale3d(decomp.scale[0], decomp.scale[1], decomp.scale[2]);
+
+  return result;
+}
+
 bool Transform::Blend(const Transform& from, double progress) {
-  DecomposedTransform to_decomp;
-  DecomposedTransform from_decomp;
-  if (!DecomposeTransform(&to_decomp, *this) ||
-      !DecomposeTransform(&from_decomp, from))
+  absl::optional<DecomposedTransform> to_decomp = Decompose();
+  if (!to_decomp)
+    return false;
+  absl::optional<DecomposedTransform> from_decomp = from.Decompose();
+  if (!from_decomp)
     return false;
 
-  to_decomp = BlendDecomposedTransforms(to_decomp, from_decomp, progress);
+  *to_decomp = BlendDecomposedTransforms(*to_decomp, *from_decomp, progress);
 
-  *this = ComposeTransform(to_decomp);
+  *this = Compose(*to_decomp);
   return true;
 }
 

@@ -10,9 +10,9 @@
 namespace ash {
 
 float GetScaleFactorForTransform(const gfx::Transform& transform) {
-  gfx::DecomposedTransform decomposed;
-  gfx::DecomposeTransform(&decomposed, transform);
-  return decomposed.scale[0];
+  if (absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose())
+    return decomp->scale[0];
+  return 1.0f;
 }
 
 }  // namespace ash

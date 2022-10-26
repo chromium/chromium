@@ -11,8 +11,9 @@
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/xr_standard_gamepad_builder.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/quaternion.h"
-#include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace device {
 
@@ -559,7 +560,7 @@ absl::optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
     *emulated_position = false;
   }
 
-  return gfx::ComposeTransform(decomp);
+  return gfx::Transform::Compose(decomp);
 }
 
 XrResult OpenXrController::CreateActionsForButton(

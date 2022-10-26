@@ -19,18 +19,21 @@ class BoxF;
 class InsetsF;
 class PointF;
 class Point3F;
+class Quaternion;
 class RectF;
 class SizeF;
 class Transform;
 class Vector2dF;
 class Vector3dF;
+struct DecomposedTransform;
 
 // This file defines gtest macros for floating-point geometry types. The
 // difference from EXPECT_EQ is that each floating-point value is checked with
 // something equivalent to EXPECT_FLOAT_EQ which can tolerate floating-point
 // errors.
 
-// For integer geometry types, you can just use EXPECT_EQ.
+// For integer geometry types, or for floating-point geometry types when you
+// know there are no floating-point errors, you can just use EXPECT_EQ.
 
 #define EXPECT_AXIS_TRANSFORM2D_EQ(a, b) \
   EXPECT_PRED_FORMAT2(::gfx::AssertAxisTransform2dFloatEqual, a, b)
@@ -58,6 +61,45 @@ class Vector3dF;
                                                     const Transform& lhs,
                                                     const Transform& rhs,
                                                     float abs_error);
+
+#define EXPECT_QUATERNION_EQ(a, b) \
+  EXPECT_PRED_FORMAT2(::gfx::AssertQuaternionFloatEqual, a, b)
+
+::testing::AssertionResult AssertQuaternionFloatEqual(const char* lhs_expr,
+                                                      const char* rhs_expr,
+                                                      const Quaternion& lhs,
+                                                      const Quaternion& rhs);
+
+#define EXPECT_QUATERNION_NEAR(a, b, abs_error) \
+  EXPECT_PRED_FORMAT3(::gfx::AssertQuaternionFloatNear, a, b, abs_error)
+
+::testing::AssertionResult AssertQuaternionFloatNear(const char* lhs_expr,
+                                                     const char* rhs_expr,
+                                                     const char* abs_error_expr,
+                                                     const Quaternion& lhs,
+                                                     const Quaternion& rhs,
+                                                     float abs_error);
+
+#define EXPECT_DECOMPOSED_TRANSFORM_EQ(a, b) \
+  EXPECT_PRED_FORMAT2(::gfx::AssertDecomposedTransformFloatEqual, a, b)
+
+::testing::AssertionResult AssertDecomposedTransformFloatEqual(
+    const char* lhs_expr,
+    const char* rhs_expr,
+    const DecomposedTransform& lhs,
+    const DecomposedTransform& rhs);
+
+#define EXPECT_DECOMPOSED_TRANSFORM_NEAR(a, b, abs_error)              \
+  EXPECT_PRED_FORMAT2(::gfx::AssertDecomposedTransformFloatNear, a, b, \
+                      abs_error)
+
+::testing::AssertionResult AssertDecomposedTransformFloatNear(
+    const char* lhs_expr,
+    const char* rhs_expr,
+    const char* abs_error_expr,
+    const DecomposedTransform& lhs,
+    const DecomposedTransform& rhs,
+    float abs_error);
 
 // Should be used in test code only, for convenience. Production code should use
 // the gfx::Transform::GetInverse() API.
