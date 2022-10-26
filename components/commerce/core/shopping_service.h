@@ -218,6 +218,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // |bookmark_update_manager_|.
   virtual void ScheduleSavedProductUpdate();
 
+  // This is a feature check for the "shopping list". This will only return true
+  // if the user has the feature flag enabled, is signed-in, has MSBB enabled,
+  // has webapp activity enabled, and is allowed by enterprise policy.
+  virtual bool IsShoppingListEligible();
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -228,6 +233,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   friend class CommerceTabHelper;
   // Test classes are also friends.
   friend class ShoppingServiceTestBase;
+  friend class ShoppingServiceTest;
 
   // A notification that a WebWrapper has been created. This typically
   // corresponds to a user creating a tab.
@@ -293,7 +299,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   // Produce a ProductInfo object given OptimizationGuideMeta. The returned
   // unique_ptr is owned by the caller and will be empty if conversion failed
-  // or there was no info.
+  // or there was no info. The value returned here can change during runtime so
+  // it should not be used when deciding to build infrastructure.
   std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
       const optimization_guide::OptimizationMetadata& metadata);
 
@@ -311,6 +318,13 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // |on_page_data_map|. The merged data is written to |info|.
   static void MergeProductInfoData(ProductInfo* info,
                                    const base::Value::Dict& on_page_data_map);
+
+  // Check if the shopping list is eligible for use. This not only checks the
+  // feature flag, but whether the feature is allowed by enterprise policy and
+  // whether the user is signed in. The value returned here can change during
+  // runtime so it should not be used when deciding to build infrastructure.
+  static bool IsShoppingListEligible(AccountChecker* account_checker,
+                                     PrefService* prefs);
 
   void HandleOptGuideMerchantInfoResponse(
       const GURL& url,

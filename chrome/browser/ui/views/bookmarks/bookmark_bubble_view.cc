@@ -232,10 +232,11 @@ void BookmarkBubbleView::ShowBubble(
                                   base::Unretained(bubble_delegate))))
       .SetInitiallyFocusedField(kBookmarkName);
 
-  if (commerce::IsShoppingListEnabled(profile->GetPrefs())) {
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  if (shopping_service->IsShoppingListEligible()) {
     absl::optional<commerce::ProductInfo> product_info =
-        commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
-            ->GetAvailableProductInfoForUrl(url);
+        shopping_service->GetAvailableProductInfoForUrl(url);
     auto* tab_helper =
         commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
     CHECK(tab_helper);

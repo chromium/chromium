@@ -262,6 +262,7 @@ source_set("shopping_service_unit_tests") {
   ]
 
   deps = [
+    ":account_checker_test_support",
     ":metrics",
     ":pref_names",
     ":shopping_service_test_support",

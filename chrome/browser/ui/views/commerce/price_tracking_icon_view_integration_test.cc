@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
+#include <memory>
+
+#include "base/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
@@ -21,6 +25,7 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,7 +64,19 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
                            BookmarkModelFactory::GetDefaultFactory());
     factories.emplace_back(ManagedBookmarkServiceFactory::GetInstance(),
                            ManagedBookmarkServiceFactory::GetDefaultFactory());
+    factories.emplace_back(
+        commerce::ShoppingServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &PriceTrackingIconViewIntegrationTest::BuildMockShoppingService));
     return factories;
+  }
+
+  static std::unique_ptr<KeyedService> BuildMockShoppingService(
+      content::BrowserContext* context) {
+    std::unique_ptr<commerce::MockShoppingService> service =
+        std::make_unique<commerce ::MockShoppingService>();
+    service->SetIsShoppingListEligible(true);
+    return service;
   }
 
   PriceTrackingIconView* GetChip() {

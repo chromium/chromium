@@ -96,7 +96,7 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
   last_fetched_image_ = gfx::Image();
   last_fetched_image_url_ = GURL();
 
-  if (!shopping_service_ || !prefs_ || !IsShoppingListEnabled(prefs_))
+  if (!shopping_service_ || !shopping_service_->IsShoppingListEligible())
     return;
 
   // Cancel any pending callbacks by invalidating any weak pointers.
@@ -130,7 +130,8 @@ void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
 }
 
 bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
-  return !last_fetched_image_.IsEmpty();
+  return shopping_service_->IsShoppingListEligible() &&
+         !last_fetched_image_.IsEmpty();
 }
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(

@@ -253,6 +253,7 @@ class ShoppingListHandlerFeatureDisableTest : public testing::Test {
 
 TEST_F(ShoppingListHandlerFeatureDisableTest,
        TestGetProductInfo_FeatureDisabled) {
+  shopping_service_->SetIsShoppingListEligible(false);
   base::RunLoop run_loop;
   EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"))
       .Times(0);

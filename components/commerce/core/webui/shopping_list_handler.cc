@@ -92,7 +92,7 @@ ShoppingListHandler::~ShoppingListHandler() = default;
 
 void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
     GetAllPriceTrackedBookmarkProductInfoCallback callback) {
-  if (!IsShoppingListEnabled(pref_service_)) {
+  if (!shopping_service_->IsShoppingListEligible()) {
     std::move(callback).Run({});
     return;
   }

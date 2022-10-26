@@ -10,6 +10,8 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_account_checker.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -19,6 +21,7 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -52,6 +55,12 @@ class ShoppingServiceTest : public ShoppingServiceTestBase {
   ShoppingServiceTest(const ShoppingServiceTest&) = delete;
   ShoppingServiceTest operator=(const ShoppingServiceTest&) = delete;
   ~ShoppingServiceTest() override = default;
+
+  // Expose the private feature check for testing.
+  static bool IsShoppingListEligible(AccountChecker* account_checker,
+                                     PrefService* prefs) {
+    return ShoppingService::IsShoppingListEligible(account_checker, prefs);
+  }
 };
 
 // Test that product info is processed correctly.
@@ -394,4 +403,93 @@ TEST_F(ShoppingServiceTest, TestDataMergeWithNoTitle) {
   EXPECT_EQ(kTitle, info.title);
 }
 
+TEST_F(ShoppingServiceTest, TestShoppingListEnabled_Policy) {
+  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+
+  SetShoppingListEnterprisePolicyPref(&prefs, false);
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+}
+
+TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_FeatureFlagOff) {
+  test_features_.InitAndDisableFeature(commerce::kShoppingList);
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+}
+
+TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_MSBB) {
+  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+
+  checker.SetAnonymizedUrlDataCollectionEnabled(false);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+}
+
+TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_SignIn) {
+  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+
+  checker.SetSignedIn(false);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+}
+
+TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_WAA) {
+  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+
+  checker.SetWebAndAppActivityEnabled(false);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+}
 }  // namespace commerce

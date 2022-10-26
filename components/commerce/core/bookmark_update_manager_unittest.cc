@@ -153,11 +153,10 @@ TEST_F(BookmarkUpdateManagerTest, RunScheduledTask) {
   EXPECT_TRUE(time_since_last < base::Minutes(1));
 }
 
-TEST_F(BookmarkUpdateManagerTest, RunScheduledTask_BlockedByPolicy) {
+TEST_F(BookmarkUpdateManagerTest, RunScheduledTask_BlockedByFeatureCheck) {
   test_features_.InitWithFeatures(
       {kShoppingList, kCommerceAllowOnDemandBookmarkUpdates}, {});
-
-  SetShoppingListEnterprisePolicyPref(pref_service_.get(), false);
+  shopping_service_->SetIsShoppingListEligible(false);
 
   const std::string title = "Title";
   const int64_t cluster_id = 123L;

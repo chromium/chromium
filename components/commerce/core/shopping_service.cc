@@ -676,6 +676,29 @@ void ShoppingService::ScheduleSavedProductUpdate() {
   bookmark_update_manager_->ScheduleUpdate();
 }
 
+bool ShoppingService::IsShoppingListEligible() {
+  return IsShoppingListEligible(account_checker_.get(), pref_service_);
+}
+
+bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
+                                             PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(kShoppingList))
+    return false;
+
+  if (!prefs || !IsShoppingListAllowedForEnterprise(prefs))
+    return false;
+
+  // Make sure the user allows subscriptions to be made and that we can fetch
+  // store data.
+  if (!account_checker || !account_checker->IsSignedIn() ||
+      !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
+      !account_checker->IsWebAndAppActivityEnabled()) {
+    return false;
+  }
+
+  return true;
+}
+
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
