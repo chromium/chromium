@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.settings.mojom;
+module ash.settings.mojom;
 
 // This file contains the definition of the mojo service that can be used in
 // C++ browser tests to manipulate the settings UI. Browser tests that want to

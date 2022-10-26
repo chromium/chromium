@@ -17,13 +17,6 @@
 
 namespace ash::settings {
 
-namespace mojom {
-using ::chromeos::settings::mojom::LockScreenSettingsAsyncWaiter;
-using ::chromeos::settings::mojom::OSSettingsBrowserProcess;
-using ::chromeos::settings::mojom::OSSettingsDriver;
-using ::chromeos::settings::mojom::OSSettingsDriverAsyncWaiter;
-}  // namespace mojom
-
 OSSettingsBrowserTestMixin::BrowserProcessServer::BrowserProcessServer() =
     default;
 

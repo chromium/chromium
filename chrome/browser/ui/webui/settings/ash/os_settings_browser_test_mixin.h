@@ -44,16 +44,14 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
 
   // Returns the mojo remote that can be used in C++ browser tests to
   // manipulate the os settings UI.
-  chromeos::settings::mojom::OSSettingsDriverAsyncWaiter OSSettingsDriver();
+  mojom::OSSettingsDriverAsyncWaiter OSSettingsDriver();
 
   // mojom::OSSettingsDriver functions, with return type wrapped into an
   // AsyncWaiter.
-  chromeos::settings::mojom::LockScreenSettingsAsyncWaiter
-  GoToLockScreenSettings();
+  mojom::LockScreenSettingsAsyncWaiter GoToLockScreenSettings();
 
  private:
-  class BrowserProcessServer
-      : public chromeos::settings::mojom::OSSettingsBrowserProcess {
+  class BrowserProcessServer : public mojom::OSSettingsBrowserProcess {
    public:
     BrowserProcessServer();
     ~BrowserProcessServer() override;
@@ -62,22 +60,17 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
     BrowserProcessServer& operator=(const BrowserProcessServer&) = delete;
 
     void RegisterOSSettingsDriver(
-        mojo::PendingRemote<chromeos::settings::mojom::OSSettingsDriver>
-            os_settings,
+        mojo::PendingRemote<mojom::OSSettingsDriver> os_settings,
         base::OnceCallback<void()>) override;
 
-    chromeos::settings::mojom::OSSettingsDriver* OSSettingsDriver();
+    mojom::OSSettingsDriver* OSSettingsDriver();
 
-    void Bind(
-        content::RenderFrameHost* render_frame_host,
-        mojo::PendingReceiver<
-            chromeos::settings::mojom::OSSettingsBrowserProcess> receiver);
+    void Bind(content::RenderFrameHost* render_frame_host,
+              mojo::PendingReceiver<mojom::OSSettingsBrowserProcess> receiver);
 
    private:
-    absl::optional<mojo::Remote<chromeos::settings::mojom::OSSettingsDriver>>
-        os_settings_driver_;
-    mojo::ReceiverSet<chromeos::settings::mojom::OSSettingsBrowserProcess>
-        receivers_;
+    absl::optional<mojo::Remote<mojom::OSSettingsDriver>> os_settings_driver_;
+    mojo::ReceiverSet<mojom::OSSettingsBrowserProcess> receivers_;
   };
 
   class TestBrowserClient : public ChromeContentBrowserClient {
@@ -121,8 +114,7 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
   // cleaned up when the mixin object is destroyed. Since it will usually not
   // contain more than perhaps a single digit number of remotes, this shouldn't
   // be a problem. mojo::RemoteSet<mojom::LockScreenSettings>
-  mojo::RemoteSet<chromeos::settings::mojom::LockScreenSettings>
-      lock_screen_settings_remotes_;
+  mojo::RemoteSet<mojom::LockScreenSettings> lock_screen_settings_remotes_;
 };
 
 }  // namespace ash::settings
