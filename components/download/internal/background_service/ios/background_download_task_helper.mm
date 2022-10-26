@@ -24,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
+#include "components/download/public/background_service/features.h"
 #include "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -272,9 +273,13 @@ void CreateNSURLSession(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
   std::string identifier =
       base::StringPrintf("%s-%d", download::kBackgroundDownloadIdentifierPrefix,
                          base::RandInt(0, kIdentifierSuffix));
-  NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
-      backgroundSessionConfigurationWithIdentifier:base::SysUTF8ToNSString(
-                                                       identifier)];
+  NSURLSessionConfiguration* configuration =
+      base::FeatureList::IsEnabled(
+          download::kDownloadServiceForegroundSessionIOSFeature)
+          ? [NSURLSessionConfiguration defaultSessionConfiguration]
+          : [NSURLSessionConfiguration
+                backgroundSessionConfigurationWithIdentifier:
+                    base::SysUTF8ToNSString(identifier)];
   configuration.sessionSendsLaunchEvents = YES;
   // TODO(qinmin): Check if we need 2 sessions here, since discretionary
   // value may be different.

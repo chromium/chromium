@@ -10,4 +10,8 @@ BASE_FEATURE(kDownloadServiceFeature,
              "DownloadService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDownloadServiceForegroundSessionIOSFeature,
+             "DownloadServiceForegroundSessionIOSFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace download

@@ -13,6 +13,11 @@ namespace download {
 // to turn on/off the feature.
 BASE_DECLARE_FEATURE(kDownloadServiceFeature);
 
+// Enable download service to download in foreground.
+// TODO(crbug/1232027): This is for iOS only and temporary fix to circumvent
+// issues with background downloads reported as crashes.
+BASE_DECLARE_FEATURE(kDownloadServiceForegroundSessionIOSFeature);
+
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_FEATURES_H_
