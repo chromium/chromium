@@ -86,11 +86,6 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
       is_generated_for_line_break_(false) {
   DCHECK_GE(end, start);
   ComputeBoxProperties();
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItem::NGInlineItem #1 %d %d %u %u",
-                       GetLayoutObject()->RecordReplayId(),
-                       type, start, end);
 }
 
 NGInlineItem::NGInlineItem(const NGInlineItem& other,
@@ -112,11 +107,6 @@ NGInlineItem::NGInlineItem(const NGInlineItem& other,
       is_end_collapsible_newline_(other.is_end_collapsible_newline_),
       is_generated_for_line_break_(other.is_generated_for_line_break_) {
   DCHECK_GE(end, start);
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItem::NGInlineItem #2 %d %d %u %u",
-                       GetLayoutObject()->RecordReplayId(),
-                       other.type_, start, end);
 }
 
 NGInlineItem::~NGInlineItem() = default;
