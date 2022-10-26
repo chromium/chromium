@@ -1,0 +1,148 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
+
+#include <memory>
+
+#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/prefs/testing_pref_service.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
+
+namespace ash {
+
+namespace {
+
+const char kCellularCustomApnsCountHistogram[] =
+    "Network.Ash.Cellular.Apn.CustomApns.Count";
+
+const char kCellularGuid[] = "test_guid";
+const char kCellularServicePath[] = "/service/network";
+const char kCellularName[] = "network_name";
+
+const char kWifiGuid[] = "test_guid2";
+const char kWifiServicePath[] = "/service/network2";
+const char kWifiName[] = "network_name2";
+
+}  // namespace
+
+class CellularNetworkMetricsLoggerTest : public testing::Test {
+ public:
+  CellularNetworkMetricsLoggerTest() = default;
+  CellularNetworkMetricsLoggerTest(const CellularNetworkMetricsLoggerTest&) =
+      delete;
+  CellularNetworkMetricsLoggerTest& operator=(
+      const CellularNetworkMetricsLoggerTest&) = delete;
+  ~CellularNetworkMetricsLoggerTest() override = default;
+
+  void SetUp() override {
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+
+    shill_service_client_ = ShillServiceClient::Get()->GetTestInterface();
+    shill_service_client_->ClearServices();
+    base::RunLoop().RunUntilIdle();
+
+    network_handler_test_helper_->RegisterPrefs(profile_prefs_.registry(),
+                                                local_state_.registry());
+
+    network_handler_test_helper_->InitializePrefs(&profile_prefs_,
+                                                  &local_state_);
+  }
+
+  void TearDown() override {
+    shill_service_client_->ClearServices();
+    network_handler_test_helper_.reset();
+  }
+
+  void SetUpGenericCellularNetwork() {
+    shill_service_client_->AddService(kCellularServicePath, kCellularGuid,
+                                      kCellularName, shill::kTypeCellular,
+                                      shill::kStateIdle,
+                                      /*visible=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetUpGenericWifiNetwork() {
+    shill_service_client_->AddService(kWifiServicePath, kWifiGuid, kWifiName,
+                                      shill::kTypeWifi, shill::kStateIdle,
+                                      /*visible=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetShillState(const std::string& service_path,
+                     const std::string& shill_state) {
+    shill_service_client_->SetServiceProperty(
+        service_path, shill::kStateProperty, base::Value(shill_state));
+    base::RunLoop().RunUntilIdle();
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  ShillServiceClient::TestInterface* shill_service_client_;
+  TestingPrefServiceSimple profile_prefs_;
+  TestingPrefServiceSimple local_state_;
+};
+
+TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitions) {
+  SetUpGenericCellularNetwork();
+
+  // Successful connect from disconnected to connected.
+  SetShillState(kCellularServicePath, shill::kStateIdle);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 0);
+  SetShillState(kCellularServicePath, shill::kStateOnline);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 1);
+  histogram_tester_->ExpectBucketCount(kCellularCustomApnsCountHistogram, 0, 1);
+
+  // Add an APN to the network.
+  base::Value apn(base::Value::Type::DICTIONARY);
+  apn.SetStringKey(shill::kApnProperty, "apn");
+  base::Value custom_apn_list(base::Value::Type::LIST);
+  custom_apn_list.Append(std::move(apn));
+  NetworkHandler::Get()->network_metadata_store()->SetCustomAPNList(
+      kCellularGuid, std::move(custom_apn_list));
+
+  // Successful connect from connecting to connected.
+  SetShillState(kCellularServicePath, shill::kStateAssociation);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 1);
+  SetShillState(kCellularServicePath, shill::kStateOnline);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 2);
+  histogram_tester_->ExpectBucketCount(kCellularCustomApnsCountHistogram, 1, 1);
+
+  // Successful connect from connecting to connected again.
+  SetShillState(kCellularServicePath, shill::kStateAssociation);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 2);
+  SetShillState(kCellularServicePath, shill::kStateOnline);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 3);
+  histogram_tester_->ExpectBucketCount(kCellularCustomApnsCountHistogram, 1, 2);
+}
+
+TEST_F(CellularNetworkMetricsLoggerTest, OnlyCellularNetworksStatusRecorded) {
+  SetUpGenericCellularNetwork();
+  SetUpGenericWifiNetwork();
+
+  SetShillState(kCellularServicePath, shill::kStateIdle);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 0);
+
+  SetShillState(kCellularServicePath, shill::kStateOnline);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 1);
+  histogram_tester_->ExpectBucketCount(kCellularCustomApnsCountHistogram, 0, 1);
+
+  SetShillState(kWifiServicePath, shill::kStateIdle);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 1);
+
+  SetShillState(kWifiServicePath, shill::kStateOnline);
+  histogram_tester_->ExpectTotalCount(kCellularCustomApnsCountHistogram, 1);
+}
+
+}  // namespace ash

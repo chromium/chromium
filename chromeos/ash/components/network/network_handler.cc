@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
@@ -206,6 +207,8 @@ void NetworkHandler::InitializePrefServices(
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get(), logged_in_profile_prefs, device_prefs,
       is_enterprise_managed_));
+  cellular_network_metrics_logger_.reset(new CellularNetworkMetricsLogger(
+      network_state_handler_.get(), network_metadata_store_.get()));
   if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
     hidden_network_handler_->SetNetworkMetadataStore(
         network_metadata_store_.get());

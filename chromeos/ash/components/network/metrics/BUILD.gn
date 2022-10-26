@@ -18,6 +18,8 @@ source_set("metrics") {
     "//chromeos/services/network_config/public/mojom",
   ]
   sources = [
+    "cellular_network_metrics_logger.cc",
+    "cellular_network_metrics_logger.h",
     "connection_info_metrics_logger.cc",
     "connection_info_metrics_logger.h",
     "connection_results.cc",
@@ -46,6 +48,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "cellular_network_metrics_logger_unittest.cc",
     "connection_info_metrics_logger_unittest.cc",
     "esim_policy_login_metrics_logger_unittest.cc",
     "network_metrics_helper_unittest.cc",
