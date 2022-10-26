@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
 #include "media/gpu/h264_decoder.h"
+#include "media/gpu/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -137,6 +138,11 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           if (!UpdateCurrentPicture(slice_hdr))
             return false;
         }
+
+        CHECK(parser_.GetPPS(cur_pps_id_));
+        DVLOGF(4) << "qp="
+                  << slice_hdr.slice_qp_delta +
+                         parser_.GetPPS(cur_pps_id_)->pic_init_qp_minus26 + 26;
 
         if (slice_hdr.disable_deblocking_filter_idc != 0) {
           LOG(ERROR) << "Deblocking filter is not enabled";
@@ -264,6 +270,8 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
+  DVLOGF(4) << "qp=" << base::strict_cast<int>(header.quantization_hdr.y_ac_qi);
+
   if (!header.show_frame) {
     LOG(ERROR) << "|show_frame| should be always true";
     return false;
@@ -383,6 +391,8 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     LOG(ERROR) << "Failed parsing";
     return false;
   }
+
+  DVLOGF(4) << "qp=" << base::strict_cast<int>(header.quant_params.base_q_idx);
 
   if (metadata.key_frame != header.IsKeyframe()) {
     LOG(ERROR) << "Keyframe info in metadata is wrong, metadata.keyframe="
