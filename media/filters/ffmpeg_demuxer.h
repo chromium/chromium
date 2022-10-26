@@ -222,6 +222,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   // Demuxer implementation.
   std::string GetDisplayName() const override;
+  DemuxerType GetDemuxerType() const override;
   void Initialize(DemuxerHost* host, PipelineStatusCallback init_cb) override;
   void AbortPendingReads() override;
   void Stop() override;

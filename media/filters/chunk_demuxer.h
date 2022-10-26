@@ -222,6 +222,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
 
   // Demuxer implementation.
   std::string GetDisplayName() const override;
+  DemuxerType GetDemuxerType() const override;
 
   // |enable_text| Process inband text tracks in the normal way when true,
   //   otherwise ignore them.

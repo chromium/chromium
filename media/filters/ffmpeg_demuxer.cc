@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/demuxer.h"
 #include "media/base/demuxer_memory_limit.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -944,6 +945,10 @@ FFmpegDemuxer::~FFmpegDemuxer() {
 
 std::string FFmpegDemuxer::GetDisplayName() const {
   return "FFmpegDemuxer";
+}
+
+DemuxerType FFmpegDemuxer::GetDemuxerType() const {
+  return DemuxerType::kFFmpegDemuxer;
 }
 
 void FFmpegDemuxer::Initialize(DemuxerHost* host,

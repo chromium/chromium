@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/demuxer.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mime_util.h"
 #include "media/base/stream_parser_buffer.h"
@@ -25,7 +26,6 @@
 #include "media/filters/frame_processor.h"
 #include "media/filters/source_buffer_stream.h"
 #include "media/filters/stream_parser_factory.h"
-
 
 namespace {
 
@@ -452,6 +452,10 @@ ChunkDemuxer::ChunkDemuxer(
 
 std::string ChunkDemuxer::GetDisplayName() const {
   return "ChunkDemuxer";
+}
+
+DemuxerType ChunkDemuxer::GetDemuxerType() const {
+  return DemuxerType::kChunkDemuxer;
 }
 
 void ChunkDemuxer::Initialize(DemuxerHost* host,

@@ -26,6 +26,15 @@ namespace media {
 
 class MediaTracks;
 
+enum class DemuxerType {
+  kMockDemuxer,
+  kFFmpegDemuxer,
+  kChunkDemuxer,
+  kMediaUrlDemuxer,
+  kFrameInjectingDemuxer,
+  kStreamProviderDemuxer,
+};
+
 class MEDIA_EXPORT DemuxerHost {
  public:
   // Notify the host that buffered time ranges have changed. Note that buffered
@@ -87,6 +96,9 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
 
   // Returns the name of the demuxer for logging purpose.
   virtual std::string GetDisplayName() const = 0;
+
+  // Get the demuxer type for identification purposes.
+  virtual DemuxerType GetDemuxerType() const = 0;
 
   // Completes initialization of the demuxer.
   //

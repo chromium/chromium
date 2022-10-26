@@ -15,6 +15,7 @@
 #include "components/cast_streaming/renderer/demuxer_connector.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/demuxer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
@@ -354,6 +355,10 @@ std::vector<media::DemuxerStream*> FrameInjectingDemuxer::GetAllStreams() {
 
 std::string FrameInjectingDemuxer::GetDisplayName() const {
   return "FrameInjectingDemuxer";
+}
+
+media::DemuxerType FrameInjectingDemuxer::GetDemuxerType() const {
+  return media::DemuxerType::kFrameInjectingDemuxer;
 }
 
 void FrameInjectingDemuxer::Initialize(

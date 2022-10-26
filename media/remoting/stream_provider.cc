@@ -17,6 +17,7 @@
 #include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/demuxer.h"
 #include "media/base/video_transformation.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/remoting/receiver_controller.h"
@@ -455,6 +456,10 @@ StreamProvider::~StreamProvider() {
 
 std::string StreamProvider::GetDisplayName() const {
   return "media::remoting::StreamProvider";
+}
+
+DemuxerType StreamProvider::GetDemuxerType() const {
+  return DemuxerType::kStreamProviderDemuxer;
 }
 
 void StreamProvider::Initialize(DemuxerHost* host,

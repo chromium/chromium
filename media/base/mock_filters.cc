@@ -5,6 +5,7 @@
 #include "media/base/mock_filters.h"
 
 #include "base/check_op.h"
+#include "media/base/demuxer.h"
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -31,6 +32,10 @@ MockDemuxer::~MockDemuxer() = default;
 
 std::string MockDemuxer::GetDisplayName() const {
   return "MockDemuxer";
+}
+
+DemuxerType MockDemuxer::GetDemuxerType() const {
+  return DemuxerType::kMockDemuxer;
 }
 
 MockDemuxerStream::MockDemuxerStream(DemuxerStream::Type type) : type_(type) {}

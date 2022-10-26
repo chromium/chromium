@@ -50,6 +50,7 @@ class StreamProvider final : public Demuxer {
   // Demuxer implementation.
   std::vector<DemuxerStream*> GetAllStreams() override;
   std::string GetDisplayName() const override;
+  DemuxerType GetDemuxerType() const override;
   void Initialize(DemuxerHost* host, PipelineStatusCallback status_cb) override;
   void AbortPendingReads() override;
   void StartWaitingForSeek(base::TimeDelta seek_time) override;

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/demuxer.h"
 
 namespace media {
 
@@ -39,6 +40,10 @@ MediaResource::Type MediaUrlDemuxer::GetType() const {
 
 std::string MediaUrlDemuxer::GetDisplayName() const {
   return "MediaUrlDemuxer";
+}
+
+DemuxerType MediaUrlDemuxer::GetDemuxerType() const {
+  return DemuxerType::kMediaUrlDemuxer;
 }
 
 void MediaUrlDemuxer::ForwardDurationChangeToDemuxerHost(
