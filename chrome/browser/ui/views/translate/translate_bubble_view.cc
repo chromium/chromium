@@ -1074,13 +1074,26 @@ void TranslateBubbleView::SwitchView(
   SizeToContents();
 
   if (view_state == TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE) {
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+    AnnounceTextToScreenReader(l10n_util::GetStringFUTF16(
         IDS_TRANSLATE_BUBBLE_TRANSLATION_COMPLETE_ANNOUNCEMENT,
         model_->GetTargetLanguageNameAt(model_->GetTargetLanguageIndex())));
   } else if (view_state == TranslateBubbleModel::VIEW_STATE_ERROR) {
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+    AnnounceTextToScreenReader(l10n_util::GetStringUTF16(
         IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
   }
+}
+
+void TranslateBubbleView::AnnounceTextToScreenReader(
+    const std::u16string& announcement_text) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(https://crbug.com/1377831): Remove this Mac workaround once
+  // AnnounceText() works as expected on Mac.
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlertDialog);
+  GetViewAccessibility().OverrideName(announcement_text);
+  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#else
+  GetViewAccessibility().AnnounceText(announcement_text);
+#endif
 }
 
 void TranslateBubbleView::SwitchTabForViewState(

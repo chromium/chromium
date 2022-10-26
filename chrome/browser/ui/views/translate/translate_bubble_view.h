@@ -270,6 +270,9 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // translation. Then close the bubble view.
   void RevertOrDeclineTranslation();
 
+  // Helper method to announce the passed-in text to the screenreader.
+  void AnnounceTextToScreenReader(const std::u16string& announcement_text);
+
   raw_ptr<views::View, DanglingUntriaged> translate_view_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> error_view_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> advanced_view_source_ = nullptr;
