@@ -4,18 +4,15 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 
-#include "base/notreached.h"
+#include <type_traits>
+
+#include "base/strings/stringprintf.h"
 
 namespace viz {
+namespace {
 
-bool SharedImageFormat::IsBitmapFormatSupported() const {
-  return is_single_plane() && resource_format() == RGBA_8888;
-}
-
-// TODO(hitawala): Add support for multiplanar formats.
-const char* SharedImageFormat::ToString() const {
-  DCHECK(is_single_plane());
-  switch (resource_format()) {
+const char* ResourceFormatToString(ResourceFormat format) {
+  switch (format) {
     case ResourceFormat::RGBA_8888:
       return "RGBA_8888";
     case ResourceFormat::RGBA_4444:
@@ -61,7 +58,78 @@ const char* SharedImageFormat::ToString() const {
     case ResourceFormat::P010:
       return "P010";
   }
-  NOTREACHED();
+}
+
+const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
+  switch (plane) {
+    case SharedImageFormat::PlaneConfig::kY_V_U:
+      return "Y+V+U";
+    case SharedImageFormat::PlaneConfig::kY_UV:
+      return "Y+UV";
+    case SharedImageFormat::PlaneConfig::kY_UV_A:
+      return "Y+UV+A";
+  }
+}
+const char* SubsamplingToString(SharedImageFormat::Subsampling subsampling) {
+  switch (subsampling) {
+    case SharedImageFormat::Subsampling::k420:
+      return "4:2:0";
+  }
+}
+
+const char* ChannelFormatToString(SharedImageFormat::ChannelFormat channel) {
+  switch (channel) {
+    case SharedImageFormat::ChannelFormat::k8:
+      return "8 unorm";
+    case SharedImageFormat::ChannelFormat::k10:
+      return "10 unorm";
+    case SharedImageFormat::ChannelFormat::k16:
+      return "16 unorm";
+    case SharedImageFormat::ChannelFormat::k16F:
+      return "16 float";
+  }
+}
+
+}  // namespace
+
+// Ensure that SharedImageFormat is suitable for passing around by value.
+static_assert(sizeof(SharedImageFormat) <= 8);
+static_assert(std::is_trivially_destructible<SharedImageFormat>::value);
+
+bool SharedImageFormat::IsBitmapFormatSupported() const {
+  return is_single_plane() && resource_format() == RGBA_8888;
+}
+
+std::string SharedImageFormat::ToString() const {
+  switch (plane_type_) {
+    case PlaneType::kUnknown:
+      return "Unknown";
+    case PlaneType::kSinglePlane:
+      return ResourceFormatToString(resource_format());
+    case PlaneType::kMultiPlane:
+      return base::StringPrintf("(%s, %s, %s)",
+                                PlaneConfigToString(plane_config()),
+                                SubsamplingToString(subsampling()),
+                                ChannelFormatToString(channel_format()));
+  }
+}
+
+bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
+  if (plane_type_ != o.plane_type())
+    return false;
+
+  switch (plane_type_) {
+    case PlaneType::kUnknown:
+      return true;
+    case PlaneType::kSinglePlane:
+      return resource_format() == o.resource_format();
+    case PlaneType::kMultiPlane:
+      return multiplanar_format() == o.multiplanar_format();
+  }
+}
+
+bool SharedImageFormat::operator!=(const SharedImageFormat& o) const {
+  return !operator==(o);
 }
 
 }  // namespace viz
