@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRI_VIEW_H_
 
 #include <memory>
+#include <utility>
 
 #include "ash/ash_export.h"
 #include "ui/gfx/geometry/insets.h"
@@ -84,10 +85,27 @@ class ASH_EXPORT TriView : public views::View {
   // Set the maximum size for the given |container|.
   void SetMaxSize(Container container, const gfx::Size& size);
 
-  // Adds the child |view| to the specified |container|.
+  // Adds the child `view` to the specified `container`. Returns a raw pointer
+  // to the view.
+  template <typename T>
+  T* AddView(Container container, std::unique_ptr<T> view) {
+    return GetContainer(container)->AddChildView(std::move(view));
+  }
+
+  // Adds the child `view` to the specified `container` at the child index.
+  // Returns a raw pointer to the view.
+  template <typename T>
+  T* AddViewAt(Container container, std::unique_ptr<T> view, int index) {
+    return GetContainer(container)->AddChildViewAt(std::move(view), index);
+  }
+
+  // Adds the child `view` to the specified `container`. Takes ownership of the
+  // view. Prefer the unique_ptr version above when possible.
   void AddView(Container container, views::View* view);
 
-  // Adds the child |view| to the specified |container| at the child index.
+  // Adds the child `view` to the specified `container` at the child index.
+  // Takes ownership of the view. Prefer the unique_ptr version above when
+  // possible.
   void AddViewAt(Container container, views::View* view, int index);
 
   // During layout the |insets| are applied to the host views entire space

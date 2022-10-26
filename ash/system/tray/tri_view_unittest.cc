@@ -167,6 +167,30 @@ TEST_F(TriViewTest, ViewsAddedToCorrectContainers) {
   EXPECT_EQ(1u, GetContainer(TriView::Container::END)->children().size());
 }
 
+TEST_F(TriViewTest, AddViewViaUniquePtr) {
+  auto child_ptr = std::make_unique<views::StaticSizedView>();
+
+  views::View* child =
+      tri_view_->AddView(TriView::Container::START, std::move(child_ptr));
+
+  EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child));
+}
+
+TEST_F(TriViewTest, AddViewAtViaUniquePtr) {
+  auto child1_ptr = std::make_unique<views::StaticSizedView>();
+  auto child2_ptr = std::make_unique<views::StaticSizedView>();
+
+  views::View* child1 =
+      tri_view_->AddViewAt(TriView::Container::START, std::move(child1_ptr), 0);
+  // Add the second view in front of the first view.
+  views::View* child2 =
+      tri_view_->AddViewAt(TriView::Container::START, std::move(child2_ptr), 0);
+
+  // The children are in reverse order.
+  EXPECT_EQ(child2, GetContainer(TriView::Container::START)->children()[0]);
+  EXPECT_EQ(child1, GetContainer(TriView::Container::START)->children()[1]);
+}
+
 TEST_F(TriViewTest, MultipleViewsAddedToTheSameContainer) {
   views::View* child1 = new views::StaticSizedView();
   views::View* child2 = new views::StaticSizedView();

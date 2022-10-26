@@ -628,7 +628,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning() {
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  connection_warning->AddView(TriView::Container::START, image_view.release());
+  connection_warning->AddView(TriView::Container::START, std::move(image_view));
 
   // Set message label in middle of row.
   std::unique_ptr<views::Label> label =
@@ -643,7 +643,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning() {
   label->SetID(static_cast<int>(
       NetworkListViewControllerViewChildId::kConnectionWarningLabel));
 
-  connection_warning->AddView(TriView::Container::CENTER, label.release());
+  connection_warning->AddView(TriView::Container::CENTER, std::move(label));
   connection_warning->SetContainerBorder(
       TriView::Container::CENTER, views::CreateEmptyBorder(gfx::Insets::TLBR(
                                       0, 0, 0, kTrayPopupLabelRightPadding)));

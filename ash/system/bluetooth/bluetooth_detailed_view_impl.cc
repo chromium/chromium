@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -192,8 +193,8 @@ void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
                           weak_factory_.GetWeakPtr()),
       IDS_ASH_STATUS_TRAY_BLUETOOTH);
   toggle->SetID(static_cast<int>(BluetoothDetailedViewChildId::kToggleButton));
-  toggle_button_ = toggle.get();
-  tri_view()->AddView(TriView::Container::END, toggle.release());
+  toggle_button_ =
+      tri_view()->AddView(TriView::Container::END, std::move(toggle));
 
   std::unique_ptr<views::Button> settings =
       base::WrapUnique(CreateSettingsButton(
@@ -202,8 +203,8 @@ void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
           IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS));
   settings->SetID(
       static_cast<int>(BluetoothDetailedViewChildId::kSettingsButton));
-  settings_button_ = settings.get();
-  tri_view()->AddView(TriView::Container::END, settings.release());
+  settings_button_ =
+      tri_view()->AddView(TriView::Container::END, std::move(settings));
 }
 
 void BluetoothDetailedViewImpl::OnSettingsClicked() {

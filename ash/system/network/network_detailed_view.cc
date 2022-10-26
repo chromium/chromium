@@ -4,6 +4,9 @@
 
 #include "ash/system/network/network_detailed_view.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -60,8 +63,7 @@ void NetworkDetailedView::CreateTitleRowButtons() {
                                            weak_ptr_factory_.GetWeakPtr()),
                        IDS_ASH_STATUS_TRAY_NETWORK_INFO));
   info->SetID(static_cast<int>(NetworkDetailedViewChildId::kInfoButton));
-  info_button_ = info.get();
-  tri_view()->AddView(TriView::Container::END, info.release());
+  info_button_ = tri_view()->AddView(TriView::Container::END, std::move(info));
 
   DCHECK(!settings_button_);
 
@@ -72,8 +74,8 @@ void NetworkDetailedView::CreateTitleRowButtons() {
           IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS));
   settings->SetID(
       static_cast<int>(NetworkDetailedViewChildId::kSettingsButton));
-  settings_button_ = settings.get();
-  tri_view()->AddView(TriView::Container::END, settings.release());
+  settings_button_ =
+      tri_view()->AddView(TriView::Container::END, std::move(settings));
 }
 
 bool NetworkDetailedView::ShouldIncludeDeviceAddresses() {
