@@ -17,7 +17,7 @@
 
 namespace base {
 
-namespace internal {
+namespace gmock_callback_support_internal {
 
 // Small helper to get the `I`th argument.
 template <size_t I, typename... Args>
@@ -56,7 +56,9 @@ template <size_t I,
 auto RunOnceCallbackImpl(Tuple&& tuple) {
   return
       [tuple = std::forward<Tuple>(tuple)](auto&&... args) -> decltype(auto) {
-        return RunImpl(std::move(internal::get<I>(args...)), tuple);
+        return RunImpl(
+            std::move(::base::gmock_callback_support_internal::get<I>(args...)),
+            tuple);
       };
 }
 
@@ -76,8 +78,9 @@ auto RunOnceCallbackImpl(Tuple&& tuple) {
     // Since running the action will move out of the arguments, `tuple_ptr` is
     // nulled out, so that attempting to run it twice will result in a run-time
     // crash.
-    return RunImpl(std::move(internal::get<I>(args...)),
-                   std::move(std::exchange(tuple_ptr, nullptr)->data));
+    return RunImpl(
+        std::move(::base::gmock_callback_support_internal::get<I>(args...)),
+        std::move(std::exchange(tuple_ptr, nullptr)->data));
   };
 }
 
@@ -88,11 +91,12 @@ template <size_t I, typename Tuple>
 auto RunRepeatingCallbackImpl(Tuple&& tuple) {
   return
       [tuple = std::forward<Tuple>(tuple)](auto&&... args) -> decltype(auto) {
-        return RunImpl(internal::get<I>(args...), tuple);
+        return RunImpl(::base::gmock_callback_support_internal::get<I>(args...),
+                       tuple);
       };
 }
 
-}  // namespace internal
+}  // namespace gmock_callback_support_internal
 
 namespace test {
 
@@ -132,14 +136,15 @@ inline auto RunOnceClosure(base::OnceClosure cb) {
 template <size_t I>
 auto RunClosure() {
   return [](auto&&... args) -> decltype(auto) {
-    return internal::get<I>(args...).Run();
+    return ::base::gmock_callback_support_internal::get<I>(args...).Run();
   };
 }
 
 template <size_t I>
 auto RunOnceClosure() {
   return [](auto&&... args) -> decltype(auto) {
-    return std::move(internal::get<I>(args...)).Run();
+    return std::move(::base::gmock_callback_support_internal::get<I>(args...))
+        .Run();
   };
 }
 
@@ -177,13 +182,13 @@ auto RunOnceClosure() {
 //   Using move-only arguments with `RunCallback()` is not supported.
 template <size_t I, typename... RunArgs>
 auto RunOnceCallback(RunArgs&&... run_args) {
-  return internal::RunOnceCallbackImpl<I>(
+  return ::base::gmock_callback_support_internal::RunOnceCallbackImpl<I>(
       std::make_tuple(std::forward<RunArgs>(run_args)...));
 }
 
 template <size_t I, typename... RunArgs>
 auto RunCallback(RunArgs&&... run_args) {
-  return internal::RunRepeatingCallbackImpl<I>(
+  return ::base::gmock_callback_support_internal::RunRepeatingCallbackImpl<I>(
       std::make_tuple(std::forward<RunArgs>(run_args)...));
 }
 
