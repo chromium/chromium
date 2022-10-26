@@ -26,10 +26,6 @@ class ASH_EXPORT DeskNameView : public DesksTextfield {
   DeskNameView& operator=(const DeskNameView&) = delete;
   ~DeskNameView() override;
 
-  // Commits an on-going desk name change (if any) by bluring the focus away
-  // from any view on |widget|, where |widget| should be the desks bar widget.
-  static void CommitChanges(views::Widget* widget);
-
   // DesksTextfield:
   void OnViewHighlighted() override;
 

@@ -26,10 +26,6 @@ class SavedDeskNameView : public DesksTextfield {
 
   static constexpr int kSavedDeskNameViewHeight = 20;
 
-  // Commits an on-going name change (if any) by bluring the focus away from any
-  // view on `widget`, where `widget` should be the saved desk library widget.
-  static void CommitChanges(views::Widget* widget);
-
   const absl::optional<std::u16string> temporary_name() const {
     return temporary_name_;
   }

@@ -29,6 +29,11 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
   // The max number of characters (UTF-16) allowed for the textfield.
   static constexpr size_t kMaxLength = 300;
 
+  // Commits an on-going name change (if any) by blurring the focus away from
+  // any view on `widget`, where `widget` should be the saved desk library
+  // widget or the desk bar widget.
+  static void CommitChanges(views::Widget* widget);
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void SetBorder(std::unique_ptr<views::Border> b) override;

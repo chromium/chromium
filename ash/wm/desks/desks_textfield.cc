@@ -4,9 +4,12 @@
 
 #include "ash/wm/desks/desks_textfield.h"
 
+#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,6 +28,27 @@ namespace {
 constexpr int kDesksTextfieldBorderRadius = 4;
 
 constexpr int kDesksTextfieldMinHeight = 16;
+
+#if DCHECK_IS_ON()
+bool IsDesksBarOrSavedDeskLibraryWidget(const views::Widget* widget) {
+  if (!widget)
+    return false;
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  if (!overview_controller->InOverviewSession())
+    return false;
+
+  auto* session = overview_controller->overview_session();
+  for (const auto& grid : session->grid_list()) {
+    if (widget == grid->saved_desk_library_widget() ||
+        widget == grid->desks_widget()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif  // DCHECK_IS_ON()
 
 }  // namespace
 
@@ -49,6 +73,19 @@ DesksTextfield::~DesksTextfield() = default;
 
 // static
 constexpr size_t DesksTextfield::kMaxLength;
+
+// static
+void DesksTextfield::CommitChanges(views::Widget* widget) {
+#if DCHECK_IS_ON()
+  DCHECK(IsDesksBarOrSavedDeskLibraryWidget(widget));
+#endif  // DCHECK_IS_ON()
+
+  auto* focus_manager = widget->GetFocusManager();
+  focus_manager->ClearFocus();
+  // Avoid having the focus restored to the same view when the parent view is
+  // refocused.
+  focus_manager->SetStoredFocusView(nullptr);
+}
 
 gfx::Size DesksTextfield::CalculatePreferredSize() const {
   const std::u16string& text = GetText();
