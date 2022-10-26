@@ -785,11 +785,12 @@ std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
   }
 
   // Search through `local_ibans_` to ensure no IBAN that already saved has the
-  // same value with `iban`, because we do not want to add two IBANs with the
-  // same account number.
+  // same value and nickname as `iban`, because we do not want to add two IBANs
+  // with the exact same data.
   if (base::ranges::any_of(
           local_ibans_, [&iban](const std::unique_ptr<IBAN>& iban_from_list) {
-            return iban.value().compare(iban_from_list->value()) == 0;
+            return iban.value().compare(iban_from_list->value()) == 0 &&
+                   iban.nickname().compare(iban_from_list->nickname());
           })) {
     return std::string();
   }

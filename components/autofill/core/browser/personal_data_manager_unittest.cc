@@ -826,7 +826,7 @@ TEST_F(PersonalDataManagerTest, NoIBANsAddedIfDisabled) {
   EXPECT_EQ(0U, personal_data_->GetIBANs().size());
 }
 
-TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
+TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   prefs::SetAutofillIBANEnabled(prefs_.get(), true);
   IBAN iban0(base::GenerateGUID());
   iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
@@ -857,6 +857,12 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
   std::vector<IBAN*> ibans;
   ibans.push_back(&iban0);
   ibans.push_back(&iban1);
+  ExpectSameElements(ibans, personal_data_->GetIBANs());
+
+  // `iban1_2` has the same fields as `iban1_1`, verify that `iban1_2` is
+  // not added.
+  IBAN iban1_2 = iban1_1;
+  personal_data_->AddIBAN(iban1_1);
   ExpectSameElements(ibans, personal_data_->GetIBANs());
 
   // Update IBAN0, remove IBAN1, and add IBAN2.
