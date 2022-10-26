@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -232,6 +232,44 @@ try_.compilator_builder(
     main_list_view = "try",
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
+)
+
+try_.orchestrator_builder(
+    name = "win10_chromium_x64_rel_ng-reclient",
+    builderless = True,
+    check_for_flakiness = True,
+    compilator = "win10_chromium_x64_rel_ng-reclient-compilator",
+    mirrors = [
+        "ci/Win x64 Builder",
+        "ci/Win10 Tests x64",
+        "ci/GPU Win x64 Builder",
+        "ci/Win10 x64 Release (NVIDIA)",
+    ],
+    description_html = "Experimental shadow builder to test reclient migration. <br/>The bot is shadowing <a href=\"https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng\">win10_chromium_x64_rel_ng</a>.",
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+        is_compile_only = True,
+    ),
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        experiment_percentage = 3,
+    ),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
+)
+
+try_.compilator_builder(
+    name = "win10_chromium_x64_rel_ng-reclient-compilator",
+    builderless = True,
+    check_for_flakiness = True,
+    # TODO (crbug.com/1245171): Revert when root issue is fixed
+    grace_period = 4 * time.minute,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
