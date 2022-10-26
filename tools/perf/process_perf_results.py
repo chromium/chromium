@@ -787,7 +787,10 @@ def main():
         args.lightweight, args.skip_perf)
     return return_code
   finally:
-    shutil.rmtree(output_results_dir)
+    # crbug/1378275. In some cases, the temp dir could be deleted. Add a
+    # check to avoid FileNotFoundError.
+    if os.path.exists(output_results_dir):
+      shutil.rmtree(output_results_dir)
 
 
 if __name__ == '__main__':
