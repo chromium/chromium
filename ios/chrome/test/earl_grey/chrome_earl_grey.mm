@@ -662,6 +662,11 @@ UIWindow* GetAnyKeyWindow() {
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
 }
 
+- (void)waitForWebStateContainingText:(const std::string&)UTF8Text
+                     timeoutInSeconds:(NSTimeInterval)timeout {
+  [self waitForWebStateContainingText:UTF8Text timeout:timeout];
+}
+
 - (void)waitForWebStateNotContainingText:(const std::string&)UTF8Text {
   NSString* text = base::SysUTF8ToNSString(UTF8Text);
   NSString* errorString = [NSString
