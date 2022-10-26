@@ -16,13 +16,13 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#include <algorithm>
 #include <limits>
 #include <type_traits>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_internal.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -256,7 +256,7 @@ bool IsStringUTF8AllowingNoncharacters(StringPiece str) {
 }
 
 bool EqualsASCII(StringPiece16 str, StringPiece ascii) {
-  return std::equal(ascii.begin(), ascii.end(), str.begin(), str.end());
+  return ranges::equal(ascii, str);
 }
 
 bool StartsWith(StringPiece str,

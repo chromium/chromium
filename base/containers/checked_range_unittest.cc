@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/containers/checked_range.h"
-#include <algorithm>
+
 #include <array>
 #include <initializer_list>
 #include <type_traits>
 
+#include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
@@ -107,14 +108,8 @@ TEST(CheckedContiguousRange, Iterators) {
   // are added.
   for (size_t i = 0; i < 5; ++i) {
     vector.push_back(i);
-    EXPECT_TRUE(
-        std::equal(vector.begin(), vector.end(), range.begin(), range.end()));
-    EXPECT_TRUE(std::equal(vector.cbegin(), vector.cend(), range.cbegin(),
-                           range.cend()));
-    EXPECT_TRUE(std::equal(vector.rbegin(), vector.rend(), range.rbegin(),
-                           range.rend()));
-    EXPECT_TRUE(std::equal(vector.crbegin(), vector.crend(), range.crbegin(),
-                           range.crend()));
+    EXPECT_TRUE(ranges::equal(vector, range));
+    EXPECT_TRUE(ranges::equal(Reversed(vector), Reversed(range)));
   }
 }
 

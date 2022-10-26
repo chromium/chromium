@@ -4,6 +4,7 @@
 
 #include "base/trace_event/heap_profiler_allocation_context.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "base/hash/hash.h"

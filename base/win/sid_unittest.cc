@@ -10,8 +10,7 @@
 
 #include <sddl.h>
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
@@ -65,13 +64,10 @@ bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
 
 bool TestSidVector(absl::optional<std::vector<Sid>> sids,
                    const std::vector<const wchar_t*> sddl) {
-  if (!sids)
-    return false;
-  if (sids->size() != sddl.size())
-    return false;
-  return std::equal(
-      sids->begin(), sids->end(), sddl.begin(),
-      [](const Sid& sid, const wchar_t* sddl) { return EqualSid(sid, sddl); });
+  return sids &&
+         ranges::equal(*sids, sddl, [](const Sid& sid, const wchar_t* sddl) {
+           return EqualSid(sid, sddl);
+         });
 }
 
 bool TestFromSddlStringVector(const std::vector<const wchar_t*> sddl) {

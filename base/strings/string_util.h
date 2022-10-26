@@ -12,7 +12,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <initializer_list>
 #include <sstream>
 #include <string>
@@ -24,6 +23,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cxx20_to_address.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"  // For implicit conversions.
 #include "build/build_config.h"
 
@@ -172,10 +172,9 @@ namespace internal {
 template <typename CharT, typename CharU>
 inline bool EqualsCaseInsensitiveASCIIT(BasicStringPiece<CharT> a,
                                         BasicStringPiece<CharU> b) {
-  return std::equal(a.begin(), a.end(), b.begin(), b.end(),
-                    [](auto lhs, auto rhs) {
-                      return ToLowerASCII(lhs) == ToLowerASCII(rhs);
-                    });
+  return ranges::equal(a, b, [](auto lhs, auto rhs) {
+    return ToLowerASCII(lhs) == ToLowerASCII(rhs);
+  });
 }
 }  // namespace internal
 

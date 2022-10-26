@@ -4,6 +4,7 @@
 
 #include "base/strings/string_util_win.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_internal.h"
 
 namespace base {
@@ -72,7 +73,7 @@ bool ContainsOnlyChars(WStringPiece input, WStringPiece characters) {
 }
 
 bool EqualsASCII(WStringPiece str, StringPiece ascii) {
-  return std::equal(ascii.begin(), ascii.end(), str.begin(), str.end());
+  return ranges::equal(ascii, str);
 }
 
 bool StartsWith(WStringPiece str,

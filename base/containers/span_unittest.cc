@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
@@ -24,24 +25,6 @@ using ::testing::Eq;
 using ::testing::Pointwise;
 
 namespace base {
-
-namespace {
-
-// constexpr implementation of std::equal's 4 argument overload.
-template <class InputIterator1, class InputIterator2>
-constexpr bool constexpr_equal(InputIterator1 first1,
-                               InputIterator1 last1,
-                               InputIterator2 first2,
-                               InputIterator2 last2) {
-  for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
-    if (*first1 != *first2)
-      return false;
-  }
-
-  return first1 == last1 && first2 == last2;
-}
-
-}  // namespace
 
 TEST(SpanTest, DefaultConstructor) {
   span<int> dynamic_span;
@@ -1076,9 +1059,7 @@ TEST(SpanTest, ConstexprIterator) {
   static constexpr int kArray[] = {1, 6, 1, 8, 0};
   constexpr span<const int> span(kArray);
 
-  static_assert(constexpr_equal(std::begin(kArray), std::end(kArray),
-                                span.begin(), span.end()),
-                "");
+  static_assert(ranges::equal(kArray, span), "");
   static_assert(1 == span.begin()[0], "");
   static_assert(1 == *(span.begin() += 0), "");
   static_assert(6 == *(span.begin() += 1), "");
@@ -1091,10 +1072,7 @@ TEST(SpanTest, ReverseIterator) {
   static constexpr int kArray[] = {1, 6, 1, 8, 0};
   constexpr span<const int> span(kArray);
 
-  EXPECT_TRUE(std::equal(std::rbegin(kArray), std::rend(kArray), span.rbegin(),
-                         span.rend()));
-  EXPECT_TRUE(std::equal(std::crbegin(kArray), std::crend(kArray),
-                         std::crbegin(span), std::crend(span)));
+  EXPECT_TRUE(ranges::equal(Reversed(kArray), Reversed(span)));
 }
 
 TEST(SpanTest, AsBytes) {
