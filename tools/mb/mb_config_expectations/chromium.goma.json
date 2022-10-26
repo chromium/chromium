@@ -199,6 +199,7 @@
   "chromeos-amd64-generic-rel-goma-rbe-staging": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
@@ -209,6 +210,7 @@
   "chromeos-amd64-generic-rel-goma-rbe-tot": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,

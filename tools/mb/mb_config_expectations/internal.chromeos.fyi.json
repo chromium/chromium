@@ -2,6 +2,7 @@
   "chromeos-betty-pi-arc-chrome-dchecks": {
     "args_file": "//build/args/chromeos/betty-pi-arc.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,

@@ -2012,6 +2012,7 @@
 
     'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient': [
       'chromeos_amd64-generic-vm_reclient', 'use_fake_dbus_clients',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_asan_reclient': [
@@ -2020,10 +2021,12 @@
 
     'chromeos_amd64-generic_cfi_thin_lto': [
       'chromeos_amd64-generic', 'cfi_full', 'thin_lto',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_cfi_thin_lto_reclient': [
       'chromeos_amd64-generic_reclient', 'cfi_full', 'thin_lto',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_dbg': [
@@ -2074,30 +2077,34 @@
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients':[
-      'chromeos_amd64-generic', 'use_fake_dbus_clients',
+      'chromeos_amd64-generic', 'use_fake_dbus_clients', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients_goma':[
-      'chromeos_amd64-generic_goma', 'use_fake_dbus_clients',
+      'chromeos_amd64-generic_goma', 'use_fake_dbus_clients', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized': [
-      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients',
+      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks': [
-      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_amd64'
+      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_arm-generic_cfi_thin_lto_official': [
       'chromeos_device', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
+
     'chromeos_arm-generic_cfi_thin_lto_official_reclient': [
       'chromeos_device_reclient', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
+      'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_arm-generic_dbg': [
       'chromeos_device', 'arm-generic', 'debug',
+      'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_arm-generic_dbg_reclient': [
@@ -2165,15 +2172,18 @@
 
     'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients': [
       'chromeos_device', 'betty-arc-r', 'include_unwind_tables', 'official', 'use_fake_dbus_clients',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_betty-pi-arc_cfi_thin_lto_official': [
       'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'minimal_symbols',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_betty-pi-arc_dchecks': [
       'chromeos_device', 'betty-pi-arc', 'include_unwind_tables', 'official',
       'use_fake_dbus_clients', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_eve-arc-r_include_unwind_tables_official': [
@@ -2198,14 +2208,15 @@
       # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
       # display-orientation DCHECK failures are resolved.
       # 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_kevin_dchecks': [
-      'chromeos_kevin', 'dcheck_always_on',
+      'chromeos_kevin', 'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_kevin_dchecks_reclient': [
-      'chromeos_kevin_reclient', 'dcheck_always_on',
+      'chromeos_kevin_reclient', 'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_kevin_include_unwind_tables_official': [
@@ -2214,6 +2225,7 @@
 
     'chromeos_kevin_include_unwind_tables_official_dchecks': [
       'chromeos_kevin', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_msan_release_bot': [
@@ -2234,10 +2246,12 @@
 
     'chromeos_octopus_include_unwind_tables_official_dchecks': [
       'chromeos_device', 'octopus', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_reven_include_unwind_tables_official_dchecks': [
       'chromeos_device', 'reven', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_trogdor64_include_unwind_tables_official_dchecks_skylab': [
@@ -3739,6 +3753,10 @@
 
     'also_build_lacros_chrome_for_architecture_amd64': {
       'gn_args': 'also_build_lacros_chrome_for_architecture="amd64"',
+    },
+
+    'also_build_lacros_chrome_for_architecture_arm': {
+      'gn_args': 'also_build_lacros_chrome_for_architecture="arm"',
     },
 
     'amd64-generic': {

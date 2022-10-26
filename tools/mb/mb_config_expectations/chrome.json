@@ -32,6 +32,7 @@
   "chromeos-betty-arc-r-chrome": {
     "args_file": "//build/args/chromeos/betty-arc-r.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -45,6 +46,7 @@
   "chromeos-betty-pi-arc-cfi-thin-lto-chrome": {
     "args_file": "//build/args/chromeos/betty-pi-arc.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "is_cfi": true,
       "is_chrome_branded": true,
@@ -60,6 +62,7 @@
   "chromeos-betty-pi-arc-chrome": {
     "args_file": "//build/args/chromeos/betty-pi-arc.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -98,6 +101,7 @@
   "chromeos-jacuzzi-chrome": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "arm",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -110,6 +114,7 @@
   "chromeos-kevin-chrome": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "arm",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -122,6 +127,7 @@
   "chromeos-octopus-chrome": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -134,6 +140,7 @@
   "chromeos-reven-chrome": {
     "args_file": "//build/args/chromeos/reven-vmtest.gni",
     "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
