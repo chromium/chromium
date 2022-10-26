@@ -27,8 +27,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "use_clang_coverage",
-                  "enable_reclient"
+                  "use_clang_coverage"
                 ],
                 "config": "chromium"
               }
@@ -54,8 +53,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "use_clang_coverage",
-                  "enable_reclient"
+                  "use_clang_coverage"
                 ],
                 "config": "chromium"
               }

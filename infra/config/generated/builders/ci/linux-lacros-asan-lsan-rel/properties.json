@@ -24,8 +24,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos",
-                  "enable_reclient"
+                  "chromeos"
                 ],
                 "config": "chromium_no_telemetry_dependencies"
               }

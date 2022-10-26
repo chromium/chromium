@@ -24,8 +24,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "arm64",
-                  "enable_reclient"
+                  "arm64"
                 ],
                 "config": "chromium"
               }

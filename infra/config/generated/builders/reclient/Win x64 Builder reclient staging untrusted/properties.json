@@ -25,7 +25,6 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "use_clang_coverage",
-                  "enable_reclient",
                   "reclient_staging"
                 ],
                 "config": "chromium"

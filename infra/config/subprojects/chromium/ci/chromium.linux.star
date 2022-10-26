@@ -42,7 +42,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -69,7 +68,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -96,7 +94,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -127,7 +124,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "arm64",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -202,7 +198,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -228,7 +223,6 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["enable_reclient"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -254,7 +248,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -322,7 +315,6 @@ ci.thin_tester(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["enable_reclient"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -349,7 +341,6 @@ ci.thin_tester(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -376,7 +367,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -402,7 +392,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -428,7 +417,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -454,7 +442,6 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(

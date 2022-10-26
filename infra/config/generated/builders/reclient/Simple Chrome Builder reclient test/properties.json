@@ -28,7 +28,6 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "chromeos",
-                  "enable_reclient",
                   "reclient_test"
                 ],
                 "config": "chromium"

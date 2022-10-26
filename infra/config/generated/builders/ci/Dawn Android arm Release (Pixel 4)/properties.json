@@ -23,8 +23,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "android",
-                  "dawn_top_of_tree",
-                  "enable_reclient"
+                  "dawn_top_of_tree"
                 ],
                 "config": "chromium"
               },

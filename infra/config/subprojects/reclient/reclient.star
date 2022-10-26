@@ -160,7 +160,6 @@ fyi_reclient_staging_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_staging",
                 ],
             ),
@@ -186,7 +185,6 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_test",
                 ],
             ),
@@ -213,7 +211,6 @@ fyi_reclient_staging_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_staging",
                 ],
             ),
@@ -236,7 +233,6 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_test",
                 ],
             ),
@@ -266,7 +262,7 @@ fyi_reclient_staging_builder(
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "enable_reclient", "reclient_staging"],
+            apply_configs = ["chromeos", "reclient_staging"],
         ),
     ),
 )
@@ -287,7 +283,7 @@ fyi_reclient_test_builder(
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "enable_reclient", "reclient_test"],
+            apply_configs = ["chromeos", "reclient_test"],
         ),
     ),
 )
@@ -301,7 +297,6 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_test",
                 ],
             ),
@@ -328,7 +323,6 @@ fyi_reclient_staging_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_staging",
                 ],
             ),
@@ -355,7 +349,6 @@ fyi_reclient_staging_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_staging",
                 ],
             ),
@@ -381,7 +374,6 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "enable_reclient",
                     "reclient_test",
                 ],
             ),
