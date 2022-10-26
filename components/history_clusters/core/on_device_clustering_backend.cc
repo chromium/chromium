@@ -341,13 +341,13 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   // The cluster finalizers to be run.
   std::vector<std::unique_ptr<ClusterFinalizer>> cluster_finalizers;
 
+  cluster_processors.push_back(
+      std::make_unique<FullMembershipClusterProcessor>());
   if (GetConfig().content_clustering_enabled) {
     cluster_processors.push_back(
         std::make_unique<ContentAnnotationsClusterProcessor>(
             &entity_id_to_entity_metadata_map));
   }
-  cluster_processors.push_back(
-      std::make_unique<FullMembershipClusterProcessor>());
 
   cluster_finalizers.push_back(
       std::make_unique<ContentVisibilityClusterFinalizer>());
