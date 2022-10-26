@@ -813,16 +813,16 @@ template("test") {
       }
 
       if (is_asan) {
-        executable_args += [ "--asan=true" ]
+        executable_args += [ "--asan=1" ]
       }
       if (is_msan) {
-        executable_args += [ "--msan=true" ]
+        executable_args += [ "--msan=1" ]
       }
       if (is_tsan) {
-        executable_args += [ "--tsan=true" ]
+        executable_args += [ "--tsan=1" ]
       }
       if (use_cfi_diag) {
-        executable_args += [ "--cfi-diag=true" ]
+        executable_args += [ "--cfi-diag=1" ]
       }
 
       data += [ "//build/lacros/test_runner.py" ]
@@ -891,16 +891,16 @@ template("test") {
         "--test-launcher-bot-mode",
       ]
       if (is_asan) {
-        executable_args += [ "--asan=true" ]
+        executable_args += [ "--asan=1" ]
       }
       if (is_msan) {
-        executable_args += [ "--msan=true" ]
+        executable_args += [ "--msan=1" ]
       }
       if (is_tsan) {
-        executable_args += [ "--tsan=true" ]
+        executable_args += [ "--tsan=1" ]
       }
       if (use_cfi_diag) {
-        executable_args += [ "--cfi-diag=true" ]
+        executable_args += [ "--cfi-diag=1" ]
       }
 
       if (use_rts) {

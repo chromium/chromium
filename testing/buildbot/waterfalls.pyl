@@ -5285,6 +5285,9 @@
         'test_suites': {
           'gtest_tests': 'linux_lacros_gtests',
         },
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+        ],
       },
       'linux-ubsan-vptr': {
         'mixins': [
