@@ -869,9 +869,9 @@ void VideoEncodeAcceleratorAdapter::NotifyError(
 
 void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
-  // TODO(chunbo): More VideoEncoderInfo can be fetched from VEA beneath.
-  // Here the accurate encoder name is updated to MediaLog. So things like
-  // media tab in Developer tools can show the actual encoder name.
+  // TODO(crbug.com/1378157): More VideoEncoderInfo can be fetched from VEA
+  // beneath. Here the accurate encoder name is updated to MediaLog. So things
+  // like media tab in Developer tools can show the actual encoder name.
   media_log_->SetProperty<media::MediaLogProperty::kVideoEncoderName>(
       info.implementation_name);
 }
