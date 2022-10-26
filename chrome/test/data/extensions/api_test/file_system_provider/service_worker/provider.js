@@ -252,25 +252,31 @@ export class TestFileSystemProvider {
     }
   }
 
-  setUpCommandListener(serviceWorker) {
-    serviceWorker.onmessage = (e) => {
-      const {requestId, commandId, args} = e.data;
-      e.waitUntil((
-          /** @suppress {checkTypes} */
-          async () => {
-            const result = {requestId};
-            try {
-              if (commandId in this) {
-                result.response = await this[commandId](...args);
-              } else {
-                result.error = `unhandled: ${commandId}`;
-              }
-            } catch (error) {
-              result.error = error.toString();
-            }
-            e.source.postMessage(result);
-          })());
+  setUpCommandListener() {
+    const listener = (msg, sender, sendResponse) => {
+      const {commandId, args} = msg;
+      this.handleCommand(commandId, ...args).then(sendResponse);
+      return true;  // Indicate that we want to respond asynchronously.
     };
+    // Listen to both events to handle messages sent both from the same or from
+    // a different extension.
+    chrome.runtime.onMessageExternal.addListener(listener);
+    chrome.runtime.onMessage.addListener(listener);
+  }
+
+  /** @suppress {checkTypes} */
+  async handleCommand(commandId, ...args) {
+    const result = {};
+    try {
+      if (commandId in this) {
+        result.response = await this[commandId](...args);
+      } else {
+        result.error = `unhandled: ${commandId}`;
+      }
+    } catch (error) {
+      result.error = error.toString();
+    }
+    return result;
   }
 
   /**
@@ -1279,5 +1285,5 @@ export function serviceWorkerMain(serviceWorker) {
       new TestFileSystemProvider(TestFileSystemProvider.FILESYSTEM_ID);
 
   provider.setUpProviderListeners();
-  provider.setUpCommandListener(serviceWorker);
+  provider.setUpCommandListener();
 }

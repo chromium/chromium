@@ -291,100 +291,113 @@ export async function mountTestFileSystem(optionsOverride) {
 }
 
 /**
- * @suppress {checkTypes}
- * @returns {string} request ID
+ * A proxy to a FileSystemProvider instance running in a different context (or
+ * different extension) to be called from test code. All the calls and arguments
+ * are forwarded as is to the test provider, see corresponding functions in
+ * FileSystemProvider for descriptions.
  */
-function generateRequestId() {
-  return crypto.randomUUID();
-}
+export class ProviderProxy {
+  constructor(extensionId) {
+    /**
+     * Target extension ID to send messages to.
+     *
+     * @private {string}
+     */
+    this.extensionId_ = extensionId;
+  }
 
-async function callServiceWorker(commandId, ...args) {
-  const requestId = generateRequestId();
-  const swContainer = navigator.serviceWorker;
-  const sw = (await swContainer.ready).active;
-
-  return new Promise((resolve, reject) => {
-    const onReply = (e) => {
-      const {requestId, response, error} = e.data;
-      if (requestId === requestId) {
-        swContainer.removeEventListener('message', onReply);
-        if (error) {
-          reject(new Error(`service worker returned: ${error}`));
-        } else {
-          resolve(response);
-        }
-      }
-    };
-    setTimeout(() => {
-      swContainer.removeEventListener('message', onReply);
-      reject(new Error(
-          `request to service worker timed out: ${commandId} args: ` +
-          JSON.stringify(args)));
-    }, 5000);
-    swContainer.addEventListener('message', onReply)
-    sw.postMessage({requestId, commandId, args});
-  });
-}
-
-/**
- * A proxy to a FileSystemProvider instance running in a service worker to be
- * called from test code. All the calls and arguments are forwarded as is to the
- * test provider, see corresponding functions in FileSystemProvider for
- * descriptions.
- */
-export const remoteProvider = {
   /**
    * @param {!Object<string, !Object>} files
    * @returns {!Promise<void>}
    */
-  addFiles: async (files) => callServiceWorker('addFiles', files),
+  async addFiles(files) {
+    return this.callProvider('addFiles', files);
+  }
+
   /**
    * @param {number} requestId
    * @returns {!Promise<void>}
    */
-  continueRequest: async (requestId) =>
-      callServiceWorker('continueRequest', requestId),
+  async continueRequest(requestId) {
+    return this.callProvider('continueRequest', requestId);
+  }
+
   /**
    * @param {string} eventName
    * @returns {!Promise<number>}
    */
-  getEventCount: async (eventName) =>
-      callServiceWorker('getEventCount', eventName),
+  async getEventCount(eventName) {
+    return this.callProvider('getEventCount', eventName);
+  }
+
   /**
    * @param {string} filePath
    * @returns {!Promise<string>}
    */
-  getFileContents: async (filePath) =>
-      callServiceWorker('getFileContents', filePath),
+  async getFileContents(filePath) {
+    return this.callProvider('getFileContents', filePath);
+  }
+
   /**
    * @returns {!Promise<number>}
    */
-  getOpenedFiles: async () => callServiceWorker('getOpenedFiles'),
+  async getOpenedFiles() {
+    return this.callProvider('getOpenedFiles');
+  }
+
   /**
    * @param {string} entryPath
    * @param {boolean} recursive
    * @param {string} tag
    */
-  triggerNotify: async (entryPath, recursive, tag) =>
-      callServiceWorker('triggerNotify', entryPath, recursive, tag),
+  async triggerNotify(entryPath, recursive, tag) {
+    return this.callProvider('triggerNotify', entryPath, recursive, tag);
+  }
+
   /**
    * @param {string} key
    * @param {?} value
    */
-  setConfig: async (key, value) => callServiceWorker('setConfig', key, value),
+  async setConfig(key, value) {
+    return this.callProvider('setConfig', key, value);
+  }
+
   /**
    * @param {string} handlerName
    * @param {boolean} enabled
    */
-  setHandlerEnabled: async (handlerName, enabled) =>
-      callServiceWorker('setHandlerEnabled', handlerName, enabled),
+  async setHandlerEnabled(handlerName, enabled) {
+    return this.callProvider('setHandlerEnabled', handlerName, enabled);
+  }
+
   /**
    * @returns {!Promise<void>}
    */
-  resetState: async () => callServiceWorker('resetState'),
+  async resetState() {
+    return this.callProvider('resetState');
+  }
+
   /**
    * @param {string} funcName
    * @returns {!Promise<!Object>}
    */
-  waitForEvent: async (funcName) => callServiceWorker('waitForEvent', funcName),
+  async waitForEvent(funcName) {
+    return this.callProvider('waitForEvent', funcName);
+  }
+
+  async callProvider(commandId, ...args) {
+    const {response, error} = await promisifyWithLastError(
+        chrome.runtime.sendMessage, this.extensionId_, {commandId, args},
+        /*options=*/ {});
+    if (error) {
+      throw new Error(`service worker returned: ${error}`);
+    }
+    return response;
+  }
 };
+
+/**
+ * Default provider proxy: sends messages to the same extension (but could still
+ * be in a different context, i.e. foreground page vs service worker).
+ */
+export const remoteProvider = new ProviderProxy(chrome.runtime.id);
