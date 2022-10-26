@@ -88,6 +88,29 @@ def main(argv):
     if not is_tsconfig_valid:
       raise AssertionError(error)
 
+    # Work-around for https://github.com/microsoft/TypeScript/issues/30024. Need
+    # to append 'trusted-types' in cases where the default configuration's
+    # 'types' field is overridden, because of the Chromium patch  at
+    # third_party/node/typescript.patch
+    # TODO(dpapad): Remove if/when the TypeScript bug has been fixed.
+    if 'compilerOptions' in tsconfig_base and \
+        'types' in tsconfig_base['compilerOptions']:
+      types = tsconfig_base['compilerOptions']['types']
+
+      if 'trusted-types' not in types:
+        # Ensure that typeRoots is not overridden in an incompatible way.
+        ERROR_MSG = ('Need to include \'third_party/node/node_modules/@types\' '
+                     'when overriding the default typeRoots')
+        assert ('typeRoots' in tsconfig_base['compilerOptions']), ERROR_MSG
+        type_roots = tsconfig_base['compilerOptions']['typeRoots']
+        has_type_root = any(r.endswith('third_party/node/node_modules/@types') \
+            for r in type_roots)
+        assert has_type_root, ERROR_MSG
+
+        augmented_types = types.copy()
+        augmented_types.append('trusted-types')
+        tsconfig['compilerOptions']['types'] = augmented_types
+
     # If "sourceMap" or "inlineSourceMap" option have been provided in the
     # tsconfig file, include the "sourceRoot" key.
     if _is_sourcemap_enabled(tsconfig_base):

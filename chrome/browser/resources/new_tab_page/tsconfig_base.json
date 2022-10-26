@@ -6,6 +6,6 @@
     "noUnusedLocals": false,
     "strictPropertyInitialization": false,
     "typeRoots": ["../../../../third_party/node/node_modules/@types"],
-    "types": ["dom-speech-recognition", "trusted-types" ]
+    "types": ["dom-speech-recognition"]
   }
 }
