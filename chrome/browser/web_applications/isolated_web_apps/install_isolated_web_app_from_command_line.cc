@@ -9,12 +9,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -59,19 +55,16 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile& profile) {
   return web_contents;
 }
 
-void ScheduleInstallIsolatedWebApp(const IsolatedWebAppUrlInfo& isolation_info,
-                                   IsolationData isolation_data,
-                                   WebAppProvider& provider,
-                                   Profile& profile,
-                                   base::OnceClosure callback) {
-  DCHECK(!callback.is_null());
-
+void ScheduleInstallIsolatedApp(const IsolatedWebAppUrlInfo& isolation_info,
+                                IsolationData isolation_data,
+                                WebAppProvider& provider,
+                                Profile& profile) {
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           isolation_info, isolation_data, CreateWebContents(profile),
           std::make_unique<WebAppUrlLoader>(), profile,
           provider.install_finalizer(),
-          base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
+          base::BindOnce(&ReportInstallationResult)));
 }
 
 base::expected<absl::optional<IsolationData>, std::string>
@@ -115,17 +108,7 @@ GetBundlePathFromCommandLine(const base::CommandLine& command_line) {
   return IsolationData{IsolationData::DevModeBundle{.path = absolute_path}};
 }
 
-base::OnceClosure& GetNextDoneCallbackInstance() {
-  static base::NoDestructor<base::OnceClosure> kInstance{base::NullCallback()};
-  return *kInstance;
-}
-
 }  // namespace
-
-void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
-    base::OnceClosure done_callback) {
-  GetNextDoneCallbackInstance() = std::move(done_callback);
-}
 
 base::expected<IsolatedWebAppUrlInfo, std::string> GetIsolationInfo(
     const IsolationData& isolation_data) {
@@ -174,18 +157,12 @@ GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
                                     Profile& profile) {
-  base::OnceClosure& next_done_callback = GetNextDoneCallbackInstance();
-  base::OnceClosure done = next_done_callback.is_null()
-                               ? base::DoNothing()
-                               : std::move(next_done_callback);
-
   // Web applications are not available on some platforms and
   // |WebAppProvider::GetForWebApps| returns nullptr in such cases.
   //
   // See |WebAppProvider::GetForWebApps| documentation for details.
   WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile);
   if (provider == nullptr) {
-    std::move(done).Run();
     return;
   }
 
@@ -193,11 +170,9 @@ void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
       GetIsolationDataFromCommandLine(command_line);
   if (!isolation_data.has_value()) {
     LOG(ERROR) << isolation_data.error();
-    std::move(done).Run();
     return;
   }
   if (!isolation_data->has_value()) {
-    std::move(done).Run();
     return;
   }
 
@@ -206,15 +181,13 @@ void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
 
   if (!isolation_info.has_value()) {
     LOG(ERROR) << isolation_info.error();
-    std::move(done).Run();
     return;
   }
 
   provider->on_registry_ready().Post(
       FROM_HERE,
-      base::BindOnce(&ScheduleInstallIsolatedWebApp, isolation_info.value(),
-                     **isolation_data, std::ref(*provider), std::ref(profile),
-                     std::move(done)));
+      base::BindOnce(&ScheduleInstallIsolatedApp, isolation_info.value(),
+                     **isolation_data, std::ref(*provider), std::ref(profile)));
 }
 
 }  // namespace web_app
