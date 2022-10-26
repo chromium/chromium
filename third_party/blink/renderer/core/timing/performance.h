@@ -292,24 +292,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   bool HasObserverFor(PerformanceEntry::EntryType) const;
 
-  // Checks whether the single ResourceResponse passes the Timing-Allow-Origin
-  // check. The first parameter is the ResourceResponse being checked. The
-  // second parameter is the next ResourceResponse in the redirect chain, or is
-  // equal to the first parameter if there is no such response. This parameter
-  // is only introduced temporarily to enable computing a UseCounter within this
-  // method. The first bool parameter is
-  // https://fetch.spec.whatwg.org/#concept-request-response-tainting, while the
-  // second bool is
-  // https://fetch.spec.whatwg.org/#concept-request-tainted-origin.
-  // The next ResourceResponse and tainted origin flag are currently only being
-  // used in a UseCounter.
-  static bool PassesTimingAllowCheck(const ResourceResponse& response,
-                                     const ResourceResponse& next_response,
-                                     const SecurityOrigin&,
-                                     ExecutionContext*,
-                                     bool* response_tainting_not_basic,
-                                     bool* tainted_origin_flag);
-
   static bool IsResponseSameOriginWithInitiator(
       const ResourceResponse& response,
       const SecurityOrigin& initiator_security_origin);
@@ -319,11 +301,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
       const SecurityOrigin& initiator_security_origin,
       const network::mojom::RequestMode request_mode,
       const Vector<ResourceResponse>& redirect_chain);
-
-  static bool AllowsTimingRedirect(const Vector<ResourceResponse>&,
-                                   const ResourceResponse&,
-                                   const SecurityOrigin&,
-                                   ExecutionContext*);
 
   // Determine whether a given Node can be exposed via a Web Perf API.
   static bool CanExposeNode(Node*);
