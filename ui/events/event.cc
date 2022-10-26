@@ -674,12 +674,17 @@ std::unique_ptr<Event> MouseWheelEvent::Clone() const {
   return std::make_unique<MouseWheelEvent>(*this);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-// This value matches Windows and Fuchsia WHEEL_DELTA.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+// This value matches Windows, Fuchsia WHEEL_DELTA, and (roughly) Firefox on
+// Linux.
 // static
 const int MouseWheelEvent::kWheelDelta = 120;
 #else
-// This value matches GTK+ wheel scroll amount.
+// This is a legacy value that matches GTK+ wheel scroll amount.  Although being
+// inherited from Linux, it is no longer used on Linux itself, but is still used
+// on some other platforms.
+// See https://crbug.com/1270089 for the detailed reasoning.
+// static
 const int MouseWheelEvent::kWheelDelta = 53;
 #endif
 

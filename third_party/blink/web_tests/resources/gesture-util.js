@@ -402,7 +402,7 @@ const LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER = 120;
 // Returns the number of pixels per wheel tick which is a platform specific value.
 function pixelsPerTick() {
   // Comes from ui/events/event.cc
-  if (navigator.platform.indexOf("Win") != -1)
+  if (navigator.platform.indexOf("Win") != -1 || navigator.platform.indexOf("Linux") != -1)
     return 120;
 
   if (navigator.platform.indexOf("Mac") != -1 || navigator.platform.indexOf("iPhone") != -1 ||
@@ -414,7 +414,7 @@ function pixelsPerTick() {
   if (navigator.platform.toLowerCase().indexOf("android") != -1)
     return 64;
 
-  // Comes from ui/events/event.cc
+  // Legacy, comes from ui/events/event.cc
   return 53;
 }
 

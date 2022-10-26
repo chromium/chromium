@@ -36,7 +36,7 @@ promise_test(async () => {
     await waitForAnimationEndTimeBased(() => {
       return overflowElement.scrollLeft;
     });
-    assert_approx_equals(overflowElement.scrollLeft, expectedScrollLeft, 0.001);
+    assert_approx_equals(overflowElement.scrollLeft, Math.round(expectedScrollLeft * 100) / 100, 0.001);
     assert_equals(last_event.wheelDeltaX, -Math.floor(EXPECTED_WHEEL_DELTA_X));
     assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_X));
 
@@ -46,7 +46,7 @@ promise_test(async () => {
     await waitForAnimationEndTimeBased(() => {
       return overflowElement.scrollTop;
     });
-    assert_approx_equals(overflowElement.scrollTop, expectedScrollTop, 0.001);
+    assert_approx_equals(overflowElement.scrollTop, Math.round(expectedScrollTop * 100) / 100, 0.001);
     assert_equals(last_event.wheelDeltaY, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
     assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
 }, 'This test checks the wheel delta value of wheel events, which should be the number of ticks multiplies the legacy mouse wheel tick multiplier.');
