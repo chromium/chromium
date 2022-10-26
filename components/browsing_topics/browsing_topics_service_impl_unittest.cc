@@ -1179,19 +1179,10 @@ TEST_F(BrowsingTopicsServiceImplTest,
   EXPECT_EQ(topics[1].topic_id(), Topic(7));
 }
 
-// TODO(yaoxia): Re-enable. This test currently fails solely due to it's
-// generating a lot of GMOCK WARNING output.
 TEST_F(BrowsingTopicsServiceImplTest,
-       DISABLED_HandleTopicsWebApi_TopicsReturnedInRandomOrder) {
+       HandleTopicsWebApi_TopicsReturnedInSortedOrder) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
-      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
-                             {Topic(2), {GetHashedDomain("bar.com")}},
-                             {Topic(3), {GetHashedDomain("bar.com")}},
-                             {Topic(4), {GetHashedDomain("bar.com")}},
-                             {Topic(5), {GetHashedDomain("bar.com")}}},
-                            kTime1));
-  mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
@@ -1211,6 +1202,13 @@ TEST_F(BrowsingTopicsServiceImplTest,
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
+                            kTime1));
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
+                             {Topic(2), {GetHashedDomain("bar.com")}},
+                             {Topic(3), {GetHashedDomain("bar.com")}},
+                             {Topic(4), {GetHashedDomain("bar.com")}},
+                             {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
@@ -1224,31 +1222,16 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   // Current time is before the epoch switch time.
 
-  // Expect that in 100 rounds, both Topic(2) and Topic(7) should be seen being
-  // at the front.
-  bool seen_topic_2_at_front = false;
-  bool seen_topic_7_at_front = false;
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
 
-  for (int i = 0; i < 100; ++i) {
-    std::vector<blink::mojom::EpochTopicPtr> result;
-    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
-        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
-        /*get_topics=*/true,
-        /*observe=*/true, result));
-
-    EXPECT_EQ(result.size(), 2u);
-    std::set<int> result_set;
-    result_set.insert(result[0]->topic);
-    result_set.insert(result[1]->topic);
-    EXPECT_EQ(result_set, std::set<int>({2, 7}));
-
-    seen_topic_2_at_front = seen_topic_2_at_front || (result[0]->topic == 2);
-    seen_topic_7_at_front = seen_topic_2_at_front || (result[0]->topic == 7);
-  }
-
-  EXPECT_TRUE(seen_topic_2_at_front);
-  EXPECT_TRUE(seen_topic_7_at_front);
+  EXPECT_EQ(result.size(), 2u);
+  EXPECT_EQ(result[0]->topic, 2);
+  EXPECT_EQ(result[1]->topic, 7);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_TrackedUsageContext) {

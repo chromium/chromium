@@ -61,17 +61,11 @@ constexpr int64_t kModelVersion = 2;
 constexpr size_t kPaddedTopTopicsStartIndex = 5;
 constexpr Topic kExpectedTopic1 = Topic(1);
 constexpr Topic kExpectedTopic2 = Topic(10);
-constexpr char kExpectedResultOrder1[] =
+constexpr char kExpectedApiResult[] =
     "[{\"configVersion\":\"chrome.1\",\"modelVersion\":\"2\","
     "\"taxonomyVersion\":\"1\",\"topic\":1,\"version\":\"chrome.1:1:2\"};{"
     "\"configVersion\":\"chrome.1\",\"modelVersion\":\"2\","
     "\"taxonomyVersion\":\"1\",\"topic\":10,\"version\":\"chrome.1:1:2\"};]";
-
-constexpr char kExpectedResultOrder2[] =
-    "[{\"configVersion\":\"chrome.1\",\"modelVersion\":\"2\","
-    "\"taxonomyVersion\":\"1\",\"topic\":10,\"version\":\"chrome.1:1:2\"};{"
-    "\"configVersion\":\"chrome.1\",\"modelVersion\":\"2\","
-    "\"taxonomyVersion\":\"1\",\"topic\":1,\"version\":\"chrome.1:1:2\"};]";
 
 EpochTopics CreateTestEpochTopics(
     const std::vector<std::pair<Topic, std::set<HashedDomain>>>& topics,
@@ -645,10 +639,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, ApiResultUkm) {
 
   EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 
-  EXPECT_TRUE((metrics_entries[0].topic0.topic() == kExpectedTopic1 &&
-               metrics_entries[0].topic1.topic() == kExpectedTopic2) ||
-              (metrics_entries[0].topic0.topic() == kExpectedTopic2 &&
-               metrics_entries[0].topic1.topic() == kExpectedTopic1));
+  EXPECT_EQ(metrics_entries[0].topic0.topic(), kExpectedTopic1);
+  EXPECT_EQ(metrics_entries[0].topic1.topic(), kExpectedTopic2);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, PageLoadUkm) {
@@ -716,8 +708,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 
   std::string result = InvokeTopicsAPI(web_contents());
 
-  EXPECT_TRUE(result == kExpectedResultOrder1 ||
-              result == kExpectedResultOrder2);
+  EXPECT_EQ(result, kExpectedApiResult);
 
   // Ensure access has been reported to the Page Specific Content Settings.
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
@@ -748,8 +739,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   std::string result = InvokeTopicsAPI(
       content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
-  EXPECT_TRUE(result == kExpectedResultOrder1 ||
-              result == kExpectedResultOrder2);
+  EXPECT_EQ(result, kExpectedApiResult);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
@@ -891,8 +881,7 @@ IN_PROC_BROWSER_TEST_F(
                                            subframe_url));
 
   std::string result = InvokeTopicsAPI(web_contents());
-  EXPECT_TRUE(result == kExpectedResultOrder1 ||
-              result == kExpectedResultOrder2);
+  EXPECT_EQ(result, kExpectedApiResult);
 
   EXPECT_EQ(
       "The \"browsing-topics\" Permissions Policy denied the use of "
@@ -916,8 +905,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   std::string result = InvokeTopicsAPI(web_contents());
-  EXPECT_TRUE(result == kExpectedResultOrder1 ||
-              result == kExpectedResultOrder2);
+  EXPECT_EQ(result, kExpectedApiResult);
 
   GURL subframe_url =
       https_server_.GetURL("c.test", "/browsing_topics/empty_page.html");
@@ -1040,8 +1028,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 
   std::string result = InvokeTopicsAPI(web_contents());
 
-  EXPECT_TRUE(result == kExpectedResultOrder1 ||
-              result == kExpectedResultOrder2);
+  EXPECT_EQ(result, kExpectedApiResult);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsAPINotAllowedInPortal) {
@@ -1083,8 +1070,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsAPINotAllowedInPortal) {
 
   std::string result = InvokeTopicsAPI(web_contents());
 
-  EXPECT_TRUE(result == kExpectedResultOrder1 ||
-              result == kExpectedResultOrder2);
+  EXPECT_EQ(result, kExpectedApiResult);
 }
 
 // Regression test for crbug/1339735.

@@ -319,11 +319,6 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
   // Remove duplicate entries.
   topics.erase(std::unique(topics.begin(), topics.end()), topics.end());
 
-  // Shuffle the entries.
-  // TODO(yaoxia): Remove the random shuffle. The topics are already sorted /
-  // no longer in time order.
-  base::RandomShuffle(topics.begin(), topics.end());
-
   return true;
 }
 
