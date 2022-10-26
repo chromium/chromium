@@ -30,7 +30,6 @@ using RecentAppsUiState =
 
 // Appearance constants in DIPs.
 constexpr gfx::Insets kRecentAppButtonFocusPadding(4);
-constexpr auto kContentTextLabelInsetsDip = gfx::Insets::TLBR(0, 4, 0, 4);
 constexpr int kHeaderLabelLineHeight = 48;
 constexpr int kRecentAppButtonDefaultSpacing = 42;
 constexpr int kRecentAppButtonMinSpacing = 20;
@@ -38,6 +37,9 @@ constexpr int kRecentAppButtonSize = 36;
 constexpr int kRecentAppButtonsViewTopPadding = 4;
 constexpr int kRecentAppButtonsViewHorizontalPadding = 6;
 constexpr int kContentLabelLineHeightDip = 20;
+constexpr int kContentTextLabelExtraMargin = 6;
+constexpr auto kContentTextLabelInsetsDip =
+    gfx::Insets::TLBR(0, kContentTextLabelExtraMargin, 0, 4);
 
 // Typography.
 constexpr int kHeaderTextFontSizeDip = 15;
